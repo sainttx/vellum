@@ -3,7 +3,6 @@
 
 <p>(Tested on Centos 5.2)
 
-
 <pre>
 # yum install openvpn
 # cd /etc/openvpn/
@@ -63,7 +62,7 @@ duplicate-cn (this means several users can use the same key)
 # netstat -ntpl | grep 1723
 </pre>
 
-Set the iptables firewall rules to allow with these rules:
+<p>Set the iptables firewall rules to allow with these rules:
 
 <pre>
 # External Interface for VPN
@@ -84,21 +83,22 @@ $IPTABLES -A FORWARD -o $INTIF -s $EXTIP -d $VPNNET -j ACCEPT
 $IPTABLES -A FORWARD -o $VPNIF -s $EXTIP -d $VPNIP -j ACCEPT
 $IPTABLES -A FORWARD -o $EXTIF -s $EXTIP -d $VPNNET -j ACCEPT
 $IPTABLES -A FORWARD -o $VPNIF -s $INTNET -d $VPNNET -j ACCEPT
+</pre>
 
-Follow the client side instructions from here...
+<p>Follow the client side instructions from here...
 
 <h2>Installing OpenVPN GUI on Windows XP</h2>
 
-Once the OpenVPN server has been setup and the client key(s) made available to you for installation, follow
+<p>Once the OpenVPN server has been setup and the client key(s) made available to you for installation, follow
 these steps to roll the VPN out to the clients:
 
-Download the client software here http://www.openvpn.se/
+<p>Download the client software here http://www.openvpn.se/
 
-The tested version is 1.0.3
+<p>The tested version is 1.0.3
 
-Install the program
+<p>Install the program
 
-Under C:\Program Files\OpenVPN\config place the following:
+<p>Under C:\Program Files\OpenVPN\config place the following:
 <pre>
 ca.crt
 ca.key
@@ -126,8 +126,8 @@ cert johnl.crt
 key johnl.key
 </pre>
 
-Start OpenVPN and the client machine should connect.
+<p>Start OpenVPN and the client machine should connect.
 
-This is done by right clicking the OpenVPN in the task tray and clicking 'connect' or after starting the program
+<p>This is done by right clicking the OpenVPN in the task tray and clicking 'connect' or after starting the program
 via the start menu.
 
