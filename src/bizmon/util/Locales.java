@@ -1,0 +1,19 @@
+/*
+ * Apache Software License 2.0
+ * Supported by BizSwitch.net
+ * Supported by BizSwitch.net
+ * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
+ */
+
+package bizmon.util;
+
+import java.util.Locale;
+
+/**
+ *
+ * @author evans
+ */
+public class Locales {
+
+   public final static Locale enZA = new Locale("en", "ZA");
+}

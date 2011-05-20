@@ -140,7 +140,7 @@ LOG:  streaming replication successfully connected to primary
 We can check that transactions from the primary are being replicated.
 
 <pre>
-postgres@biz4 9.0: bin/psql -p 9600 ipay_token_retail -t -c "select max(date_sold_by_us) from qamps.cell_token"
+postgres@biz4 9.0: bin/psql -p 9600 biz_retail -t -c "select max(date_sold_by_us) from qschema.cell_token"
 </pre>
 
 == Monitoring ==
@@ -149,7 +149,7 @@ We require a custom nagios plugin to monitor the replication lag.
 
 <pre>
 postgres@biz3 9.0: sh scripts/check_lag
-PostgreSQLReplication OK - xplainit cell_token 2550 2550, date_sold_by_us 14:47 at 14:48
+PostgreSQLReplication OK - xschema cell_token 2550 2550, date_sold_by_us 14:47 at 14:48
 </pre>
 
 where for example this indicates critical state if lag is greater than 100 transactions, or warning if greater than 10 transactions.
@@ -163,9 +163,9 @@ This script counts the number of transactions eg. in <tt>cell_token</tt> table, 
 <pre>
 postgres@biz3 9.0: cat scripts/check_lag
 ...
-query="select count(1) from xplainit.cell_token where date_sold_by_us > current_date"
-count_primary=`bin/psql -h localhost -p 9500 ipay_token_retail -t -c "$query"`
-count_standby=`bin/psql -h biz4 -p 9600 ipay_token_retail -t -c "$query"`
+query="select count(1) from xschema.cell_token where date_sold_by_us > current_date"
+count_primary=`bin/psql -h localhost -p 9500 biz_retail -t -c "$query"`
+count_standby=`bin/psql -h biz4 -p 9600 biz_retail -t -c "$query"`
 
 state=WARNING
 
