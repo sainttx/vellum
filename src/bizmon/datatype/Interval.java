@@ -4,7 +4,7 @@
  * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  */
 
-package bizmon.util;
+package bizmon.datatype;
 
 /**
  *
