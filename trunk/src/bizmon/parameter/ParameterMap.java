@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class ParameterMap extends HashMap<String, String> {
     List<Entry<String, String>> entryList = new ArrayList();

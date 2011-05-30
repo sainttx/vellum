@@ -8,7 +8,7 @@ package bizmon.enumtype;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public enum DelimiterType {
     SPACE,

@@ -1,8 +1,8 @@
 = PostgreSQL 9.0 =
 
-== Documentation ==
+PostgreSQL 9.0 streaming replication
 
-; PostgreSQL 9.0 streaming replication
+== Documentation ==
 
 [http://wiki.postgresql.org/wiki/Binary_Replication_Tutorial#5_Minutes_to_Simple_Replication http://wiki.postgresql.org/wiki/Binary_Replication_Tutorial#5_Minutes_to_Simple_Replication]
 
@@ -10,12 +10,17 @@
 
 == Primary ==
 
+Consider that we have create out primary database data files as follows.
+
 <pre>
-postgres@biz3 ~: cd /dbfiles/9.0
-postgres@biz3 9.0: vi prod/postgresql.conf
+postgres@bizserver ~: cd /dbfiles/9.0
+postgres@bizserver 9.0: initdb prod
+postgres@bizserver 9.0: vi prod/postgresql.conf
 port = 9500
 listen_addresses = '*' # listen for connections from standby
 </pre>
+
+where assuming we have a current 8.x PostgreSQL installation running on port 5432, we choose a different port eg. 9500.
 
 In <tt>pg_hba.conf</tt> we must allow standby to connect for replication.
 
@@ -69,14 +74,14 @@ postgres@biz4 9.0: vi standby/recovery.conf
 
 standby_mode = 'on'
 primary_conninfo = 'host=127.0.0.1 port=9401' # connection to localhost for testing (on biz4 test/ port 9401)
-#primary_conninfo = 'host=192.168.16.190 port=9500' # connection to primary on biz3
+#primary_conninfo = 'host=192.168.16.190 port=9500' # connection to primary on bizserver
 </pre>
 
 We also allow remote connections to the standby for monitoring the lag.
 <pre>
 postgres@biz4 9.0: vi standby/pg_hba.conf
 
-host all all 196.168.16.190/32 trust # monitoring script on biz3 will connect
+host all all 196.168.16.190/32 trust # monitoring script on bizserver will connect
 </pre>
 
 ; Trigger
@@ -112,11 +117,11 @@ postgres@biz4$ psql -p 9600 # confirm standby server down
 </pre>
 
 <pre>
-postgres@biz3: rsync -av --exclude pg_xlog --exclude postgresql.conf --exclude postmaster.pid --exclude pg_ctl_start.log prod/* biz4:/dbfiles/9.0/standby/
+postgres@bizserver: rsync -av --exclude pg_xlog --exclude postgresql.conf --exclude postmaster.pid --exclude pg_ctl_start.log prod/* biz4:/dbfiles/9.0/standby/
 </pre>
 
 <pre>
-postgres@biz3$ bin/psql -p 9500
+postgres@bizserver$ bin/psql -p 9500
 psql (9.0.4)
 postgres=# select pg_stop_backup();
 NOTICE:  WAL archiving is not enabled; you must ensure that all required WAL segments are copied through other means to complete the backup
@@ -148,7 +153,7 @@ postgres@biz4 9.0: bin/psql -p 9600 biz_retail -t -c "select max(date_sold_by_us
 We require a custom nagios plugin to monitor the replication lag.
 
 <pre>
-postgres@biz3 9.0: sh scripts/check_lag
+postgres@bizserver 9.0: sh scripts/check_lag
 PostgreSQLReplication OK - xschema cell_token 2550 2550, date_sold_by_us 14:47 at 14:48
 </pre>
 
@@ -161,7 +166,7 @@ where for example this indicates critical state if lag is greater than 100 trans
 This script counts the number of transactions eg. in <tt>cell_token</tt> table, on the primary and the standby.
 
 <pre>
-postgres@biz3 9.0: cat scripts/check_lag
+postgres@bizserver 9.0: cat scripts/check_lag
 ...
 query="select count(1) from xschema.cell_token where date_sold_by_us > current_date"
 count_primary=`bin/psql -h localhost -p 9500 biz_retail -t -c "$query"`

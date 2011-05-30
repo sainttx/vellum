@@ -10,7 +10,7 @@ import java.io.PrintStream;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class PrinterFactory {
 

@@ -6,7 +6,7 @@
 http://linux.byexamples.com/archives/297/how-to-ssh-without-password/
 
 If you google <tt>ssh-keygen,</tt> you should find lots of examples sometimes entitled "ssh without password"
-for installing a public key on server eg. biz3 for ssh.
+for installing a public key on server eg. bizserver for ssh.
 
 ; ssh-keygen
 
@@ -30,11 +30,11 @@ To avoid the inconvenience of having to enter the passphrase every time ssh requ
 this passphrase can be cached by <tt>ssh-agent</tt>. We use <tt>ssh-add</tt> to activate <tt>ssh-agent</tt> for your session, and add
 your decrypted private key info to the agent to use for authentication.
 <pre>
-[evans@dev1 ~]$ ps x | grep ssh-agent
+[evanx@dev1 ~]$ ps x | grep ssh-agent
 26995 ?        Ss     0:00 ssh-agent /bin/bash
 
-[evans@dev1 ~]$ ssh-add
-Identity added: /home/evans/.ssh/identity (/home/evans/.ssh/identity)
+[evanx@dev1 ~]$ ssh-add
+Identity added: /home/evanx/.ssh/identity (/home/evanx/.ssh/identity)
 </pre>
 
 <tt>ssh-agent</tt> is usually started for your shell by default but is inactive until <tt>ssh-add</tt> is invoked,
@@ -43,8 +43,8 @@ and this will prompt for the passphrase for the encrypted private key to be cach
 If <tt>ssh-agent</tt> is not running, it can be started as follows.
 
 <pre>
-evans@evans ~$ ssh-agent bash
-evans@evans ~$ ssh-add
+evanx@evanx ~$ ssh-agent bash
+evanx@evanx ~$ ssh-add
 </pre>
 
 ; ssh-copy-id
@@ -84,26 +84,26 @@ If that doesn't give an indication of the problem, we need to look in sshd logs 
 
 On Ubuntu:
 <pre>
-root@evans:~# tail /var/log/auth.log
+root@evanx:~# tail /var/log/auth.log
 
-Mar 17 13:48:30 evans sshd[27543]: Failed password for postgres from 192.168.15.4 port 56867 ssh2
+Mar 17 13:48:30 evanx sshd[27543]: Failed password for postgres from 192.168.15.4 port 56867 ssh2
 </pre>
 
 On CentOS:
 <pre>
-root@biz3 ~: tail /var/log/secure
+root@bizserver ~: tail /var/log/secure
 
-Mar 17 13:50:01 biz3 sshd[2044]: Failed password for invalid user postgres from 192.168.16.191 port 52575 ssh2
+Mar 17 13:50:01 bizserver sshd[2044]: Failed password for invalid user postgres from 192.168.16.191 port 52575 ssh2
 </pre>
 
 Finally we can run <tt>sshd</tt> in debug mode using <tt>-d</tt> option.
 <pre>
-root@biz3 ~: /usr/sbin/sshd -p 2200 -d
+root@bizserver ~: /usr/sbin/sshd -p 2200 -d
 
 debug1: sshd version OpenSSH_4.3p2
 </pre>
 
 Then when we <tt>ssh</tt> to that port and view the debugging information that it will output to the console.
 <pre>
-evans@evans:~$ ssh -vvv -p 2200 biz3
+evanx@evanx:~$ ssh -vvv -p 2200 bizserver
 </pre>

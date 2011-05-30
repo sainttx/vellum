@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class IntegerMap<T> extends TreeMap<T, Integer> {
     

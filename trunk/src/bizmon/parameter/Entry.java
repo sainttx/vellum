@@ -10,7 +10,7 @@ import bizmon.util.Args;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class Entry<K, V> {
     K key;

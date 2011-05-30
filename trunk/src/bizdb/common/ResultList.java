@@ -17,7 +17,7 @@ import javax.sql.RowSet;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class ResultList<K> {
     List<String> columnNameList;

@@ -13,7 +13,7 @@ import java.io.IOException;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class GenericPageHandler implements HttpHandler {
 

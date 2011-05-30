@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class LinePrinter implements Printer {
     List<String> lineList = new LinkedList();

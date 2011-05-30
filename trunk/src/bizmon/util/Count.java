@@ -7,7 +7,7 @@ package bizmon.util;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class Count {
     public static final int G = 1024*1024*1024;

@@ -16,7 +16,7 @@ import java.sql.Statement;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class DatabaseMeta {
     
