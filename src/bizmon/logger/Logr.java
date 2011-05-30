@@ -12,7 +12,7 @@ import java.util.logging.Level;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class Logr {
     Class source;

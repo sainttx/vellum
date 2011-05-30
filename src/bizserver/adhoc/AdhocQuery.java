@@ -12,7 +12,7 @@ import bizserver.common.PageHandler;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class AdhocQuery extends PageHandler {
 

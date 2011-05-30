@@ -8,7 +8,7 @@ package bizserver.common;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public enum PageHandlerType {
     COMMAND,

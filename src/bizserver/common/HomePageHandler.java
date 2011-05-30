@@ -7,7 +7,7 @@ package bizserver.common;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class HomePageHandler extends PageHandler {
 

@@ -28,7 +28,7 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public abstract class PageHandler implements HttpHandler {
 
@@ -177,12 +177,12 @@ public abstract class PageHandler implements HttpHandler {
         out.printf("<form method='get' action='/search'>\n");
         out.printf("<div class='menuBarDiv'>\n");
         out.printf("<span class='menuItem'><a href='/'><input type='button' value='home'></a></span>\n");
-        out.printf("<span class='menuItem'><a href='http://evans:8091'><input type='button' value='biz1'></a></span>\n");
-        out.printf("<span class='menuItem'><a href='http://evans:8092'><input type='button' value='biz2'></a></span>\n");
-        out.printf("<span class='menuItem'><a href='http://evans:8093'><input type='button' value='biz3'></a></span>\n");
-        out.printf("<span class='menuItem'><a href='http://evans:8094'><input type='button' value='biz4'></a></span>\n");
-        out.printf("<span class='menuItem'><a href='http://evans:8095'><input type='button' value='biz5'></a></span>\n");
-        out.printf("<span class='menuItem'><a href='http://evans:8099'><input type='button' value='evans'></a></span>\n");
+        out.printf("<span class='menuItem'><a href='http://evanx:8091'><input type='button' value='biz1'></a></span>\n");
+        out.printf("<span class='menuItem'><a href='http://evanx:8092'><input type='button' value='biz2'></a></span>\n");
+        out.printf("<span class='menuItem'><a href='http://evanx:8093'><input type='button' value='bizserver'></a></span>\n");
+        out.printf("<span class='menuItem'><a href='http://evanx:8094'><input type='button' value='biz4'></a></span>\n");
+        out.printf("<span class='menuItem'><a href='http://evanx:8095'><input type='button' value='biz5'></a></span>\n");
+        out.printf("<span class='menuItem'><a href='http://evanx:8099'><input type='button' value='evanx'></a></span>\n");
         out.printf("<span class='hostName'>[<a href='/'>%s</a>]</span>\n", Parameters.getHostName());
         out.printf("</div>\n");
         if (false) {

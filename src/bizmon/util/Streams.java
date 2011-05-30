@@ -19,7 +19,7 @@ import java.util.zip.GZIPInputStream;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class Streams {
 

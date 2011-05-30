@@ -11,7 +11,7 @@ import bizmon.util.Types;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class TablePrinter {
 

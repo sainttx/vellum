@@ -8,7 +8,7 @@ package bizmon.printer;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public interface Printer {
 

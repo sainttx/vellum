@@ -8,7 +8,7 @@ package bizmon.util;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class Intervals {
 

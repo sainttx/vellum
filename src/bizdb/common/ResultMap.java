@@ -17,7 +17,7 @@ import javax.sql.RowSet;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class ResultMap<K> {
 

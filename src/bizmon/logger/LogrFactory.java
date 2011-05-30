@@ -8,7 +8,7 @@ package bizmon.logger;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class LogrFactory {
 

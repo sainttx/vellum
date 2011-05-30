@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class SafeDateFormat {
 

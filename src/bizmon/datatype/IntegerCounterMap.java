@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class IntegerCounterMap<T> extends IntegerMap {
 

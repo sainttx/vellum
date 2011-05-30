@@ -31,7 +31,7 @@ import javax.sql.rowset.CachedRowSet;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class RowSets {
 

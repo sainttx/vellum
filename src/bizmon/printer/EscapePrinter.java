@@ -11,7 +11,7 @@ import java.io.PrintStream;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class EscapePrinter implements Printer {
     Printer printer;

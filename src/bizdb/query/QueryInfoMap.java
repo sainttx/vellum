@@ -22,7 +22,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public final class QueryInfoMap {
 

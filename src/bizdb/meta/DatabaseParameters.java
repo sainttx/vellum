@@ -11,7 +11,7 @@ import bizmon.util.Args;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class DatabaseParameters {
     String database;

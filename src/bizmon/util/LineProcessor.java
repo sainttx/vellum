@@ -8,7 +8,7 @@ package bizmon.util;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public interface LineProcessor {
     public void processLine(String line) throws Exception;

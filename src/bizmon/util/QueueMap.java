@@ -12,7 +12,7 @@ import java.util.Queue;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class QueueMap<K, V> extends HashMap<K, V> {
     int capacity;

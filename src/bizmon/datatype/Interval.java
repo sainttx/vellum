@@ -8,7 +8,7 @@ package bizmon.datatype;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class Interval {
 

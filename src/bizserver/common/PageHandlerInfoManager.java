@@ -14,7 +14,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class PageHandlerInfoManager {
     Map<String, PageHandlerInfo> handlerInfoMap = new TreeMap();

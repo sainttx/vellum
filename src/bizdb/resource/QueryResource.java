@@ -12,7 +12,7 @@ import java.io.InputStream;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public enum QueryResource {
     common,

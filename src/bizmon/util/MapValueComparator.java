@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class MapValueComparator implements Comparator {
 

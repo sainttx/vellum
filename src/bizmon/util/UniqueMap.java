@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author evans
+ * @author evanx
  */
 public class UniqueMap<K, V> extends HashMap<K, V> {
 
