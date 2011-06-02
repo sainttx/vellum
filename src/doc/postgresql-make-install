@@ -1,0 +1,64 @@
+= PostgreSQL install from source =
+
+Consider that we want to install a new version of PostgreSQL eg. to evaulate with a view to migrating, alongside an existing version eg. currently in use.
+
+Similarly we may wish to install an older version of PostgreSQL eg. to inspect an archived database.
+
+Clearly we cannot use "yum install" or "yum upgrade" since this will affect the existing installation.
+
+The current install <tt>yum</tt> or <tt>rpm</tt> might be <tt>/var/lib/pgsql</tt>,
+
+By default the install directory for source <tt>/usr/local/pgsql/</tt>, which we can change. Indeed this is the reason why we install from source.
+
+[http://www.postgresql.org/ftp/source/ http://www.postgresql.org/ftp/source/]
+
+  postgres@biz3 install: wget http://wwwmaster.postgresql.org/download/mirrors-ftp/source/v8.3.15/postgresql-8.3.15.tar.bz2
+  postgres@biz3 install: bunzip2 postgresql-8.3.15.tar.bz2
+  postgres@biz3 install: zgip postgresql-8.3.15.tar
+  postgres@biz3 install: tar xzvf postgresql-8.3.15.tar.gz
+  postgres@biz3 install: cd postgresql-8.3.15
+
+We are now ready to build.
+
+  postgres@biz3 postgresql-8.3.15: ./configure --prefix=/dbfiles/8.3/pgsql
+
+The <tt>--prefix</tt> directory is critical as we do not wish to overwrite an existing installation.
+
+  postgres@biz3 postgresql-8.3.15: make
+  '''All of PostgreSQL successfully made. Ready to install.'''
+
+Before we install, double check we are not installing over an existing installation, possibly running, possibly used for production.
+  postgres@biz3 postgresql-8.3.15: grep ^prefix config.log
+  '''prefix='/dbfiles/8.3/pgsql'''
+
+Install to the target installation directory as specified in <tt>--prefix=/dbfiles/8.3/pgsql</tt>.
+  postgres@biz3 postgresql-8.3.15: make install
+  '''PostgreSQL installation complete.'''
+
+  postgres@biz3 postgresql-8.3.15: /dbfiles/8.3/pgsql/bin/psql --version
+  '''psql (PostgreSQL) 8.3.15'''
+
+We might test creating a database, again being sure not to overwrite any existing database!
+
+  $ /dbfiles/8.3/pgsql/bin/initdb /dbfiles/8.3/test
+
+  $ vi /dbfiles/8.3/test/postgresql.conf
+  '''port=6401'''
+
+  $ /dbfiles/8.3/pgsql/bin/pg_ctl -D /dbfiles/8.3/test -l /dbfiles/8.3/test/pg_ctl_start.log start
+  '''server starting'''
+
+  $ /dbfiles/8.3/pgsql/bin/psql -p 6401
+  '''Welcome to psql 8.3.13 (server 8.3.15), the PostgreSQL interactive terminal.'''
+  postgres=#
+
+  $ /dbfiles/8.3/pgsql/bin/pg_ctl -D /dbfiles/8.3/test stop
+  '''waiting for server to shut down.... done
+  '''server stopped'''
+
+  $ /dbfiles/8.3/pgsql/bin/pg_ctl -D /dbfiles/8.3/test stop -m fast
+
+
+[[Category:uncategorized]]
+
+__NOTOC__
