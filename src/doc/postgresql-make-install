@@ -6,7 +6,7 @@ Similarly we may wish to install an older version of PostgreSQL eg. to inspect a
 
 Clearly we cannot use "yum install" or "yum upgrade" since this will affect the existing installation.
 
-The current install <tt>yum</tt> or <tt>rpm</tt> might be <tt>/var/lib/pgsql</tt>,
+(The currently installed server via <tt>yum</tt> or <tt>rpm</tt> package managers, might be in <tt>/var/lib/pgsql</tt>.)
 
 By default the install directory for source <tt>/usr/local/pgsql/</tt>, which we can change. Indeed this is the reason why we install from source.
 
@@ -38,9 +38,10 @@ Install to the target installation directory as specified in <tt>--prefix=/dbfil
   postgres@biz3 postgresql-8.3.15: /dbfiles/8.3/pgsql/bin/psql --version
   '''psql (PostgreSQL) 8.3.15'''
 
-We might test creating a database, again being sure not to overwrite any existing database!
+We might test creating a database, while not wanting to overwrite any existing database, <tt>initdb</tt> will give an error if directory exists and is not empty.
 
   $ /dbfiles/8.3/pgsql/bin/initdb /dbfiles/8.3/test
+  '''initdb: directory "test" exists but is not empty'''
 
   $ vi /dbfiles/8.3/test/postgresql.conf
   '''port=6401'''
@@ -48,13 +49,22 @@ We might test creating a database, again being sure not to overwrite any existin
   $ /dbfiles/8.3/pgsql/bin/pg_ctl -D /dbfiles/8.3/test -l /dbfiles/8.3/test/pg_ctl_start.log start
   '''server starting'''
 
+where if the log is not specified, output will be the <tt>stderr</tt>.
+
   $ /dbfiles/8.3/pgsql/bin/psql -p 6401
   '''Welcome to psql 8.3.13 (server 8.3.15), the PostgreSQL interactive terminal.'''
-  postgres=#
+  postgres=# create database test_database;
+
+We can try other binaries
+  $ /dbfiles/8.3/pgsql/bin/createuser -p 6401 test_user
+  $ /dbfiles/8.3/pgsql/bin/createdb -p 6401 test_database
+  $ /dbfiles/8.3/pgsql/bin/dropdb -p 6401 test_database
 
   $ /dbfiles/8.3/pgsql/bin/pg_ctl -D /dbfiles/8.3/test stop
   '''waiting for server to shut down.... done
   '''server stopped'''
+
+If the server does not shutdown, then try "fast" mode.
 
   $ /dbfiles/8.3/pgsql/bin/pg_ctl -D /dbfiles/8.3/test stop -m fast
 
