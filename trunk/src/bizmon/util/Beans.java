@@ -5,7 +5,7 @@
  */
 package bizmon.util;
 
-import bizmon.exception.Exceptions;
+import common.exception.Exceptions;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;

@@ -1,13 +1,13 @@
 /*
- * (c) Copyright 2010, iPay (Pty) Ltd, Evan Summers
+ * Copyright 2011, iPay (Pty) Ltd, Evan Summers
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
 package bizdb.meta;
 
-import bizdb.common.RowSets;
-import bizmon.logger.Logr;
-import bizmon.logger.LogrFactory;
+import common.result.RowSets;
+import common.logger.Logr;
+import common.logger.LogrFactory;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;

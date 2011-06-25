@@ -5,7 +5,7 @@
  */
 package bizmon.util;
 
-import bizmon.exception.ArgsRuntimeException;
+import common.exception.ArgsRuntimeException;
 import java.math.BigDecimal;
 import java.util.Date;
 
