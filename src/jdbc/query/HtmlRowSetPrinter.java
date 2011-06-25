@@ -8,8 +8,8 @@ package jdbc.query;
 import common.exception.Exceptions;
 import common.logger.Logr;
 import common.logger.LogrFactory;
-import bizmon.printer.Printer;
-import bizmon.util.Types;
+import common.printer.Printer;
+import common.util.Types;
 import java.sql.ResultSetMetaData;
 import javax.sql.RowSet;
 

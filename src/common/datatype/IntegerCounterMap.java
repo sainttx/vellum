@@ -4,7 +4,7 @@
  */
 package common.datatype;
 
-import bizmon.util.Lists;
+import common.util.Lists;
 import java.util.TreeMap;
 
 /**

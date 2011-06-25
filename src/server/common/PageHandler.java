@@ -5,19 +5,19 @@
  */
 package server.common;
 
-import bizmon.parameter.Parameters;
+import server.parameter.Parameters;
 import common.logger.Logr;
 import common.logger.LogrFactory;
-import bizmon.printer.PrintStreamAdapter;
+import common.printer.PrintStreamAdapter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import bizmon.parameter.Entry;
-import bizmon.parameter.ParameterMap;
-import bizmon.printer.Printer;
-import bizmon.util.Beans;
-import bizmon.util.Streams;
-import bizmon.util.Strings;
-import bizmon.util.Types;
+import server.parameter.Entry;
+import server.parameter.ParameterMap;
+import common.printer.Printer;
+import common.util.Beans;
+import common.util.Streams;
+import common.util.Strings;
+import common.util.Types;
 import common.exception.Exceptions;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayOutputStream;

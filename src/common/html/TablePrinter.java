@@ -5,9 +5,9 @@
  */
 package common.html;
 
-import bizmon.printer.Printer;
-import bizmon.util.Strings;
-import bizmon.util.Types;
+import common.printer.Printer;
+import common.util.Strings;
+import common.util.Types;
 
 /**
  *

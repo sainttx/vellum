@@ -7,8 +7,8 @@ package jdbc.query;
 
 import common.logger.Logr;
 import common.logger.LogrFactory;
-import bizmon.util.Args;
-import bizmon.util.Strings;
+import common.util.Args;
+import common.util.Strings;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.RowSet;

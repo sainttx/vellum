@@ -6,8 +6,8 @@
 
 package jdbc.query;
 
-import bizmon.parameter.Parameters;
-import bizmon.util.Args;
+import server.parameter.Parameters;
+import common.util.Args;
 import java.util.Map;
 
 /**

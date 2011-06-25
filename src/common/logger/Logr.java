@@ -6,7 +6,7 @@
 
 package common.logger;
 
-import bizmon.util.Args;
+import common.util.Args;
 import java.io.PrintStream;
 import java.util.logging.Level;
 
