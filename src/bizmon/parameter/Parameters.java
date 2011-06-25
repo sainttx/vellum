@@ -1,11 +1,11 @@
 /*
- * (c) Copyright 2010, iPay (Pty) Ltd, Evan Summers
+ * Copyright 2011, iPay (Pty) Ltd, Evan Summers
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
 package bizmon.parameter;
 
-import bizmon.exception.Exceptions;
+import common.exception.Exceptions;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
