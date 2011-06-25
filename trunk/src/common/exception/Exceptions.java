@@ -7,8 +7,8 @@ package common.exception;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import bizmon.util.Lists;
-import bizmon.util.Strings;
+import common.util.Lists;
+import common.util.Strings;
 
 /**
  * Utility methods related to exceptions.

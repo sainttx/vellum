@@ -5,7 +5,7 @@
  */
 package server.common;
 
-import bizmon.util.Types;
+import common.util.Types;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import common.exception.Exceptions;
