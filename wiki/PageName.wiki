@@ -27,7 +27,8 @@ public class Server {
         server.createContext("/echo", new EchoHandler());
         server.createContext("/", new GenericPageHandler(HomePageHandler.class));
         createContext();
-        server.setExecutor(new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4)));
+        server.setExecutor(new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, 
+            new ArrayBlockingQueue<Runnable>(4)));
         server.start();
         new ServerSocket(shutdownPort).accept();
         logger.info("bizmon restarted");
