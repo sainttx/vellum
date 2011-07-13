@@ -1,0 +1,64 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
+
+
+<code language="java">
+public class Server {
+
+    Logr logger = LogrFactory.getLogger(getClass());
+    int serverPort = Integer.getInteger("serverPort", 8099);
+    int shutdownPort = Integer.getInteger("shutdownPort", 8098);
+    HttpServer server;
+
+    protected void start() throws Exception {
+        requestShutdown();
+        server = HttpServer.create(new InetSocketAddress(serverPort), 4);
+        server.createContext("/echo", new EchoHandler());
+        server.createContext("/", new GenericPageHandler(HomePageHandler.class));
+        createContext();
+        server.setExecutor(new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4)));
+        server.start();
+        new ServerSocket(shutdownPort).accept();
+        logger.info("bizmon restarted");
+        System.exit(0);
+    }
+
+    protected void requestShutdown() {
+        try {
+            URL url = new URL("http://localhost:" + shutdownPort);
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            connection.getContentLength();
+            logger.info("restarting server");
+        } catch (Exception e) {
+            logger.info("starting server");
+        }
+    }
+
+    protected void createContext(String context, Class type) {
+        logger.info(context, type);
+        server.createContext(context, new GenericPageHandler(type));
+    }
+
+    protected void createContext() {
+        for (PageHandlerInfo info : PageHandlerInfoManager.getInstance().getHandlerInfoList()) {
+            createContext("/" + info.getName(), info.getType());
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        new Server().start();
+    }
+}
+</code>
