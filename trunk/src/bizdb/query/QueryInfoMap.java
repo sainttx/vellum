@@ -1,13 +1,15 @@
 /*
- * Copyright 2011, iPay (Pty) Ltd, Evan Summers
+ * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
-package jdbc.query;
+package bizdb.query;
 
 import bizmon.exception.Exceptions;
+import bizmon.parameter.Parameters;
 import bizmon.logger.Logr;
 import bizmon.logger.LogrFactory;
+import bizdb.resource.QueryResource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +26,7 @@ import java.util.TreeMap;
  */
 public final class QueryInfoMap {
 
+    static final Map<QueryResource, QueryInfoMap> instanceMap = new HashMap();
     Logr logger = LogrFactory.getLogger(getClass());
     Map<String, QueryInfo> map = new TreeMap();
     Map<String, String> optionMap = new HashMap();
@@ -35,6 +38,10 @@ public final class QueryInfoMap {
     boolean exclude = false;
 
     public QueryInfoMap() {
+    }
+
+    public QueryInfoMap(QueryResource resource) {
+        this(resource.getStream());
     }
 
     public QueryInfoMap(InputStream stream) {
@@ -152,6 +159,15 @@ public final class QueryInfoMap {
 
     public List<QueryInfo> getList() {
         return list;
+    }
+
+    public static QueryInfoMap getInstance(QueryResource resource) {
+        QueryInfoMap queryInfoMap = instanceMap.get(resource);
+        if (queryInfoMap == null) {
+            queryInfoMap = new QueryInfoMap(resource);
+            instanceMap.put(resource, queryInfoMap);
+        }
+        return queryInfoMap;
     }
 
     public static QueryInfo get(Class parent, String queryName) {

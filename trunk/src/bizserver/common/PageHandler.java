@@ -1,18 +1,18 @@
 /*
- * Copyright 2011, iPay (Pty) Ltd, Evan Summers
+ * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
-package server.common;
+package bizserver.common;
 
-import server.parameter.Parameters;
+import bizmon.parameter.Entry;
+import bizmon.parameter.ParameterMap;
+import bizmon.parameter.Parameters;
 import bizmon.logger.Logr;
 import bizmon.logger.LogrFactory;
 import bizmon.printer.PrintStreamAdapter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import server.parameter.Entry;
-import server.parameter.ParameterMap;
 import bizmon.printer.Printer;
 import bizmon.util.Beans;
 import bizmon.util.Streams;
