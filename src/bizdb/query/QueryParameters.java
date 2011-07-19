@@ -1,12 +1,12 @@
 /*
- * Copyright 2011, iPay (Pty) Ltd, Evan Summers
+ * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
 
-package jdbc.query;
+package bizdb.query;
 
-import server.parameter.Parameters;
+import bizmon.parameter.Parameters;
 import bizmon.util.Args;
 import java.util.Map;
 

@@ -1,9 +1,9 @@
 /*
- * Copyright 2011, iPay (Pty) Ltd, Evan Summers
+ * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
-package server.common;
+package bizserver.common;
 
 import bizmon.util.Types;
 import com.sun.net.httpserver.HttpExchange;
