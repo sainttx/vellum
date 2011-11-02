@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Hello SyntaxHighlighter</title>
+<link href="/syntaxhighlighter/styles/shThemeDefault.css" rel="stylesheet" type="text/css" />
+<script src="/syntaxhighlighter/scripts/shCore.js" type="text/javascript"></script>
+<script src="/syntaxhighlighter/scripts/shBrushJava.js" type="text/javascript"></script>
+<script src="/syntaxhighlighter/scripts/shAutoloader.js" type="text/javascript"></script>
+</head>
+
+<body style="background: white; font-family: Helvetica">
+
+<h1>Hello SyntaxHighlighter</h1>
+<pre class="brush: java;">
+public class Server {
+
+    Logr logger = LogrFactory.getLogger(getClass());
+    int serverPort = Integer.getInteger("serverPort", 8099);
+    int shutdownPort = Integer.getInteger("shutdownPort", 8098);
+    HttpServer server;
+
+    protected void start() throws Exception {
+        requestShutdown();
+        server = HttpServer.create(new InetSocketAddress(serverPort), 4);
+        server.createContext("/echo", new EchoHandler());
+        server.createContext("/", new GenericPageHandler(HomePageHandler.class));
+        createContext();
+        server.setExecutor(new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4)));
+        server.start();
+        new ServerSocket(shutdownPort).accept();
+        logger.info("bizmon restarted");
+        System.exit(0);
+    }
+
+    protected void requestShutdown() {
+        try {
+            URL url = new URL("http://localhost:" + shutdownPort);
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            connection.getContentLength();
+            logger.info("restarting server");
+        } catch (Exception e) {
+            logger.info("starting server");
+        }
+    }
+
+    protected void createContext(String context, Class type) {
+        logger.info(context, type);
+        server.createContext(context, new GenericPageHandler(type));
+    }
+
+    protected void createContext() {
+        for (PageHandlerInfo info : PageHandlerInfoManager.getInstance().getHandlerInfoList()) {
+            createContext("/" + info.getName(), info.getType());
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        new Server().start();
+    }
+}
+</pre>
+
+<script type="text/javascript">
+     SyntaxHighlighter.all()
+</script>
+</html>
