@@ -7,7 +7,6 @@ max(date_sold_by_us) as max_date_sold_by_us,
 sum(count_) as count_,
 cast(sum(our_sale_amount) as numeric(10, 2))
 from qamps_total.cell_token_total
-where 
 where date_sold_by_us >= $begin_date and date_sold_by_us < $end_date
 ;
 
@@ -56,8 +55,7 @@ group by date_trunc('day', date_sold_by_us)
 order by date_trunc('day', date_sold_by_us)
 ;
 
--- by token 
-
+-- by token type
 select cell_token_type_id,
 sum(count_), 
 min(date_sold_by_us), max(date_sold_by_us)
@@ -67,38 +65,40 @@ group by cell_token_type_id
 order by cell_token_type_id
 ;
 
+-- by token type
 select cell_token_type_id, 
 count(1), 
 min(date_sold_by_us), max(date_sold_by_us)
 from qamps.cell_token_archive 
-where date_sold_by_us >= '2011-03-01' and date_sold_by_us < '2011-04-01' 
+where date_sold_by_us >= '2011-01-01' and date_sold_by_us < '2011-02-01' 
 and bought_by_retailer_id in (
-  select retailer_id from retailer where date_trunc('month', date_registered) <= date_sold_by_us and enabled
+  select retailer_id from retailer where date_trunc('month', date_registered) <= '2011-01-01' and enabled
 )
 group by cell_token_type_id
 order by cell_token_type_id
 ;
 
 
--- 
-
+-- by month
 select 
 date_trunc('month', date_sold_by_us),
-count(1), sum(our_sale_amount)::integer 
-from ONLY qamps.cell_token
-where date_sold_by_us >= '2011-03-01' and date_sold_by_us < '2011-04-01' 
+count(1), 
+sum(our_sale_amount)::integer 
+from ONLY qamps.cell_token_archive
+where date_sold_by_us >= '2011-01-01' and date_sold_by_us < '2011-02-01' 
+and bought_by_retailer_id in (
+  select retailer_id from retailer where date_trunc('month', date_registered) <= date_sold_by_us and enabled
+)
 and not is_test 
 group by date_trunc('month', date_sold_by_us)
 order by date_trunc('month', date_sold_by_us)
 ;
 
+-- by month
 select 
 date_trunc('month', date_sold_by_us),
 sum(count_), 
-min(date_sold_by_us)::date, 
-max(date_sold_by_us)::date, 
-min(date_created)::timestamp, 
-max(date_created)::timestamp
+sum(our_sale_amount)::integer 
 from qamps_total.cell_token_total 
 group by date_trunc('month', date_sold_by_us)
 order by date_trunc('month', date_sold_by_us)
@@ -106,10 +106,8 @@ order by date_trunc('month', date_sold_by_us)
 
 
 
-
 -- report 
 select 
-bought_by_retailer_id,
 min(date_sold_by_us) as min_date_sold_by_us, 
 max(date_sold_by_us) as max_date_sold_by_us,
 count(1) as count_,
