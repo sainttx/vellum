@@ -1,0 +1,10 @@
+
+select date_part(‘day’, date_sold_by_us), count(1), min(date_sold_by_us), max(date_sold_by_us), min(date_created), max(date_created)
+from qamps_total.cell_token_total where date_sold_by_us between '2011-02-01' and '2011-03-01' 
+group by date_part(‘day’, date_sold_by_us)
+order by date_part(‘day’, date_sold_by_us)
+;
+
+select count(1), min(date_sold_by_us), max(date_sold_by_us), min(date_created), max(date_created)
+from qamps_total.cell_token_total where date_sold_by_us between '2011-02-01' and '2011-03-01' 
+;
