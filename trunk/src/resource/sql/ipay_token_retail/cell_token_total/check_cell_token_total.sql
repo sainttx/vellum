@@ -1,4 +1,33 @@
 
+select date_trunc('month', date_sold_by_us), 
+count(1), 
+count(distinct(bought_by_retailer_id)), 
+count(distinct(date_sold_by_us)), 
+to_char(min(date_created), 'HH24:MI:SS'),
+to_char(max(date_created), 'HH24:MI:SS')
+from qamps_total.cell_token_total
+group by date_trunc('month', date_sold_by_us)
+order by date_trunc('month', date_sold_by_us) desc
+;
+
+select date_sold_by_us, max(date_created), count(1), min(bought_by_retailer_id), max(bought_by_retailer_id)
+from qamps_total.cell_token_total
+group by date_sold_by_us
+order by date_sold_by_us desc
+;
+
+select date_created, date_sold_by_us, bought_by_retailer_id
+from qamps_total.cell_token_total
+order by date_created desc
+limit 10
+;
+
+
+SELECT count(1) 
+FROM qamps_total.cell_token_total
+WHERE date_trunc('day', date_sold_by_us) < date_sold_by_us
+;
+
 
 SELECT bought_by_retailer_id, date_trunc('day', date_sold_by_us)
 FROM qamps_total.cell_token_total
@@ -84,16 +113,45 @@ group by cell_token_type_id
 order by cell_token_type_id
 ;
 
+-- by retailer
+select 
+bought_by_retailer_id,
+date_trunc('month', date_sold_by_us),
+count(1), 
+sum(our_sale_amount)::integer 
+from ONLY qamps.cell_token_archive
+where date_sold_by_us >= '2011-02-01' and date_sold_by_us < '2011-03-01' 
+and not is_test 
+group by bought_by_retailer_id, date_trunc('month', date_sold_by_us)
+order by bought_by_retailer_id, date_trunc('month', date_sold_by_us)
+limit 10
+;
+
+-- by retailer
+select 
+bought_by_retailer_id,
+date_trunc('month', date_sold_by_us),
+sum(count_), 
+sum(our_sale_amount)::integer 
+from qamps_total.cell_token_total 
+where date_sold_by_us >= '2011-02-01' and date_sold_by_us < '2011-03-01' 
+group by bought_by_retailer_id, date_trunc('month', date_sold_by_us)
+order by bought_by_retailer_id, date_trunc('month', date_sold_by_us)
+limit 10
+;
+
+
+
 
 -- by month
 select 
 date_trunc('month', date_sold_by_us),
 count(1), 
 sum(our_sale_amount)::integer 
-from ONLY qamps.cell_token_archive
-where date_sold_by_us >= '2011-01-01' and date_sold_by_us < '2011-02-01' 
+from ONLY qamps.cell_token
+where date_sold_by_us >= '2011-03-01' -- and date_sold_by_us < '2011-05-01' 
 and bought_by_retailer_id in (
-  select retailer_id from retailer where date_trunc('month', date_registered) <= date_sold_by_us and enabled
+  select retailer_id from retailer where enabled -- date_trunc('month', date_registered) <= '2011-02-01' and enabled
 )
 and not is_test 
 group by date_trunc('month', date_sold_by_us)
@@ -106,6 +164,10 @@ date_trunc('month', date_sold_by_us),
 sum(count_), 
 sum(our_sale_amount)::integer 
 from qamps_total.cell_token_total 
+where date_sold_by_us >= '2011-03-01' -- and date_sold_by_us < '2011-05-01' 
+and bought_by_retailer_id in (
+  select retailer_id from retailer where enabled -- date_trunc('month', date_registered) <= '2011-02-01'
+)
 group by date_trunc('month', date_sold_by_us)
 order by date_trunc('month', date_sold_by_us)
 ;
