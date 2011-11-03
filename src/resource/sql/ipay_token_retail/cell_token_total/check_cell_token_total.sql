@@ -1,4 +1,12 @@
 
+
+SELECT bought_by_retailer_id, date_trunc('day', date_sold_by_us)
+FROM qamps_total.cell_token_total
+WHERE date_trunc('month', date_sold_by_us) = date_trunc('month', cast('2010-01-01' as date))
+AND bought_by_retailer_id = 2000000000000297
+GROUP BY bought_by_retailer_id, date_trunc('day', date_sold_by_us)
+ORDER BY bought_by_retailer_id, date_trunc('day', date_sold_by_us)
+
 -- sum from cell_token_total
 select 
 bought_by_retailer_id,
@@ -9,8 +17,6 @@ cast(sum(our_sale_amount) as numeric(10, 2))
 from qamps_total.cell_token_total
 where date_sold_by_us >= $begin_date and date_sold_by_us < $end_date
 ;
-
-
 
 select 
 count(distinct(bought_by_retailer_id)),
