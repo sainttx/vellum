@@ -1,4 +1,11 @@
 
+
+select count(1) 
+from qamps_total.cell_token_total
+where our_purch_amt_incl_tax = null
+;
+
+
 select date_trunc('month', date_sold_by_us), 
 count(distinct(bought_by_retailer_id)), 
 count(distinct(date_sold_by_us)), 
