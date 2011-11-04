@@ -189,3 +189,29 @@ and date_trunc('day', date_sold_by_us) > (
   where bought_by_retailer = $retailer_id
 )
 ;
+
+
+
+  SELECT
+    bought_by_retailer_id,
+    network_id,
+    cell_token_type_id,
+    date_trunc('day', date_sold_by_us) AS date_sold_by_us,
+    MIN(date_sold_by_us) AS min_date_sold_by_us,
+    MAX(date_sold_by_us) AS max_date_sold_by_us,
+    COUNT(1)
+  FROM ONLY qamps.cell_token_archive ct
+  WHERE is_test IS FALSE
+  AND bought_by_retailer_id = 50
+  AND date_sold_by_us < current_date - interval '7 days'
+  AND date_trunc('month', date_sold_by_us) =  date_trunc('month', cast ('2011-01-01' as date))
+  AND date_trunc('day', date_sold_by_us) NOT IN (
+    SELECT DISTINCT(date_sold_by_us) FROM qamps_total.cell_token_total
+    WHERE bought_by_retailer_id = ct.bought_by_retailer_id
+    AND date_trunc('month', date_sold_by_us) =  date_trunc('month', ct.date_sold_by_us)
+  )
+  GROUP BY
+    bought_by_retailer_id,
+    network_id,
+    cell_token_type_id,
+    date_trunc('day', date_sold_by_us)
