@@ -7,6 +7,11 @@ where our_purch_amt_incl_tax is null
 
 select count(1) 
 from qamps_total.cell_token_total
+where count_ = 0
+;
+
+select count(1) 
+from qamps_total.cell_token_total
 where our_purch_amt_incl_tax > 0
 ;
 
