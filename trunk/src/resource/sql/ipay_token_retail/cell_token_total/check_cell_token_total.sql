@@ -1,8 +1,9 @@
 
 select date_trunc('month', date_sold_by_us), 
-count(1), 
 count(distinct(bought_by_retailer_id)), 
 count(distinct(date_sold_by_us)), 
+count(1), 
+sum(count_), 
 to_char(min(date_created), 'HH24:MI:SS'),
 to_char(max(date_created), 'HH24:MI:SS')
 from qamps_total.cell_token_total
