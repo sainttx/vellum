@@ -1,5 +1,29 @@
 
 
+
+select date_trunc('month', date_sold_by_us), 
+count(distinct(bought_by_retailer_id)), 
+count(distinct(date_sold_by_us)), 
+count(1), 
+sum(count_), 
+date_trunc('second', min(date_created)),
+date_trunc('second', max(date_created)),
+to_char(max(date_created), 'HH24:MI:SS')
+from qamps_total.cell_token_total
+group by date_trunc('month', date_sold_by_us)
+order by date_trunc('month', date_sold_by_us) desc
+;
+
+
+select pg_size_pretty(pg_relation_size('qamps_total.cell_token_total'));
+
+
+update qamps_total.cell_token_total
+set dirty = false, is_test = false
+where dirty is null or is_test is null
+;
+
+
 select count(1) 
 from qamps_total.cell_token_total
 where our_purch_amt_incl_tax is null
@@ -25,6 +49,7 @@ count(distinct(bought_by_retailer_id)),
 count(distinct(date_sold_by_us)), 
 count(1), 
 sum(count_), 
+max(date_created),
 to_char(min(date_created), 'HH24:MI:SS'),
 to_char(max(date_created), 'HH24:MI:SS')
 from qamps_total.cell_token_total
