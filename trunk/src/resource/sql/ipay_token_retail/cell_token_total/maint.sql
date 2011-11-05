@@ -13,7 +13,6 @@ CREATE TABLE cell_stock_total (
     our_sale_amount double precision,
     our_sale_tax double precision,
     dirty boolean,
-    is_test boolean
 );
 
 
@@ -31,7 +30,6 @@ CREATE TABLE cell_token_total (
     agent_comm_incl_tax double precision,
     our_purch_amt_incl_tax double precision,
     dirty boolean,
-    is_test boolean
 );
 
 CREATE SEQUENCE cell_token_total_seq
@@ -55,9 +53,11 @@ ALTER TABLE qamps_total.cell_token_total CLUSTER ON idx_cttot_retailer_date;
 ALTER TABLE ONLY qamps_total.cell_token_total ADD COLUMN is_test boolean;
 ALTER TABLE ONLY qamps_total.cell_token_total ADD COLUMN agent_comm_incl_tax double precision;
 ALTER TABLE ONLY qamps_total.cell_token_total ADD COLUMN our_purch_amt_incl_tax double precision;
-UPDATE qamps_total.cell_token_total SET is_test = false;
+--UPDATE qamps_total.cell_token_total SET is_test = false;
 
 alter table qamps_total.cell_token_total add COLUMN date_created timestamp default date_trunc('second', now()) ;
+alter table qamps_total.cell_token_total add COLUMN countu int ;
+
 
 
 
