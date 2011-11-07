@@ -7,8 +7,8 @@ count(distinct(date_sold_by_us)),
 count(1), 
 sum(count_), 
 date_trunc('second', min(date_created)),
-date_trunc('second', max(date_created)),
-to_char(max(date_created), 'HH24:MI:SS')
+date_trunc('second', max(date_created))
+--to_char(max(date_created), 'HH24:MI:SS')
 from qamps_total.cell_token_total
 group by date_trunc('month', date_sold_by_us)
 order by date_trunc('month', date_sold_by_us) desc
