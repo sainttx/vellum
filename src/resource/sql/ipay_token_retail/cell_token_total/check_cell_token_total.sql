@@ -262,3 +262,27 @@ and date_trunc('day', date_sold_by_us) > (
     network_id,
     cell_token_type_id,
     date_trunc('day', date_sold_by_us)
+
+
+  SELECT date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us), 
+    MIN(min_date_sold_by_us) AS min_date_sold_by_us,
+    MAX(max_date_sold_by_us) AS max_date_sold_by_us,
+    SUM(count_),
+    SUM(our_sale_amount + our_sale_tax)::integer as our_sale_incl,
+    SUM(retailer_sale_amount + retailer_sale_tax)::integer as retailer_sale_incl
+  FROM ONLY qamps_total.cell_token_total ct
+  GROUP BY date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us)
+  ORDER BY date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us)
+;
+
+  SELECT date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us), 
+    MIN(date_sold_by_us) AS min_date_sold_by_us,
+    MAX(date_sold_by_us) AS max_date_sold_by_us,
+    COUNT(1),
+    SUM(our_sale_amount + our_sale_tax)::integer as our_sale_incl,
+    SUM(retailer_sale_amount + retailer_sale_tax)::integer as retailer_sale_incl
+  FROM ONLY qamps.cell_token_archive ct -- JOIN retailer r ON bought_by_retailer_id = retailer_id
+  WHERE is_test IS FALSE
+  GROUP BY date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us)
+  ORDER BY date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us)
+;
