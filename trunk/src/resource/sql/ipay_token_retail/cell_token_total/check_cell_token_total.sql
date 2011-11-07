@@ -4,15 +4,44 @@
 select date_trunc('month', date_sold_by_us), 
 count(distinct(bought_by_retailer_id)), 
 count(distinct(date_sold_by_us)), 
+sum(count_), 
+min(date_sold_by_us),
+max(date_sold_by_us)
+from qamps_total.cell_token_total
+group by date_trunc('month', date_sold_by_us)
+order by date_trunc('month', date_sold_by_us) desc
+;
+
+select date_trunc('month', date_sold_by_us), 
+count(distinct(bought_by_retailer_id)), 
+count(distinct(date_sold_by_us)), 
+count(1), 
+min(date_sold_by_us),
+max(date_sold_by_us)
+from only cell_token_archive
+group by date_trunc('month', date_sold_by_us)
+order by date_trunc('month', date_sold_by_us) desc
+;
+
+
+--
+
+
+select date_trunc('month', date_sold_by_us), 
+count(distinct(bought_by_retailer_id)), 
+count(distinct(date_sold_by_us)), 
 count(1), 
 sum(count_), 
-date_trunc('second', min(date_created)),
-date_trunc('second', max(date_created))
+min(date_sold_by_us),
+max(date_sold_by_us)
+--date_trunc('second', min(date_created)),
+--date_trunc('second', max(date_created))
 --to_char(max(date_created), 'HH24:MI:SS')
 from qamps_total.cell_token_total
 group by date_trunc('month', date_sold_by_us)
 order by date_trunc('month', date_sold_by_us) desc
 ;
+
 
 
 select pg_size_pretty(pg_relation_size('qamps_total.cell_token_total'));
@@ -285,4 +314,9 @@ and date_trunc('day', date_sold_by_us) > (
   WHERE is_test IS FALSE
   GROUP BY date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us)
   ORDER BY date_trunc('year', date_sold_by_us), date_trunc('month', date_sold_by_us)
+;
+
+SELECT COUNT(1)
+FROM ONLY qamps.cell_token ct JOIN retailer r ON bought_by_retailer_id = retailer_id
+AND r.date_registered > date_sold_by_us
 ;
