@@ -5,8 +5,8 @@ select date_trunc('month', date_sold_by_us),
 count(distinct(bought_by_retailer_id)), 
 count(distinct(date_sold_by_us)), 
 sum(count_), 
-min(date_sold_by_us),
-max(date_sold_by_us)
+min(min_date_sold_by_us),
+max(max_date_sold_by_us)
 from qamps_total.cell_token_total
 group by date_trunc('month', date_sold_by_us)
 order by date_trunc('month', date_sold_by_us) desc

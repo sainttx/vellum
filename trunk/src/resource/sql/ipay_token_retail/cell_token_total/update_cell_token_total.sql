@@ -1,5 +1,11 @@
 
   UPDATE qamps_total.cell_token_total cttot
+  SET min_date_sold_by_us = date_trunc('second', min_date_sold_by_us), 
+    max_date_sold_by_us = date_trunc('second', max_date_sold_by_us)
+  ; 
+
+
+  UPDATE qamps_total.cell_token_total cttot
     set agent_comm_incl_tax = ct.agent_comm_incl_tax,
     our_purch_amt_incl_tax = ct.our_purch_amt_incl_tax,
     countu = ct.count_
