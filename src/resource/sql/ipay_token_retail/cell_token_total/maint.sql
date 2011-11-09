@@ -47,6 +47,9 @@ ALTER TABLE ONLY qamps_total.cell_token_total ADD CONSTRAINT cell_token_total_un
 
 CREATE INDEX idx_cttot_retailer_date ON qamps_total.cell_token_total (bought_by_retailer_id, date_sold_by_us);
 
+CREATE INDEX idx_cttot_date_sold_by_us ON qamps_total.cell_token_total (date_sold_by_us, cell_token_type_id);
+
+
 ALTER TABLE qamps_total.cell_token_total CLUSTER ON idx_cttot_retailer_date;
 
 

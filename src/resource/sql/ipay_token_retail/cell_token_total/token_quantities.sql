@@ -26,6 +26,34 @@ ORDER BY ctn.network_name, ctt.units
 ;
 
 
+    SELECT 
+    --ct.bought_by_retailer_id, ct.network_id, ct.cell_token_type_id, 
+    --date_trunc('day', ct.date_sold_by_us) AS date_sold_by_us,
+    SUM(COALESCE(ct.agent_comm_incl_tax, 0)) AS agent_comm_incl_tax,
+    SUM(COALESCE(ct.our_purch_amt_incl_tax, 0)) AS our_purch_amt_incl_tax,
+    SUM(COALESCE(ct.commission_amount, 0)) AS commission_amount,
+    count(1) as count_
+    FROM ONLY qamps.cell_token_archive ct
+    WHERE ct.is_test IS FALSE
+    AND date_trunc('month', ct.date_sold_by_us) = '2010-01-01' -- $date_sold_by_us
+    GROUP BY ct.bought_by_retailer_id, ct.network_id, ct.cell_token_type_id, date_trunc('day', ct.date_sold_by_us)
+    ORDER BY ct.bought_by_retailer_id, ct.network_id, ct.cell_token_type_id, date_trunc('day', ct.date_sold_by_us)
+;
+
+    SELECT ct.bought_by_retailer_id, ct.network_id, ct.cell_token_type_id, ct.date_sold_by_us,
+    ct.agent_comm_incl_tax, 
+    ct.our_purch_amt_incl_tax, 
+    count_, 
+    countu
+    FROM qamps_total.cell_token_total ct
+    WHERE ct.is_test IS FALSE
+    AND date_trunc('month', ct.date_sold_by_us) = '2011-02-01' -- $date_sold_by_us
+    ORDER BY ct.bought_by_retailer_id, ct.network_id, ct.cell_token_type_id, ct.date_sold_by_us
+;
+
+
+
+
 SELECT ctt.token_type_name, ctn.network_name, ctt.units,
 coalesce(ct.token_count, 0) as "Quantity in stock",
 coalesce(cts.period_count, 0) as "Previous week sales",
