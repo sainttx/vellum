@@ -168,7 +168,7 @@ public abstract class PageHandler implements HttpHandler {
         out.println("<html>");
         out.println("<head>");
         out.printf("<title>%s</title>", getClass().getSimpleName());
-        printCss("/bizserver/common/style.css");
+        printCss("style.css");
         out.println("</head>");
         out.println("<body>");
     }
