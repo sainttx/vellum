@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpPrincipal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,6 +37,8 @@ public interface HttpExchange {
 
     public OutputStream getResponseBody() throws IOException;
 
+    public PrintWriter getWriter() throws IOException;
+    
     public void sendResponseHeaders(int code, long length) throws IOException;
 
     public InetSocketAddress getRemoteAddress();

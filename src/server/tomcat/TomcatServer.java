@@ -39,6 +39,7 @@ public class TomcatServer {
             }
         };
         Tomcat.addServlet(ctx, "echo", new HandlerServlet(new DefaultHandlerFactory(EchoHandler.class))); 
+        Tomcat.addServlet(ctx, "hello", helloServlet); 
         ctx.addServletMapping("/*", "echo");
         tomcat.start();
         tomcat.getServer().await();

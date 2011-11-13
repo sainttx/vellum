@@ -22,7 +22,8 @@ public class HandlerServlet extends HttpServlet {
         this.handlerFactory = handlerFactory;
     }
             
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {    
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {    
         try {
             HttpHandler handler = handlerFactory.newHandler();
             HttpExchange httpExchange = new ServletHttpExchange(request, response);
