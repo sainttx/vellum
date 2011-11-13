@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpPrincipal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,6 +55,10 @@ public class ServletHttpExchange implements HttpExchange {
         return request.getRequestURL().toString();
     }
 
+    public PrintWriter getWriter() throws IOException {
+        return response.getWriter();
+    }
+    
     public HttpContext getHttpContext() {
         return null;
     }
