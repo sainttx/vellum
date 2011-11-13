@@ -24,8 +24,13 @@ import javax.net.ssl.TrustManagerFactory;
  */
 public class SecureServer {
 
-    protected void start() throws Exception {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+    SSLContext sslContext;
+    
+    public SecureServer() {
+    }
+    
+    protected void init() throws Exception {
+        sslContext = SSLContext.getInstance("TLS");
         char[] password = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
         KeyStore ks = KeyStore.getInstance("JKS");
         FileInputStream fis = new FileInputStream(System.getProperty("javax.net.ssl.keyStore"));
@@ -34,8 +39,11 @@ public class SecureServer {
         kmf.init(ks, password);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(ks);
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
-        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(443), 8);
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());        
+    }
+    
+    protected void start() throws Exception {
+        init();
         HttpsConfigurator httpsConfigurator = new HttpsConfigurator(sslContext) {
 
             @Override
@@ -49,6 +57,7 @@ public class SecureServer {
                 httpsParameters.setSSLParameters(defaultSSLParameters);
             }
         };
+        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(443), 8);
         httpsServer.setHttpsConfigurator(httpsConfigurator);
         httpsServer.setExecutor(new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4)));
         httpsServer.createContext("/", new EchoHandler());
