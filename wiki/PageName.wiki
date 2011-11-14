@@ -65,8 +65,7 @@ while i got the com.sun.net.httpserver.HttpsServer builtin JRE https server to w
 i also tested with client auth - where generate private key + public cert using openssl, and package into browser-friendly pcks12 format like certificate.pfx, and import that into web-browser as client-side cert, and import the client cert into the server keystore as trusted cert (truststore) using keytool - funnily that worked for me with firefox but couldn't come right with chrome 
 
 
-<code language="java">
-import com.sun.net.httpserver.HttpsServer;
+<code language="java">import com.sun.net.httpserver.HttpsServer;
 
 public class SecureServer {
 
