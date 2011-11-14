@@ -2,16 +2,8 @@
 
 = Introduction =
 
-Add your content here.
 
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
-
+= JRE http server =
 
 <code language="java">
 public class Server {
@@ -63,3 +55,85 @@ public class Server {
     }
 }
 </code>
+
+
+= JRE https secure server =
+
+
+while i got the com.sun.net.httpserver.HttpsServer builtin JRE https server to work, i was suprised that -Djavax.net.ssl.keyStore options didn't seem to take and i had to instantiate and load keystore manually (couldn't avoid having the init() method to manually init SSL context key and trust managers even with -Djavax.ssl.net options i tried)
+
+i also tested with client auth - where generate private key + public cert using openssl, and package into browser-friendly pcks12 format like certificate.pfx, and import that into web-browser as client-side cert, and import the client cert into the server keystore as trusted cert (truststore) using keytool - funnily that worked for me with firefox but couldn't come right with chrome 
+
+
+<code language="java">
+import com.sun.net.httpserver.HttpsServer;
+
+public class SecureServer {
+
+    SSLContext sslContext;
+    
+    public SecureServer() {
+    }
+    
+    protected void init() throws Exception {
+        sslContext = SSLContext.getInstance("TLS");
+        char[] password = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
+        KeyStore ks = KeyStore.getInstance("JKS");
+        FileInputStream fis = new FileInputStream(System.getProperty("javax.net.ssl.keyStore"));
+        ks.load(fis, password);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(ks, password);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+        tmf.init(ks);
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());        
+    }
+    
+    protected void start() throws Exception {
+        init();
+        HttpsConfigurator httpsConfigurator = new HttpsConfigurator(sslContext) {
+
+            @Override
+            public void configure(HttpsParameters httpsParameters) {
+                SSLContext sslContext = getSSLContext();
+                InetSocketAddress remote = httpsParameters.getClientAddress();
+                if (remote.getHostName().equals("localhost")) {
+                }
+                SSLParameters defaultSSLParameters = sslContext.getDefaultSSLParameters();
+                defaultSSLParameters.setNeedClientAuth(true);
+                httpsParameters.setSSLParameters(defaultSSLParameters);
+            }
+        };
+        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(443), 8);
+        httpsServer.setHttpsConfigurator(httpsConfigurator);
+        httpsServer.setExecutor(new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4)));
+        httpsServer.createContext("/", new EchoHandler());
+        httpsServer.start();
+    }
+
+    public static final void main(String[] args) {
+        try {
+            new SecureServer().start();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+}
+</code>
+
+
+for client-side auth disabled, 
+
+                defaultSSLParameters.setNeedClientAuth(false);
+
+and generate client private key (for browser) and public cert (for server truststore) as follows
+
+ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+ openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfile certificate.crt
+
+
+
+http://emo.sourceforge.net/cert-login-howto.html
+
+http://download.oracle.com/javase/6/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/package-summary.html
+
+
