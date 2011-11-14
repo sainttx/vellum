@@ -60,10 +60,18 @@ public class Server {
 = JRE https secure server =
 
 
-while i got the com.sun.net.httpserver.HttpsServer builtin JRE https server to work, i was suprised that -Djavax.net.ssl.keyStore options didn't seem to take and i had to instantiate and load keystore manually (couldn't avoid having the init() method to manually init SSL context key and trust managers even with -Djavax.ssl.net options i tried)
+while i got the `com.sun.net.httpserver.HttpsServer` builtin JRE https server to work, 
+we were suprised that `-Djavax.net.ssl.keyStore` options didn't seem to take, 
+and so we had to instantiate and load keystore manually 
+(couldn't avoid having the `init()` method to manually init SSL context key and trust managers even 
+with` -Djavax.ssl.net` options i tried)
 
-i also tested with client auth - where generate private key + public cert using openssl, and package into browser-friendly pcks12 format like certificate.pfx, and import that into web-browser as client-side cert, and import the client cert into the server keystore as trusted cert (truststore) using keytool - funnily that worked for me with firefox but couldn't come right with chrome 
+We tested with client auth - where generate private key and public cert using openssl, 
+and package into browser-friendly pcks12 format like `certificate.pfx`, 
+and import that into web-browser as client-side cert, 
+and import the client cert into the server keystore as trusted cert (truststore) using keytool.
 
+At that time, it worked with Firefox but not with Chrome.
 
 <code language="java">import com.sun.net.httpserver.HttpsServer;
 
@@ -120,11 +128,11 @@ public class SecureServer {
 </code>
 
 
-for client-side auth disabled, 
+For client-side auth disabled, 
 
-                defaultSSLParameters.setNeedClientAuth(false);
+ defaultSSLParameters.setNeedClientAuth(false);
 
-and generate client private key (for browser) and public cert (for server truststore) as follows
+and we generate client private key (for browser) and public cert (for server truststore) as follows
 
  openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
  openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfile certificate.crt
