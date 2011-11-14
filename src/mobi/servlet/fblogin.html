@@ -1,0 +1,14 @@
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
+  <body>
+    <script src="http://connect.facebook.net/en_US/all.js"></script>
+    <div id="fb-root"></div>
+    <script>
+      // assume we are already logged in
+      FB.init({appId: '$fbAppId', xfbml: true, cookie: true, oauth: true});
+
+      FB.login({
+        scope: 'email,user_birthday',
+      });
+     </script>
+  </body>
+</html>
