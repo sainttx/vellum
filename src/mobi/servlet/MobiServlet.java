@@ -1,6 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
  */
 package mobi.servlet;
 
@@ -24,24 +22,15 @@ public class MobiServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
         logr.info(req.getRequestURI());
-        if (req.getRequestURI().indexOf("fbredirect") > 0) {
-            res.setContentType("text/plain");
-            Writer w = res.getWriter();
-            for (String name : req.getParameterMap().keySet()) {
-                w.write(name);
-                w.write("=");
-                w.write(req.getParameter(name));
-                w.write("\n");
-            }
-            w.close();
+        if (req.getRequestURI().indexOf("fbredirect.html") > 0) {
+            new FbRedirect().service(req, res);
+        } else if (req.getRequestURI().indexOf("login.html") > 0) {
+            new Login().service(req, res);
+        } else if (req.getRequestURI().indexOf("fbredirect.html") > 0) {
+            new FbLogin().service(req, res);
         } else {
-            HtmlBuilder builder = new HtmlBuilder(Streams.readString(getClass(), "fblogin.html"));
-            builder.replace("fbAppId", MobiConfig.getProperty("fbAppId"));
-            res.setContentType("text/html");
-            Writer w = res.getWriter();
-            w.write(builder.toString());
-            w.close();
+            new Login().service(req, res);
         }
-    }
+    }    
     
 }
