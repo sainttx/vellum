@@ -1,6 +1,6 @@
 = Mdstat =
 
-; Reading 
+<h6>Reading</h6>
 
 [http://wiki.centos.org/HowTos/SoftwareRAIDonCentOS5 http://wiki.centos.org/HowTos/SoftwareRAIDonCentOS5]
 
@@ -10,7 +10,7 @@
 
 [http://radu.rendec.ines.ro/howto/raid1.html http://radu.rendec.ines.ro/howto/raid1.html]
 
-; Automation 
+<h6>Automation</h6>
 
 Actually we monitor the status via cron or nagios using a script as follows
 
