@@ -1,6 +1,6 @@
 = Mdstat =
 
-<h6>Reading</h6>
+===== Reading =====
 
 [http://wiki.centos.org/HowTos/SoftwareRAIDonCentOS5 http://wiki.centos.org/HowTos/SoftwareRAIDonCentOS5]
 
@@ -10,7 +10,7 @@
 
 [http://radu.rendec.ines.ro/howto/raid1.html http://radu.rendec.ines.ro/howto/raid1.html]
 
-<h6>Automation</h6>
+===== Automation =====
 
 Actually we monitor the status via cron or nagios using a script as follows
 
@@ -36,7 +36,7 @@ then
 fi
 </pre>
 
-; Inspect
+===== Inspect =====
 
 Check the partition and md setup.
 
@@ -87,7 +87,7 @@ md: cannot remove active disk sda1 from md0 ...
 raid1: Disk failure on sda1, disabling device. 
 </pre>
 
-; Remove and re-add failed partitions 
+===== Remove and re-add failed partitions =====
 
 In order to attempt to rebuild a partition, we can remove and re-add.
 
@@ -96,7 +96,7 @@ mdadm /dev/md2 --remove /dev/sda3
 mdadm /dev/md2 --add /dev/sda3
 </pre>
 
-; Remove faulty drive partitions
+===== Remove faulty drive partitions =====
 
 <pre>
 root@biz5 ~ # mdadm /dev/md0 --remove /dev/sda1
@@ -131,14 +131,14 @@ md2 : active raid1 sdb3[1]
       974390336 blocks [2/1] [_U]
 </pre>
 
-; Serial number
+===== Serial number =====
 
 Check the serial number of the drive to remove.
 <pre>
 hdparm -i /dev/sda
 </pre>
 
-; Grub 
+===== Grub =====
 
 Ensure that grub is installed on the secondary drive so when the primary one is removed, the system still boots.
 
@@ -186,7 +186,7 @@ setup (hd0)
 
 However when the new drive is inserted, we must install grub into its MBR as well i.e. both hd0 and hd1.
 
-; grub-install
+===== grub-install =====
 
 On CentOS (RHEL, Fedora), one can use grub-install, rather than the above interactive shell, grub.
 
