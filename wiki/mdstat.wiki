@@ -294,3 +294,4 @@ md2 : active raid1 sdb3[2] sda3[1]
       974390336 blocks [2/1] [_U]
       [>....................]  recovery =  2.4% (23479424/974390336) finish=264.6min speed=59882K/sec
 </pre>
+
