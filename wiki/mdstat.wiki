@@ -223,7 +223,7 @@ kernel /vmlinuz-2.6.18-274.7.1.el5 ro root=/dev/md2 vga=0x317 selinux=0
 initrd /initrd-2.6.18-274.7.1.el5.img
 </pre>
 
-; Rebuilt
+=== Rebuilt ===
 
 We check the new drive installed
 <pre>
