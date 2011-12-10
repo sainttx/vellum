@@ -83,7 +83,7 @@ public class HtmlQueryExecutor {
     }
 
     protected void executeInner(QueryInfo queryInfo) throws Exception {
-        connection = RowSets.getPostgresConnection(port, queryInfo.getDatabase(), queryInfo.getUser(), null);
+        connection = RowSets.getConnection(queryInfo);
         statement = connection.createStatement();
         ResultSet res = statement.executeQuery(queryInfo.getQuery());
         ResultSetMetaData md = res.getMetaData();

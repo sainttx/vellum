@@ -37,20 +37,6 @@ public class RowSets {
 
     public static Logr logger = LogrFactory.getLogger(RowSets.class);
 
-    public static Connection getPostgresConnection(String database, String user, String password) {
-        return getPostgresConnection(5432, database, user, password);
-    }
-    
-    public static Connection getPostgresConnection(int port, String database, String user, String password) {
-        String databaseUrl = String.format("jdbc:postgresql://localhost:%d/%s", port, database);
-        try {
-            Class.forName("org.postgresql.Driver");
-            return DriverManager.getConnection(databaseUrl, user, password);
-        } catch (Exception e) {
-            throw Exceptions.newRuntimeException(e, databaseUrl, user);
-        }
-    }
-
     public static void close(Statement statement) {
         try {
             if (statement != null) {
@@ -342,6 +328,10 @@ public class RowSets {
         } catch (Exception e) {
             throw Exceptions.newRuntimeException(e);
         }
+    }
+
+    public static Connection getConnection(QueryInfo queryInfo) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }
