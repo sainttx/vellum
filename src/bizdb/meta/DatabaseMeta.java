@@ -31,7 +31,7 @@ public class DatabaseMeta {
     }
 
     protected void connect() throws Exception {
-        connection = RowSets.getConnection(parameters.database, parameters.schema);
+        connection = RowSets.getPostgresConnection(parameters.database, parameters.schema, null);
         metaData = connection.getMetaData();
         ResultSet schemas = metaData.getSchemas();
         ResultSetMetaData md = schemas.getMetaData();

@@ -35,19 +35,14 @@ import javax.sql.rowset.CachedRowSet;
  */
 public class RowSets {
 
-    public static int defaultPort = 9500;
     public static Logr logger = LogrFactory.getLogger(RowSets.class);
 
-    public static Connection getConnection(String database, String user) {
-        return getConnection(defaultPort, database, user);
+    public static Connection getPostgresConnection(String database, String user, String password) {
+        return getPostgresConnection(5432, database, user, password);
     }
-
-    public static Connection getConnection(int port, String database, String user) {
-        if (port == 0) {
-            port = defaultPort;
-        }
+    
+    public static Connection getPostgresConnection(int port, String database, String user, String password) {
         String databaseUrl = String.format("jdbc:postgresql://localhost:%d/%s", port, database);
-        String password = "ipay100";
         try {
             Class.forName("org.postgresql.Driver");
             return DriverManager.getConnection(databaseUrl, user, password);

@@ -1,0 +1,36 @@
+/*
+ */
+package mobi.servlet;
+
+import bizmon.logger.Logr;
+import bizmon.logger.LogrFactory;
+import bizmon.util.Streams;
+import java.io.IOException;
+import java.io.Writer;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+ * @author evan
+ */
+public class Page {
+
+    Logr logr = LogrFactory.getLogger(getClass());
+    HttpServletRequest req;
+    HttpServletResponse res;
+    HtmlBuilder builder;
+
+    public Page(String htmlFileName) {
+        builder = new HtmlBuilder(Streams.readString(getClass(), htmlFileName));
+    }
+                   
+    protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        this.req = req;
+        this.res = res;
+        res.setContentType("text/html");
+        Writer w = res.getWriter();
+        w.write(builder.toString());
+        w.close();
+    }
+}
