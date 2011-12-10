@@ -263,7 +263,7 @@ root@server ~ # mdadm /dev/md2 -a /dev/sdb3
 mdadm: added /dev/sdb3
 </pre>
 
-Inspect rebuild.
+Inspect progress of the rebuild.
 
 <pre>
 root@server ~ # cat /proc/mdstat
