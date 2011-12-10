@@ -32,7 +32,7 @@ public class QueryExecutor {
 
    public RowSet execute(QueryInfo queryInfo) throws Exception {
       try {
-         connection = RowSets.getPostgresConnection(5432, queryInfo.getDatabase(), queryInfo.getUser(), null);
+         connection = RowSets.getConnection(queryInfo);
          statement = connection.createStatement();
          durationMillis = System.currentTimeMillis();
          ResultSet res = statement.executeQuery(queryInfo.getQuery());
