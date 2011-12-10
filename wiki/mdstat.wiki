@@ -77,7 +77,8 @@ Before hot removing a partition, we might see "sda3[0](F)" when detected as faul
 
 Manually check for I/O errors.
 
-<code language="sh">root@server ~ # dmesg | grep -i "disk\|error"
+<code language="sh">
+root@server ~ # dmesg | grep -i "disk\|error"
 VFS: Disk quotas dquot_6.5.1
 md: md driver 0.90.3 MAX_MD_DEVS=256, MD_SB_DISKS=27
 sd 0:0:0:0: Attached scsi disk sda
@@ -90,7 +91,8 @@ raid1: Disk failure on sda1, disabling device.
 
 In order to attempt to rebuild a partition, we can remove and re-add.
 
-<code language="sh">mdadm /dev/md2 --remove /dev/sda3
+<code language="sh">
+mdadm /dev/md2 --remove /dev/sda3
 mdadm /dev/md2 --add /dev/sda3
 </code>
 
@@ -139,14 +141,16 @@ hdparm -i /dev/sda
 
 Ensure that grub is installed on the secondary drive so when the primary one is removed, the system still boots.
 
-<code language="sh">root@server ~ # cat /boot/grub/device.map
+<code language="sh">
+root@server ~ # cat /boot/grub/device.map
 (hd0)   /dev/sda
 (hd1)   /dev/sdb
 </code>
 
 One can use grub interactive shell to install boot onto both RAID1 drives, as follows.
 
-<code language="sh">root@server ~ # grub
+<code language="sh">
+root@server ~ # grub
 grub> device (hd0) /dev/sda
 device (hd0) /dev/sda
 grub> root (hd0,1) 
@@ -169,7 +173,8 @@ setup (hd1)
 
 Incidently if the /dev/sda is faulty, the following would also work, referring to /dev/sdb as hd0.
 
-<code language="sh">root@server ~ # grub
+<code language="sh">
+root@server ~ # grub
 grub> device (hd0) /dev/sdb
 grub> root (hd0,1) 
 root (hd0,1)
@@ -184,7 +189,9 @@ However when the new drive is inserted, we must install grub into its MBR as wel
 
 On CentOS (RHEL, Fedora), one can use grub-install, rather than the above interactive shell, grub.
 
-<code language="sh">root@server /home/evanx # vi /boot/grub/grub.conf
+<code language="sh">
+root@server /home/evanx # vi /boot/grub/grub.conf
+
 timeout 5
 default 0
 
@@ -200,7 +207,8 @@ where we changed the root device hd1 (where /boot resides) in grub.conf and then
 
 In case the drives switch e.g. the good sdb drives becomes sda, one can create boot option for either drive as follows.
 
-<code language="sh">timeout 5
+<code language="sh">
+timeout 5
 default 0
 
 title CentOS (2.6.18-274.7.1.el5) hd0
