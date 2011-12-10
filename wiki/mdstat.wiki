@@ -228,8 +228,10 @@ initrd /initrd-2.6.18-274.7.1.el5.img
 We check the new drive installed
 <pre>
 root@server ~ # hdparm -i /dev/sdb
- Model=ST1000NM0011                            , FwRev=SN02    , SerialNo=            Z1N03AN0
+ Model=ST1000NM0011                            , FwRev=SN02    , SerialNo=            W1N03QQ8
 </pre>
+
+Note the serial number above to confirm it is the new drive we installed.
 
 Partition the new drive the same as the existing OK drive.
 
@@ -255,10 +257,9 @@ root@server ~ # mdadm /dev/md0 -a /dev/sdb1
 mdadm: added /dev/sdb1
 
 root@server ~ # mdadm /dev/md1 -a /dev/sdb2
-
 mdadm: added /dev/sdb2
-root@server ~ # mdadm /dev/md2 -a /dev/sdb3
 
+root@server ~ # mdadm /dev/md2 -a /dev/sdb3
 mdadm: added /dev/sdb3
 </pre>
 
