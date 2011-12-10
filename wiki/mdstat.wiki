@@ -268,6 +268,7 @@ Inspect rebuild.
 <pre>
 root@server ~ # cat /proc/mdstat
 Personalities : [raid1] [raid0] [raid6] [raid5] [raid4] [raid10]
+
 md0 : active raid1 sdb1[2] sda1[1]
 
       2102464 blocks [2/1] [_U]
@@ -285,6 +286,7 @@ md2 : active raid1 sdb3[2] sda3[1]
 <pre>
 root@server ~ # cat /proc/mdstat 
 Personalities : [raid1] [raid0] [raid6] [raid5] [raid4] [raid10] 
+
 md0 : active raid1 sdb1[0] sda1[1]
       2102464 blocks [2/2] [UU]
       
