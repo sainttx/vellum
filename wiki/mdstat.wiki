@@ -112,7 +112,8 @@ mdadm: set /dev/sda1 faulty in /dev/md0
 
 Remove all the partitions of the faulty drive to be physically removed.
 
-<code language="sh">root@server ~ # mdadm /dev/md0 --remove /dev/sda1
+<code language="sh">
+root@server ~ # mdadm /dev/md0 --remove /dev/sda1
 root@server ~ # mdadm /dev/md1 --remove /dev/sda2
 root@server ~ # mdadm /dev/md2 --remove /dev/sda3
 </code>
