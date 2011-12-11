@@ -54,7 +54,7 @@ Filesystem           1K-blocks      Used Available Use% Mounted on
 /dev/md1                256586     23076    220262  10% /boot
 </code>
 
-Check the status via /proc/mdstat psuedo file. 
+Check the status via `/proc/mdstat` psuedo file. 
 
 <code language="sh">
 root@server ~ # cat /proc/mdstat 
@@ -73,7 +73,7 @@ unused devices: <none>
 
 Underscores in the following are faulty partitions e.g. sda3, which has been removed i.e. sda3.
 
-Before hot removing a partition, we might see "sda3[0](F)" when detected as faulty because of I/O errors etc.
+Before hot removing a partition, we might see `"sda3[0](F)"` when detected as faulty because of I/O errors etc.
 
 Manually check for I/O errors.
 
