@@ -71,7 +71,7 @@ md2 : active raid1 sdb3[1]
 unused devices: <none>
 </code>
 
-Underscores in the following are faulty partitions e.g. sda3, which has been removed i.e. sda3.
+Underscores in the following are faulty partitions e.g. `sda3`, which has been removed i.e. `sda3`.
 
 Before hot removing a partition, we might see `"sda3[0](F)"` when detected as faulty because of I/O errors etc.
 
