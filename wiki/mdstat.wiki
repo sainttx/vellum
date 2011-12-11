@@ -19,6 +19,12 @@ root@server ~ # crontab -l
 MAILTO=evanx@gmail.com
 4 4 * * * /opt/scripts/rdiff-backup.sh
 9 9 * * * /opt/scripts/check_mdstat.sh
+
+root@server ~ # crontab -l 
+MAILTO=evanx@gmail.com
+4 4 * * * /opt/scripts/rdiff-backup.sh
+9 9 * * * /opt/scripts/check_mdstat.sh
+
 </code>
 
 Where our monitoring script grep's /proc/mdstat psuedo file for underscores.
