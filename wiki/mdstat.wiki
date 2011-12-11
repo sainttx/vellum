@@ -12,7 +12,7 @@
 
 === Automation ===
 
-Actually we monitor the status via cron or nagios using a script as follows
+Actually we monitor the status via cron or nagios using a script as follows.
 
 <code language="sh">
 root@server ~ # crontab -l 
