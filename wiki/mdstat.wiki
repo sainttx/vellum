@@ -12,7 +12,7 @@
 
 === Automation ===
 
-Actually we monitor the status via cron or nagios using a script as follows.
+Actually we monitor the status via `cron` or nagios using a script as follows.
 
 <code language="sh">
 root@server ~ # crontab -l 
@@ -21,7 +21,7 @@ MAILTO=evanx@gmail.com
 9 9 * * * /opt/scripts/check_mdstat.sh
 </code>
 
-Where our monitoring script grep's /proc/mdstat psuedo file for underscores.
+Where our monitoring script grep's `/proc/mdstat` psuedo file for underscores.
 
 <code language="sh">
 root@server ~ # cat /scripts/check_mdstat.sh 
