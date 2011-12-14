@@ -3,6 +3,7 @@
 === Documentation === 
 
 http://en.wikipedia.org/wiki/Open_Source_Tripwire 
+
 http://www.thegeekstuff.com/2008/12/tripwire-tutorial-linux-host-based-intrusion-detection-system
 
 === Preparation ===
