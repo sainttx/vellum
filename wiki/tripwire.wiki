@@ -1,36 +1,47 @@
-Documentation  
+=== Documentation === 
 
 http://en.wikipedia.org/wiki/Open_Source_Tripwire 
 http://www.thegeekstuff.com/2008/12/tripwire-tutorial-linux-host-based-intrusion-detection-system
 
-Preparation
+=== Preparation ===
 
 To build packages from source eg. tripwire, we require make and GNU C/C++ compiler.
 
+<code>
 yum install gcc gcc-c++ autoconf automake
+</code>
+
 Alternatively
 
+<code>
 yum groupinstall "Development Tools"
+</code>
 
-Download
+=== Download ===
+
 Download tripwire-2.4.2-src.tar.gz from sourceforge (http://sourceforge.net/projects/tripwire).
 
+<code>
 [root@vbox1 ~]# tar xzvf tripwire-2.4.2-src.tar.gz
 [root@vbox1 ~]# cd tripwire-2.4.2-src
 [root@vbox1 tripwire-2.4.2-src]# ./configure --prefix /opt/tripwire
 [root@vbox1 tripwire-2.4.2-src]# make install
+</code>
 
-Initialise database
+=== Initialise database ===
 
+<code>
 [root@vbox1 tripwire-2.4.2-src]# /opt/tripwire/sbin/tripwire --init -c /opt/tripwire/etc/tw.cfg
 Please enter your local passphrase:
 Parsing policy file: /opt/tripwire/etc/tw.pol
 ...
 Wrote database file: /opt/tripwire/lib/tripwire/vbox1.twd
 The database was successfully generated.
+</code>
 
-Schedule
+=== Schedule ===
 
+<code>
 [root@vbox1 tripwire-2.4.2-src]# crontab -e
 03 2 * * * /opt/tripwire/sbin/tripwire --check -c /opt/tripwire/etc/tw.cfg | /usr/bin/mail root -s "Tripwire Check" 2>&1
 Run the check to see what's changed since the --init command.
@@ -40,9 +51,13 @@ Parsing policy file: /opt/tripwire/etc/tw.pol
 ...
 Modified:
 ...
-Customise
+</code>
+
+=== Customise ===
 
 Update policy eg. commenting out default directories that we don't have eg. /cdrom.
 
+<code>
 [root@vbox1 ~]# vi /opt/tripwire/etc/twpol.txt
 [root@vbox1 ~]# /opt/tripwire/sbin/tripwire --update-policy --secure-mode low -c /opt/tripwire/etc/tw.cfg /opt/tripwire/etc/twpol.txt
+</code>
