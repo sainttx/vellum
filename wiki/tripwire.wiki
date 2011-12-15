@@ -47,8 +47,11 @@ The database was successfully generated.
 <code>
 [root@vbox1 tripwire-2.4.2-src]# crontab -e
 03 2 * * * /opt/tripwire/sbin/tripwire --check -c /opt/tripwire/etc/tw.cfg | /usr/bin/mail root -s "Tripwire Check" 2>&1
+</code>
+
 Run the check to see what's changed since the --init command.
 
+<code>
 [root@vbox1 tripwire-2.4.2-src]# /opt/tripwire/sbin/tripwire --check -c /opt/tripwire/etc/tw.cfg
 Parsing policy file: /opt/tripwire/etc/tw.pol
 ...
