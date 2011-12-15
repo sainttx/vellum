@@ -27,14 +27,14 @@ Download tripwire-2.4.2-src.tar.gz from sourceforge (http://sourceforge.net/proj
 <code language="bash">
 [root@vbox1 ~]$ tar xzvf tripwire-2.4.2-src.tar.gz
 [root@vbox1 ~]$ cd tripwire-2.4.2-src
-[root@vbox1 tripwire-2.4.2-src]# ./configure --prefix /opt/tripwire
-[root@vbox1 tripwire-2.4.2-src]# make install
+[root@vbox1 tripwire-2.4.2-src]$ ./configure --prefix /opt/tripwire
+[root@vbox1 tripwire-2.4.2-src]$ make install
 </code>
 
 === Initialise database ===
 
 <code language="bash">
-[root@vbox1 tripwire-2.4.2-src]# /opt/tripwire/sbin/tripwire --init -c /opt/tripwire/etc/tw.cfg
+[root@vbox1 tripwire-2.4.2-src]$ /opt/tripwire/sbin/tripwire --init -c /opt/tripwire/etc/tw.cfg
 Please enter your local passphrase:
 Parsing policy file: /opt/tripwire/etc/tw.pol
 ...
@@ -45,14 +45,14 @@ The database was successfully generated.
 === Schedule ===
 
 <code language="bash">
-[root@vbox1 tripwire-2.4.2-src]# crontab -e
+[root@vbox1 tripwire-2.4.2-src]$ crontab -e
 03 2 * * * /opt/tripwire/sbin/tripwire --check -c /opt/tripwire/etc/tw.cfg | /usr/bin/mail root -s "Tripwire Check" 2>&1
 </code>
 
 Run the check to see what's changed since the --init command.
 
 <code language="bash">
-[root@vbox1 tripwire-2.4.2-src]# /opt/tripwire/sbin/tripwire --check -c /opt/tripwire/etc/tw.cfg
+[root@vbox1 tripwire-2.4.2-src]$ /opt/tripwire/sbin/tripwire --check -c /opt/tripwire/etc/tw.cfg
 Parsing policy file: /opt/tripwire/etc/tw.pol
 ...
 Modified:
