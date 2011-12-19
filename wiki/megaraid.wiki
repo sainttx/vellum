@@ -1,0 +1,85 @@
+= MegaRAID =
+
+We can use the following command to the check the state of the MegaRAID controller.
+<pre>
+  # /opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -a0 -L0
+  Adapter 0 -- Virtual Drive Information:
+  Virtual Disk: 0 (Target Id: 0)
+  Name:
+  RAID Level: Primary-1, Secondary-3, RAID Level Qualifier-0
+  Size:1427649MB
+  State: Optimal
+  Stripe Size: 128kB
+  Number Of Drives:2
+  Span Depth:3
+  Default Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU
+  Current Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU
+  Access Policy: Read/Write
+  Disk Cache Policy: Disk's Default
+  Exit Code: 0x00
+</pre>
+where -a0 indicates the 1st adapter (and only adapter in our case) and -L0 indicates the 1st Logical Disk aka "Virtual Disk" (as opposed to Physical Disk).
+
+We check the status regaularly via the crontab.
+
+<pre>
+  root@server ~: crontab -l
+  MAILTO=evans.summers@gmail.com
+  * * * * * /scripts/check-megaraid
+</pre>
+
+The script checks the MegaRAID state every minute using the MegaCli64 utility as follows.
+<pre>
+  root@server ~: cat /opt/scripts/check-megaraid
+  /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -a0 -L0 | grep -q "^State: Optimal"
+  if [ $? -ne 0 ]
+  then
+    state=`/opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -aALL -Lall | grep "^State: "`
+    /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -aALL -Lall | mail -s "MegaRAID $state" evan.summers@gmail.com
+    exit 2
+  fi
+</pre>
+where although the cron emails output, that might be filtered out and not receive urgent attention, so we use mail explicitly to provide an appropriate subject.
+
+Note that in the case where we have two logical disks, a smaller one for the system root directory, and the other for /mnt/dbfiles, and in this case need to check -L1 as well.
+
+For the purposes of a Nagios plugin, the script is modified as follows.
+<pre>
+  function check_logical {
+    /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -L$1 -a0 | grep -q "^State: Optimal"
+    if [ $? -ne 0 ]
+    then
+      echo "MegaRaid CRITICAL - Logical disk $1 not optimal"
+      exit 2
+    fi
+  }
+
+  check_logical 0
+  check_logical 1
+
+  echo "MegaRaid OK"
+  exit 0
+</pre>
+
+If the state is not optimal we must check the the event log.
+<pre>
+  /opt/MegaRAID/MegaCli/MegaCli64 -AdpEventLog -GetEvents -f events.log -aALL
+</pre>
+
+We can script this as follows.
+<pre>
+  tmp=/tmp/$USER.`basename $0`
+  bin=/opt/MegaRAID/MegaCli
+
+  function grep_event_log_error {
+    $bin/MegaCli64 -AdpEventLog -GetEvents -f $tmp -aALL
+    grep -i error -B5 $tmp | grep -i "^Time\|error"
+  }
+</pre>
+
+Additionally we should check the battery backup, especially if we have optimised PostgreSQL on the assumption that in the event of a power-failure, the RAID controller will still retain data not written to disk.
+<pre>
+  function check_battery {
+    $bin/MegaCli64 -AdpBbuCmd -GetBbuStatus -aALL
+  }
+</pre>
