@@ -15,7 +15,7 @@ We can use the following command to the check the state of the MegaRAID controll
   Default Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU
   Current Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU
   Access Policy: Read/Write
-  Disk Cache Policy: Disk's Default
+  Disk Cache Policy: Disk''s Default
   Exit Code: 0x00
 </code>
 where -a0 indicates the 1st adapter (and only adapter in our case) and -L0 indicates the 1st Logical Disk aka "Virtual Disk" (as opposed to Physical Disk).
@@ -41,7 +41,7 @@ The script checks the MegaRAID state every minute using the MegaCli64 utility as
 </code>
 where although the cron emails output, that might be filtered out and not receive urgent attention, so we use mail explicitly to provide an appropriate subject.
 
-Note that in the case where we have two logical disks, a smaller one for the system root directory, and the other for /mnt/dbfiles, and in this case need to check -L1 as well.
+Note that in the case where we have two logical disks, we need to check -L1 as well.
 
 For the purposes of a Nagios plugin, the script is modified as follows.
 <code>
