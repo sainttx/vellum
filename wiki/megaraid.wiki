@@ -35,7 +35,6 @@ The script checks the MegaRAID state every minute using the MegaCli64 utility as
   if [ $? -ne 0 ]
   then
     state=``/opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -aALL -Lall | grep "^State: "``
-
     /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -aALL -Lall | mail -s "MegaRAID $state" evan.summers@gmail.com
     exit 2
   fi
