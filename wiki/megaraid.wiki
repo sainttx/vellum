@@ -68,6 +68,7 @@ We can script this as follows.
 <code>
   tmp=/tmp/$USER.``basename $0``
   bin=/opt/MegaRAID/MegaCli
+  
   function grep_event_log_error {
     $bin/MegaCli64 -AdpEventLog -GetEvents -f $tmp -aALL
     grep -i error -B5 $tmp | grep -i "^Time\|error"
