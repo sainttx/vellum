@@ -53,7 +53,12 @@ Create client cert
 
 Generate a key pair (private key and public certificate) in pem format 
 <code language="bash">
-  openssl req -new -nodes -x509 -out client_public.pem -keyout client_private.pem -days 7300 -subj "/C=ZA/ST=Western Cape/L=Cape Town/CN=MyCompany"
+  openssl req -new -nodes -x509 -out client_public.pem -keyout client_private.pem -days 7300
+</code>
+
+One can specific the subject on the command-line as follows.
+<code language="bash">
+   -subj "/C=ZA/ST=Western Cape/L=Cape Town/CN=MyCompany"
 </code>
 
 Covert to DER format
