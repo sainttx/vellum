@@ -18,9 +18,9 @@ We can use the following command to the check the state of the MegaRAID controll
   Disk Cache Policy: Disk''s Default
   Exit Code: 0x00
 </code>
-where -a0 indicates the 1st adapter (and only adapter in our case) and -L0 indicates the 1st Logical Disk aka "Virtual Disk" (as opposed to Physical Disk).
+where -a0 indicates the 1st adapter (and only adapter in our case) and -L0 indicates the 1st Logical Disk (aka "Virtual Disk" as opposed to "Physical Disk").
 
-We check the status regaularly via the crontab.
+We check the status regularly via the crontab.
 
 <code>
   root@server ~: crontab -l
@@ -28,7 +28,7 @@ We check the status regaularly via the crontab.
   * * * * * /scripts/check-megaraid
 </code>
 
-The script checks the MegaRAID state every minute using the MegaCli64 utility as follows.
+The script checks the MegaRAID state every minute using the `MegaCli64` utility as follows.
 <code>
   root@server ~: cat /opt/scripts/check-megaraid
   /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -a0 -L0 | grep -q "^State: Optimal"
@@ -75,7 +75,8 @@ We can script this as follows.
   }
 </code>
 
-Additionally we should check the battery backup, especially if we have optimised PostgreSQL on the assumption that in the event of a power-failure, the RAID controller will still retain data not written to disk.
+Additionally we should check the battery backup, especially if we have configured our database server not to `fsync`
+to boost write performance on the assumption that in the event of a power-failure the RAID controller will still retain data not written to disk.
 <code>
   function check_battery {
     $bin/MegaCli64 -AdpBbuCmd -GetBbuStatus -aALL
