@@ -267,10 +267,10 @@ Note: the intent of this requirement does not include storage in volatile memory
 <b>1.3.8 Do not disclose private IP addresses and routing information to unauthorized parties.</b>
 
 Note: Methods to obscure IP addressing may include, but are not limited to:
-* Network Address Translation (NAT)
-* Placing servers containing cardholder data behind proxy servers/firewalls or content caches,
-* Removal or filtering of route advertisements for private networks that employ registered addressing,
-* Internal use of RFC1918 address space instead of registered addresses.
+ * Network Address Translation (NAT)
+ * Placing servers containing cardholder data behind proxy servers/firewalls or content caches,
+ * Removal or filtering of route advertisements for private networks that employ registered addressing,
+ * Internal use of RFC1918 address space instead of registered addresses.
 
 Restricting the broadcast of IP addresses is essential to prevent a hacker
 “learning” the IP addresses of the internal network, and using that information to
