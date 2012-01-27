@@ -127,7 +127,9 @@ Cardholder data is susceptible to unauthorized viewing, copying, or scanning if 
 unprotected while it is on removable or portable media, printed out, or left on
 someone’s desk.
 
-== 9.7 Maintain strict control over the internal or external distribution of any kind of media == 
+== 9.7 Maintain strict control over the distribution of media == 
+
+Maintain strict control over the internal or external distribution of any kind of media.
 
 Procedures and processes help protect cardholder data on media distributed to
 internal and/or external users. Without such procedures data can be lost or stolen
@@ -146,7 +148,7 @@ postal mail. Use the services of a secure courier to deliver any media that cont
 cardholder data, so that you can use their tracking systems to maintain inventory
 and location of shipments.
 
-== 9.8 Ensure management approves any and all media that is moved from a secured area == 
+== 9.8 Ensure management approves removal of media== 
 
 Ensure management approves any and all media that is moved from a secured area (especially when media is distributed to individuals).
 
@@ -156,7 +158,9 @@ can lead to lost or stolen data. Without a firm process, media locations are not
 tracked, nor is there a process for where the data goes or how it is protected.
 </i>
 
-== 9.9 Maintain strict control over the storage and accessibility of medi ==
+== 9.9 Maintain strict control over media ==
+
+Maintain strict control over the storage and accessibility of media.
 
 Without careful inventory methods and storage controls, stolen or missing media
 could go unnoticed for an indefinite amount of time.
