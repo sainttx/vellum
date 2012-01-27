@@ -1,5 +1,7 @@
 = PCI SAQ D Overview = 
 
+Source: "Navigating DSS v2.0" from https://www.pcisecuritystandards.org 
+
 http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard
 
 https://www.pcisecuritystandards.org

@@ -1,6 +1,8 @@
 
 = SAQ 1: Firewall =
 
+Source: "Navigating DSS v2.0" from https://www.pcisecuritystandards.org 
+
 <b>
 Part of: Build and Maintain a Secure Network.
 

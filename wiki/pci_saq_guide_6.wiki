@@ -1,5 +1,7 @@
 = SAQ 6: Secure systems =
 
+Source: "Navigating DSS v2.0" from https://www.pcisecuritystandards.org 
+
 Requirement 6: Develop and maintain secure systems and applications
 
 Unscrupulous individuals use security vulnerabilities to gain privileged access to systems. Many of these vulnerabilities are fixed by vendor-
