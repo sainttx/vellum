@@ -13,9 +13,7 @@ Note: Appropriate software patches are those patches that have been evaluated an
 conflict with existing security configurations. For in-house developed applications, numerous vulnerabilities can be avoided by using standard
 system development processes and secure coding techniques.
 
-== 6.1 ==
-
-<b>Install critical security patches</b>
+== 6.1 Install critical security patches ==
 
 Ensure that all system components and software are
 protected from known vulnerabilities by having the latest vendor-supplied security patches installed. 
@@ -40,9 +38,7 @@ systems can be installed within 30 days, and other less-risky changes are instal
 within 2-3 months.
 </i>
 
-== 6.2 ==
-
-<b>Identify and ranking newly discovered security vulnerabilities.</b>
+== 6.2 Identify and ranking newly discovered security vulnerabilities ==
 
 Establish a process to identify and assign a risk ranking to newly discovered security vulnerabilities.
 
@@ -79,7 +75,7 @@ organizations to identify and address high priority risk items more quickly, and
 reduce the likelihood that vulnerabilities posing the greatest risk will be exploited.
 </i>
 
-== 6.3 ==
+== 6.3 Develop software applications in accordance with PCI DSS and best practices ==
 
 <b>Develop software applications in accordance with PCI DSS and based on industry best practices.</b>
 
@@ -216,9 +212,7 @@ have been introduced by the change.
 For each change, there should be back-out procedures in case the change fails, to
 allow for restoring back to the previous state.
 
-== 6.5 ==
-
-<b>Develop applications based on secure coding guidelines.</b>
+== 6.5 Develop applications based on secure coding guidelines ==
 
 Prevent common coding vulnerabilities in software development
 processes, to include the following.
@@ -389,9 +383,7 @@ victim's browser to perform a hostile action to the benefit of the attacker. CSR
 be as powerful as the web application that it attacks.
 </i>
 
-== 6.6 ==
-
-<b>Address new threats and vulnerabilities on an ongoing basis.</b>
+== 6.6 Address new threats and vulnerabilities on an ongoing basis ==
 
 For public-facing web applications, address new threats and
 vulnerabilities on an ongoing basis and ensure these applications
