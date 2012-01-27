@@ -22,7 +22,7 @@ Other system components may provide firewall functionality, provided they meet t
 Where other system components are used within the cardholder data environment to provide firewall functionality, these devices
 must be included within the scope and assessment of Requirement 1.
 
-== 1.1 ==
+== 1.1 Firewall and router configuration standards ==
 
 <b>Establish firewall and router configuration standards that include the following.</b> 
 
@@ -107,7 +107,7 @@ It is advisable to undertake these reviews on a more frequent basis, such as
 monthly, to ensure that the rule sets are current and match the needs of the
 business without opening security holes and running unnecessary risks.
 
-== 1.2 == 
+== 1.2 Restrict connections == 
 
 <b>Restrict connections between untrusted networks and the cardholder data environment</b> 
 
@@ -169,7 +169,7 @@ of the purpose of the environment to which the wireless network is connected. Th
 may include, but is not limited to, corporate networks, retail stores, warehouse
 environments, etc.
 
-== 1.3 == 
+== 1.3 Prohibit direct public access == 
 
 <b>Prohibit direct public access between the Internet and any system component in the cardholder data environment.</b>
 
@@ -295,7 +295,7 @@ circumstances, prevention of route advertisement or other techniques should be
 used to prevent internal address space being broadcast on the Internet or
 disclosed to unauthorized parties.
 
-== 1.4 == 
+== 1.4 Personal firewall == 
 
 <b>Install personal firewall software on any mobile and/or employee-owned computers.</b>
 
