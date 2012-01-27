@@ -47,7 +47,7 @@ hardening standards.
 Sources of industry-accepted system hardening standards may include, but are not limited to:
  * Center for Internet Security (CIS)
  * International Organization for Standardization (ISO)
- * {SysAdmin} Audit Network Security (SANS)
+ * Sys Admin Audit Network Security (SANS)
  * National Institute of Standards Technology (NIST)
 
 <i>There are known weaknesses with many operating systems, databases, and
