@@ -1,4 +1,4 @@
-= SAQ 7: =
+= SAQ 7: Data access =
 
 Source: "Navigating DSS v2.0" from https://www.pcisecuritystandards.org 
 
