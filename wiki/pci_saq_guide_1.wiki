@@ -2,7 +2,7 @@
 = SAQ 1: Firewall =
 
 <b>
-Requirements 1 and 2: Build and Maintain a Secure Network
+Part of: Build and Maintain a Secure Network.
 
 Requirement 1: Install and maintain a firewall configuration to protect cardholder data
 </b>
