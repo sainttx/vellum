@@ -1,0 +1,34 @@
+
+<code language="sh">
+
+if [ "$1" = "-s" ]
+then
+  shift
+fi
+
+subject="biz3 mailer"
+if [ $# -gt 0 ]
+then
+  echo "$1" | grep -q "@"
+  if [ $? -ne 0 ]
+  then
+    subject=$1
+    shift
+  fi
+fi
+
+to=evans@ipay.co.za
+if [ $# -gt 0 ]
+then
+  to=$@
+fi
+
+tmp=/tmp/`basename $0`-$USER-$$.tmp
+
+cat > $tmp
+
+if [ `cat $tmp | wc -c | bc` -gt 1 ]
+then
+  cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $to
+fi
+</code>

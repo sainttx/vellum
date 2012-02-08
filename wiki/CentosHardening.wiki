@@ -1,0 +1,13 @@
+
+
+
+chkconfig apmd off
+chkconfig bluetooth off
+chkconfig cups off
+chkconfig gpm off
+chkconfig isdn off
+chkconfig netfs off
+chkconfig nfslock off
+chkconfig portmap off
+
+    
