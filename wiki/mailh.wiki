@@ -19,24 +19,24 @@ from=$USER@`hostname`
 subject="$hostname mailer"
 timestamp=``date +'%Y-%m-%d %T'``
 
-while [ $# -gt 0 ]<br>
+while [ $# -gt 0 &#93;
 do
-  if [ "$1" = "--pre" ]<br>
+  if [ "$1" = "--pre" &#93;
   then
     echo "<pre>" > $tmp
-  elif [ "$1" = "--tee" ]<br>
+  elif [ "$1" = "--tee" &#93;
   then
     tee=1
-  elif [ "$1" = "-s" ]<br>
+  elif [ "$1" = "-s" &#93;
   then
-    if [ $# -gt 0 ]<br>
+    if [ $# -gt 0 &#93;
     then
       shift
       subject=$1
     fi
   else
     echo "$1" | grep -q "@"
-    if [ $? -eq 0 ]<br>
+    if [ $? -eq 0 &#93;
     then
       break
     else
@@ -47,19 +47,19 @@ do
 done
 
 to=evans@ipay.co.za
-if [ $# -gt 0 ]<br>
+if [ $# -gt 0 &#93;
 then
   to=$@
 fi
 
 cat >> $tmp
 
-if [ ``cat $tmp | wc -c | bc`` -gt 1 ]<br>
+if [ ``cat $tmp | wc -c | bc`` -gt 1 &#93;
 then
   cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $to
 fi
 
-if [ $tee -eq 1 ]<br>
+if [ $tee -eq 1 &#93;
 then
   echo "from: $from"
   echo "to: $to"
