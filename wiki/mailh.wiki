@@ -10,6 +10,8 @@ test message
 
 evans@bizserver ~:  cat /usr/local/bin/mailh 
 
+recipients=evans@gmail.com
+
 tmp=/tmp/`basename $0`-$USER-$$.tmp
 
 tee=0
@@ -45,25 +47,25 @@ do
   shift
 done
 
-to=evans@ipay.co.za
 if [ $# -gt 0 ]
 then
-  to=$@
+  recipients=$@
 fi
 
 cat >> $tmp
 
 if [ `cat $tmp | wc -c | bc` -gt 1 ]
 then
-  cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $to
+  cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $recipients
 fi
 
 if [ $tee -eq 1 ]
 then
   echo "from: $from"
-  echo "to: $to"
+  echo "to: $recipients"
   echo "date: $timestamp"
   echo "subject: $subject"
+  echo "--"
   cat $tmp
 fi
 
