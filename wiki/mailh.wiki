@@ -6,8 +6,8 @@ from: evans@bizserver.net
 to: evans@gmail.com
 date: 2012-02-17 17:40:38
 subject: test subject
-<pre>
-test message
+ <pre>
+ test message
 
 evans@bizserver ~:  cat /usr/local/bin/mailh 
 
