@@ -1,12 +1,24 @@
 
 <code language="sh">
 
-~: cat /usr/local/bin/mailh 
+evans@bizserver ~: echo "test message" | mailh --pre --tee -s "test subject" evans@gmail.com
+from: evans@bizserver.net
+to: evans@gmail.com
+date: 2012-02-17 17:40:38
+subject: test subject
+<pre>
+test message
+
+evans@bizserver ~:  cat /usr/local/bin/mailh 
 
 tmp=/tmp/`basename $0`-$USER-$$.tmp
 
 tee=0
-subject="biz3 mailer"
+hostname=`hostname -s`
+from=$USER@`hostname`
+subject="$hostname mailer"
+timestamp=`date +'%Y-%m-%d %T'`
+
 while [ $# -gt 0 ]
 do
   if [ "$1" = "--pre" ]
@@ -49,7 +61,9 @@ fi
 
 if [ $tee -eq 1 ]
 then
+  echo "from: $from"
   echo "to: $to"
+  echo "date: $timestamp"
   echo "subject: $subject"
   cat $tmp
 fi
