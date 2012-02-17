@@ -10,13 +10,13 @@ test message
 
 evans@bizserver ~:  cat /usr/local/bin/mailh 
 
-tmp=/tmp/``basename $0``-$USER-$$.tmp
+tmp=/tmp/`basename $0`-$USER-$$.tmp
 
 tee=0
-hostname=``hostname -s``
+hostname=`hostname -s`
 from=$USER@`hostname`
 subject="$hostname mailer"
-timestamp=``date +'%Y-%m-%d %T'``
+timestamp=`date +'%Y-%m-%d %T'`
 
 while [ $# -gt 0 ]
 do
@@ -53,7 +53,7 @@ fi
 
 cat >> $tmp
 
-if [ ``cat $tmp | wc -c | bc`` -gt 1 ]
+if [ `cat $tmp | wc -c | bc` -gt 1 ]
 then
   cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $to
 fi
