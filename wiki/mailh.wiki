@@ -54,12 +54,12 @@ fi
 
 cat >> $tmp
 
-if [ `cat $tmp | wc -c | bc` -gt 1 ]
+if \[ ``cat $tmp | wc -c | bc`` -gt 1 \]
 then
   cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $to
 fi
 
-if [ $tee -eq 1 ]
+if \[ $tee -eq 1 \]
 then
   echo "from: $from"
   echo "to: $to"
