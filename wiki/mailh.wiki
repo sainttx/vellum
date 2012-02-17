@@ -1,21 +1,38 @@
 
 <code language="sh">
 
-if [ "$1" = "-s" ]
-then
-  shift
-fi
+~: cat /usr/local/bin/mailh 
 
+tmp=/tmp/`basename $0`-$USER-$$.tmp
+
+tee=0
 subject="biz3 mailer"
-if [ $# -gt 0 ]
-then
-  echo "$1" | grep -q "@"
-  if [ $? -ne 0 ]
+while [ $# -gt 0 ]
+do
+  if [ "$1" = "--pre" ]
   then
-    subject=$1
-    shift
+    echo "<pre>" > $tmp
+  elif [ "$1" = "--tee" ]
+  then
+    tee=1
+  elif [ "$1" = "-s" ]
+  then
+    if [ $# -gt 0 ]
+    then
+      shift
+      subject=$1
+    fi
+  else
+    echo "$1" | grep -q "@"
+    if [ $? -eq 0 ]
+    then
+      break
+    else
+      subject=$1
+    fi
   fi
-fi
+  shift
+done
 
 to=evans@ipay.co.za
 if [ $# -gt 0 ]
@@ -23,12 +40,19 @@ then
   to=$@
 fi
 
-tmp=/tmp/`basename $0`-$USER-$$.tmp
-
-cat > $tmp
+cat >> $tmp
 
 if [ `cat $tmp | wc -c | bc` -gt 1 ]
 then
   cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $to
 fi
+
+if [ $tee -eq 1 ]
+then
+  echo "to: $to"
+  echo "subject: $subject"
+  cat $tmp
+fi
+
+rm $tmp
 </code>

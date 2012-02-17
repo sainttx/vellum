@@ -10,4 +10,20 @@ chkconfig netfs off
 chkconfig nfslock off
 chkconfig portmap off
 
-    
+yum remove anacron autofs avahi* bluetooth cups* firstboot 
+chkconfig gpm off
+
+yum groupremove "Sound and Video"
+yum groupremove "GNOME Desktop Environment"
+yum groupremove "KDE (K Desktop Environment)"
+yum groupremove "GNOME Software Development"
+yum groupremove "X Window System"
+yum groupremove "X Software Development"
+yum groupremove "Development Libraries"
+yum groupremove "Development Tools"
+
+
+yum verify | grep "^[a-z]"
+yum reinstall openssl openssh openldap*
+
+yum remove fontconfig libfontenc
