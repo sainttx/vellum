@@ -11,13 +11,13 @@ test message
 
 evans@bizserver ~:  cat /usr/local/bin/mailh 
 
-tmp=/tmp/`basename $0`-$USER-$$.tmp
+tmp=/tmp/``basename $0``-$USER-$$.tmp
 
 tee=0
-hostname=`hostname -s`
+hostname=``hostname -s``
 from=$USER@`hostname`
 subject="$hostname mailer"
-timestamp=`date +'%Y-%m-%d %T'`
+timestamp=``date +'%Y-%m-%d %T'``
 
 while [ $# -gt 0 ]
 do
