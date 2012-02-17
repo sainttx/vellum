@@ -1,5 +1,5 @@
 
-<code language="sh">
+<pre language="sh">
 
 evans@bizserver ~: echo "test message" | mailh --pre --tee -s "test subject" evans@gmail.com
 from: evans@bizserver.net
@@ -69,4 +69,4 @@ then
 fi
 
 rm $tmp
-</code>
+</pre>
