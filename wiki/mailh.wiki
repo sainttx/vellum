@@ -1,5 +1,5 @@
 
-<pre language="sh">
+<pre>
 
 evans@bizserver ~: echo "test message" | mailh --pre --tee -s "test subject" evans@gmail.com
 from: evans@bizserver.net
