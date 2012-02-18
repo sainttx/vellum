@@ -3,7 +3,7 @@
  * Supported by BizSwitch.net   
  *
  */
-package bizmon.datatype;
+package vellum.datatype;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
