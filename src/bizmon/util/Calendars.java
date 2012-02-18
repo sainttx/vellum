@@ -5,7 +5,7 @@
  */
 package bizmon.util;
 
-import bizmon.datatype.SafeDateFormat;
+import vellum.datatype.SafeDateFormat;
 import bizmon.exception.Exceptions;
 import java.text.ParseException;
 import static java.util.Calendar.*;
