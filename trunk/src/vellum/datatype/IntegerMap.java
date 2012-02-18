@@ -2,7 +2,7 @@
  * 
  * 
  */
-package bizmon.datatype;
+package vellum.datatype;
 
 import java.util.TreeMap;
 
