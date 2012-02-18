@@ -4,7 +4,7 @@
  */
 package bizmon.util;
 
-import bizmon.enumtype.DelimiterType;
+import vellum.enumtype.DelimiterType;
 import bizmon.exception.Exceptions;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
