@@ -2,8 +2,8 @@
  */
 package mobi.servlet;
 
-import bizmon.logger.Logr;
-import bizmon.logger.LogrFactory;
+import vellum.logger.Logr;
+import vellum.logger.LogrFactory;
 import java.io.IOException;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServlet;

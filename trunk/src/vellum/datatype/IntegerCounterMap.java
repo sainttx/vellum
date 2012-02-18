@@ -4,7 +4,7 @@
  */
 package vellum.datatype;
 
-import bizmon.util.Lists;
+import vellum.util.Lists;
 import java.util.TreeMap;
 
 /**

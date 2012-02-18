@@ -5,9 +5,9 @@
  */
 package common.html;
 
-import bizmon.printer.Printer;
-import bizmon.util.Strings;
-import bizmon.util.Types;
+import vellum.printer.Printer;
+import vellum.util.Strings;
+import vellum.util.Types;
 
 /**
  *

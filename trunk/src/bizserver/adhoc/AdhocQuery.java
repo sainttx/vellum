@@ -5,9 +5,9 @@
  */
 package bizserver.adhoc;
 
-import bizdb.query.HtmlQueryExecutor;
-import bizdb.query.QueryInfo;
-import bizdb.query.QueryInfoMap;
+import vellum.sql.query.HtmlQueryExecutor;
+import vellum.sql.query.QueryInfo;
+import vellum.sql.query.QueryInfoMap;
 import bizserver.common.PageHandler;
 
 /**
