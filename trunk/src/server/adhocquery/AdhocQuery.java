@@ -5,10 +5,10 @@
  */
 package server.adhocquery;
 
-import jdbc.query.HtmlQueryExecutor;
-import jdbc.query.QueryInfo;
-import jdbc.query.QueryInfoMap;
 import server.common.PageHandler;
+import vellum.sql.query.HtmlQueryExecutor;
+import vellum.sql.query.QueryInfo;
+import vellum.sql.query.QueryInfoMap;
 
 /**
  *
