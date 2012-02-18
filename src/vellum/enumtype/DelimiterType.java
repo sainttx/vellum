@@ -4,14 +4,14 @@
  * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  */
 
-package bizmon.enumtype;
+package vellum.enumtype;
 
 /**
  *
  * @author evanx
  */
-public enum FormatType {
-    DISPLAY,
-    VERBOSE,
-    PRINTABLE;
+public enum DelimiterType {
+    SPACE,
+    COMMA,
+    COLON;
 }
