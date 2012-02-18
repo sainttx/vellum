@@ -5,10 +5,10 @@
  */
 package bizserver.common;
 
-import bizmon.util.Types;
+import vellum.util.Types;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import bizmon.exception.Exceptions;
+import vellum.exception.Exceptions;
 import java.io.IOException;
 
 /**
