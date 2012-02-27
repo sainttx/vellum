@@ -8,8 +8,7 @@ subject: test subject
 <pre>
 test message
 
-evans@bizserver ~:  cat /usr/local/bin/mailh 
-
+evans@bizserver ~:  cat /usr/local/bin/mailh 4
 recipients=evans@gmail.com
 
 tmp=/tmp/`basename $0`-$USER-$$.tmp
