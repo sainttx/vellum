@@ -89,7 +89,7 @@ yum verify | grep "^[a-z]"
 
 yum -y reinstall rpm rpm-build rpm-libs yum*
 yum -y reinstall anacron coreutils diffutils openssh* passwd util-linux
-yum -y reinstall findutils logrotate mktemp mlocate prelink tmpwatch rsync 
+yum -y reinstall findutils logrotate mktemp mlocate prelink tmpwatch rsync vixie-cron
 yum -y reinstall webalizer
 
 == cron 
@@ -171,6 +171,7 @@ Verify Permissions on passwd, shadow, group and gshadow Files
 
 <pre>
 cd /etc
+ls -l passwd shadow group gshadow
 chown root:root passwd shadow group gshadow
 chmod 644 passwd group
 chmod 400 shadow gshadow
@@ -208,11 +209,16 @@ chmod o-w file
 </pre>
 
 
-=== 
+=== SUID/GUID
 
 <pre>
+ find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -print
 </pre>
 
+for bin in ccreds_validate ksu netreport lockfile mount.nfs mount.nfs4 rpc rlogin rsh ssh-keysign usernetctl umount.nfs umount.nfs4 userisdnctl usernetctl wall write 
+do 
+  which $bin && chmod -s `which $bin`  
+done
 
 === 
 
