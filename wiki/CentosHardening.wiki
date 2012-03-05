@@ -136,10 +136,36 @@ yum verify | grep "^[a-z]"
 
 {{{
 yum -y reinstall rpm rpm-build rpm-libs yum*
-yum -y reinstall anacron coreutils diffutils openssh* passwd util-linux
+yum -y reinstall coreutils diffutils openssh* passwd util-linux
 yum -y reinstall findutils logrotate mktemp mlocate prelink tmpwatch rsync vixie-cron
 yum -y reinstall webalizer
 }}}
+
+yum remove anacron pam-krb5 pam_pkcs11 
+
+cp -ra /var/lib/rpm /root/rpmdb.`date +'%Y-%m-%d'`
+rpm --rebuilddb
+rpm -Va | grep "bin/\|/lib/"
+
+root@biz3 ~: yum list installed | grep i386
+root@biz3 ~: yum list installed | grep devel
+
+md5sum /usr/sbin/aide
+yum -y update aide 
+md5sum /usr/sbin/aide
+yum -y reinstall aide 
+md5sum /usr/sbin/aide
+
+yum -y reinstall rpm rpm-libs yum*
+yum -y reinstall aide coreutils diffutils openss* openldap passwd pam pam_passwdqc usermode util-linux
+yum -y reinstall findutils logrotate mktemp mlocate prelink tmpwatch rsync sudo vixie-cron
+yum -y reinstall bc curl cvs cyrus-sasl info fipscheck grep gnupg ftp less lvm2 ncurses pcre procps psmisc popt readline sqlite tcp_wrappers vim-enhanced wget 
+yum -y reinstall libidn libgcrypt libuser libxslt libgpg-error 
+
+rpm -Va | grep "bin/\|/lib/"
+yum verify | grep "^[a-z]"
+
+yum -y reinstall rpm rpm-libs yum*
 
 == cron 
 
