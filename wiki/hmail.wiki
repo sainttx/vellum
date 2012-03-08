@@ -1,29 +1,23 @@
 
 {{{
-evans@bizserver ~: echo "test message" | mailh --pre --tee -s "test subject" evans@gmail.com
-from: evans@bizserver.net
-to: evans@gmail.com
-date: 2012-02-17 17:40:38
-subject: test subject
-<pre>
-test message
-
-evans@bizserver ~:  cat /usr/local/bin/mailh 4
-recipients=evans@gmail.com
+[root@bizserver ~]# cat /usr/bin/hmail
 
 tmp=/tmp/`basename $0`-$USER-$$.tmp
 
 tee=0
+pre=0
 hostname=`hostname -s`
 from=$USER@`hostname`
 subject="$hostname mailer"
 timestamp=`date +'%Y-%m-%d %T'`
 
+recipients=$from
+
 while [ $# -gt 0 ]
 do
   if [ "$1" = "--pre" ]
   then
-    echo "<pre>" > $tmp
+    pre=1
   elif [ "$1" = "--tee" ]
   then
     tee=1
@@ -51,11 +45,34 @@ then
   recipients=$@
 fi
 
-cat >> $tmp
+cat > $tmp
+
+if [ $pre -eq 0 ]
+then
+  cat $tmp | grep -q "<"
+  if [ $? -ne 0 ]
+  then
+    pre=1
+  fi
+fi
+
+if [ $pre -eq 1 ]
+then
+  cat $tmp > $tmp.tmp
+  echo "<pre>" > $tmp
+  cat $tmp.tmp | sed -e 's/&/\&amp;/g' | sed -e 's/</\&lt;/g' | sed -e 's/>/\&gt;/g' >> $tmp
+  rm -f $tmp.tmp
+fi
+
+cat $tmp | grep -q "^Subject: "
+if [ $? -eq 0 ]
+then
+  subject=`cat $tmp | grep -q "^Subject: " | cut -b10-99 | head -1`
+fi
 
 if [ `cat $tmp | wc -c | bc` -gt 1 ]
 then
-  cat $tmp | /opt/mutt-1.5.21/bin/mutt -e 'set content_type="text/html"' -s "$subject" $recipients
+  cat $tmp | grep -v "^Subject: \|^To: \|^From: " | mutt -e 'set content_type="text/html"' -s "$subject" $recipients
 fi
 
 if [ $tee -eq 1 ]
@@ -68,5 +85,5 @@ then
   cat $tmp
 fi
 
-rm $tmp
+rm -f $tmp
 }}}
