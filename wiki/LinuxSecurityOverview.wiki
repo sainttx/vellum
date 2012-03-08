@@ -1,10 +1,12 @@
 
+<hr>
 = Security =
 
 We consider the PCI DSS documentation as a guide to best practices.
 
 For example, PCI recommends firewalling, change control, IDS (intrusion detection), and FIM (file integrity monitoring).
 
+<hr>
 == Documentation ==
 
 In general, for PCI compliance we need documentation laying out your policy, procedures and controls, and of course to implement those controls to ensure our policy and procedures are being implemented as planned.
@@ -25,11 +27,12 @@ For example, a commonly required procedure is employee exit check list eg. disab
 
 In general we need the initial reactive procedure (eg. disable account when employee leaves), and the subsequent proactive controls eg. annually review all accounts on all systems.
 
+<hr>
 == Overview ==
 
 We present some general recommendations for network security. 
 
-=== Scheduled reviews ===
+==== Scheduled reviews ====
 
 We schedule regular compliance reviews eg. firewall rules are review every month; bi-annual review should audit logins and permissions; and annual review ensure that keys are changed.
 
@@ -39,7 +42,7 @@ In accordance with PCI, we require IDS (intrusion detection) like <tt>snort</tt>
 
 Obviously <tt>snort</tt> and <tt>tripwire</tt> daily reports and such, need to be monitored on daily basis. 
 
-=== Firewalling ===
+==== Firewalling ====
 
 Place servers on a private network (using private IP numbers) behind a firewall (with NAT translation). Use a hardware firewall, eg. even just a simple Cisco or Netgear router, 
 with port forwarding to the servers themselves. This is primary barrier.  
@@ -47,20 +50,20 @@ with port forwarding to the servers themselves. This is primary barrier.
 Then as a secondary firewall, configure iptables on the servers themselves. Therefore there are always two barriers, so if one is temporarily misconfigured, the other acts as a safety net. (Having said that, 
 controls should be in place to detect such problems "immediately.")
 
-=== SSL ===
+==== SSL ====
 
 All public access should be via SSL, ie. web access via HTTPS (not HTTP), console access via <tt>ssh</tt>, and finally BizSwitch client connections must use two-way SSL authentification via SSL certificates. 
 
 <tt>ssh</tt> access should be via <tt>SSL</tt> keys only, ie. passwords are not allowed as these are vulnerable to a brute force attack. Private <tt>ssh</tt> keys mnust be passphrase protected,
 since these resides on relative insecure laptops, mobiles, etc. 
 
-=== Application tiering ===
+==== Application tiering ====
 
 Ideally each server (or VM) has a single function eg. web server, database server, etcetera. The web server is accessible via the internet, and "vulnerable" in that sense.
 However the database server (containing sensitive data like credit card info etc), is not exposed directly to the Internet, or even the web server. Consequently someone would be to break into 
 the web server first, and still not have access to sensitive data. Intrusion detection on the web server should give you enough time to prevent further penetration and access to the data.
 
-=== Change control ===
+==== Change control ====
 
 PCI states that we require "a formal process for approving and testing all external network connections and changes to the firewall and router configurations. "
 
@@ -69,7 +72,7 @@ before it is applied, and provides an historical record.
 
 A centralised logging server is advisable, which is a secure indelible record of events.
 
-=== Updates ===
+==== Updates ====
 
 Subscribe to CentOS mailing list for security advisorie, because we need to update packages when a vulnerability is discovered eg. in openssl - and you know via CentOS mailing list. 
 Additionally, update the machine regularly i.e. using "yum update."
