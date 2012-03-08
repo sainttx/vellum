@@ -36,7 +36,7 @@ We present some general recommendations for network security.
 
 We schedule regular compliance reviews eg. firewall rules are review every month; bi-annual review should audit logins and permissions; and annual review ensure that keys are changed.
 
-=== Monitoring ====
+==== Monitoring =====
 
 In accordance with PCI, we require IDS (intrusion detection) like <tt>snort</tt> plus FIM (file integrity monitoring) like <tt>tripwire</tt>. 
 
