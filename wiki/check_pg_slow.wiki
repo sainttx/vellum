@@ -4,53 +4,90 @@
 {{{
 [postgres@server ~]$ cat scripts/check_pg.sh 
 
-serviceName=PostgreSQL
-port=5432
+tmp=/tmp/`basename $0`-$USER-$$.tmp
 
-query_slow="
-  select age(now(), query_start), usename, procpid, substr(current_query, 1, 32)
-  from pg_stat_activity
-  where age(now(), query_start) > interval '10 seconds'
-  and current_query <> '<IDLE>'
-  order by query_start
-"
+tee=0
+pre=0
+hostname=`hostname -s`
+from=$USER@`hostname`
+subject="$hostname mailer"
+timestamp=`date +'%Y-%m-%d %T'`
 
-query_slowest_info="
-  select age(now(), query_start), usename, procpid, substr(current_query, 1, 32)
-  from pg_stat_activity
-  where age(now(), query_start) > interval '10 seconds'
-  and current_query <> '<IDLE>'
-  order by age(now(), query_start) desc
-  limit 1
-"
-
-query_slowest_seconds="
-  select extract(epoch from age(now(), query_start))::integer as seconds
-  from pg_stat_activity
-  where age(now(), query_start) > interval '10 seconds'
-  and current_query <> '<IDLE>'
-  order by age(now(), query_start) desc
-  limit 1
-"
-
-count=`psql -p $port -t -c "$query_slow" | grep -v "IDLE\|COPY\|autovacuum" | grep "|" | wc -l`
-if [ $count -gt 0 ]
-then
-  age=`psql -p $port -t -c "$query_slowest_seconds" | bc`
-  if [ -n "$age" -a $age -gt 10 ]
+while [ $# -gt 0 ]
+do
+  if [ "$1" = "--pre" ]
   then
-    message="slowest $age seconds, loadavg `cat /proc/loadavg`"
-    statusName=WARNING
-    status="$serviceName $statusName - $message"
-    host=`hostname -s`
-    echo "Subject: $host $serviceName $statusName"
-    echo "<b>$status</b>"
-    echo "<pre>"
-    psql -p $port -c "$query_slowest_info"
-    psql -p $port -c "$query_slow"
-    exit 1
+    pre=1
+  elif [ "$1" = "--tee" ]
+  then
+    tee=1
+  elif [ "$1" = "-s" ]
+  then
+    if [ $# -gt 0 ]
+    then
+      shift
+      subject=$1
+    fi
+  else
+    echo "$1" | grep -q "@"
+    if [ $? -eq 0 ]
+    then
+      break
+    else
+      subject=$1
+    fi
+  fi
+  shift
+done
+
+if [ $# -gt 0 ]
+then
+  recipients=$@
+fi
+
+cat > $tmp
+
+if [ `cat $tmp | wc -c | bc` -gt 1 ]
+then
+  exit 1
+fi
+
+if [ $pre -eq 0 ]
+then
+  cat $tmp | grep -q "<"
+  if [ $? -ne 0 ]
+  then
+    pre=1
   fi
 fi
+
+if [ $pre -eq 1 ]
+then
+  cat $tmp > $tmp.tmp
+  echo "<pre>" > $tmp
+  cat $tmp.tmp | sed -e 's/&/\&amp;/g' | sed -e 's/</\&lt;/g' | sed -e 's/>/\&gt;/g' >> $tmp
+  rm -f $tmp.tmp
+fi
+
+cat $tmp | grep -q "^Subject: "
+if [ $? -eq 0 ]
+then
+  subject=`cat $tmp | grep -q "^Subject: " | cut -b10-99 | head -1`
+fi
+
+ cat $tmp | grep -v "^Subject: \|^To: \|^From: " | mutt -e 'set content_type="text/html"' -s "$subject" $recipients
+
+if [ $tee -eq 1 ]
+then
+  echo "from: $from"
+  echo "to: $recipients"
+  echo "date: $timestamp"
+  echo "subject: $subject"
+  echo "--"
+  cat $tmp
+fi
+
+rm -f $tmp
 
 exit 0
 }}}
