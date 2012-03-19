@@ -76,11 +76,6 @@ $ ssh -vvv -p 2200 bizswitch.net
 
 If that doesn't give an indication of the problem, we need to look in sshd logs on the server.
 
-{{{
-[root@biz etc]# cat /etc/ssh/sshd_config | grep DEBUG
-LogLevel DEBUG
-}}}
-
 On Ubuntu:
 
 {{{
@@ -89,6 +84,11 @@ Mar 17 13:48:30 evanx sshd[27543]: Failed password for postgres from 192.168.15.
 }}}
 
 On CentOS:
+
+{{{
+[root@biz etc]# cat /etc/ssh/sshd_config | grep DEBUG
+LogLevel DEBUG
+}}}
 
 {{{
 root@server ~: tail /var/log/secure
