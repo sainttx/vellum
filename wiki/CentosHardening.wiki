@@ -142,20 +142,21 @@ yum -y reinstall findutils logrotate mktemp mlocate prelink tmpwatch rsync vixie
 yum -y reinstall webalizer
 }}}
 
-yum remove anacron pam-krb5 pam_pkcs11 
+<b>rebuild and verify rpmdb</b>
 
+{{{
 cp -ra /var/lib/rpm /root/rpmdb.`date +'%Y-%m-%d'`
 rpm --rebuilddb
 rpm -Va | grep "bin/\|/lib/"
+}}}
 
-root@biz3 ~: yum list installed | grep i386
-root@biz3 ~: yum list installed | grep devel
-
+{{{
 md5sum /usr/sbin/aide
 yum -y update aide 
 md5sum /usr/sbin/aide
 yum -y reinstall aide 
 md5sum /usr/sbin/aide
+}}}
 
 yum verify | grep "^[a-z]"
 yum -y reinstall aide coreutils diffutils rpm rpm-libs yum*
