@@ -135,8 +135,9 @@ yum verify | grep "^[a-z]"
 }}}
 
 {{{
-yum -y reinstall rpm rpm-build rpm-libs yum*
-yum -y reinstall coreutils diffutils openssh* passwd util-linux
+yum -y reinstall rpm rpm-build rpm-libs yum* 
+yum -y reinstall coreutils diffutils
+yum -y reinstall openssh* passwd util-linux
 yum -y reinstall findutils logrotate mktemp mlocate prelink tmpwatch rsync vixie-cron
 yum -y reinstall webalizer
 }}}
