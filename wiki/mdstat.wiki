@@ -14,16 +14,16 @@
 
 Actually we monitor the status via `cron` or nagios using a script as follows.
 
-<code language="sh">
+{{{
 root@server ~ # crontab -l 
 MAILTO=evanx@gmail.com
 4 4 * * * /opt/scripts/rdiff-backup.sh
 9 9 * * * /opt/scripts/check_mdstat.sh
-</code>
+}}}
 
 Where our monitoring script grep's `/proc/mdstat` psuedo file for underscores.
 
-<code language="sh">
+{{{
 root@server ~ # cat /scripts/check_mdstat.sh 
 
 cat /proc/mdstat | grep -q "_"
@@ -34,13 +34,13 @@ then
   cat /proc/mdstat 
   cat /proc/mdstat | mail -s "mdstat disk error" evanx@gmail.com
 fi
-</code>
+}}}
 
 === Inspect ===
 
 Check the partition and md setup.
 
-<code language="sh">
+{{{
 root@server ~ # cat /etc/fstab 
 proc /proc proc defaults 0 0
 none /dev/pts devpts gid=5,mode=620 0 0
@@ -52,11 +52,11 @@ root@server ~ # df
 Filesystem           1K-blocks      Used Available Use% Mounted on
 /dev/md2             966683064   5829652 912133896   1% /
 /dev/md1                256586     23076    220262  10% /boot
-</code>
+}}}
 
 Check the status via `/proc/mdstat` psuedo file. 
 
-<code language="sh">
+{{{
 root@server ~ # cat /proc/mdstat 
 Personalities : [raid1] [raid0] [raid6] [raid5] [raid4] [raid10] 
 md0 : active raid1 sda1[0] sdb1[1]
@@ -69,7 +69,7 @@ md2 : active raid1 sdb3[1]
       974390336 blocks [2/1] [_U]
       
 unused devices: <none>
-</code>
+}}}
 
 Underscores in the following are faulty partitions e.g. `sda3`, which has been removed i.e. `sda3`.
 
@@ -77,7 +77,7 @@ Before hot removing a partition, we might see `"sda3[0](F)"` when detected as fa
 
 Manually check for I/O errors.
 
-<code language="sh">
+{{{
 root@server ~ # dmesg | grep -i "disk\|error"
 VFS: Disk quotas dquot_6.5.1
 md: md driver 0.90.3 MAX_MD_DEVS=256, MD_SB_DISKS=27
@@ -85,40 +85,40 @@ sd 0:0:0:0: Attached scsi disk sda
 sd 1:0:0:0: Attached scsi disk sdb
 md: cannot remove active disk sda1 from md0 ... 
 raid1: Disk failure on sda1, disabling device. 
-</code>
+}}}
 
 ; Remove and re-add failed partitions 
 
 In order to attempt to rebuild a partition, we can remove and re-add.
 
-<code language="sh">
+{{{
 mdadm /dev/md2 --remove /dev/sda3
 mdadm /dev/md2 --add /dev/sda3
-</code>
+}}}
 
 === Remove faulty drive partitions ===
 
-<code language="sh">
+{{{
 root@server ~ # mdadm /dev/md0 --remove /dev/sda1
 mdadm: hot remove failed for /dev/sda1: Device or resource busy
-</code>
+}}}
 
 We might need to --set_faulty to remove the swap partition.
 
-<code language="sh">
+{{{
 root@server ~ # mdadm /dev/md0 --set-faulty /dev/sda1
 mdadm: set /dev/sda1 faulty in /dev/md0
-</code>
+}}}
 
 Remove all the partitions of the faulty drive to be physically removed.
 
-<code language="sh">
+{{{
 root@server ~ # mdadm /dev/md0 --remove /dev/sda1
 root@server ~ # mdadm /dev/md1 --remove /dev/sda2
 root@server ~ # mdadm /dev/md2 --remove /dev/sda3
-</code>
+}}}
 
-<code language="sh">
+{{{
 root@server ~ # cat /proc/mdstat 
 Personalities : [raid1] [raid0] [raid6] [raid5] [raid4] [raid10] 
 md0 : active raid1 sdb1[1]
@@ -129,28 +129,28 @@ md1 : active raid1 sdb2[1]
       
 md2 : active raid1 sdb3[1]
       974390336 blocks [2/1] [_U]
-</code>
+}}}
 
 === Serial number ===
 
 Check the serial number of the drive to remove.
-<code language="sh">
+{{{
 hdparm -i /dev/sda
-</code>
+}}}
 
 === Grub ===
 
 Ensure that grub is installed on the secondary drive so when the primary one is removed, the system still boots.
 
-<code language="sh">
+{{{
 root@server ~ # cat /boot/grub/device.map
 (hd0)   /dev/sda
 (hd1)   /dev/sdb
-</code>
+}}}
 
 One can use grub interactive shell to install boot onto both RAID1 drives, as follows.
 
-<code language="sh">
+{{{
 root@server ~ # grub
 grub> device (hd0) /dev/sda
 device (hd0) /dev/sda
@@ -159,9 +159,9 @@ root (hd0,1)
  Filesystem type is ext2fs, partition type 0xfd
 grub> setup (hd0)
 setup (hd0)
-</code>
+}}}
 
-<code language="sh">
+{{{
 root@server ~ # grub
 grub> device (hd1) /dev/sdb
 device (hd1) /dev/sdb
@@ -170,11 +170,11 @@ root (hd1,1)
  Filesystem type is ext2fs, partition type 0xfd
 grub> setup (hd1)
 setup (hd1)
-</code>
+}}}
 
 Incidently if the `/dev/sda` is faulty, the following would also work, referring to `/dev/sdb` as `hd0`.
 
-<code language="sh">
+{{{
 root@server ~ # grub
 grub> device (hd0) /dev/sdb
 grub> root (hd0,1) 
@@ -182,7 +182,7 @@ root (hd0,1)
  Filesystem type is ext2fs, partition type 0xfd
 grub> setup (hd0)
 setup (hd0)
-</code>
+}}}
 
 However when the new drive is inserted, we must install grub into its MBR as well i.e. both `hd0` and `hd1`.
 
@@ -190,7 +190,7 @@ However when the new drive is inserted, we must install grub into its MBR as wel
 
 On CentOS (RHEL, Fedora), one can use grub-install, rather than the above interactive shell, `grub`.
 
-<code language="sh">
+{{{
 root@server /home/evanx # vi /boot/grub/grub.conf
 
 timeout 5
@@ -202,13 +202,13 @@ kernel /vmlinuz-2.6.18-274.7.1.el5 ro root=/dev/md2 vga=0x317 selinux=0
 initrd /initrd-2.6.18-274.7.1.el5.img
 
 root@server /home/evanx # /sbin/grub-install /dev/sdb
-</code>
+}}}
 
 where we changed the root device hd1 (where /boot resides) in grub.conf and then run grub-install to install grub in the MBR of that device.
 
 In case the drives switch e.g. the good sdb drives becomes sda, one can create boot option for either drive as follows.
 
-<code language="sh">
+{{{
 timeout 5
 default 0
 
@@ -221,21 +221,21 @@ title CentOS (2.6.18-274.7.1.el5) hd1
 root (hd1,1)
 kernel /vmlinuz-2.6.18-274.7.1.el5 ro root=/dev/md2 vga=0x317 selinux=0
 initrd /initrd-2.6.18-274.7.1.el5.img
-</code>
+}}}
 
 === Rebuilt ===
 
 We check the new drive installed
-<code language="sh">
+{{{
 root@server ~ # hdparm -i /dev/sdb
  Model=ST1000NM0011                            , FwRev=SN02    , SerialNo=            W1N03QQ8
-</code>
+}}}
 
 Note the serial number above to confirm it is the new drive we installed.
 
 Partition the new drive the same as the existing OK drive.
 
-<code language="sh">root@server ~ # fdisk /dev/sdb
+{{{root@server ~ # fdisk /dev/sdb
 
 Command (m for help): p
 
@@ -247,7 +247,7 @@ Units = cylinders of 16065 * 512 = 8225280 bytes
 /dev/sdb1               1         262     2104483+  fd  Linux raid autodetect
 /dev/sdb2             263         295      265072+  fd  Linux raid autodetect
 /dev/sdb3             296      121601   974390445   fd  Linux raid autodetect
-</code>
+}}}
 
 Add partitions to the array.
 
@@ -260,7 +260,7 @@ mdadm: added /dev/sdb2
 
 root@server ~ # mdadm /dev/md2 -a /dev/sdb3
 mdadm: added /dev/sdb3
-</code>
+}}}
 
 Monitor the progress of the rebuild.
 
@@ -285,4 +285,4 @@ md1 : active raid1 sdb2[0] sda2[1]
 md2 : active raid1 sdb3[2] sda3[1]
       974390336 blocks [2/1] [_U]
       [>....................]  recovery =  2.4% (23479424/974390336) finish=264.6min speed=59882K/sec
-</code>
+}}}
