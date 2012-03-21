@@ -5,27 +5,22 @@
 package vellum.provider;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
+import java.net.Socket;
 
 /**
  *
  * @author evan
  */
 public class VCipherConnection {
-    final InetSocketAddress address;
     VCipherSocket socket;
-    SSLContext sslContext;
+    VProvider provider = VProvider.instance;
     
-    public VCipherConnection(InetSocketAddress address) {
-        this.address = address;
+    public VCipherConnection() {
     }
 
     private void open() throws IOException {
-        SSLSocket sslSocket = null;
-        socket = new VCipherSocket(sslSocket);
+        Socket sslSocket = provider.newSSLSocket();
+        this.socket = new VCipherSocket(sslSocket);
     }
     
      
