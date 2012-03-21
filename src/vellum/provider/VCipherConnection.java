@@ -24,7 +24,7 @@ public class VCipherConnection {
     }
 
     private void open() throws IOException {
-        SSLSocket sslSocket = sslContext.caddress.getAddress(), address.getPort());
+        SSLSocket sslSocket = null;
         socket = new VCipherSocket(sslSocket);
     }
     
