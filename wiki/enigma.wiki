@@ -147,7 +147,7 @@ Alternatively, we copy the file to the client's file system.
 
 === Client Trust Store ===
 
-According to the [http://www.exampledepot.com/egs/javax.net.ssl/Client.html Java Developers Almanac]
+According to the [http://www.exampledepot.com/egs/javax.net.ssl/Client.html Java Developers Almanac],
 <blockquote>
 When an SSL client socket connects to an SSL server, it receives a certificate of authentication from the server. 
 The client socket then validates the certificate against a set of certificates in its truststore.
