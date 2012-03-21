@@ -24,6 +24,7 @@ public class EnigmaServer extends Thread {
     SecureRandom secureRandom;
     SSLServerSocket serverSocket;
     boolean isRunning = true;
+    
     public void init() throws Exception {
         initKeyManagers();
         initTrustManagers();
