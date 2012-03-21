@@ -5,6 +5,7 @@
 package vellum.provider;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.security.Provider;
 import java.security.Security;
 
@@ -38,7 +39,7 @@ public class VProvider extends Provider {
     }
 
     public VCipherConnection newConnection() {
-        return new VCipherConnection(serverAddress, serverPort);
+        return new VCipherConnection(new InetSocketAddress(serverAddress, serverPort));
     }
         
 }
