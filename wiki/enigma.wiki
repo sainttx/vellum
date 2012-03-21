@@ -1,9 +1,9 @@
 
 == Introduction ==
 
-In PasswordHash we started our cryptographic foray, which later included Password-Based Encryption.
+In "Password Hash" we started our cryptographic foray, which later included Password-Based Encryption.
 
-The [Cryptonomical] prequel investigated the 
+The "Cryptonomical: prequel investigated the 
 [http://java.sun.com/j2se/1.5.0/docs/guide/security/CryptoSpec.html Java Cryptography Architecture]
 further, considering both symmetric (secret key) and asymmetric (public key)
 algorithms. We implemented a client and server that mimics how SSL works, where the client uses 
@@ -40,7 +40,7 @@ The signature might be that of a trusted [http://en.wikipedia.org/wiki/Certifica
 ie. it is signed by them using their private key. 
 Alternatively, it might be self-signed ie. signed by ourselves
 using our private key eg. generated using 
-[http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`].
+[http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html <tt>keytool</tt>].
 
 === X.509 ===
 
@@ -59,14 +59,14 @@ Consider that we wish to build a client/server application, using SSL to encrypt
 over an insecure network eg. the Internet.
 We expect that we'll have to create at least a self-signed digital certificate for the server. 
 
-We use [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`]
+We use [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html <tt>keytool</tt>]
 to create a Java Key Store (JKS), which we'll refer to as a "keystore file," and to 
 generate private key entries therein, and also to export and import public key certificate entries. 
 
 === Private Key Entry ===
 
 First we create a public/private key pair for our server, 
-(see [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`])
+(see [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html <tt>keytool</tt>])
 ie. a "private key entry" in a keystore file, which it creates automatically. 
 
 {{{
@@ -790,7 +790,7 @@ We build a trivial client/server demo using `SSLServerSocket` and `SSLSocket`,
 provided by the 
 [http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html Java Secure Socket Extension (JSSE)].
 
-We use [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`]
+We use [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html keytool]
 to create keystores with private key entries, and public key certificate entries. 
 The `-genkey` command is used to create a keystore with a "private key entry" 
 ie. a public/private key pair for our server. We export the "private key entry" 
@@ -811,16 +811,16 @@ with the server's trusted public key certificate keystore.
 == Resources ==
 
 You can browse the code for this exercise at 
-[https://aptserver.dev.java.net/source/browse/aptserver/src/ssldemo/ `aptserver.dev.java.net`].
+[https://aptserver.dev.java.net/source/browse/aptserver/src/ssldemo/ <tt>aptserver.dev.java.net</tt>].
 
 See blogs...
 
 [http://weblogs.java.net/blog/rbair/archive/2006/10/ssl_and_self_si_1.html Richard Bair's SSL blog entry ]
 
-[https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http `swingx-ws org.jdesktop.http` package]
+[https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http <tt>swingx-ws org.jdesktop.http</tt> package]
 
 [http://blogs.sun.com/andreas/entry/no_more_unable_to_find Andreas Sterbenz's SSL blog entry ]
-and [http://blogs.sun.com/andreas/resource/InstallCert.java `InstallCert.java`]
+and [http://blogs.sun.com/andreas/resource/InstallCert.java <tt>InstallCert.java</tt>]
 to add a server's certificate to `jssecerts`.
 
 See the Java Developers Almanac... 
@@ -833,7 +833,7 @@ See the Java Developers Almanac...
 
 See references...
 
-[http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`]
+[http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html <tt>keytool</tt>]
 
 [http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html JSSE Reference Guide]
 
