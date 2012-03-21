@@ -251,7 +251,7 @@ Units = cylinders of 16065 * 512 = 8225280 bytes
 
 Add partitions to the array.
 
-<code language="sh>
+{{{
 root@server ~ # mdadm /dev/md0 -a /dev/sdb1
 mdadm: added /dev/sdb1
 
@@ -264,7 +264,7 @@ mdadm: added /dev/sdb3
 
 Monitor the progress of the rebuild.
 
-<code>
+{{{
 root@server ~ # cat /proc/mdstat
 
 md0 : active raid1 sdb1[2] sda1[1]
