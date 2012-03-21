@@ -2,27 +2,26 @@
 
 == Introduction ==
 
-In [Password Hash] we started our cryptographic foray, which later included [Password-Based Encryption].
+In PasswordHash we started our cryptographic foray, which later included Password-Based Encryption.
 
 The [Cryptonomical] prequel investigated the 
-[Java Cryptography Architecture http://java.sun.com/j2se/1.5.0/docs/guide/security/CryptoSpec.html]
+[http://java.sun.com/j2se/1.5.0/docs/guide/security/CryptoSpec.html Java Cryptography Architecture]
 further, considering both symmetric (secret key) and asymmetric (public key)
 algorithms. We implemented a client and server that mimics how SSL works, where the client uses 
 the server's public key to encrypt and transfer a secret key, which is then 
 used to encrypt messages.
 
 Now for the main event, we use the 
-[Java Secure Socket Extension (JSSE), http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf]
+[http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf Java Secure Socket Extension (JSSE)],
 to build a trivial client/server demo using ~SSLServerSocket and ~SSLSocket. 
 
 == Crypto Concepts ==
 
 First let's review the relevant crypto concepts again, cos i keep forgetting them.
 
-
 === Digital signature ===
 
-A [digital signature http://en.wikipedia.org/wiki/Image:Digital_signature_schema.gif]
+A [http://en.wikipedia.org/wiki/Image:Digital_signature_schema.gif digital signature]
 for a document is created by generating a hashcode of the document, and 
 then encrypting that hashcode using your private key. 
 This encrypted hashcode is the digital signature.
@@ -34,19 +33,19 @@ in which case the document is considered authentic.
 
 === Digital certificate ===
 
-A digital certificate, or [public key certificate, http://en.wikipedia.org/wiki/Public_key_certificate]
+A digital certificate, or [http://en.wikipedia.org/wiki/Public_key_certificate public key certificate]
 is an artifact that uses a digital signature to bind together a public key 
 with an identity document eg. specifying the name, URL et al of a person or organisation. 
 
-The signature might be that of a trusted [Certificate Authority, http://en.wikipedia.org/wiki/Certificate_authority]
+The signature might be that of a trusted [http://en.wikipedia.org/wiki/Certificate_authority Certificate Authority]
 ie. it is signed by them using their private key. 
 Alternatively, it might be self-signed ie. signed by ourselves
 using our private key eg. generated using 
-[~keytool. http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html]
+[http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`].
 
 === X.509 ===
 
-According to [Wikipedia... http://en.wikipedia.org/wiki/X.509]
+According to [http://en.wikipedia.org/wiki/X.509 Wikipedia],
 
 <blockquote>
 X.509 is an ITU-T standard for public key infrastructure (PKI). 
@@ -61,15 +60,14 @@ Consider that we wish to build a client/server application, using SSL to encrypt
 over an insecure network eg. the Internet.
 We expect that we'll have to create at least a self-signed digital certificate for the server. 
 
-We use [~keytool http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html]
+We use [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`]
 to create a Java Key Store (JKS), which we'll refer to as a "keystore file," and to 
 generate private key entries therein, and also to export and import public key certificate entries. 
-
 
 === Private Key Entry ===
 
 First we create a public/private key pair for our server, 
-(see [~keytool http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html])
+(see [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`])
 ie. a "private key entry" in a keystore file, which it creates automatically. 
 
 {{{
@@ -86,7 +84,7 @@ serverprivate, 2007/05/23, PrivateKeyEntry,
 Certificate fingerprint (MD5): F6:8D:A9:6F:9D:54:E8:CC:ED:E6:7B:11:B2:4D:24:D1
 }}}
 
-where the ~-alias is used to refer to a key entry in the keystore. 
+where the `-alias` is used to refer to a key entry in the keystore. 
 
 The keystore is created as a file named ~serverprivate in the current directory.
 In order to recreate it, we delete the existing file before running the ~keytool command.
@@ -114,9 +112,9 @@ Certificate fingerprints:
          Version: 3
 }}}
 
-where the ~-rfc option requests printable encoding format, rather than binary.
+where the `-rfc` option requests printable encoding format, rather than binary.
 
-The X.509 public key certificate is created as a file named ~servercert in the current directory.
+The X.509 public key certificate is created as a file named `servercert` in the current directory.
 
 === Trusted Certificate Entry ===
 
@@ -136,31 +134,33 @@ serverpublic, 2007/03/04, trustedCertEntry,
 Certificate fingerprint (MD5): 9A:05:FE:39:85:79:BA:54:06:C5:F9:64:42:6D:FD:E6
 }}}
 
-where the JKS file named ~serverpublic is created automatically (if it doesn't already exist), 
+where the JKS file named `serverpublic` is created automatically (if it doesn't already exist), 
 and the certificate is imported into this keystore. 
 
 This entry is a "trusted certificate entry" rather than a "private key entry"
-as created using ~-genkey. In our example, it is a digital certificate providing
+as created using `-genkey`. In our example, it is a digital certificate providing
 the server's public key.
 
 We might copy the certificate keystore file into a ~resource subdirectory 
-in the client project ~src, in which case our Java Webstart client can read 
-the server's public key from its jar using ~getResourceAsStream().
+in the client project `src`, in which case our Java Webstart client can read 
+the server's public key from its jar using `getResourceAsStream()`.
 Alternatively, we copy the file to the client's file system. 
 
 === Client Trust Store ===
 
-According to the [Java Developers Almanac, http://www.exampledepot.com/egs/javax.net.ssl/Client.html]
+According to the [http://www.exampledepot.com/egs/javax.net.ssl/Client.html Java Developers Almanac]
 <blockquote>
-When an SSL client socket connects to an SSL server, it receives a certificate of authentication from the server. The client socket then validates the certificate against a set of certificates in its truststore.
+When an SSL client socket connects to an SSL server, it receives a certificate of authentication from the server. 
+The client socket then validates the certificate against a set of certificates in its truststore.
 
-The default truststore is ~$JAVAHOME/lib/security/cacerts. If the server's certificate cannot be validated with the certificates in the truststore, the server's certificate must be added to the truststore before the connection can be established. 
+The default truststore is `$JAVAHOME/lib/security/cacerts`. 
+If the server's certificate cannot be validated with the certificates in the truststore, the server's certificate must be added to the truststore before the connection can be established. 
 </blockquote>
 
 Incidently, we can supplement the 
-[Certificate Authority http://en.wikipedia.org/wiki/Certificate_authority]
-certificates in the ~cacerts keystore, with a new keystore file named ~jre/lib/security/jssecacerts,
-eg. copy ~serverpublic to the client JRE's ~lib/security directory and rename it to ~jssecacerts.
+[http://en.wikipedia.org/wiki/Certificate_authority Certificate Authority]
+certificates in the `cacerts` keystore, with a new keystore file named `jre/lib/security/jssecacerts`,
+eg. copy `serverpublic` to the client JRE's `lib/security` directory and rename it to `jssecacerts`.
 
 Alternatively, we can specify our server's public key certificate keystore as 
 the default trust store for the client, using the following VM options. 
@@ -186,11 +186,11 @@ Then we can create an ~SSLSocket as follows.
 }    
 }}}
 
-(See the [Java Developers Almanac http://www.exampledepot.com/egs/javax.net.ssl/Client.html].)
+(See the [http://www.exampledepot.com/egs/javax.net.ssl/Client.html Java Developers Almanac].)
 
 === Server Key Store ===
 
-According to the [Java Developers Almanac, http://www.exampledepot.com/egs/javax.net.ssl/Server.html]
+According to the [http://www.exampledepot.com/egs/javax.net.ssl/Server.html Java Developers Almanac]
 <blockquote>
 An SSL server socket requires certificates that it will send to clients for authentication. 
 The certificates must be contained in a keystore whose location must be explicitly specified.
@@ -217,7 +217,7 @@ public class SimpleServer extends Thread {
 }    
 }}}
 
-(See the [Java Developers Almanac http://www.exampledepot.com/egs/javax.net.ssl/Server.html].)
+(See the [http://www.exampledepot.com/egs/javax.net.ssl/Server.html Java Developers Almanac].)
 
 
 == Crash Test Dummy ==
@@ -253,9 +253,9 @@ public class EnigmaDemo {
 }
 }}}
 
-where we will bind the ~server to an ~SSLServerSocket on the given ~sslPort eg. 443, 
-and then get the ~client to connect to the server socket using 
-a client ~SSLSocket. 
+where we will bind the ~server to an `SSLServerSocket` on the given `sslPort` eg. 443, 
+and then get the client to connect to the server socket using 
+a client `SSLSocket`. 
 
 We exit the VM after enough time to run the demo, to make sure we don't leave
 any processes hanging around, eg. in the event of the client or server thread 
@@ -263,10 +263,10 @@ encountering an exception, and the other thread still waiting endlessly.
 
 == Public Key Store ==
 
-Let's assume that we are not using the ~-Djavax.net.ssl.trustStore
+Let's assume that we are not using the `-Djavax.net.ssl.trustStore`
 and ~trustStorePassword VM options. 
 
-We specify the public keystore location and password in ~EnigmaCommonProperties.
+We specify the public keystore location and password in `EnigmaCommonProperties`.
 
 {{{
 public class EnigmaCommonProperties {
@@ -278,7 +278,7 @@ public class EnigmaCommonProperties {
 }
 }}}
 
-where we have copied the ~serverpublic keystore file as resource in our jar. 
+where we have copied the `serverpublic` keystore file as resource in our jar. 
 This keystore contains the server's trusted digital certificate entry, 
 as created below.
 
@@ -287,13 +287,13 @@ $ keytool -import -file servercert -alias serverpublic -keystore serverpublic \
           -noprompt -storepass publicstorepassword
 }}}
 
-where the ~servercert file was generated further above using ~-export, 
-from a private key entry in the ~serverprivate keystore, which was created using ~-genkey.
+where the `servercert` file was generated further above using `-export`, 
+from a private key entry in the `serverprivate` keystore, which was created using `-genkey`.
 
 == Client ==
 
 We now implement the client thread as follows, 
-disregarding the ~-Djavax.net.ssl.trustStore option.
+disregarding the `-Djavax.net.ssl.trustStore` option.
 
 {{{
 public class EnigmaClient extends Thread {
@@ -327,7 +327,7 @@ public class EnigmaClient extends Thread {
 }    
 }}}
 
-where we need to initialise ~sslContext before attempting to ~connect() using SSL.
+where we need to initialise `SSLContext` before attempting to `connect()` using SSL.
 
 In ~EnigmaDemo further above, we invoke the above ~init(), then ~connect(), and 
 then start the client thread, which will invoke ~process() as seen below.
@@ -369,7 +369,7 @@ We can inspect the server's certificate as follows.
 
 === Client SSL Context === 
 
-We instantiate ~keyManagers and ~trustManagers, and then initialise ~sslContext, as follows.
+We instantiate ~keyManagers and ~trustManagers, and then initialise `SSLContext`, as follows.
 
 {{{
     protected void initKeyManagers() throws Exception {
@@ -468,7 +468,7 @@ public class SimpleClient extends Thread {
 }
 }}}
 
-where we use the ~SSLSocketFactory.getDefault() rather than ~SSLContext,
+where we use the ~SSLSocketFactory.getDefault() rather than `SSLContext`,
 and need not instantiate any ~KeyStore, ~KeyManager or ~TrustManager 
 instances. 
 
@@ -509,7 +509,7 @@ public class EnigmaServer extends Thread {
 }
 }}}
 
-where we bind to an ~SSLServerSocket using the ~sslContext to create a ~SSLServerSocketFactory.
+where we bind to an ~SSLServerSocket using the `SSLContext` to create a ~SSLServerSocketFactory.
 
 === Private Key Store ===
 
@@ -536,7 +536,7 @@ $ keytool -genkey -alias serverprivate -keystore serverprivate \
 === Server SSL Context ===
 
 As in the case of the client, we might instantiate ~keyManagers and ~trustManagers, 
-with which to initialise ~sslContext. 
+with which to initialise `SSLContext`. 
 
 {{{
     public void init() throws Exception {
@@ -562,13 +562,13 @@ with which to initialise ~sslContext.
 where in this case the ~inputStream for the keystore is a ~FileInputStream
 for the specified ~serverprivate file.
 
-We initialise ~keyManagerFactory with the ~keyStore, and also the private key 
+We initialise `KeyManagerFactory` with the ~keyStore, and also the private key 
 password, ie. the ~-keypass specified with the ~-genkey command. 
 In ~EnigmaClient, this 
 password was ~null since the keystore contained a trusted public certificate 
 entry ie. no private key entry. 
 
-Similarly to ~EnigmaClient, we initialise ~trustManagers and finally ~sslContext, as follows.
+Similarly to ~EnigmaClient, we initialise ~trustManagers and finally `SSLContext`, as follows.
 
 {{{
     protected void initTrustManagers() throws Exception {
@@ -789,57 +789,57 @@ Objects are XML encoded into text as follows.
 
 We build a trivial client/server demo using ~SSLServerSocket and ~SSLSocket, 
 provided by the 
-[Java Secure Socket Extension} (JSSE) http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html].
+[http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html Java Secure Socket Extension (JSSE)].
 
-We use [~keytool http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html]
+We use [http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`]
 to create keystores with private key entries, and public key certificate entries. 
-The ~-genkey command is used to create a keystore with a "private key entry" 
+The `-genkey` command is used to create a keystore with a "private key entry" 
 ie. a public/private key pair for our server. We export the "private key entry" 
 as a self-signed X.509 public key certificate file using ~-export.
 Finally, we import the certificate into it's own keystore, 
 as a "trusted certificate entry," to install on the client.
 
-In the application code, the ~KeyStore is loaded from a resource or file, and a ~KeyManagerFactory
-and ~TrustManagerFactory are initialised with the ~keyStore instance. 
-Finally, an ~SSLContext is initialised with key managers and trust managers, 
+In the application code, the `KeyStore` is loaded from a resource or file, and a `KeyManagerFactory`
+and `TrustManagerFactory` are initialised with the ~keyStore instance. 
+Finally, an `SSLContext` is initialised with key managers and trust managers, 
 and this is used to create SSL socket connections.
 
 Alternatively, the server's keystore location and password is specified using 
-~-Djavax.net.ssl VM options, and we override the client's default ~cacerts trust store
+`-Djavax.net.ssl` VM options, and we override the client's default ~cacerts trust store
 with the server's trusted public key certificate keystore. 
 
 
 == Resources ==
 
 You can browse the code for this exercise at 
-[~aptserver.dev.java.net https://aptserver.dev.java.net/source/browse/aptserver/src/ssldemo/].
+[https://aptserver.dev.java.net/source/browse/aptserver/src/ssldemo/ `aptserver.dev.java.net`].
 
 See blogs...
 
-[Richard Bair's SSL blog entry http://weblogs.java.net/blog/rbair/archive/2006/10/ssl_and_self_si_1.html]
+[http://weblogs.java.net/blog/rbair/archive/2006/10/ssl_and_self_si_1.html Richard Bair's SSL blog entry ]
 
-[~swingx-ws' ~org.jdesktop.http package https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http]
+[https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http `swingx-ws ~org.jdesktop.http` package]
 
-[Andreas Sterbenz's SSL blog entry http://blogs.sun.com/andreas/entry/no_more_unable_to_find]
-and [~InstallCert.java http://blogs.sun.com/andreas/resource/InstallCert.java]
-to add a server's certificate to ~jssecerts.
+[http://blogs.sun.com/andreas/entry/no_more_unable_to_find Andreas Sterbenz's SSL blog entry ]
+and [http://blogs.sun.com/andreas/resource/InstallCert.java `InstallCert.java`]
+to add a server's certificate to `jssecerts`.
 
 See the Java Developers Almanac... 
 
-[Creating an SSL Server Socket http://www.exampledepot.com/egs/javax.net.ssl/Server.html]
+[http://www.exampledepot.com/egs/javax.net.ssl/Server.html Creating an SSL Server Socket]
 
-[Creating an SSL Client Socket, http://www.exampledepot.com/egs/javax.net.ssl/Client.html]
+[http://www.exampledepot.com/egs/javax.net.ssl/Client.html Creating an SSL Client Socket]
 
-[Disabling Certificate Validation in an HTTPS Connection http://www.exampledepot.com/egs/javax.net.ssl/TrustAll.html?l=rel]
+[http://www.exampledepot.com/egs/javax.net.ssl/TrustAll.html?l=rel Disabling Certificate Validation in an HTTPS Connection ]
 
 See references...
 
-[~keytool, http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html]
+[http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html `keytool`]
 
-[JSSE Reference Guide http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html]
+[http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html JSSE Reference Guide]
 
-[ONJava JSSE Tutorial http://www.onjava.com/pub/a/onjava/2001/05/03/java_security.html]
+[http://www.onjava.com/pub/a/onjava/2001/05/03/java_security.html ONJava JSSE Tutorial]
 
 Especially see...
 
-[IBM developerWorks JSSE Tutorial (PDF) http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf]
+[http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf IBM developerWorks JSSE Tutorial (PDF)]
