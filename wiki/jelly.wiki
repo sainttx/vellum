@@ -2,6 +2,6 @@
 
 [Encryptic]
 
-[PasswordHash]
+[Password Hash]
 
 [Cryptonomical]
