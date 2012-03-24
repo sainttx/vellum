@@ -9,15 +9,17 @@ package vellum.provider;
  * @author evan
  */
 public class VTestProperties {
+    String providerCert = "/evans/test/provider.cert";
+    String providerKeyStoreFile = "/evans/test/providerKeyStore.jks";
+    String providerTrustStoreFile = "/evans/test/providerTrustStore.jks";
 
-    String serverCert = "/evans/test/server.cert";
-    String clientCert = "/evans/test/client.cert";
-    String serverKeyStoreFile = "/evans/test/serverKeyStore.jks";
-    String serverTrustStoreFile = "/evans/test/serverTrustStore.jks";
-    String clientKeyStoreFile = "/evans/test/clientKeyStore.jks";
-    String clientTrustStoreFile = "/evans/test/clientTrustStore.jks";
-    String keyStorePass = "storepass2012";
-    String keyPass = "test.0.2012";
+    String cipherCert = "/evans/test/cipher.cert";
+    String cipherKeyStoreFile = "/evans/test/cipherKeyStore.jks";
+    String cipherTrustStoreFile = "/evans/test/cipherTrustStore.jks";
+
+    String keyStorePass = "storepass";
+    String keyPass = "keypass";
     String keyAlg = "DSA";
+    
     
 }

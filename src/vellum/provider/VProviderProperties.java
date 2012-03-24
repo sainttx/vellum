@@ -11,7 +11,7 @@ package vellum.provider;
 public class VProviderProperties {
     String serverIp = "localhost";
     String keyAlias = "provider.key";
-    String trustAlias = "server.cert";
+    String trustAlias = "cipher.cert";
     int sslPort = 7443;
     String keyStore; 
     String trustStore; 
