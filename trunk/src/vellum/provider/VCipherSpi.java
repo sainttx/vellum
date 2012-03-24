@@ -14,7 +14,7 @@ import javax.crypto.*;
  * @author evan
  */
 public class VCipherSpi extends CipherSpi {
-    VProviderContext provider = VProviderContext.instance; 
+    VProviderContext provider = VProviderContext.getInstance(); 
     VCipherConnection connection = provider.newConnection(); 
     
     public VCipherSpi() {
