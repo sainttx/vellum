@@ -28,8 +28,13 @@ public class VCipherServer extends Thread implements Closeable {
     public void config(VCipherContext context) throws IOException {
         this.context = context;
         this.properties = context.properties;
-        this.serverSocket = context.sslContext.getServerSocketFactory().createServerSocket(
+        if (false) {
+            this.serverSocket = new ServerSocket(
+                    properties.sslPort, properties.backlog, context.inetAddress);
+        } else {
+            this.serverSocket = context.sslContext.getServerSocketFactory().createServerSocket(
                 properties.sslPort, properties.backlog, context.inetAddress);
+        }
     }
     
     @Override
@@ -37,6 +42,7 @@ public class VCipherServer extends Thread implements Closeable {
         while (accepting) {
             try {
                 Socket socket = serverSocket.accept();
+                logger.trace("socket accepted", socket.getRemoteSocketAddress());
                 VCipherThread thread = new VCipherThread(socket);
                 thread.start();
             } catch (Exception e) {

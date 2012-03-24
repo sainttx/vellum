@@ -25,6 +25,10 @@ public class VCipherResponse {
         return bytes;
     }
 
+    public VCipherResponseType getResponseType() {
+        return responseType;
+    }
+    
     @Override
     public String toString() {
         return responseType.name();

@@ -33,6 +33,7 @@ public class VTest implements Runnable {
     VCipherServer server = new VCipherServer();
     VCipherContext cipherContext = new VCipherContext();
 
+    @Override
     public void run() {
         try {
             process();
@@ -61,7 +62,9 @@ public class VTest implements Runnable {
         KeyTool.main(buildKeyToolListArgs(providerProperties.keyStore));
         KeyTool.main(buildKeyToolListArgs(providerProperties.trustStore));
         generateKey();
-        cipherContext.config(cipherProperties, properties.keyStorePass.toCharArray(), properties.keyPass.toCharArray());
+        cipherContext.config(cipherProperties, 
+                properties.keyStorePass.toCharArray(), properties.keyPass.toCharArray(),
+                properties.trustStorePass.toCharArray());
         server.config(cipherContext);
         Security.addProvider(providerContext.provider);
         listProviders();
@@ -79,7 +82,8 @@ public class VTest implements Runnable {
         String datum = "12345678901234567890";
         logger.info(datum);
         byte[] bytes = datum.getBytes();
-        cipher.engineDoFinal(bytes, 0, bytes.length);
+        byte[] responseBytes = cipher.engineDoFinal(bytes, 0, bytes.length);
+        logger.info(responseBytes.length);
         server.close();
     }
         
@@ -118,7 +122,7 @@ public class VTest implements Runnable {
             "-import", 
             "-noprompt",
             "-keystore", trustStore, 
-            "-storepass", properties.keyStorePass,
+            "-storepass", properties.trustStorePass,
             "-alias", trustAlias,
             "-file", certFile,
         };
@@ -150,9 +154,13 @@ public class VTest implements Runnable {
     public static void main(String[] args) {
         VTest instance = new VTest() ;
         try {
-            new Thread(instance).start();
-            Thread.sleep(2000);
-            System.exit(0);
+            if (true) {
+                new Thread(instance).start();
+                Thread.sleep(4000);
+                System.exit(0);
+            } else {
+                instance.process();
+            }
         } catch (Exception e) {
             e.printStackTrace(System.err);
         } finally {

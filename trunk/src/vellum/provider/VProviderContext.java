@@ -83,12 +83,12 @@ public class VProviderContext {
         return keyStorePassword;
     }
 
-    public VCipherConnection newConnection() {
-        return new VCipherConnection();
-    }
-
-    public Socket newSSLSocket() throws IOException {
-        return sslContext.getSocketFactory().createSocket(serverSocketAddress.getAddress(), serverSocketAddress.getPort());
+    public Socket createSocket() throws IOException {
+        if (false) {
+            return new Socket(serverSocketAddress.getAddress(), serverSocketAddress.getPort());
+        } else {
+            return sslContext.getSocketFactory().createSocket(serverSocketAddress.getAddress(), serverSocketAddress.getPort());
+        }
     }
 
     public static VProviderContext getInstance() {

@@ -17,6 +17,10 @@ public class VCipherRequest {
         this.bytes = bytes;
     }
 
+    public byte[] getBytes() {
+        return bytes;
+    }
+    
     @Override
     public String toString() {
         return requestType.name();

@@ -23,6 +23,7 @@ import vellum.logger.LogrFactory;
 public class VCipherContext {
     Logr logger = LogrFactory.getLogger(getClass());
     VCipherProperties properties;    
+    SecureRandom sr = new SecureRandom();
     SSLContext sslContext;
     InetSocketAddress address;
     InetAddress inetAddress;
@@ -30,7 +31,7 @@ public class VCipherContext {
     public VCipherContext() {
     }
 
-    public void config(VCipherProperties properties, char[] keyStorePassword, char[] keyPassword) throws Exception {
+    public void config(VCipherProperties properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
         this.properties = properties;        
         inetAddress = InetAddress.getByName(properties.serverIp);
         address = new InetSocketAddress(inetAddress, properties.sslPort);
@@ -45,8 +46,8 @@ public class VCipherContext {
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         KeyStore ts = KeyStore.getInstance("JKS");
         FileInputStream trustStoreStream = new FileInputStream(properties.trustStore);
-        ts.load(trustStoreStream, keyStorePassword);
+        ts.load(trustStoreStream, trustStorePassword);
         tmf.init(ts);
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());                
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), sr);
     }
 }

@@ -5,8 +5,7 @@
 package vellum.provider;
 
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
@@ -24,15 +23,21 @@ public class VSocket {
     }
      
     public void write(Object message) throws IOException {
-        byte[] bytes = new Gson().toJson(message).getBytes(VProviderContext.CHARSET);
-        socket.getOutputStream().write(bytes);
-        logger.trace("write", message.getClass(), bytes.length);
+        String json = new Gson().toJson(message);
+        byte[] bytes = json.getBytes(VProviderContext.CHARSET);
+        PrintWriter writer = new PrintWriter(socket.getOutputStream());
+        writer.println(json);
+        writer.flush();
+        logger.trace("write", message.getClass(), bytes.length, new String(bytes));
     }
 
-    public <T> T read(Class messageClass) throws IOException {
+    public <T> T read(Class messageClass) throws IOException {        
+        logger.trace("read", messageClass, socket.getInputStream().available());
         InputStreamReader reader = new InputStreamReader(socket.getInputStream());
-        Object response = new Gson().fromJson(reader, messageClass);
-        logger.trace("read", messageClass);
+        BufferedReader br = new BufferedReader(reader);
+        String json = br.readLine();
+        Object response = new Gson().fromJson(json, messageClass);
+        logger.trace("read", response.getClass());
         return (T) response;
     }        
 }

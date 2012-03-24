@@ -32,9 +32,10 @@ public class VCipherThread extends Thread {
     }
     
     protected void process() throws Exception {
-        String request = socket.read(VCipherRequest.class);
-        logger.info(request);
-        VCipherResponse response = new VCipherResponse(VCipherResponseType.ERROR);
-        logger.info(response);
+        VCipherRequest request = socket.read(VCipherRequest.class);
+        logger.info("received", request);
+        VCipherResponse response = new VCipherResponse(VCipherResponseType.OK, request.getBytes());
+        logger.info("reply", response);
+        socket.write(response);
     }
 }
