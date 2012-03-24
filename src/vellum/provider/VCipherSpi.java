@@ -14,8 +14,7 @@ import javax.crypto.*;
  * @author evan
  */
 public class VCipherSpi extends CipherSpi {
-    VProviderContext provider = VProviderContext.getInstance(); 
-    VCipherConnection connection = provider.newConnection(); 
+    VProviderConnection connection = new VProviderConnection();
     
     public VCipherSpi() {
         super();
@@ -75,7 +74,10 @@ public class VCipherSpi extends CipherSpi {
     protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen) throws IllegalBlockSizeException, BadPaddingException {
         try {
             VCipherRequest request = new VCipherRequest(VCipherRequestType.ENCIPHER, input);
-            VCipherResponse response = connection.sendRequest(request);
+            VCipherResponse response = connection.sendCipherRequest(request);
+            if (response.responseType != VCipherResponseType.OK) {
+                throw new VCipherResponseRuntimeException(response);
+            }
             return response.getBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);

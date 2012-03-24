@@ -13,24 +13,22 @@ import vellum.logger.LogrFactory;
  *
  * @author evan
  */
-public class VCipherConnection {
+public class VProviderConnection {
     Logr logger = LogrFactory.getLogger(getClass());
     VSocket socket;
     VProviderContext providerContext = VProviderContext.instance;
     
-    public VCipherConnection() {
+    public VProviderConnection() {
     }
 
     private void open() throws IOException {
-        Socket sslSocket = providerContext.newSSLSocket();
+        Socket sslSocket = providerContext.createSocket();        
         this.socket = new VSocket(sslSocket);
+        logger.info("opened", sslSocket.getRemoteSocketAddress());
     }
          
-    public VCipherResponse sendRequest(VCipherRequest request) throws IOException {
-        return  sendCipherRequest(request);
-    }
-
     public VCipherResponse sendCipherRequest(VCipherRequest request) throws IOException {
+        logger.info("send", request);
         return (VCipherResponse) sendSingleRequest(request, VCipherResponse.class);
     }    
     

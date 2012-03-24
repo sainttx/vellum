@@ -18,6 +18,7 @@ public class VTestProperties {
     String cipherTrustStoreFile = "/evans/test/cipherTrustStore.jks";
 
     String keyStorePass = "storepass";
+    String trustStorePass = "storepass";
     String keyPass = "keypass";
     String keyAlg = "DSA";
     
