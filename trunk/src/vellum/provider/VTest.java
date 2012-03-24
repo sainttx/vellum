@@ -26,37 +26,39 @@ public class VTest {
     VProviderProperties providerProperties = new VProviderProperties();
             
     VTestProperties properties = new VTestProperties(); 
-    char[] keyStorePass = properties.keyStorePass.toCharArray();
-    char[] keyPass = properties.keyPass.toCharArray();
     
     VCipherProperties cipherProperties = new VCipherProperties();
     VCipherServer server = new VCipherServer();
     VCipherContext cipherContext = new VCipherContext();
     
     public void start() throws Exception {
-        providerProperties.keyStore = properties.clientKeyStoreFile;        
-        providerProperties.trustStore = properties.clientTrustStoreFile;
-        cipherProperties.keyStore = properties.serverKeyStoreFile;        
-        cipherProperties.trustStore = properties.serverTrustStoreFile;
+        providerProperties.keyStore = properties.providerKeyStoreFile;
+        providerProperties.trustStore = properties.providerTrustStoreFile;
+        cipherProperties.keyStore = properties.cipherKeyStoreFile;        
+        cipherProperties.trustStore = properties.cipherTrustStoreFile;
         new File(providerProperties.keyStore).delete();
         new File(providerProperties.trustStore).delete();
         new File(cipherProperties.keyStore).delete();
         new File(cipherProperties.trustStore).delete();
         KeyTool.main(buildKeyToolGenKeyPairArgs(providerProperties.keyStore, providerProperties.keyAlias, "provider"));
-        KeyTool.main(buildKeyToolExportCertArgs(providerProperties.keyStore, providerProperties.keyAlias, properties.clientCert));
+        KeyTool.main(buildKeyToolExportCertArgs(providerProperties.keyStore, providerProperties.keyAlias, properties.providerCert));
         KeyTool.main(buildKeyToolGenKeyPairArgs(cipherProperties.keyStore, cipherProperties.keyAlias, "cipher"));
-        KeyTool.main(buildKeyToolExportCertArgs(cipherProperties.keyStore, cipherProperties.keyAlias, properties.serverCert));
-        KeyTool.main(buildKeyToolImportCertArgs(cipherProperties.trustStore, cipherProperties.trustAlias, properties.clientCert));
-        KeyTool.main(buildKeyToolImportCertArgs(providerProperties.trustStore, providerProperties.trustAlias, properties.serverCert));
+        KeyTool.main(buildKeyToolExportCertArgs(cipherProperties.keyStore, cipherProperties.keyAlias, properties.cipherCert));
+        KeyTool.main(buildKeyToolImportCertArgs(cipherProperties.trustStore, cipherProperties.trustAlias, properties.providerCert));
+        KeyTool.main(buildKeyToolImportCertArgs(providerProperties.trustStore, providerProperties.trustAlias, properties.cipherCert));
         KeyTool.main(buildKeyToolListArgs(cipherProperties.keyStore));
+        KeyTool.main(buildKeyToolListArgs(cipherProperties.trustStore));
+        KeyTool.main(buildKeyToolListArgs(providerProperties.keyStore));
+        KeyTool.main(buildKeyToolListArgs(providerProperties.trustStore));
         Security.addProvider(new VProvider());
         openKeystore(cipherProperties.keyStore, cipherProperties.keyAlias);
         generateKey();
         listProviders();
-        cipherContext.config(cipherProperties, keyStorePass, keyPass);
+        cipherContext.config(cipherProperties, properties.keyStorePass.toCharArray(), properties.keyPass.toCharArray());
         server.config(cipherContext);
-        //server.start();
-        providerContext.config(providerProperties, keyStorePass, keyPass);
+        server.start();
+        providerContext.config(providerProperties, properties.keyStorePass.toCharArray(), properties.keyPass.toCharArray());
+        server.close();
     }
         
     private void generateKey() throws Exception {

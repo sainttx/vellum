@@ -39,7 +39,7 @@ public class VCipherServer extends Thread {
                 VCipherThread thread = new VCipherThread(socket);
                 thread.start();
             } catch (Exception e) {
-                logger.warn(e);
+                logger.warn(e.getMessage());
             }
         }                    
     }        
