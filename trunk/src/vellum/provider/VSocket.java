@@ -21,7 +21,7 @@ public class VSocket {
     }
      
     public void write(Object message) throws IOException {
-        socket.getOutputStream().write(new Gson().toJson(message).getBytes(VProvider.CHARSET));        
+        socket.getOutputStream().write(new Gson().toJson(message).getBytes(VProviderContext.CHARSET));        
     }
 
     public <T> T read(Class messageClass) throws IOException {

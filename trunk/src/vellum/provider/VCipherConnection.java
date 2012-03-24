@@ -13,13 +13,13 @@ import java.net.Socket;
  */
 public class VCipherConnection {
     VSocket socket;
-    VProvider provider = VProvider.instance;
+    VProviderContext providerContext = VProviderContext.instance;
     
     public VCipherConnection() {
     }
 
     private void open() throws IOException {
-        Socket sslSocket = provider.newSSLSocket();
+        Socket sslSocket = providerContext.newSSLSocket();
         this.socket = new VSocket(sslSocket);
     }
     
