@@ -7,18 +7,20 @@ package vellum.provider;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.*;
+import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import sun.security.tools.KeyTool;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Base64;
+import vellum.util.Streams;
 
 /**
  *
  * @author evan
  */
-public class VTest {
+public class VTest implements Runnable {
     Logr logger = LogrFactory.getLogger(getClass());    
     
     VProviderContext providerContext = VProviderContext.instance;
@@ -30,8 +32,16 @@ public class VTest {
     VCipherProperties cipherProperties = new VCipherProperties();
     VCipherServer server = new VCipherServer();
     VCipherContext cipherContext = new VCipherContext();
+
+    public void run() {
+        try {
+            process();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     
-    public void start() throws Exception {
+    public void process() throws Exception {
         providerProperties.keyStore = properties.providerKeyStoreFile;
         providerProperties.trustStore = properties.providerTrustStoreFile;
         cipherProperties.keyStore = properties.cipherKeyStoreFile;        
@@ -50,14 +60,26 @@ public class VTest {
         KeyTool.main(buildKeyToolListArgs(cipherProperties.trustStore));
         KeyTool.main(buildKeyToolListArgs(providerProperties.keyStore));
         KeyTool.main(buildKeyToolListArgs(providerProperties.trustStore));
-        Security.addProvider(new VProvider());
-        openKeystore(cipherProperties.keyStore, cipherProperties.keyAlias);
         generateKey();
-        listProviders();
         cipherContext.config(cipherProperties, properties.keyStorePass.toCharArray(), properties.keyPass.toCharArray());
         server.config(cipherContext);
+        Security.addProvider(providerContext.provider);
+        listProviders();
+        if (false) {
+            Cipher cipher = Cipher.getInstance("AES", providerContext.provider);
+            logger.info(cipher.getProvider().getClass());
+            cipher.init(0, (Key) null);
+        }
+        openKeystore(cipherProperties.keyStore, cipherProperties.keyAlias);
+        providerContext.config(providerProperties, 
+                properties.keyStorePass.toCharArray(), properties.keyPass.toCharArray(),
+                properties.keyStorePass.toCharArray());
         server.start();
-        providerContext.config(providerProperties, properties.keyStorePass.toCharArray(), properties.keyPass.toCharArray());
+        VCipherSpi cipher = new VCipherSpi();
+        String datum = "12345678901234567890";
+        logger.info(datum);
+        byte[] bytes = datum.getBytes();
+        cipher.engineDoFinal(bytes, 0, bytes.length);
         server.close();
     }
         
@@ -126,10 +148,15 @@ public class VTest {
     }
     
     public static void main(String[] args) {
+        VTest instance = new VTest() ;
         try {
-            new VTest().start();
+            new Thread(instance).start();
+            Thread.sleep(2000);
+            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace(System.err);
+        } finally {
+            Streams.close(instance.server);
         }
     }
 

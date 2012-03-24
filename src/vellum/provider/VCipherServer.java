@@ -4,6 +4,7 @@
  */
 package vellum.provider;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,7 +15,7 @@ import vellum.logger.LogrFactory;
  *
  * @author evan
  */
-public class VCipherServer extends Thread {
+public class VCipherServer extends Thread implements Closeable {
     Logr logger = LogrFactory.getLogger(getName());    
     VCipherContext context;
     VCipherProperties properties;
@@ -44,6 +45,7 @@ public class VCipherServer extends Thread {
         }                    
     }        
     
+    @Override
     public void close() throws IOException {        
         accepting = false;
         serverSocket.close();

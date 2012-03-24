@@ -20,15 +20,18 @@ import javax.net.ssl.*;
  */
 public class VProviderContext {
     public static final String CHARSET = "UTF8";
-    public static VProviderContext instance = new VProviderContext();
+    public static final VProviderContext instance = new VProviderContext();
+    public final VProvider provider = new VProvider();
     
     VProviderProperties properties;
     char[] keyStorePassword;
+    char[] trustStorePassword;
     char[] keyPassword;
     InetAddress serverInetAddress;
     InetSocketAddress serverSocketAddress;
     
     KeyStore keyStore;
+    KeyStore trustStore;
     SSLContext sslContext;
     KeyManager[] keyManagers;
     TrustManager[] trustManagers;
@@ -37,9 +40,10 @@ public class VProviderContext {
     private VProviderContext() {        
     }
     
-    public void config(VProviderProperties properties, char[] keyStorePassword, char[] keyPassword) throws Exception {
+    public void config(VProviderProperties properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
         this.properties = properties;
         this.keyStorePassword = keyStorePassword;        
+        this.trustStorePassword = trustStorePassword;        
         this.keyPassword = keyPassword;        
         this.serverInetAddress = InetAddress.getByName(properties.serverIp);
         this.serverSocketAddress = new InetSocketAddress(serverInetAddress, properties.sslPort);
@@ -58,8 +62,11 @@ public class VProviderContext {
     }
 
     private void initTrustManagers() throws Exception {
+        trustStore = KeyStore.getInstance("JKS");
+        InputStream inputStream = new FileInputStream(properties.trustStore);
+        trustStore.load(inputStream, trustStorePassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(keyStore);        
+        trustManagerFactory.init(trustStore);        
         this.trustManagers = trustManagerFactory.getTrustManagers();
     }
     
@@ -84,5 +91,9 @@ public class VProviderContext {
         return sslContext.getSocketFactory().createSocket(serverSocketAddress.getAddress(), serverSocketAddress.getPort());
     }
 
+    public static VProviderContext getInstance() {
+        return instance;
+    }
+        
     
 }

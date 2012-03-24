@@ -6,12 +6,15 @@ package vellum.provider;
 
 import java.io.IOException;
 import java.net.Socket;
+import vellum.logger.Logr;
+import vellum.logger.LogrFactory;
 
 /**
  *
  * @author evan
  */
 public class VCipherConnection {
+    Logr logger = LogrFactory.getLogger(getClass());
     VSocket socket;
     VProviderContext providerContext = VProviderContext.instance;
     
@@ -22,17 +25,9 @@ public class VCipherConnection {
         Socket sslSocket = providerContext.newSSLSocket();
         this.socket = new VSocket(sslSocket);
     }
-    
-     
+         
     public VCipherResponse sendRequest(VCipherRequest request) throws IOException {
-        while (true) {
-            try {
-                return  sendCipherRequest(request);
-            } catch (IOException e) {
-                open();
-            } finally {
-            }
-        }
+        return  sendCipherRequest(request);
     }
 
     public VCipherResponse sendCipherRequest(VCipherRequest request) throws IOException {
@@ -40,6 +35,7 @@ public class VCipherConnection {
     }    
     
     public Object sendSingleRequest(Object request, Class responseClass) throws IOException {
+        if (socket == null) open();
         socket.write(request);
         Object response = socket.read(responseClass);
         return response;
