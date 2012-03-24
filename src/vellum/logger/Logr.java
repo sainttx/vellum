@@ -6,9 +6,9 @@
 
 package vellum.logger;
 
-import vellum.util.Args;
 import java.io.PrintStream;
 import java.util.logging.Level;
+import vellum.util.Args;
 
 /**
  *
@@ -18,12 +18,15 @@ public class Logr {
     Class source;
     PrintStream out = System.err;
     Level level = Level.INFO;
+    String name;
     
     public Logr(Class source) {
         this.source = source;
+        this.name = source.getSimpleName();
     }
 
     public Logr(String name) {
+        this.name = name;
     }
 
     public void setLevel(Level level) {
@@ -55,4 +58,9 @@ public class Logr {
         }
         return null;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+        
 }

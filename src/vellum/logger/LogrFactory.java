@@ -16,5 +16,9 @@ public class LogrFactory {
         return new Logr(source);
     }
 
+    public static Logr getLogger(String name) {
+        return new Logr(name);
+    }
+    
     public static final Logr logger = new Logr("global");
 }
