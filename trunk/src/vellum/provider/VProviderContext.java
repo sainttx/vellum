@@ -14,15 +14,15 @@ import javax.net.ssl.*;
  *
  * @author evan
  */
-public class VContext {
-    VProperties properties;
+public class VProviderContext {
+    VProviderProperties properties;
     KeyStore keyStore;
     SSLContext sslContext;
     KeyManager[] keyManagers;
     TrustManager[] trustManagers;
     SecureRandom secureRandom;
 
-    public VContext(VProperties properties) {
+    public VProviderContext(VProviderProperties properties) {
         this.properties = properties;
     }
     

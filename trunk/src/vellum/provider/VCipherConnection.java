@@ -12,7 +12,7 @@ import java.net.Socket;
  * @author evan
  */
 public class VCipherConnection {
-    VCipherSocket socket;
+    VSocket socket;
     VProvider provider = VProvider.instance;
     
     public VCipherConnection() {
@@ -20,19 +20,28 @@ public class VCipherConnection {
 
     private void open() throws IOException {
         Socket sslSocket = provider.newSSLSocket();
-        this.socket = new VCipherSocket(sslSocket);
+        this.socket = new VSocket(sslSocket);
     }
     
      
     public VCipherResponse sendRequest(VCipherRequest request) throws IOException {
         while (true) {
             try {
-                return socket.sendRequest(request);
+                return  sendCipherRequest(request);
             } catch (IOException e) {
                 open();
             } finally {
             }
         }
     }
+
+    public VCipherResponse sendCipherRequest(VCipherRequest request) throws IOException {
+        return (VCipherResponse) sendSingleRequest(request, VCipherResponse.class);
+    }    
     
+    public Object sendSingleRequest(Object request, Class responseClass) throws IOException {
+        socket.write(request);
+        Object response = socket.read(responseClass);
+        return response;
+    }    
 }

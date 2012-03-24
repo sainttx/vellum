@@ -68,7 +68,7 @@ public class VenigmaServer {
         httpsServer.start();
     }
 
-    public static final void main(String[] args) {
+    public static void main(String[] args) {
         try {
             new VenigmaServer().start();
         } catch (Exception e) {

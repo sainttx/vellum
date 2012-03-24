@@ -5,27 +5,43 @@
 package vellum.provider;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import javax.net.ssl.SSLContext;
+import java.net.Socket;
+import vellum.logger.Logr;
+import vellum.logger.LogrFactory;
 
 /**
  *
  * @author evan
  */
 public class VCipherServer {
-    InetAddress address;
-    int port;
-    int backlog;
-    ServerSocket serverSocket;
-
-    public VCipherServer(SSLContext sslContext, int port, int backlog, InetAddress address) {
-        this.address = address;
-        this.port = port;
+    Logr logger = LogrFactory.getLogger(getClass());    
+    VCipherContext context;
+    VCipherProperties properties;
+    ServerSocket serverSocket; 
+    boolean accepting = true;
+    
+    public VCipherServer() {
     }
     
-    public void init(SSLContext sslContext) throws IOException {
-        this.serverSocket = sslContext.getServerSocketFactory().createServerSocket(port, backlog, address);        
-    }
+    public void start(VCipherContext context) throws IOException {
+        this.context = context;
+        this.properties = context.properties;
+        this.serverSocket = context.sslContext.getServerSocketFactory().createServerSocket(
+                properties.sslPort, properties.backlog, context.inetAddress);
+        while (accepting) {
+            try {
+                Socket socket = serverSocket.accept();
+                VCipherThread thread = new VCipherThread(socket);
+                thread.start();
+            } catch (Exception e) {
+                logger.warn(e);
+            }
+        }                    
+    }        
     
+    public void stop() throws IOException {        
+        accepting = false;
+        serverSocket.close();
+    }
 }

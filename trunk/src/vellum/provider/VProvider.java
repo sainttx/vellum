@@ -12,7 +12,6 @@ import java.net.UnknownHostException;
 import java.security.Provider;
 import java.security.Security;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 
 /**
  *
@@ -23,8 +22,8 @@ public class VProvider extends Provider {
     public static final String CHARSET = "UTF8";
     public static VProvider instance = new VProvider();
 
-    VProperties properties;
-    VContext context;
+    VProviderProperties properties;
+    VProviderContext context;
     SSLContext sslContext;
     char[] password;
     InetSocketAddress serverSocketAddress;
@@ -32,8 +31,8 @@ public class VProvider extends Provider {
     public void config(String password) throws UnknownHostException {
         this.password = password.toCharArray();        
         Security.addProvider(VProvider.instance);
-        properties = new VProperties();
-        context = new VContext(properties);
+        properties = new VProviderProperties();
+        context = new VProviderContext(properties);
         sslContext = context.getSSLContext();
         InetAddress serverInetAddress = InetAddress.getByName(properties.serverIp);
         this.serverSocketAddress = new InetSocketAddress(serverInetAddress, properties.sslPort);
