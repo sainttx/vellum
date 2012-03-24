@@ -18,7 +18,7 @@ import java.util.Enumeration;
  * @author evan
  */
 public class VKeyStoreSpi extends KeyStoreSpi {
-    VProvider provider = VProvider.instance; 
+    VProviderContext provider = VProviderContext.instance; 
     KeyStore keyStore;
 
     public VKeyStoreSpi() {
@@ -31,7 +31,7 @@ public class VKeyStoreSpi extends KeyStoreSpi {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        password = provider.getPassword();
+        password = provider.getKeyStorePassword();
         keyStore.load(stream, password);
     }
 

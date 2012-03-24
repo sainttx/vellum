@@ -12,7 +12,8 @@ public class VCipherRequest {
     VCipherRequestType requestType;
     byte[] bytes;
 
-    public VCipherRequest(byte[] bytes) {
+    public VCipherRequest(VCipherRequestType requestType, byte[] bytes) {
+        this.requestType = requestType;
         this.bytes = bytes;
     }
 

@@ -14,8 +14,8 @@ import vellum.logger.LogrFactory;
  *
  * @author evan
  */
-public class VCipherServer {
-    Logr logger = LogrFactory.getLogger(getClass());    
+public class VCipherServer extends Thread {
+    Logr logger = LogrFactory.getLogger(getName());    
     VCipherContext context;
     VCipherProperties properties;
     ServerSocket serverSocket; 
@@ -24,11 +24,15 @@ public class VCipherServer {
     public VCipherServer() {
     }
     
-    public void start(VCipherContext context) throws IOException {
+    public void config(VCipherContext context) throws IOException {
         this.context = context;
         this.properties = context.properties;
         this.serverSocket = context.sslContext.getServerSocketFactory().createServerSocket(
                 properties.sslPort, properties.backlog, context.inetAddress);
+    }
+    
+    @Override
+    public void run() {
         while (accepting) {
             try {
                 Socket socket = serverSocket.accept();
@@ -40,8 +44,24 @@ public class VCipherServer {
         }                    
     }        
     
-    public void stop() throws IOException {        
+    public void close() throws IOException {        
         accepting = false;
         serverSocket.close();
+        super.interrupt();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

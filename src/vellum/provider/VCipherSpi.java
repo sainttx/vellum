@@ -14,7 +14,7 @@ import javax.crypto.*;
  * @author evan
  */
 public class VCipherSpi extends CipherSpi {
-    VProvider provider = VProvider.instance; 
+    VProviderContext provider = VProviderContext.instance; 
     VCipherConnection connection = provider.newConnection(); 
     
     public VCipherSpi() {
@@ -22,11 +22,11 @@ public class VCipherSpi extends CipherSpi {
     }
 
     @Override
-    protected void engineSetMode(String string) throws NoSuchAlgorithmException {
+    protected void engineSetMode(String mode) throws NoSuchAlgorithmException {
     }
 
     @Override
-    protected void engineSetPadding(String string) throws NoSuchPaddingException {
+    protected void engineSetPadding(String padding) throws NoSuchPaddingException {
     }
 
     @Override
@@ -35,7 +35,7 @@ public class VCipherSpi extends CipherSpi {
     }
 
     @Override
-    protected int engineGetOutputSize(int i) {
+    protected int engineGetOutputSize(int inputLen) {
         return 0;
     }
 
@@ -50,31 +50,31 @@ public class VCipherSpi extends CipherSpi {
     }
 
     @Override
-    protected void engineInit(int i, Key key, SecureRandom sr) throws InvalidKeyException {
+    protected void engineInit(int opmode, Key key, SecureRandom sr) throws InvalidKeyException {
     }
 
     @Override
-    protected void engineInit(int i, Key key, AlgorithmParameterSpec aps, SecureRandom sr) throws InvalidKeyException, InvalidAlgorithmParameterException {
+    protected void engineInit(int opmode, Key key, AlgorithmParameterSpec aps, SecureRandom sr) throws InvalidKeyException, InvalidAlgorithmParameterException {
     }
 
     @Override
-    protected void engineInit(int i, Key key, AlgorithmParameters ap, SecureRandom sr) throws InvalidKeyException, InvalidAlgorithmParameterException {
+    protected void engineInit(int opmode, Key key, AlgorithmParameters ap, SecureRandom sr) throws InvalidKeyException, InvalidAlgorithmParameterException {
     }
 
     @Override
-    protected byte[] engineUpdate(byte[] bytes, int i, int i1) {
+    protected byte[] engineUpdate(byte[] input, int inputOffset, int inputLen) {
         return null;
     }
 
     @Override
-    protected int engineUpdate(byte[] bytes, int i, int i1, byte[] bytes1, int i2) throws ShortBufferException {
+    protected int engineUpdate(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException {
         return 0;
     }
 
     @Override
-    protected byte[] engineDoFinal(byte[] bytes, int i, int i1) throws IllegalBlockSizeException, BadPaddingException {
+    protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen) throws IllegalBlockSizeException, BadPaddingException {
         try {
-            VCipherRequest request = new VCipherRequest(bytes);
+            VCipherRequest request = new VCipherRequest(VCipherRequestType.ENCIPHER, input);
             VCipherResponse response = connection.sendRequest(request);
             return response.getBytes();
         } catch (IOException e) {
@@ -83,7 +83,7 @@ public class VCipherSpi extends CipherSpi {
     }
 
     @Override
-    protected int engineDoFinal(byte[] bytes, int i, int i1, byte[] bytes1, int i2) throws ShortBufferException, IllegalBlockSizeException, BadPaddingException {
+    protected int engineDoFinal(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException, IllegalBlockSizeException, BadPaddingException {
         return 0;
     }
 }
