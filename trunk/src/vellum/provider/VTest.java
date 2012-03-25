@@ -10,10 +10,12 @@ import java.security.*;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import sun.security.tools.KeyTool;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Base64;
+import vellum.util.Lists;
 import vellum.util.Streams;
 
 /**
@@ -84,7 +86,7 @@ public class VTest implements Runnable {
             logger.info(cipher.getProvider().getClass());
             cipher.init(0, (Key) null);
         }
-        openKeystore(cipherProperties.keyStore, cipherProperties.privateAlias);
+        loadKey(cipherProperties.keyStore, cipherProperties.privateAlias);
         providerContext.config(providerProperties, 
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
                 properties.keyStorePass.toCharArray());
@@ -102,7 +104,19 @@ public class VTest implements Runnable {
         Security.addProvider(provider);
         KeyTool.main(buildKeyToolGenSecKeyArgs(cipherProperties.cipherKeyStore, cipherProperties.secretAlias));
         KeyTool.main(buildKeyToolListArgs(cipherProperties.cipherKeyStore));
-        openKeystore(cipherProperties.cipherKeyStore, cipherProperties.secretAlias);
+        Key key = loadKey(cipherProperties.cipherKeyStore, cipherProperties.secretAlias);
+        Cipher aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        aesEncryptCipher.init(Cipher.ENCRYPT_MODE, key);
+        AlgorithmParameters params = aesEncryptCipher.getParameters();
+        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();        
+        logger.info(Lists.formatHex(iv));
+        Cipher aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec ips = new IvParameterSpec(iv);
+        aesDecryptCipher.init(Cipher.DECRYPT_MODE, key, ips);
+        String message = "0123456789";
+        byte[] encryptedBytes = aesEncryptCipher.doFinal(message.getBytes());
+        byte[] decryptedBytes = aesDecryptCipher.doFinal(encryptedBytes);
+        logger.info(new String(decryptedBytes));        
     }
     
     public void process() throws Exception {
@@ -181,13 +195,14 @@ public class VTest implements Runnable {
         };
     }
 
-    private void openKeystore(String keyStoreFile, String keyAlias) throws Exception {
+    private Key loadKey(String keyStoreFile, String keyAlias) throws Exception {
         File file = new File(keyStoreFile);
         KeyStore keyStore = KeyStore.getInstance("JCEKS", "VProvider");
         keyStore.load(new FileInputStream(file), properties.keyStorePass.toCharArray());
-        logger.info("KeyStore", keyStore.getType(), keyStore.getProvider().getName());
+        logger.info("loadKey", keyStore.getType(), keyStore.getProvider().getName());
         Key key = keyStore.getKey(keyAlias, properties.privateKeyPass.toCharArray());
         logger.info(key.getAlgorithm(), key.getFormat());
+        return key;
     }
 
     private void importKey(String cipherKeyStore, String secretAlias, Key key) throws Exception {
