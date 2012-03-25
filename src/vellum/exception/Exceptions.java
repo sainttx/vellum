@@ -47,4 +47,9 @@ public class Exceptions {
             throw Exceptions.newRuntimeException(e);
         }
     }
+    
+    public static void warn(Exception e) {
+        e.printStackTrace(System.err);
+    }
+    
 }

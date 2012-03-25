@@ -17,7 +17,7 @@ import vellum.util.Args;
 public class Logr {
     Class source;
     PrintStream out = System.err;
-    Level level = Level.INFO;
+    Level level = Level.FINEST;
     String name;
     
     public Logr(Class source) {

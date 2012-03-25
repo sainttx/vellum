@@ -10,6 +10,7 @@ import vellum.logger.LogrFactory;
 import vellum.exception.ArgsRuntimeException;
 import vellum.exception.Exceptions;
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -147,6 +148,14 @@ public class Streams {
             }
         } finally {
             reader.close();
+        }
+    }
+
+    public static void close(Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

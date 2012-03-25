@@ -12,10 +12,10 @@ import java.security.Provider;
  */
 
 public class VProvider extends Provider {
-            
-    VProvider() {
-        super("VProvider", 1.0, "Provides KeyStore.JKS");
-        put("KeyStore.JKS", VKeyStoreSpi.class.getName());
+    
+    public VProvider() {
+        super("VProvider", 1.0, "Provides KeyStore.JCEKS");
+        put("KeyStore.JCEKS", VKeyStoreSpi.class.getName());
         put("Cipher.AES", VCipherSpi.class.getName());
     }
 

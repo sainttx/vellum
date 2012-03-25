@@ -27,7 +27,7 @@ public class VKeyStoreSpi extends KeyStoreSpi {
     @Override
     public void engineLoad(InputStream stream, char[] password) throws IOException, NoSuchAlgorithmException, CertificateException {
         try {
-            keyStore = KeyStore.getInstance("JKS");
+            keyStore = KeyStore.getInstance("JCEKS");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -10,10 +10,12 @@ package vellum.provider;
  */
 public class VCipherProperties {
     String serverIp = "localhost";
-    String keyAlias = "cipher.key";
+    String privateAlias = "cipher.private";
     String trustAlias = "provider.cert";
+    String secretAlias = "cipher.secret";
     int sslPort = 7443;
     int backlog = 4;
     String keyStore; 
     String trustStore; 
+    String cipherKeyStore; 
 }

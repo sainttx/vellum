@@ -21,7 +21,6 @@ import javax.net.ssl.*;
 public class VProviderContext {
     public static final String CHARSET = "UTF8";
     public static final VProviderContext instance = new VProviderContext();
-    public final VProvider provider = new VProvider();
     
     VProviderProperties properties;
     char[] keyStorePassword;
