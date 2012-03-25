@@ -296,4 +296,16 @@ public class Lists {
     public static Object[] toArray(String[] array) {
         return Arrays.asList(array).toArray();
     }
+    
+    public static String formatHex(byte[] bytes) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            if (builder.length() > 0) {
+                builder.append(",");
+            }
+            builder.append(String.format("%02x", bytes[i]));
+        }
+        return "{" + builder.toString() + "}";
+    }
+    
 }
