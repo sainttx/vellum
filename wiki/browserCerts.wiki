@@ -28,48 +28,67 @@ http://code.google.com/p/chromium/wiki/LinuxCertManagement
 ==== Examples ====
 
 Create private key and corresponding public certificate, and combine into PKCS12 format to import into browser
-<code language="bash">
+{{{
   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
   openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfile CACert.crt
-</code>
+}}}
 
 Create CA cert
-<code language="bash">
+{{{
   openssl genrsa 2048 > ca-key.pem # server key   
   openssl req -new -x509 -nodes -days 1000 -key ca-key.pem > ca-cert.pem
-</code>
+}}}
 
 Create server cert
-<code language="bash">
+{{{
   openssl req -newkey rsa:2048 -days 1000 -nodes -keyout server-key.pem > server-req.pem 
   openssl x509 -req -in server-req.pem -days 1000 -CA ca-cert.pem -CAkey ca-key.pem -set_serial 01 > server-cert.pem
-</code>
+}}}
 
 Create client cert
-<code language="bash">
+{{{
   openssl req -newkey rsa:2048 -days 1000 -nodes -keyout client-key.pem > client-req.pem
   openssl x509 -req -in client-req.pem -days 1000 -CA ca-cert.pem -CAkey ca-key.pem -set_serial 01 > client-cert.pem
-</code>
+}}}
 
 Generate a key pair (private key and public certificate) in pem format 
-<code language="bash">
+{{{
   openssl req -new -nodes -x509 -out client_public.pem -keyout client_private.pem -days 7300
-</code>
+}}}
 
 One can specific the subject on the command-line as follows.
-<code language="bash">
+{{{
    -subj "/C=ZA/ST=Western Cape/L=Cape Town/CN=MyCompany"
-</code>
+}}}
 
 Covert to DER format
-<code language="bash">
+{{{
   openssl pkcs8 -topk8 -nocrypt -in client_private.pem -inform PEM -out client_private.der -outform DER
   openssl x509 -in testssl_client_public.pem -inform PEM -out client_public.der -outform DER
-</code>
+}}}
 
 Test connection
-<code language="bash">
+{{{
   $ openssl
   OpenSSL> s_client -connect localhost:9040 -key client_private.pem -cert client_public.pem -CAfile server_public.pem
-</code>
+}}}
 
+JDK 1.6 one can effectively "export" private by <tt>-importkeystore</tt> into PCKS12 "keystore"
+{{{
+  keytool -importkeystore -srckeystore ~/.keystore -destkeystore my.p12 -deststoretype PKCS12-srcalias mykey
+}}}
+
+Use openssl to convert the key to PEM (which produces a des3 encrypted key):
+{{{
+  openssl pkcs12 -in my.p12 -out my.pem -nocerts
+}}}
+
+No DES encryption:
+{{{
+  openssl pkcs12 -in my.p12 -out my-nodes.pem -nocerts -nodes
+}}}
+
+Convert both private key and cert to PEM:
+{{{
+  openssl pkcs12 -in my.p12 -out my.pem
+}}}
