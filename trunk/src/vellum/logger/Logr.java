@@ -16,7 +16,8 @@ import vellum.util.Args;
  */
 public class Logr {
     Class source;
-    PrintStream out = System.err;
+    PrintStream out = System.out;
+    PrintStream err = System.err;
     Level level = Level.FINEST;
     String name;
     
@@ -25,6 +26,11 @@ public class Logr {
         this.name = source.getSimpleName();
     }
 
+    public Logr(Class source, String name) {
+        this.source = source;
+        this.name = source.getSimpleName() + "." + name;
+    }
+    
     public Logr(String name) {
         this.name = name;
     }
@@ -34,21 +40,36 @@ public class Logr {
     }
     
     public void info(Object ... args) {
+        out.print(name);
+        out.print(" ");        
+        out.print("INFO");
+        out.print(" ");        
         out.println(Args.format(args));
-        out.flush();
+        flush();
     }
 
     public void trace(Object ... args) {
         if (level.intValue() > Level.FINER.intValue()) return;
+        out.print(name);
+        out.print(" ");        
         out.println(Args.format(args));
+        flush();
     }
 
+    private void flush() {
+        System.out.flush();
+        System.err.flush();
+    }
+    
     public void warn(Object ... args) {
-        out.print("WARN ");
-        out.println(Args.format(args));
+        err.print(name);
+        err.print(" ");        
+        err.print("WARN ");        
+        err.print(" ");        
+        err.println(Args.format(args));
         Throwable throwable = getThrowable(args);
         if (throwable != null) {
-            throwable.printStackTrace(System.err);
+            throwable.printStackTrace(err);
         }
     }
     
@@ -62,5 +83,8 @@ public class Logr {
     public void setName(String name) {
         this.name = name;
     }
-        
+
+    public String getName() {
+        return name;
+    }                
 }

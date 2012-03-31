@@ -7,19 +7,48 @@ package vellum.provider;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import vellum.logger.Logr;
+import vellum.logger.LogrFactory;
 
 /**
  *
  * @author evan
  */
-public class VCipherSpi extends CipherSpi {
+public final class VCipherSpi extends CipherSpi {
+    static String ERROR_MESSAGE_NO_IV_SPEC = "VCipher requires init with IvParameterSpec";
+    static String ERROR_MESSAGE_NO_MODE = "VCipher requires init with op mode (and IvParameterSpec)";
+    
+    Logr logger = LogrFactory.getLogger(getClass());
     VProviderConnection connection = new VProviderConnection();
+    int opmode;
+    byte[] iv = new byte[16];
     
     public VCipherSpi() {
         super();
     }
 
+    private void init(int opmode, IvParameterSpec ips) {
+        iv = ips.getIV();
+        init(opmode);
+    }
+
+    public void init(int opmode, SecureRandom sr) {
+        sr.nextBytes(iv);
+        init(opmode);        
+    }
+    
+    private void init(int opmode) {
+        this.opmode = opmode;
+        try {
+            connection.open();
+        } catch (IOException e) {
+            logger.warn(e);
+        }
+    }
+    
     @Override
     protected void engineSetMode(String mode) throws NoSuchAlgorithmException {
     }
@@ -34,13 +63,13 @@ public class VCipherSpi extends CipherSpi {
     }
 
     @Override
-    protected int engineGetOutputSize(int inputLen) {
+    protected int engineGetOutputSize(int outputSize) {
         return 0;
     }
 
     @Override
     protected byte[] engineGetIV() {
-        return null;
+        return iv;
     }
 
     @Override
@@ -50,14 +79,33 @@ public class VCipherSpi extends CipherSpi {
 
     @Override
     protected void engineInit(int opmode, Key key, SecureRandom sr) throws InvalidKeyException {
+        init(opmode, sr);
     }
 
     @Override
     protected void engineInit(int opmode, Key key, AlgorithmParameterSpec aps, SecureRandom sr) throws InvalidKeyException, InvalidAlgorithmParameterException {
+        if (aps instanceof IvParameterSpec) {
+            init(opmode, (IvParameterSpec) aps);
+        } else if (aps instanceof IvParameterSpec) {
+            init(opmode, sr);
+        } else {
+            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
+        }
     }
 
     @Override
     protected void engineInit(int opmode, Key key, AlgorithmParameters ap, SecureRandom sr) throws InvalidKeyException, InvalidAlgorithmParameterException {
+        try {
+            AlgorithmParameterSpec aps = ap.getParameterSpec(IvParameterSpec.class);
+            if (aps instanceof IvParameterSpec) {
+                init(opmode, (IvParameterSpec) aps);
+            } else {
+                init(opmode, sr);
+            }
+        } catch (InvalidParameterSpecException e) {
+            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC, e);
+
+        }
     }
 
     @Override
@@ -73,17 +121,43 @@ public class VCipherSpi extends CipherSpi {
     @Override
     protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen) throws IllegalBlockSizeException, BadPaddingException {
         try {
-            VCipherRequest request = new VCipherRequest(VCipherRequestType.ENCIPHER, input);
-            VCipherResponse response = connection.sendCipherRequest(request);
-            if (response.responseType != VCipherResponseType.OK) {
-                throw new VCipherResponseRuntimeException(response);
+            if (opmode == Cipher.ENCRYPT_MODE) {
+                return encrypt(input);
+            } else if (opmode == Cipher.DECRYPT_MODE) {
+                return decrypt(input);                
+            } else {
+                throw new RuntimeException(ERROR_MESSAGE_NO_MODE);
             }
-            return response.getBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private byte[] encrypt(byte[] input) throws IOException {
+        if (iv == null) {
+            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
+        }
+        VCipherRequest request = new VCipherRequest(VCipherRequestType.ENCIPHER, input, iv);
+        VCipherResponse response = connection.sendCipherRequest(request);
+        if (response.responseType != VCipherResponseType.OK) {
+            throw new VCipherResponseRuntimeException(response);
+        }
+        iv = response.getIv();
+        return response.getBytes();        
+    }
+
+    private byte[] decrypt(byte[] input) throws IOException {
+        if (iv == null) {
+            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
+        }
+        VCipherRequest request = new VCipherRequest(VCipherRequestType.DECIPHER, input, iv);
+        VCipherResponse response = connection.sendCipherRequest(request);
+        if (response.responseType != VCipherResponseType.OK) {
+            throw new VCipherResponseRuntimeException(response);
+        }
+        return response.getBytes();                
+    }
+    
     @Override
     protected int engineDoFinal(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException, IllegalBlockSizeException, BadPaddingException {
         return 0;

@@ -19,7 +19,7 @@ import javax.sql.RowSet;
  */
 public class QueryInfo {
 
-   static Logr logger = LogrFactory.logger;
+   static Logr logger = LogrFactory.globalLogger;
    String queryName;
    String parameterisedQuery;
    String query;

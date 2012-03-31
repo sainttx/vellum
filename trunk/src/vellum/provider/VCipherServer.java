@@ -8,32 +8,32 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import vellum.util.Streams;
 
 /**
  *
  * @author evan
  */
 public class VCipherServer extends Thread implements Closeable {
-    Logr logger = LogrFactory.getLogger(getName());    
+    Logr logger = LogrFactory.getLogger(this);
     VCipherContext context;
-    VCipherProperties properties;
     ServerSocket serverSocket; 
     boolean accepting = true;
     
     public VCipherServer() {
     }
     
-    public void config(VCipherContext context) throws IOException {
+    public void config(VCipherContext context) throws Exception {
         this.context = context;
-        this.properties = context.properties;
         if (false) {
             this.serverSocket = new ServerSocket(
-                    properties.sslPort, properties.backlog, context.inetAddress);
+                    context.config.sslPort, context.config.backlog, context.inetAddress);
         } else {
             this.serverSocket = context.sslContext.getServerSocketFactory().createServerSocket(
-                properties.sslPort, properties.backlog, context.inetAddress);
+                    context.config.sslPort, context.config.backlog, context.inetAddress);
         }
     }
     
@@ -42,34 +42,22 @@ public class VCipherServer extends Thread implements Closeable {
         while (accepting) {
             try {
                 Socket socket = serverSocket.accept();
-                logger.trace("socket accepted", socket.getRemoteSocketAddress());
-                VCipherThread thread = new VCipherThread(socket);
-                thread.start();
-            } catch (Exception e) {
+                logger.info("socket accepted", socket.getRemoteSocketAddress());
+                VCipherHandler handler = new VCipherHandler(context);
+                handler.init();
+                handler.handle(socket);
+            } catch (SocketException e) {
                 logger.warn(e.getMessage());
+            } catch (Exception e) {
+                logger.warn(e);
             }
         }                    
+        Streams.close(serverSocket);
     }        
     
     @Override
     public void close() throws IOException {        
         accepting = false;
-        serverSocket.close();
-        super.interrupt();
+        Streams.close(serverSocket);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

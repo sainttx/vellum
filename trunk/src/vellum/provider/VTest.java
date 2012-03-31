@@ -4,6 +4,7 @@
  */
 package vellum.provider;
 
+import com.sun.crypto.provider.AESCipher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.*;
@@ -15,7 +16,7 @@ import sun.security.tools.KeyTool;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Base64;
-import vellum.util.Lists;
+import vellum.util.Bytes;
 import vellum.util.Streams;
 
 /**
@@ -28,10 +29,11 @@ public class VTest implements Runnable {
     VTestProperties properties = new VTestProperties(); 
     SecureRandom sr = new SecureRandom();
     
-    VProviderProperties providerProperties = new VProviderProperties();
+    VProviderConfig providerConfig = new VProviderConfig();
     VProviderContext providerContext = VProviderContext.instance;
     VProvider provider = new VProvider();
     
+    VCipherConfig cipherConfig = new VCipherConfig();
     VCipherProperties cipherProperties = new VCipherProperties();
     VCipherContext cipherContext = new VCipherContext();
     VCipherServer server = new VCipherServer();
@@ -41,44 +43,47 @@ public class VTest implements Runnable {
         try {
             process();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace(System.err);
         }
     }
     
     private void setProperties() {
-        providerProperties.keyStore = properties.providerKeyStoreFile;
-        providerProperties.trustStore = properties.providerTrustStoreFile;
-        cipherProperties.keyStore = properties.cipherPrivateKeyStoreFile;        
-        cipherProperties.trustStore = properties.cipherTrustStoreFile;
-        cipherProperties.cipherKeyStore = properties.cipherSecretKeyStoreFile;                
+        providerConfig.keyStore = properties.providerKeyStoreFile;
+        providerConfig.trustStore = properties.providerTrustStoreFile;
+        cipherConfig.keyStore = properties.cipherPrivateKeyStoreFile;        
+        cipherConfig.trustKeyStore = properties.cipherTrustKeyStoreFile;
+        cipherConfig.secretKeyStore = properties.cipherSecretKeyStoreFile;
+        cipherProperties.keyStorePassword = properties.keyStorePass.toCharArray();
+        cipherProperties.trustKeyStorePassword = properties.trustKeyStorePass.toCharArray();
+        cipherProperties.privateKeyPassword = properties.privateKeyPass.toCharArray();
+        cipherProperties.secretKeyStorePassword = properties.secretKeyStorePass.toCharArray();
+        cipherProperties.secretKeyPassword = properties.secretKeyPass.toCharArray();
     }
     
     private void deleteKeyStores() {
-        new File(providerProperties.keyStore).delete();
-        new File(providerProperties.trustStore).delete();
-        new File(cipherProperties.keyStore).delete();
-        new File(cipherProperties.trustStore).delete();
-        new File(cipherProperties.cipherKeyStore).delete();        
+        new File(providerConfig.keyStore).delete();
+        new File(providerConfig.trustStore).delete();
+        new File(cipherConfig.keyStore).delete();
+        new File(cipherConfig.trustKeyStore).delete();
+        new File(cipherConfig.secretKeyStore).delete();        
     }
 
     private void testProvider() throws Exception {
-        KeyTool.main(buildKeyToolGenKeyPairArgs(providerProperties.keyStore, providerProperties.keyAlias, "provider"));
-        KeyTool.main(buildKeyToolExportCertArgs(providerProperties.keyStore, providerProperties.keyAlias, properties.providerCert));
-        KeyTool.main(buildKeyToolGenKeyPairArgs(cipherProperties.keyStore, cipherProperties.privateAlias, "cipher"));
-        KeyTool.main(buildKeyToolExportCertArgs(cipherProperties.keyStore, cipherProperties.privateAlias, properties.cipherCert));
-        KeyTool.main(buildKeyToolImportCertArgs(cipherProperties.trustStore, cipherProperties.trustAlias, properties.providerCert));
-        KeyTool.main(buildKeyToolImportCertArgs(providerProperties.trustStore, providerProperties.trustAlias, properties.cipherCert));
-        KeyTool.main(buildKeyToolListArgs(cipherProperties.keyStore));
-        KeyTool.main(buildKeyToolListArgs(cipherProperties.trustStore));
-        KeyTool.main(buildKeyToolListArgs(providerProperties.keyStore));
-        KeyTool.main(buildKeyToolListArgs(providerProperties.trustStore));
+        KeyTool.main(buildKeyToolGenKeyPairArgs(providerConfig.keyStore, providerConfig.keyAlias, "provider"));
+        KeyTool.main(buildKeyToolExportCertArgs(providerConfig.keyStore, providerConfig.keyAlias, properties.providerCert));
+        KeyTool.main(buildKeyToolGenKeyPairArgs(cipherConfig.keyStore, cipherConfig.privateAlias, "cipher"));
+        KeyTool.main(buildKeyToolExportCertArgs(cipherConfig.keyStore, cipherConfig.privateAlias, properties.cipherCert));
+        KeyTool.main(buildKeyToolImportCertArgs(cipherConfig.trustKeyStore, cipherConfig.trustAlias, properties.providerCert));
+        KeyTool.main(buildKeyToolImportCertArgs(providerConfig.trustStore, providerConfig.trustAlias, properties.cipherCert));
+        KeyTool.main(buildKeyToolListArgs(cipherConfig.keyStore));
+        KeyTool.main(buildKeyToolListArgs(cipherConfig.trustKeyStore));
+        KeyTool.main(buildKeyToolListArgs(providerConfig.keyStore));
+        KeyTool.main(buildKeyToolListArgs(providerConfig.trustStore));
         Key key = generateKey();
         if (false) {
-            importKey(cipherProperties.cipherKeyStore, cipherProperties.secretAlias, key);
+            importKey(cipherConfig.secretKeyStore, cipherConfig.secretAlias, key);
         }
-        cipherContext.config(cipherProperties, 
-                properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
-                properties.trustStorePass.toCharArray());
+        cipherContext.config(cipherConfig, cipherProperties);
         server.config(cipherContext);
         listProviders();
         if (false) {
@@ -86,44 +91,55 @@ public class VTest implements Runnable {
             logger.info(cipher.getProvider().getClass());
             cipher.init(0, (Key) null);
         }
-        loadKey(cipherProperties.keyStore, cipherProperties.privateAlias);
-        providerContext.config(providerProperties, 
+        loadKey(cipherConfig.keyStore, cipherConfig.privateAlias);
+        server.start();
+        providerContext.config(providerConfig, 
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
                 properties.keyStorePass.toCharArray());
-        server.start();
+        providerContext.init();        
+        testCipher();
+        server.close();
+    }
+    
+    private void testCipher() throws Exception {
         VCipherSpi cipher = new VCipherSpi();
+        cipher.engineInit(Cipher.ENCRYPT_MODE, null, sr);
         String datum = "12345678901234567890";
         logger.info(datum);
         byte[] bytes = datum.getBytes();
-        byte[] responseBytes = cipher.engineDoFinal(bytes, 0, bytes.length);
-        logger.info(responseBytes.length);
-        server.close();
+        byte[] encryptedBytes = cipher.engineDoFinal(bytes, 0, bytes.length);
+        byte[] iv = cipher.engineGetIV();
+        logger.info(encryptedBytes.length);
+        cipher.engineInit(Cipher.DECRYPT_MODE, null, new IvParameterSpec(iv), sr);
+        byte[] decryptedBytes = cipher.engineDoFinal(encryptedBytes, 0, bytes.length);
+        logger.info(new String(decryptedBytes));
     }
-
+    
     private void testSecretKey() throws Exception {
         Security.addProvider(provider);
-        KeyTool.main(buildKeyToolGenSecKeyArgs(cipherProperties.cipherKeyStore, cipherProperties.secretAlias));
-        KeyTool.main(buildKeyToolListArgs(cipherProperties.cipherKeyStore));
-        Key key = loadKey(cipherProperties.cipherKeyStore, cipherProperties.secretAlias);
+        KeyTool.main(buildKeyToolGenSecKeyArgs(cipherConfig.secretKeyStore, cipherConfig.secretAlias));
+        KeyTool.main(buildKeyToolListArgs(cipherConfig.secretKeyStore));
+        Key key = loadKey(cipherConfig.secretKeyStore, cipherConfig.secretAlias);
         Cipher aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         aesEncryptCipher.init(Cipher.ENCRYPT_MODE, key);
-        AlgorithmParameters params = aesEncryptCipher.getParameters();
-        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();        
-        logger.info(Lists.formatHex(iv));
+        byte[] iv = aesEncryptCipher.getIV();
+        logger.info(Bytes.formatHex(iv));
         Cipher aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         IvParameterSpec ips = new IvParameterSpec(iv);
         aesDecryptCipher.init(Cipher.DECRYPT_MODE, key, ips);
         String message = "0123456789";
         byte[] encryptedBytes = aesEncryptCipher.doFinal(message.getBytes());
         byte[] decryptedBytes = aesDecryptCipher.doFinal(encryptedBytes);
+        logger.info(Bytes.formatHex(encryptedBytes));
         logger.info(new String(decryptedBytes));        
+        logger.info(Bytes.formatHex(aesEncryptCipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV()));
     }
     
     public void process() throws Exception {
         setProperties();
         deleteKeyStores();
         testSecretKey();
-        if (false) {
+        if (true) {
             testProvider();
         }
     }
@@ -180,7 +196,7 @@ public class VTest implements Runnable {
             "-noprompt",
             "-keystore", trustStore, 
             "-storetype", properties.keyStoreType, 
-            "-storepass", properties.trustStorePass,
+            "-storepass", properties.trustKeyStorePass,
             "-alias", trustAlias,
             "-file", certFile,
         };
@@ -225,7 +241,9 @@ public class VTest implements Runnable {
         try {
             if (true) {
                 new Thread(instance).start();
-                Thread.sleep(4000);
+                Thread.sleep(2000);
+                Streams.close(instance.server);
+                Thread.sleep(1000);
                 System.exit(0);
             } else {
                 instance.process();

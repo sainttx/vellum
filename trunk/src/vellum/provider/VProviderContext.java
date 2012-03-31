@@ -22,7 +22,7 @@ public class VProviderContext {
     public static final String CHARSET = "UTF8";
     public static final VProviderContext instance = new VProviderContext();
     
-    VProviderProperties properties;
+    VProviderConfig properties;
     char[] keyStorePassword;
     char[] trustStorePassword;
     char[] keyPassword;
@@ -39,7 +39,7 @@ public class VProviderContext {
     private VProviderContext() {        
     }
     
-    public void config(VProviderProperties properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
+    public void config(VProviderConfig properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
         this.properties = properties;
         this.keyStorePassword = keyStorePassword;        
         this.trustStorePassword = trustStorePassword;        
@@ -51,8 +51,14 @@ public class VProviderContext {
         initSSLContext();
     }
     
+    public void init() throws IOException {
+        VProviderConnection connection = new VProviderConnection();
+        connection.open();
+        connection.close();      
+    }
+    
     private void initKeyManagers() throws Exception {
-        keyStore = KeyStore.getInstance("JKS");
+        keyStore = KeyStore.getInstance("JCEKS");
         InputStream inputStream = new FileInputStream(properties.keyStore);
         keyStore.load(inputStream, keyStorePassword);
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
@@ -61,7 +67,7 @@ public class VProviderContext {
     }
 
     private void initTrustManagers() throws Exception {
-        trustStore = KeyStore.getInstance("JKS");
+        trustStore = KeyStore.getInstance("JCEKS");
         InputStream inputStream = new FileInputStream(properties.trustStore);
         trustStore.load(inputStream, trustStorePassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");

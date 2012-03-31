@@ -13,11 +13,21 @@ public class VCipherRequest {
     byte[] bytes;
     byte[] iv;    
 
+    public VCipherRequest(VCipherRequestType requestType) {
+        this.requestType = requestType;
+    }
+    
     public VCipherRequest(VCipherRequestType requestType, byte[] bytes) {
         this.requestType = requestType;
         this.bytes = bytes;
     }
 
+    public VCipherRequest(VCipherRequestType requestType, byte[] bytes, byte[] iv) {
+        this.requestType = requestType;
+        this.bytes = bytes;
+        this.iv = iv;
+    }
+    
     public byte[] getBytes() {
         return bytes;
     }
