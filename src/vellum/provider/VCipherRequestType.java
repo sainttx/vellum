@@ -9,6 +9,7 @@ package vellum.provider;
  * @author evan
  */
 public enum VCipherRequestType {
+    PING,
     ENCIPHER,
     DECIPHER;
     

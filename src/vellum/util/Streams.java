@@ -16,6 +16,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -151,6 +153,22 @@ public class Streams {
         }
     }
 
+    public static void close(ServerSocket closeable) {
+        try {
+            closeable.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void close(Socket closeable) {
+        try {
+            closeable.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public static void close(Closeable closeable) {
         try {
             closeable.close();

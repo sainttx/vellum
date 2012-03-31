@@ -22,6 +22,7 @@ import vellum.logger.LogrFactory;
  */
 public class VCipherContext {
     Logr logger = LogrFactory.getLogger(getClass());
+    VCipherConfig config;    
     VCipherProperties properties;    
     SecureRandom sr = new SecureRandom();
     SSLContext sslContext;
@@ -31,22 +32,23 @@ public class VCipherContext {
     public VCipherContext() {
     }
 
-    public void config(VCipherProperties properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
-        this.properties = properties;        
-        inetAddress = InetAddress.getByName(properties.serverIp);
-        address = new InetSocketAddress(inetAddress, properties.sslPort);
+    public void config(VCipherConfig config, VCipherProperties properties) throws Exception {
+        this.config = config;        
+        this.properties = properties;
+        inetAddress = InetAddress.getByName(config.serverIp);
+        address = new InetSocketAddress(inetAddress, config.sslPort);
         sslContext = SSLContext.getInstance("TLS");
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        KeyStore ks = KeyStore.getInstance("JKS");
-        File keyStoreFile = new File(properties.keyStore);
+        KeyStore ks = KeyStore.getInstance("JCEKS");
+        File keyStoreFile = new File(config.keyStore);
         logger.info(keyStoreFile.getAbsolutePath());
         FileInputStream fis = new FileInputStream(keyStoreFile);
-        ks.load(fis, keyStorePassword);
-        kmf.init(ks, keyPassword);
+        ks.load(fis, properties.keyStorePassword);
+        kmf.init(ks, properties.privateKeyPassword);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        KeyStore ts = KeyStore.getInstance("JKS");
-        FileInputStream trustStoreStream = new FileInputStream(properties.trustStore);
-        ts.load(trustStoreStream, trustStorePassword);
+        KeyStore ts = KeyStore.getInstance("JCEKS");
+        FileInputStream trustStoreStream = new FileInputStream(config.trustKeyStore);
+        ts.load(trustStoreStream, properties.trustKeyStorePassword);
         tmf.init(ts);
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), sr);
     }

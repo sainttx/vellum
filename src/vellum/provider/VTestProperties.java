@@ -15,12 +15,12 @@ public class VTestProperties {
 
     String cipherCert = "/evans/test/cipher.cert";
     String cipherPrivateKeyStoreFile = "/evans/test/cipherPrivateKeyStore.ks";
-    String cipherTrustStoreFile = "/evans/test/cipherTrustStore.ks";
+    String cipherTrustKeyStoreFile = "/evans/test/cipherTrustStore.ks";
     String cipherSecretKeyStoreFile = "/evans/test/cipherSecretKeyStore.ks";
 
     String keyStoreType = "JCEKS";
     String keyStorePass = "storepass";
-    String trustStorePass = "storepass";
+    String trustKeyStorePass = "storepass";
     String secretKeyStorePass = "storepass";
     String privateKeyPass = "keypass";
     String secretKeyPass = "keypass";
