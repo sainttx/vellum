@@ -11,7 +11,11 @@ package vellum.provider;
 public class VCipherRequest {
     VCipherRequestType requestType;
     byte[] bytes;
-    byte[] iv;    
+    byte[] iv;
+    String keyAlias;
+    int keyRevision;
+    String username;
+    VCipherRole role;
 
     public VCipherRequest(VCipherRequestType requestType) {
         this.requestType = requestType;
