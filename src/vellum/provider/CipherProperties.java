@@ -8,7 +8,7 @@ package vellum.provider;
  *
  * @author evan
  */
-public class VCipherProperties {
+public class CipherProperties {
     char[] keyStorePassword;
     char[] privateKeyPassword;
     char[] trustKeyStorePassword;

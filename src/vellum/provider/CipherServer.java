@@ -17,16 +17,16 @@ import vellum.util.Streams;
  *
  * @author evan
  */
-public class VCipherServer extends Thread implements Closeable {
+public class CipherServer extends Thread implements Closeable {
     Logr logger = LogrFactory.getLogger(this);
-    VCipherContext context;
+    CipherContext context;
     ServerSocket serverSocket; 
     boolean accepting = true;
     
-    public VCipherServer() {
+    public CipherServer() {
     }
     
-    public void config(VCipherContext context) throws Exception {
+    public void config(CipherContext context) throws Exception {
         this.context = context;
         if (false) {
             this.serverSocket = new ServerSocket(
@@ -43,7 +43,7 @@ public class VCipherServer extends Thread implements Closeable {
             try {
                 Socket socket = serverSocket.accept();
                 logger.info("socket accepted", socket.getRemoteSocketAddress());
-                VCipherHandler handler = new VCipherHandler(context);
+                CipherHandler handler = new CipherHandler(context);
                 handler.init();
                 handler.handle(socket);
             } catch (SocketException e) {

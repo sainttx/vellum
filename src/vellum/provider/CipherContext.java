@@ -20,19 +20,19 @@ import vellum.logger.LogrFactory;
  *
  * @author evan
  */
-public class VCipherContext {
+public class CipherContext {
     Logr logger = LogrFactory.getLogger(getClass());
-    VCipherConfig config;    
-    VCipherProperties properties;    
+    CipherConfig config;    
+    CipherProperties properties;    
     SecureRandom sr = new SecureRandom();
     SSLContext sslContext;
     InetSocketAddress address;
     InetAddress inetAddress;
     
-    public VCipherContext() {
+    public CipherContext() {
     }
 
-    public void config(VCipherConfig config, VCipherProperties properties) throws Exception {
+    public void config(CipherConfig config, CipherProperties properties) throws Exception {
         this.config = config;        
         this.properties = properties;
         inetAddress = InetAddress.getByName(config.serverIp);

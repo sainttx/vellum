@@ -4,7 +4,6 @@
  */
 package vellum.provider;
 
-import com.sun.crypto.provider.AESCipher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.*;
@@ -23,20 +22,20 @@ import vellum.util.Streams;
  *
  * @author evan
  */
-public class VTest implements Runnable {
+public class Test implements Runnable {
     Logr logger = LogrFactory.getLogger(getClass());    
 
-    VTestProperties properties = new VTestProperties(); 
+    TestProperties properties = new TestProperties(); 
     SecureRandom sr = new SecureRandom();
     
-    VProviderConfig providerConfig = new VProviderConfig();
-    VProviderContext providerContext = VProviderContext.instance;
-    VProvider provider = new VProvider();
+    ProviderConfig providerConfig = new ProviderConfig();
+    ProviderContext providerContext = ProviderContext.instance;
+    Provider provider = new Provider();
     
-    VCipherConfig cipherConfig = new VCipherConfig();
-    VCipherProperties cipherProperties = new VCipherProperties();
-    VCipherContext cipherContext = new VCipherContext();
-    VCipherServer server = new VCipherServer();
+    CipherConfig cipherConfig = new CipherConfig();
+    CipherProperties cipherProperties = new CipherProperties();
+    CipherContext cipherContext = new CipherContext();
+    CipherServer server = new CipherServer();
 
     @Override
     public void run() {
@@ -102,7 +101,7 @@ public class VTest implements Runnable {
     }
     
     private void testCipher() throws Exception {
-        VCipherSpi cipher = new VCipherSpi();
+        CipherSpi cipher = new CipherSpi();
         cipher.engineInit(Cipher.ENCRYPT_MODE, null, sr);
         String datum = "12345678901234567890";
         logger.info(datum);
@@ -231,13 +230,13 @@ public class VTest implements Runnable {
 
     
     private void listProviders() {
-        for (Provider provider : Security.getProviders()) {
-            logger.info(provider.getName());
+        for (java.security.Provider prov : Security.getProviders()) {
+            logger.info(prov.getName());
         }
     }
     
     public static void main(String[] args) {
-        VTest instance = new VTest() ;
+        Test instance = new Test() ;
         try {
             if (true) {
                 new Thread(instance).start();

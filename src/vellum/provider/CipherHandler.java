@@ -20,17 +20,17 @@ import vellum.logger.LogrFactory;
  *
  * @author evan
  */
-public class VCipherHandler {
+public class CipherHandler {
     Logr logger = LogrFactory.getLogger(getClass());
-    VCipherContext context;
+    CipherContext context;
     Key key;
     Cipher aesEncryptCipher;
     Cipher aesDecryptCipher;
     Socket socket;
-    VCipherRequest request;
+    CipherRequest request;
     boolean running = true;
     
-    public VCipherHandler(VCipherContext context) {
+    public CipherHandler(CipherContext context) {
         this.context = context;
     }
     
@@ -68,41 +68,41 @@ public class VCipherHandler {
 
     private void reply(Throwable throwable) {
         try {
-            reply(new VCipherResponse(throwable));
+            reply(new CipherResponse(throwable));
         } catch (IOException e) {
             logger.warn(e);
         }
     }
     
     private void process() throws Exception {
-        this.request = VSockets.read(socket, VCipherRequest.class);
+        this.request = JsonSockets.read(socket, CipherRequest.class);
         logger.info("received", request);
-        if (request.requestType == VCipherRequestType.PING) {
-            reply(new VCipherResponse(VCipherResponseType.PING));
-        } else if (request.requestType == VCipherRequestType.ENCIPHER) {
+        if (request.requestType == CipherRequestType.PING) {
+            reply(new CipherResponse(CipherResponseType.PING));
+        } else if (request.requestType == CipherRequestType.ENCIPHER) {
             reply(encrypt());
-        } else if (request.requestType == VCipherRequestType.DECIPHER) {
+        } else if (request.requestType == CipherRequestType.DECIPHER) {
             reply(decrypt());
         }
     }
     
-    protected void reply(VCipherResponse response) throws IOException {
+    protected void reply(CipherResponse response) throws IOException {
         logger.info("reply", response);
-        VSockets.write(socket, response);                
+        JsonSockets.write(socket, response);                
     }
 
-    protected VCipherResponse decrypt() throws Exception {
+    protected CipherResponse decrypt() throws Exception {
         IvParameterSpec ips = new IvParameterSpec(request.iv);
         aesDecryptCipher.init(Cipher.DECRYPT_MODE, key, ips);
         byte[] decryptedBytes = aesDecryptCipher.doFinal(request.getBytes());
-        return new VCipherResponse(VCipherResponseType.OK, decryptedBytes);
+        return new CipherResponse(CipherResponseType.OK, decryptedBytes);
     }
 
-    protected VCipherResponse encrypt() throws Exception {
+    protected CipherResponse encrypt() throws Exception {
         AlgorithmParameters params = aesEncryptCipher.getParameters();
         byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
         byte[] encryptedBytes = aesEncryptCipher.doFinal(request.getBytes());
-        return new VCipherResponse(VCipherResponseType.OK, encryptedBytes, iv);
+        return new CipherResponse(CipherResponseType.OK, encryptedBytes, iv);
     }
    
 }

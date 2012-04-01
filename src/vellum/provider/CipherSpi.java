@@ -17,16 +17,16 @@ import vellum.logger.LogrFactory;
  *
  * @author evan
  */
-public final class VCipherSpi extends CipherSpi {
+public final class CipherSpi extends javax.crypto.CipherSpi {
     static String ERROR_MESSAGE_NO_IV_SPEC = "VCipher requires init with IvParameterSpec";
     static String ERROR_MESSAGE_NO_MODE = "VCipher requires init with op mode (and IvParameterSpec)";
     
     Logr logger = LogrFactory.getLogger(getClass());
-    VProviderConnection connection = new VProviderConnection();
+    ProviderConnection connection = new ProviderConnection();
     int opmode;
     byte[] iv = new byte[16];
     
-    public VCipherSpi() {
+    public CipherSpi() {
         super();
     }
 
@@ -137,10 +137,10 @@ public final class VCipherSpi extends CipherSpi {
         if (iv == null) {
             throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
         }
-        VCipherRequest request = new VCipherRequest(VCipherRequestType.ENCIPHER, input, iv);
-        VCipherResponse response = connection.sendCipherRequest(request);
-        if (response.responseType != VCipherResponseType.OK) {
-            throw new VCipherResponseRuntimeException(response);
+        CipherRequest request = new CipherRequest(CipherRequestType.ENCIPHER, input, iv);
+        CipherResponse response = connection.sendCipherRequest(request);
+        if (response.responseType != CipherResponseType.OK) {
+            throw new CipherResponseRuntimeException(response);
         }
         iv = response.getIv();
         return response.getBytes();        
@@ -150,10 +150,10 @@ public final class VCipherSpi extends CipherSpi {
         if (iv == null) {
             throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
         }
-        VCipherRequest request = new VCipherRequest(VCipherRequestType.DECIPHER, input, iv);
-        VCipherResponse response = connection.sendCipherRequest(request);
-        if (response.responseType != VCipherResponseType.OK) {
-            throw new VCipherResponseRuntimeException(response);
+        CipherRequest request = new CipherRequest(CipherRequestType.DECIPHER, input, iv);
+        CipherResponse response = connection.sendCipherRequest(request);
+        if (response.responseType != CipherResponseType.OK) {
+            throw new CipherResponseRuntimeException(response);
         }
         return response.getBytes();                
     }

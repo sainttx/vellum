@@ -8,25 +8,25 @@ package vellum.provider;
  *
  * @author evan
  */
-public class VCipherRequest {
-    VCipherRequestType requestType;
+public class CipherRequest {
+    CipherRequestType requestType;
     byte[] bytes;
     byte[] iv;
     String keyAlias;
     int keyRevision;
     String username;
-    VCipherRole role;
+    CipherRole role;
 
-    public VCipherRequest(VCipherRequestType requestType) {
+    public CipherRequest(CipherRequestType requestType) {
         this.requestType = requestType;
     }
     
-    public VCipherRequest(VCipherRequestType requestType, byte[] bytes) {
+    public CipherRequest(CipherRequestType requestType, byte[] bytes) {
         this.requestType = requestType;
         this.bytes = bytes;
     }
 
-    public VCipherRequest(VCipherRequestType requestType, byte[] bytes, byte[] iv) {
+    public CipherRequest(CipherRequestType requestType, byte[] bytes, byte[] iv) {
         this.requestType = requestType;
         this.bytes = bytes;
         this.iv = iv;
