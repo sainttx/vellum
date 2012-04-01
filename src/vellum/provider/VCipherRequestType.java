@@ -11,6 +11,10 @@ package vellum.provider;
 public enum VCipherRequestType {
     PING,
     ENCIPHER,
-    DECIPHER;
+    DECIPHER,
+    START,
+    GRANT,
+    REVOKE,
+    GENKEY
     
 }
