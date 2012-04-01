@@ -8,7 +8,7 @@ package vellum.provider;
  *
  * @author evan
  */
-public class VTestProperties {
+public class TestProperties {
     String providerCert = "/evans/test/provider.cert";
     String providerKeyStoreFile = "/evans/test/providerKeyStore.ks";
     String providerTrustStoreFile = "/evans/test/providerTrustStore.ks";

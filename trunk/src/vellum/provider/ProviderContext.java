@@ -18,11 +18,11 @@ import javax.net.ssl.*;
  *
  * @author evan
  */
-public class VProviderContext {
+public class ProviderContext {
     public static final String CHARSET = "UTF8";
-    public static final VProviderContext instance = new VProviderContext();
+    public static final ProviderContext instance = new ProviderContext();
     
-    VProviderConfig properties;
+    ProviderConfig properties;
     char[] keyStorePassword;
     char[] trustStorePassword;
     char[] keyPassword;
@@ -36,10 +36,10 @@ public class VProviderContext {
     TrustManager[] trustManagers;
     SecureRandom secureRandom;
 
-    private VProviderContext() {        
+    private ProviderContext() {        
     }
     
-    public void config(VProviderConfig properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
+    public void config(ProviderConfig properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
         this.properties = properties;
         this.keyStorePassword = keyStorePassword;        
         this.trustStorePassword = trustStorePassword;        
@@ -52,7 +52,7 @@ public class VProviderContext {
     }
     
     public void init() throws IOException {
-        VProviderConnection connection = new VProviderConnection();
+        ProviderConnection connection = new ProviderConnection();
         connection.open();
         connection.close();      
     }
@@ -96,7 +96,7 @@ public class VProviderContext {
         }
     }
 
-    public static VProviderContext getInstance() {
+    public static ProviderContext getInstance() {
         return instance;
     }
         

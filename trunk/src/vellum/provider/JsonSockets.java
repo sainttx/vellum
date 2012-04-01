@@ -14,12 +14,12 @@ import vellum.logger.LogrFactory;
  *
  * @author evan
  */
-public class VSockets {
-    static Logr logger = LogrFactory.getThreadLogger(VSockets.class);
+public class JsonSockets {
+    static Logr logger = LogrFactory.getThreadLogger(JsonSockets.class);
      
     public static void write(Socket socket, Object message) throws IOException {
         String json = new Gson().toJson(message);
-        byte[] bytes = json.getBytes(VProviderContext.CHARSET);
+        byte[] bytes = json.getBytes(ProviderContext.CHARSET);
         PrintWriter writer = new PrintWriter(socket.getOutputStream());
         writer.println(json);
         writer.flush();

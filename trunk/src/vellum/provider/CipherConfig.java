@@ -8,7 +8,7 @@ package vellum.provider;
  *
  * @author evan
  */
-public class VCipherConfig {
+public class CipherConfig {
     String serverIp = "localhost";
     String privateAlias = "cipher.private";
     String trustAlias = "provider.cert";

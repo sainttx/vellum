@@ -17,11 +17,11 @@ import java.util.Enumeration;
  *
  * @author evan
  */
-public class VKeyStoreSpi extends KeyStoreSpi {
-    VProviderContext provider = VProviderContext.instance; 
+public class KeyStoreSpi extends java.security.KeyStoreSpi {
+    ProviderContext provider = ProviderContext.instance; 
     KeyStore keyStore;
 
-    public VKeyStoreSpi() {
+    public KeyStoreSpi() {
     }
 
     @Override

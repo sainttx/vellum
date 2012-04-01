@@ -14,12 +14,12 @@ import vellum.util.Streams;
  *
  * @author evan
  */
-public class VProviderConnection {
+public class ProviderConnection {
     Logr logger = LogrFactory.getLogger(getClass());
     Socket socket;
-    VProviderContext providerContext = VProviderContext.instance;
+    ProviderContext providerContext = ProviderContext.instance;
     
-    public VProviderConnection() {
+    public ProviderConnection() {
     }
 
     public void open() throws IOException {
@@ -30,7 +30,7 @@ public class VProviderConnection {
         this.socket = providerContext.createSocket();
         logger.info("open", socket.getRemoteSocketAddress());
         if (false) {
-            VCipherResponse response = sendCipherRequest(new VCipherRequest(VCipherRequestType.PING));
+            CipherResponse response = sendCipherRequest(new CipherRequest(CipherRequestType.PING));
             logger.info("open ping response", response);
         }
     }
@@ -45,16 +45,16 @@ public class VProviderConnection {
         } 
     }
     
-    public VCipherResponse sendCipherRequest(VCipherRequest request) throws IOException {
+    public CipherResponse sendCipherRequest(CipherRequest request) throws IOException {
         logger.info("send", request);
-        return (VCipherResponse) sendSingleRequest(request, VCipherResponse.class);
+        return (CipherResponse) sendSingleRequest(request, CipherResponse.class);
     }    
     
     public Object sendSingleRequest(Object request, Class responseClass) throws IOException {
         try {
             if (socket == null) open();
-            VSockets.write(socket, request);
-            Object response = VSockets.read(socket, responseClass);
+            JsonSockets.write(socket, request);
+            Object response = JsonSockets.read(socket, responseClass);
             return response;
         } finally {
             close();

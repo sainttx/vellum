@@ -8,20 +8,20 @@ package vellum.provider;
  *
  * @author evan
  */
-public class VCipherResponseRuntimeException extends RuntimeException {
+public class CipherResponseRuntimeException extends RuntimeException {
  
-    VCipherResponse response;
+    CipherResponse response;
 
-    public VCipherResponseRuntimeException(VCipherResponse response) {
+    public CipherResponseRuntimeException(CipherResponse response) {
         super(getMessage(response));
         this.response = response;
     }
 
-    public VCipherResponse getResponse() {
+    public CipherResponse getResponse() {
         return response;
     }
         
-    public static String getMessage(VCipherResponse response) {
+    public static String getMessage(CipherResponse response) {
         return response.getResponseType().name();
     }
     

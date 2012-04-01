@@ -8,9 +8,9 @@ package vellum.provider;
  *
  * @author evan
  */
-public enum VCipherRole {
-    SUPERVISOR,
-    OPERATOR
-    
+public enum CipherResponseType {
+    PING,
+    OK,
+    ERROR;
     
 }

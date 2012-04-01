@@ -11,34 +11,34 @@ import vellum.util.Bytes;
  *
  * @author evan
  */
-public class VCipherResponse {
-    VCipherResponseType responseType;
+public class CipherResponse {
+    CipherResponseType responseType;
     String errorMessage;
     byte[] bytes;
     byte[] iv;
 
-    public VCipherResponse(VCipherResponseType responseType, byte[] bytes) {
+    public CipherResponse(CipherResponseType responseType, byte[] bytes) {
         this.responseType = responseType;
         this.bytes = bytes;
     }
 
-    public VCipherResponse(VCipherResponseType responseType, byte[] bytes, byte[] iv) {
+    public CipherResponse(CipherResponseType responseType, byte[] bytes, byte[] iv) {
         this.responseType = responseType;
         this.bytes = bytes;
         this.iv = iv;
     }
     
-    public VCipherResponse(VCipherResponseType responseType) {
+    public CipherResponse(CipherResponseType responseType) {
         this.responseType = responseType;
     }
 
-    public VCipherResponse(Throwable throwable) {
-        this.responseType = VCipherResponseType.ERROR;
+    public CipherResponse(Throwable throwable) {
+        this.responseType = CipherResponseType.ERROR;
         this.errorMessage = throwable.getMessage();
     }
     
-    public VCipherResponse(String errorMessage) {
-        this.responseType = VCipherResponseType.ERROR;
+    public CipherResponse(String errorMessage) {
+        this.responseType = CipherResponseType.ERROR;
         this.errorMessage = errorMessage;
     }
     
@@ -54,7 +54,7 @@ public class VCipherResponse {
         this.iv = iv;
     }
         
-    public VCipherResponseType getResponseType() {
+    public CipherResponseType getResponseType() {
         return responseType;
     }
     
