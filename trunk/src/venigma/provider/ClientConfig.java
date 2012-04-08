@@ -8,7 +8,7 @@ package venigma.provider;
  *
  * @author evan
  */
-public class ProviderConfig {
+public class ClientConfig {
     public String serverIp = "localhost";
     public String keyAlias = "provider.key";
     public String trustAlias = "cipher.cert";

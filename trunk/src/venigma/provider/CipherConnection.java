@@ -6,24 +6,25 @@ package venigma.provider;
 
 import java.io.IOException;
 import java.net.Socket;
-import venigma.server.CipherRequest;
-import venigma.server.CipherRequestType;
-import venigma.server.CipherResponse;
-import venigma.common.JsonSockets;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Streams;
+import venigma.common.JsonSockets;
+import venigma.server.CipherRequest;
+import venigma.server.CipherRequestType;
+import venigma.server.CipherResponse;
 
 /**
  *
  * @author evan
  */
-public class ProviderConnection {
+public class CipherConnection {
     Logr logger = LogrFactory.getLogger(getClass());
     Socket socket;
-    ProviderContext providerContext = ProviderContext.instance;
+    ClientContext clientContext;
     
-    public ProviderConnection() {
+    public CipherConnection(ClientContext clientContext) {
+        this.clientContext = clientContext;
     }
 
     public void open() throws IOException {
@@ -31,7 +32,7 @@ public class ProviderConnection {
             logger.warn("already open");
             Streams.close(socket);
         }
-        this.socket = providerContext.createSocket();
+        this.socket = clientContext.createSocket();
         logger.info("open", socket.getRemoteSocketAddress());
         if (false) {
             CipherResponse response = sendCipherRequest(new CipherRequest(CipherRequestType.PING));

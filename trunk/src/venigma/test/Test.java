@@ -4,8 +4,8 @@
  */
 package venigma.test;
 
-import venigma.provider.ProviderConfig;
-import venigma.provider.ProviderContext;
+import venigma.provider.ClientConfig;
+import venigma.provider.ClientContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.*;
@@ -27,6 +27,7 @@ import vellum.util.Bytes;
 import vellum.util.Streams;
 import venigma.common.AdminRole;
 import venigma.common.AdminUser;
+import venigma.provider.CipherConnection;
 import venigma.provider.VProvider;
 import venigma.server.*;
 
@@ -40,9 +41,12 @@ public class Test implements Runnable {
     TestProperties properties = new TestProperties(); 
     SecureRandom sr = new SecureRandom();
     
-    ProviderConfig providerConfig = new ProviderConfig();
-    ProviderContext providerContext = ProviderContext.instance;
+    ClientConfig providerConfig = new ClientConfig();
+    ClientContext providerContext = VProvider.providerContext;
     VProvider provider = new VProvider();
+
+    ClientConfig clientConfig = new ClientConfig();
+    ClientContext clientContext = new ClientContext();
     
     CipherConfig cipherConfig = new CipherConfig();
     CipherProperties cipherProperties = new CipherProperties();
@@ -88,7 +92,7 @@ public class Test implements Runnable {
         new File(cipherConfig.secretKeyStore).delete();        
     }
 
-    private void testProvider() throws Exception {
+    private void createKeystores() throws Exception {
         KeyTool.main(buildKeyToolGenKeyPairArgs(providerConfig.keyStore, providerConfig.keyAlias, "provider"));
         KeyTool.main(buildKeyToolExportCertArgs(providerConfig.keyStore, providerConfig.keyAlias, properties.providerCert));
         KeyTool.main(buildKeyToolGenKeyPairArgs(cipherConfig.keyStore, cipherConfig.privateAlias, "cipher"));
@@ -102,7 +106,11 @@ public class Test implements Runnable {
         Key key = generateKey();
         if (false) {
             importKey(cipherConfig.secretKeyStore, cipherConfig.secretAlias, key);
-        }
+        }        
+    }
+    
+    private void testProvider() throws Exception {
+        createKeystores();
         cipherContext.config(cipherConfig, cipherProperties);
         cipherContext.load(buildUserList());
         server.config(cipherContext);
@@ -114,6 +122,8 @@ public class Test implements Runnable {
         }
         loadKey(cipherConfig.keyStore, cipherConfig.privateAlias);
         server.start();
+        configClientContext();
+        sendStartRequest();
         providerContext.config(providerConfig, 
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
                 properties.keyStorePass.toCharArray());
@@ -121,16 +131,18 @@ public class Test implements Runnable {
         testCipher();
         server.close();
     }
+
+    private void configClientContext() throws Exception {
+        clientContext.config(providerConfig, 
+                properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
+                properties.keyStorePass.toCharArray());
+        clientContext.init();
+    }
     
-    private List<AdminUser> buildUserList() {
-        List<AdminUser> userList = new ArrayList();
-        AdminUser user0 = new AdminUser(properties.username0, properties.username0, AdminRole.SUPERVISOR, true);
-        AdminUser user1 = new AdminUser(properties.username1, properties.username1, AdminRole.OPERATOR, true);
-        AdminUser user2 = new AdminUser(properties.username2, properties.username2, AdminRole.OPERATOR, true);
-        userList.add(user0);
-        userList.add(user1);
-        userList.add(user2);
-        return userList;
+    private void sendStartRequest() throws Exception {
+        CipherConnection clientConnection = new CipherConnection(clientContext);
+        CipherResponse response = clientConnection.sendCipherRequest(new CipherRequest(CipherRequestType.START));
+        logger.info("client start response", response);
     }
     
     private void testCipher() throws Exception {
@@ -175,6 +187,17 @@ public class Test implements Runnable {
         return key;
     }
 
+    private List<AdminUser> buildUserList() {
+        List<AdminUser> userList = new ArrayList();
+        AdminUser user0 = new AdminUser(properties.username0, properties.username0, AdminRole.SUPERVISOR, true);
+        AdminUser user1 = new AdminUser(properties.username1, properties.username1, AdminRole.OPERATOR, true);
+        AdminUser user2 = new AdminUser(properties.username2, properties.username2, AdminRole.OPERATOR, true);
+        userList.add(user0);
+        userList.add(user1);
+        userList.add(user2);
+        return userList;
+    }
+        
     private String[] buildKeyToolGenSecKeyArgs(String secretKeyStoreFile, String secretKeyAlias) {
         return new String[] {
             "-genseckey", 
