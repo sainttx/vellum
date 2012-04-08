@@ -4,6 +4,8 @@
  */
 package venigma.server;
 
+import venigma.common.AdminRole;
+
 /**
  *
  * @author evan
@@ -15,7 +17,7 @@ public class CipherRequest {
     String keyAlias;
     int keyRevision;
     String username;
-    CipherRole role;
+    AdminRole role;
 
     public CipherRequest(CipherRequestType requestType) {
         this.requestType = requestType;

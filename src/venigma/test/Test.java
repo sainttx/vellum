@@ -9,6 +9,8 @@ import venigma.provider.ProviderContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -23,6 +25,8 @@ import vellum.logger.LogrFactory;
 import vellum.util.Base64;
 import vellum.util.Bytes;
 import vellum.util.Streams;
+import venigma.common.AdminRole;
+import venigma.common.AdminUser;
 import venigma.provider.VProvider;
 import venigma.server.*;
 
@@ -51,6 +55,15 @@ public class Test implements Runnable {
             process();
         } catch (Exception e) {
             e.printStackTrace(System.err);
+        }
+    }
+
+    public void process() throws Exception {
+        setProperties();
+        deleteKeyStores();
+        testSecretKey();
+        if (true) {
+            testProvider();
         }
     }
     
@@ -91,6 +104,7 @@ public class Test implements Runnable {
             importKey(cipherConfig.secretKeyStore, cipherConfig.secretAlias, key);
         }
         cipherContext.config(cipherConfig, cipherProperties);
+        cipherContext.load(buildUserList());
         server.config(cipherContext);
         listProviders();
         if (false) {
@@ -106,6 +120,17 @@ public class Test implements Runnable {
         providerContext.init();        
         testCipher();
         server.close();
+    }
+    
+    private List<AdminUser> buildUserList() {
+        List<AdminUser> userList = new ArrayList();
+        AdminUser user0 = new AdminUser(properties.username0, properties.username0, AdminRole.SUPERVISOR, true);
+        AdminUser user1 = new AdminUser(properties.username1, properties.username1, AdminRole.OPERATOR, true);
+        AdminUser user2 = new AdminUser(properties.username2, properties.username2, AdminRole.OPERATOR, true);
+        userList.add(user0);
+        userList.add(user1);
+        userList.add(user2);
+        return userList;
     }
     
     private void testCipher() throws Exception {
@@ -142,15 +167,6 @@ public class Test implements Runnable {
         logger.info(Bytes.formatHex(aesEncryptCipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV()));
     }
     
-    public void process() throws Exception {
-        setProperties();
-        deleteKeyStores();
-        testSecretKey();
-        if (true) {
-            testProvider();
-        }
-    }
-        
     private Key generateKey() throws Exception {
         KeyGenerator generator = KeyGenerator.getInstance("AES");        
         generator.init(256, sr);

@@ -10,9 +10,11 @@ package venigma.server;
  */
 public enum CipherRequestType {
     PING,
+    CHECK,
     ENCIPHER,
     DECIPHER,
     START,
+    STOP,
     GRANT,
     REVOKE,
     GENKEY
