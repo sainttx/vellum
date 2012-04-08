@@ -91,9 +91,17 @@ public class CipherHandler {
         } else if (request.requestType == CipherRequestType.REVOKE) {
             reply(revoke());
         } else if (request.requestType == CipherRequestType.ENCIPHER) {
-            reply(encrypt());
+            if (!context.isStarted()) {
+                reply(new CipherResponse(CipherResponseType.ERROR_NOT_STARTED));
+            } else {
+                reply(encrypt());
+            }
         } else if (request.requestType == CipherRequestType.DECIPHER) {
-            reply(decrypt());
+            if (!context.isStarted()) {
+                reply(new CipherResponse(CipherResponseType.ERROR_NOT_STARTED));
+            } else {
+                reply(decrypt());
+            }
         }
     }
     
@@ -117,6 +125,7 @@ public class CipherHandler {
     }
     
     protected CipherResponse start() throws Exception {
+        context.setStarted(true);
         return new CipherResponse(CipherResponseType.OK);
     }
 

@@ -11,6 +11,7 @@ package venigma.server;
 public enum CipherResponseType {
     PING,
     OK,
-    ERROR;
+    ERROR,
+    ERROR_NOT_STARTED;
     
 }
