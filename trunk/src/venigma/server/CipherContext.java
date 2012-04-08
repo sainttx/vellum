@@ -31,6 +31,7 @@ public class CipherContext {
     InetSocketAddress address;
     InetAddress inetAddress;
     CipherStorage storage = new CipherStorage();
+    boolean started = false;
     
     public CipherContext() {
     }
@@ -59,5 +60,13 @@ public class CipherContext {
     public void load(List<AdminUser> userList) throws Exception {
         storage.init(userList);
     }
-    
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
+        
 }
