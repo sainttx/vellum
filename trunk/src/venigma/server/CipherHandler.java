@@ -80,6 +80,16 @@ public class CipherHandler {
         logger.info("received", request);
         if (request.requestType == CipherRequestType.PING) {
             reply(new CipherResponse(CipherResponseType.PING));
+        } else if (request.requestType == CipherRequestType.START) {
+            reply(start());
+        } else if (request.requestType == CipherRequestType.STOP) {
+            reply(stop());
+        } else if (request.requestType == CipherRequestType.CHECK) {
+            reply(check());
+        } else if (request.requestType == CipherRequestType.GRANT) {
+            reply(grant());
+        } else if (request.requestType == CipherRequestType.REVOKE) {
+            reply(revoke());
         } else if (request.requestType == CipherRequestType.ENCIPHER) {
             reply(encrypt());
         } else if (request.requestType == CipherRequestType.DECIPHER) {
@@ -105,5 +115,25 @@ public class CipherHandler {
         byte[] encryptedBytes = aesEncryptCipher.doFinal(request.getBytes());
         return new CipherResponse(CipherResponseType.OK, encryptedBytes, iv);
     }
-   
+    
+    protected CipherResponse start() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+
+    protected CipherResponse check() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+    
+    protected CipherResponse stop() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+    
+    protected CipherResponse grant() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+
+    protected CipherResponse revoke() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+    
 }

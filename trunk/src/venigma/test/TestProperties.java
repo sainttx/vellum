@@ -28,5 +28,7 @@ public class TestProperties {
     String secretKeyAlg = "AES";
     int secretKeySize = 256;
     
-    
+    String username0 = "evan";
+    String username1 = "bryan";
+    String username2 = "patrick";
 }

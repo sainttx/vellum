@@ -2,13 +2,13 @@
  * Copyright Evan Summers
  * 
  */
-package venigma.server;
+package venigma.common;
 
 /**
  *
  * @author evan
  */
-public enum CipherRole {
+public enum AdminRole {
     SUPERVISOR,
     OPERATOR
     

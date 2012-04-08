@@ -10,11 +10,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import venigma.common.AdminUser;
 
 /**
  *
@@ -28,6 +30,7 @@ public class CipherContext {
     SSLContext sslContext;
     InetSocketAddress address;
     InetAddress inetAddress;
+    CipherStorage storage = new CipherStorage();
     
     public CipherContext() {
     }
@@ -52,4 +55,9 @@ public class CipherContext {
         tmf.init(ts);
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), sr);
     }
+    
+    public void load(List<AdminUser> userList) throws Exception {
+        storage.init(userList);
+    }
+    
 }
