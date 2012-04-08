@@ -18,11 +18,10 @@ import javax.net.ssl.*;
  *
  * @author evan
  */
-public class ProviderContext {
+public class ClientContext {
     public static final String CHARSET = "UTF8";
-    public static final ProviderContext instance = new ProviderContext();
     
-    ProviderConfig properties;
+    ClientConfig config;
     char[] keyStorePassword;
     char[] trustStorePassword;
     char[] keyPassword;
@@ -35,12 +34,14 @@ public class ProviderContext {
     KeyManager[] keyManagers;
     TrustManager[] trustManagers;
     SecureRandom secureRandom;
-
-    private ProviderContext() {        
-    }
+    boolean configured = false; 
     
-    public void config(ProviderConfig properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
-        this.properties = properties;
+    public ClientContext() {        
+    }
+
+    public void config(ClientConfig properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
+        configured = true;
+        this.config = properties;
         this.keyStorePassword = keyStorePassword;        
         this.trustStorePassword = trustStorePassword;        
         this.keyPassword = keyPassword;        
@@ -52,14 +53,14 @@ public class ProviderContext {
     }
     
     public void init() throws IOException {
-        ProviderConnection connection = new ProviderConnection();
+        CipherConnection connection = new CipherConnection(this);
         connection.open();
         connection.close();      
     }
     
     private void initKeyManagers() throws Exception {
         keyStore = KeyStore.getInstance("JCEKS");
-        InputStream inputStream = new FileInputStream(properties.keyStore);
+        InputStream inputStream = new FileInputStream(config.keyStore);
         keyStore.load(inputStream, keyStorePassword);
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);
@@ -68,7 +69,7 @@ public class ProviderContext {
 
     private void initTrustManagers() throws Exception {
         trustStore = KeyStore.getInstance("JCEKS");
-        InputStream inputStream = new FileInputStream(properties.trustStore);
+        InputStream inputStream = new FileInputStream(config.trustStore);
         trustStore.load(inputStream, trustStorePassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
         trustManagerFactory.init(trustStore);        
@@ -88,17 +89,15 @@ public class ProviderContext {
         return keyStorePassword;
     }
 
-    public Socket createSocket() throws IOException {
+    public Socket createSocket() throws IOException, IllegalArgumentException {
+        if (!configured) {
+            throw new IllegalArgumentException(ProviderResources.CONTEXT_NOT_INITIALISED);
+        }        
         if (false) {
             return new Socket(serverSocketAddress.getAddress(), serverSocketAddress.getPort());
         } else {
             return sslContext.getSocketFactory().createSocket(serverSocketAddress.getAddress(), serverSocketAddress.getPort());
         }
     }
-
-    public static ProviderContext getInstance() {
-        return instance;
-    }
-        
     
 }

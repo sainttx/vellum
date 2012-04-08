@@ -4,7 +4,7 @@
  */
 package venigma.common;
 
-import venigma.provider.ProviderContext;
+import venigma.provider.ClientContext;
 import com.google.gson.Gson;
 import java.io.*;
 import java.net.Socket;
@@ -20,7 +20,7 @@ public class JsonSockets {
      
     public static void write(Socket socket, Object message) throws IOException {
         String json = new Gson().toJson(message);
-        byte[] bytes = json.getBytes(ProviderContext.CHARSET);
+        byte[] bytes = json.getBytes(ClientContext.CHARSET);
         PrintWriter writer = new PrintWriter(socket.getOutputStream());
         writer.println(json);
         writer.flush();

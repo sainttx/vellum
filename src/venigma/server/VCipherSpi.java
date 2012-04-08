@@ -4,7 +4,7 @@
  */
 package venigma.server;
 
-import venigma.provider.ProviderConnection;
+import venigma.provider.CipherConnection;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
@@ -13,17 +13,16 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import venigma.provider.VProvider;
 
 /**
  *
  * @author evan
  */
 public final class VCipherSpi extends javax.crypto.CipherSpi {
-    static String ERROR_MESSAGE_NO_IV_SPEC = "VCipher requires init with IvParameterSpec";
-    static String ERROR_MESSAGE_NO_MODE = "VCipher requires init with op mode (and IvParameterSpec)";
     
     Logr logger = LogrFactory.getLogger(getClass());
-    ProviderConnection connection = new ProviderConnection();
+    CipherConnection connection = new CipherConnection(VProvider.providerContext);
     int opmode;
     byte[] iv = new byte[16];
     
@@ -90,7 +89,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
         } else if (aps instanceof IvParameterSpec) {
             init(opmode, sr);
         } else {
-            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
+            throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_IV_SPEC);
         }
     }
 
@@ -104,7 +103,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
                 init(opmode, sr);
             }
         } catch (InvalidParameterSpecException e) {
-            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC, e);
+            throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_IV_SPEC, e);
 
         }
     }
@@ -127,7 +126,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
             } else if (opmode == Cipher.DECRYPT_MODE) {
                 return decrypt(input);                
             } else {
-                throw new RuntimeException(ERROR_MESSAGE_NO_MODE);
+                throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_MODE);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -136,7 +135,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
 
     private byte[] encrypt(byte[] input) throws IOException {
         if (iv == null) {
-            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
+            throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_IV_SPEC);
         }
         CipherRequest request = new CipherRequest(CipherRequestType.ENCIPHER, input, iv);
         CipherResponse response = connection.sendCipherRequest(request);
@@ -149,7 +148,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
 
     private byte[] decrypt(byte[] input) throws IOException {
         if (iv == null) {
-            throw new RuntimeException(ERROR_MESSAGE_NO_IV_SPEC);
+            throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_IV_SPEC);
         }
         CipherRequest request = new CipherRequest(CipherRequestType.DECIPHER, input, iv);
         CipherResponse response = connection.sendCipherRequest(request);

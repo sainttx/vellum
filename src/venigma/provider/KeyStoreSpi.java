@@ -4,7 +4,7 @@
  */
 package venigma.provider;
 
-import venigma.provider.ProviderContext;
+import venigma.provider.ClientContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,7 +19,7 @@ import java.util.Enumeration;
  * @author evan
  */
 public class KeyStoreSpi extends java.security.KeyStoreSpi {
-    ProviderContext provider = ProviderContext.instance; 
+    ClientContext provider = VProvider.providerContext;
     KeyStore keyStore;
 
     public KeyStoreSpi() {

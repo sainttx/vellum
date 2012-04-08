@@ -13,9 +13,9 @@ import java.security.Key;
 import java.security.KeyStore;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
-import venigma.common.JsonSockets;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import venigma.common.JsonSockets;
 
 /**
  *
