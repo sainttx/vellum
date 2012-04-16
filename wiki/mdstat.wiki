@@ -26,13 +26,12 @@ Where our monitoring script grep's `/proc/mdstat` psuedo file for underscores.
 {{{
 root@server ~ # cat /scripts/check_mdstat.sh 
 
-cat /proc/mdstat | grep -q "_"
-if [ $? -eq 0 ]
+if cat /proc/mdstat | grep -q "_"
 then
   dmesg | grep "error\|sda\|sdb\|disk"
   mdstat /dev/md2 --detail
   cat /proc/mdstat 
-  cat /proc/mdstat | mail -s "mdstat disk error" evanx@gmail.com
+  cat /proc/mdstat | mail -s "mdstat disk error on `hostname -s`" evanx@gmail.com
 fi
 }}}
 
