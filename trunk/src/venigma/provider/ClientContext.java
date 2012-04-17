@@ -50,9 +50,10 @@ public class ClientContext {
         initKeyManagers();
         initTrustManagers();
         initSSLContext();
+        init();
     }
     
-    public void init() throws IOException {
+    private void init() throws IOException {
         CipherConnection connection = new CipherConnection(this);
         connection.open();
         connection.close();      

@@ -10,7 +10,8 @@ package venigma.provider;
  */
 public class ClientConfig {
     public String serverIp = "localhost";
-    public String keyAlias = "provider.key";
+    public String keyAlias = "client.key";
+    public String cn = "client";
     public String trustAlias = "cipher.cert";
     public int sslPort = 7443;
     public String keyStore; 

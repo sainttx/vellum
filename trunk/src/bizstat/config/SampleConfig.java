@@ -15,12 +15,9 @@ import bizstat.entity.Service;
  */
 public class SampleConfig {
     ContactGroup ipay = new ContactGroup();
-    ContactGroup itronFin = new ContactGroup();
-    Contact evans = new Contact();
-    Contact hentyw = new Contact();
-    Contact brandonh = new Contact();
-    Host biz1 = new Host();
-    Host biz3 = new Host();
+    ContactGroup itron = new ContactGroup();
+    Contact evans = new Contact("evan.summers@gmail.com", "0827745205");
+    Host bizswitch = new Host("BizSwitch.net");
     Service qamps = new Service();
     Service fin = new Service();
     
