@@ -13,6 +13,7 @@ import java.security.Key;
 import java.security.KeyStore;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import javax.net.ssl.SSLSocket;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import venigma.common.JsonSockets;
@@ -25,8 +26,6 @@ public class CipherHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CipherContext context;
     Key key;
-    Cipher aesEncryptCipher;
-    Cipher aesDecryptCipher;
     Socket socket;
     CipherRequest request;
     boolean running = true;
@@ -36,27 +35,12 @@ public class CipherHandler {
     }
     
     public void init() throws Exception {
-        key = loadKey(context.config.secretKeyStore, context.config.secretAlias, 
-                context.properties.secretKeyStorePassword, context.properties.secretKeyPassword);
-        aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        aesEncryptCipher.init(Cipher.ENCRYPT_MODE, key);
-        logger.info("initialised");        
     }
     
-    private Key loadKey(String keyStoreFile, String keyAlias, char[] storePass, char[] keyPass) throws Exception {
-        File file = new File(keyStoreFile);
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        keyStore.load(new FileInputStream(file), storePass);
-        logger.info("loadKey", keyStore.getType(), keyStore.getProvider().getName());
-        Key key = keyStore.getKey(keyAlias, keyPass);
-        logger.info(key.getAlgorithm(), key.getFormat());
-        return key;
-    }
-        
-    public void handle(Socket socket) {
+    public void handle(SSLSocket socket) {
         this.socket = socket;
         try {
+            //logger.info("handle", socket.getSession().getPeerCertificateChain().toString());
             process();
         } catch (IOException e) {
             logger.warn(e.getMessage());
@@ -111,16 +95,16 @@ public class CipherHandler {
     }
 
     protected CipherResponse decrypt() throws Exception {
-        IvParameterSpec ips = new IvParameterSpec(request.iv);
-        aesDecryptCipher.init(Cipher.DECRYPT_MODE, key, ips);
-        byte[] decryptedBytes = aesDecryptCipher.doFinal(request.getBytes());
+        Cipher cipher = context.getCipher(Cipher.DECRYPT_MODE, request.iv);
+        byte[] decryptedBytes = cipher.doFinal(request.getBytes());
         return new CipherResponse(CipherResponseType.OK, decryptedBytes);
     }
 
     protected CipherResponse encrypt() throws Exception {
-        AlgorithmParameters params = aesEncryptCipher.getParameters();
+        Cipher cipher = context.getCipher(Cipher.ENCRYPT_MODE);
+        AlgorithmParameters params = cipher.getParameters();
         byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-        byte[] encryptedBytes = aesEncryptCipher.doFinal(request.getBytes());
+        byte[] encryptedBytes = cipher.doFinal(request.getBytes());
         return new CipherResponse(CipherResponseType.OK, encryptedBytes, iv);
     }
     

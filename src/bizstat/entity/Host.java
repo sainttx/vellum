@@ -13,5 +13,11 @@ public class Host {
     String label;
     String ipNumber;
     String fqdn;
+
+    public Host(String name) {
+        this.name = name;
+    }
+    
+    
     
 }

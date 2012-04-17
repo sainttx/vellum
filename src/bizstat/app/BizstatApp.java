@@ -20,7 +20,7 @@ public class BizstatApp {
     }
     
     public void init() {
-        new SampleConfig();
+        SampleConfig sampleConfig = new SampleConfig();
     }
     
     

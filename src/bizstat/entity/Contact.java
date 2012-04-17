@@ -15,4 +15,10 @@ public class Contact extends StringIdEntity {
     String label;
     String email;
     String sms;
+
+    public Contact(String email, String sms) {
+        this.email = email;
+        this.sms = sms;
+    }
+    
 }
