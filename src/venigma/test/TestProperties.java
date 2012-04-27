@@ -12,7 +12,7 @@ public class TestProperties {
     String client0Cert = "/evans/test/client0.cert";
     String client0KeyAlias = "client0";
     String client0CertAlias = "client0";
-    String client0Cn = "client0";
+    String client0Cn = "evan";
     String client0KeyStoreFile = "/evans/test/client0KeyStore.ks";
     String client0TrustStoreFile = "/evans/test/client0TrustStore.ks";
 

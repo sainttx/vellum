@@ -6,6 +6,7 @@ package venigma.server;
 
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import venigma.common.AdminRole;
 import venigma.common.AdminUser;
 import venigma.provider.ClientType;
 
@@ -15,11 +16,12 @@ import venigma.provider.ClientType;
  */
 public class CipherRequestAuth {
     static Logr logger = LogrFactory.getLogger(CipherRequestAuth.class);
-    CipherContext context;
+    CipherContext context;    
     
     public CipherRequestAuth(CipherContext context) {
         this.context = context;
     }
+    
     public CipherResponseType authUser(ClientType clientType) {
         if (clientType == ClientType.PROVIDER) {
             return CipherResponseType.ERROR_NOT_USER;
@@ -51,11 +53,18 @@ public class CipherRequestAuth {
         }
         logger.info("auth", subject);
         ClientType clientType = null;
-        if (subject.startsWith("CN=provider")) {
+        if (subject.startsWith("CN=provider,")) {
             clientType = ClientType.PROVIDER;
         } else {
-            for (AdminUser adminUser : context.storage.userList) {
+            for (AdminUser adminUser : context.storage.getAdminUserStorage().getList()) {
                 logger.info(adminUser);
+                if (subject.startsWith("CN=" + adminUser.getUsername() + ",")) {
+                    if (adminUser.getRole() == AdminRole.SUPERVISOR) {
+                        clientType = ClientType.ADMIN;
+                    } else {
+                        clientType = ClientType.USER;                        
+                    }
+                }
             }
         }
         if (request.requestType == CipherRequestType.START) {

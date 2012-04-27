@@ -29,7 +29,7 @@ import venigma.server.*;
  *
  * @author evan
  */
-public class Test implements Runnable {
+public class TestVenigma implements Runnable {
     Logr logger = LogrFactory.getLogger(getClass());    
 
     TestProperties properties = new TestProperties(); 
@@ -173,6 +173,9 @@ public class Test implements Runnable {
         KeyTool.main(keyToolBuilder.buildKeyToolImportCertArgs(cipherConfig.trustKeyStore, properties.client2CertAlias, properties.client2Cert));
         KeyTool.main(keyToolBuilder.buildKeyToolExportCertArgs(cipherConfig.privateKeyStore, cipherConfig.privateAlias, properties.cipherCert));
         KeyTool.main(keyToolBuilder.buildKeyToolImportCertArgs(providerConfig.trustStore, providerConfig.trustAlias, properties.cipherCert));
+        KeyTool.main(keyToolBuilder.buildKeyToolImportCertArgs(client0Config.trustStore, providerConfig.trustAlias, properties.cipherCert));
+        KeyTool.main(keyToolBuilder.buildKeyToolImportCertArgs(client1Config.trustStore, providerConfig.trustAlias, properties.cipherCert));
+        KeyTool.main(keyToolBuilder.buildKeyToolImportCertArgs(client2Config.trustStore, providerConfig.trustAlias, properties.cipherCert));
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(cipherConfig.privateKeyStore));
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(cipherConfig.trustKeyStore));
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(providerConfig.keyStore));
@@ -207,7 +210,7 @@ public class Test implements Runnable {
     }
         
     public static void main(String[] args) {
-        Test instance = new Test() ;
+        TestVenigma instance = new TestVenigma() ;
         try {
             if (true) {
                 new Thread(instance).start();
