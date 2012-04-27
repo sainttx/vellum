@@ -10,6 +10,8 @@ import java.security.Key;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
@@ -142,7 +144,7 @@ public class CipherHandler {
     }
     
     protected CipherResponse grant() throws Exception {
-        AdminUser user = context.storage.getAdminUser(request.getUsername());
+        AdminUser user = context.storage.getAdminUserStorage().get(request.getUsername());
         if (user == null) {
             return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
         }
@@ -150,12 +152,12 @@ public class CipherHandler {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_GRANTED);
         }
         user.setEnabled(true);
-        context.storage.update(user);
+        context.storage.getAdminUserStorage().update(user);
         return new CipherResponse(CipherResponseType.OK);
     }
 
     protected CipherResponse revoke() throws Exception {
-        AdminUser user = context.storage.getAdminUser(request.getUsername());
+        AdminUser user = context.storage.getAdminUserStorage().get(request.getUsername());
         if (user == null) {
             return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
         }
@@ -163,22 +165,30 @@ public class CipherHandler {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_REVOKED);
         }
         user.setEnabled(false);
-        context.storage.update(user);
+        context.storage.getAdminUserStorage().update(user);
         return new CipherResponse(CipherResponseType.OK);
     }
 
     protected CipherResponse addUser() throws Exception {
         AdminUser user = request.getUser();
-        if (context.storage.exists(user.getUsername())) {
+        if (context.storage.getAdminUserStorage().exists(user.getUsername())) {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_EXISTS);
         }        
-        context.storage.addAdminUser(user);        
+        context.storage.getAdminUserStorage().add(user);        
         return new CipherResponse(CipherResponseType.OK);
     }
     
-
     protected CipherResponse genKey() throws Exception {
-        
+        KeyGenerator aes = KeyGenerator.getInstance("AES");
+        if (request.getKeySize() == 0) {
+            return new CipherResponse(CipherResponseType.ERROR_NO_KEY_SIZE);            
+        }
+        if (request.getKeySize() < 128 && request.getKeySize() != 192 && request.getKeySize() != 256) {
+            return new CipherResponse(CipherResponseType.ERROR_INVALID_KEY_SIZE);            
+        }
+        aes.init(request.getKeySize(), context.sr);
+        SecretKey key = aes.generateKey();
+        context.save(key, request.getKeyAlias(), request.getKeyRevision());
         return new CipherResponse(CipherResponseType.OK);
     }
 }

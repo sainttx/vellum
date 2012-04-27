@@ -17,6 +17,7 @@ public class CipherRequest {
     byte[] iv;
     String keyAlias;
     int keyRevision;
+    int keySize;
     String username;
     AdminRole role;
     AdminUser user;
@@ -67,7 +68,19 @@ public class CipherRequest {
     public AdminRole getRole() {
         return role;
     }
-    
+
+    public int getKeySize() {
+        return keySize;
+    }
+
+    public int getKeyRevision() {
+        return keyRevision;
+    }
+
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+            
     @Override
     public String toString() {
         return requestType.name();

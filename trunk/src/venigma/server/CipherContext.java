@@ -4,6 +4,7 @@
  */
 package venigma.server;
 
+import venigma.server.storage.CipherStorage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -26,9 +28,10 @@ import vellum.logger.LogrFactory;
  * @author evan
  */
 public class CipherContext {
+
     Logr logger = LogrFactory.getLogger(getClass());
-    CipherConfig config;    
-    CipherProperties properties;  
+    CipherConfig config;
+    CipherProperties properties;
     CipherRequestAuth requestAuth;
     SecureRandom sr = new SecureRandom();
     SSLContext sslContext;
@@ -36,14 +39,15 @@ public class CipherContext {
     InetAddress inetAddress;
     CipherStorage storage = new CipherStorage();
     boolean started = false;
-    Key key; 
-    SSLServerSocket serverSocket; 
-    
+    Key key;
+    SSLServerSocket serverSocket;
+    KeyStore secretKeyStore;
+
     public CipherContext() {
     }
 
     public void config(CipherConfig config, CipherProperties properties) throws Exception {
-        this.config = config;        
+        this.config = config;
         this.properties = properties;
         inetAddress = InetAddress.getByName(config.serverIp);
         address = new InetSocketAddress(inetAddress, config.sslPort);
@@ -62,16 +66,14 @@ public class CipherContext {
         tmf.init(ts);
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), sr);
         logger.info("cipher ssl context initialised", hashCode());
-        loadKey();
+        secretKeyStore = KeyStore.getInstance("JCEKS");
+        secretKeyStore.load(new FileInputStream(config.secretKeyStore), properties.secretKeyStorePassword);
+        key = loadKey(config.secretAlias, properties.secretKeyPassword);
         initServerSocket();
-        storage.init(properties.userList); 
+        storage.getAdminUserStorage().init(properties.userList);
         requestAuth = new CipherRequestAuth(this);
     }
 
-    private void loadKey() throws Exception {
-        key = loadKey(config.secretKeyStore, config.secretAlias, properties.secretKeyStorePassword, properties.secretKeyPassword);                        
-    }
-        
     private void initServerSocket() throws IOException {
         this.serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(
                 config.sslPort, config.backlog, inetAddress);
@@ -81,17 +83,25 @@ public class CipherContext {
     public SSLServerSocket getServerSocket() {
         return serverSocket;
     }
-    
-    private Key loadKey(String keyStoreFile, String keyAlias, char[] storePass, char[] keyPass) throws Exception {
-        File file = new File(keyStoreFile);
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        keyStore.load(new FileInputStream(file), storePass);
-        logger.info("loadKey", keyStore.getType(), keyStore.getProvider().getName());
-        Key key = keyStore.getKey(keyAlias, keyPass);
+
+    private Key loadKey(String keyAlias, char[] keyPass) throws Exception {
+        logger.info("loadKey", secretKeyStore.getType(), secretKeyStore.getProvider().getName());
+        Key key = secretKeyStore.getKey(keyAlias, keyPass);
         logger.info(key.getAlgorithm(), key.getFormat());
         return key;
     }
+
+    public String getKeyAlias(String keyAlias, int keyRevision) {
+        return keyAlias + "." + keyRevision;
+    }
     
+    public void save(SecretKey key, String keyAlias, int keyRevision) throws Exception {
+        String alias = getKeyAlias(keyAlias, keyRevision);
+        KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
+        KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(properties.secretKeyPassword);
+        secretKeyStore.setEntry(alias, entry, prot);        
+    }
+
     public Cipher getCipher(int opmode, byte[] iv) throws Exception {
         IvParameterSpec ips = new IvParameterSpec(iv);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -104,7 +114,7 @@ public class CipherContext {
         cipher.init(opmode, key);
         return cipher;
     }
-    
+
     public boolean isStarted() {
         return started;
     }
@@ -114,6 +124,4 @@ public class CipherContext {
         if (true) {
         }
     }
-
-        
 }

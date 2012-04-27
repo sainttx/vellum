@@ -10,7 +10,7 @@ import java.util.Date;
  *
  * @author evan
  */
-public class AdminUser {
+public class AdminUser implements IdEntity {
     String username;
     String displayName;
     AdminRole role;
@@ -58,5 +58,16 @@ public class AdminUser {
     public void setUsername(String username) {
         this.username = username;
     }
-   
+
+    @Override
+    public Comparable getId() {
+        return username;
+    }
+
+    @Override
+    public String toString() {
+        return getId().toString();
+    }
+
+    
 }
