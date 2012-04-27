@@ -4,6 +4,8 @@
  */
 package venigma.common;
 
+import java.util.Date;
+
 /**
  *
  * @author evan
@@ -13,7 +15,11 @@ public class AdminUser {
     String displayName;
     AdminRole role;
     boolean enabled;
-
+    String email;
+    Date timeCreated;
+    String createdBy;
+    String secondedBy;
+    
     public AdminUser(String username, String displayName, AdminRole role, boolean enabled) {
         this.username = username;
         this.displayName = displayName;
