@@ -12,7 +12,6 @@ import java.net.InetSocketAddress;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.util.List;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.KeyManagerFactory;
@@ -21,7 +20,6 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManagerFactory;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
-import venigma.common.AdminUser;
 
 /**
  *
@@ -30,7 +28,8 @@ import venigma.common.AdminUser;
 public class CipherContext {
     Logr logger = LogrFactory.getLogger(getClass());
     CipherConfig config;    
-    CipherProperties properties;    
+    CipherProperties properties;  
+    CipherRequestAuth requestAuth;
     SecureRandom sr = new SecureRandom();
     SSLContext sslContext;
     InetSocketAddress address;
@@ -66,6 +65,7 @@ public class CipherContext {
         loadKey();
         initServerSocket();
         storage.init(properties.userList); 
+        requestAuth = new CipherRequestAuth(this);
     }
 
     private void loadKey() throws Exception {
@@ -75,6 +75,7 @@ public class CipherContext {
     private void initServerSocket() throws IOException {
         this.serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(
                 config.sslPort, config.backlog, inetAddress);
+        this.serverSocket.setNeedClientAuth(true);
     }
 
     public SSLServerSocket getServerSocket() {
@@ -113,5 +114,6 @@ public class CipherContext {
         if (true) {
         }
     }
+
         
 }

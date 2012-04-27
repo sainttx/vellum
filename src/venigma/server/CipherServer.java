@@ -6,8 +6,8 @@ package venigma.server;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.SocketException;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
@@ -20,7 +20,7 @@ import vellum.util.Streams;
 public class CipherServer extends Thread implements Closeable {
     Logr logger = LogrFactory.getLogger(this);
     CipherContext context;
-    ServerSocket serverSocket; 
+    SSLServerSocket serverSocket; 
     boolean accepting = true;
     
     public CipherServer() {
@@ -28,7 +28,7 @@ public class CipherServer extends Thread implements Closeable {
     
     public void config(CipherContext context) throws Exception {
         this.context = context;
-        this.serverSocket = context.getServerSocket();
+        this.serverSocket = context.getServerSocket();        
     }
     
     @Override

@@ -17,6 +17,7 @@ public enum CipherRequestType {
     STOP,
     GRANT,
     REVOKE,
-    GENKEY
+    ADDUSER,
+    GENKEY,
     
 }

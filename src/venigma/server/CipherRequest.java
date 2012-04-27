@@ -5,6 +5,7 @@
 package venigma.server;
 
 import venigma.common.AdminRole;
+import venigma.common.AdminUser;
 
 /**
  *
@@ -18,7 +19,8 @@ public class CipherRequest {
     int keyRevision;
     String username;
     AdminRole role;
-
+    AdminUser user;
+    
     public CipherRequest(CipherRequestType requestType) {
         this.requestType = requestType;
     }
@@ -41,9 +43,34 @@ public class CipherRequest {
     public byte[] getIv() {
         return iv;
     }
-        
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUser(AdminUser user) {
+        this.user = user;
+    }
+    
+    public AdminUser getUser() {
+        return user;
+    }
+
+    public void setRole(AdminRole role) {
+        this.role = role;
+    }
+
+    public AdminRole getRole() {
+        return role;
+    }
+    
     @Override
     public String toString() {
         return requestType.name();
-    }               
+    }
+
 }

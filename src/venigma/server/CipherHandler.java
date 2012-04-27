@@ -4,18 +4,18 @@
  */
 package venigma.server;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.security.AlgorithmParameters;
 import java.security.Key;
-import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import venigma.common.AdminUser;
 import venigma.common.JsonSockets;
 
 /**
@@ -26,9 +26,11 @@ public class CipherHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CipherContext context;
     Key key;
-    Socket socket;
+    SSLSocket socket;
     CipherRequest request;
+    CipherResponseType responseType;
     boolean running = true;
+    String subject; 
     
     public CipherHandler(CipherContext context) {
         this.context = context;
@@ -40,7 +42,6 @@ public class CipherHandler {
     public void handle(SSLSocket socket) {
         this.socket = socket;
         try {
-            //logger.info("handle", socket.getSession().getPeerCertificateChain().toString());
             process();
         } catch (IOException e) {
             logger.warn(e.getMessage());
@@ -49,6 +50,16 @@ public class CipherHandler {
             reply(e);
         } finally {
         }
+    }
+
+    private String getSubject() throws SSLPeerUnverifiedException {
+        for (Certificate cert : socket.getSession().getPeerCertificates()) {
+            if (cert instanceof X509Certificate) {
+                X509Certificate x509Cert = (X509Certificate) cert;
+                return x509Cert.getSubjectDN().getName();
+            }
+        }
+        throw new RuntimeException();
     }
 
     private void reply(Throwable throwable) {
@@ -61,7 +72,12 @@ public class CipherHandler {
     
     private void process() throws Exception {
         this.request = JsonSockets.read(socket, CipherRequest.class);
-        logger.info("received", request);
+        subject = getSubject();
+        responseType = context.requestAuth.auth(request, subject);
+        if (responseType != CipherResponseType.OK) {
+            reply(new CipherResponse(responseType));            
+            return;
+        }
         if (request.requestType == CipherRequestType.PING) {
             reply(new CipherResponse(CipherResponseType.PING));
         } else if (request.requestType == CipherRequestType.START) {
@@ -70,10 +86,14 @@ public class CipherHandler {
             reply(stop());
         } else if (request.requestType == CipherRequestType.CHECK) {
             reply(check());
+        } else if (request.requestType == CipherRequestType.GENKEY) {
+            reply(genKey());
         } else if (request.requestType == CipherRequestType.GRANT) {
             reply(grant());
         } else if (request.requestType == CipherRequestType.REVOKE) {
             reply(revoke());
+        } else if (request.requestType == CipherRequestType.ADDUSER) {
+            reply(addUser());
         } else if (request.requestType == CipherRequestType.ENCIPHER) {
             if (!context.isStarted()) {
                 reply(new CipherResponse(CipherResponseType.ERROR_NOT_STARTED));
@@ -88,7 +108,7 @@ public class CipherHandler {
             }
         }
     }
-    
+            
     protected void reply(CipherResponse response) throws IOException {
         logger.info("reply", response);
         JsonSockets.write(socket, response);                
@@ -122,11 +142,43 @@ public class CipherHandler {
     }
     
     protected CipherResponse grant() throws Exception {
+        AdminUser user = context.storage.getAdminUser(request.getUsername());
+        if (user == null) {
+            return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
+        }
+        if (user.isEnabled()) { 
+            return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_GRANTED);
+        }
+        user.setEnabled(true);
+        context.storage.update(user);
         return new CipherResponse(CipherResponseType.OK);
     }
 
     protected CipherResponse revoke() throws Exception {
+        AdminUser user = context.storage.getAdminUser(request.getUsername());
+        if (user == null) {
+            return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
+        }
+        if (!user.isEnabled()) { 
+            return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_REVOKED);
+        }
+        user.setEnabled(false);
+        context.storage.update(user);
+        return new CipherResponse(CipherResponseType.OK);
+    }
+
+    protected CipherResponse addUser() throws Exception {
+        AdminUser user = request.getUser();
+        if (context.storage.exists(user.getUsername())) {
+            return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_EXISTS);
+        }        
+        context.storage.addAdminUser(user);        
         return new CipherResponse(CipherResponseType.OK);
     }
     
+
+    protected CipherResponse genKey() throws Exception {
+        
+        return new CipherResponse(CipherResponseType.OK);
+    }
 }

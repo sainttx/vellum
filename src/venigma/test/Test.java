@@ -5,22 +5,14 @@
 package venigma.test;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.security.Key;
-import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import sun.security.tools.KeyTool;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
-import vellum.util.Base64;
-import vellum.util.Bytes;
 import vellum.util.Streams;
 import venigma.common.AdminRole;
 import venigma.common.AdminUser;
@@ -98,7 +90,7 @@ public class Test implements Runnable {
     }
     
     private void configClientContext() throws Exception {
-        client0Context.config(providerConfig, 
+        client0Context.config(client0Config, 
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
                 properties.keyStorePass.toCharArray());
     }
@@ -106,7 +98,10 @@ public class Test implements Runnable {
     private void sendStartRequest() throws Exception {
         CipherConnection clientConnection = new CipherConnection(client0Context);
         CipherResponse response = clientConnection.sendCipherRequest(new CipherRequest(CipherRequestType.START));
-        logger.info("client start response", response);
+        if (response.getResponseType() != CipherResponseType.OK) {
+            logger.warn("client start response", response);
+            System.exit(1);
+        }
     }
     
     private void testCipher() throws Exception {
@@ -182,7 +177,8 @@ public class Test implements Runnable {
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(cipherConfig.trustKeyStore));
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(providerConfig.keyStore));
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(providerConfig.trustStore));
-        
+        KeyTool.main(keyToolBuilder.buildKeyToolListArgs(client0Config.keyStore));
+        KeyTool.main(keyToolBuilder.buildKeyToolListArgs(client0Config.trustStore));
     }
 
     private void deleteKeyStores() {
