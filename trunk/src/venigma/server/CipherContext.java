@@ -28,6 +28,8 @@ import vellum.util.Streams;
 import venigma.common.AdminUser;
 import venigma.server.storage.CipherStorage;
 import venigma.common.KeyInfo;
+import venigma.server.storage.StorageExceptionType;
+import venigma.server.storage.StorageRuntimeException;
 
 /**
  *
@@ -101,7 +103,9 @@ public class CipherContext {
             secretKeyStore = KeyStore.getInstance("JCEKS");
             File file = new File(config.secretKeyStore);
             if (file.exists()) {
-                secretKeyStore.load(new FileInputStream(file), properties.secretKeyStorePassword);
+                FileInputStream stream = new FileInputStream(file);
+                secretKeyStore.load(stream, properties.secretKeyStorePassword);
+                stream.close();
                 loaded = true;
             } else {
                 secretKeyStore.load(null, null);
@@ -111,16 +115,20 @@ public class CipherContext {
 
     private synchronized void saveKeyStore() throws Exception {
         String newFileName = config.secretKeyStore + ".new";
-        loadKeyStore();
-        secretKeyStore.store(new FileOutputStream(newFileName), properties.secretKeyStorePassword);
-        Streams.replaceFile(newFileName, config.secretKeyStore);
+        FileOutputStream stream = new FileOutputStream(newFileName);
+        secretKeyStore.store(stream, properties.secretKeyStorePassword);
+        stream.close();
+        Streams.renameTo(newFileName, config.secretKeyStore);
         loaded = false;
     }
     
     private SecretKey loadSecretKey(String keyAlias, char[] keyPass) throws Exception {
-        logger.info("loadKey", secretKeyStore.getType(), secretKeyStore.getProvider().getName());
+        logger.info("loadKey", keyAlias, secretKeyStore.getType(), secretKeyStore.getProvider().getName());
         loadKeyStore();
         SecretKey secretKey = (SecretKey) secretKeyStore.getKey(keyAlias, keyPass);
+        if (secretKey == null) {
+            throw new StorageRuntimeException(StorageExceptionType.KEY_NOT_FOUND, keyAlias);
+        }
         logger.info("loadKey", secretKey.getAlgorithm(), secretKey.getFormat());
         return secretKey;
     }
@@ -128,17 +136,26 @@ public class CipherContext {
     public void saveNewKey(KeyInfo keyInfo) throws Exception {
         logger.info("saveNewKey", keyInfo);        
         loadKeyStore();
+        String keyAlias = keyInfo.buildKeystoreAlias();
+        logger.info("saveNewKey keyAlias", keyAlias);        
+        if (secretKeyStore.isKeyEntry(keyAlias)) {
+            throw new StorageRuntimeException(StorageExceptionType.KEY_ALREADY_EXISTS, keyAlias);
+        }
         KeyGenerator aes = KeyGenerator.getInstance("AES");
         aes.init(keyInfo.getKeySize(), sr);
         SecretKey key = aes.generateKey();
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
         KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(properties.secretKeyPassword);
-        secretKeyStore.setEntry(keyInfo.buildKeystoreAlias(), entry, prot);        
+        secretKeyStore.setEntry(keyAlias, entry, prot);        
         storage.getKeyInfoStorage().add(keyInfo);
         saveKeyStore();
     }
 
     public void saveRevisedKey(KeyInfo keyInfo) throws Exception {
+        logger.info("saveRevisedKey", keyInfo);
+        loadKeyStore();
+        String keyAlias = keyInfo.buildKeystoreAlias();
+        logger.info("saveRevised keyAlias", keyAlias);        
         keyInfo.incrementRevisionNumber();
         KeyGenerator aes = KeyGenerator.getInstance("AES");
         aes.init(keyInfo.getKeySize(), sr);

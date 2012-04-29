@@ -177,9 +177,10 @@ public class Streams {
         }
     }
 
-    public static void replaceFile(String srcFileName, String destFileName) {
+    public static void renameTo(String srcFileName, String destFileName) {
         File srcFile = new File(srcFileName);
         File destFile = new File(destFileName);
         srcFile.renameTo(destFile);
+        logger.info("replaceFile", srcFileName, destFileName);
     }
 }
