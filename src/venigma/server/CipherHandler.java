@@ -6,7 +6,6 @@ package venigma.server;
 
 import java.io.IOException;
 import java.security.AlgorithmParameters;
-import java.security.Key;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import javax.crypto.Cipher;
@@ -19,6 +18,8 @@ import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import venigma.common.AdminUser;
 import venigma.common.JsonSockets;
+import venigma.server.storage.CipherStorage;
+import venigma.common.KeyInfo;
 
 /**
  *
@@ -27,7 +28,7 @@ import venigma.common.JsonSockets;
 public class CipherHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CipherContext context;
-    Key key;
+    CipherStorage storage;
     SSLSocket socket;
     CipherRequest request;
     CipherResponseType responseType;
@@ -36,6 +37,7 @@ public class CipherHandler {
     
     public CipherHandler(CipherContext context) {
         this.context = context;
+        this.storage = context.getStorage();
     }
     
     public void init() throws Exception {
@@ -48,7 +50,7 @@ public class CipherHandler {
         } catch (IOException e) {
             logger.warn(e.getMessage());
         } catch (Exception e) {
-            logger.warn(e.getMessage());
+            logger.warn(e);
             reply(e);
         } finally {
         }
@@ -88,13 +90,13 @@ public class CipherHandler {
             reply(stop());
         } else if (request.requestType == CipherRequestType.CHECK) {
             reply(check());
-        } else if (request.requestType == CipherRequestType.GENKEY) {
-            reply(genKey());
+        } else if (request.requestType == CipherRequestType.GENERATE_KEY) {
+            reply(generateKey());
         } else if (request.requestType == CipherRequestType.GRANT) {
             reply(grant());
         } else if (request.requestType == CipherRequestType.REVOKE) {
             reply(revoke());
-        } else if (request.requestType == CipherRequestType.ADDUSER) {
+        } else if (request.requestType == CipherRequestType.ADD_USER) {
             reply(addUser());
         } else if (request.requestType == CipherRequestType.ENCIPHER) {
             if (!context.isStarted()) {
@@ -117,13 +119,21 @@ public class CipherHandler {
     }
 
     protected CipherResponse decrypt() throws Exception {
-        Cipher cipher = context.getCipher(Cipher.DECRYPT_MODE, request.iv);
+        if (!storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+            return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
+        }
+        KeyInfo keyInfo = storage.getKeyInfoStorage().get(request.getKeyAlias());
+        Cipher cipher = context.getCipher(keyInfo, Cipher.DECRYPT_MODE, request.iv);
         byte[] decryptedBytes = cipher.doFinal(request.getBytes());
         return new CipherResponse(CipherResponseType.OK, decryptedBytes);
     }
 
     protected CipherResponse encrypt() throws Exception {
-        Cipher cipher = context.getCipher(Cipher.ENCRYPT_MODE);
+        if (!storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+            return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
+        }
+        KeyInfo keyInfo = storage.getKeyInfoStorage().get(request.getKeyAlias());
+        Cipher cipher = context.getCipher(keyInfo, Cipher.ENCRYPT_MODE);
         AlgorithmParameters params = cipher.getParameters();
         byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
         byte[] encryptedBytes = cipher.doFinal(request.getBytes());
@@ -178,17 +188,28 @@ public class CipherHandler {
         return new CipherResponse(CipherResponseType.OK);
     }
     
-    protected CipherResponse genKey() throws Exception {
-        KeyGenerator aes = KeyGenerator.getInstance("AES");
+    protected CipherResponse generateKey() throws Exception {
         if (request.getKeySize() == 0) {
             return new CipherResponse(CipherResponseType.ERROR_NO_KEY_SIZE);            
         }
-        if (request.getKeySize() < 128 && request.getKeySize() != 192 && request.getKeySize() != 256) {
+        if (request.getKeySize() != 128 && request.getKeySize() != 192 && request.getKeySize() != 256) {
             return new CipherResponse(CipherResponseType.ERROR_INVALID_KEY_SIZE);            
         }
-        aes.init(request.getKeySize(), context.sr);
-        SecretKey key = aes.generateKey();
-        context.save(key, request.getKeyAlias(), request.getKeyRevision());
+        if (storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+            return new CipherResponse(CipherResponseType.ERROR_KEY_ALREADY_EXISTS);
+        }
+        KeyInfo keyInfo = new KeyInfo(request.getKeyAlias(), request.getKeyRevision(), request.getKeySize());
+        context.saveNewKey(keyInfo);
         return new CipherResponse(CipherResponseType.OK);
     }
+    
+    protected CipherResponse reviseKey() throws Exception {
+        if (!storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+            return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
+        }
+        KeyInfo keyInfo = storage.getKeyInfoStorage().get(request.getKeyAlias());
+        context.saveRevisedKey(keyInfo);
+        return new CipherResponse(CipherResponseType.OK);
+    }
+
 }

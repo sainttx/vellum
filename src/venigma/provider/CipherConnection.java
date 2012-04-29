@@ -20,8 +20,8 @@ import venigma.server.CipherResponse;
  */
 public class CipherConnection {
     Logr logger = LogrFactory.getLogger(getClass());
-    Socket socket;
     ClientContext clientContext;
+    Socket socket;
     
     public CipherConnection(ClientContext clientContext) {
         this.clientContext = clientContext;
@@ -64,5 +64,6 @@ public class CipherConnection {
         } finally {
             close();
         }
-    }    
+    }
+
 }

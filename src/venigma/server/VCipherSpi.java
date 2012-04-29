@@ -13,6 +13,7 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import venigma.provider.ProviderContext;
 import venigma.provider.VProvider;
 
 /**
@@ -23,8 +24,10 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
     
     Logr logger = LogrFactory.getLogger(getClass());
     CipherConnection connection = new CipherConnection(VProvider.providerContext);
+    String keyAlias = VProvider.providerContext.getKeyAlias();
     int opmode;
     byte[] iv = new byte[16];
+
     
     public VCipherSpi() {
         super();
@@ -137,7 +140,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
         if (iv == null) {
             throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_IV_SPEC);
         }
-        CipherRequest request = new CipherRequest(CipherRequestType.ENCIPHER, input, iv);
+        CipherRequest request = new CipherRequest(CipherRequestType.ENCIPHER, keyAlias, input, iv);
         CipherResponse response = connection.sendCipherRequest(request);
         if (response.responseType != CipherResponseType.OK) {
             throw new CipherResponseRuntimeException(response);
@@ -150,7 +153,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
         if (iv == null) {
             throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_IV_SPEC);
         }
-        CipherRequest request = new CipherRequest(CipherRequestType.DECIPHER, input, iv);
+        CipherRequest request = new CipherRequest(CipherRequestType.DECIPHER, keyAlias, input, iv);
         CipherResponse response = connection.sendCipherRequest(request);
         if (response.responseType != CipherResponseType.OK) {
             throw new CipherResponseRuntimeException(response);

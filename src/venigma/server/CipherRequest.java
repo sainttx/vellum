@@ -21,20 +21,27 @@ public class CipherRequest {
     String username;
     AdminRole role;
     AdminUser user;
+    char[] password;
     
     public CipherRequest(CipherRequestType requestType) {
         this.requestType = requestType;
     }
     
-    public CipherRequest(CipherRequestType requestType, byte[] bytes) {
+    public CipherRequest(CipherRequestType requestType, String keyAlias, byte[] bytes) {
         this.requestType = requestType;
+        this.keyAlias = keyAlias;
         this.bytes = bytes;
     }
 
-    public CipherRequest(CipherRequestType requestType, byte[] bytes, byte[] iv) {
+    public CipherRequest(CipherRequestType requestType, String keyAlias, byte[] bytes, byte[] iv) {
         this.requestType = requestType;
+        this.keyAlias = keyAlias;
         this.bytes = bytes;
         this.iv = iv;
+    }
+
+    public void setKeyAlias(String keyAlias) {
+        this.keyAlias = keyAlias;
     }
     
     public byte[] getBytes() {
@@ -69,6 +76,10 @@ public class CipherRequest {
         return role;
     }
 
+    public void setKeySize(int keySize) {
+        this.keySize = keySize;
+    }
+    
     public int getKeySize() {
         return keySize;
     }
@@ -80,7 +91,15 @@ public class CipherRequest {
     public String getKeyAlias() {
         return keyAlias;
     }
-            
+
+    public void setPassword(char[] password) {
+        this.password = password;
+    }
+
+    public char[] getPassword() {
+        return password;
+    }
+        
     @Override
     public String toString() {
         return requestType.name();

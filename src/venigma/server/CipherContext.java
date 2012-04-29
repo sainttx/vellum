@@ -4,16 +4,18 @@
  */
 package venigma.server;
 
-import venigma.server.storage.CipherStorage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.SecureRandom;
+import java.security.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.KeyManagerFactory;
@@ -22,6 +24,10 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManagerFactory;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import vellum.util.Streams;
+import venigma.common.AdminUser;
+import venigma.server.storage.CipherStorage;
+import venigma.common.KeyInfo;
 
 /**
  *
@@ -30,19 +36,20 @@ import vellum.logger.LogrFactory;
 public class CipherContext {
 
     Logr logger = LogrFactory.getLogger(getClass());
+    CipherRequestAuth requestAuth = new CipherRequestAuth(this);
     CipherConfig config;
     CipherProperties properties;
-    CipherRequestAuth requestAuth;
     SecureRandom sr = new SecureRandom();
     SSLContext sslContext;
     InetSocketAddress address;
     InetAddress inetAddress;
     CipherStorage storage = new CipherStorage();
     boolean started = false;
-    Key key;
+    boolean loaded = false;
     SSLServerSocket serverSocket;
     KeyStore secretKeyStore;
-
+    Map<String, SecretKey> keyMap = new HashMap();
+    
     public CipherContext() {
     }
 
@@ -66,12 +73,7 @@ public class CipherContext {
         tmf.init(ts);
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), sr);
         logger.info("cipher ssl context initialised", hashCode());
-        secretKeyStore = KeyStore.getInstance("JCEKS");
-        secretKeyStore.load(new FileInputStream(config.secretKeyStore), properties.secretKeyStorePassword);
-        key = loadKey(config.secretAlias, properties.secretKeyPassword);
         initServerSocket();
-        storage.getAdminUserStorage().init(properties.userList);
-        requestAuth = new CipherRequestAuth(this);
     }
 
     private void initServerSocket() throws IOException {
@@ -84,34 +86,82 @@ public class CipherContext {
         return serverSocket;
     }
 
-    private Key loadKey(String keyAlias, char[] keyPass) throws Exception {
-        logger.info("loadKey", secretKeyStore.getType(), secretKeyStore.getProvider().getName());
-        Key key = secretKeyStore.getKey(keyAlias, keyPass);
-        logger.info(key.getAlgorithm(), key.getFormat());
-        return key;
+    public SecretKey getSecretKey(KeyInfo keyInfo) throws Exception {
+        String alias = keyInfo.buildKeystoreAlias();
+        SecretKey secretKey = keyMap.get(alias);
+        if (secretKey == null) {
+            secretKey = loadSecretKey(keyInfo.buildKeystoreAlias(), properties.secretKeyPassword);        
+            keyMap.put(alias, secretKey);
+        }
+        return secretKey;
     }
 
-    public String getKeyAlias(String keyAlias, int keyRevision) {
-        return keyAlias + "." + keyRevision;
+    private synchronized void loadKeyStore() throws Exception {
+        if (!loaded) {
+            secretKeyStore = KeyStore.getInstance("JCEKS");
+            File file = new File(config.secretKeyStore);
+            if (file.exists()) {
+                secretKeyStore.load(new FileInputStream(file), properties.secretKeyStorePassword);
+                loaded = true;
+            } else {
+                secretKeyStore.load(null, null);
+            }
+        }
+    }
+
+    private synchronized void saveKeyStore() throws Exception {
+        String newFileName = config.secretKeyStore + ".new";
+        loadKeyStore();
+        secretKeyStore.store(new FileOutputStream(newFileName), properties.secretKeyStorePassword);
+        Streams.replaceFile(newFileName, config.secretKeyStore);
+        loaded = false;
     }
     
-    public void save(SecretKey key, String keyAlias, int keyRevision) throws Exception {
-        String alias = getKeyAlias(keyAlias, keyRevision);
+    private SecretKey loadSecretKey(String keyAlias, char[] keyPass) throws Exception {
+        logger.info("loadKey", secretKeyStore.getType(), secretKeyStore.getProvider().getName());
+        loadKeyStore();
+        SecretKey secretKey = (SecretKey) secretKeyStore.getKey(keyAlias, keyPass);
+        logger.info("loadKey", secretKey.getAlgorithm(), secretKey.getFormat());
+        return secretKey;
+    }
+    
+    public void saveNewKey(KeyInfo keyInfo) throws Exception {
+        logger.info("saveNewKey", keyInfo);        
+        loadKeyStore();
+        KeyGenerator aes = KeyGenerator.getInstance("AES");
+        aes.init(keyInfo.getKeySize(), sr);
+        SecretKey key = aes.generateKey();
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
         KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(properties.secretKeyPassword);
-        secretKeyStore.setEntry(alias, entry, prot);        
+        secretKeyStore.setEntry(keyInfo.buildKeystoreAlias(), entry, prot);        
+        storage.getKeyInfoStorage().add(keyInfo);
+        saveKeyStore();
     }
 
-    public Cipher getCipher(int opmode, byte[] iv) throws Exception {
+    public void saveRevisedKey(KeyInfo keyInfo) throws Exception {
+        keyInfo.incrementRevisionNumber();
+        KeyGenerator aes = KeyGenerator.getInstance("AES");
+        aes.init(keyInfo.getKeySize(), sr);
+        SecretKey key = aes.generateKey();
+        KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
+        KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(properties.secretKeyPassword);
+        secretKeyStore.setEntry(keyInfo.buildKeystoreAlias(), entry, prot);        
+        storage.getKeyInfoStorage().update(keyInfo);
+        saveKeyStore();
+    }
+
+    public Cipher getCipher(KeyInfo keyInfo, int opmode, byte[] iv) throws Exception {
         IvParameterSpec ips = new IvParameterSpec(iv);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(opmode, key, ips);
+        SecretKey secretKey = getSecretKey(keyInfo);
+        cipher.init(opmode, secretKey, ips);
         return cipher;
     }
 
-    public Cipher getCipher(int opmode) throws Exception {
+    public Cipher getCipher(KeyInfo keyInfo, int opmode) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(opmode, key);
+        SecretKey secretKey = getSecretKey(keyInfo);
+        cipher.init(opmode, secretKey);
         return cipher;
     }
 
@@ -124,4 +174,13 @@ public class CipherContext {
         if (true) {
         }
     }
+
+    public CipherStorage getStorage() {
+        return storage;
+    }
+
+    public void init(List<AdminUser> userLit) {
+        storage.getAdminUserStorage().init(userLit);
+    }
+
 }
