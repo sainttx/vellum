@@ -12,7 +12,7 @@ import venigma.server.VCipherSpi;
  */
 
 public class VProvider extends java.security.Provider {
-    public static final ClientContext providerContext  = new ClientContext();
+    public static final ProviderContext providerContext  = new ProviderContext();
     
     public VProvider() {
         super("VProvider", 1.0, "Provides KeyStore.JCEKS");

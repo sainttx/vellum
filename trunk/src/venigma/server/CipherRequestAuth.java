@@ -51,6 +51,9 @@ public class CipherRequestAuth {
         if (subject == null) {
             return CipherResponseType.ERROR_CERT;
         }
+        if (request.requestType == CipherRequestType.REGISTER_USER) {
+            return CipherResponseType.OK;
+        }
         logger.info("auth", subject);
         ClientType clientType = null;
         if (subject.startsWith("CN=provider,")) {
@@ -77,11 +80,23 @@ public class CipherRequestAuth {
             return authAdmin(clientType);
         } else if (request.requestType == CipherRequestType.REVOKE) {
             return authAdmin(clientType);
-        } else if (request.requestType == CipherRequestType.ADDUSER) {
+        } else if (request.requestType == CipherRequestType.ADD_USER) {
             return authAdmin(clientType);
+        } else if (request.requestType == CipherRequestType.ADD_KEY) {
+            return authAdmin(clientType);
+        } else if (request.requestType == CipherRequestType.GENERATE_KEY) {
+            return authAdmin(clientType);
+        } else if (request.requestType == CipherRequestType.REVISE_KEY) {
+            return authAdmin(clientType);
+        } else if (request.requestType == CipherRequestType.CONFIRM_KEY) {
+            return authUser(clientType);
+        } else if (request.requestType == CipherRequestType.CONFIRM_USER) {
+            return authUser(clientType);
         } else if (request.requestType == CipherRequestType.ENCIPHER) {
             return authProvider(clientType);
-        } else if (request.requestType == CipherRequestType.DECIPHER) {            
+        } else if (request.requestType == CipherRequestType.DECIPHER) {
+            return authProvider(clientType);
+        } else if (request.requestType == CipherRequestType.RECIPHER) {
             return authProvider(clientType);
         }
         return CipherResponseType.ERROR_AUTH;

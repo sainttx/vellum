@@ -48,6 +48,7 @@ public class TestProperties {
     String secretKeyStorePass = "storepass";
     String privateKeyPass = "keypass";
     String secretKeyPass = "keypass";
+    String secretKeyAlias = "secret0";
     String keyAlg = "DSA";
     String secretKeyAlg = "AES";
     int secretKeySize = 256;

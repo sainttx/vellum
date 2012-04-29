@@ -30,29 +30,23 @@ import venigma.server.*;
  * @author evan
  */
 public class TestVenigma implements Runnable {
-    Logr logger = LogrFactory.getLogger(getClass());    
 
-    TestProperties properties = new TestProperties(); 
+    Logr logger = LogrFactory.getLogger(getClass());    
+    TestProperties properties = new TestProperties();    
     SecureRandom sr = new SecureRandom();
-                
     ClientConfig providerConfig = new ClientConfig();
     ClientContext providerContext = VProvider.providerContext;    
     VProvider provider = new VProvider();
-
     ClientConfig client0Config = new ClientConfig();
     ClientContext client0Context = new ClientContext();
-
     ClientConfig client1Config = new ClientConfig();
     ClientContext client1Context = new ClientContext();
-
     ClientConfig client2Config = new ClientConfig();
     ClientContext client2Context = new ClientContext();
-    
     CipherConfig cipherConfig = new CipherConfig();
     CipherProperties cipherProperties = new CipherProperties();
     CipherContext cipherContext = new CipherContext();
     CipherServer server = new CipherServer();
-
     KeyToolBuilder keyToolBuilder;
     
     @Override
@@ -63,26 +57,28 @@ public class TestVenigma implements Runnable {
             e.printStackTrace(System.err);
         }
     }
-
+    
     public void process() throws Exception {
         setProperties();
         initKeyToolBuilder();
         createKeystores();
         testCipherConnection();
     }
-            
+    
     private void testCipherConnection() throws Exception {
         cipherProperties.userList.addAll(buildUserList());
         cipherContext.config(cipherConfig, cipherProperties);
+        cipherContext.init(buildUserList());
         server.config(cipherContext);
         server.start();
         configClientContext();
         sendStartRequest();
+        sendGenerateKeyRequest();
         configProviderContext();
         testCipher();
         server.close();
     }
-
+    
     private void configProviderContext() throws Exception {
         providerContext.config(providerConfig,
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
@@ -90,18 +86,35 @@ public class TestVenigma implements Runnable {
     }
     
     private void configClientContext() throws Exception {
-        client0Context.config(client0Config, 
+        client0Context.config(client0Config,
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
                 properties.keyStorePass.toCharArray());
     }
     
-    private void sendStartRequest() throws Exception {
+    private CipherResponse sendStartRequest() throws Exception {
         CipherConnection clientConnection = new CipherConnection(client0Context);
-        CipherResponse response = clientConnection.sendCipherRequest(new CipherRequest(CipherRequestType.START));
+        CipherRequest request = new CipherRequest(CipherRequestType.START);
+        request.setPassword(properties.secretKeyPass.toCharArray());
+        CipherResponse response = clientConnection.sendCipherRequest(request);
         if (response.getResponseType() != CipherResponseType.OK) {
             logger.warn("client start response", response);
             System.exit(1);
         }
+        return response;
+    }
+    
+    private CipherResponse sendGenerateKeyRequest() throws Exception {
+        CipherConnection clientConnection = new CipherConnection(client0Context);
+        CipherRequest request = new CipherRequest(CipherRequestType.GENERATE_KEY);
+        request.setKeyAlias(VProvider.providerContext.getKeyAlias());
+        request.setKeySize(256);
+        request.setPassword(properties.secretKeyPass.toCharArray());
+        CipherResponse response = clientConnection.sendCipherRequest(request);
+        if (response.getResponseType() != CipherResponseType.OK) {
+            logger.warn("client generate key response", response);
+            System.exit(1);
+        }
+        return response;
     }
     
     private void testCipher() throws Exception {
@@ -146,7 +159,7 @@ public class TestVenigma implements Runnable {
     }
     
     private void initKeyToolBuilder() {
-        KeyToolBuilderConfig keyConfig = new KeyToolBuilderConfig(); 
+        KeyToolBuilderConfig keyConfig = new KeyToolBuilderConfig();        
         KeyToolBuilderlProperties keyProperties = new KeyToolBuilderlProperties();
         keyProperties.setPrivateKeyPass(properties.privateKeyPass);
         keyProperties.setTrustKeyStorePass(properties.trustKeyStorePass);
@@ -165,7 +178,7 @@ public class TestVenigma implements Runnable {
         KeyTool.main(keyToolBuilder.buildKeyToolExportCertArgs(client2Config.keyStore, client2Config.keyAlias, properties.client2Cert));
         KeyTool.main(keyToolBuilder.buildKeyToolGenKeyPairArgs(providerConfig.keyStore, providerConfig.keyAlias, providerConfig.cn));
         KeyTool.main(keyToolBuilder.buildKeyToolExportCertArgs(providerConfig.keyStore, providerConfig.keyAlias, properties.providerCert));
-        KeyTool.main(keyToolBuilder.buildKeyToolGenSecKeyArgs(cipherConfig.secretKeyStore, cipherConfig.secretAlias));
+        //KeyTool.main(keyToolBuilder.buildKeyToolGenSecKeyArgs(cipherConfig.secretKeyStore, cipherConfig.secretAlias));
         KeyTool.main(keyToolBuilder.buildKeyToolGenKeyPairArgs(cipherConfig.privateKeyStore, cipherConfig.privateAlias, cipherConfig.cn));
         KeyTool.main(keyToolBuilder.buildKeyToolImportCertArgs(cipherConfig.trustKeyStore, properties.providerCertAlias, properties.providerCert));
         KeyTool.main(keyToolBuilder.buildKeyToolImportCertArgs(cipherConfig.trustKeyStore, properties.client0CertAlias, properties.client0Cert));
@@ -183,7 +196,7 @@ public class TestVenigma implements Runnable {
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(client0Config.keyStore));
         KeyTool.main(keyToolBuilder.buildKeyToolListArgs(client0Config.trustStore));
     }
-
+    
     private void deleteKeyStores() {
         new File(client0Config.keyStore).delete();
         new File(client1Config.keyStore).delete();
@@ -208,9 +221,9 @@ public class TestVenigma implements Runnable {
         userList.add(user2);
         return userList;
     }
-        
+    
     public static void main(String[] args) {
-        TestVenigma instance = new TestVenigma() ;
+        TestVenigma instance = new TestVenigma();
         try {
             if (true) {
                 new Thread(instance).start();

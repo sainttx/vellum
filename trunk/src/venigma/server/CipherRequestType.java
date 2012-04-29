@@ -11,13 +11,19 @@ package venigma.server;
 public enum CipherRequestType {
     PING,
     CHECK,
-    ENCIPHER,
-    DECIPHER,
     START,
     STOP,
+    ADD_KEY,
+    GENERATE_KEY,
+    REVISE_KEY,
+    ADD_USER,
+    REGISTER_USER,
+    CONFIRM_USER,
+    CONFIRM_KEY,
     GRANT,
     REVOKE,
-    ADDUSER,
-    GENKEY,
+    ENCIPHER,
+    DECIPHER,
+    RECIPHER,
     
 }
