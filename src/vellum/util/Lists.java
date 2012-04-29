@@ -143,6 +143,10 @@ public class Lists {
         return formatDisplay(COMMA_DELIMITER, args);
     }
 
+    public static String formatPrintComma(Object[] args) {
+        return formatPrint(COMMA_DELIMITER, args);
+    }
+    
     public static String formatDisplayCommaSingleQuote(Object[] args) {
         return formatDisplay(COMMA_DELIMITER, SINGLE_QUOTE, args);
     }

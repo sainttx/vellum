@@ -11,6 +11,9 @@ package venigma.server.storage;
 public enum StorageExceptionType {
     ID_NULL,
     ENTITY_NULL,
+    KEY_NULL,
+    KEY_NOT_FOUND,
+    KEY_ALREADY_EXISTS,
     ID_NOT_FOUND,
     ID_ALREADY_EXISTS,
     PAIR_NOT_FOUND,
