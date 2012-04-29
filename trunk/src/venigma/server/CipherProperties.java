@@ -13,8 +13,8 @@ import venigma.common.AdminUser;
  * @author evan
  */
 public class CipherProperties {
-    public char[] dataStorePassword;
-    public char[] dataUserPassword;
+    public char[] databaseStorePassword;
+    public char[] databaseUserPassword;
     public char[] keyStorePassword;
     public char[] privateKeyPassword;
     public char[] trustKeyStorePassword;
@@ -22,4 +22,7 @@ public class CipherProperties {
     public char[] secretKeyPassword;
     public List<AdminUser> userList = new ArrayList();
     
+    public String buildDatabasePassword() {
+        return null;
+    }
 }

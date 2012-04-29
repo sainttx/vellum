@@ -4,9 +4,15 @@ drop table organisation;
 drop table admin_user; 
 drop table key_info;
 
-create table schema_version (
+create table meta_info (
+  access_count int;
+  access_time timestamp default now()
+)
+;
+
+create table meta_revision (
   revision_number int,
-  time_updated timestamp default now()
+  update_time timestamp default now()
 )
 ;
 
