@@ -58,6 +58,7 @@ public class CipherContext {
     public void config(CipherConfig config, CipherProperties properties) throws Exception {
         this.config = config;
         this.properties = properties;
+        storage.init(properties.dataStorePassword);
         inetAddress = InetAddress.getByName(config.serverIp);
         address = new InetSocketAddress(inetAddress, config.sslPort);
         sslContext = SSLContext.getInstance("TLS");

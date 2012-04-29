@@ -13,6 +13,8 @@ import venigma.common.AdminUser;
  * @author evan
  */
 public class CipherProperties {
+    public char[] dataStorePassword;
+    public char[] dataUserPassword;
     public char[] keyStorePassword;
     public char[] privateKeyPassword;
     public char[] trustKeyStorePassword;
