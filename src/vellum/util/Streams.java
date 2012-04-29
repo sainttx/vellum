@@ -155,7 +155,9 @@ public class Streams {
 
     public static void close(ServerSocket closeable) {
         try {
-            closeable.close();
+            if (closeable != null) {
+                closeable.close();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -163,7 +165,9 @@ public class Streams {
 
     public static void close(Socket closeable) {
         try {
-            closeable.close();
+            if (closeable != null) {
+                closeable.close();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -171,7 +175,9 @@ public class Streams {
     
     public static void close(Closeable closeable) {
         try {
-            closeable.close();
+            if (closeable != null) {
+                closeable.close();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

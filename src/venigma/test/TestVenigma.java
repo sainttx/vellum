@@ -156,6 +156,8 @@ public class TestVenigma implements Runnable {
         cipherProperties.privateKeyPassword = properties.privateKeyPass.toCharArray();
         cipherProperties.secretKeyStorePassword = properties.secretKeyStorePass.toCharArray();
         cipherProperties.secretKeyPassword = properties.secretKeyPass.toCharArray();
+        cipherProperties.databaseUserPassword = null;
+        cipherProperties.databaseStorePassword = null;
     }
     
     private void initKeyToolBuilder() {

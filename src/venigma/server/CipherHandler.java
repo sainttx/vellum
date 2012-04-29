@@ -18,7 +18,7 @@ import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import venigma.common.AdminUser;
 import venigma.common.JsonSockets;
-import venigma.server.storage.CipherStorage;
+import venigma.server.data.CipherStorage;
 import venigma.common.KeyInfo;
 
 /**

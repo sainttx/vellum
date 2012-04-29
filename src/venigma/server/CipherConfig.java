@@ -4,6 +4,8 @@
  */
 package venigma.server;
 
+import venigma.server.storage.DatabaseConnectionInfo;
+
 /**
  *
  * @author evan
@@ -18,4 +20,11 @@ public class CipherConfig {
     public String trustKeyStore; 
     public String secretKeyStore; 
     public String secretAlias = "cipher.secret";
+    
+    public DatabaseConnectionInfo databaseConnectionInfo = new DatabaseConnectionInfo(
+            "org.h2.Driver",
+            "jdbc:h2:tcp://localhost/~/cipher",
+            "sa"            
+            );
+
 }

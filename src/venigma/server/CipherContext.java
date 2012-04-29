@@ -26,7 +26,7 @@ import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Streams;
 import venigma.common.AdminUser;
-import venigma.server.storage.CipherStorage;
+import venigma.server.data.CipherStorage;
 import venigma.common.KeyInfo;
 import venigma.server.storage.StorageExceptionType;
 import venigma.server.storage.StorageRuntimeException;
@@ -45,7 +45,7 @@ public class CipherContext {
     SSLContext sslContext;
     InetSocketAddress address;
     InetAddress inetAddress;
-    CipherStorage storage = new CipherStorage();
+    CipherStorage storage = new CipherStorage(this);
     boolean started = false;
     boolean loaded = false;
     SSLServerSocket serverSocket;
@@ -58,7 +58,7 @@ public class CipherContext {
     public void config(CipherConfig config, CipherProperties properties) throws Exception {
         this.config = config;
         this.properties = properties;
-        storage.init(properties.dataStorePassword);
+        storage.init();
         inetAddress = InetAddress.getByName(config.serverIp);
         address = new InetSocketAddress(inetAddress, config.sslPort);
         sslContext = SSLContext.getInstance("TLS");
@@ -197,6 +197,14 @@ public class CipherContext {
         return storage;
     }
 
+    public CipherConfig getConfig() {
+        return config;
+    }
+
+    public CipherProperties getProperties() {
+        return properties;
+    }
+    
     public void init(List<AdminUser> userLit) {
         storage.getAdminUserStorage().init(userLit);
     }

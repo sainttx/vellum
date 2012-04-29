@@ -17,7 +17,9 @@ public enum StorageExceptionType {
     ID_NOT_FOUND,
     ID_ALREADY_EXISTS,
     PAIR_NOT_FOUND,
-    PAIR_ALREADY_EXISTS;
+    PAIR_ALREADY_EXISTS,
+    NO_DATABASE_STORE_PASSWORD,
+    NO_DATABASE_NAME;
     
     public StorageRuntimeException newRuntimeException() {
         return new StorageRuntimeException(this);

@@ -11,6 +11,7 @@ package venigma.server;
 public enum CipherRequestType {
     PING,
     CHECK,
+    START_SAFE_MODE,
     START,
     STOP,
     ADD_KEY,

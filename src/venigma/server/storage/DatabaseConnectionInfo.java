@@ -13,9 +13,12 @@ public class DatabaseConnectionInfo {
     String name;
     String url;
     String username;
-    String password;
-    char[] storePassword;
-    char[] userPassword;
+
+    public DatabaseConnectionInfo(String driver, String url, String username) {
+        this.driver = driver;
+        this.url = url;
+        this.username = username;
+    }
     
     public String getDriver() {
         return driver;
@@ -29,22 +32,6 @@ public class DatabaseConnectionInfo {
         return name;
     }
 
-    public void setStorePassword(char[] storePassword) {
-        this.storePassword = storePassword;
-    }
-
-    public char[] getStorePassword() {
-        return storePassword;
-    }
-
-    public void setUserPassword(char[] userPassword) {
-        this.userPassword = userPassword;
-    }
-
-    public char[] getUserPassword() {
-        return userPassword;
-    }
-    
     public void setDriver(String driver) {
         this.driver = driver;
     }
@@ -63,14 +50,6 @@ public class DatabaseConnectionInfo {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
     }
         
 }
