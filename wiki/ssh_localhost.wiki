@@ -7,12 +7,12 @@ bruce force attack.
 
 Also with agent forwarding its more convenient than entering a password. 
 
-<tt>AllowUsers</tt>
+<tt>!AllowUsers</tt>
 <pre>
 [root@server etc]# cat /etc/ssh/sshd_config | grep AllowUsers
 </pre>
 
-<tt>ForwardAgent</tt>
+<tt>!ForwardAgent</tt>
 <pre>
 [evanx@server ~]$ cat .ssh/config
 ForwardAgent yes
