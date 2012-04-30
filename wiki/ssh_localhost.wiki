@@ -7,34 +7,33 @@ bruce force attack.
 
 Also with agent forwarding its more convenient than entering a password. 
 
-AllowUsers
+<tt>AllowUsers</tt>
 <pre>
 [root@server etc]# cat /etc/ssh/sshd_config | grep AllowUsers
 </pre>
 
-ForwardAgent
+<tt>ForwardAgent</tt>
 <pre>
 [evanx@server ~]$ cat .ssh/config
 ForwardAgent yes
 </pre>
 
-authorized_keys
+<tt>authorized_keys</tt>
 <pre>
 [other@server ~]$ cat .ssh/authorized_keys
 from="localhost" ssh-rsa 
-AAAAB3NzaC1yc2EAAAADAQABAAABAQDAaIojgNHnHBGnuDdpo9s/GgL7D25wxQj0t5FmCC/yd0KnUvLFr0m0xaw69vyOu9pzmyvMMKvNslgoXZJluD74qG0oRBa5CdSqZU6kmkO2O7rMNSkIS3twe0pjXGAwd3cv7bfAMzmr9L2lHrYb0YsahstSxy4YGyFGgZ0RScnetTlMobAIccXaNF9Jr2bULnuhsaDHizeo9fPe1tzB87Pwm4kYl5CoIsVZTBGuVhiUCIMqv5DuBzp42q6dhPDXQZ+Q7RDysHByhEwFYUfW3i/TzoBAhjHgmmJrQJQwVzoRG0NhYVZk7w2VvzVGnXh/0741D1Npg4rvO2YLBWIWrkzL 
+AAAAB3NzaC1yc2EAAAADAQABAAABAQDAaIojgNHnHBGnuDdpo9s...
 evanx@evanx
 </pre>
 
-ssh localhost
+<tt>ssh localhost</tt>
 <pre>
 [evanx@server ~]$ ssh other@localhost
 Last login: Mon Apr 30 13:03:10 2012 from localhost
 [other@server ~]$
 </pre>
 
-/var/log/secure
-
+<tt>/var/log/secure</tt>
 <pre>
 Apr 30 13:05:47 server sshd[30086]: debug1: matching key found: file 
 /home/other/.ssh/authorized_keys, line 2
