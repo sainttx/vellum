@@ -9,6 +9,7 @@ package venigma.server.storage;
  * @author evan
  */
 public enum StorageExceptionType {
+    CONNECTION_ERROR,
     ID_NULL,
     ENTITY_NULL,
     KEY_NULL,

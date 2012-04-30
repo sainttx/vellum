@@ -6,17 +6,23 @@ package venigma.server.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.RowSets;
-import venigma.common.AdminUser;
 import venigma.common.AdminUserPair;
 import venigma.common.KeyInfo;
 import venigma.common.KeyInfoAdminUserPair;
 import venigma.server.CipherConfig;
 import venigma.server.CipherContext;
 import venigma.server.CipherProperties;
-import venigma.server.storage.*;
+import venigma.server.storage.DatabaseConnectionInfo;
+import venigma.server.storage.IdStorage;
+import venigma.server.storage.PairStorage;
+import venigma.server.storage.StorageExceptionType;
+import venigma.server.storage.StorageRuntimeException;
 
 /**
  *
@@ -25,7 +31,6 @@ import venigma.server.storage.*;
 public class CipherStorage {
 
     Logr logger = LogrFactory.getLogger(CipherStorage.class);
-    IdStorage<AdminUser> adminUserStorage = new IdStorage();
     IdStorage<KeyInfo> keyInfoStorage = new IdStorage();
     PairStorage<KeyInfoAdminUserPair> KeyInfoAdminUserPairStorage = new PairStorage();
     PairStorage<AdminUserPair> adminUserPairStorage = new PairStorage();
@@ -33,7 +38,7 @@ public class CipherStorage {
     CipherConfig config;
     CipherProperties properties;
     DatabaseConnectionInfo databaseConnectionInfo;
-
+    
     public CipherStorage(CipherContext context) {
         this.context = context;
     }
@@ -42,29 +47,29 @@ public class CipherStorage {
         config = context.getConfig();
         databaseConnectionInfo = config.databaseConnectionInfo;
         properties = context.getProperties();
-        initH2();
-    }
-
-    public void initH2() throws Exception {
+        Class.forName(config.databaseConnectionInfo.getDriver());
         if (properties.databaseStorePassword != null) {
+            initEncryptedDatabase();
         }
-        Class.forName(databaseConnectionInfo.getDriver());
         Connection connection = getConnection();
         new SchemaConnection(connection).verifySchema();
         releaseConnection(connection);
     }
 
-    public Connection getConnection() throws Exception {
-        return DriverManager.getConnection(databaseConnectionInfo.getUrl(),
-                databaseConnectionInfo.getUsername(), properties.buildDatabasePassword());
-    }    
+    private void initEncryptedDatabase() throws Exception {
+    }
     
+    public Connection getConnection() {
+        try {
+            return DriverManager.getConnection(databaseConnectionInfo.getUrl(),
+                    databaseConnectionInfo.getUsername(), properties.buildDatabasePassword());
+        } catch (SQLException e) {
+            throw new StorageRuntimeException(StorageExceptionType.CONNECTION_ERROR, e);
+        }
+    }    
+
     public void releaseConnection(Connection connection) {
         RowSets.close(connection);
-    }
-
-    public IdStorage<AdminUser> getAdminUserStorage() {
-        return adminUserStorage;
     }
 
     public IdStorage<KeyInfo> getKeyInfoStorage() {
@@ -77,5 +82,9 @@ public class CipherStorage {
 
     public PairStorage<AdminUserPair> getAdminUserPairStorage() {
         return adminUserPairStorage;
+    }
+
+    public AdminUserConnection getAdminUserConnection() {
+        return new AdminUserConnection(getConnection());
     }
 }

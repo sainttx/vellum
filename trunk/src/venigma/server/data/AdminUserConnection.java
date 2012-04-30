@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import vellum.sql.common.QueryMap;
 import venigma.common.AdminUser;
 
@@ -23,7 +25,7 @@ public class AdminUserConnection {
         this.connection = connection;
     }
         
-    public AdminUser newAdminUser(ResultSet resultSet) throws SQLException {
+    public AdminUser get(ResultSet resultSet) throws SQLException {
         AdminUser adminUser = new AdminUser();
         adminUser.setEmail(resultSet.getString("email"));
         adminUser.setUsername(resultSet.getString("username"));
@@ -33,7 +35,7 @@ public class AdminUserConnection {
         return adminUser;        
     }
 
-    public boolean existsAdminUser(String email) throws SQLException {
+    public boolean exists(String email) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("exists"));
         statement.setString(1, email);
         ResultSet resultSet = statement.executeQuery();
@@ -47,10 +49,10 @@ public class AdminUserConnection {
         if (!resultSet.next()) {
             return null;
         }
-        return newAdminUser(resultSet);
+        return get(resultSet);
     }
     
-    public void insertAdminUser(AdminUser AdminUser) throws SQLException {
+    public void insert(AdminUser AdminUser) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
         statement.setString(1, AdminUser.getUsername());
         int updateCount = statement.executeUpdate();        
@@ -58,5 +60,26 @@ public class AdminUserConnection {
             throw new SQLException();            
         }
     }
-        
+
+    public void update(AdminUser AdminUser) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(sqlMap.get("update"));
+        statement.setString(1, AdminUser.getUsername());
+        int updateCount = statement.executeUpdate();        
+        if (updateCount != 1) {
+            throw new SQLException();            
+        }
+    }
+    
+    public List<AdminUser> getList() throws SQLException {
+        List<AdminUser> list = new ArrayList();
+        PreparedStatement statement = connection.prepareStatement(sqlMap.get("list all"));
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            list.add(get(resultSet));
+        }
+        return list;
+    }
+
+    public void insertAll(List<AdminUser> adminUserList) {
+    }
 }

@@ -10,6 +10,11 @@ package venigma.server.storage;
  */
 public class StorageRuntimeException extends RuntimeException {
     StorageExceptionType storageExceptionType;
+
+    public StorageRuntimeException(StorageExceptionType storageExceptionType, Throwable exception) {
+        super(StorageExceptions.formatMessage(exception, storageExceptionType), exception);
+        this.storageExceptionType = storageExceptionType;        
+    }
     
     public StorageRuntimeException(StorageExceptionType storageExceptionType) {
         super(StorageExceptions.formatMessage(storageExceptionType));
