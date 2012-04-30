@@ -68,7 +68,7 @@ public class TestVenigma implements Runnable {
     private void testCipherConnection() throws Exception {
         cipherProperties.userList.addAll(buildUserList());
         cipherContext.config(cipherConfig, cipherProperties);
-        cipherContext.init(buildUserList());
+        cipherContext.getStorage().getAdminUserConnection().insertAll(buildUserList());
         server.config(cipherContext);
         server.start();
         configClientContext();

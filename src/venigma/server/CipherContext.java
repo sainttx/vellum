@@ -204,9 +204,4 @@ public class CipherContext {
     public CipherProperties getProperties() {
         return properties;
     }
-    
-    public void init(List<AdminUser> userLit) {
-        storage.getAdminUserStorage().init(userLit);
-    }
-
 }

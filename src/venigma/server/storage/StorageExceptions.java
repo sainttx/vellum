@@ -18,6 +18,10 @@ public class StorageExceptions {
     public static String formatMessage(StorageExceptionType storageExceptionType, Object[] args) {
         return storageExceptionType.name() + " (" + Lists.formatDisplayComma(args) + ")";
     }
+
+    public static String formatMessage(Throwable exception, StorageExceptionType storageExceptionType) {
+        return storageExceptionType.name() + " (" + exception.getMessage() + ")";
+    }
     
     public static StorageRuntimeException newRuntimeException(StorageExceptionType storageExceptionType) {
         return new StorageRuntimeException(storageExceptionType);

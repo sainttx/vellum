@@ -12,6 +12,8 @@ public enum CipherRequestType {
     PING,
     CHECK,
     START_SAFE_MODE,
+    LIST_EMPTY_PASSWORDS,
+    SET_PASSWORD,
     START,
     STOP,
     ADD_KEY,

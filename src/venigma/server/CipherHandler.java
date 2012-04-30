@@ -9,8 +9,6 @@ import java.security.AlgorithmParameters;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
@@ -154,7 +152,7 @@ public class CipherHandler {
     }
     
     protected CipherResponse grant() throws Exception {
-        AdminUser user = context.storage.getAdminUserStorage().get(request.getUsername());
+        AdminUser user = context.storage.getAdminUserConnection().find(request.getUsername());
         if (user == null) {
             return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
         }
@@ -162,12 +160,12 @@ public class CipherHandler {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_GRANTED);
         }
         user.setEnabled(true);
-        context.storage.getAdminUserStorage().update(user);
+        context.storage.getAdminUserConnection().update(user);
         return new CipherResponse(CipherResponseType.OK);
     }
 
     protected CipherResponse revoke() throws Exception {
-        AdminUser user = context.storage.getAdminUserStorage().get(request.getUsername());
+        AdminUser user = context.storage.getAdminUserConnection().find(request.getUsername());
         if (user == null) {
             return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
         }
@@ -175,16 +173,16 @@ public class CipherHandler {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_REVOKED);
         }
         user.setEnabled(false);
-        context.storage.getAdminUserStorage().update(user);
+        context.storage.getAdminUserConnection().update(user);
         return new CipherResponse(CipherResponseType.OK);
     }
 
     protected CipherResponse addUser() throws Exception {
         AdminUser user = request.getUser();
-        if (context.storage.getAdminUserStorage().exists(user.getUsername())) {
+        if (context.storage.getAdminUserConnection().exists(user.getUsername())) {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_EXISTS);
         }        
-        context.storage.getAdminUserStorage().add(user);        
+        context.storage.getAdminUserConnection().insert(user);        
         return new CipherResponse(CipherResponseType.OK);
     }
     
@@ -212,4 +210,11 @@ public class CipherHandler {
         return new CipherResponse(CipherResponseType.OK);
     }
 
+    protected CipherResponse setPassword() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+    
+    protected CipherResponse listEmptyPasswords() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }    
 }

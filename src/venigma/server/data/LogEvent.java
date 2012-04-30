@@ -6,6 +6,9 @@ package venigma.server.data;
 
 import java.util.Date;
 import venigma.common.IdEntity;
+import venigma.server.CipherRequest;
+import venigma.server.CipherRequestType;
+import venigma.server.CipherResponseType;
 
 /**
  *
@@ -15,7 +18,10 @@ public class LogEvent implements IdEntity {
     Long id;
     Date timestamp;
     String message;
-    
+    CipherRequestType requestType;
+    CipherResponseType responseType;
+    CipherRequest request;
+            
     public LogEvent() {
     }
 
