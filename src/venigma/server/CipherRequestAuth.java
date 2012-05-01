@@ -6,10 +6,10 @@ package venigma.server;
 
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
-import venigma.common.AdminRole;
-import venigma.common.AdminUser;
+import venigma.data.AdminRole;
+import venigma.data.AdminUser;
 import venigma.provider.ClientType;
-import venigma.server.data.AdminUserConnection;
+import venigma.data.AdminUserStorage;
 
 /**
  *
@@ -60,7 +60,7 @@ public class CipherRequestAuth {
         if (subject.startsWith("CN=provider,")) {
             clientType = ClientType.PROVIDER;
         } else {
-            AdminUserConnection conn = context.getStorage().getAdminUserConnection();
+            AdminUserStorage conn = context.getStorage().getAdminUserStorage();
             for (AdminUser adminUser : conn.getList()) {
                 logger.info(adminUser);
                 if (subject.startsWith("CN=" + adminUser.getUsername() + ",")) {

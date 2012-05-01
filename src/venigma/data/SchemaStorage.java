@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package venigma.server.data;
+package venigma.data;
 
 import java.io.InputStream;
 import java.sql.*;
@@ -15,8 +15,8 @@ import vellum.util.RowSets;
  *
  * @author evan
  */
-public class SchemaConnection {
-    Logr logger = LogrFactory.getLogger(SchemaConnection.class);
+public class SchemaStorage {
+    Logr logger = LogrFactory.getLogger(SchemaStorage.class);
     
     static final int MIN_VERSION_NUMBER = 0;
     static final int CURRENT_VERSION_NUMBER = 2;
@@ -24,7 +24,7 @@ public class SchemaConnection {
     Connection connection;
     DatabaseMetaData databaseMetaData;
 
-    public SchemaConnection(Connection connection) {
+    public SchemaStorage(Connection connection) {
         this.connection = connection;
     }
 

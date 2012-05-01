@@ -1,11 +1,12 @@
 
-drop table schema_version;
+drop table meta_info;
+drop table meta_revision;
 drop table organisation; 
 drop table admin_user; 
 drop table key_info;
 
 create table meta_info (
-  access_count int;
+  access_count int,
   access_time timestamp default now()
 )
 ;
@@ -19,6 +20,8 @@ create table meta_revision (
 create table admin_user (
   username varchar(16), 
   email varchar(64),
+  role_ varchar(32),
+  public_key text,
   display_name varchar(64), 
   password_hash varchar(64),
   password_salt varchar(32),
@@ -42,7 +45,8 @@ create table organisation (
 
 create table key_info (
   key_alias varchar(32),
-  key_size int,
+  key_size int,  
   revision_number int,
+  data_ text,
 );
 

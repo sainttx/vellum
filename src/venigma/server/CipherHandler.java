@@ -14,10 +14,10 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
-import venigma.common.AdminUser;
-import venigma.common.JsonSockets;
-import venigma.server.data.CipherStorage;
-import venigma.common.KeyInfo;
+import venigma.data.AdminUser;
+import venigma.data.CipherStorage;
+import venigma.data.JsonSockets;
+import venigma.data.KeyEntity;
 
 /**
  *
@@ -117,20 +117,20 @@ public class CipherHandler {
     }
 
     protected CipherResponse decrypt() throws Exception {
-        if (!storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+        if (!storage.getKeyEntityStorage().exists(request.getKeyAlias())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
         }
-        KeyInfo keyInfo = storage.getKeyInfoStorage().get(request.getKeyAlias());
+        KeyEntity keyInfo = storage.getKeyEntityStorage().find(request.getKeyAlias());
         Cipher cipher = context.getCipher(keyInfo, Cipher.DECRYPT_MODE, request.iv);
         byte[] decryptedBytes = cipher.doFinal(request.getBytes());
         return new CipherResponse(CipherResponseType.OK, decryptedBytes);
     }
 
     protected CipherResponse encrypt() throws Exception {
-        if (!storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+        if (!storage.getKeyEntityStorage().exists(request.getKeyAlias())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
         }
-        KeyInfo keyInfo = storage.getKeyInfoStorage().get(request.getKeyAlias());
+        KeyEntity keyInfo = storage.getKeyEntityStorage().find(request.getKeyAlias());
         Cipher cipher = context.getCipher(keyInfo, Cipher.ENCRYPT_MODE);
         AlgorithmParameters params = cipher.getParameters();
         byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
@@ -152,7 +152,7 @@ public class CipherHandler {
     }
     
     protected CipherResponse grant() throws Exception {
-        AdminUser user = context.storage.getAdminUserConnection().find(request.getUsername());
+        AdminUser user = context.storage.getAdminUserStorage().find(request.getUsername());
         if (user == null) {
             return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
         }
@@ -160,12 +160,12 @@ public class CipherHandler {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_GRANTED);
         }
         user.setEnabled(true);
-        context.storage.getAdminUserConnection().update(user);
+        context.storage.getAdminUserStorage().update(user);
         return new CipherResponse(CipherResponseType.OK);
     }
 
     protected CipherResponse revoke() throws Exception {
-        AdminUser user = context.storage.getAdminUserConnection().find(request.getUsername());
+        AdminUser user = context.storage.getAdminUserStorage().find(request.getUsername());
         if (user == null) {
             return new CipherResponse(CipherResponseType.ERROR_USER_NOT_FOUND);
         }
@@ -173,16 +173,16 @@ public class CipherHandler {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_REVOKED);
         }
         user.setEnabled(false);
-        context.storage.getAdminUserConnection().update(user);
+        context.storage.getAdminUserStorage().update(user);
         return new CipherResponse(CipherResponseType.OK);
     }
 
     protected CipherResponse addUser() throws Exception {
         AdminUser user = request.getUser();
-        if (context.storage.getAdminUserConnection().exists(user.getUsername())) {
+        if (context.storage.getAdminUserStorage().exists(user.getUsername())) {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_EXISTS);
         }        
-        context.storage.getAdminUserConnection().insert(user);        
+        context.storage.getAdminUserStorage().insert(user);        
         return new CipherResponse(CipherResponseType.OK);
     }
     
@@ -193,19 +193,19 @@ public class CipherHandler {
         if (request.getKeySize() != 128 && request.getKeySize() != 192 && request.getKeySize() != 256) {
             return new CipherResponse(CipherResponseType.ERROR_INVALID_KEY_SIZE);            
         }
-        if (storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+        if (storage.getKeyEntityStorage().exists(request.getKeyAlias())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_ALREADY_EXISTS);
         }
-        KeyInfo keyInfo = new KeyInfo(request.getKeyAlias(), request.getKeyRevision(), request.getKeySize());
+        KeyEntity keyInfo = new KeyEntity(request.getKeyAlias(), request.getKeyRevision(), request.getKeySize());
         context.saveNewKey(keyInfo);
         return new CipherResponse(CipherResponseType.OK);
     }
     
     protected CipherResponse reviseKey() throws Exception {
-        if (!storage.getKeyInfoStorage().exists(request.getKeyAlias())) {
+        if (!storage.getKeyEntityStorage().exists(request.getKeyAlias())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
         }
-        KeyInfo keyInfo = storage.getKeyInfoStorage().get(request.getKeyAlias());
+        KeyEntity keyInfo = storage.getKeyEntityStorage().find(request.getKeyAlias());
         context.saveRevisedKey(keyInfo);
         return new CipherResponse(CipherResponseType.OK);
     }

@@ -2,25 +2,20 @@
  * Copyright Evan Summers
  * 
  */
-package venigma.server.data;
+package venigma.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.RowSets;
-import venigma.common.AdminUserPair;
-import venigma.common.KeyInfo;
-import venigma.common.KeyInfoAdminUserPair;
 import venigma.server.CipherConfig;
 import venigma.server.CipherContext;
 import venigma.server.CipherProperties;
 import venigma.server.storage.DatabaseConnectionInfo;
-import venigma.server.storage.IdStorage;
-import venigma.server.storage.PairStorage;
+import venigma.server.storage.IdEntityMap;
+import venigma.server.storage.PairMap;
 import venigma.server.storage.StorageExceptionType;
 import venigma.server.storage.StorageRuntimeException;
 
@@ -31,9 +26,9 @@ import venigma.server.storage.StorageRuntimeException;
 public class CipherStorage {
 
     Logr logger = LogrFactory.getLogger(CipherStorage.class);
-    IdStorage<KeyInfo> keyInfoStorage = new IdStorage();
-    PairStorage<KeyInfoAdminUserPair> KeyInfoAdminUserPairStorage = new PairStorage();
-    PairStorage<AdminUserPair> adminUserPairStorage = new PairStorage();
+    IdEntityMap<KeyEntity> keyInfoStorage = new IdEntityMap();
+    PairMap<KeyEntityAdminUserPair> KeyInfoAdminUserPairStorage = new PairMap();
+    PairMap<AdminUserPair> adminUserPairStorage = new PairMap();
     CipherContext context;
     CipherConfig config;
     CipherProperties properties;
@@ -52,7 +47,7 @@ public class CipherStorage {
             initEncryptedDatabase();
         }
         Connection connection = getConnection();
-        new SchemaConnection(connection).verifySchema();
+        new SchemaStorage(connection).verifySchema();
         releaseConnection(connection);
     }
 
@@ -72,19 +67,12 @@ public class CipherStorage {
         RowSets.close(connection);
     }
 
-    public IdStorage<KeyInfo> getKeyInfoStorage() {
-        return keyInfoStorage;
+    public AdminUserStorage getAdminUserStorage() {
+        return new AdminUserStorage(getConnection());
+    }
+    
+    public KeyEntityStorage getKeyEntityStorage() {
+        return new KeyEntityStorage(getConnection());
     }
 
-    public PairStorage<KeyInfoAdminUserPair> getKeyInfoAdminUserPairStorage() {
-        return KeyInfoAdminUserPairStorage;
-    }
-
-    public PairStorage<AdminUserPair> getAdminUserPairStorage() {
-        return adminUserPairStorage;
-    }
-
-    public AdminUserConnection getAdminUserConnection() {
-        return new AdminUserConnection(getConnection());
-    }
 }

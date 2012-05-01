@@ -4,9 +4,9 @@
  */
 package vellum.util;
 
-import java.io.IOException;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
+import vellum.exception.Exceptions;
 
 /**
  *
@@ -18,8 +18,12 @@ public class Base64 {
         return new BASE64Encoder().encode(bytes);        
     }
 
-    public static byte[] decode(String string) throws IOException {
-        return new BASE64Decoder().decodeBuffer(string);        
+    public static byte[] decode(String string) {
+        try {
+            return new BASE64Decoder().decodeBuffer(string);        
+        } catch (Exception e) {
+            throw Exceptions.newRuntimeException(e);
+        }
     }
     
 }

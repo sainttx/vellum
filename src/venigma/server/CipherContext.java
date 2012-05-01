@@ -25,9 +25,9 @@ import javax.net.ssl.TrustManagerFactory;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Streams;
-import venigma.common.AdminUser;
-import venigma.server.data.CipherStorage;
-import venigma.common.KeyInfo;
+import venigma.data.AdminUser;
+import venigma.data.CipherStorage;
+import venigma.data.KeyEntity;
 import venigma.server.storage.StorageExceptionType;
 import venigma.server.storage.StorageRuntimeException;
 
@@ -89,7 +89,7 @@ public class CipherContext {
         return serverSocket;
     }
 
-    public SecretKey getSecretKey(KeyInfo keyInfo) throws Exception {
+    public SecretKey getSecretKey(KeyEntity keyInfo) throws Exception {
         String alias = keyInfo.buildKeystoreAlias();
         SecretKey secretKey = keyMap.get(alias);
         if (secretKey == null) {
@@ -134,7 +134,7 @@ public class CipherContext {
         return secretKey;
     }
     
-    public void saveNewKey(KeyInfo keyInfo) throws Exception {
+    public void saveNewKey(KeyEntity keyInfo) throws Exception {
         logger.info("saveNewKey", keyInfo);        
         loadKeyStore();
         String keyAlias = keyInfo.buildKeystoreAlias();
@@ -148,11 +148,11 @@ public class CipherContext {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
         KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(properties.secretKeyPassword);
         secretKeyStore.setEntry(keyAlias, entry, prot);        
-        storage.getKeyInfoStorage().add(keyInfo);
+        storage.getKeyEntityStorage().insert(keyInfo);
         saveKeyStore();
     }
 
-    public void saveRevisedKey(KeyInfo keyInfo) throws Exception {
+    public void saveRevisedKey(KeyEntity keyInfo) throws Exception {
         logger.info("saveRevisedKey", keyInfo);
         loadKeyStore();
         String keyAlias = keyInfo.buildKeystoreAlias();
@@ -164,11 +164,11 @@ public class CipherContext {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
         KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(properties.secretKeyPassword);
         secretKeyStore.setEntry(keyInfo.buildKeystoreAlias(), entry, prot);        
-        storage.getKeyInfoStorage().update(keyInfo);
+        storage.getKeyEntityStorage().update(keyInfo);
         saveKeyStore();
     }
 
-    public Cipher getCipher(KeyInfo keyInfo, int opmode, byte[] iv) throws Exception {
+    public Cipher getCipher(KeyEntity keyInfo, int opmode, byte[] iv) throws Exception {
         IvParameterSpec ips = new IvParameterSpec(iv);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKey secretKey = getSecretKey(keyInfo);
@@ -176,7 +176,7 @@ public class CipherContext {
         return cipher;
     }
 
-    public Cipher getCipher(KeyInfo keyInfo, int opmode) throws Exception {
+    public Cipher getCipher(KeyEntity keyInfo, int opmode) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKey secretKey = getSecretKey(keyInfo);
         cipher.init(opmode, secretKey);

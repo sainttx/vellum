@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package venigma.server.data;
+package venigma.data;
 
 import java.sql.*;
 import vellum.sql.common.QueryMap;
@@ -11,11 +11,11 @@ import vellum.sql.common.QueryMap;
  *
  * @author evan
  */
-public class LogEventConnection {
-    static QueryMap sqlMap = new QueryMap(LogEventConnection.class);
+public class LogEventStorage {
+    static QueryMap sqlMap = new QueryMap(LogEventStorage.class);
     Connection connection;
 
-    public LogEventConnection(Connection connection) {
+    public LogEventStorage(Connection connection) {
         this.connection = connection;
     }
         

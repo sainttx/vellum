@@ -6,7 +6,7 @@ package venigma.server;
 
 import java.util.ArrayList;
 import java.util.List;
-import venigma.common.AdminUser;
+import venigma.data.AdminUser;
 
 /**
  *
