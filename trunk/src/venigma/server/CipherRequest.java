@@ -4,8 +4,8 @@
  */
 package venigma.server;
 
-import venigma.common.AdminRole;
-import venigma.common.AdminUser;
+import venigma.data.AdminRole;
+import venigma.data.AdminUser;
 
 /**
  *

@@ -2,10 +2,10 @@
  * Copyright Evan Summers
  * 
  */
-package venigma.server.data;
+package venigma.data;
 
 import java.util.Date;
-import venigma.common.IdEntity;
+import venigma.data.IdEntity;
 import venigma.server.CipherRequest;
 import venigma.server.CipherRequestType;
 import venigma.server.CipherResponseType;

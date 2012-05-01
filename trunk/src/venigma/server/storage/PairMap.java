@@ -10,19 +10,19 @@ import java.util.List;
 import java.util.Map;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
-import venigma.common.EntityPair;
-import venigma.common.IdPair;
+import venigma.data.EntityPair;
+import venigma.data.IdPair;
 
 /**
  *
  * @author evan
  */
-public class PairStorage<T extends EntityPair> {
-    Logr logger = LogrFactory.getLogger(PairStorage.class);
+public class PairMap<T extends EntityPair> {
+    Logr logger = LogrFactory.getLogger(PairMap.class);
     List<T> list = new ArrayList();
     Map<IdPair, T> map = new HashMap();
     
-    public PairStorage() {
+    public PairMap() {
     }
     
     public boolean exists(Comparable id, Comparable otherId) {

@@ -14,8 +14,8 @@ import sun.security.tools.KeyTool;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Streams;
-import venigma.common.AdminRole;
-import venigma.common.AdminUser;
+import venigma.data.AdminRole;
+import venigma.data.AdminUser;
 import venigma.provider.CipherConnection;
 import venigma.provider.ClientConfig;
 import venigma.provider.ClientContext;
@@ -68,7 +68,7 @@ public class TestVenigma implements Runnable {
     private void testCipherConnection() throws Exception {
         cipherProperties.userList.addAll(buildUserList());
         cipherContext.config(cipherConfig, cipherProperties);
-        cipherContext.getStorage().getAdminUserConnection().insertAll(buildUserList());
+        cipherContext.getStorage().getAdminUserStorage().insertAll(buildUserList());
         server.config(cipherContext);
         server.start();
         configClientContext();
@@ -89,6 +89,18 @@ public class TestVenigma implements Runnable {
         client0Context.config(client0Config,
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
                 properties.keyStorePass.toCharArray());
+    }
+
+    private CipherResponse sendRegisterCipher() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+
+    private CipherResponse sendAddUser() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
+    }
+    
+    private CipherResponse sendRegisterUser() throws Exception {
+        return new CipherResponse(CipherResponseType.OK);
     }
     
     private CipherResponse sendStartRequest() throws Exception {

@@ -10,18 +10,18 @@ import java.util.List;
 import java.util.Map;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
-import venigma.common.IdEntity;
+import venigma.data.IdEntity;
 
 /**
  *
  * @author evan
  */
-public class IdStorage<T extends IdEntity> {
-    Logr logger = LogrFactory.getLogger(IdStorage.class);
+public class IdEntityMap<T extends IdEntity> {
+    Logr logger = LogrFactory.getLogger(IdEntityMap.class);
     List<T> list = new ArrayList();
     Map<Comparable, T> map = new HashMap();
     
-    public IdStorage() {
+    public IdEntityMap() {
     }
     
     public void init(List<T> entityList) {        
