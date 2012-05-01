@@ -187,6 +187,7 @@ public class CipherHandler {
     }
     
     protected CipherResponse generateKey() throws Exception {
+        logger.info("generateKey", request.getKeyAlias());
         if (request.getKeySize() == 0) {
             return new CipherResponse(CipherResponseType.ERROR_NO_KEY_SIZE);            
         }
