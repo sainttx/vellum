@@ -13,17 +13,23 @@ import vellum.exception.Exceptions;
  * @author evan
  */
 public class Base64 {
-
+    
     public static String encode(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
         return new BASE64Encoder().encode(bytes);        
     }
 
     public static byte[] decode(String string) {
+        if (string == null) {
+            return null;
+        }
         try {
             return new BASE64Decoder().decodeBuffer(string);        
         } catch (Exception e) {
             throw Exceptions.newRuntimeException(e);
         }
     }
-    
+
 }

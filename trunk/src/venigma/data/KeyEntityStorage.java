@@ -38,7 +38,7 @@ public class KeyEntityStorage {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("exists"));
         statement.setString(1, keyAlias);
         ResultSet resultSet = statement.executeQuery();
-        return resultSet.next();
+        return resultSet.next() && resultSet.getBoolean(1);
     }
     
     public KeyEntity find(String keyAlias) throws SQLException {
