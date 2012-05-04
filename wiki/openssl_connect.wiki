@@ -29,7 +29,7 @@ keytool -importkeystore -destkeystore mykey.p12 -deststoretype pkcs12 -deststore
 * Convert .p12 to .pem using openssl
 
 {{{
-    openssl pkcs12 -in mykey.p12 > mykey.private.pem
+openssl pkcs12 -in mykey.p12 > mykey.private.pem
 }}}
 
 This is private key so it'll have "this is private key so it'll have <tt>"ENCRYPTED PRIVATE KEY"</tt> as well as its public cert as <tt>"CERTIFICATE"</tt>.
