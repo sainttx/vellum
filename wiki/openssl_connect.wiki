@@ -41,7 +41,7 @@ keytool -keystore mystore.jks -list -alias mykey.jks -rfc
 openssl s_client -connect 192.17.16.15:443 -CAfile trusted_server_cert.pem -cert mykey.private.pem
 }}}
 
-and to troubleshoot you can see what cert they id themselves as, and what their trusted certs are, as follows
+and troubleshoot e.g. check what cert they identify themselves as to you, and what their trusted certs are.
 
 {{{
 Enter pass phrase for pdsl.private.pem:
