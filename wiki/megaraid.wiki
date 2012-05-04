@@ -31,11 +31,12 @@ We check the status regularly via the crontab.
 The script checks the MegaRAID state every minute using the `MegaCli64` utility as follows.
 {{{
   root@server ~: cat /opt/scripts/check-megaraid
-  /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -a0 -L0 | grep -q "^State: Optimal"
+  PATH=/opt/MegaRAID/MegaCli:$PATH
+  MegaCli64 -LDInfo -a0 -L0 | grep -q "^State: Optimal"
   if [ $? -ne 0 ]
   then
-    state=``/opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -aALL -Lall | grep "^State: "``
-    /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -aALL -Lall | mail -s "MegaRAID $state" evan.summers@gmail.com
+    state=``MegaCli64 -LDInfo -aALL -Lall | grep "^State: "``
+    MegaCli64 -LDInfo -aALL -Lall | mail -s "MegaRAID $state" evan.summers@gmail.com
     exit 2
   fi
 }}}
@@ -46,7 +47,7 @@ Note that in the case where we have two logical disks, we need to check -L1 as w
 For the purposes of a Nagios plugin, the script is modified as follows.
 {{{
   function check_logical {
-    /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -L$1 -a0 | grep -q "^State: Optimal"
+    MegaCli64 -LDInfo -L$1 -a0 | grep -q "^State: Optimal"
     if [ $? -ne 0 ]
     then
       echo "MegaRaid CRITICAL - Logical disk $1 not optimal"
@@ -61,16 +62,15 @@ For the purposes of a Nagios plugin, the script is modified as follows.
 
 If the state is not optimal we must check the the event log.
 {{{
-  /opt/MegaRAID/MegaCli/MegaCli64 -AdpEventLog -GetEvents -f events.log -aALL
+  MegaCli64 -AdpEventLog -GetEvents -f events.log -aALL
 }}}
 
 We can script this as follows.
 {{{
-  tmp=/tmp/$USER.``basename $0``
-  bin=/opt/MegaRAID/MegaCli
+  tmp=/tmp/$USER.``basename $0 .sh``
   
   function grep_event_log_error {
-    $bin/MegaCli64 -AdpEventLog -GetEvents -f $tmp -aALL
+    MegaCli64 -AdpEventLog -GetEvents -f $tmp -aALL
     grep -i error -B5 $tmp | grep -i "^Time\|error"
   }
 }}}
