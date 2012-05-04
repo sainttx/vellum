@@ -1,0 +1,80 @@
+
+= SSL connection test using openssl = 
+
+One can get remote server cert to import as follows, without having to ask them for it.
+
+{{{
+[evanx@myserver keystores]$ openssl s_client -connect 192.17.16.15:443
+}}}
+
+Cut and paste the PEM text eg. into <tt>trusted_server_cert.pem</tt> - and that cert can then be imported in to keystore.
+
+{{{
+[evanx@biz3 keystores]$ keytool -keystore trusted_certs.jks -storetype JKS -alias other_server -importcert -file trusted_server_cert
+}}}
+
+to test java keystore/keys SSL connection, exporting the private key to using openssl  as follows:
+
+* export the private key from keystore to a .p12 file format using keytool -importkeystore -deststoretype pcks12
+
+{{{
+[evanx@myserver keystores]$ keytool -importkeystore -destkeystore mykey.p12 -deststoretype pkcs12 -deststorepass mypass -srckeystore mystore.jks -alias mykey
+}}}
+
+* convert .p12 to .pem using openssl
+
+{{{
+[evanx@myserver keystores]$ openssl pkcs12 -in mykey.p12 > mykey.private.pem
+}}}
+
+this is private key so it'll have "this is private key so it'll have "ENCRYPTED PRIVATE KEY" as well as its public cert as "CERTIFICATE"
+
+* export trusted remote server cert to PEM
+
+{{{
+[evanx@myserver keystores]$ keytool -keystore mystore.jks -list -alias mykey.jks -rfc
+}}}
+
+* test connection using opensl
+
+{{{
+[evanx@myserver keystores]$ openssl s_client -connect 192.17.16.15:443 -CAfile trusted_server_cert.pem -cert mykey.private.pem
+}}}
+
+and to troubleshoot you can see what cert they id themselves as, and what their trusted certs are, as follows
+
+{{{
+Enter pass phrase for pdsl.private.pem:
+CONNECTED(00000003)
+depth=0 C = ZA, ST = South Africa, L = Cape Town, O = server, OU = Some Org Unit, CN = server
+verify return:1
+---
+Certificate chain
+ 0 s:/C=ZA/ST=South Africa/L=Cape Town/O=Some Org/OU=Some Org Unit/CN=Some Name
+   i:/C=ZA/ST=South Africa/L=Cape Town/O=Some Org/OU=Some Org Unit/CN=Some Name
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIC+jCCArigAwIBAgIET5gTFzALBgcqhkjOOAQDBQAwYDELMAkGA1UEBhMCS1kx
+...
+MCwCFGQTkWoQIzQ5o9UIhd/zcLABIYplAhQcQEVbK6juAZQI81up/3BYJN8hdA==
+-----END CERTIFICATE-----
+subject=/C=ZA/ST=South Africa/L=Cape Town/O=Some Org/OU=Some Org Unit/CN=Some Name
+issuer=/C=ZA/ST=South Africa/L=Cape Town/O=Some Org/OU=Some Org Unit/CN=Some Name
+---
+Acceptable client certificate CA names
+/C=South Africa/ST=WP/L=Cape Town/O=My Org/OU=My Org Unit/CN=My Name
+---
+SSL handshake has read 1400 bytes and written 1052 bytes
+---
+New, TLSv1/SSLv3, Cipher is EDH-DSS-DES-CBC3-SHA
+Server public key is 1024 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+SSL-Session:
+    Protocol  : TLSv1
+    Cipher    : EDH-DSS-DES-CBC3-SHA
+    ...
+    Verify return code: 0 (ok)
+}}}
