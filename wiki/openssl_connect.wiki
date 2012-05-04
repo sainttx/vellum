@@ -4,13 +4,13 @@
 One can get remote server cert to import as follows, without having to ask them for it.
 
 {{{
-[evanx@myserver keystores]$ openssl s_client -connect 192.17.16.15:443
+openssl s_client -connect 192.17.16.15:443
 }}}
 
 Cut and paste the PEM text eg. into <tt>trusted_server_cert.pem</tt> - and that cert can then be imported in to keystore.
 
 {{{
-[evanx@biz3 keystores]$ keytool -keystore trusted_certs.jks -storetype JKS -alias other_server -importcert -file trusted_server_cert
+keytool -keystore trusted_certs.jks -storetype JKS -alias other_server -importcert -file trusted_server_cert
 }}}
 
 to test java keystore/keys SSL connection, exporting the private key to using openssl  as follows:
@@ -18,13 +18,13 @@ to test java keystore/keys SSL connection, exporting the private key to using op
 * export the private key from keystore to a .p12 file format using keytool -importkeystore -deststoretype pcks12
 
 {{{
-[evanx@myserver keystores]$ keytool -importkeystore -destkeystore mykey.p12 -deststoretype pkcs12 -deststorepass mypass -srckeystore mystore.jks -alias mykey
+keytool -importkeystore -destkeystore mykey.p12 -deststoretype pkcs12 -deststorepass mypass -srckeystore mystore.jks -alias mykey
 }}}
 
 * convert .p12 to .pem using openssl
 
 {{{
-[evanx@myserver keystores]$ openssl pkcs12 -in mykey.p12 > mykey.private.pem
+    openssl pkcs12 -in mykey.p12 > mykey.private.pem
 }}}
 
 this is private key so it'll have "this is private key so it'll have "ENCRYPTED PRIVATE KEY" as well as its public cert as "CERTIFICATE"
@@ -32,13 +32,13 @@ this is private key so it'll have "this is private key so it'll have "ENCRYPTED 
 * export trusted remote server cert to PEM
 
 {{{
-[evanx@myserver keystores]$ keytool -keystore mystore.jks -list -alias mykey.jks -rfc
+keytool -keystore mystore.jks -list -alias mykey.jks -rfc
 }}}
 
 * test connection using opensl
 
 {{{
-[evanx@myserver keystores]$ openssl s_client -connect 192.17.16.15:443 -CAfile trusted_server_cert.pem -cert mykey.private.pem
+openssl s_client -connect 192.17.16.15:443 -CAfile trusted_server_cert.pem -cert mykey.private.pem
 }}}
 
 and to troubleshoot you can see what cert they id themselves as, and what their trusted certs are, as follows
