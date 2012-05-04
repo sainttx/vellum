@@ -20,13 +20,13 @@ keytool -keystore trusted_certs.jks -storetype JKS -alias other_server -importce
 In order to test a java keystore keys and certs for client auth SSL connection, we will export the private key to PKCS12 and convert that to PEM, 
 in order to using openssl to test the connection. 
 
-* export the private key from keystore to a .p12 file format using keytool -importkeystore -deststoretype pcks12
+* Export the private key from keystore to a .p12 file format using keytool -importkeystore -deststoretype pcks12
 
 {{{
 keytool -importkeystore -destkeystore mykey.p12 -deststoretype pkcs12 -deststorepass mypass -srckeystore mystore.jks -alias mykey
 }}}
 
-* convert .p12 to .pem using openssl
+* Convert .p12 to .pem using openssl
 
 {{{
     openssl pkcs12 -in mykey.p12 > mykey.private.pem
@@ -34,19 +34,19 @@ keytool -importkeystore -destkeystore mykey.p12 -deststoretype pkcs12 -deststore
 
 this is private key so it'll have "this is private key so it'll have "ENCRYPTED PRIVATE KEY" as well as its public cert as "CERTIFICATE"
 
-* export trusted remote server cert to PEM
+* Export trusted remote server cert to PEM
 
 {{{
 keytool -keystore mystore.jks -list -alias mykey.jks -rfc
 }}}
 
-* test connection using opensl
+* Test connection using opensl
 
 {{{
 openssl s_client -connect 192.17.16.15:443 -CAfile trusted_server_cert.pem -cert mykey.private.pem
 }}}
 
-and troubleshoot e.g. check what cert they identify themselves as to you, and what their trusted certs are.
+Finally, we can troubleshoot e.g. check what cert they identify themselves as to you, and what their trusted certs are.
 
 {{{
 Enter pass phrase for pdsl.private.pem:
