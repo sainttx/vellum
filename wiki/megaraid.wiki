@@ -1,7 +1,7 @@
 = MegaRAID =
 
 We can use the following command to the check the state of the MegaRAID controller.
-<code>
+{{{
   # /opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -a0 -L0
   Adapter 0 -- Virtual Drive Information:
   Virtual Disk: 0 (Target Id: 0)
@@ -17,19 +17,19 @@ We can use the following command to the check the state of the MegaRAID controll
   Access Policy: Read/Write
   Disk Cache Policy: Disk''s Default
   Exit Code: 0x00
-</code>
+}}}
 where -a0 indicates the 1st adapter (and only adapter in our case) and -L0 indicates the 1st Logical Disk (aka "Virtual Disk" as opposed to "Physical Disk").
 
 We check the status regularly via the crontab.
 
-<code>
+{{{
   root@server ~: crontab -l
   MAILTO=evans.summers@gmail.com
   * * * * * /scripts/check-megaraid
-</code>
+}}}
 
 The script checks the MegaRAID state every minute using the `MegaCli64` utility as follows.
-<code>
+{{{
   root@server ~: cat /opt/scripts/check-megaraid
   /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -a0 -L0 | grep -q "^State: Optimal"
   if [ $? -ne 0 ]
@@ -38,13 +38,13 @@ The script checks the MegaRAID state every minute using the `MegaCli64` utility 
     /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -aALL -Lall | mail -s "MegaRAID $state" evan.summers@gmail.com
     exit 2
   fi
-</code>
+}}}
 where although the cron emails output, that might be filtered out and not receive urgent attention, so we use mail explicitly to provide an appropriate subject.
 
 Note that in the case where we have two logical disks, we need to check -L1 as well.
 
 For the purposes of a Nagios plugin, the script is modified as follows.
-<code>
+{{{
   function check_logical {
     /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -L$1 -a0 | grep -q "^State: Optimal"
     if [ $? -ne 0 ]
@@ -57,15 +57,15 @@ For the purposes of a Nagios plugin, the script is modified as follows.
   check_logical 1
   echo "MegaRaid OK"
   exit 0
-</code>
+}}}
 
 If the state is not optimal we must check the the event log.
-<code>
+{{{
   /opt/MegaRAID/MegaCli/MegaCli64 -AdpEventLog -GetEvents -f events.log -aALL
-</code>
+}}}
 
 We can script this as follows.
-<code>
+{{{
   tmp=/tmp/$USER.``basename $0``
   bin=/opt/MegaRAID/MegaCli
   
@@ -73,12 +73,12 @@ We can script this as follows.
     $bin/MegaCli64 -AdpEventLog -GetEvents -f $tmp -aALL
     grep -i error -B5 $tmp | grep -i "^Time\|error"
   }
-</code>
+}}}
 
 Additionally we should check the battery backup, especially if we have configured our database server not to `fsync`
 to boost write performance on the assumption that in the event of a power-failure the RAID controller will still retain data not written to disk.
-<code>
+{{{
   function check_battery {
     $bin/MegaCli64 -AdpBbuCmd -GetBbuStatus -aALL
   }
-</code>
+}}}
