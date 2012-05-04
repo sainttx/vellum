@@ -49,7 +49,6 @@ openssl s_client -connect 192.17.16.15:443 -CAfile trusted_server_cert.pem -cert
 Finally, we can troubleshoot e.g. check what cert they identify themselves as to you, and what their trusted certs are.
 
 {{{
-Enter pass phrase for pdsl.private.pem:
 CONNECTED(00000003)
 depth=0 C = ZA, ST = South Africa, L = Cape Town, O = server, OU = Some Org Unit, CN = server
 verify return:1
