@@ -32,7 +32,7 @@ keytool -importkeystore -destkeystore mykey.p12 -deststoretype pkcs12 -deststore
     openssl pkcs12 -in mykey.p12 > mykey.private.pem
 }}}
 
-this is private key so it'll have "this is private key so it'll have "ENCRYPTED PRIVATE KEY" as well as its public cert as "CERTIFICATE"
+This is private key so it'll have "this is private key so it'll have <tt>"ENCRYPTED PRIVATE KEY"</tt> as well as its public cert as <tt>"CERTIFICATE"</tt>.
 
 * Export trusted remote server cert to PEM
 
