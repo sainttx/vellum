@@ -63,7 +63,7 @@ subject=/C=ZA/ST=South Africa/L=Cape Town/O=Some Org/OU=Some Org Unit/CN=Some Na
 issuer=/C=ZA/ST=South Africa/L=Cape Town/O=Some Org/OU=Some Org Unit/CN=Some Name
 ---
 Acceptable client certificate CA names
-/C=South Africa/ST=WP/L=Cape Town/O=My Org/OU=My Org Unit/CN=My Name
+/C=South Africa/ST=WP/L=Cape Town/O=My Org/OU=My Org Unit/CN=evanx.info
 ---
 SSL handshake has read 1400 bytes and written 1052 bytes
 ---
