@@ -1,19 +1,24 @@
 
 = SSL connection test using openssl = 
 
+== public trusted cert == 
+
 One can get remote server cert to import as follows, without having to ask them for it.
 
 {{{
 openssl s_client -connect 192.17.16.15:443
 }}}
 
-Cut and paste the PEM text eg. into <tt>trusted_server_cert.pem</tt> - and that cert can then be imported in to keystore.
+Cut and paste the PEM text eg. into <tt>trusted_server_cert.pem</tt>, and that cert can then be imported in to keystore.
 
 {{{
 keytool -keystore trusted_certs.jks -storetype JKS -alias other_server -importcert -file trusted_server_cert
 }}}
 
-to test java keystore/keys SSL connection, exporting the private key to using openssl  as follows:
+== private key == 
+
+In order to test a java keystore keys and certs for client auth SSL connection, we will export the private key to PKCS12 and convert that to PEM, 
+in order to using openssl to test the connection. 
 
 * export the private key from keystore to a .p12 file format using keytool -importkeystore -deststoretype pcks12
 
