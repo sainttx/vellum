@@ -4,6 +4,8 @@
  */
 package vellum.util;
 
+import vellum.util.formatter.ArgFormatter;
+
 /**
  * Utility methods related to classes.
  * Utility methods for specific types eg {@code String}, are found in {@code Strings}.
@@ -13,67 +15,13 @@ package vellum.util;
 public class Args {
 
     /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
+     * Used in toString() methods.
+     * 
      */
-    public static String format(Object... args) {
-        return Lists.format(args);
+    public static String format(Object ... args) {
+        return ArgFormatter.formatter.formatArray(args);
     }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatPrint(Object... args) {
-        return Lists.formatPrint(", ", args);
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatDisplay(Object... args) {
-        return Lists.formatDisplay(", ", args);
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatDisplaySpaced(Object... args) {
-        return Lists.formatDisplay(" ", args);
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatDisplayDashed(Object... args) {
-        return Lists.formatDisplay("-", args);
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatExport(String delimiter, Object... args) {
-        return Lists.formatExport(delimiter, args);
-    }
-
-    /**
-     * Format the list of args to a String.
-     *
-     */
-    public static String formatVerbose(Object... args) {
-        return Lists.formatVerbose(args);
-    }
-
+    
     /**
      * Determine if any of the args equal the given object. 
      */
@@ -95,7 +43,6 @@ public class Args {
             if (arg != null && arg == object) {
                 return true;
             }
-
         }
         return false;
     }

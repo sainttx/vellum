@@ -6,10 +6,10 @@ package vellum.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import vellum.util.formatter.ArgFormatter;
 
 /**
  * Utility methods related to classes.
@@ -18,11 +18,6 @@ import java.util.TreeMap;
  * @author evan
  */
 public class Lists {
-
-    public static final String DEFAULT_DELIMITER = ", ";
-    public static final String COMMA_DELIMITER = ", ";
-    public static final String SINGLE_QUOTE = "'";
-    public static final String DOUBLE_QUOTE = "\"";
 
     /**
      * Compare items in two lists for equality.
@@ -73,147 +68,7 @@ public class Lists {
                 }
             }
         }
-        return formatPrint(", ", args);
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatPrint(String delimiter, Object[] args) {
-        if (args == null) {
-            return "{}";
-        }
-        StringBuilder builder = new StringBuilder();
-        for (Object arg : args) {
-            if (builder.length() > 0) {
-                builder.append(delimiter);
-            }
-            builder.append(Types.formatPrint(arg));
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatDisplay(String delimiter, Object[] args) {
-        if (args == null) {
-            return "";
-        }
-        StringBuilder builder = new StringBuilder();
-        for (Object arg : args) {
-            if (arg != null) {
-                if (builder.length() > 0) {
-                    builder.append(delimiter);
-                }
-                builder.append(Types.formatPrint(arg));
-            }
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatDisplay(String delimiter, String quote, Object[] args) {
-        if (args == null) {
-            return "";
-        }
-        StringBuilder builder = new StringBuilder();
-        for (Object arg : args) {
-            if (arg != null) {
-                if (builder.length() > 0) {
-                    builder.append(delimiter);
-                }
-                builder.append(quote);
-                builder.append(Types.formatPrint(arg));
-                builder.append(quote);
-            }
-        }
-        return builder.toString();
-    }
-
-    public static String formatDisplayComma(Object[] args) {
-        return formatDisplay(COMMA_DELIMITER, args);
-    }
-
-    public static String formatPrintComma(Object[] args) {
-        return formatPrint(COMMA_DELIMITER, args);
-    }
-    
-    public static String formatDisplayCommaSingleQuote(Object[] args) {
-        return formatDisplay(COMMA_DELIMITER, SINGLE_QUOTE, args);
-    }
-
-    public static String formatDisplayCommaSingleQuote(Collection collection) {
-        return formatDisplay(COMMA_DELIMITER, SINGLE_QUOTE, collection.toArray());
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatDisplay(Collection collection) {
-        return formatDisplay(DEFAULT_DELIMITER, collection.toArray());
-    }
-
-    /**
-     * Convenience method used in {@code toString()} methods of objects
-     * to format their properties.
-     *
-     */
-    public static String formatExport(String delimiter, Object[] args) {
-        if (args == null) {
-            return "";
-        }
-        StringBuilder builder = new StringBuilder();
-        boolean delimit = false;
-        for (Object arg : args) {
-            if (!delimit) {
-                delimit = true;
-            } else {
-                builder.append(delimiter);
-            }
-            if (arg != null) {
-                builder.append(Types.formatDisplay(arg));
-            }
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Format the list of values to a String.
-     *
-     */
-    public static String formatVerbose(Object[] args) {
-        StringBuilder builder = new StringBuilder();
-        for (Object arg : args) {
-            if (builder.length() > 0) {
-                builder.append(", ");
-            }
-            if (arg == null) {
-                builder.append("null");
-            } else {
-                String string = Types.formatPrint(arg);
-                if (Strings.isEmpty(string)) {
-                    string = "empty";
-                }
-                if (arg.getClass() != String.class && !arg.getClass().isPrimitive()) {
-                    builder.append("(");
-                    builder.append(arg.getClass().getSimpleName());
-                    builder.append(") ");
-                }
-                builder.append(string);
-            }
-        }
-        return builder.toString();
+        return ArgFormatter.formatter.formatArray(args);
     }
 
     /**

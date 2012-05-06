@@ -23,16 +23,13 @@ import javax.net.ssl.TrustManagerFactory;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import venigma.data.CipherStorage;
-import venigma.data.KeyId;
 import venigma.data.KeyInfo;
-
 /**
  *
  * @author evan
  */
 public class CipherContext {
-    public static String PBKDF_ALGORITHM = "PBKDF2WithHmacSHA1";
-
+    
     Logr logger = LogrFactory.getLogger(getClass());
     CipherRequestAuth requestAuth = new CipherRequestAuth(this);
     CipherConfig config;
@@ -44,7 +41,7 @@ public class CipherContext {
     CipherStorage storage = new CipherStorage(this);
     boolean started = false;
     SSLServerSocket serverSocket;
-    Map<KeyId, KeyInfo> keyMap = new HashMap();
+    Map<KeyInfo, KeyInfo> keyMap = new HashMap();
 
     public CipherContext() {
     }
@@ -83,18 +80,20 @@ public class CipherContext {
         return serverSocket;
     }
 
-    public Cipher getCipher(int mode, KeyId keyId) throws Exception {
-        SecretKey secretKey = getSecretKey(keyId);
-        return getCipher(mode, secretKey, keyId.getIv());
+    public Cipher getCipher(int mode, KeyInfo keyInfo) throws Exception {
+        SecretKey secretKey = getSecretKey(keyInfo);
+        return getCipher(mode, secretKey, keyInfo.getIv());
     }
     
-    public SecretKey getSecretKey(KeyId keyId) throws Exception {
-        logger.info("getSecretKey", keyId);
-        KeyInfo keyInfo = keyMap.get(keyId);
-        if (keyInfo == null) {
-            keyInfo = storage.getKeyInfoStorage().find(keyId);
+    public SecretKey getSecretKey(KeyInfo keyInfo) throws Exception {
+        logger.info("getSecretKey", keyInfo);
+        if (keyMap.containsKey(keyInfo)) {
+            keyInfo = keyMap.get(keyInfo);
+        } else {
+            keyInfo = storage.getKeyInfoStorage().find(keyInfo);
+            logger.info(keyInfo);
             keyInfo.decrypt(properties.secretKeyPassword);
-            keyMap.put(keyId, keyInfo);
+            keyMap.put(keyInfo, keyInfo);
         }
         return keyInfo.getSecretKey();
     }
@@ -104,7 +103,7 @@ public class CipherContext {
         KeyGenerator aes = KeyGenerator.getInstance("AES");
         aes.init(keyInfo.getKeySize(), sr);
         SecretKey secretKey = aes.generateKey();
-        keyInfo.encrypt(secretKey, properties.secretKeyPassword, sr);
+        keyInfo.setKey(secretKey, properties.secretKeyPassword, sr);
         keyInfo.incrementRevisionNumber();
         storage.getKeyInfoStorage().insert(keyInfo);
     }
@@ -114,7 +113,7 @@ public class CipherContext {
         KeyGenerator aes = KeyGenerator.getInstance("AES");
         aes.init(keyInfo.getKeySize(), sr);
         SecretKey secretKey = aes.generateKey();
-        keyInfo.encrypt(secretKey, properties.secretKeyPassword, sr);
+        keyInfo.setKey(secretKey, properties.secretKeyPassword, sr);
         storage.getKeyInfoStorage().insert(keyInfo);
     }
 

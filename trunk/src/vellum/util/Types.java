@@ -4,8 +4,7 @@
  */
 package vellum.util;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import vellum.util.formatter.ArgFormatter;
 
 /**
  * Utility methods related to classes.
@@ -50,41 +49,15 @@ public class Types {
      *
      */
     public static String formatDisplay(Object object) {
-        if (object == null) {
-            return "";
-        }
-        if (object instanceof Date) {
-            return Calendars.timestampFormat.format((Date) object);
-        }
-        if (object instanceof BigDecimal) {
-            return Numbers.formatMoney((BigDecimal) object);
-        }
-        if (object instanceof Double) {
-            return Numbers.formatMoney((Double) object);
-        }
-        return object.toString();
+        return ArgFormatter.displayFormatter.format(object);
     }
 
     /**
      * Printable {@code toString()} indicating empty and null values.
      *
      */
-    public static String formatPrint(Object arg) {
-        if (arg == null) {
-            return "null";
-        } else if (arg instanceof Class) {
-            return ((Class) arg).getSimpleName();
-        } else if (arg instanceof Date) {
-            return Calendars.timestampFormat.format((Date) arg);
-        } else if (Strings.isEmpty(arg.toString())) {
-            return "empty";
-        } else if (arg instanceof Object[]) {
-            return String.format("[%s]", Lists.formatPrint(", ", (Object[]) arg));
-        } else if (arg instanceof String[]) {
-            return String.format("[%s]", Lists.formatPrint(", ", (String[]) arg));
-        } else {
-            return arg.toString();
-        }
+    public static String formatPrint(Object object) {
+        return ArgFormatter.formatter.format(object);
     }
 
     public static <T> T newInstance(Class<T> type) {
@@ -119,7 +92,6 @@ public class Types {
             return "Numeric";
         }
         return type.getSimpleName();
-
     }
 
     public static boolean isNumber(Class type) {

@@ -9,6 +9,7 @@ package vellum.logger;
 import java.io.PrintStream;
 import java.util.logging.Level;
 import vellum.util.Args;
+import vellum.util.formatter.ArgFormatter;
 
 /**
  *
@@ -44,7 +45,7 @@ public class Logr {
         out.print(" ");        
         out.print("INFO");
         out.print(" ");        
-        out.println(Args.format(args));
+        out.println(ArgFormatter.formatter.format(args));
         flush();
     }
 
@@ -52,7 +53,7 @@ public class Logr {
         if (level.intValue() > Level.FINER.intValue()) return;
         out.print(name);
         out.print(" ");        
-        out.println(Args.format(args));
+        out.println(ArgFormatter.formatter.format(args));
         flush();
     }
 
@@ -66,7 +67,7 @@ public class Logr {
         err.print(" ");        
         err.print("WARN ");        
         err.print(" ");        
-        err.println(Args.format(args));
+        out.println(ArgFormatter.formatter.format(args));
         Throwable throwable = getThrowable(args);
         if (throwable != null) {
             throwable.printStackTrace(err);

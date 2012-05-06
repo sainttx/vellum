@@ -45,8 +45,10 @@ create table organisation (
 
 create table key_info (
   key_alias varchar(32),
-  key_size int,  
   revision_number int,
+  key_size int,  
+  salt text,
+  iv text,
   data_ text,
 );
 

@@ -40,7 +40,7 @@ public class QueryParameters {
 
     @Override
     public String toString() {
-        return Args.formatPrint(database, schema, query);
+        return Args.format(database, schema, query);
     }
             
 }

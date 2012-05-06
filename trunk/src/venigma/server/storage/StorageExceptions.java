@@ -4,7 +4,7 @@
  */
 package venigma.server.storage;
 
-import vellum.util.Lists;
+import vellum.util.Args;
 
 /**
  *
@@ -16,7 +16,7 @@ public class StorageExceptions {
     }
 
     public static String formatMessage(StorageExceptionType storageExceptionType, Object[] args) {
-        return storageExceptionType.name() + " (" + Lists.formatDisplayComma(args) + ")";
+        return storageExceptionType.name() + " (" + Args.format(args) + ")";
     }
 
     public static String formatMessage(Throwable exception, StorageExceptionType storageExceptionType) {

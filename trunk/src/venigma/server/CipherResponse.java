@@ -60,6 +60,6 @@ public class CipherResponse {
     
     @Override
     public String toString() {
-        return Args.formatPrint(responseType.name(), errorMessage, Bytes.formatHex(bytes), Bytes.formatHex(iv));
+        return Args.format(responseType.name(), errorMessage, Bytes.formatHex(bytes), Bytes.formatHex(iv));
     }   
 }

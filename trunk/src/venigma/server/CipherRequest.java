@@ -6,7 +6,7 @@ package venigma.server;
 
 import venigma.data.AdminRole;
 import venigma.data.AdminUser;
-import venigma.data.KeyId;
+import venigma.data.KeyInfo;
 
 /**
  *
@@ -41,8 +41,8 @@ public class CipherRequest {
         this.iv = iv;
     }
 
-    public KeyId getKeyId() {
-        return new KeyId(keyAlias, keyRevisionNumber, keySize);
+    public KeyInfo getKeyInfo() {
+        return new KeyInfo(keyAlias, keyRevisionNumber, keySize);
         
     }
     
