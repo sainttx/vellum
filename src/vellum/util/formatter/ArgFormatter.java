@@ -4,7 +4,10 @@
  */
 package vellum.util.formatter;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import vellum.util.Calendars;
 import vellum.util.Strings;
 import vellum.util.Types;
@@ -53,6 +56,8 @@ public class ArgFormatter {
             return Calendars.timestampFormat.format((Date) arg);
         } else if (Strings.isEmpty(arg.toString())) {
             return "empty";
+        } else if (arg instanceof byte[]) {
+            return String.format("{%s}", formatArray(toList((byte[]) arg)));
         } else if (arg instanceof Object[]) {
             return String.format("{%s}", formatArray((Object[]) arg));
         } else if (arg instanceof String[]) {
@@ -64,6 +69,10 @@ public class ArgFormatter {
 
     public String formatArgs(Object ... args) {
         return formatArray(args);
+    }
+
+    public String formatArray(Collection collection) {
+        return formatArray(collection.toArray());
     }
     
     public String formatArray(Object[] args) {
@@ -118,6 +127,13 @@ public class ArgFormatter {
         }
         return builder.toString();
     }
-    
+
+    public List toList(byte[] array) {
+        List list = new ArrayList();
+        for (byte element : array) {
+            list.add(element);
+        }
+        return list;
+    }
     
 }
