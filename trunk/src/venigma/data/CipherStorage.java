@@ -4,9 +4,14 @@
  */
 package venigma.data;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.KeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.RowSets;
@@ -26,8 +31,8 @@ import venigma.server.storage.StorageRuntimeException;
 public class CipherStorage {
 
     Logr logger = LogrFactory.getLogger(CipherStorage.class);
-    IdEntityMap<KeyEntity> keyInfoStorage = new IdEntityMap();
-    PairMap<KeyEntityAdminUserPair> KeyInfoAdminUserPairStorage = new PairMap();
+    IdEntityMap<KeyInfo> keyInfoStorage = new IdEntityMap();
+    PairMap<KeyInfoAdminUserPair> KeyInfoAdminUserPairStorage = new PairMap();
     PairMap<AdminUserPair> adminUserPairStorage = new PairMap();
     CipherContext context;
     CipherConfig config;
@@ -71,8 +76,9 @@ public class CipherStorage {
         return new AdminUserStorage(getConnection());
     }
     
-    public KeyEntityStorage getKeyEntityStorage() {
-        return new KeyEntityStorage(getConnection());
+    public KeyInfoStorage getKeyInfoStorage() {
+        return new KeyInfoStorage(getConnection());
     }
 
+    
 }

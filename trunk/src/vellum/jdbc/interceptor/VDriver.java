@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package vellum.jdbc.aggregator;
+package vellum.jdbc.interceptor;
 
 import java.sql.Connection;
 import java.sql.Driver;

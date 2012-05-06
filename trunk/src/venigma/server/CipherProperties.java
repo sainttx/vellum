@@ -20,6 +20,9 @@ public class CipherProperties {
     public char[] trustKeyStorePassword;
     public char[] secretKeyStorePassword;
     public char[] secretKeyPassword;
+    public byte[] secretKeyPasswordSalt;
+    public byte[] secretKeyIv;
+    
     public List<AdminUser> userList = new ArrayList();
     
     public String buildDatabasePassword() {

@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package vellum.jdbc.aggregator;
+package vellum.jdbc.interceptor;
 
 import java.io.InputStream;
 import java.io.Reader;

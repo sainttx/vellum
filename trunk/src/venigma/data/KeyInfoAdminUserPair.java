@@ -8,9 +8,9 @@ package venigma.data;
  *
  * @author evan
  */
-public class KeyEntityAdminUserPair extends AbstractPair {
+public class KeyInfoAdminUserPair extends AbstractPair {
     
-    public KeyEntityAdminUserPair(IdPair idPair) {
+    public KeyInfoAdminUserPair(IdPair idPair) {
         super(idPair);
     }
 }

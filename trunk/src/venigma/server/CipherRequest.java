@@ -6,6 +6,7 @@ package venigma.server;
 
 import venigma.data.AdminRole;
 import venigma.data.AdminUser;
+import venigma.data.KeyId;
 
 /**
  *
@@ -16,7 +17,7 @@ public class CipherRequest {
     byte[] bytes;
     byte[] iv;
     String keyAlias;
-    int keyRevision;
+    int keyRevisionNumber;
     int keySize;
     String username;
     AdminRole role;
@@ -40,6 +41,11 @@ public class CipherRequest {
         this.iv = iv;
     }
 
+    public KeyId getKeyId() {
+        return new KeyId(keyAlias, keyRevisionNumber, keySize);
+        
+    }
+    
     public void setKeyAlias(String keyAlias) {
         this.keyAlias = keyAlias;
     }
@@ -84,8 +90,8 @@ public class CipherRequest {
         return keySize;
     }
 
-    public int getKeyRevision() {
-        return keyRevision;
+    public int getKeyRevisionNumber() {
+        return keyRevisionNumber;
     }
 
     public String getKeyAlias() {
