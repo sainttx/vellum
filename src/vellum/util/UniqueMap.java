@@ -6,6 +6,7 @@
 package vellum.util;
 
 import java.util.HashMap;
+import vellum.util.formatter.ArgFormatter;
 
 /**
  *
@@ -15,7 +16,7 @@ public class UniqueMap<K, V> extends HashMap<K, V> {
 
     public V put(K key, V value) {
         if (key == null) {
-            throw new NullPointerException(Args.format(key, value));
+            throw new NullPointerException(ArgFormatter.formatter.formatArgs(key, value));
         }
         V previous = super.put(key, value);
         if (previous != null) {

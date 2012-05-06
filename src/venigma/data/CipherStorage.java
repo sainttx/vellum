@@ -4,14 +4,9 @@
  */
 package venigma.data;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.KeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.RowSets;

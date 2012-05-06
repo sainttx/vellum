@@ -12,8 +12,8 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import vellum.type.ComparableTuple;
 import vellum.util.Args;
-import venigma.server.CipherContext;
 import venigma.server.storage.StorageException;
 import venigma.server.storage.StorageExceptionType;
 
@@ -21,7 +21,13 @@ import venigma.server.storage.StorageExceptionType;
  *
  * @author evan
  */
-public class KeyInfo extends KeyId {
+public class KeyInfo extends AbstractIdEntity {
+    String keyAlias;
+    int keyRevisionNumber;
+    int keySize;
+    KeyType keyType;
+    byte[] salt;
+    byte[] iv;
     byte[] encryptedKey;
     SecretKey secretKey;
     
@@ -29,13 +35,66 @@ public class KeyInfo extends KeyId {
     }
         
     public KeyInfo(String keyAlias, int revisionNumber, int keySize) {
-        super(keyAlias, revisionNumber, keySize);
+        this.keyAlias = keyAlias;
+        this.keyRevisionNumber = revisionNumber;
+        this.keySize = keySize;
+    }
+    
+    @Override
+    public Comparable getId() {
+        return ComparableTuple.newInstance(keyAlias, keyRevisionNumber);
     }
 
-    public KeyInfo(KeyId keyId) {
-        keyAlias = keyId.keyAlias;
-        keyRevisionNumber = keyId.keyRevisionNumber;
-        keySize = keyId.keySize;
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
+    
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+    
+    public int getKeySize() {
+        return keySize;
+    }
+
+    public void setKeySize(int keySize) {
+        this.keySize = keySize;
+    }
+    
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+
+    public void setKeyAlias(String keyAlias) {
+        this.keyAlias = keyAlias;
+    }
+
+    public int getKeyRevisionNumber() {
+        return keyRevisionNumber;
+    }
+
+    public void setKeyRevisionNumber(int keyRevisionNumber) {
+        this.keyRevisionNumber = keyRevisionNumber;
+    }
+    
+    public void incrementRevisionNumber() {
+        keyRevisionNumber++;
+    }
+
+    public void setKeyType(KeyType keyType) {
+        this.keyType = keyType;
+    }
+
+    public KeyType getKeyType() {
+        return keyType;
     }
     
     public void setEncryptedKey(byte[] encryptedKey) {
@@ -46,13 +105,13 @@ public class KeyInfo extends KeyId {
         return encryptedKey;
     }
 
-    public byte[] encrypt(SecretKey secretKey, char[] password, SecureRandom sr) throws Exception {
+    public void setKey(SecretKey secretKey, char[] password, SecureRandom sr) throws Exception {
         salt = new byte[8];
         iv = new byte[16];
         sr.nextBytes(iv);
         sr.nextBytes(salt);
         Cipher cipher = getCipher(Cipher.ENCRYPT_MODE, password);
-        return cipher.doFinal(secretKey.getEncoded());
+        encryptedKey = cipher.doFinal(secretKey.getEncoded());
     }
     
     public void decrypt(char[] password) throws Exception {
@@ -63,11 +122,12 @@ public class KeyInfo extends KeyId {
     
     private Cipher getCipher(int mode, char[] password) throws Exception {
         KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(CipherContext.PBKDF_ALGORITHM);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         SecretKey pbeKey = secretKeyFactory.generateSecret(spec);
+        SecretKey secretKey = new SecretKeySpec(pbeKey.getEncoded(), "AES");
         IvParameterSpec ips = new IvParameterSpec(iv);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(mode, pbeKey, ips);
+        cipher.init(mode, secretKey, ips);
         return cipher;
     }
         
@@ -78,4 +138,10 @@ public class KeyInfo extends KeyId {
         return secretKey;
     }
 
+    @Override
+    public String toString() {
+        return Args.format(keyAlias, keyRevisionNumber, iv);
+    }
+    
+    
 }

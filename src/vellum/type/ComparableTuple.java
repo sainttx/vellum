@@ -4,7 +4,9 @@
  */
 package vellum.type;
 
+import vellum.util.Args;
 import vellum.util.Comparables;
+import vellum.util.formatter.ArgFormatter;
 
 /**
  *
@@ -33,6 +35,11 @@ public class ComparableTuple implements Comparable<ComparableTuple> {
     @Override
     public int hashCode() {
         return Comparables.hashCode(values);
+    }
+
+    @Override
+    public String toString() {
+        return ArgFormatter.formatter.format(values);
     }
     
     public static ComparableTuple newInstance(Comparable ... values) {

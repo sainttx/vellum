@@ -18,6 +18,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Date;
 import javax.sql.RowSet;
+import vellum.util.formatter.ArgFormatter;
 
 /**
  *
@@ -110,7 +111,7 @@ public class HtmlQueryExecutor {
             for (int index = 1; index <= md.getColumnCount(); index++) {
                 String typeName = md.getColumnTypeName(index);
                 Object value = set.getObject(index);
-                String string = Types.formatDisplay(value);
+                String string = ArgFormatter.displayFormatter.format(value);
                 if (string.endsWith(".0")) {
                     string = string.substring(0, string.length() - 2);
                 } else if (typeName.equals("date")) {

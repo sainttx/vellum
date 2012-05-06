@@ -31,7 +31,7 @@ public class Entry<K, V> {
 
     @Override
     public String toString() {
-        return Args.formatPrint(key, value);
+        return Args.format(key, value);
     }
 
 }

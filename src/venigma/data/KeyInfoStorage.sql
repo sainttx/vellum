@@ -18,8 +18,8 @@ delete from key_info where key_alias = ?
 ;
 
 -- insert
-insert into key_info (key_alias, key_size, revision_number, data_)
-values (?, ?, ?, ?)
+insert into key_info (key_alias, revision_number, key_size, salt, iv, data_)
+values (?, ?, ?, ?, ?, ?)
 ;
 
 

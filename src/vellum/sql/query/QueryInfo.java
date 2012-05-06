@@ -174,7 +174,7 @@ public class QueryInfo {
 
    @Override
    public String toString() {
-      return Args.formatPrint(queryName, database, schema, user);
+      return Args.format(queryName, database, schema, user);
    }
 
 

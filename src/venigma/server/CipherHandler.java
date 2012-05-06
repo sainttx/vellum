@@ -114,21 +114,20 @@ public class CipherHandler {
     }
 
     protected CipherResponse decrypt() throws Exception {
-        if (!storage.getKeyInfoStorage().exists(request.getKeyId())) {
+        if (!storage.getKeyInfoStorage().exists(request.getKeyInfo())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
         }
-        KeyId keyId = request.getKeyId();
-        Cipher cipher = context.getCipher(Cipher.DECRYPT_MODE, keyId);
+        Cipher cipher = context.getCipher(Cipher.DECRYPT_MODE, request.getKeyInfo());
         byte[] decryptedBytes = cipher.doFinal(request.getBytes());
         return new CipherResponse(CipherResponseType.OK, decryptedBytes);
     }
 
     protected CipherResponse encrypt() throws Exception {
-        if (!storage.getKeyInfoStorage().exists(request.getKeyId())) {
+        if (!storage.getKeyInfoStorage().exists(request.getKeyInfo())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
         }
-        KeyId keyId = request.getKeyId();
-        Cipher cipher = context.getCipher(Cipher.ENCRYPT_MODE, keyId);
+        KeyInfo keyInfo = request.getKeyInfo();
+        Cipher cipher = context.getCipher(Cipher.ENCRYPT_MODE, keyInfo);
         AlgorithmParameters params = cipher.getParameters();
         byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
         byte[] encryptedBytes = cipher.doFinal(request.getBytes());
@@ -184,14 +183,14 @@ public class CipherHandler {
     }
     
     protected CipherResponse generateKey() throws Exception {
-        logger.info("generateKey", request.getKeyId());
+        logger.info("generateKey", request.getKeyInfo());
         if (request.getKeySize() == 0) {
             return new CipherResponse(CipherResponseType.ERROR_NO_KEY_SIZE);            
         }
         if (request.getKeySize() != 128 && request.getKeySize() != 192 && request.getKeySize() != 256) {
             return new CipherResponse(CipherResponseType.ERROR_INVALID_KEY_SIZE);            
         }
-        if (storage.getKeyInfoStorage().exists(request.getKeyId())) {
+        if (storage.getKeyInfoStorage().exists(request.getKeyInfo())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_ALREADY_EXISTS);
         }
         KeyInfo keyInfo = new KeyInfo(request.getKeyAlias(), request.getKeyRevisionNumber(), request.getKeySize());
@@ -200,7 +199,7 @@ public class CipherHandler {
     }
     
     protected CipherResponse reviseKey() throws Exception {
-        if (!storage.getKeyInfoStorage().exists(request.getKeyId())) {
+        if (!storage.getKeyInfoStorage().exists(request.getKeyInfo())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_NOT_FOUND);
         }
         KeyInfo keyInfo = new KeyInfo(request.getKeyAlias(), request.getKeyRevisionNumber(), request.getKeySize());

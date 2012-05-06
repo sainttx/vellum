@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.crypto.SecretKey;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.sql.common.QueryMap;
@@ -37,10 +36,12 @@ public class KeyInfoStorage {
         keyInfo.setKeySize(resultSet.getInt("key_size"));
         keyInfo.setKeyRevisionNumber(resultSet.getInt("revision_number"));
         keyInfo.setEncryptedKey(Base64.decode(resultSet.getString("data_")));
+        keyInfo.setIv(Base64.decode(resultSet.getString("iv")));
+        keyInfo.setSalt(Base64.decode(resultSet.getString("salt")));
         return keyInfo;        
     }
 
-    public boolean exists(KeyId keyId) throws SQLException {
+    public boolean exists(KeyInfo keyId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("exists"));
         statement.setString(1, keyId.getKeyAlias());
         statement.setInt(2, keyId.getKeyRevisionNumber());
@@ -48,10 +49,10 @@ public class KeyInfoStorage {
         return resultSet.next() && resultSet.getBoolean(1);
     }
     
-    public KeyInfo find(KeyId keyId) throws Exception {
+    public KeyInfo find(KeyInfo keyInfo) throws Exception {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("find"));
-        statement.setString(1, keyId.getKeyAlias());
-        statement.setInt(2, keyId.getKeyRevisionNumber());
+        statement.setString(1, keyInfo.getKeyAlias());
+        statement.setInt(2, keyInfo.getKeyRevisionNumber());
         ResultSet resultSet = statement.executeQuery();
         if (!resultSet.next()) {
             throw new StorageException(StorageExceptionType.KEY_NOT_FOUND);
@@ -62,16 +63,18 @@ public class KeyInfoStorage {
     public void insert(KeyInfo keyInfo) throws Exception {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
         statement.setString(1, keyInfo.getKeyAlias());
-        statement.setInt(2, keyInfo.getKeySize());
-        statement.setInt(3, keyInfo.getKeyRevisionNumber());
-        statement.setString(3, Base64.encode(keyInfo.getEncryptedKey()));
-        int updateCount = statement.executeUpdate();        
-        if (updateCount != 1) {
+        statement.setInt(2, keyInfo.getKeyRevisionNumber());
+        statement.setInt(3, keyInfo.getKeySize());
+        statement.setString(4, Base64.encode(keyInfo.getSalt()));
+        statement.setString(5, Base64.encode(keyInfo.getIv()));
+        statement.setString(6, Base64.encode(keyInfo.getEncryptedKey()));
+        int insertCount = statement.executeUpdate();        
+        if (insertCount != 1) {
             throw new StorageException(StorageExceptionType.KEY_NOT_INSERTED);
         }
     }
 
-    public void delete(KeyId keyId) throws Exception {
+    public void delete(KeyInfo keyId) throws Exception {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("delete"));
         statement.setString(1, keyId.getKeyAlias());
         int updateCount = statement.executeUpdate();        
