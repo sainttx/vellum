@@ -45,7 +45,6 @@ public class ArgFormatter {
         this.delimiter = delimiter;
     }
     
-    
     public String format(Object arg) {
         if (arg == null) {
             if (displayable) return "";
