@@ -56,11 +56,11 @@ public class ArgFormatter {
         } else if (Strings.isEmpty(arg.toString())) {
             return "empty";
         } else if (arg instanceof byte[]) {
-            return String.format("{%s}", formatArray(toList((byte[]) arg)));
+            return String.format("[%s]", formatArray(toList((byte[]) arg)));
         } else if (arg instanceof Object[]) {
-            return String.format("{%s}", formatArray((Object[]) arg));
+            return String.format("[%s]", formatArray((Object[]) arg));
         } else if (arg instanceof String[]) {
-            return String.format("{%s}", formatArray((String[]) arg));
+            return String.format("[%s]", formatArray((String[]) arg));
         } else {
             return arg.toString();
         }
@@ -75,6 +75,10 @@ public class ArgFormatter {
     }
     
     public String formatArray(Object[] args) {
+        if (args == null) {
+            if (displayable) return "";
+            return "null[]";
+        }
         StringBuilder builder = new StringBuilder();
         for (Object arg : args) {
             if (builder.length() > 0) {
