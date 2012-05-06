@@ -81,11 +81,11 @@ public class CipherContext {
     }
 
     public Cipher getCipher(int mode, KeyInfo keyInfo) throws Exception {
-        SecretKey secretKey = getSecretKey(keyInfo);
-        return getCipher(mode, secretKey, keyInfo.getIv());
+        keyInfo = getSecretKey(keyInfo);
+        return getCipher(mode, keyInfo.getSecretKey(), keyInfo.getIv());
     }
     
-    public SecretKey getSecretKey(KeyInfo keyInfo) throws Exception {
+    public KeyInfo getSecretKey(KeyInfo keyInfo) throws Exception {
         logger.info("getSecretKey", keyInfo);
         if (keyMap.containsKey(keyInfo)) {
             keyInfo = keyMap.get(keyInfo);
@@ -95,7 +95,8 @@ public class CipherContext {
             keyInfo.decrypt(properties.secretKeyPassword);
             keyMap.put(keyInfo, keyInfo);
         }
-        return keyInfo.getSecretKey();
+        logger.info("getSecretKey iv", keyInfo.getIv());
+        return keyInfo;
     }
 
     public void reviseSecretKey(KeyInfo keyInfo) throws Exception {
