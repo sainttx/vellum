@@ -6,10 +6,16 @@ package venigma.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.SecureRandom;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
+import venigma.server.storage.StorageException;
+import venigma.server.storage.StorageExceptionType;
 
 /**
  *
@@ -28,7 +34,33 @@ public class Ciphers {
         return key;
     }
         
+    public static void generateAESKey(KeyStore keyStore, String keyAlias, char[] secretKeyPassword, 
+            int keySize, SecureRandom sr) throws Exception {
+        KeyGenerator aes = KeyGenerator.getInstance("AES");
+        aes.init(keySize, sr);
+        SecretKey key = aes.generateKey();
+        KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
+        KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(secretKeyPassword);
+        keyStore.setEntry(keyAlias, entry, prot);        
+    }
+
+    public static void writeKeyStore(KeyStore keyStore, String fileName, char[] storePassword) throws Exception {
+        FileOutputStream stream = new FileOutputStream(fileName);
+        keyStore.store(stream, storePassword);
+        stream.close();
+    }
     
+    public static KeyStore loadKeyStore(String fileName, char[] storePassword) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        File file = new File(fileName);
+        if (!file.exists()) {
+            throw new StorageException(StorageExceptionType.KEY_NOT_FOUND);
+        }
+        FileInputStream stream = new FileInputStream(file);
+        keyStore.load(stream, storePassword);
+        stream.close();
+        return keyStore;
+    }
     
-    
+
 }

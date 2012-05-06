@@ -241,10 +241,8 @@ public class TestVenigma implements Runnable {
         try {
             if (true) {
                 new Thread(instance).start();
-                Thread.sleep(2000);
+                Thread.sleep(4000);
                 Streams.close(instance.server);
-                Thread.sleep(1000);
-                System.exit(0);
             } else {
                 instance.process();
             }
