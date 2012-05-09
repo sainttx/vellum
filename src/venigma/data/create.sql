@@ -42,7 +42,6 @@ create table organisation (
   organisation_url varchar(32)
 );
 
-
 create table key_info (
   key_alias varchar(32),
   revision_number int,
