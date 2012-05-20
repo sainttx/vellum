@@ -84,7 +84,14 @@ public class ArgFormatter {
             if (builder.length() > 0) {
                 builder.append(delimiter);
             }
-            builder.append(format(arg));
+            String string = format(arg);
+            if (string.contains(delimiter)) {
+                builder.append("{");
+                builder.append(string);
+                builder.append("}");
+            } else {
+                builder.append(string);                
+            }
         }
         return builder.toString();
     }
