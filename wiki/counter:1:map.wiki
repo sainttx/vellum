@@ -1,0 +1,113 @@
+
+I hope to blog about monitoring and what-not, and to begin this saga, put this Map in your internet right there.
+
+<code>
+public class IntegerCounterMap<T> extends TreeMap<T, Integer> {
+    
+    public int getInt(T key) {
+        Integer number = get(key);
+        if (number == null) {
+            number = new Integer(0);
+        }
+        return number;
+    }
+
+    public void increment(T key) {
+        Integer number = getInt(key);
+        put(key, new Integer(number.intValue() + 1));
+    }
+
+    public int calculateTotalCount() {
+        int total = 0;
+        for (T key : keySet()) {
+            total += getInt(key);
+        }
+        return total;
+    }
+}
+</code>
+
+where for sure we are going to count some of these key things, so we add <tt>increment()</tt> 
+
+Usually we are counting some things for some time period, maybe the number of successes and failures of something or other, over the last minute.
+
+<code>
+public class TimestampedSample implements Timestamped {
+    long millis;
+    IntegerCounterMap counterMap = new IntegerCounterMap();
+
+    public TimestampedSample(long millis) {
+        this.millis = millis;
+    }
+    
+    @Override
+    public void setTimestampMillis(long millis) {
+        this.millis = millis;
+    }
+
+    @Override
+    public long getTimestampMillis() {
+        return millis;
+    }
+
+    public IntegerCounterMap getCounterMap() {
+        return counterMap;
+    }
+}
+</code>
+
+We must queue up timestamped log messages for our digester.
+
+<code>
+public class TimestampedList<T extends Timestamped>  {
+
+    LinkedList<T> linkedList = new LinkedList();
+    long capacityMillis;
+    long latestMillis;
+
+    public TimestampedList(long millis) {
+        this.capacityMillis = millis;
+    }
+    
+    public synchronized List<T> getList() {
+        return getList(System.currentTimeMillis());
+    }
+
+    public synchronized List<T> getList(long millis) {
+        prune(millis);
+        return new CopyOnWriteArrayList(linkedList);
+    }
+    
+    public synchronized void add(T entry) {
+        if (entry.getTimestampMillis() == 0) {
+            entry.setTimestampMillis(System.currentTimeMillis());
+        }
+        prune(entry.getTimestampMillis());
+        linkedList.add(0, entry);
+    }
+
+    public synchronized List<T> getLatest(int length) {
+        if (linkedList.size() <= length) {
+            return Collections.unmodifiableList(linkedList);
+        } else {
+            return linkedList.subList(0, length);
+        }
+    }
+    
+    private void prune(long latestMillis) {
+        this.latestMillis = latestMillis;
+        while (linkedList.size() > 0) {
+            T last = linkedList.getLast();
+            if (last == null || last.getTimestampMillis() >= latestMillis - capacityMillis) {
+                return;
+            }
+            linkedList.remove(last);
+        }
+    }
+}
+</code>
+
+where we prune our list to remove entries that are getting old. 
+
+The proof is in the pudding, but to be honest, this pudding is still half baked. End of part 1. See part 2 plating, and part 3 for serving it up.
+
