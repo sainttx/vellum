@@ -145,7 +145,7 @@ public class VenigmaLogAppender extends AppenderSkeleton {
 where parameters are set via the log4j config, eg. an HTTP port we will use to report some stats and status later.
 
 For some or other reason, we wrap a <tt>LoggingEvent</tt> into a <tt>LogMessage</tt>, which might be a persistent object, 
-but really i'm grasping at straws as to why this has occurred.
+but really i'm grasping at straws as to why this has occurred. I'm sure it seemed like a good idea at the time.
 
 We will schedule a task to execute every so often on our queue of messages. 
 
@@ -292,7 +292,10 @@ public class HomePageHandler extends AbstractPageHandler {
         print(context.messageList.getLatest(20));
         out.println("<hr>");
         VenigmaSample sample = context.timerTask.getSample();
-        out.printf("sample from %s (%d) to %s\n", DateFormats.formatTime(sample.getStartMillis()), sample.getStartMillis(), DateFormats.formatTime(sample.getTimestampMillis()));
+        out.printf("sample from %s (%d) to %s\n", 
+            DateFormats.formatTime(sample.getStartMillis()), 
+            sample.getStartMillis(), 
+            DateFormats.formatTime(sample.getTimestampMillis()));
         for (Object key : sample.counterMap.keySet()) {
             out.printf("<i>%s</i> %d\n", key, sample.counterMap.get(key));
         }
@@ -301,9 +304,15 @@ public class HomePageHandler extends AbstractPageHandler {
     protected void print(List<LogMessage> messageList) {
         for (LogMessage message : messageList) {
             if (message.getConciseMessage() != null) {
-                out.printf("%s <b>%s</b> %s\n", message.getLevel(), message.getCategory(), message.getConciseMessage());
+                out.printf("%s <b>%s</b> %s\n", 
+                  message.getLevel(), 
+                  message.getCategory(), 
+                  message.getConciseMessage());
             } else {
-                out.printf("%s <b>%s</b> %s\n", message.getLevel(), message.getCategory(), message.getMessage());                
+                out.printf("%s <b>%s</b> %s\n", 
+                  message.getLevel(), 
+                  message.getCategory(), 
+                  message.getMessage());                
             }
         }
     }   
