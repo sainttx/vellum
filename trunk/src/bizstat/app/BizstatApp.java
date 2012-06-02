@@ -21,7 +21,6 @@ public class BizstatApp {
     
     public void init() {
         SampleConfig sampleConfig = new SampleConfig();
-    }
-    
+    }    
     
 }
