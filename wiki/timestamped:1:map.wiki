@@ -56,7 +56,7 @@ public class TimestampedSample implements Timestamped {
 }
 </code>
 
-We must queue up timestamped log messages for our digester.
+We need some data to sample. So queue up timestamped log messages to be digested.
 
 <code>
 public class TimestampedList<T extends Timestamped>  {
@@ -109,5 +109,5 @@ public class TimestampedList<T extends Timestamped>  {
 
 where we prune our list to remove entries that are getting old. 
 
-The proof is in the pudding, but to be honest, this pudding is still half baked. End of part 1. See part 2 plating, and part 3 for serving it up.
+The proof is in the pudding, but to be honest, this pudding is still half baked. End of part 1. See part 2 for plating, and part 3 for serving it up.
 
