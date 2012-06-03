@@ -11,7 +11,7 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
 <div style="border-bottom: solid 1px; background-color: #ccff00;">
 <img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/>
-<span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Descending map:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
+<span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Counting map:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
 </a>
 
@@ -19,22 +19,29 @@ As you can imagine we will need to count so many <i>key</i> things like the numb
 
 <code>
 public class IntegerCounterMap<K> extends TreeMap<K, Integer> {
-    protected int totalCount = 0;
-    
-    public int getInt(K key) {
-        Integer number = get(key);
-        if (number == null) {
-            number = new Integer(0);
+    private int totalCount = 0;
+
+    public int getInt(K key, int defaultValue) {
+        if (!containsKey(key)) {
+            return defaultValue;
+        } else {
+            return get(key);
         }
-        return number;
+    }
+
+    public int getInt(K key) {
+        return getInt(key, 0);
     }
     
     public void increment(K key) {
         totalCount++;
-        Integer number = getInt(key);
-        put(key, new Integer(number.intValue() + 1));
+        put(key, new Integer(getInt(key) + 1));
     }
 
+    public Iterable<K> descendingValueKeySet() {
+        return Maps.descendingValueKeySet(this);
+    }
+    
     public int getTotalCount() {
         return totalCount;
     }
@@ -46,10 +53,6 @@ public class IntegerCounterMap<K> extends TreeMap<K, Integer> {
         }
         return total;
     }
-
-    public Iterable<K> descendingValueKeySet() {
-        return Maps.descendingValueKeySet(this);
-    }    
 }
 </code> 
 
@@ -96,11 +99,11 @@ public class Maps {
 }
 </code>
 
-where we sort the map's entries by value, and put the keys into a <tt>List</tt> to iterate over in <tt>for</tt> loops.
+where we sort the map's entries by value, and put the keys into a <tt>List</tt> to iterate over e.g. in a <tt>for</tt> loop.
 
 See also http://stackoverflow.com/questions/109383/how-to-sort-a-mapkey-value-on-the-values-in-java. <i>"Put that in your internet, put that in your twitter right there."</i>
 
-Finally let's test it. 
+Let's test this ordering. 
 
 <code>
     @Test
@@ -142,7 +145,6 @@ In part two, we'll properly  introduce the namesake of this series, a so-called 
 
 <pre>
 public interface Timestamped {
-    public void setTimestampMillis(long millis);
     public long getTimestampMillis();    
 }
 </pre>
