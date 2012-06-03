@@ -4,16 +4,15 @@ The first part in a series entitled "Timestamped: a trilogy in a few parts." For
 -->
 
 
-I plan to blog about monitoring and what-not, and to begin this saga, I'll start with this series "Timestamped: a trilogy in a few parts,"  this being the first part,  where we introduce a "counter map" and ensure we can sort it by its integer values.
-
-We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
+I plan to blog about monitoring and what-not, and to begin this saga, I'll start with this series "Timestamped: a trilogy in a few parts,"  this being the first part,  where we introduce a "counter map" for key things and ensure we can sort it by its integer values.
 
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
 <div style="border-bottom: solid 1px; background-color: #ccff00;">
-<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/>
-<span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Counter map:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Counter map:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
 </a>
+
+We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
 
 As you can imagine we will need to count so many <i>key</i> things like the number of successes and failures of one thing or another. For this purpose, we introduce the following so-called "counter map."
 
@@ -101,25 +100,26 @@ public class Maps {
 
 where we sort the map's entries by value, and put the keys into a <tt>List</tt> to iterate over e.g. in a <tt>for</tt> loop.
 
-See also http://stackoverflow.com/questions/109383/how-to-sort-a-mapkey-value-on-the-values-in-java. <i>"Put that in your internet, put that in your twitter right there."</i>
+See also http://stackoverflow.com/questions/109383/how-to-sort-a-mapkey-value-on-the-values-in-java. 
 
 Let's test this ordering. 
 
 <code>
     @Test
-    public void testDecendingMap() {
-        Map<String, Integer> counterMap = new HashMap();
+    public void testDescendingCounterMap() {
+        IntegerCounterMap<String> counterMap = new IntegerCounterMap();
         counterMap.put("WARNING", 0);
         counterMap.put("DEBUG", 1000000);
-        counterMap.put("ERROR", 5000);
-        counterMap.put("INFO", 1);
-        for (String key : Maps.descendingValueKeySet(counterMap)) {
-            System.out.printf("%d %s\n", counterMap.get(key), key);            
+        counterMap.put("ERROR", 1000);
+        counterMap.increment("ERROR");
+        counterMap.increment("INFO");
+        for (String key : counterMap.descendingValueKeySet()) {
+            System.out.printf("%d %s\n", counterMap.get(key), key);
         }
-        Assert.assertEquals(Maps.descendingValueKeySet(counterMap).iterator().next(), "DEBUG");
+        Assert.assertEquals(counterMap.descendingValueKeySet().iterator().next(), "DEBUG");
         String lastKey = null;
         int keyCount = 0;
-        for (String key : Maps.descendingValueKeySet(counterMap)) {
+        for (String key : counterMap.descendingValueKeySet()) {
             lastKey = key;
             keyCount++;
         }
@@ -128,16 +128,18 @@ Let's test this ordering.
     }
 </code>
 
-And we after some debugging we get what we want. 
+After some debugging (with the help of a lot logging), we eventually get what we were expecting. 
+<i>"Put that in your internet, put that in your twitter right there."</i>
 
-<code>
+<pre>
 1000000 DEBUG
 5000 ERROR
 1 INFO
 0 WARNING
-</code>
+</pre>
 
-As so often seems to be case, we have a million DEBUG messages and so many ERRORs with absolutely no bloody warning and very little INFO to go on.
+As so often seems to be case, we have a million DEBUG messages, a thousand and one ERRORs 
+with absolutely no bloody warning and very little INFO to go on.
 
 <h2>Coming soon</h2>
 

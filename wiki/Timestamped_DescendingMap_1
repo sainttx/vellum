@@ -131,7 +131,7 @@ Finally let's test it.
     }
 </code>
 
-And we after some debugging with the help of logging, we get what we would have wanted. 
+After some debugging with the help of a lot logging, we get what were always expecting. 
 
 <code>
 1000000 DEBUG
