@@ -1,6 +1,4 @@
 
-This technical info site is is produced by evan.summers (at) gmail.com, and supported by iPay (Pty) Ltd, 
-who provide payment software and services, including solutions for prepaid electricity and airtime, 
-including !BizSwitch, a leading software switching platform - see http://bizswitch.net.
+This technical info site is is produced by evan.summers (at) gmail.com.
 
-[Timestamped_DescendingMap]
+[DescendingMap]
