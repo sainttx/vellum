@@ -69,8 +69,7 @@ For sure we are going to count some of these key things, so we add <tt>increment
     }
 </code>
 
-Also we provide a <tt>descendingValueKeySet()</tt> method for when we wanna display counters is descending order, to see the biggest numbers. 
-This is delegates to the following util class. 
+Also we provide a <tt>descendingValueKeySet()</tt> method for when we wanna display counters is descending order, to see the biggest numbers. This is delegates to the following util class. 
 
 <code>
 public class Maps {  

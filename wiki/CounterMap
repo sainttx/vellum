@@ -11,7 +11,7 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
 <div style="border-bottom: solid 1px; background-color: #ccff00;">
 <img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/>
-<span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Counting map:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
+<span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Counter map:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
 </a>
 
@@ -68,7 +68,7 @@ For sure we are going to count some of these key things, so we add <tt>increment
     }
 </code>
 
-Also we provide a <tt>descendingValueKeySet()</tt> method cos we gonna wanna display counters is descending order to see the most significant culprits in our map right there. This is delegates to the following util class. 
+Also we provide a <tt>descendingValueKeySet()</tt> method for when we wanna display counters is descending order, to see the biggest numbers. This is delegates to the following util class. 
 
 <code>
 public class Maps {  
