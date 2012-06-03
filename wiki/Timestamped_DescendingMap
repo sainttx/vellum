@@ -4,27 +4,22 @@ The first part in a series entitled "Timestamped: a trilogy in a few parts." For
 -->
 
 
-I plan to blog about monitoring and what-not, and to begin this saga, I'll start with 
-a series "Timestamped: a trilogy in a few parts." 
+I plan to blog about monitoring and what-not, and to begin this saga, I'll start with this series 
+"Timestamped: a trilogy in a few parts,"  this being the first part,  where we introduce a "counter map" 
+and ensure we can sort it by its integer values.
 
-We will be analysing logs in this unwinding series. 
+We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest 
+our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
 
-<div style="background-color: green">
-<img src="" alt="" align="top" align="left" hspace="4"/>
+<a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
+<div style="border-bottom: solid 1px; background-color: #ccff00;">
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/>
+<span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Descending map:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
+</a>
 
-Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, 
-and make some judgement calls as to the rapidly changing status of our app.  
-
-<div style="border-bottom: solid 1px; background-color: #33ffff;">
-<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" width="32" height="32" align="left" hspace="8"/>
-<span style="font-style: normal; font-weight: bold; font-size: 11pt;">Descending map</span>
-<br><a style='text-decoration: none;' href="http://code.google.com/p/vellum/wiki/home">
-<span style="font-style: italic; font-size: 11pt; color: black;">A part of "Timestamped: a trilogy in a few parts."</span></a>
-</div>
-
-As you can imagine we will need to count so things like the 
-number of successes and failures of one thing or another. For this purpose, we introduce the following so-called "counter map."
+As you can imagine we will need to count so many <i>key</i> things like the number of successes and failures 
+of one thing or another. For this purpose, we introduce the following so-called "counter map."
 
 <code>
 public class IntegerCounterMap<K> extends TreeMap<K, Integer> {
@@ -136,10 +131,26 @@ Finally let's test it.
     }
 </code>
 
-As often seems to be case, we have a million DEBUG messages, helluva lotta ERRORs with absolutely no bloody warning and very little INFO to go on, doggone it!
+And we after some debugging we get what we want. 
 
+<code>
+1000000 DEBUG
+5000 ERROR
+1 INFO
+0 WARNING
+</code>
 
+As so often seems to be case, we have a million DEBUG messages and so many ERRORs with absolutely no bloody warning and very little INFO to go on.
 
+<h2>Coming soon</h2>
 
+In part two, we'll properly  introduce the namesake of this series, the <tt>Timestamped</tt> interface, 
+not to mention <tt>TimestampedList</tt>, <tt>TimestampedSample</tt> and what-not.
 
-
+<pre>
+public interface Timestamped {
+    public void setTimestampMillis(long millis);
+    public long getTimestampMillis();    
+}
+</pre>
+ 
