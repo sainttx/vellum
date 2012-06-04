@@ -72,6 +72,10 @@ Also we provide a <tt>descendingValueKeySet()</tt> method for when we wanna disp
 <code>
 public class Maps {  
 
+    public static <K, V> Iterable<K> descendingValueKeySet(Map<K, V> map) {
+        return keySet(descendingValueEntrySet(map));
+    }
+    
     private static <K, V> NavigableSet<Entry<K, V>> descendingValueEntrySet(Map<K, V> map) {
         TreeSet set = new TreeSet(new Comparator<Entry>() {
 
@@ -90,10 +94,6 @@ public class Maps {
             keyList.add((K) entry.getKey());
         }
         return keyList;
-    }
-
-    public static <K, V> Iterable<K> descendingValueKeySet(Map<K, V> map) {
-        return keySet(descendingValueEntrySet(map));
     }
 }
 </code>
