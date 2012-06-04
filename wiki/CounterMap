@@ -133,7 +133,7 @@ After some debugging (with the help of a lot logging), we eventually get what we
 
 <pre>
 1000000 DEBUG
-5000 ERROR
+1001 ERROR
 1 INFO
 0 WARNING
 </pre>
