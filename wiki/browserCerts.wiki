@@ -56,7 +56,7 @@ Generate a key pair (private key and public certificate) in pem format
   openssl req -new -nodes -x509 -out client_public.pem -keyout client_private.pem -days 7300
 }}}
 
-One can specific the subject on the command-line as follows.
+One can specify the subject on the command-line as follows.
 {{{
    -subj "/C=ZA/ST=Western Cape/L=Cape Town/CN=MyCompany"
 }}}
