@@ -37,10 +37,6 @@ public class IntegerCounterMap<K> extends TreeMap<K, Integer> {
         put(key, new Integer(getInt(key) + 1));
     }
 
-    public Iterable<K> descendingValueKeySet() {
-        return Maps.descendingValueKeySet(this);
-    }
-    
     public int getTotalCount() {
         return totalCount;
     }
@@ -52,6 +48,10 @@ public class IntegerCounterMap<K> extends TreeMap<K, Integer> {
         }
         return total;
     }
+    
+    public Iterable<K> descendingValueKeySet() {
+        return Maps.descendingValueKeySet(this);
+    }    
 }
 </code> 
 
