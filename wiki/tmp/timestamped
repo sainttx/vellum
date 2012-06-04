@@ -1,0 +1,234 @@
+
+I hope to blog about monitoring and what-not, and to begin this saga, put this Map in your internet right there.
+
+<code>
+public class IntegerCounterMap<T> extends TreeMap<T, Integer> {
+    
+    public int getInt(T key) {
+        Integer number = get(key);
+        if (number == null) {
+            number = new Integer(0);
+        }
+        return number;
+    }
+
+    public void increment(T key) {
+        Integer number = getInt(key);
+        put(key, new Integer(number.intValue() + 1));
+    }
+
+    public int calculateTotalCount() {
+        int total = 0;
+        for (T key : keySet()) {
+            total += getInt(key);
+        }
+        return total;
+    }
+}
+</code>
+
+where for sure we are going to count some of these key things, so let's extend to add <tt>increment()</tt> 
+
+Usually we are counting some things for some time period, maybe the number of successes and failures of something or other, over the last minute.
+
+<code>
+public class VenigmaSample implements Timestamped {
+    long millis;
+    IntegerCounterMap counterMap = new IntegerCounterMap();
+
+    public VenigmaSample(long millis) {
+        this.millis = millis;
+    }
+    
+    @Override
+    public void setTimestampMillis(long millis) {
+        this.millis = millis;
+    }
+
+    @Override
+    public long getTimestampMillis() {
+        return millis;
+    }
+
+    public IntegerCounterMap getCounterMap() {
+        return counterMap;
+    }
+}
+</code>
+
+where say our app is called "Venigma" and so its custom stuff we'll prefix with that.
+
+I have a habit of a singleton called "context" to keep app state, which has "config" and "properties" singletons to boot. 
+<i>Why have one when you can have three?!</i>
+
+<code>
+public class VenigmaContext implements LogMessageHandler {
+    VenigmaConfig config;
+    VenigmaProperties properties;
+
+    String lastMessage;
+    TimestampedList<LogMessage> messageList = new TimestampedList(Millis.fromSeconds(120));
+    TimestampedList<VenigmaSample> sampleList = new TimestampedList(Millis.fromHours(sampleCapacityHours));
+    
+    Timer timer = new Timer();
+    boolean running = false;
+
+    VenigmaTimerTask timerTask = new VenigmaTimerTask(this);    
+    VenigmaHttpServer httpServer = new VenigmaHttpServer(this);
+
+    VenigmaContext(VenigmaConfig config, VenigmaProperties properties) {
+        this.config = config;
+        this.properties = properties;
+    }
+    ...
+}    
+</code>
+
+Our config can hard-code some defaults for now.
+
+<code>
+public class VenigmaConfig {
+    int sampleIntervalSeconds = 60;
+    int sampleCapacityHours = 72;
+    ...
+}
+</code>
+
+Our properties we are going to set for sure. 
+
+<code>
+public class VenigmaProperties {
+    Integer httpPort;
+
+    public VenigmaProperties(int httpPort) {
+        this.httpPort = httpPort;
+    }
+    ...   
+}
+</code>
+
+Conceptually our "config" is more static, and our "properties" more dynamic.
+Sometimes some config is massaged into some properties, but for this app the distinction is... <i>and that's what i want.</i>
+
+We have a log4j appender which will delegate to the app to handle messages.
+
+Actually we could have rolled our config, properties, context, server and appender all into one class. 
+<i>But why have one or two when you can have four or five!?</i>
+
+<code>
+public class VenigmaLogAppender extends AppenderSkeleton {
+
+    VenigmaContext context;
+    
+    LoggingEvent lastEvent; 
+    
+    public VenigmaLogAppender() {
+    }
+
+    public void setHttpPort(int httpPort) {        
+        context = new VenigmaContext(new VenigmaConfig(), new VenigmaProperties(httpPort));
+        context.start();
+    }
+    
+    @Override
+    public void append(LoggingEvent le) {
+        this.lastEvent = le;
+        if (context != null) {
+          LogMessage message = new VenigmaMessage(le);
+          context.handle(message);
+        }
+    }
+    ...
+}
+</code>
+
+where parameters are set via the log4j config, eg. an HTTP port we will use to report some stats and status later.
+
+For some or other reason, we wrap a <tt>LoggingEvent</tt> into a <tt>LogMessage</tt>, which might be a persistent object, 
+but really i'm grasping at straws as to why this has occurred. I'm sure it seemed like a good idea at the time.
+
+We will schedule a task to execute every so often on our queue of messages. 
+
+<code>
+public class VenigmaTimerTask extends TimerTask {
+    VenigmaContext context; 
+    
+    public VenigmaTimerTask(VenigmaContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public void run() {
+        VenigmaSample sample = getSample();
+        context.sampleList.add(sample);
+    }
+
+    public VenigmaSample getSample() {
+      long time = System.currentTimeMillis();
+      VenigmaSample sample = new VenigmaSample(time);
+        for (LogMessage message : context.messageList.getList(time)) {
+            if (message.getLevel() != null && message.getLevel().equals("ERROR")) {
+                sample.getCounterMap().increment(message.getLevel());                
+            }
+            ...
+        }
+        return sample;
+    }    
+}
+</code>
+
+We must queue up timestamped log messages for our digester.
+
+<code>
+public class TimestampedList<T extends Timestamped>  {
+
+    LinkedList<T> linkedList = new LinkedList();
+    long capacityMillis;
+    long latestMillis;
+
+    public TimestampedList(long millis) {
+        this.capacityMillis = millis;
+    }
+    
+    public synchronized List<T> getList() {
+        return getList(System.currentTimeMillis());
+    }
+
+    public synchronized List<T> getList(long millis) {
+        prune(millis);
+        return new CopyOnWriteArrayList(linkedList);
+    }
+    
+    public synchronized void add(T entry) {
+        if (entry.getTimestampMillis() == 0) {
+            entry.setTimestampMillis(System.currentTimeMillis());
+        }
+        prune(entry.getTimestampMillis());
+        linkedList.add(0, entry);
+    }
+
+    public synchronized List<T> getLatest(int length) {
+        if (linkedList.size() <= length) {
+            return Collections.unmodifiableList(linkedList);
+        } else {
+            return linkedList.subList(0, length);
+        }
+    }
+    
+    private void prune(long latestMillis) {
+        this.latestMillis = latestMillis;
+        while (linkedList.size() > 0) {
+            T last = linkedList.getLast();
+            if (last == null || last.getTimestampMillis() >= latestMillis - capacityMillis) {
+                return;
+            }
+            linkedList.remove(last);
+        }
+    }
+}
+</code>
+
+where we prune our list to remove entries that are getting old. 
+
+The proof is in the pudding, but to be honest, this pudding is still half baked. End of part 1. See part 2 for serving it up.
+

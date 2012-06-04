@@ -1,0 +1,84 @@
+<code>
+public class VenigmaHttpServer implements HttpHandler {
+
+    VenigmaContext context; 
+    HttpServer httpServer;
+    
+    public VenigmaHttpServer(VenigmaContext context) {
+        this.context = context;
+    }    
+    
+    public void setHttpPort(int httpPort) {
+        try {
+            if (stop()) {
+                Thread.sleep(2000);
+            }
+            httpServer = HttpServer.create(new InetSocketAddress(httpPort), 4);
+            httpServer.createContext("/", this);
+            httpServer.setExecutor(new ThreadPoolExecutor(4, 8, 0, 
+                TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4)));
+            httpServer.start();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }        
+    }
+
+    protected boolean stop() {
+        if (httpServer != null) {
+            httpServer.stop(0); 
+            return true;
+        }        
+        return false;
+    }
+
+    @Override
+    public void handle(HttpExchange he) throws IOException {
+        new HomePageHandler(context).handle(he);
+    
+    }
+}
+</code>
+
+<code>
+public class HomePageHandler extends AbstractPageHandler {
+
+    VenigmaContext context; 
+    
+    public HomePageHandler(VenigmaContext context) {
+        super();
+        this.context = context;
+    }
+    
+    @Override
+    protected void handle() throws Exception {
+        out.println("<pre>");
+        out.printf("messageList size %d\n", context.getMessageList().size());
+        print(context.messageList.getLatest(20));
+        out.println("<hr>");
+        VenigmaSample sample = context.timerTask.getSample();
+        out.printf("sample from %s (%d) to %s\n", 
+            DateFormats.formatTime(sample.getStartMillis()), 
+            sample.getStartMillis(), 
+            DateFormats.formatTime(sample.getTimestampMillis()));
+        for (Object key : sample.counterMap.keySet()) {
+            out.printf("<i>%s</i> %d\n", key, sample.counterMap.get(key));
+        }
+    }
+
+    protected void print(List<LogMessage> messageList) {
+        for (LogMessage message : messageList) {
+            if (message.getConciseMessage() != null) {
+                out.printf("%s <b>%s</b> %s\n", 
+                  message.getLevel(), 
+                  message.getCategory(), 
+                  message.getConciseMessage());
+            } else {
+                out.printf("%s <b>%s</b> %s\n", 
+                  message.getLevel(), 
+                  message.getCategory(), 
+                  message.getMessage());                
+            }
+        }
+    }   
+}
+</code>
