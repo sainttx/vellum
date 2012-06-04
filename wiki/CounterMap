@@ -61,13 +61,21 @@ For sure we are going to count some of these key things, so we add <tt>increment
     @Test
     public void testCounterMap() {
         IntegerCounterMap<String> counterMap = new IntegerCounterMap();
+        counterMap.increment("INFO");
         counterMap.increment("ERROR");
+        counterMap.increment("ERROR");
+        Assert.assertEquals(counterMap.getInt("WARNING"), 0);
+        Assert.assertEquals(counterMap.getInt("INFO"), 1);
+        Assert.assertEquals(counterMap.getInt("ERROR"), 2);
+        Assert.assertEquals(counterMap.size(), 2);
+        Assert.assertEquals(counterMap.getTotalCount(), 3);
         Assert.assertEquals(counterMap.getTotalCount(), counterMap.calculateTotalCount());
-        ...
-    }
+   }
 </code>
 
-Also we provide a <tt>descendingValueKeySet()</tt> method for when we wanna display counters is descending order, to see the biggest numbers. This is delegates to the following util class. 
+where since WARNING is not incremented like the others, it's not put into the map, and so the <tt>size</tt> of map is only the two keys, namely INFO and ERROR.
+
+We provided a <tt>descendingValueKeySet()</tt> method for when we wanna display counters is descending order, to see the biggest numbers. This is delegates to the following util class. 
 
 <code>
 public class Maps {  
