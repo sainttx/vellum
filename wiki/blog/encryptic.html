@@ -1,0 +1,47 @@
+
+<a href='http://weblogs.java.net/blog/evanx/archive/2007/03/all_your_base64_1.html'>Earlier</a> we considered using straight Base-64 for hiding sensitive data from prying eyes.
+
+Let's take it a step further and actually encrypt the data using a known password.
+
+<a style='text-decoration: none; color: black;' href="https://code.google.com/p/vellum/wiki/Enigma">
+<div style="border-bottom: solid 1px; background-color: #ccff00; font-weight: bold;">
+<img src="http://weblogs.java.net/blog/evanx/archive/database.png" border="0" width="32" height="32" align="left" hspace="8"/><b>Read "Encryptic, a cover story"</b> <i>Part of the "Jelly Beans" part of a trilogy in 42 parts</i>
+https://code.google.com/p/vellum/wiki/Encryptic
+</div>
+</a>
+
+<h2>Code snippet</h2>
+
+We implement the following class to support password-based encryption using the DES algorithm.
+
+<pre>
+public class PBECipher {
+    private static final String pbeAlgorithm = "PBEWithMD5AndDES";
+    private static final String defaultPassword = "ssh ssh!";
+    ...
+    public PBECipher() {
+        this(defaultPassword);
+    }
+    
+    public PBECipher(String password) {
+        try {
+            parameterSpec = new PBEParameterSpec(salt, iterationCount);
+            secretKey = createSecretKey(password);
+            encryptCipher = createEncryptCipher();
+            decryptCipher = createDecryptCipher();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    ...
+    public String decrypt(String string) {
+        try {
+            return new String(decryptCipher.doFinal(Base64.decode(string)));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }    
+}  
+</pre>
+
+where we instantiate a <tt>PBEParameterSpec</tt> with an arbitrary 8-byte <tt>salt</tt> and <tt>iterationCount</tt>.
