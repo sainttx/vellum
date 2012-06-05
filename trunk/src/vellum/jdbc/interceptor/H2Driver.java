@@ -4,6 +4,8 @@
  */
 package vellum.jdbc.interceptor;
 
+import java.sql.Driver;
+
 /**
  *
  * @author evan
@@ -11,7 +13,11 @@ package vellum.jdbc.interceptor;
 public class H2Driver extends VDriver {
 
     public H2Driver() {
-        delegate = new org.h2.Driver();
+        try {
+            delegate = (Driver) Class.forName("org.h2.Driver").newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }    
     
 }
