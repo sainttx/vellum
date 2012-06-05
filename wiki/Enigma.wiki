@@ -681,7 +681,7 @@ We escape and unescape new line characters in the XML message as follows.
     }
 }}}
 
-which is fine unless any string in the message object contains our arbitrarily chosen ~"&amp;newline;" placeholder.
+which is fine unless any string in the message object contains our arbitrarily chosen `"&amp;newline;"` placeholder.
 
 === XML Encoding ===
 

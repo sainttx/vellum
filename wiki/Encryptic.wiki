@@ -44,7 +44,7 @@ public class PBECipher {
 
 where we offer a `defaultPassword` for the password-based encryption.
 
-We instantiate a ~PBEParameterSpec with an arbitrary 8-byte `salt` and `iterationCount`, for some password-based key derivation function. [http://en.wikipedia.org/wiki/PBKDF2]
+We instantiate a `PBEParameterSpec` with an arbitrary 8-byte `salt` and `iterationCount`, for some password-based key derivation function. [http://en.wikipedia.org/wiki/PBKDF2]
 
 {{{
     private static final int iterationCount = 5;

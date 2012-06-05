@@ -320,7 +320,7 @@ We write the object as text followed by a blank line, and so use `readLine()` to
 
 === XML Encoding for Objects ===
 
-Objects are encoded into XML text using ~java.beans.XMLEncoder and ~XMLDecoder as follows. 
+Objects are encoded into XML text using `java.beans.XMLEncoder` and `XMLDecoder` as follows. 
 
 {{{
     protected String encodeXml(Object object) {
@@ -345,7 +345,7 @@ Objects are encoded into XML text using ~java.beans.XMLEncoder and ~XMLDecoder a
     }
 }}}
 
-In our example, we write and read ~String instances only, which are trivially encoded to XML. 
+In our example, we write and read `String` instances only, which are trivially encoded to XML. 
 
 === Crypto ===
 
@@ -473,7 +473,7 @@ where the `publicKey` is used for encryption, and the private key for decryption
 Incidently, the asymmetric ciphers in Sun's default crypto implementation do not appear to support multiple chunks of data (to handle data larger than the key size), and do not throw an exception when this is attempted. Consequently and inconsequently, `CipherOutputStream` and `CipherInputStream` might fail silently too. As explained in their JDK API docs,
 
 <blockquote>
-`CipherInputStream` adheres strictly to the semantics, especially the failure semantics, of its ancestor classes ~java.io.FilterInputStream and ~java.io.InputStream. This class has exactly those methods specified in its ancestor classes, and overrides them all. Moreover, this class catches all exceptions that are not thrown by its ancestor classes.
+`CipherInputStream` adheres strictly to the semantics, especially the failure semantics, of its ancestor classes `java.io.FilterInputStream` and `java.io.InputStream`. This class has exactly those methods specified in its ancestor classes, and overrides them all. Moreover, this class catches all exceptions that are not thrown by its ancestor classes.
 </blockquote>
 
 So crypto exceptions thrown by the ciphers (eg. data chunk larger than key size) are swallowed by the cipher streams e.g. not rethrown even as wrapped runtime exceptions. 
