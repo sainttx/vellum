@@ -238,7 +238,7 @@ public class CryptonomicalThread extends Thread {
 }
 }}}
 
-where we generate a new key pair for every connection, which is not necessary. We should create a static key pair for the server beforehand, and use this for all connections. In order to protect against a [http://en.wikipedia.org/wiki/Man_in_the_middle_attack man-in-the-middle} attack], we need to authenticate the server's public key, e.g. via a third party 
+where we generate a new key pair for every connection, which is not necessary. We should create a static key pair for the server beforehand, and use this for all connections. In order to protect against a [http://en.wikipedia.org/wiki/Man_in_the_middle_attack man-in-the-middle attack], we need to authenticate the server's public key, e.g. via a third party 
 such as a Certificate Authority. Alternatively, we could install the server's public key in the client beforehand, e.g. encoded into a <tt>static</tt> base-64 string, or resource file.
 
 In the above implementation we send the server's public key to the client, and receive back a secret key encrypted with that public key. The server decrypts the secret key using its private key, and now the client and server share the secret key to use for symmetric encryption of the traffic between them.
