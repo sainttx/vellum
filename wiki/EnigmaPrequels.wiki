@@ -1,6 +1,8 @@
 
 === The Enigma Prequels ===
 
+This series was published on my [http://weblogs.java.net/evanx blog] some years but and for completeness is <tt>rehashed</tt> here on this wiki. 
+
 [PasswordHash Password Hash]
 
 [Enigma Enigma]
@@ -8,3 +10,4 @@
 [Cryptonomical Cryptonomical]
 
 [Encryptic Encryptic]
+
