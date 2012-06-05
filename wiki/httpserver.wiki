@@ -1,9 +1,9 @@
-#summary JRE built-in http server 
+#summary JRE built-in http server
 #labels Featured
 
 = JRE http server =
 
-<code language="java">
+{{{
 public class Server {
 
     Logr logger = LogrFactory.getLogger(getClass());
@@ -52,7 +52,7 @@ public class Server {
         new Server().start();
     }
 }
-</code>
+}}}
 
 
 = JRE https secure server =
@@ -71,7 +71,8 @@ and import the client cert into the server keystore as trusted cert (truststore)
 
 At that time, it worked with Firefox but not with Chrome.
 
-<code language="java">import com.sun.net.httpserver.HttpsServer;
+{{{
+import com.sun.net.httpserver.HttpsServer;
 
 public class SecureServer {
 
@@ -123,7 +124,7 @@ public class SecureServer {
         }
     }
 }
-</code>
+}}}
 
 
 For client-side auth disabled, 
