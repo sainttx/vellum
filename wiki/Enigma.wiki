@@ -375,9 +375,9 @@ public class EmptyTrustManager implements X509TrustManager {
 where `checkServerTrusted()` is empty i.e. does not actually check certificates 
 and so never throws an exception. 
 
-(See the [http://www.exampledepot.com/egs/javax.net.ssl/TrustAll.html?l=rel Java Developers Almanac's example].)
+(See the [http://www.exampledepot.com/egs/javax.net.ssl/TrustAll.html Java Developers Almanac's example].)
 
-(See [https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http `swingx-ws`' various `TrustManager` implementations].)
+(See [https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http swingx-ws' various TrustManager implementations].)
 
 === Default Trust Store ===
 
