@@ -5,11 +5,11 @@ This technical info site is is produced by evan.summers (at) gmail.com.
 
 The new 2012 trilogy, in a few parts. 
 
-[Timestamped Timestamped]
+See the [Timestamped Timestamped] page.
 
 === The Enigma Prequels ===
 
 This series was published on my [http://weblogs.java.net/evanx blog] some years ago but and for completeness is <tt>rehashed</tt> here in wiki format, as a prequel to an upcoming series entitled "Venigma," which will rehash them yet again. 
 
-[EnigmaPrequels Enigma Prequels]
+See the [EnigmaPrequels Enigma Prequels] page.
 
