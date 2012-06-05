@@ -5,9 +5,10 @@ This series was published on my [http://weblogs.java.net/evanx blog] some years 
 
 [PasswordHash Password Hash]
 
-[Encryptic Encryptic]
-
 [Cryptonomical Cryptonomical]
 
 [Enigma Enigma]
+
+[Encryptic Encryptic]
+
 
