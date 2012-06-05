@@ -6,7 +6,7 @@ In [Cryptonomical] we considered both symmetric (secret key) and asymmetric (pub
 
 In [PasswordHash] we considered securing passwords. 
 
-We also casually considered using straight Base-64 encoding for hiding sensitive data from prying eyes, but nothing more than that eg. people with half a clue. 
+We also casually considered using straight Base-64 encoding for hiding sensitive data from prying eyes, but nothing more than that e.g. people with half a clue. 
 
 So now let's actually encrypt data using passwords, albeit not-so-secret ones.
 
