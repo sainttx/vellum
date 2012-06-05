@@ -3,7 +3,7 @@
 
 == Introduction ==
 
-The [PasswordHash Password Hash] prequel started our cryptographic foray.
+The [PasswordHash] prequel started our cryptographic foray.
 
 Let's now investigate the [http://java.sun.com/j2se/1.4.2/docs/guide/security/CryptoSpec.html Java Cryptography Architecture] further, considering both symmetric (secret key) and asymmetric (public/private) algorithms. 
 
@@ -600,6 +600,6 @@ where additionally we test with `CipherOutputStream` and `CipherInputStream`.
 
 We consider both symmetric and asymmetric ciphers by way of implementing a trivial client and server that mimic how SSL might work. The client uses the server's public key to asymmetrically encrypt and transfer a secret key, which is then used by both sides to encrypt messages using a symmetric cipher. 
 
-You can browse the code for this exercise at [https://aptserver.dev.java.net/source/browse/aptserver/src/cryptonomicaldemo/ aptserver.dev.java.net].
+<!--You can browse the code for this exercise at [https://aptserver.dev.java.net/source/browse/aptserver/src/cryptonomicaldemo/ aptserver.dev.java.net].-->
 
 Later we'll build a basic RESTful server using `SSLServerSocket` i.e. the [http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf Java Secure Socket Extension} (JSSE)], testing with self-signed certificates created using `keytool`, and connecting to it using `SSLSocket` in a Swing Webstart client aka RIA.
