@@ -468,7 +468,7 @@ Incidently, the asymmetric ciphers in Sun's default crypto implementation do not
 
 So crypto exceptions thrown by the ciphers (eg. data chunk larger than key size) are swallowed by the cipher streams e.g. not rethrown even as wrapped runtime exceptions. 
 
-=== Asymmetric Cipher Test //subsection
+=== Asymmetric Cipher Test ===
 
 We test the above asymmetric cipher as follows. 
 
