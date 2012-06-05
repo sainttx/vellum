@@ -128,14 +128,15 @@ public class SecureServer {
 
 
 For client-side auth disabled, 
-
+{{{
  defaultSSLParameters.setNeedClientAuth(false);
+}}}
 
 and we generate client private key (for browser) and public cert (for server truststore) as follows
-
+{{{
  openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
  openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfilecertificate.crt
-
+}}}
 
 http://emo.sourceforge.net/cert-login-howto.html
 
