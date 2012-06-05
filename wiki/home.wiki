@@ -5,10 +5,10 @@ This technical info site is is produced by evan.summers (at) gmail.com.
 
 === Venigma prequels ===
 
-[PasswordHash]
+[PasswordHash Password Hash]
 
-[Enigma]
+[Enigma Enigma]
 
-[Cryptonomical]
+[Cryptonomical Cryptonomical]
 
-[Enigma]
+[Encryptic Encryptic]
