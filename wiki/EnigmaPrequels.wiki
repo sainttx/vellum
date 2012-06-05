@@ -5,9 +5,9 @@ This series was published on my [http://weblogs.java.net/evanx blog] some years 
 
 [PasswordHash Password Hash]
 
-[Enigma Enigma]
+[Encryptic Encryptic]
 
 [Cryptonomical Cryptonomical]
 
-[Encryptic Encryptic]
+[Enigma Enigma]
 
