@@ -725,7 +725,7 @@ Alternatively, the server's keystore location and password is specified using `-
 
 == Resources ==
 
-You can browse the code for this exercise in the [http://code.google.com/p/vellum/source/browse/#svn/trunk/src/vellum/enigma vellum.enigma package].
+You can browse the code for this exercise [http://code.google.com/p/vellum/source/browse/#svn/trunk/src/vellumdemo/enigmademo here].
 
 See blogs...
 
