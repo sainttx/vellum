@@ -1,14 +1,7 @@
 
 This technical info site is is produced by evan.summers (at) gmail.com.
 
-=== Timestamped ===
+[Timestamped]
 
-=== Venigma prequels ===
+[EnigmaPrequels Enigma Prequels]
 
-[PasswordHash Password Hash]
-
-[Enigma Enigma]
-
-[Cryptonomical Cryptonomical]
-
-[Encryptic Encryptic]
