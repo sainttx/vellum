@@ -17,7 +17,7 @@ import vellum.logger.LogrFactory;
 import vellum.util.Base64;
 
 public class CryptonomicalSocket {
-    static Logr logger = LogrFactory.getLogger(CryptonomicalCommon.class);
+    static Logr logger = LogrFactory.getLogger(CryptonomicalSocket.class);
     Socket socket;
     InputStream inputStream;
     OutputStream outputStream;
