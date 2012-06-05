@@ -600,6 +600,6 @@ where additionally we test with `CipherOutputStream` and `CipherInputStream`.
 
 We consider both symmetric and asymmetric ciphers by way of implementing a trivial client and server that mimic how SSL might work. The client uses the server's public key to asymmetrically encrypt and transfer a secret key, which is then used by both sides to encrypt messages using a symmetric cipher. 
 
-You can browse the code for this exercise at [http://code.google.com/p/vellum/source/browse/#svn/trunk/src/vellumdemo/cryptonomicaldemo here].
+== Resources ==
 
-Later we'll build a basic RESTful server using `SSLServerSocket` i.e. the [http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf Java Secure Socket Extension (JSSE)], testing with self-signed certificates created using `keytool`, and connecting to it using `SSLSocket` in a Swing Webstart client aka RIA.
+You can browse the code for this exercise at [http://code.google.com/p/vellum/source/browse/#svn/trunk/src/vellumdemo/cryptonomicaldemo here].
