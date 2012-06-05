@@ -725,8 +725,7 @@ Alternatively, the server's keystore location and password is specified using `-
 
 == Resources ==
 
-You can browse the code for this exercise at 
-[https://aptserver.dev.java.net/source/browse/aptserver/src/ssldemo/ aptserver.dev.java.net].
+You can browse the code for this exercise in the [http://code.google.com/p/vellum/source/browse/#svn/trunk/src/vellum/enigma vellum.enigma package].
 
 See blogs...
 
