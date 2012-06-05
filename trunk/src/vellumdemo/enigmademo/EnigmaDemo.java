@@ -2,7 +2,7 @@ package vellumdemo.enigmademo;
 
 
 public class EnigmaDemo {
-    static EnigmaCommonResources config = new EnigmaCommonResources();
+    static EnigmaConfig config = new EnigmaConfig();
     
     EnigmaServer server = new EnigmaServer();
     EnigmaClient client = new EnigmaClient();

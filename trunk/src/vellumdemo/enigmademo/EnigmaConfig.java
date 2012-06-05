@@ -8,7 +8,7 @@ package vellumdemo.enigmademo;
  *
  * @author evan
  */
-public class EnigmaCommonProperties {
+public class EnigmaConfig {
     String host = "localhost";
     int port = 80;
     int sslPort = 443;    

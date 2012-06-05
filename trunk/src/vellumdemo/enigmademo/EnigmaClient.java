@@ -19,7 +19,7 @@ import vellum.logger.LogrFactory;
  */
 public class EnigmaClient extends Thread {
 
-    static EnigmaCommonProperties properties = new EnigmaCommonProperties();
+    static EnigmaConfig config = new EnigmaConfig();
     static Logr logger = LogrFactory.getLogger(EnigmaClient.class);
     SSLSocket clientSocket;
     EnigmaSocket enigmaSocket;
@@ -56,9 +56,9 @@ public class EnigmaClient extends Thread {
     protected void initKeyManagers() throws Exception {
         this.keyStore = KeyStore.getInstance("JKS");
         InputStream inputStream = getClass().getResourceAsStream(
-                properties.serverPublicKeyStoreResource);
+                config.serverPublicKeyStoreResource);
         keyStore.load(inputStream,
-                properties.serverPublicKeyStorePassword.toCharArray());
+                config.serverPublicKeyStorePassword.toCharArray());
         KeyManagerFactory keyManagerFactory =
                 KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, null);

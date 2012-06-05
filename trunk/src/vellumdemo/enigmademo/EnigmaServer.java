@@ -15,7 +15,7 @@ import javax.net.ssl.*;
  * @author evan
  */
 public class EnigmaServer extends Thread {
-    EnigmaServerProperties properties = new EnigmaServerProperties();
+    EnigmaServerConfig config = new EnigmaServerConfig();
     
     KeyStore keyStore;
     SSLContext sslContext;
@@ -34,13 +34,13 @@ public class EnigmaServer extends Thread {
     protected void initKeyManagers() throws Exception {
         keyStore = KeyStore.getInstance("JKS");
         InputStream inputStream = new FileInputStream(
-                properties.serverKeyStoreFileName);
+                config.serverKeyStoreFileName);
         keyStore.load(inputStream,
-                properties.serverKeyStorePassword.toCharArray());
+                config.serverKeyStorePassword.toCharArray());
         KeyManagerFactory keyManagerFactory =
                 KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore,
-                properties.serverKeyPassword.toCharArray());
+                config.serverKeyPassword.toCharArray());
         keyManagers = keyManagerFactory.getKeyManagers();
     }
 
