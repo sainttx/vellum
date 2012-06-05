@@ -731,7 +731,7 @@ See blogs...
 
 [http://weblogs.java.net/blog/rbair/archive/2006/10/ssl_and_self_si_1.html Richard Bair's SSL blog entry ]
 
-[https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http swingx-ws org.jdesktop.http</tt> package]
+[https://swingx-ws.dev.java.net/source/browse/swingx-ws/src/java/org/jdesktop/http swingx-ws org.jdesktop.http package]
 
 [http://blogs.sun.com/andreas/entry/no_more_unable_to_find Andreas Sterbenz's SSL blog entry ]
 and [http://blogs.sun.com/andreas/resource/InstallCert.java InstallCert.java]
