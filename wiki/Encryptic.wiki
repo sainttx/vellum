@@ -2,23 +2,17 @@
 
 == Intro ==
 
-In Cryptonomical
-we considered both symmetric (secret key) and asymmetric (public key)
-algorithms, to encrypt messages in a communications session.
-But what about persistent data?
+In [Cryptonomical] we considered both symmetric (secret key) and asymmetric (public key) algorithms, to encrypt messages in a communications session. But what about persistent data?
 
-In Password Hash we considered securing passwords. 
+In [PasswordHash] we considered securing passwords. 
 
-We also casually considered using straight Base-64 encoding for hiding sensitive data from prying eyes,
-but nothing more than that eg. people with half a clue. 
+We also casually considered using straight Base-64 encoding for hiding sensitive data from prying eyes, but nothing more than that eg. people with half a clue. 
 
 So now let's actually encrypt data using passwords, albeit not-so-secret ones.
 
 == Password-based Encryption (PBE) == 
 
-We implement the following class to support password-based encryption (PBE) 
-using the DES symmetric algorithm. (Alternatively, we might use triple-DES or AES  
-algorithms.)
+We implement the following class to support password-based encryption (PBE) using the DES symmetric algorithm. (Alternatively, we might use triple-DES or AES algorithms.)
 
 {{{
 public class PBECipher {
@@ -50,8 +44,7 @@ public class PBECipher {
 
 where we offer a `defaultPassword` for the password-based encryption.
 
-We instantiate a ~PBEParameterSpec with an arbitrary 8-byte `salt` and `iterationCount`, 
-for some password-based key derivation function. [http://en.wikipedia.org/wiki/PBKDF2]
+We instantiate a ~PBEParameterSpec with an arbitrary 8-byte `salt` and `iterationCount`, for some password-based key derivation function. [http://en.wikipedia.org/wiki/PBKDF2]
 
 {{{
     private static final int iterationCount = 5;
@@ -85,13 +78,11 @@ We implement the following `private` support methods.
     }
 }}}
 
-where our `secretKey` instance is created in `createSecretKey()` by a `SecretKeyFactory`, 
-using `PBEKeySpec`. 
+where our `secretKey` instance is created in `createSecretKey()` by a `SecretKeyFactory`, using `PBEKeySpec`. 
 
 We initialise our ciphers using the `secretKey` and the `PBEParameterSpec`.
 
-(We discussed Java Cryptography's `Cipher` [http://java.sun.com/j2se/1.4.2/docs/guide/security/CryptoSpec.html]
-in the Cryptonomical prequel.
+(We discussed Java Cryptography's `Cipher` [http://java.sun.com/j2se/1.4.2/docs/guide/security/CryptoSpec.html] in the [Cryptonomical] prequel.
 
 === Ciphering === 
 
@@ -117,7 +108,7 @@ Finally, we use the following `public` methods for encryption/decryption.
 
 where in this case we support the encryption of strings only, rather than `byte` arrays. 
 
-(We discussed Base-64 encoding in Password Hash.) 
+(We discussed Base-64 encoding in PasswordHash.) 
 
 Testing === 
 
@@ -159,5 +150,4 @@ OK then, that's a wrap!
 
 == Conclusion ==
 
-Even though the default password is in the code and so known to "everyone," 
-at least now we can assure our managers that we are actually encrypting the data ;)  
+Even though the default password is in the code and so known to "everyone," at least now we can assure our managers that we are actually encrypting the data ;)  
