@@ -1,15 +1,15 @@
 package vellumdemo.cryptonomicaldemo;
 
 public class CryptonomicalDemo {
-    public static CryptonomicalResources resources = new CryptonomicalResources();
+    public static CryptonomicalConfig config = new CryptonomicalConfig();
     
     CryptonomicalServer server = new CryptonomicalServer();
     CryptonomicalClient client = new CryptonomicalClient();
     
     protected void test() throws Exception {
-        server.bind(resources.serverPort);
+        server.bind(config.serverPort);
         server.start();
-        client.connect("localhost", resources.serverPort);
+        client.connect("localhost", config.serverPort);
         client.start();
     }
     

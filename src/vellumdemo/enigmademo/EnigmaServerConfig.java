@@ -8,7 +8,7 @@ package vellumdemo.enigmademo;
  *
  * @author evan
  */
-public class EnigmaServerProperties extends EnigmaCommonProperties {
+public class EnigmaServerConfig extends EnigmaConfig {
     String serverKeyStorePassword = "storepassword";
     String serverKeyPassword = "storepassword";
     String serverKeyStoreFileName = System.getProperty("javax.net.ssl.keyStore");
