@@ -53,7 +53,7 @@ Certificate fingerprints:
          Version: 1
 }}}
 
-=== X509 //subsection
+=== X509 ===
 
 According to [http://en.wikipedia.org/wiki/X.509 Wikipedia],
 
@@ -562,7 +562,7 @@ Similarly to `AsymmetricCipher`, the following methods support encryption and de
 
 where the same shared `secretKey` is used for both encryption and decryption, in this symmetric case. 
 
-=== Symmetric Cipher Test //subsection
+=== Symmetric Cipher Test ===
 
 We test the above symmetric cipher as follows. 
 
@@ -602,4 +602,4 @@ We consider both symmetric and asymmetric ciphers by way of implementing a trivi
 
 <!--You can browse the code for this exercise at [https://aptserver.dev.java.net/source/browse/aptserver/src/cryptonomicaldemo/ aptserver.dev.java.net].-->
 
-Later we'll build a basic RESTful server using `SSLServerSocket` i.e. the [http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf Java Secure Socket Extension} (JSSE)], testing with self-signed certificates created using `keytool`, and connecting to it using `SSLSocket` in a Swing Webstart client aka RIA.
+Later we'll build a basic RESTful server using `SSLServerSocket` i.e. the [http://www.panix.com/~mito/articles/articles/jsse/j-jsse-ltr.pdf Java Secure Socket Extension (JSSE)], testing with self-signed certificates created using `keytool`, and connecting to it using `SSLSocket` in a Swing Webstart client aka RIA.

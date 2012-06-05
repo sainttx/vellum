@@ -110,7 +110,7 @@ where in this case we support the encryption of strings only, rather than `byte`
 
 (We discussed Base-64 encoding in PasswordHash.) 
 
-Testing === 
+=== Testing === 
 
 So let's test this PBE cipher.
 
