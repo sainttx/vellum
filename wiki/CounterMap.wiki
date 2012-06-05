@@ -1,7 +1,7 @@
 
 == Timestamped, the trilogy == 
 
-We herewith begin a saga about monitoring with this series entitled "Timestamped: a trilogy in a few parts," this being the first part, where we introduce a map to count key things, and ensure we can sort it by its integer values.
+We herewith begin a saga about monitoring with this series entitled <i>"Timestamped: a trilogy in a few parts,"</i> this being the first part, where we introduce a map to count key things, and ensure we can sort it by its integer values.
 
 We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
 
@@ -66,7 +66,7 @@ For sure we are going to count some of these key things, so we add <tt>increment
    }
 }}}
 
-where since WARN is not incremented like the others, it's not put into the map, and so the <tt>size</tt> of map is only the two keys, namely INFO and ERROR.
+where since <tt>WARN</tt> is not incremented like the others, it's not put into the map, and so the <tt>size</tt> of map is only the two keys, namely <tt>INFO</tt> and <tt>ERROR</tt>.
 
 We provided a <tt>descendingValueKeySet()</tt> method for when we wanna display counters is descending order, to see the biggest numbers. This is delegates to the following util class. 
 
@@ -99,7 +99,7 @@ public class Maps {
 }
 }}}
 
-where courtesy of a <tt>TreeMap</tt>, we sort the map's entries by value, and put the thus ordered keys into a <tt>List</tt> to iterate over e.g. in a <tt>for</tt> each loop.
+where courtesy of a <tt>!TreeMap</tt>, we sort the map's entries by value, and put the thus ordered keys into a <tt>List</tt> to iterate over e.g. in a <tt>for</tt> each loop.
 
 See also [http://stackoverflow.com/questions/109383/how-to-sort-a-mapkey-value-on-the-values-in-java stackoverflow.com]. 
 
@@ -131,7 +131,7 @@ Let's test this ordering.
 
 where we use "BWARN" instead of "WARN" to be sure we aren't picking up the natural ordering. (Yes that was happening and hiding a bug quite effectively.)
 
-After some DEBUG'ing (with the help of a lot logging), we eventually get what we were expecting. <i>"Put that in your internet, put that in your twitter right there."</i>
+After some <tt>DEBUG</tt>'ing (with the help of a lot logging), we eventually get what we were expecting.
 
 {{{
 1000000 DEBUG
@@ -140,7 +140,7 @@ After some DEBUG'ing (with the help of a lot logging), we eventually get what we
 0 BWARN
 }}}
 
-As so often seems to be case, we have a million DEBUG messages, a thousand and one ERRORs with very little INFO to go on, and no bloody warnings.
+As so often seems to be case, we have a million DEBUG messages, a thousand and one ERRORs with very little INFO to go on, and no bloody warnings. <i>"Put that in your internet, put that in your twitter right there."</i>
 
 ==== Coming soon ==== 
 
