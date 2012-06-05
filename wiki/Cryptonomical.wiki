@@ -68,20 +68,10 @@ and a certification path validation algorithm.
 According to [http://en.wikipedia.org/wiki/HMAC Wikipedia],
 
 <blockquote>
-A cryptographic message authentication code (MAC) 
-is a short piece of information used to authenticate a message. 
-A MAC algorithm accepts as input a secret key and an arbitrary-length message 
-to be authenticated, and outputs a MAC (sometimes known as a tag). 
-The MAC value protects both a message's integrity as well as its authenticity, 
-by allowing verifiers (who also possess the secret key) 
-to detect any changes to the message content.
-<p>
-MACs differ from digital signatures, as MAC values are both generated and verified 
-using the same secret key. This implies that the sender and receiver 
-of a message must agree on keys before initiating communications, 
-as is the case with symmetric encryption.
-</p>
-<p>
+A cryptographic message authentication code (MAC) is a short piece of information used to authenticate a message. A MAC algorithm accepts as input a secret key and an arbitrary-length message to be authenticated, and outputs a MAC (sometimes known as a tag). The MAC value protects both a message's integrity as well as its authenticity, by allowing verifiers (who also possess the secret key) to detect any changes to the message content.
+
+MACs differ from digital signatures, as MAC values are both generated and verified using the same secret key. This implies that the sender and receiver of a message must agree on keys before initiating communications, as is the case with symmetric encryption.
+
 A keyed-hash message authentication code, or HMAC, is a type of message authentication code (MAC) calculated using a cryptographic hash function in combination with a secret key. As with any MAC, it may be used to simultaneously verify both the data integrity and the authenticity of a message. Any iterative cryptographic hash function, such as MD5 or SHA-1, may be used in the calculation of an HMAC; the resulting MAC algorithm is termed HMAC-MD5 or HMAC-SHA-1 accordingly.
 </blockquote>
 
