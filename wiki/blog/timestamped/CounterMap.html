@@ -1,5 +1,5 @@
 
-We herewith begin a saga about monitoring with this series entitled "Timestamped: a trilogy in a few parts," this being the first part, where we introduce a map to count key things, and ensure we can sort it by its integer values.
+We herewith begin a saga about monitoring with this series entitled "Timestamped: a trilogy in a few parts," this being the first part, where we introduce a map to count key things, and ensure we can order it by its integer values.
 
 <p>   
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
@@ -80,7 +80,7 @@ Our typical key type is <tt>String</tt> e.g. the name of something we are counti
 
 <p>Note that since WARN is not incremented like the others, it's not put into the map, and so the <tt>size</tt> of map is only the two keys, namely INFO and ERROR.
 
-<p>We have a <tt>descendingValueKeySet()</tt> method for when we wanna display counters in descending order, to see the biggest numbers, or worst culprits. This delegates to the following util class. 
+<p>We have a <tt>descendingValueKeySet()</tt> method for when we wanna display counters in descending order, to see the biggest numbers and/or worst culprits. This delegates to the following util class. 
 
 <pre>
 public class Maps {  
