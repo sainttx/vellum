@@ -1,0 +1,40 @@
+
+Let's build a trivial client/server demo using <tt>SSLServerSocket</tt> and <tt>SSLSocket</tt> as provided by the <a href='http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html'>Java Secure Socket Extension</a> (JSSE). We create a self-signed public key certificate for the server using <a href='http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html'><tt>keytool</a></tt>, and install this on the client.
+
+
+<a style='text-decoration: none; color: black;' href="https://code.google.com/p/vellum/wiki/Enigma">
+<div style="border-bottom: solid 1px; background-color: #ccff00; font-weight: bold;">
+<img src="http://weblogs.java.net/blog/evanx/archive/database.png" border="0" width="32" height="32" align="left" hspace="8"/><b>Read "Enigma, a public key expose"</b> <i>Part of the "Jelly Beans" part of a trilogy in 42 parts</i>
+https://code.google.com/p/vellum/wiki/Enigma
+</div>
+</a>
+
+<h2>Code Snippet</h2>
+
+We implement the client as follows.
+
+<pre>
+public class EnigmaClient extends Thread {
+    EnigmaSocket enigmaSocket;
+    KeyStore keyStore;
+    KeyManager[] keyManagers;
+    TrustManager[] trustManagers;
+    SSLContext sslContext;
+    
+    public void init() throws Exception {
+        initKeyManagers();
+        initTrustManagers();
+        initSSLContext();
+    }
+    
+    public void connect(String host, int port) throws Exception {
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+        Socket clientSocket = sslSocketFactory.createSocket(host, port);
+        this.enigmaSocket = new EnigmaSocket(clientSocket);
+    }
+    ...
+}</pre>
+
+where the keystore containing the server's digital certificate eg. created using <tt>keytool</tt>, is loaded from a resource or file, and a <tt>KeyManagerFactory</tt> and <tt>TrustManagerFactory</tt> are initialised with the <tt>keyStore</tt> instance. Finally, an <tt>SSLContext</tt> is initialised with key managers and trust managers, and this is used to create SSL socket connections.
+
+

@@ -1,0 +1,48 @@
+
+Let's check out some <a href='http://java.sun.com/j2se/1.4.2/docs/guide/security/CryptoSpec.html'>Java Cryptography</a>, considering both symmetric and asymmetric algorithms. 
+
+We implement a client and server that mimic how SSL works, where the client uses the server's public key to asymmetrically encrypt and transfer a secret key, which is then used by both sides to encrypt messages using a symmetric cipher. 
+
+<a href="https://code.google.com/p/vellum/wiki/Cryptonomical">
+<div style="border-bottom: solid 1px; background-color: #ccff00;">
+<img src="http://weblogs.java.net/blog/evanx/archive/database.png" border="0" width="32" height="32" align="left" hspace="8"/><b>Cryptonomical, the secret story:</b> <i>Part of the "Jelly Beans" part of a trilogy in 42 parts</i>
+https://code.google.com/p/vellum/wiki/Cryptonomical
+</div>
+
+</a>
+
+<h2>Code Snippet</h2>
+
+The client connects to the server port, negotiates a key exchange, and then communicates securely. 
+
+<pre>
+public class CryptonomicalClient extends Thread {
+    CryptonomicalSocket cryptoSocket;
+    ...
+    public void run() {
+        try {
+            String publicKey = cryptoSocket.sendRequest(cryptoRequest);
+            cryptoSocket.setEncodedPublicKey(publicKey);
+            cryptoSocket.generateSecretKey();
+            String encryptedSecretKey = cryptoSocket.encryptSecretKey();
+            String response = cryptoSocket.sendRequest(encryptedSecretKey);
+            if (!response.equals(cryptoAcknowledge)) throw new RuntimeException();
+            cryptoSocket.setEncrypt(true);
+            process();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cryptoSocket.close();            
+        }
+    }
+    
+    protected void process() throws Exception {
+        String response = cryptoSocket.sendRequest("ALL YOUR BASE ARE BELONG TO US.");
+        logger.info(response);
+    }        
+}
+</pre>
+
+Once key change has been accomplished, we can securely send the server a test <a href='http://en.wikipedia.org/wiki/All_your_base_are_belong_to_us'>message</a> in <tt>process()</tt>. 
+
+PS. The title of this article is of course a tribute to Neal Stephenson's book <a href='http://www.cryptonomicon.com/'>Cryptonomicon</a>, which is on my bedside table right now.
