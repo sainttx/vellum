@@ -77,7 +77,7 @@ public class HtmlQueryExecutor {
             }
             return set;
         } catch (Exception e) {
-            logger.warn(queryInfo, queryInfo.getQuery());
+            logger.warning(queryInfo, queryInfo.getQuery());
             throw Exceptions.newRuntimeException(e, queryInfo);
         } finally {
         }

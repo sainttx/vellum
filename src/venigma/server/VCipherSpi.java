@@ -48,7 +48,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
         try {
             connection.open();
         } catch (IOException e) {
-            logger.warn(e);
+            logger.warning(e);
         }
     }
     

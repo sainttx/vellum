@@ -43,9 +43,9 @@ public class CipherHandler {
         try {
             process();
         } catch (IOException e) {
-            logger.warn(e.getMessage());
+            logger.warning(e.getMessage());
         } catch (Exception e) {
-            logger.warn(e);
+            logger.warning(e);
             reply(e);
         } finally {
         }
@@ -65,7 +65,7 @@ public class CipherHandler {
         try {
             reply(new CipherResponse(throwable));
         } catch (IOException e) {
-            logger.warn(e);
+            logger.warning(e);
         }
     }
     

@@ -33,7 +33,7 @@ public class Log4jAdapter implements Logr {
     }
 
     @Override
-    public void warn(Object... args) {
+    public void warning(Object... args) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
