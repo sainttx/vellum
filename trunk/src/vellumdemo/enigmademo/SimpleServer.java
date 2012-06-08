@@ -7,7 +7,7 @@ import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 
 public class SimpleServer extends Thread {
-    static Logr logger = LogrFactory.getLogger(SimpleServer.class.getName());
+    static Logr logger = LogrFactory.getLogger(SimpleServer.class);
     
     SSLServerSocket serverSocket;
     boolean isRunning = true;

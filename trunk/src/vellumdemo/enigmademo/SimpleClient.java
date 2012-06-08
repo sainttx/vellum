@@ -9,7 +9,7 @@ import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 
 public class SimpleClient extends Thread {
-    static Logr logger = LogrFactory.getLogger(SimpleClient.class.getName());
+    static Logr logger = LogrFactory.getLogger(SimpleClient.class);
     
     SSLSocket clientSocket;
     EnigmaSocket enigmaSocket;
