@@ -1,7 +1,7 @@
 
 <h2>Swing and Roundabouts 1: Event DTs</h2>
 
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/swings4.jpg" align=left vspace=8 hspace=16 border=0 />
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/swings4.jpg" align="left" vspace="8" hspace="16" border="0" />
 
 <h2>Introduction</h2>
 <i>"People always said there were no monsters, no real ones... but there are."</i>
@@ -279,9 +279,7 @@ Similarly when we encounter a need for a method on a Swing component, we should 
 <h2>Conclusion</h2>
 <i>"I dunno if I'm happy about this... I mean running around here in the dark with that frikkin beast after us."</i>
 
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/alienBox2.jpg" 
-width="58" height="88"
-align=right vspace=8 hspace=16 border=0 />
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/alienBox2.jpg" align=right vspace=8 hspace=16 border=0 />
 
 We should not block the EDT for any length of time, e.g. while waiting from a response from the server. Otherwise our Swing app appears to be "hung" to the user.
 
