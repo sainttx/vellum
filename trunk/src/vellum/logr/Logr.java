@@ -3,7 +3,7 @@
  * (c) Copyright 2012, Evan Summers
  */
 
-package vellum.logger;
+package vellum.logr;
 
 /**
  *

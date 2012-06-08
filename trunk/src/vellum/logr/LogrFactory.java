@@ -3,10 +3,10 @@
  * (c) Copyright 2012, Evan Summers
  */
 
-package vellum.logger;
+package vellum.logr;
 
 import org.slf4j.LoggerFactory;
-import vellum.logger.simple.SimpleLogrProvider;
+import vellum.logr.simple.SimpleLogrProvider;
 
 /**
  *
@@ -17,9 +17,8 @@ public class LogrFactory {
     
     static ThreadLocal threadLocalLogger = new ThreadLocal();
 
-
     static Logr getLogger(LogrContext context) {
-        return new LogrAdapter(provider.getHandler(context));
+        return provider.getLogger(context);
     }
     
     public static Logr getLogger(Class source) {
