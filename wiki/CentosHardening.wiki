@@ -295,7 +295,7 @@ chmod o-w file
 === SUID/GUID ===
 
 {{{
- find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -print
+find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -print
 }}}
 
 {{{
