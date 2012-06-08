@@ -1,35 +1,51 @@
 /*
  * Apache Software License 2.0
- * Supported by BizSwitch.net
- * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
+ * (c) Copyright 2012, Evan Summers
  */
 
 package vellum.logger;
+
+import org.slf4j.LoggerFactory;
+import vellum.logger.simple.SimpleLogrProvider;
 
 /**
  *
  * @author evanx
  */
 public class LogrFactory {
+    static LogrProvider provider = newProvider();
+    
     static ThreadLocal threadLocalLogger = new ThreadLocal();
 
+
+    static Logr getLogger(LogrContext context) {
+        return new LogrAdapter(provider.getHandler(context));
+    }
+    
     public static Logr getLogger(Class source) {
-        return new Logr(source);
+        return getLogger(new LogrContext(provider, source, source.getClass().getSimpleName()));
     }
 
     public static Logr getLogger(Thread thread) {
-        Logr logger = new Logr(thread.getClass(), thread.getName());
+        Logr logger = getLogger(new LogrContext(provider, thread.getClass(), thread.getName()));
         threadLocalLogger.set(logger);
         return logger;
     }
 
     public static Logr getThreadLogger(Class source) {
-        return new Logr(source, Thread.currentThread().getName());
+        return getLogger(new LogrContext(provider, source, Thread.currentThread().getName()));
     }
     
-    public static Logr getLogger(String name) {
-        return new Logr(name);
+    private static LogrProvider newProvider() {
+        String provider = System.getProperty("logr.provider");
+        if (provider != null) {
+            try {
+                return (LogrProvider) Class.forName(provider).newInstance();
+            } catch (Throwable e) {
+                throw new RuntimeException(provider, e);
+            }
+        } else {
+            return new SimpleLogrProvider();
+        }
     }
-    
-    public static final Logr globalLogger = new Logr("global");
 }

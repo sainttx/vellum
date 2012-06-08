@@ -8,7 +8,6 @@ package vellum.sql.query;
 import vellum.logger.Logr;
 import vellum.logger.LogrFactory;
 import vellum.util.Args;
-import vellum.util.Strings;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.RowSet;
@@ -19,7 +18,7 @@ import javax.sql.RowSet;
  */
 public class QueryInfo {
 
-   static Logr logger = LogrFactory.globalLogger;
+   static Logr logger = LogrFactory.getLogger(QueryInfo.class);
    String queryName;
    String parameterisedQuery;
    String query;
