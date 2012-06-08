@@ -175,7 +175,7 @@ yum verify | grep "^[a-z]"
 
 yum -y reinstall rpm rpm-libs yum*
 
-== cron 
+== cron ==
 
 {{{
 for bin in mktemp tmpwatch prelink updatedb makewhatis logger logrotate
@@ -250,9 +250,6 @@ or modified folder contents:
   --set /desktop/gnome/thumbnailers/disable_all true
 }}}
 
-
-=== 
-
 Verify Permissions on passwd, shadow, group and gshadow Files
 
 {{{
@@ -282,8 +279,8 @@ chmod +t /dir
 
 === World writables === 
 
-
 The following command discovers and prints any world-writable files in local partitions. 
+
 Run it once for each local partition:
 {{{
 find / -xdev -type f -perm -0002 -print
@@ -295,30 +292,15 @@ chmod o-w file
 }}}
 
 
-=== SUID/GUID
+=== SUID/GUID ===
 
 {{{
  find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -print
 }}}
 
+{{{
 for bin in ccreds_validate ksu netreport lockfile mount.nfs mount.nfs4 rpc rlogin rsh ssh-keysign usernetctl umount.nfs umount.nfs4 userisdnctl usernetctl wall write 
 do 
   which $bin && chmod -s `which $bin`  
 done
-
-=== 
-
-{{{
-}}}
-
-
-=== 
-
-{{{
-}}}
-
-
-=== 
-
-{{{
 }}}
