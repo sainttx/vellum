@@ -15,7 +15,7 @@ public class LogrContext {
     
     public LogrContext(LogrProvider provider, Class source, String name) {
         this.provider = provider;
-        this.sourceName = source.getClass().getName();
+        this.sourceName = source.getName();
         this.name = name;
     }
 

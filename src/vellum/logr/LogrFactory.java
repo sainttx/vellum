@@ -21,7 +21,7 @@ public class LogrFactory {
     }
     
     public static Logr getLogger(Class source) {
-        return getLogger(new LogrContext(provider, source, source.getClass().getSimpleName()));
+        return getLogger(new LogrContext(provider, source, source.getSimpleName()));
     }
 
     public static Logr getLogger(Thread thread) {
