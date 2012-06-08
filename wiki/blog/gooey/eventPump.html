@@ -1,0 +1,61 @@
+
+It is often convenient to execute long tasks synchronously, that is to say, to wait for the task to complete, so that we can then do something appropriate like update the GUI. In order for our GUI to remain responsive while our long task is executing, we can use  <a href='http://foxtrot.sf.net'>foxtrot.sf.net</a> which manages to hook into the <tt>EventDispatchThread.pumpEvents()</tt> method to keep the events rolling. 
+
+<h2>Salientology</h2>
+
+In case you don't want to read <i>"Event Pump DTs, a scifi space opera,"</i> in all its gory detail, we extract some salient bits and present them below.
+
+<h2>Code Glance</h2>
+
+We might introduce a <tt>doInBackgroundAndWait()</tt> method as below.
+
+<pre>
+public class EdtInvoker {
+    ...
+    public <T> T doInBackgroundAndWait(final Callable callable) 
+    throws Exception {
+        final EventPump eventPump = new EventPump();
+        SwingWorker worker = new SwingWorker() {
+            protected Object doInBackground() throws Exception {
+                try {
+                    return callable.call();
+                } finally {
+                    eventPump.done();
+                }
+            }
+        };
+        worker.execute();
+        eventPump.pumpEvents(); 
+        try {
+            return (T) worker.get();
+        } catch (Exception e) {
+            throw getActualCause(e);
+        }
+    } 
+}
+</pre>
+
+An alternative to actually pumping events is to a use an "invisible" modal <tt>Dialog</tt> to disable and block our application while executing a "background" task (synchronously).
+
+<pre>
+public class EventPump {
+    protected JDialog dialog;
+    
+    public EventPump(JFrame frame) {        
+        dialog = new JDialog(frame, true);
+        dialog.setUndecorated(true);
+        dialog.setBounds(0, 0, 0, 0);
+    }
+    
+    public void pumpEvents() {
+        dialog.setVisible(true);
+       
+    }
+    
+    public void done() {
+       dialog.setVisible(false);
+    }    
+}
+</pre>
+
+In this case we aren't actually pumping all events on our frame, but are disabling mouse and keyboard events by means of the modal dialog, which invokes the EDT's <tt>pumpEventsForHierachy()</tt> method.
