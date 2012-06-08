@@ -10,8 +10,8 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.*;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 /**
  *

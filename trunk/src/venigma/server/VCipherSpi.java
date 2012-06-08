@@ -11,8 +11,8 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import venigma.provider.ProviderContext;
 import venigma.provider.VProvider;
 

@@ -8,8 +8,8 @@ import venigma.provider.ClientContext;
 import com.google.gson.Gson;
 import java.io.*;
 import java.net.Socket;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 /**
  *

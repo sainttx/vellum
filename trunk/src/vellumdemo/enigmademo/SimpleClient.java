@@ -5,8 +5,8 @@ import java.security.cert.X509Certificate;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 public class SimpleClient extends Thread {
     static Logr logger = LogrFactory.getLogger(SimpleClient.class);

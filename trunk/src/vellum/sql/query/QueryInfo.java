@@ -5,8 +5,8 @@
  */
 package vellum.sql.query;
 
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import vellum.util.Args;
 import java.util.HashMap;
 import java.util.Map;

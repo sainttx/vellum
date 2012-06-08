@@ -8,8 +8,8 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 /**
  *

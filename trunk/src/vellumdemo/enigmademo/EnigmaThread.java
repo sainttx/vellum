@@ -5,8 +5,8 @@
 package vellumdemo.enigmademo;
 
 import java.net.Socket;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 /**
  *

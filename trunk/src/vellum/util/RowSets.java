@@ -7,8 +7,8 @@ package vellum.util;
 
 import com.sun.rowset.CachedRowSetImpl;
 import vellum.exception.Exceptions;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.sql.Connection;

@@ -5,8 +5,8 @@
  */
 package vellum.util;
 
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import vellum.exception.ArgsRuntimeException;
 import vellum.exception.Exceptions;
 import java.io.BufferedReader;

@@ -3,9 +3,12 @@
  * (c) Copyright 2012, Evan Summers
  */
 
-package vellum.logger.simple;
+package vellum.logr.simple;
 
-import vellum.logger.*;
+import vellum.logr.LogrHandler;
+import vellum.logr.LogrContext;
+import vellum.logr.LogrMessage;
+import vellum.logr.LogrLevel;
 import java.io.PrintStream;
 import vellum.util.formatter.ArgFormatter;
 
@@ -19,13 +22,14 @@ public class SimpleLogrHandler implements LogrHandler {
     LogrLevel level = LogrLevel.DEBUG;
     SimpleFormatter formatter = new SimpleFormatter();
     
-    public SimpleLogrHandler(LogrContext context) {
+    public SimpleLogrHandler(LogrContext context, LogrLevel level) {
         this.context = context;
+        this.level = level;
     }
 
     @Override
     public void handle(LogrMessage message) {
-        if (message.getLevel().ordinal() >= context.getLevel().ordinal()) {
+        if (message.getLevel().ordinal() >= level.ordinal()) {
             err.println(formatter.format(context, message));
             Throwable throwable = getThrowable(message.getArgs());
             if (throwable != null) {
