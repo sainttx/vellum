@@ -44,7 +44,7 @@ public class QueryExecutor {
          queryInfo.setRowSet(rowSet);
          return rowSet;
       } catch (Exception e) {
-         logger.warning(queryInfo, queryInfo.getQuery());
+         logger.warning(null, queryInfo, queryInfo.getQuery());
          throw e;
       } finally {
          durationMillis = System.currentTimeMillis() - durationMillis;

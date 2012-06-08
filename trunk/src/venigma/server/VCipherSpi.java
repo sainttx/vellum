@@ -13,7 +13,6 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import venigma.provider.ProviderContext;
 import venigma.provider.VProvider;
 
 /**
@@ -48,7 +47,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
         try {
             connection.open();
         } catch (IOException e) {
-            logger.warning(e);
+            logger.warning(e, null);
         }
     }
     

@@ -137,7 +137,7 @@ public class TestVenigma implements Runnable {
         byte[] bytes = datum.getBytes();
         byte[] encryptedBytes = cipher.doFinal(bytes, 0, bytes.length);
         byte[] iv = cipher.getIV();
-        logger.info(encryptedBytes.length);
+        logger.info("length", encryptedBytes.length);
         cipher.init(Cipher.DECRYPT_MODE, null, new IvParameterSpec(iv), sr);
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes, 0, bytes.length);
         logger.info(new String(decryptedBytes));

@@ -18,23 +18,32 @@ public class NullLogr implements Logr {
     }
 
     @Override
-    public void trace(Object... args) {
+    public void trace(String message, Object... args) {
     }
 
     @Override
-    public void debug(Object... args) {
+    public void debug(String message, Object... args) {
     }
 
     @Override
-    public void info(Object... args) {
+    public void info(String message, Object... args) {
     }
 
     @Override
-    public void warning(Object... args) {
+    public void warning(String message, Object... args) {
     }
 
     @Override
-    public void error(Object... args) {
+    public void error(String message, Object... args) {
     }
+
+    @Override
+    public void warning(Throwable throwable, String message, Object... args) {
+    }
+
+    @Override
+    public void error(Throwable throwable, String message, Object... args) {
+    }
+
     
 }
