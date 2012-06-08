@@ -3,7 +3,7 @@
  * (c) Copyright 2012, Evan Summers
  */
 
-package vellum.logger;
+package vellum.logr;
 
 /**
  *
@@ -11,6 +11,5 @@ package vellum.logger;
  */
 public interface LogrProvider {
 
-    public LogrLevel getLevel();
-    public LogrHandler getHandler(LogrContext context);
+    public Logr getLogger(LogrContext context);
 }
