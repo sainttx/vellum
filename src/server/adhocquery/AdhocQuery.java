@@ -39,9 +39,8 @@ public class AdhocQuery extends PageHandler {
         }
         HtmlQueryExecutor executor = new HtmlQueryExecutor(5432, out, verbose);
         for (QueryInfo query : queryInfoManager.getList()) {
-            logger.info(parameterMap);
+            logger.trace("query", query, parameterMap);
             query.putAll(parameterMap);
-            logger.info(query);
             executor.execute(query);
         }
 

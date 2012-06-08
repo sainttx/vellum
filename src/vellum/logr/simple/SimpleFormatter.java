@@ -6,7 +6,7 @@ package vellum.logr.simple;
 
 import vellum.logr.LogrContext;
 import vellum.logr.LogrFormatter;
-import vellum.logr.LogrMessage;
+import vellum.logr.LogrRecord;
 import vellum.util.formatter.ArgFormatter;
 
 /**
@@ -16,14 +16,20 @@ import vellum.util.formatter.ArgFormatter;
 public class SimpleFormatter implements LogrFormatter {
 
     @Override
-    public String format(LogrContext context, LogrMessage message) {
+    public String format(LogrContext context, LogrRecord message) {
         StringBuilder builder = new StringBuilder();
         builder.append(context.getName());
         builder.append(" ");        
-        builder.append(message.getLevel().name());        
-        builder.append(" ");        
-        builder.append(ArgFormatter.formatter.formatArgs(message.getArgs()));
+        builder.append(message.getLevel().name());
+        if (message.getArgs().length > 0) {
+            builder.append(" ");        
+            builder.append(format(message.getArgs()));
+        }
         return builder.toString();
     }
     
+    String format(Object[] args) {
+        return ArgFormatter.formatter.formatArgs(args);
+    }
+ 
 }

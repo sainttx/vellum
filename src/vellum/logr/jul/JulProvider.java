@@ -14,7 +14,7 @@ public class JulProvider implements LogrProvider {
 
     @Override
     public Logr getLogger(LogrContext context) {
-        return new JulAdapter(context);
+        return new LogrAdapter(new JulAdapter(context));
     }
 
 }

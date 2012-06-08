@@ -16,27 +16,37 @@ public class LogrAdapter implements Logr {
     }
     
     @Override
-    public void trace(Object... args) {
-        handler.handle(new LogrMessage(LogrLevel.TRACE, args));
+    public void trace(String message, Object... args) {
+        handler.handle(new LogrRecord(LogrLevel.TRACE, message, args));
     }
 
     @Override
-    public void debug(Object... args) {
-        handler.handle(new LogrMessage(LogrLevel.DEBUG, args));
+    public void debug(String message, Object... args) {
+        handler.handle(new LogrRecord(LogrLevel.DEBUG, message, args));
     }
     
     @Override
-    public void info(Object... args) {
-        handler.handle(new LogrMessage(LogrLevel.INFO, args));
+    public void info(String message, Object... args) {
+        handler.handle(new LogrRecord(LogrLevel.INFO, message, args));
     }
 
     @Override
-    public void warning(Object... args) {
-        handler.handle(new LogrMessage(LogrLevel.WARN, args));
+    public void warning(String message, Object... args) {
+        handler.handle(new LogrRecord(LogrLevel.WARN, message, args));
     }
 
     @Override
-    public void error(Object... args) {
-        handler.handle(new LogrMessage(LogrLevel.ERROR, args));
+    public void error(String message, Object... args) {
+        handler.handle(new LogrRecord(LogrLevel.ERROR, message, args));
+    }
+    
+    @Override
+    public void warning(Throwable throwable, String message, Object... args) {
+        handler.handle(new LogrRecord(throwable, LogrLevel.WARN, message, args));
+    }
+
+    @Override
+    public void error(Throwable throwable, String message, Object... args) {
+        handler.handle(new LogrRecord(throwable, LogrLevel.ERROR, message, args));
     }
 }

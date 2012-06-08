@@ -15,7 +15,7 @@ public class LogrDispatcher implements LogrHandler {
     List<LogrHandler> handlerList = new CopyOnWriteArrayList();
 
     @Override
-    public void handle(LogrMessage message) {
+    public void handle(LogrRecord message) {
         for (LogrHandler handler : handlerList) {
             handler.handle(message);
         }

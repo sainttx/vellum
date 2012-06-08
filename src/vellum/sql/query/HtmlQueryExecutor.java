@@ -44,7 +44,7 @@ public class HtmlQueryExecutor {
 
     public void outputQuery(QueryInfo queryInfo) throws Exception {
         this.queryInfo = queryInfo;
-        logger.info(queryInfo);
+        logger.info(null, queryInfo);
         out.printf("<p><pre class='connectInfo'><b>%s</b> [%s:%d, %s]</pre>\n", queryInfo.getQueryName(), queryInfo.getDatabase(), port, queryInfo.getUser());
         out.printf("<pre class='queryInfo'>%s</pre>\n", queryInfo.getQuery());
         out.flush();
@@ -52,7 +52,7 @@ public class HtmlQueryExecutor {
 
     public RowSet execute(QueryInfo queryInfo) throws Exception {
         this.queryInfo = queryInfo;
-        logger.info(queryInfo);
+        logger.info(null, queryInfo);
         if (outputQuery) {
             outputQuery(queryInfo);
         }
@@ -77,7 +77,7 @@ public class HtmlQueryExecutor {
             }
             return set;
         } catch (Exception e) {
-            logger.warning(queryInfo, queryInfo.getQuery());
+            logger.warning(null, queryInfo, queryInfo.getQuery());
             throw Exceptions.newRuntimeException(e, queryInfo);
         } finally {
         }

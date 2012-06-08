@@ -91,7 +91,7 @@ public class CipherContext {
             keyInfo = keyMap.get(keyInfo);
         } else {
             keyInfo = storage.getKeyInfoStorage().find(keyInfo);
-            logger.info(keyInfo);
+            logger.info("keyInfo", keyInfo);
             keyInfo.decrypt(properties.secretKeyPassword);
             keyMap.put(keyInfo, keyInfo);
         }

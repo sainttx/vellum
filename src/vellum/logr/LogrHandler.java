@@ -10,6 +10,6 @@ package vellum.logr;
  */
 public interface LogrHandler {
    
-    public void handle(LogrMessage message);
+    public void handle(LogrRecord message);
 
 }

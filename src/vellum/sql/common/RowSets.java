@@ -106,7 +106,7 @@ public class RowSets {
                             field.setAccessible(true);
                             field.set(bean, value);
                         } else {
-                            logger.info(field.getType(), value.getClass(), value);
+                            logger.info(null, field.getType(), value.getClass(), value);
                         }
                     }
                 }

@@ -62,7 +62,7 @@ public class CipherRequestAuth {
         } else {
             AdminUserStorage conn = context.getStorage().getAdminUserStorage();
             for (AdminUser adminUser : conn.getList()) {
-                logger.info(adminUser);
+                logger.info(null, adminUser);
                 if (subject.startsWith("CN=" + adminUser.getUsername() + ",")) {
                     if (adminUser.getRole() == AdminRole.SUPERVISOR) {
                         clientType = ClientType.ADMIN;

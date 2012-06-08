@@ -83,7 +83,7 @@ public abstract class PageHandler implements HttpHandler {
         } finally {
             close();
             if (baos != null) {
-                logger.info(baos.size());
+                logger.trace("size", baos.size());
                 httpExchange.getResponseHeaders().set("Content-length", Integer.toString(baos.size()));
                 httpExchange.getResponseBody().write(baos.toByteArray());
                 httpExchange.getRequestBody().close();
@@ -111,7 +111,7 @@ public abstract class PageHandler implements HttpHandler {
                 }
             }
         }
-        logger.info(agentWget, acceptGzip);
+        logger.trace("parseHeaders", agentWget, acceptGzip);
     }
 
     protected void parseParameterMap() {

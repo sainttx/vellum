@@ -7,7 +7,7 @@ package vellum.logr.simple;
 
 import vellum.logr.LogrHandler;
 import vellum.logr.LogrContext;
-import vellum.logr.LogrMessage;
+import vellum.logr.LogrRecord;
 import vellum.logr.LogrLevel;
 import java.io.PrintStream;
 import vellum.util.formatter.ArgFormatter;
@@ -28,7 +28,7 @@ public class SimpleLogrHandler implements LogrHandler {
     }
 
     @Override
-    public void handle(LogrMessage message) {
+    public void handle(LogrRecord message) {
         if (message.getLevel().ordinal() >= level.ordinal()) {
             err.println(formatter.format(context, message));
             Throwable throwable = getThrowable(message.getArgs());
