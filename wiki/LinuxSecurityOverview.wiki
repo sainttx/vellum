@@ -1,5 +1,4 @@
 
-<hr>
 = Security =
 
 We consider the PCI DSS documentation as a guide to best practices.
@@ -27,7 +26,6 @@ For example, a commonly required procedure is employee exit check list eg. disab
 
 In general we need the initial reactive procedure (eg. disable account when employee leaves), and the subsequent proactive controls eg. annually review all accounts on all systems.
 
-<hr>
 == Overview ==
 
 We present some general recommendations for network security. 
