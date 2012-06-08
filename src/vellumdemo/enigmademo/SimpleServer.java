@@ -3,8 +3,8 @@ package vellumdemo.enigmademo;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 public class SimpleServer extends Thread {
     static Logr logger = LogrFactory.getLogger(SimpleServer.class);

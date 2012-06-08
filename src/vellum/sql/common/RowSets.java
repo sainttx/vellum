@@ -7,8 +7,8 @@ package vellum.sql.common;
 
 import vellum.sql.query.QueryExecutor;
 import vellum.sql.query.QueryInfo;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import vellum.util.Beans;
 import vellum.util.Strings;
 import com.sun.rowset.CachedRowSetImpl;

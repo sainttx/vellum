@@ -2,11 +2,11 @@
  * Apache Software License 2.0
  * (c) Copyright 2012, Evan Summers
  */
-package vellum.logger.simple;
+package vellum.logr.simple;
 
-import vellum.logger.LogrContext;
-import vellum.logger.LogrFormatter;
-import vellum.logger.LogrMessage;
+import vellum.logr.LogrContext;
+import vellum.logr.LogrFormatter;
+import vellum.logr.LogrMessage;
 import vellum.util.formatter.ArgFormatter;
 
 /**

@@ -7,8 +7,8 @@ package venigma.data;
 import java.io.InputStream;
 import java.sql.*;
 import javax.sql.RowSet;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import vellum.util.RowSets;
 
 /**

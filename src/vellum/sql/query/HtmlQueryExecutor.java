@@ -7,8 +7,8 @@ package vellum.sql.query;
 
 import vellum.sql.common.RowSets;
 import vellum.exception.Exceptions;
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import vellum.printer.Printer;
 import vellum.util.Calendars;
 import vellum.util.Types;

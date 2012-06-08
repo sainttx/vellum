@@ -2,8 +2,8 @@
  */
 package mobi.servlet;
 
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import vellum.util.Streams;
 import java.io.IOException;
 import java.io.Writer;

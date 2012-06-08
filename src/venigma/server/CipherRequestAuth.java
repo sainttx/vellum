@@ -4,8 +4,8 @@
  */
 package venigma.server;
 
-import vellum.logger.Logr;
-import vellum.logger.LogrFactory;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import venigma.data.AdminRole;
 import venigma.data.AdminUser;
 import venigma.provider.ClientType;
