@@ -1,0 +1,299 @@
+
+<h2>Swing and Roundabouts 1: Event DTs</h2>
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/swings4.jpg" align="left" vspace="8" hspace="16" border="0" />
+
+<h2>Introduction</h2>
+<i>"People always said there were no monsters, no real ones... but there are."</i>
+
+In his blog [http://weblogs.java.net/blog/joconner/archive/2006/05/a_simple_framew.html A Simple Framework for Desktop Applications] John O'Conner summarised a JavaOne presentation by Hans Muller and Scott Violet vis-a-vis [http://www.jcp.org/en/jsr/detail?id=296 JSR 296].
+
+John reports that this framework would give some guidance to Swing developers, to avoid common bad practices. Such as Swing apps that only support English, and Swing apps that are <i>"a tangle of actionPerformed methods that block the event dispatch thread (EDT)."</i>
+
+I commented there that the issue of EDT-blocking event handlers is a big one for me. In my last project, most event handlers kicked off a string of "long tasks" (namely, communicating to a server over a GSM network), and I got into such a tangle with SwingWorkers upon SwingWorkers, that the code became increasingly difficult to follow.
+
+This blog presents how I eventually untangled that application. 
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/alien5.jpg" align=right vspace=8 hspace=16 border=0 />
+
+<h2>Application</h2>
+<i>"All we know is that there is still is no contact with the colony, and that a xenomorph may be involved."</i>
+
+Imagine a client-server application, where the client application communicates to the server application via the network. 
+
+Actually, this system is deployed on a remote planet managed by aliens. Those same class of aliens as we met in the Aliens movies, if you can believe it. The server room is installed in a secure complex on one of the moons. (I can't be more specific because of the NDA the Company makes everyone sign, so...)
+
+Let's consider the login dialog. The alien enters its username and password, and then hits the "Login" button. This invokes our event handler to communicate to the server as follows.
+
+<pre>
+   Gui gui = Gui.getInstance(); // our GUI helper 
+   Messenger messenger = Messenger.getInstance(); // our server comms helper
+
+   public void actionPerformed(ActionEvent event) {
+      if (event.getSource() == loginButton) {
+         loginActionPerformed();
+      }
+   }
+   
+   protected void loginActionPerformed() {      
+      try {
+         LoginResponse loginResponse = messenger.sendLogin(getLoginBean());
+         if (loginResponse.getErrorMessage() != null) {
+            gui.showMessageDialog(loginResponse.getErrorMessage());
+            if (loginResponse.isInvalidPassword()) passwordField.requestFocusInWindow();
+            else usernameField.requestFocusInWindow();
+            return;
+         }
+         if (loginResponse.isPasswordExpiring()) {
+            String password = gui.showPasswordInputDialog("Enter new password");
+            if (password != null) {
+               ChangePasswordResponse response = 
+                  messenger.sendChangePassword(loginResponse, password);
+               if (response.getErrorMessage() != null) {
+                  gui.showMessageDialog(response.getErrorMessage());
+               } else {
+                  gui.showMessageDialog("Password changed");
+               }
+            }
+         }
+         login(loginResponse);            
+         gui.showMessageDialog("Welcome, " + loginResponse.getAlienName());
+      } catch (CommsException ce) {
+         gui.showMessageDialog(ce, "The frelling connection is down again.");
+      } catch (Exception e) {
+         gui.showMessageDialog(e, "System failure. Try a hard reboot.");
+      }
+   }
+</pre>
+
+As you can see, we communicate the login information to the server (ie. username and password), which might return with an error such as "Unknown Alien", "Access Denied" or "Invalid password." Or we might get a comms exception, e.g. caused by the high gamma ray activity on this particular alien planet.
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/ktalkd.png" width="48" height="48" align=left vspace=4 hspace=16 />
+
+Finally, if the login is valid, but the password is expiring soon, then we ask the alien to enter a new password.
+
+Now the problem is that we are blocking the EDT in this method! In particular when we communicate to the server. Because it might take 10 or 20 seconds to get a response from the server on the moon.
+
+<h2>EDT Blocking Problem</h2>
+<i>"In case you haven't been paying attention to current events, we just got our asses kicked, pal!"</i>
+
+To be 100% safe, we should not "manipulate" Swing components outside the EDT. 
+Because, as the Java Tutorial says,
+<blockquote>
+Swing event-handling and painting code executes in a single thread, called the event-dispatching thread. This ensures that each event handler finishes executing before the next one executes and that painting isn't interrupted by events. To avoid the possibility of deadlock, you must take extreme care that Swing components and models are created, modified, and queried only from the event-dispatching thread.
+</blockquote>
+
+That's fine because we typically manipulate our components (causing visual changes on the screen) in our EDT event handlers. For example, when a button is pressed, an <tt>actionPerformed()</tt> method is invoked by, and within, the EDT. And that's where our application actually does stuff, ie. in response an alien pressing or clicking something. Because GUI applications are event-driven.
+
+The problem is that we should not block the EDT for any length of time, e.g. while waiting for a response from the server. Because then our Swing app is "hung" e.g. if the alien starts moving windows around, they don't get repainted, and if it presses a window's "close" button, or a "cancel" button, or clicks on a different tab, nothing frikkin happens. Quite frustrating. Now understand that these aliens get very irritated, very quickly, and can go flying off the handle, and we really don't want that.
+
+<h2>Waking the SwingWorker</h2>
+<i>"This a lead works isn't it? All we gotta do is lure the beast into the mold!"</i>
+
+So the solution is to use a [http://swingworker.dev.java.net SwingWorker]
+thread, so that our long task can run as a separate thread outside the EDT. 
+Then we can start a <tt>SwingWorker</tt> thread, and let the EDT exit the 
+<tt>actionPerformed()</tt> method immediately, so that it can service other 
+events if necessary (eg. in the response to the user clicking on something).
+
+We might restructure our earlier <tt>loginActionPerformed()</tt> method to use a <tt>SwingWorker</tt>
+as follows.
+
+<pre>
+   public void loginActionPerformed() {
+      SwingWorker loginWorker = new SwingWorker() {
+         LoginResponse loginResponse = null;
+         Exception exception = null;
+         public Object doInBackground() throws Exception { 
+            // this is outside of the EDT, so no GUI stuff, just for our long task
+            try {
+               loginResponse = messenger.sendLogin(getLoginBean());
+            } catch (Exception e) {
+               exception = e;
+            }
+            return null;
+         }
+         public void done() { // this is inside the EDT, for GUI stuff
+            if (exception != null) {
+               String message = null;
+               if (loginResponse != null) message = loginResponse.getErrorMessage();
+               if (message == null) message = "A frak up has occurred";
+               gui.showMessageDialog(exception, message);
+            } else if (loginResponse == null) {
+               gui.showMessageDialog(exception, "No response from server");
+            } else if (loginResponse.getErrorMessage() != null) {
+               gui.showMessageDialog(exception, loginResponse.getErrorMessage());
+            } else {
+               if (loginResponse.isPasswordExpiring()) {
+                  String password = gui.showPasswordInputDialog("Enter new password");
+                  if (password != null) {
+                     ChangePasswordResponse response = 
+                        messenger.sendChangePassword(loginResponse, password);
+                     ... // oh frell, a long task, and we are in the EDT here...
+                     ... // so this is so not gonna work //highlight
+                  }   
+               }          
+               gui.showMessageDialog("Welcome, " + loginResponse.getAlienName());
+            }
+         }       
+      };
+      loginWorker.execute(); // start the worker thread and free the EDT
+   }                        
+</pre>
+
+As you can see, we had to cajole our event handler quite significantly
+to make it jump through a SwingWorker hoop. <i>"Uh oh, this is crashing 
+my code-assist neural implants... I don't like it."</i>
+
+<h2>SwingWorker hive</h2>
+<i>"Seventeen days? Look man, I don't wanna rain on your parade, but we aint gonna last seventeen hours!"</i>
+
+The problem is that our "long task" is actually a chain of long tasks. First off, we communicate the login info to the server. <i>Clearly, this is a long task, which should run outside of the EDT.</i> When we get a response, we might popup a dialog to enter a new password. <i>Uh oh, that should run in the EDT.</i> Then we communicate to the server again, which is another long task. <i>Uh oh, that should run outside the EDT.</i> 
+
+So we have to switch maybe a few times in and out of the EDT. SwingWorker is only good for one switch out of the EDT (and then back again). <i>"Frell it! You just can't win with these alien requirements!"</i>
+
+Nested SwingWorkers? Let's not even go there!
+
+<h2>Reversing into a solution</h2>
+<i>"I say we take off and nuke the entire site from orbit. That's the only way to be sure."</i>
+
+Really, we wanna leave the code as it was before ie. as in the original <tt>loginActionPerformed()</tt> implementation further above, without having to worry about blocking the EDT and SwingWorkers and all that.
+
+But we know for sure that in order to make our event handler non-blocking, we will need to run it via a <tt>SwingWorker</tt> thread. That's a given. OK, so let's try the following.
+<pre>
+   public void actionPerformed(ActionEvent event) {
+      if (event.getSource() == loginButton) {       
+         gui.executeWorker(new Runnable() {
+            public void run() {
+               loginActionPerformed();
+            }
+         });
+      }
+   }      
+</pre>
+
+We have introduced a <tt>executeWorker(runnable)</tt> helper method, which we implement as follows.
+
+<pre>
+   public void executeWorker(final Runnable runnable) {
+      SwingWorker swingWorker = new SwingWorker() {
+         public Object doInBackground() throws Exception {
+            try { 
+               setWaitCursor(true);
+               runnable.run();
+            } catch (Exception e) {
+               showExceptionDialog(e);
+            } finally {
+               setWaitCursor(false);
+            }
+            return null;
+         }
+      };
+      swingWorker.execute();
+   }
+</pre>
+
+Note that we have no <tt>done()</tt> method for GUI code, and our <tt>runnable</tt> event handler is run from the <tt>doInBackground()</tt> method ie. outside the EDT, so it must be "EDT-safe." Let's put that aside for a second...
+
+The above method takes care of showing the hour glass, as follows.
+
+<pre>
+   public void setWaitCursor(final boolean waitCursor) {
+      Runnable runnable = new Runnable() {
+         public void run() {
+            if (!waitCursor) {
+               applicationFrame.setCursor(null);
+            } else {
+               Cursor cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+               applicationFrame.setCursor(cursor);
+            }
+            glassPane.setVisible(waitCursor);
+         }
+      };
+      if (SwingUtilities.isEventDispatchThread()) {
+         runnable.run();
+      } else {
+         SwingUtilities.invokeAndWait(runnable);
+      }
+   }
+</pre>
+
+Notice that we might also activate a glass pane to disable a particular panel while our task is in progress, e.g. to force the user to wait for the task to complete.
+
+<h2>Lose on the Swing, gain on the roundabout</h2>
+<i>"Nobody never gave me nothing. So I say, let's fight this beast ourselves! Do you wanna die on your feet, or on your frikkin knees?"</i>
+
+The trick is that our runnable GUI code must be made "EDT-agnostic." In particular, since we use a GUI helper class, it's methods must be made EDT-agnostic.
+
+Firstly, let's implement an EDT-agnostic <tt>invokeAndWait()</tt> method as follows.
+
+<pre>
+   public void invokeAndWait(Runnable runnable) {
+      if (SwingUtilities.isEventDispatchThread()) {
+         runnable.run();
+      } else {
+         SwingUtilities.invokeAndWait(runnable);
+      }
+   }
+</pre>
+
+The above implementation of <tt>invokeAndWait()</tt> can be invoked safely inside the EDT, or outside it, e.g. in a SwingWorker's <tt>doInBackground()</tt> method. As such, it is "EDT-safe."
+
+Now we can "EDT-harden" methods invoked on Swing components in the <tt>loginActionPerformed()</tt> further above, such as  <tt>showConfirmDialog()</tt> in our <tt>Gui</tt> helper class, as follows.
+
+
+<pre>
+   int dialogOptionValue;
+
+   public int showConfirmDialog(final Object message, final String title, 
+         final int option) {
+      invokeAndWait(new Runnable() {
+         public void run() {
+            dialogOptionValue = JOptionPane.showConfirmDialog(
+               (Component) applicationFrame, message, title, option);
+         }
+      });
+      return dialogOptionValue;
+   }
+</pre>
+
+
+Similarly, we EDT-harden other methods in our GUI helper class, where these are commonly in our event handlers, e.g. <tt>requestFocusInWindows()</tt> as below.
+
+<pre>
+   public void requestFocusInWindow(final Component component) {
+      invokeAndWait(new Runnable() {
+         public void run() 
+            component.requestFocusInWindow();
+         }
+      });
+   }  
+</pre>
+
+While this seems verbose and tedious, it is relatively quick to EDT-harden a method in our GUI helper class, by cutting and pasting the <tt>invokeAndWait(Runnable)</tt> boiler-plate code from another EDT-hardened method.
+
+At first, methods in our helper class are not necessarily EDT-agnostic, that is to say, they do not use <tt>invokeAndWait()</tt>. When we encounter a need for that method to be used in the <tt>doInBackground()</tt> method of a SwingWorker, e.g. via our <tt>executeWorker(runnable)</tt> helper, then we make that method EDT-agnostic in our helper class via <tt>invokeAndWait(Runnable)</tt>.
+
+Similarly when we encounter a need for a method on a Swing component, we should delegate that to our helper class, where we can make it EDT-safe. 
+
+<h2>Conclusion</h2>
+<i>"I dunno if I'm happy about this... I mean running around here in the dark with that frikkin beast after us."</i>
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/alienBox2.jpg" align=right vspace=8 hspace=16 border=0 />
+
+We should not block the EDT for any length of time, e.g. while waiting from a response from the server. Otherwise our Swing app appears to be "hung" to the user.
+
+So we should use a SwingWorker thread, for our long tasks. However, the SwingWorker is only good for one switch out of the EDT, and then back again. This is a problem if our "long task" is actually a chain of long tasks, requiring GUI updates in between, before proceeding to the next long task.
+
+If our event handler performs a long task, then we put it into a SwingWorker thread. But the trick is that we take care that any GUI manipulation is performed via an EDT-agnostic helper class. In our helper class, we use an <tt>invokeAndWait()</tt> method which will work whether we are in the Swing EDT or not, by checking <tt>SwingUtilities.isEventDispatchThread()</tt>.
+ 
+Our helper class may seem verbose and tedious, owing to the <tt>invokeAndWait(Runnable)</tt> boiler-plate code everywhere. However, our application code is simpler and clearer. So it's a very good bargain. We isolate the tedium in a single helper class, to free up the whole application for developers. It's a win-win, for us and the aliens.
+
+Which means the aliens won't be blowing any developers out of the hatch, and visa versa, for now.
+
+<h2>Sequels</h2>
+<i>"So you're saying we're dealing with an 8 foot beast with acid for blood, that kills people on sight, and is generally unpleasant?"</i>
+
+See the sequels [Epoxy DTs], [Emission DTs], and the finale [Enhanced DTs].
+
+And thereafter, [Boiler Room] and [Event Pump].
