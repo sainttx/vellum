@@ -7,39 +7,42 @@ package vellum.logr.jul;
 import java.util.logging.Logger;
 import vellum.logr.Logr;
 import vellum.logr.LogrContext;
+import vellum.util.Args;
 
 /**
  *
  * @author evans
  */
 public class JulAdapter implements Logr {
+    Logger logger;
     
     public JulAdapter(LogrContext context) {
+        logger = Logger.getLogger(context.getName());
     }
 
     @Override
     public void trace(Object... args) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        logger.finer(Args.format(args));
     }
 
     @Override
     public void debug(Object... args) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        logger.fine(Args.format(args));
     }
 
     @Override
     public void info(Object... args) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        logger.info(Args.format(args));
     }
 
     @Override
-    public void warn(Object... args) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void warning(Object... args) {
+        logger.warning(Args.format(args));
     }
 
     @Override
     public void error(Object... args) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        logger.severe(Args.format(args));
     }
     
 }

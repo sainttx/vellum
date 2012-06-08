@@ -25,7 +25,7 @@ public class EnigmaThread extends Thread {
             enigmaSocket.init();
             process();
         } catch (Exception e) {
-            logger.warn(e);
+            logger.warning(e);
         } finally {
             enigmaSocket.close();
         }
