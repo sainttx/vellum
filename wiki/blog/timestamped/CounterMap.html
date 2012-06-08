@@ -119,25 +119,23 @@ public class Maps {
 
 <pre>
     @Test
-    public void testDescendingCounterMap() {
+    public void testDescendingMap() {
+        System.out.println();
         IntegerCounterMap<String> counterMap = new IntegerCounterMap();
         counterMap.add("BWARN", 0);
         counterMap.add("DEBUG", 1000000);
-        counterMap.add("ERROR", 1000);
-        counterMap.increment("ERROR");
-        counterMap.increment("INFO");
-        for (String key : counterMap.descendingValueKeySet()) {
-            System.out.printf("%d %s\n", counterMap.get(key), key);
-        }
-        Assert.assertEquals(counterMap.descendingValueKeySet().iterator().next(), "DEBUG");
+        counterMap.add("ERROR", 5000);
+        counterMap.add("INFO", 1);
         String lastKey = null;
         int keyCount = 0;
-        for (String key : counterMap.descendingValueKeySet()) {
+        for (String key : Maps.descendingValueKeySet(counterMap)) {
+            System.out.printf("%d %s\n", counterMap.get(key), key);
             lastKey = key;
             keyCount++;
         }
         Assert.assertEquals(lastKey, "BWARN");
         Assert.assertEquals(keyCount, 4);
+        Assert.assertEquals(Maps.descendingValueKeySet(counterMap).iterator().next(), "DEBUG");
     }
 </pre>
 
@@ -152,7 +150,7 @@ public class Maps {
 0 BWARN
 </pre>
 
-<p>As so often seems to be the case, we have a million DEBUG messages, a thousand and one ERRORs, with very little INFO to go on, and no bloody warnings.  <i>"Put that in your internet, put that in your twitter right there."</i>
+<p>As so often seems to be the case, we have a million DEBUG messages, a thousand and one ERRORs, with very little INFO to go on, and no bloody warning!  <i>"Put that in your internet, put that in your twitter right there."</i>
 
 <h2>Resources</h2>
 

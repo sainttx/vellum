@@ -37,7 +37,7 @@ public class VenigmaHttpServer implements HttpHandler {
     
     }
 }
-</code>
+}}}
 
 <code>
 public class HomePageHandler extends AbstractPageHandler {
@@ -81,4 +81,4 @@ public class HomePageHandler extends AbstractPageHandler {
         }
     }   
 }
-</code>
+}}}
