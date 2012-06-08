@@ -2,16 +2,15 @@
  * Apache Software License 2.0
  * (c) Copyright 2012, Evan Summers
  */
-package vellum.logr.log4j;
+package vellum.logr;
 
-import vellum.logr.*;
 import vellum.logr.*;
 
 /**
  *
  * @author evans
  */
-public class Log4jProvider implements LogrProvider {
+public class NullProvider implements LogrProvider {
 
     @Override
     public Logr getLogger(LogrContext context) {
