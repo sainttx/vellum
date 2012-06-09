@@ -1,0 +1,135 @@
+
+So you're hosting your project on java.net, and you've uploaded some screenshots. <i>Supoib!</i> The next step is putting a Webstart "Launch" button on your page, innit.
+
+Since i'm too lazy to read the JNLP documentation, and to write a JNLP file  from scratch by hand, i'm gonna use those firefox goggles for starters. Later we'll be forced to read <a href="http://java.sun.com/developer/technicalArticles/Programming/jnlp/">Deploying Software with JNLP and Java Web Start</a> and edit the JNLP XML by hand, when as expected, things don't work as expected right off the bat.
+
+Using the goggles we quickly see that Netbeans has a JNLP tool, woohoo! And a tutorial aptly named <a href="http://www.netbeans.org/kb/articles/matisse-jaws.html">Using Java Web Start in NetBeans IDE</a> which i followed as follows.
+
+We go to the <b>Update Manager</b>, choose the <b>Netbeans Update Center Beta</b>.
+
+<img alt="nbupdate.png" src="http://weblogs.java.net/blog/evanx/archive/nbupdate.png" width="582" height="444" vspace=4 hspace=4 border=0 />
+
+<i>When in doubt press the OK button. Unfortunately the above screen does not have 
+an OK button, so we try the Next button.</i>
+
+<img alt="nbupdate2.png" src="http://weblogs.java.net/blog/evanx/archive/nbupdate2.png" width="580" height="200" vspace=4 hspace=4 border=0 />
+
+We add the <b>Netbeans Module for Java Web Start</b>.
+
+<img alt="nbupdate3.png" src="http://weblogs.java.net/blog/evanx/archive/nbupdate3.png" width="580" height="200" vspace=4 hspace=4 border=0 />
+
+<i>I think we should meet and greet this module!</i>
+
+<img alt="nbupdate4.png" src="http://weblogs.java.net/blog/evanx/archive/nbupdate4.png" width="580" height="200" vspace=4 hspace=4 border=0 />
+
+Now we see a <b>Java Web Start</b> item in the menu when we right click on our project. We enable this, and when we <b>Run with Webstart</b>, Netbeans generates our JNLP file, woohoo! It even provides a JNLP designer for for manipulating the file with the mouse, as you can see below. <i>Oisome!</i>
+
+<img alt="aptws.png" src="http://weblogs.java.net/blog/evanx/archive/aptws.png" width="586" height="551" vspace=4 hspace=4 border=0 />
+
+As expected from years of experience with softwarez, it doesn't work for us the first time, D'oh!
+
+We enable the Java Webstart Console to see the exception, or just click on <b>Details</b> and select the <b>Exception</b> tab. We see it's a security permissions problem with the application trying to access system properties ie. command line options. Probably preferences would also cause a security violation. So i disable properties and preferences in the application.
+
+<img alt="wsconsole.png" src="http://weblogs.java.net/blog/evanx/archive/wsconsole.png" width="574" height="522" vspace=4 hspace=4 border=0 />
+
+Trying again, there is a different error, ie. progress, woohoo! 
+
+<img alt="wsconsole2.png" src="http://weblogs.java.net/blog/evanx/archive/wsconsole2.png" width="572" height="246" vspace=4 hspace=4 border=0 />
+
+Looks like the above security exception is caused by <tt>field.setAccessible()</tt> ie. reflection.
+
+Let's try a different angle of attack which is to disable sandbox security, for now. We do this by adding a <tt>security</tt> element with <tt>all-permissions</tt> into our JNLP as follows. <i>If you know how to provide limited permissions, but not all permissions, eg. to allow reflection and "standard" stuff, but obviously not local file system access, please post a comment.</i>
+
+<img alt="jnlp-security-all.png" src="http://weblogs.java.net/blog/evanx/archive/jnlp-security-all.png" width="578" height="285" vspace=4 hspace=4 border=0 />
+
+But we get a "jar not signed" JNLP exception, as we see when we click on <b>Details</b> and then the <b>Exception</b> tab.
+
+<img alt="not-signed-error.png" src="http://weblogs.java.net/blog/evanx/archive/not-signed-error.png" width="577" height="206" vspace=4 hspace=4 border=0 />
+
+For this to work we gotta sign the jar as detailed in <a href="http://java.sun.com/products/javawebstart/1.2/docs/developersguide.html">Web Start Developer's Guide</a>, which gives us the following <tt>keytool</tt> and <tt>jarsigner</tt> commands.
+<i>(Update. <a href="http://weblogs.java.net/blog/kirillcool/archive/2005/05/signing_jars_fo.html">Kirill Grouchnikov's "Signing jars for java.net Web Start applications"</a> provides a great tutorial on signing your jars.)</i>
+
+<pre>
+    cd /opt/java5/bin
+    keytool -genkey -keystore <b>myKeystore</b> -alias <b>myself</b> 
+    keytool -selfcert -alias <b>myself</b> -keystore <b>myKeystore</b> 
+    keytool -list -keystore <b>myKeystore</b> 
+    jarsigner -keystore <b>myKeystore /aptframework/netbeans/dist/aptframework.jar myself</b>
+    javaws <b>/aptframework/netbeans/aptframework.jnlp</b>
+</pre>
+
+where the <tt>keytool</tt> commmands we do once only, to create our "keystore," 
+and the <tt>jarsigner</tt> command we do to prep the jar prior to trying to web start it.
+
+<img alt="signjar.png" src="http://weblogs.java.net/blog/evanx/archive/signjar.png" width="573" height="91" vspace=4 hspace=4 border=0 />
+
+Now we write a JNLP file for our web page, as follows.
+
+<pre>
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp codebase="<b>http://jroller.com/resources/e/evanx/</b>">
+  <information>
+    <title><b>AptFramework Demo</b></title>
+    <vendor><b>aptframework.dev.java.net</b></vendor>
+    <icon href="default"/>
+    <offline-allowed/>
+  </information>  
+  <security>
+     <<b>all-permissions</b>/>
+  </security>
+  <resources>
+    <j2se version="1.5+" />
+    <jar href="<b>aptframework.jar</b>"/>
+  </resources>
+  <application-desc main-class="<b>aptcomponent.common.ZViewContext</b>"/>
+</jnlp>    
+</pre>
+
+For going online, all that changes is the <tt>codebase</tt>, which is now an <tt>http</tt> URL, rather than a local file.
+
+<img src="http://weblogs.java.net/blog/evanx/archive/highlight.png" width="32" height="32" align="left" hspace="8" >
+I found that the <tt>weblogs.java.net</tt> webserver transforms XML files somehow, like our JNLP file, so that Firefox displays the XML rather than launching Web Start. So we upload our JNLP file and our jar to <tt>jroller.com</tt> rather because that seems to work.
+
+Now we can insert the JNLP link into our HTML web page as follows.
+
+<a href="http://jroller.com/resources/e/evanx/aptframework607.jnlp"><img alt="webstart.small.gif" src="http://weblogs.java.net/blog/evanx/archive/webstart.small.gif" border="0" /></a> <tt>(695k, unsandboxed, Java5)</tt>
+
+<h2>Addendum on Dependent Jar Resources</h2>
+
+<a href="http://weblogs.java.net/blog/kirillcool/archive/2005/05/signing_jars_fo.html">Kirill Grouchnikov's "Signing jars for java.net Web Start applications"</a> addresses dependent jars, where these might be signed by someone else, eg. <tt>activation.jar</tt>et al signed by Sun. In this case, you can't include these directly as jar resources in your JNLP. As Kirill shows, the trick is to wrap them in their own JNLP, and list that as the resource in your JNLP. I include such an example below, for completeness.
+
+But if you have dependent jars that are signed by someone else eg. Sun, then you gonna get an error because your jars are not all signed by the same certificate, ie. yours. You can inspect the signing certificates et al, using the following command. <i>(Incidently, the following JavaDB jar isn't signed, but for the sake of this discussion, let's pretend that it is signed by Sun.)</i>
+
+<pre>
+jarsigner -certs -verbose -verify /projects/aptframework/lib/derby.jar    
+</pre>
+
+As Kirill shows, we can create a JNLP file for dependent jars which are signed by Sun et al, as follows.
+
+<pre><?xml version="1.0" encoding="UTF-8"?>
+<jnlp codebase="<b>http://aptframework.dev.java.net</b>" href="<b>javadb.jnlp</b>">
+  <information>
+    <title><b>JavaDB jar</b></title>
+    <vendor><b>Signed by Sun Microsystems, Inc</b></vendor>
+    <offline-allowed/>
+  </information>  
+  <resources>
+      <jar href="<b>derby.jar</b>"/>
+  </resources>
+  <component-desc/>
+</jnlp>    
+</pre>
+
+where in this case, i'm gonna check-in dependent jars under the <tt>www</tt> subdirectory of my java.net project, in which case the <tt>codebase</tt> is my java.net project homepage.
+
+And then in the <tt>resources</tt> section of our JNLP, we list dependent jars, including those wrapped in their own JNLP file, as follows.
+
+<pre>  <resources>
+    <j2se version="1.5+" />
+    <jar href="aptframework.jar</b>"/>
+    <jar href="aptfoundation.jar</b>"/>
+    <b><extension href="javadb.jnlp"/></b>
+  </resources>    
+</pre>
+
+Now i've just gotta update my demo to actually use JavaDB, eg. for an in-memory database :)

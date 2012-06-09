@@ -1,13 +1,10 @@
 
-<h2>Swing and Roundabouts 1: Event DTs</h2>
-
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/swings4.jpg" align="left" vspace="8" hspace="16" border="0" />
-
 <h2>Introduction</h2>
 <i>"People always said there were no monsters, no real ones... but there are."</i>
 
-In his blog [http://weblogs.java.net/blog/joconner/archive/2006/05/a_simple_framew.html A Simple Framework for Desktop Applications] John O'Conner summarised a JavaOne presentation by Hans Muller and Scott Violet vis-a-vis [http://www.jcp.org/en/jsr/detail?id=296 JSR 296].
+In his blog <a href="http://weblogs.java.net/blog/joconner/archive/2006/05/a_simple_framew.html">A Simple Framework for Desktop Applications</a> John O'Conner summarised a JavaOne presentation by Hans Muller and Scott Violet vis-a-vis <a href="http://www.jcp.org/en/jsr/detail?id=296">JSR 296</a>.
 
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/swings4.jpg" align="left" vspace="8" hspace="16" border="0" />
 John reports that this framework would give some guidance to Swing developers, to avoid common bad practices. Such as Swing apps that only support English, and Swing apps that are <i>"a tangle of actionPerformed methods that block the event dispatch thread (EDT)."</i>
 
 I commented there that the issue of EDT-blocking event handlers is a big one for me. In my last project, most event handlers kicked off a string of "long tasks" (namely, communicating to a server over a GSM network), and I got into such a tangle with SwingWorkers upon SwingWorkers, that the code became increasingly difficult to follow.
@@ -90,7 +87,7 @@ The problem is that we should not block the EDT for any length of time, e.g. whi
 <h2>Waking the SwingWorker</h2>
 <i>"This a lead works isn't it? All we gotta do is lure the beast into the mold!"</i>
 
-So the solution is to use a [http://swingworker.dev.java.net SwingWorker]
+So the solution is to use a <a href="http://swingworker.dev.java.net">SwingWorker</a>
 thread, so that our long task can run as a separate thread outside the EDT. 
 Then we can start a <tt>SwingWorker</tt> thread, and let the EDT exit the 
 <tt>actionPerformed()</tt> method immediately, so that it can service other 
@@ -294,6 +291,6 @@ Which means the aliens won't be blowing any developers out of the hatch, and vis
 <h2>Sequels</h2>
 <i>"So you're saying we're dealing with an 8 foot beast with acid for blood, that kills people on sight, and is generally unpleasant?"</i>
 
-See the sequels [Epoxy DTs], [Emission DTs], and the finale [Enhanced DTs].
+See the sequels <a href="">Epoxy DTs</a>, <a href="">Emission DTs</a>, and the finale <a href="">Enhanced DTs</a>.
 
-And thereafter, [Boiler Room] and [Event Pump].
+And thereafter, <a href="">Boiler Room</a> and <a href="">Event Pump</a>.

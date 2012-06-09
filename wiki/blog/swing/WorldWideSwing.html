@@ -1,0 +1,20 @@
+
+I commented in <a href="http://weblogs.java.net/blog/javakiddy/archive/2006/07/what_romain_did.html">cSimon Morris' "In Defence of the Desktop"</a>, on how non-database desktop apps could use a database, for example for logging. Then queries could be performed using dates and severity, e.g. for looking for exception stack traces after the fact. 
+
+<i>Maybe you venture onsite for a meeting, and get cornered in a corridor by a user complaining that the application crashes all the time. "No worries, lemme get my magic wand from the car, and wave it over your computer, so that it can telepathically tell me what went wrong, and i can telepathically fix it for you right away - how does that sound!?"  Actually i wouldn't dare say that to a user... in case they believe me! ;)</i>
+
+Simon quite rightly reminded me that pure desktop apps don't log - they typically throw the exception up in a <tt>JOptionPane</tt>. Maybe with a "Details" button. Maybe with a "Email support desk" or "Send Error Report" button. <i>Supoib!</i>
+
+Simon said, "Perhaps this just highlights how the desktop and web worlds are so very very different?" I say that perhaps this just highlights how the desktop world is so very very diverse!? :)
+
+As John Reynolds points out in <a href ="http://weblogs.java.net/blog/johnreynolds/archive/2006/07/why_use_a_datab.html"> "Why Use A Database Instead Of"</a>, most "business" desktop apps capture, manipulate and/or present data. 
+
+In short, many Swing apps out there in the wild world are very much like web apps, at least in function - e.g. your database front-end business app. I would warrant that these are the ones that keep most Swing developers out there employed.
+
+Desktop Swing apps in the fields of graphics, visualisation, etcetera, and of course the "usual" desktop apps such as media, office/productivity, gaming, etcetera, make Web and Swing database apps seem like the siblings.
+
+So what i'm saying is that as a Swing/database developer, i feel closer to most of the "web world" than to the rest of the "desktop" world. In function, if not in form. Incidently, what is the definition of a "desktop" application? Is it strictly a 1-tier client application, that runs on the desktop, for personal productivity, never connecting to a server on a network? No, it is any (graphical) application whose user interface is not a web browser. Certainly that is a diverse group of applications!
+
+Interestingly, as the "web" continues towards "web services" and SOA, ie. where webservers dish up webservice XML for other programs to consume, rather than HTML for people's eyeballs to consume, this lends itself towards Swing front-ends, arguably more so than browser front-ends. Certainly more so than ever before in the "web world."
+
+Which is another reason why EJB3 is gonna be so great for Swing programmers too! :) The Java Persistence API, JAXB2, Web Services, Messaging, and other components of EJB3 are surely gonna be used increasingly by Swing clients. Is a new world of "Swing JEE web programming" dawning? 

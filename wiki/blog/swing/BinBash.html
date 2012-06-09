@@ -1,0 +1,173 @@
+
+
+<h2>Introduction</h2>
+
+In the preceding blogs <a href="http://weblogs.java.net/blog/evanx/archive/2006/05/java_is_all_you.html">"Java is all you'll ever need"</a> and <a href="http://weblogs.java.net/blog/evanx/archive/2006/05/a_fools_errand.html">"A Fool's Errand"</a> I alluded to using Java for "small tasks" eg. file/system tasks, rather than shell scripts. I promised to present some examples along these lines.
+
+This is Chapter 1 of many, and presents a basic design. We'll thrash it out in subsequent chapters.
+
+<h2>Motivation</h2>
+
+My motivation for trying to move away from shell scripting (or using some other scripting language like python or groovy), in favour of writing "tasklets" in Java, are as follows.
+
+<ul>
+<li> My personal familiarity and productivity with my favourite Java and Netbeans environment.
+<li> The unlimited power of available Java libraries and tools. <i>"Yeah baby, bring it on!"</i>
+<li> Using Netbeans' convenient CVS/Subversion to manage and version tasklets.
+<li> Using Netbeans to "keep it clean" eg. revising, commenting (javadocs) and refactoring tasklets. 
+<li> Moving towards a portable, cross-platform solution for file and system tasks (compared to shell scripts).
+</ul>
+
+<h2>Problem</h2>
+
+A typical task is backing up our computer, so let's consider this one of our first goals. OK, this could take a while. Hopefully we'll achieve this goal in subsequent chapters. Doing a good design here would be a great start.
+
+<a href="http://everaldo.com"><img alt="linux-av.png" src="http://weblogs.java.net/blog/evanx/archive/linux-av.png" width="64" height="64" align=left hspace=16 vspace=4  border=0 /></a>
+We want our tasklets to be cross-platform. In particular, we want to use our "backup tasklet" to backup our Linux PC, Windows laptop, and MacOSX media center. So let's keep that in mind. 
+
+Of course our "framework" should be reusable for other tasks, besides the backup one. And very convenient to use. So that some day soon, we can write all our file and system tasks in Java, and never look back, woohoo!
+
+<h2>Design Overview</h2>
+
+Let's create some helper classes, eg. <tt>TFileHelper</tt> for handling files, and <tt>TProcessHelper</tt> for handling processes. And we will create a <tt>TTaskContext</tt> which exposes our "library" to our tasklets, and/or can be used as a superclass by our tasklet classes.
+
+Note that I've choosen the letter T to prefix our "tasking" project classes. This avoids any potential namespace conflicts, and makes it clear which classes are our new ones.
+
+To give us some flexibility, let's create our own classes to represent files and processes, namely <tt>TFile</tt> and <tt>TProcess</tt>. We will extend those eg. <tt>TDir</tt> and <tt>TZipFile</tt> from <tt>TFile</tt>.
+
+<a href="http://everaldo.com"><img alt="folder1_man.png" src="http://weblogs.java.net/blog/evanx/archive/folder1_man.png" width="64" height="64" border=0 align=right vspace=8 hspace=16 /></a>
+
+<h2>Files</h2>
+
+First let's design our file helper class. <i>(Note that I'm using abstract declarations to highlight the interface at this stage, rather than the implementation.)</i>
+<pre>
+public class TFileHelper {
+   public boolean exists(TFile file);
+   public boolean isDirectory(TFile file);
+   public void remove(TFile file);
+   public void removeIfExists(TFile file);
+   public void removeDirectory(TDir directory);
+   public void moveToTrash(TFile file);
+   public void moveToTrashDirectory(TDir directory);
+   public TDir createDirectory(TDir directory);
+   public void copy(TFile file, TFile destination);
+   public void copyOverwrite(TFile file, TFile destination);
+   public List<TFile> listDirectory(TDir directory);
+   public List<TFile> listDirectoryRecursively(TDir directory);
+   public List<TFile> findRecursively(TDir directory, String pattern);
+
+   public TZipFile zipRecursively(TFile ... paths);
+   public TZipFile openZipFile(TZipFile zipFile);
+
+   public String getDigestString(TFile file);
+   public boolean equalsDigest(TFile file, TFile otherFile);
+}
+</pre>
+
+That's just for starters. We can expect this class to grow a lot!
+
+<a href="http://everaldo.com"><img alt="yast_zip.png" src="http://weblogs.java.net/blog/evanx/archive/yast_zip.png" width="64" height="64" border=0 align=left vspace=8 hspace=16 /></a>
+The methods related to zip files might be refactored out later eg. into <tt>TArchiveFileHelper</tt>, and the digest methods to <tt>TDigestHelper</tt>, but let's not overdesign this thing quite yet. Later when we wanna support different archives, eg. <tt>tar</tt> et al, and different digests, eg. MD5 vs CRC32, then we might create generic interfaces for archives and digests, for different implementations. But not today. Rome wasn't built in a day, innit. 
+
+<img alt="WindowsTasks.png" src="http://weblogs.java.net/blog/evanx/archive/WindowsTasks.png" width="125" height="87" align=right hspace=16 vspace=8 />
+We might have these methods throw wrapped runtime exceptions, eg. <tt>TIOException</tt>, which is a <tt>RuntimeException</tt> wrapping <tt>IOException</tt>. So that's why the methods above are not throwing checked exceptions, in case you were wondering.
+
+<h2>Processes</h2>
+
+Next let's design our process helper class. 
+
+<pre>
+public class TProcessHelper {
+   public void kill(TProcess ... processes);
+   public boolean killAll(TProcess process);
+   public TFile pipe(TProcess ... processes);
+   public TFile exec(TProcess process, Object ... args);
+   public List<TProcess> getProcessList(TProcess ... processes);
+
+   public TProcess fileWriter(TFile outputFile);
+   public TProcess fileReader(TFile inputFile);
+   public TProcess gzipProcess(TFile gzipFile);
+   public TProcess tarProcess(TFile tarFile);
+   public TProcess xargProcess(TProcess execProcess);
+   public TProcess findProcess(TProcess execProcess);
+}</pre>
+
+The file reader and writer processes above would be used for redirection, eg. the file reader as the first argument in the <tt>pipe()</tt>, and/or the file writer as the last, as follows.
+<pre>
+   processHelper.pipe(findProcess, grepProcess,
+      xargProcess, gzipProcess, fileWriter);  
+</pre>
+
+As you can see, we are loving Java5 varargs :)
+
+
+<h2>Context</h2>
+
+For convenience, let's introduce a superclass for our tasklets. 
+<pre>
+public class TTaskContext {
+   public TFileHelper fileHelper = new TFileHelper(); 
+   public TProcessHelper processHelper = new TProcessHelper(); 
+   public TCalendarHelper calendarHelper = new TCalendarHelper(); 
+
+   public TDir toDir(String dirName);
+   public TFile toFile(String fileName);
+   public TProcess toProcess(String processName);
+}
+</pre>
+
+Let's slide this baby into gear and start putting rubber to road.
+
+<h2>Example Implementation</h2>
+
+So let's imagine what our first backup tasklet implementation might look like, eg. for zipping up our home directory on Linux.
+<pre>
+public class BackupTask extends TTaskContext {
+
+   @TArgument TDir targetDir = toDir("/home/evan");
+   @TArgument TDir archiveDir = toDir("/backups/evan"); 
+   @TArgument String zipBaseFileName = "evan"; 
+
+   public void run() {
+      String timestamp = calendarHelper.getNumericTimestamp();
+      TZipFile zipFile = fileHelper.zipRecursively(targetDir);
+      zipFile.setOutputDirectory(archiveDir);
+      zipFile.saveAs(zipBaseFileName + timestamp);
+   }
+}
+</pre>
+
+Ok, so if we wanna write tasklets like the above, we still gotta bit of work to do. It's gonna rock tho, innit.
+
+So you spotted those annotations. The idea is that our framework could prompt for those eg. if not specified on the command-line...
+
+<h2>Future plans</h2>
+
+So we gonna use annotations to tell the framework what it needs to know to provide a "tasklet container" with a management console in future maybe. Now we're talking!
+
+I'm getting way ahead of myself here, but let's dream on...
+<p> 
+This "management console" could have a Swing interface, and/or a web interface. 
+
+<a href="http://everaldo.com"><img alt="yast_remote.png" src="http://weblogs.java.net/blog/evanx/archive/yast_remote.png" width="64" height="64" vspace=4 hspace=16 align=left border=0 /></a>
+A Swing interface could support a file chooser, which would be very handy, and would be quick to throw together using Netbeans/Mattise. Hey, it could even let us invoke remote tasklets, on lists of multiple machines... Hang on, this could grow up to be a network management system! <i>"Heel, boy!"</i>
+
+On the other hand, a web interface would be quick and easy for administering remote boxen, eg. backing up our media center in the lounge using our laptop. Even on a local machine, having a web-based console for tasks would be handy.
+
+You know what, I just decided we gonna embed a web server into our tasklet framework. So that our tasklets are always remoteable, and deployable via a single self-contained jar...
+OK, I better stop, I'm getting too excited here! 
+
+<h2>Conclusion</h2>
+
+<img alt="TProcessHelper2.png" src="http://weblogs.java.net/blog/evanx/archive/TProcessHelper2.png" width="123" height="118" align=right hspace=16 vspace=8 border=0 />
+This concludes "Chapter 1." We made a start which is the most important thing. We came up with a design. Hopefully it'll hold up. We'll find out soon enough. 
+
+Like when you are reversing your car towards a wall, you find out very quickly when you've gone too far. Rather that than driving in the wrong direction for hours on end, and not knowing it.
+
+Let's hope for accidents of the former "loud and clear" type, rather than misdirections of the latter, later type.
+
+In the next chapter, we might refine this design before we kick off, so please post comments to that effect.
+
+Then we can start rolling up our sleeves to implement some of the file IO functionality. Uh oh, sounds like work. So we'll google and cut and paste. We are developers after all, with a limited amount of time, so the less code we actually write the better, innit ;)
+
+<i>Update. Check out <a href="http://www.martiansoftware.com/nailgun/background.html">NailGun</a> which aims to obviate the start time of the JVM, eg. for Java command-line tasks. They say, "Java has an extensive and robust core API and huge number of available open source libraries. It's a great big hammer, making almost any programming project look like a nail." :)</i>

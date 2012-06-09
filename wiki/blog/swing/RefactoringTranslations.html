@@ -1,0 +1,214 @@
+
+<h2>Introduction.</h2>
+<i>"There is no problem that cannot be solved by the use of high explosives."</i>
+
+<a href='http://everaldo.com'><img alt="locale.png" src="http://weblogs.java.net/blog/evanx/archive/locale.png" width="32" height="32" align=left hspace=8 border=0 /></a>
+Recently I was tasked with making an app translatable. It was a relatively small Swing app, e.g. 200 classes. 
+
+That means moving strings, like exception messages, into a resource bundle. I had some fun with a phased approach, which I present here.
+
+<h2>Moving the strings</h2>
+<i>"The best armor is staying out of gun-shot."</i>
+
+The first phase was moving the string literals in the code into a "message class" as below. 
+
+<pre>
+public class IMessage {
+    public static String systemErrorLogin = "~ logging in";
+    public static String systemBusyCommunicatingWithServer = "Communicating with the server...";
+    public static String systemErrorOccurred = "An error has occurred";
+    public static String systemErrorOccuredFormatTilde = "An error has occurred while %s";
+    public static String systemSendOpLogoffReq = "~ sending logoff message";
+    public static String systemUpdateError = "~ updating application";
+    public static char systemLoginMnemonic = 'L';
+    public static String[] periodOptions = {"Today", "Yesterday", ...};
+    ...
+}
+</pre>
+
+Note that we allow different types in the message class, i.e. <tt>char</tt> for mnemonics, and string arrays for combo boxes. 
+
+(Incidently, in the above example, we use a notation where a tilde at the beginning of exception messages is substituted with "An error has occurred while..." <i>It's lazy, and that's what I really dig about it, man!</i>
+
+The application code becomes "stringless" as follows. 
+
+<pre>
+   public void run() {
+      try {
+         login();
+      } catch (Exception e) {
+         e.printStackTrace();
+         gui.showExceptionDialog(e, IMessage.systemErrorLogin);
+      }
+   }
+</pre>
+
+<a href='http:/everaldo.com'><img alt="jabber_protocol.png" src="http://weblogs.java.net/blog/evanx/archive/jabber_protocol.png" width="32" height="32" align=left hspace=8 border=0 /></a>
+An advantage of this approach, is that the "keys" we are choosing are refactorable field names, e.g. <tt>systemErrorLogin</tt>, rather than string references. Once all strings have been refactored out into this message class, we can review the keys for naming consistency, spelling, etcetera. Renaming them is safe and easy, e.g. using Netbean's refactorings.
+
+I sometimes argue that "string references" (eg. resource bundle keys in this case) hinder refactoring, and so we should aim for applications with <i>"no string references attached." </i>
+
+<h2>Generating the resource bundle</h2>
+<i>"The best tank terrain is that without anti-tank weapons."</i>
+
+The second phase is to generate the resource bundle from this message class. We use the field name as the key, and use reflection to generate the resource bundle as follows.
+
+<pre>
+   public void generateResourceBundleContent() throws Exception {
+      IMessage messages = new IMessage();
+      for (Field field : IMessage.class.getFields()) {
+         // iterate through all the fields in the message class 
+         String key = field.getName();
+         Object value = field.get(messages);
+         if (field.getType() == String.class) {
+            // output a regular string message  
+            logger.println(key + " = " + value);
+         } else if (field.getType() == String[].class) {
+            // output a string array, e.g. combo box items 
+            String[] array = (String[]) value;
+            int index = 0;
+            for (String string : array) {
+               logger.println(key + index + " = " + array[index]);
+               index++;
+            }
+         } else if (field.getType() == char.class) {
+            // output a char, e.g. a mnemonic 
+            logger.println(key + " = " + value);
+         }
+      }
+   }   
+</pre>
+
+In the above method, we generate the content to be cut and pasted into our resource bundle file e.g. <tt>myapp_en.properties</tt>. Note that we handle string arrays by appending an index digit to the key.
+
+<h2>Loading the resource bundle</h2>
+<i>"Samuel Morse must have lost his mind if he believes in this Dots and Dashes idea himself!" A Government Official (1842).</i>
+
+<a href='http://everaldo.com'><img alt="kdmconfig.png" src="http://weblogs.java.net/blog/evanx/archive/kdmconfig.png" width="32" height="32" align=left hspace=8 border=0 /></a>
+Now we can translate the resource bundle file into other languages, e.g. <tt>myapp_de.properties</tt> for German. When our application starts up, we need to load the messages for the current locale's resource bundle. Firstly, to simplify the processing, we find it convenient to read the resource bundle into a <tt>Map</tt>, as follows.
+
+<pre>
+    public static final Map<String, String> resourceMap = new HashMap();
+
+    public void loadMessages() throws Exception {
+       for (Enumeration<String> it = resourceBundle.getKeys(); it.hasMoreElements();) {
+          String key = it.nextElement();
+          String value = resourceBundle.getString(key);
+          resourceMap.put(key, value);
+        }
+        logger.exiting(resourceMap.size());
+    }
+</pre>
+
+So now we gonna load the resource bundle messages into our messages class (which is otherwise still initialised to the original English strings). We use reflection, as follows.
+
+<pre>
+   public void configureMessages() throws Exception {
+      IMessage messages = new IMessage();
+      for (Field field : IMessage.class.getFields()) {
+         // iterate through all the fields in the message class          
+         String key = field.getName();
+         Object defaultValue = field.get(messages);
+         Object resourceValue = null;
+         if (field.getType() == String.class) {
+            // we are looking for a regular string message
+            resourceValue = resourceMap.get(key);
+            if (resourceValue == null) { 
+               throw new IRuntimeException(field);
+            }
+            field.set(messages, resourceValue);
+         } else if (field.getType() == String[].class) {
+            // we are looking for an array of strings in this case
+            String[] defaultArray = (String[]) defaultValue; 
+            List<String> stringList = new ArrayList();
+            for (int index = 0;; index++) {
+               String string = resourceMap.get(key + index);
+               if (string == null) break;
+               stringList.add(string);
+            }
+            if (stringList.size() != defaultArray.length) {
+              throw new IRuntimeException(field); 
+            }
+            resourceValue = stringList.toArray(new String[stringList.size()]);
+            field.set(messages, resourceValue);
+         } else if (field.getType() == char.class) {
+            // we are looking for a char resource
+            String resourceString = resourceMap.get(key);
+            if (resourceString == null || resourceString.length() != 1) {
+               throw new IRuntimeException(field);
+            }  
+            resourceValue = resourceString.charAt(0);
+            field.set(messages, resourceValue);
+        }
+    }
+</pre>
+
+Note that in the above code, if an entry is found in the resource bundle that is inconsistent with the messages class, e.g. an unrecognised key, or different length string array, then an exception is thrown. This should be performed as a unit test. Anyway we will know as soon as we run the application if our resource bundle is not as it should be (via an exception). 
+
+<h2>Testing</h2>
+<i>"Airplanes suffer from so many technical faults that it is only a matter of time before any reasonable man realizes that they are useless." - Scientific American (1910)</i>
+
+<a href='http://everaldo.com'><img alt="fonts.png" src="http://weblogs.java.net/blog/evanx/archive/fonts.png" width="32" height="32" align=left hspace=8 border=0 /></a>
+Resource bundles, with string literals as keys in the code, e.g. <tt>getString("loginError")</tt>, are fragile. For example, a misspelt key for some obscure exception message, might only be picked up (as a "dangling" string reference) when that exception occurs. That might only happen down the line, in production. 
+
+An advantage of the message class approach, is that it enables unit testing of our resource bundles. For example, we can easily test that every one of our messages (as declared in the message class) is translated in our resource bundles, as follows. 
+<pre>
+   public void test() throws Exception {
+      IMessage messages = new IMessage();
+      for (Field field : IMessage.class.getFields()) {
+         String key = field.getName();
+         if (resourceMap.get(key) == null) {
+            throw new IRuntimeException(key); 
+         }
+      }
+   }
+</pre>
+
+The above code sample is over-simplified, but hopefully illustrates the point. 
+
+<h2>Merging messages</h2>
+<i>"No flying machine will ever fly from New York to Paris." -  Orville Wright.</i>
+
+<a href='http://everaldo.com'><img alt="appearance.png" src="http://weblogs.java.net/blog/evanx/archive/appearance.png" width="32" height="32" align=left hspace=8 border=0 /></a>
+What may be useful, is to generate the content of a message class from an existing resource bundle (eg. one produced using Netbeans GUI designer, for labels and such), as below. Then we can cut and paste that content into our message class. In this case, we can identify name clashes, and also happily generate the resource bundle file in its entirety later (from the message class, as shown above).
+<pre>
+   public void emitMessagesCode() throws Exception {
+      for (String key : resourceMap.keySet()) {
+         String value = resourceMap.get(key);
+         logger.println("public static String " + key + " = \"" + value + "\";");
+      }
+   }
+</pre>
+
+<h2>To Bundle, or not to bundle?</h2>
+<i>"We are not retreating - we are advancing in another direction." - Gen. Douglas MacArthur</i>
+
+<a href='http://everaldo.com'><img alt="yast_babelfish.png" src="http://weblogs.java.net/blog/evanx/archive/yast_babelfish.png" width="32" height="32" align=left hspace=8 border=0 /></a>
+Another option is to translate messages in code as below. The advantage of this approach is that the keys remain refactorable. And then translators can use Netbeans, and commit directly to the source code CVS, yay!
+<pre>
+   public void installGerman() {
+      IMessage.systemError = "Eine StÃ¶rung trat auf";
+      ...
+   }
+</pre>
+
+
+<h2>Conclusion</h2>
+<i>"I have a catapult. You will agree to my terms, or I will fling an enormous rock at your city." -  Latin literature.</i>
+
+We introduce a phased approach for translating an application. First, we move strings into a message class. This is achieved by cutting and pasting strings out of application classes into the message class. (Additionally, an existing resource bundle, as produced by the Netbeans GUI designer for example, might be merged into the messages class, with the assistance of some trivial code generation.)
+
+This first phase enables us to ensure neat and consistent naming of the keys we use to reference messages. For example, we can readily rename the message keys using IDE refactorings, to correct spelling mistakes and inconsistent naming conventions.
+
+<a href='http://everaldo.com'><img alt="mozillacrystal.png" src="http://weblogs.java.net/blog/evanx/archive/mozillacrystal.png" width="32" height="32" align=left hspace=8 border=0 /></a>
+The next phase is to generate the master resource bundle from the message class. We use reflection on the message class to generate the key/value pairs, which we cut and paste into the master resource bundle file. After this stage, the resource bundle can be translated into multiple languages.
+
+At startup, the application loads the resource bundle for the current locale, and uses reflection to configure the message class from the resource bundle. This offers a mechanism to ensure that the resource bundle is consistent, i.e. there are no strings that remain untranslated.
+
+In general, I argue that source code should contain no string literals whatsoever! The reason for this is that string literals are typically fragile references, which are not refactorable. This applies to strings that refer to field or method names as discussed in my earlier blog <a href="http://weblogs.java.net/blog/evanx/archive/2006/05/explicit_reflec.html">"Explicit Reflection"</a>, and string references to properties, as discussed in <a href="http://weblogs.java.net/blog/evanx/archive/2006/05/bean_curd_chapt_1.html">"Bean Curd (Chapter 1)"</a>. (Strings used in OR queries will be discussed in an up-coming blog, "Bean Curd 2: Native Query Beans.")
+
+Clearly strings that are text messages are also undesirable, because they should be externalised for translation (in resource bundles).
+
+And finally string references to externalised messages in resource bundles, are fragile and unable to be unit tested, and consequently dangerous, e.g. <tt>getString("loginError")</tt>.
+
+So I think that covers all the evil strings that we might find lurking in our code? Let's root them out and banish them forever!

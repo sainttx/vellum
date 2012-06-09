@@ -1,0 +1,66 @@
+
+A recent <a href="http://weblogs.java.net/blog/davidvc/archive/2006/07/working_from_ho.html">blog</a> by David Van Couvering discussed scripting languages, and the JVM in the browser, "if only as a virtual machine to run dynamic languages like Ruby and Groovy."
+
+He referred to  <a href="http://weblogs.java.net/blog/enicholas/archive/2006/04/java_2_browser.html">Ethan Nicholas's "Java 2 Browser Edition"</a>, which is another great blog entry that i only discovered and read today. Ethan writes that the problem with Java (applets) in the browser, compared to competitors like Flex and Ajax, is that the JRE download is too big (7Mb plugin), starts up too slowly (eg. could be 30 seconds), is hard to install and upgrade (compared to the consumer-savvy Flash plugin), and is not as reliable as Flash (eg. on some machines/browsers, applets just won't run, whatever you do). 
+
+Besides improving the installer and improving reliability, he suggests the following two solutions. 
+<ul>
+<li> <b>1Mb download.</b> Splitting the JRE into modular downloads, eg. 1Mb for the core 
+(excluding stuff like JNDI et cetera, that is seldom used by applets), and other modules could be 
+loaded on demand. 
+<li> <b>Instant startup.</b> Ethan says that every usability study reveals that 
+users are impatient, "it's a fact of life, and we as software developers need to live with it."
+</ul>
+
+Herewith are my comments.
+
+The issue of reliability should of course be addressed. I imagine this an engineering 
+integration/testing issue with all the combinations of OS'es, browsers and JRE's, 
+which requires lots of resources. On the issue of installers, these days users
+definitely expect a painless "auto update" feature, and we should give it to them. 
+
+On the issue of download size, maybe having a 7Mb monolithic download might be 
+better than multiple 1Mb ones on demand, because then at least it's a once-off? 
+And Dell et al ship Java preinstalled, and broadband keeps getting broader 
+(and cheaper). I believe that every PC should have the latest JRE installed, and in time, 
+every PC will. But i accept i'm sticking my head in the sand here.
+
+<img alt="stopwatch6.jpg" src="http://weblogs.java.net/blog/evanx/archive/stopwatch6.jpg" width="222" height="192" align=left vspace=8 hspace=8 />
+
+The issue of start-up time is an interesting one, because this has to be endured 
+for every applet, every time it's run, so i reckon this is the crux that needs to be optimised. 
+This engineering problem is addressed in operating systems, to speed up boot time.
+Maybe Sun's Solaris guys could show those tricks to the ClassLoader.
+
+Opensource Java will open opportunities for some collaborative innovation in 
+such areas, eg. with Apple, IBM and Google. It's in everyone's interest 
+to have the best possible Java Plugin. And Desktop Java
+and Web Start, would consequently also enjoy faster startup times eg. courtesy of
+a preloaded shared JVM with a prefetching/caching ClassLoader :)
+
+OpenOffice addressed its huge startup time in part by pre-loading itself 
+(as a background process). Maybe the Java Plugin could do the same, 
+and feature an optimised ClassLoader that does some preloading of the most 
+commonly used classes from standard libraries. 
+
+In future, hard drives will feature large flash RAM caches, eg. 4Gb and the like. 
+In this case, so long as the JRE and Java Plugin can book a spot in flash, 
+preloading isn't necessary. If Java is often used, then it'll certainly get a spot. 
+Maybe OpenOffice, which will be often used, can see to it that Java is 
+also always often used ;)
+
+So I want a Java Plugin with (a) the option to get loaded when the browser starts, 
+and (b) with a class cache for preloading standard libraries. There could be different
+cache size settings, eg. a "cold" one for startup eg. 0 to 16Mb, 
+a "warmer" one to kick in when the first applet tag is seen in a web page, and 
+a "hot" one for after an applet has been launched, eg. 0 to 32Mb.
+Considering that the Java5 <tt>rt.jar</tt> is 32Mb uncompressed, and 7Mb compressed. 
+In practice, i guess you would have "cache size" and then "performance" settings 
+of "low", "medium" and "high." Maybe an option to have a compressed cache would be 
+handy, for trading off CPU vs memory, just in case you still have one of those 
+legacy single-core machines in the future ;)
+
+With such optimisations, if in future you're waiting for more than a second for 
+the Java Plugin to kick in, concurrently with your browser loading the applet jar
+via 100Mbit WiMax, then perhaps you don't have a quad-core Dell under your desk, 
+with a "Java Inside" sticker next to that "Designed for Opensource" one!? ;)

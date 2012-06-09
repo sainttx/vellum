@@ -1,0 +1,186 @@
+
+
+<img alt="layout1_200.jpg" src="http://weblogs.java.net/blog/evanx/archive/layout1_200.jpg" width="200" height="137" align="left" vspace="8" hspace="8" />
+
+<a href="http://weblogs.java.net/blog/enicholas/">Ethan Nicholas</a> blogged recently on <a href='http://weblogs.java.net/blog/enicholas/archive/2006/04/reinventing_gri.html'> "Reinventing GridBagLayout"</a>, which enjoyed many comments regarding simplifying GBL, and problems with GBL. Karsten Lentzsch notes that <i>"SpringLayout is very powerful, ExplicitLayout is powerful, FormLayout is quite powerful, HIGLayout is quite powerful, GBL is weak."</i> He compares layout managers at the end of his <a href="http://www.jgoodies.com/articles/forms.pdf">Forms whitepaper</a>.
+
+We hear that Netbean's Matisse <tt>GroupLayout</tt> is state-of-the-art. It does seem to have a learning curve, for hand coding. So i haven't got around to trying it yet. Anyway, my requirements are not very stringent, and so i still just use <tt>GridBagLayout</tt>, which is my layout comfort zone. I use spacer panels ie. with <tt>fill</tt> not <tt>NONE</tt>, and assemble subpanels, and get what i want without any constraints, i mean complaints.
+
+<a href="http://weblogs.java.net/blog/cayhorstmann/">Cay Horstmann</a> introduced <a href='http://www.horstmann.com/articles/GBC.java'>"GBC.java - a convenience class to tame the GridBagLayout"</a> (2002) in <a href="http://horstmann.com/corejava.html">Core Java</a>. That must have leaked out of my subconscious at some point, and led to me to implement a similar friendly extension of <tt>GridBagConstraints</tt>, as follows. 
+
+<pre>
+public class Gbc extends GridBagConstraints {
+
+    public Gbc(int gridx, int gridy, int anchor, int fill, Insets insets) {
+        super(gridx, gridy, 1, 1, 0., 0., NORTHWEST, NONE, new Insets(0, 0, 0, 0), 0, 0);
+        anchor(anchor);
+        fill(fill);
+        insets(insets);
+    }
+
+    public Gbc(int gridx, int gridy, Insets insets) {
+        this(gridx, gridy, 0, 0, insets);
+    }
+
+    public Gbc(int gridx, int gridy) {
+        this(gridx, gridy, 0, 0, null);
+    }
+
+    public Gbc insets(Insets insets) {
+        if (insets == null) insets = new Insets(0, 0, 0, 0);
+        this.insets = insets;
+        return this;
+    }
+
+    public Gbc anchor(int anchor) {
+        if (anchor == 0) anchor = NORTHWEST;
+        this.anchor = anchor;
+        return this;
+    }
+
+    public Gbc fill(int fill) {
+        if (fill == 0) fill = NONE;
+        if (fill == HORIZONTAL || fill == BOTH) weightx = 1;
+        if (fill == VERTICAL || fill == BOTH) weighty = 1;
+        this.fill = fill;
+        return this;
+    }
+
+    public Gbc none() {
+        return fill(NONE);
+    }
+
+    public Gbc both() {
+        return fill(BOTH);
+    }
+
+    public Gbc vertical() {
+        return fill(VERTICAL);
+    }
+
+    public Gbc horizontal() {
+        return fill(HORIZONTAL);
+    }
+
+    public Gbc center() {
+        return anchor(CENTER);
+    }
+
+    public Gbc north() {
+        return anchor(NORTH);
+    }
+
+    public Gbc northeast() {
+        return anchor(NORTHEAST);
+    }
+
+    public Gbc east() {
+        return anchor(EAST);
+    }
+
+    public Gbc southeast() {
+        return anchor(SOUTHEAST);
+    }
+
+    public Gbc south() {
+        return anchor(SOUTH);
+    }
+
+    public Gbc southwest() {
+        return anchor(SOUTHWEST);
+    }
+
+    public Gbc west() {
+        return anchor(WEST);
+    }
+
+    public Gbc northwest() {
+        return anchor(NORTHWEST);
+    }
+
+    public Gbc top(int top) {
+        insets.top = top;
+        return this;
+    }
+
+    public Gbc bottom(int bottom) {
+        insets.bottom = bottom;
+        return this;
+    }
+
+    public Gbc right(int right) {
+        insets.right = right;
+        return this;
+    }
+
+    public Gbc left(int left) {
+        insets.left = left;
+        return this;
+    }
+
+    public Gbc insets(int top, int left, int bottom, int right) {
+        insets = new Insets(top, left,  bottom, right);
+        return this;
+    }
+
+    public Gbc cloneGbc() {
+        Gbc gbc = (Gbc) clone();
+        gbc.insets = (Insets) insets.clone();
+        return gbc;
+    }
+
+    public static String formatGbcValue(int value) {
+        if (value == NONE) return "NONE";
+        if (value == HORIZONTAL) return "HORIZONTAL";
+        if (value == VERTICAL) return "VERTICAL";
+        if (value == BOTH) return "BOTH";
+        if (value == NORTH) return "NORTH";
+        if (value == NORTHEAST) return "NORTHEAST";
+        if (value == EAST) return "EAST";
+        if (value == SOUTHEAST) return "SOUTHEAST";
+        if (value == SOUTH) return "SOUTH";
+        if (value == SOUTHWEST) return "SOUTHWEST";
+        if (value == WEST) return "WEST";
+        if (value == NORTHWEST) return "NORTHWEST";
+        if (value == CENTER) return "CENTER";
+        return "gbcValue=" + value;
+    }
+
+    public String toString() {
+        StringBuffer buffer = new StringBuffer("Gbc");            
+        buffer.append(" x" + gridx);
+        buffer.append(" y" + gridy);
+        buffer.append(" " + formatGbcValue(anchor));
+        buffer.append(" " + formatGbcValue(fill));
+        buffer.append(" " + insets.toString());
+        return buffer.toString();
+    }            
+}
+</pre>
+
+where i use weights that are either 0.0 or 1.0, depending on the <tt>fill</tt>.
+
+Feel free to use and abuse this class as you wish. You can find it via <a href="http://java.net/projects/gridbaglady">http://java.net/projects/gridbaglady</a>, under the ASL.
+
+<img src="http://weblogs.java.net/blog/evanx/archive/sourcyShot.png" width="577" height="272" />
+
+The screenshot below, of the source of the above, shows <tt>Gbc.java</tt> in action.
+
+<img src="http://weblogs.java.net/blog/evanx/archive/sourcyFrame.png" width="578" height="395" />
+
+As a further example, the following code uses <tt>Gbc</tt> to create a simple button panel, as used for the above demo.
+
+<pre>
+public JPanel createButtonPanel(NAction ... actions) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        int index  = 0;
+        for (NAction action : actions) {
+            panel.add(new JButton(action), new Gbc(index, 0).right(4));
+            index++;
+        }
+        return panel;
+    }
+}
+</pre>
+
+where the right inset is given as 4, to space the buttons apart.
