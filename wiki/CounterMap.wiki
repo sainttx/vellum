@@ -7,7 +7,7 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 
 === Counter Map ===
 
-<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="8"/>
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg"/>
 
 We herewith begin a saga about monitoring with this series entitled "Timestamped: a trilogy in a few parts," this being the first part, where we introduce a map to count key things, and ensure we can order it by its integer values.
 
