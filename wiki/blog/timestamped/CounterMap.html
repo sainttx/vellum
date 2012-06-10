@@ -49,9 +49,9 @@ public class IntegerCounterMap<K> extends TreeMap<K, Integer> {
         return total;
     }
     
-    public Iterable<K> descendingValueKeySet() {
-        return Maps.descendingValueKeySet(this);
-    }    
+    public LinkedList<K> descendingValueKeys() {
+        return Maps.descendingValueKeys(this);
+    }
 }
 </pre>
 
@@ -80,38 +80,44 @@ Our typical key type is <tt>String</tt> e.g. the name of something we are counti
 
 <p>Note that since WARN is not incremented like the others, it's not put into the map, and so the <tt>size</tt> of map is only the two keys, namely INFO and ERROR.
 
-<p>We have a <tt>descendingValueKeySet()</tt> method for when we wanna display counters in descending order, to see the biggest numbers and/or worst culprits. This delegates to the following util class. 
+<p>We have a <tt>descendingValueKeys()</tt> method for when we wanna display counters in descending order, to see the biggest numbers and/or worst culprits. This delegates to the following util class. 
 
 <pre>
 public class Maps {  
 
-    public static <K, V> Iterable<K> descendingValueKeySet(Map<K, V> map) {
-        return keySet(descendingValueEntrySet(map));
+    public static <K, V extends Comparable> LinkedList<K> descendingValueKeys(Map<K, V> map) {
+        return keyLinkedList(descendingValueEntrySet(map));
     }
     
-    private static <K, V> NavigableSet<Entry<K, V>> descendingValueEntrySet(Map<K, V> map) {
-        TreeSet set = new TreeSet(new Comparator<Entry>() {
+    public static <K, V extends Comparable> NavigableSet<Entry<K, V>> 
+            descendingValueEntrySet(Map<K, V> map) {
+        TreeSet set = new TreeSet(new Comparator<Entry<K, V>>() {
 
             @Override
-            public int compare(Entry o1, Entry o2) {
-                return ((Comparable) o2.getValue()).compareTo(o1.getValue());
+            public int compare(Entry<K, V> o1, Entry<K, V> o2) {
+                return o2.getValue().compareTo(o1.getValue());
             }
         });
         set.addAll(map.entrySet());
         return set;
     }
 
-    private static <K, V> Iterable<K> keySet(NavigableSet<Entry<K, V>> entrySet) {
-        List<K> keyList = new ArrayList();
-        for (Map.Entry entry : entrySet) {
-            keyList.add((K) entry.getKey());
+    public static <K, V> LinkedList<K> keyLinkedList(NavigableSet<Entry<K, V>> entrySet) {
+        LinkedList<K> keyList = new LinkedList();
+        for (Map.Entry<K, V> entry : entrySet) {
+            keyList.add(entry.getKey());
         }
         return keyList;
     }
+
+    public static <K, V extends Comparable> V getMinimumValue(Map<K, V> map) {
+        return getMinimumValueEntry(map).getValue();
+    }
+    ...
 }
 </pre>
 
-<p>where courtesy of a <tt>TreeMap</tt>, we sort the map's entries by value, and put the thus ordered keys into a <tt>List</tt> to iterate over e.g. in a <tt>for</tt> each loop.
+<p>where courtesy of a <tt>TreeMap</tt>, we sort the map's entries by value, and put the thus ordered keys into a <tt>LinkedList</tt> to iterate over e.g. in a <tt>for</tt> each loop.
 
 <p>See also <a href="http://stackoverflow.com/questions/109383/how-to-sort-a-mapkey-value-on-the-values-in-java">stackoverflow.com</a> which helped me with that. 
 
@@ -120,23 +126,20 @@ public class Maps {
 <pre>
     @Test
     public void testDescendingMap() {
-        System.out.println();
         IntegerCounterMap<String> counterMap = new IntegerCounterMap();
         counterMap.add("BWARN", 0);
         counterMap.add("DEBUG", 1000000);
         counterMap.add("ERROR", 5000);
         counterMap.add("INFO", 1);
-        String lastKey = null;
-        int keyCount = 0;
-        for (String key : Maps.descendingValueKeySet(counterMap)) {
+        Assert.assertEquals(counterMap.size(), 4);
+        Assert.assertEquals(counterMap.descendingValueKeys().getFirst(), "DEBUG");
+        Assert.assertEquals(counterMap.descendingValueKeys().getLast(), "BWARN");
+        Assert.assertEquals(Maps.getMinimumValue(counterMap).intValue(), 0);
+        Assert.assertEquals(Maps.getMaximumValue(counterMap).intValue(), 1000000);
+        for (String key : Maps.descendingValueKeys(counterMap)) {
             System.out.printf("%d %s\n", counterMap.get(key), key);
-            lastKey = key;
-            keyCount++;
         }
-        Assert.assertEquals(lastKey, "BWARN");
-        Assert.assertEquals(keyCount, 4);
-        Assert.assertEquals(Maps.descendingValueKeySet(counterMap).iterator().next(), "DEBUG");
-    }
+     }
 </pre>
 
 <p>where we use "BWARN" instead of "WARN" to be sure we aren't picking up the natural ordering. (Yes, that was hiding a bug that bit me in the bum!)
