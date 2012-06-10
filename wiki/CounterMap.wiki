@@ -10,7 +10,7 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 
 We herewith begin a saga about monitoring with this series entitled "Timestamped: a trilogy in a few parts," this being the first part, where we introduce a map to count key things, and ensure we can order it by its integer values.
 
-<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><b>Counter map:</b> <i>A part of "Timestamped: a trilogy in a few parts."</i></a>
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><b>Counter map:</b> <i>A part of "Timestamped: a trilogy in a few parts."</i>
 
 <p>We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs in order to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
 
