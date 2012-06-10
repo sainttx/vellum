@@ -7,6 +7,6 @@ package vellum.hyper;
  *
  * @author evans
  */
-public class CssMap {
+public class HtmlTemplate {
     
 }
