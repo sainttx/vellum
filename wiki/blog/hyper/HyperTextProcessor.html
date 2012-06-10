@@ -1,0 +1,41 @@
+
+In the <a href="http://weblogs.java.net/blog/evanx/archive/2007/01/html_builder.html">HTML Builder</a> prequel, we generated a HTML artifacts for <tt>QHyperTextProcessorProperties</tt>. 
+
+So let's meet this <tt>QHyperTextProcessor</tt> itself, even if it's messy and not generally useful, but just a hack to serve the random purposes of this author, for this so-called Foundation trilogy.
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: cyan;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/print_printer.png" width="32" height="32" align="left" hspace="8"/> <b>Hyper Text Processor:</b> <i>A part of the "Hyper Beans" part of a trilogy in 42 parts"</i></div></a>
+
+<tt>QHyperTextProcessor</tt> processes a document <i>in toto</i>, given it's text. 
+
+<pre>
+public class QHyperTextProcessor {
+    protected QHyperTextProcessorProperties properties = 
+            dependencyManager.getInstance(QHyperTextProcessorProperties.class);
+    
+    protected String text;
+    protected QStringBuilder stringBuilder = new QStringBuilder();
+    protected QTextState state = noState;
+    
+    public QHyperTextProcessor(String text) {
+        this.text = text;
+    }
+    ...
+    public String processText() {
+        for (String string : stringHelper.splitString(text, "\n")) {
+            try {
+                processTextLine(string);
+            } catch (Throwable e) {
+                throw new QWrappedRuntimeException(e, null, string);
+            }
+        }
+        return stringBuilder.toString();
+    }
+}
+</pre>    
+
+where we split the text up into lines, and invoke <tt>processTextLine()</tt> with each line of text in the file. 
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.

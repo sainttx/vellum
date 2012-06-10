@@ -1,0 +1,43 @@
+We use <a href='http://cglib.sf.net'><u>CGLIB</u></a> to enhance a half-baked Java Bean with no <tt>firePropertyChange()</tt> invocations in its setters, into a bean that does fire <tt>PropertyChangeEvent</tt>'s from its setters.
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey Bean Aspect</b>, a tale of inner discovery, <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+Our <tt>QBeanInterceptor</tt> registers the <tt>PropertyDescriptor</tt>'s setters methods into a <tt>setterMap</tt>.
+
+<pre>
+public class QBeanInterceptor extends QInterceptor {
+    BeanInfo beanInfo;
+    Map<Method, PropertyDescriptor> setterMap = new HashMap();
+    BeanPropertySupport beanAnnotation;
+    boolean fireByDefault;
+    ...
+    public Object invoke(Object target, Method method, Object[] args,
+            MethodProxy proxy) throws Throwable {
+        Object oldValue = null;
+        Object newValue = null;
+        PropertyDescriptor propertyDescriptor = null;
+        if (args.length == 1 && fireAtWill(method)) {
+            newValue = args[0];
+            propertyDescriptor = setterMap.get(method);
+            if (propertyDescriptor != null) {
+                oldValue = getOldValue(target, propertyDescriptor);
+            }
+        }
+        Object result = super.invoke(target, method, args, proxy);
+        if (propertyDescriptor != null) {
+            QBean bean = (QBean) target;
+            bean.getPropertyChangeSupport().firePropertyChange(
+                    propertyDescriptor.getName(), oldValue, newValue);
+        }
+        return result;
+    }
+    ...
+}
+</pre>
+where if the method is a key to an associated <tt>PropertyDescriptor</tt> in <tt>setterMap</tt>, then we invoke <tt>firePropertyChange()</tt> to fire a <tt>PropertyChangeEvent</tt>.
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

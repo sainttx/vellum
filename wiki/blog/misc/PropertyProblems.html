@@ -1,0 +1,31 @@
+Here are some problems and possible solutions (today) relating to bean properties.
+
+<b>Getters and Setters</b>
+
+<i>Problem.</i> We don't wanna write lots of getters and setters, or see them. 
+
+<i>Solution.</i> We use our IDE to generate them. 
+
+<i>Wishlist.</i> Maybe we wanna fold basic getters and setters right out of view <i>en masse</i>.
+
+<i>Another Wishlist.</i> People wanna see the introduction of property keywords e.g. <tt>property</tt>, <tt>readonly</tt>, <i>etcetera</i>. Personally, i'm happy with getters and setters with the help of my IDE.
+
+<b>Property References</b>
+
+<i>Problem.</i> Property names are strings, which are not geared for IDEs (besides being highlightable as strings as opposed to numbers and keywords). So we can't expect, and don't get any help from our IDE, or even compiler. All we can expect is runtime errors, D'oh!
+
+<i>Solution.</i> We unit test our code so that we catch problems before they can hurt us at runtime. 
+
+<i>Further Solution.</i> We might implement <tt>BeanInfo</tt> meta-classes where we explicitly expose the bean property descriptors. For example, in <a href=''>Gooey Beans Info</a>, we introduce a <tt>PropertyDescriptor</tt> wrapper with methods that our forms and table models will invoke eg. <tt>property.get(bean)</tt> and <tt>property.set(bean, value)</tt>, which support validation, type conversion, and throw useful exceptions.
+
+<i>Wishlist.</i> I wish for a language notation eg. <tt>Person@surname</tt> to access a <tt>PropertyDescriptor</tt> in a convenient, auto-completable, verifiable and refactorable way in my favourite IDE.
+
+<b>Bound Properties</b>
+
+<i>Problem.</i> Lazy people like me don't wanna implement all the JavaBean boilerplate to fire <tt>PropertyChangeEvent</tt>'s. 
+
+<i>Solution.</i> We can use AOP to introduce <tt>PropertyChangeSupport</tt> and fire <tt>PropertyChangeEvent</tt>'s, eg. using <a href='http://cglib.sf.net'><u>CGLIB</u></a>. We use our explicit <tt>BeanInfo</tt> meta-class as a factory to create our enhanced beans. (I'll try this out in a follow up blog.) 
+
+<i>Wish.</i> I wish my favourite IDE could create new Java Beans (with <tt>PropertyChangeSupport)</tt> and generate setters which fire <tt>PropertyChangeEvent</tt>'s, and code-fold them to look like POJO's with regular setters. 
+
+<i>Further Wish.</i> I wish for a standard tool in my favourite IDE's default build process, for annotation processing for compile-time AOP code generation, to enhance classes <i>ala</i> <a href='http://spoon.gforge.inria.fr/'><u>Spoon</u></a> at compile-time. This could support a <tt>@JavaBean</tt> aspect annotation to request that a POJO be enhanced into a Java Bean i.e. having observable properties. 

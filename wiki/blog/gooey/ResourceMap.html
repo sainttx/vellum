@@ -1,0 +1,55 @@
+This the first part of my work-in-progress, um, online book, woohoo! 
+
+It's a preachy scifi/fantasy online book, trilogy in 42 parts, on how you could rewrite your database application using Swing. It's gonna be whatsit, creative commons, partly because it's not gonna be worth the, um, paper its not written on.
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey Resource Map</b>, <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+<pre>
+public class AddressFormPanel extends JPanel {    
+    AddressFormPanelResources resources = 
+       dependencyContainer.getResources(AddressFormPanelResources.class);
+    ...
+    JButton newButton = new JButton(resources.newButton);
+    JButton deleteButton = new JButton(resources.deleteButton);
+    JButton editButton = new JButton(resources.editButton);
+    JButton saveButton = new JButton(resources.saveButton);
+    JButton cancelButton = new JButton(resources.cancelButton);
+    ...
+</pre>
+where we have introduced a peer "resources" class, which is as follows.
+
+<pre>
+public class AddressFormPanelResources {    
+    @Resource String newButton = "New";
+    @Resource String deleteButton = "Delete";
+    @Resource String editButton = "Edit";
+    @Resource String saveButton = "Save";
+    @Resource String cancelButton = "Cancel";
+    ...
+</pre>
+
+When we haven't specified a properties file for our application, and/or haven't populated it properly, our injection prints the following with our defaults for us to cut and paste.
+
+<pre>
+AddressFormPanelResources.newButton = New
+AddressFormPanelResources.deleteButton = Delete
+AddressFormPanelResources.editButton = Edit
+AddressFormPanelResources.saveButton = Save
+</pre>
+
+We also wish to support global values, e.g. 
+
+<pre>
+saveAction.keyStroke = control S
+saveAction.toolTip = Save the data
+</pre>
+where these can be customised for specific classes as follows.
+
+<pre>
+AddressFormPanelResources.saveAction.toolTip = Save the address form
+</pre>
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

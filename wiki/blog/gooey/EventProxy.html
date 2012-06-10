@@ -1,0 +1,90 @@
+
+In the <a href="http://weblogs.java.net/blog/evanx/archive/2008/06/mvnc_architectu.html">Gooey MvnC</a> prequel, we consider an MVC-type separation for programming a Swing UI panel, and convention-over-configuration to automate events, threading and beans binding. 
+
+Now as an illustration of the above intent, we implement a minimalistic helper class to create dynamic proxies for event listeners wired to event handler methods in our controller.
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey Event Proxy:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+In our controller, we implement event handler methods as follows. 
+
+<pre>
+public class LoginController implements GEventController {
+   LoginView view = new LoginView();
+   LoginModel model = new LoginModel();
+   GEventHelper eventHelper = new GEventHelper(this, view, model);
+   ...   
+   void usernameFocusLost() {
+      ... // check that username is valid
+   }
+   
+   void cancelActionPerformed() {
+      ... // handle cancel button pressed
+   }   
+   
+   SwingWorker okActionPerformed() {
+      ... // worker for OK button pressed to login
+   }      
+}
+</pre>
+
+Our helper creates dynamic proxies as event listeners registered on our components, as follows.
+
+<pre>
+public class GEventHelper {
+    protected GEventController controller;
+    protected Map<Field, Component> components = new HashMap();
+    protected Map<Component, GBeanProperty> bindings = new HashMap();
+
+    public GEventHelper(GEventController controller, Component view, GBean model) {
+        this.controller = controller;
+        initComponents(view); // populate components map
+        bind(model); // create bindings/listeners
+        connectController();
+    }
+    ...
+    public void connectController() {
+        for (Component component : components.values()) {
+            if (GInputComponentAdapterFactory.isInputComponent(component)) {
+                GInputComponentAdapterFactory.create(component).addActionListener(
+                        (ActionListener) createListenerProxy(component,
+                        ActionListener.class));
+                GInputComponentAdapterFactory.create(component).addFocusListener(
+                        (FocusListener) createListenerProxy(component,
+                        FocusListener.class));
+                ... // other events
+            }
+        }
+    }
+    
+    protected Object createListenerProxy(Component source, Class listenerType) {
+        return Proxy.newProxyInstance(
+                source.getClass().getClassLoader(),
+                new Class[]{listenerType},
+                new GEventProxy(controller, source));
+    }
+    ...
+}
+</pre>
+
+where our <tt>GEventProxy</tt> below will invoke methods in our controller e.g. <tt>usernameFocusLost()</tt> when <tt>focusLost()</tt> is invoked on a proxy listener registered on a component named <tt>"username"</tt>. 
+
+<pre>
+public class GEventProxy implements InvocationHandler {
+   ...
+   protected void invoke(Method method, Object[] args) {
+        for (Method eventMethod : eventMethods.values()) {
+            if (eventMethod.getName().equalsIgnoreCase(
+                    component.getName() + method.getName())) {
+                invokeHandler(eventMethod, args);
+                break;
+            }
+        }
+    }
+}
+</pre>
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

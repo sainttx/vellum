@@ -1,0 +1,37 @@
+
+
+In the <a href="http://weblogs.java.net/blog/evanx/archive/2007/03/hyper_text_proc.html">Hyper Text Processor</a> prequel, we processed half-baked HTML for this "Foundation Beans" series of articles.
+
+Now let's meet the <tt>QHyperJavaProcessor</tt>, which highlights Java code in HTML <tt>pre</tt> blocks. 
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: cyan;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/print_printer.png" width="32" height="32" align="left" hspace="8"/> <b>Java Highlighter:</b> <i>A part of the "Hyper Beans" part of a trilogy in 42 parts"</i></div></a>
+
+We split up the Java text into an array of string tokens, using the following delimiter tokens, which include Java keywords to be highlighted. 
+
+<pre class='java'>
+public class QHyperJavaProcessor {
+    static final String[] keywords = new String[] {
+        "package", "import",
+        "static", "final", "abstract", "synchronized", "transient",
+        "default",
+        "class", "interface", "@interface", "enum",
+        "extends", "implements",
+        "public", "private", "protected",
+        "true", "false", "null",
+        "instanceof",
+        "void", "boolean", "int", "char", "long",
+        "throws", "throw", "try", "catch", "finally",
+        "new", "this", "super",
+        "if", "else", "for", "while",
+        "continue", "break",
+        "return"
+    };
+    ...
+}        
+</pre>    
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

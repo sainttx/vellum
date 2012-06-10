@@ -1,0 +1,138 @@
+
+
+Let's say we have a following class with Swing components.
+
+<pre class='java'>
+public class PersonEditor {
+    JPanel mainPanel;
+    JTextField firstname;
+    JTextField surname;
+    JFormattedTextField dateOfBirth;
+    ...
+    public PersonEditor() {
+        GSwingBuilder.build(this); // inject the above components
+    }
+    ...    
+}
+</pre>
+
+Let's create the following companion resource file, 
+named ~PersonEditor.def.
+
+<pre class='java'>
+    JPanel mainPanel;
+    JTextField firstname;
+    JTextField surname;
+    JFormattedTextField dateOfBirth;
+    ...    
+    mainPanel = panel();
+        tabbedPane();
+            panel();              
+                firstnameLabel = label(); gbc(0, 0);
+                firstname; gbc(gridx = 1);
+                surnameLabel = label(); gbc(0, 1);
+                surname; gbc(1, 1);
+                ...
+                applyChanges = button();
+            panel();
+            ...          
+</pre>
+
+where firstly, we have cut and pasted the component declarations from ~PersonEditor.java.
+
+<img alt="lockstart_session.png" src="http://weblogs.java.net/blog/evanx/archive/lockstart_session.png"
+width="64" height="64" align="right" hspace="16" vspace="8"/>
+But then we present a hierarchy of objects that 
+are to be constructed using various methods eg. ~panel(), ~tabbedPane(), 
+~label(). Also, declared components are referenced by name eg. ~firstname, ~surname.
+
+So the above resource file is like an extension script used in conjunction with 
+the following Java builder that we implement.
+
+<pre class='java'>
+ public class GSwingBuilder extends GBuilder {
+
+    JPanel panel() {
+        return new JPanel(new GridBagLayout());
+    }
+
+    GridBagConstraints gbc(int gridx, int gridy) {
+        ...
+    }        
+
+    JLabel label() {
+        return new JLabel();
+    }
+    ...
+    JTextField createTextField() {
+        return new JTextField();               
+    }
+
+    JFormattedTextField createFormattedTextField() {
+        return new JFormattedTextField();
+    }    
+    ...
+    void add(Container container, Component component, GridBagConstraints gbc) {
+        container.add(component, gbc);
+    }
+}
+</pre>
+
+The ~build() method in the ~GBuilder superclass will parse the 
+resource file script in order construct the objects (using reflection 
+to find and invoke methods in the above builder subclass), 
+and importantly, invoke ~add() to assemble the components. 
+Finally it injects the constructed components into the declared fields
+of our ~PersonEditor object.
+
+<img alt="jabber_protocol_64.png" src="http://weblogs.java.net/blog/evanx/archive/jabber_protocol_64.png"
+width="64" height="64" align="left" hspace="16" vspace="8"/>
+This offers the following niceties. 
+Firstly and most importantly, we can use indentation to express our hierarchy
+most conveniently. Secondly, constituent components can be either unnamed eg. panels and panes, 
+or named ie. for referencing and injection 
+of input components into our UI controller class, and also of course for resource 
+injection into these components ie. of translatable labels, customisable 
+colors, fonts, <i>et cetera</i>.
+
+So we create a Java builder 
+class where we can define whatever methods we want, and the script
+file references these methods, together with fields in the target class, 
+in order to construct, assemble and inject objects into the target.
+
+Isn't this quite flexible, given that we couple Java code with 
+our script in this way, such that builder code extends the script, and 
+the script extends the target code?!
+
+Next we might consider how this can be applied to HTML component trees 
+eg. where we create a ~GBuilder subclass called ~GHtmlBuilder,
+define a component tree using a script, 
+and expose the components we want to access via the Java target class,
+for the purpose of creating HTML output using Java code (for 
+its programmability) together with 
+a complementary builder script. 
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/eventProxy.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/eventProxy.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Event Proxy' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/gooeyController.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/gooeyController.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey MVnC' /></a>
+  </form>  
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+     <a href='http://aptframework.dev.java.net/foundation/contents.html'
+     style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+  </form>
+</table>

@@ -1,0 +1,84 @@
+
+Rather than put our "application logic" in a "messy" view class, we create a separate "controller" class, with event handlers. We wish this controller class to be as neat and tidy as possible e.g. with minimal boilerplate or much else besides our application logic. 
+
+Let's explore how we might achieve this, using an annotation-driven application framework, with some AOP and convention-over-configuration.
+
+
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey MVnC:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div>
+</div>
+
+<table cellspacing="2px" cellpadding="4px" style="background-color: lightgray">
+<tr style="background-color: lightgray: color: white">
+<td align="center" colspan="4"><b>Gooey MVnC Guidelines Cheatsheet</b></td>
+<tr valign="top" style="background-color: #eee">
+    <td style="background-color: #eee"></td>
+    <td style="background-color: #eee"><i><b>View</b></i>&nbsp;</td>
+    <td><i><b>Controller</b>&nbsp;</i></td>
+    <td><i><b>Model</b> beans</i>&nbsp;</td>
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Code</b></i></td>
+    <td>Messy</td>    
+    <td>Neat</td>    
+    <td>Trivial</td>    
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Tool</b></i></td>
+    <td>GUI Designer</td>&nbsp;
+    <td></td>    
+    <td></td>    
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Rules</b></i></td>
+    <td>No logic</td>
+    <td>No strings</td>    
+    <td></td>
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Automation</b></i>&nbsp;</td>
+    <td>Beans Binding</td>
+    <td>Events &amp; Tasks&nbsp;</td>
+    <td>Validation</td>
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Tricks</b></i></td>
+    <td>Resource injection&nbsp;</td>
+    <td>AOP</td>    
+    <td></td>
+</tr>
+</table>
+
+<h2>Code Snippet</h2>
+
+Our controller class includes annotations in order to enable our framework infrastructure to automatically map events from our GUI components to event handler methods, and to support background tasks and EDT-switching via AOP.
+
+<pre>
+public class LoginController extends GBasicController {
+   @View LoginView view = new LoginView(); // JPanel with components
+   @FormBean User user = new User(); // for form fields auto binding
+   ...
+   @BackgroundTask void fetchUsers() throws DatabaseException {
+      ... // long running task
+   }
+
+   @BackgroundTaskDone void fetchUsersDone() {
+      ... // update GUI with results from task
+   }
+
+   @EventHandler void okActionPerformed() {
+      ... // handle OK button pressed
+   }
+   
+   @EventHander void usernameEntered() throw DataException {
+      ... // validate username exists in database
+      view.password.requestFocusInWindow();
+   }
+   ...   
+}
+</pre>
+
+Annotations in our model beans, eg. <tt>User</tt>, relate to binding and validation, where we wish to support automatic binding of view components to bean properties, eg. by matching component names to bean property names. 
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.

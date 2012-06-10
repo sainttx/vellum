@@ -1,0 +1,108 @@
+
+<a style='text-decoration: none; color: black;' 
+href="https://aptframework.dev.java.net/gooey/tableModel.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Table Model, an informative column"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+
+We introduce a generic table model supporting a list of backing beans,
+with simplistic "beans binding" facilitated by ~java.beans.PropertyDescriptor.
+
+<table>
+<tr><td>
+<form action='https://aptframework.dev.java.net/gooey/tableModel.html'> 
+<a href='https://aptframework.dev.java.net/gooey/tableModel.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Table Model' />
+</a>
+</form>
+</table>
+
+Demo //section
+
+The following demo exercises our table models (and forms). 
+
+<img alt="divvy.png" src="http://weblogs.java.net/blog/evanx/archive/divvy.png" width="700" height="373" />
+
+<a href="https://aptframework.dev.java.net/jnlp/personinfo.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+   &nbsp; <i>(PirateWarez, 150k/500k, unsandboxed, Java6)</i>
+<br>
+
+Incidently, notice how the selection works, eg. click on the search icon to select the person, 
+and enter a blank product ID to select some booty! ;)
+Later in this series, we'll look at a popup finder for entities.
+
+Code Snippet //section 
+
+We implement a table model in our application as follows.
+
+<pre class='java'>    
+public class ProductMovementDetailTableModel extends GTableModel<ProductMovementDetail> {
+    ProductMovementDetailInfo info = new ProductMovementDetailInfo();
+    
+    GTableColumn productId = createColumn(info.productId);
+    GTableColumn label = createColumn(info.label);
+    GTableColumn productUnit = createColumn(info.productUnit);
+    GTableColumn unitCost = createColumn(info.unitCost);
+    GTableColumn quantity = createColumn(info.quantity);
+    GTableColumn amount = createColumn(info.amount);
+    
+    public ProductMovementDetailTableModel() {
+        super(ProductMovementDetail.class);
+        ... // setEditable() on column objects
+    }    
+}
+</pre>
+
+where we create column objects to contain metadata eg. column headings, types, <i>et cetera.</i>
+
+Each row of the table has a backing bean, eg. ~ProductMovementDetail in the above example. 
+As presented in the :{Gooey Beans Info} prequel, //https://aptframework.dev.java.net/gooey/beanInfo.html
+we define metadata for the bean's properties in a "bean info" object, 
+eg. ~ProductMovementDetailInfo. The column objects wrap "property info" objects which are
+created in the bean info class. 
+
+A controller is implemented to handle events from the table component, 
+eg. row selection and cell editing. 
+The beans and column objects are used in these event handlers to reference 
+rows and columns.
+
+Disclaimer: This design predates JSR 295 (Beans Binding), which is the future, 
+and so will be presented in future, in this series' 2nd Edition ;)
+
+Incidently, the days of my publishing an article every month in this :{Foundation} series //https://aptframework.dev.java.net/foundation/contents.html
+seem to have come to an end, because i've been travelling.  
+Right now i'm in Germany, and from next week i'll be cycling across southern France 
+and northern Spain (woohoo!) without a computer, so um, zero productivity...
+
+<br>
+
+<table>
+<tr><td>
+  <form action='https://aptframework.dev.java.net/gooey/tableModel.html'> 
+    <a href='https://aptframework.dev.java.net/gooey/tableModel.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Table Model' /></a>
+  </form>
+<td>
+  <form action='https://aptframework.dev.java.net/jnlp/personinfo.jnlp'>
+    <a href='https://aptframework.dev.java.net/jnlp/personinfo.jnlp' 
+      style='text-decoration: none;'><input type=submit value='PirateWarez Demo'/></a>
+  </form>
+<td>
+  <form action='https://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='https://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='https://aptframework.dev.java.net/foundation/contents.html'>
+  <a href='https://aptframework.dev.java.net/foundation/contents.html'
+  style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a></form>
+  </form>
+</table>
+

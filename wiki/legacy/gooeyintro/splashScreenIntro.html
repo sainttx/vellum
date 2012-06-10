@@ -1,0 +1,83 @@
+
+If it's gonna take a while to start up our Swing app, then we probably wanna  
+display a splash screen. 
+
+It's easy with Java6 - just add a ~-splash command-line option. 
+
+<br>
+<p>
+<a style='text-decoration: none; color: black;' 
+href="https://aptframework.dev.java.net/gooey/splashScreen.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Splash Screen, a waiting game"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, the GUI part of a trilogy in 42 parts"</span>
+</div>
+</a>
+</p>
+
+<p>
+<table>
+<tr><td>
+<form action='https://aptframework.dev.java.net/gooey/splashScreen.html'> 
+<a href='https://aptframework.dev.java.net/gooey/splashScreen.html' 
+  style="text-decoration: none;">
+<input type=submit value="Read Splash Screen" />
+</a>
+</form>
+</table>
+
+   
+
+Code Snippet //section 
+
+We initialise a ~SplashScreen instance and get its ~Graphics2D as follows.
+
+<pre class='java'>
+public class SplashTest {
+    static Logger logger = Logger.getLogger(SplashTest.class.getSimpleName());
+    final SplashScreen splash = SplashScreen.getSplashScreen();
+    Rectangle splashBounds;
+    Graphics2D splashGraphics;
+    
+    protected void initSplash() throws Exception {
+        if (splash == null) {
+            throw new Exception("no splash image specified eg. -splash:mysplash.png");
+        }
+        splashBounds = splash.getBounds();
+        splashGraphics = (Graphics2D) splash.createGraphics();
+        ...
+    }
+    
+    protected void updateSplash(String status, int progress) {
+        if (splash == null) return;
+        drawSplash(splashGraphics, status, progress);
+        splash.update();
+    }
+    ...
+}    
+</pre>
+
+where in ~drawSplash() we draw a progress bar ourselves over the splash image 
+using the ~Graphics2D instance.
+
+
+
+<br>
+
+<table>
+<tr><td>
+  <form action='https://aptframework.dev.java.net/gooey/splashScreen.html'> 
+    <a href='https://aptframework.dev.java.net/gooey/splashScreen.html' 
+      style="text-decoration: none;"><input type=submit value="Splash Screen" /></a>
+  </form>
+<td>
+  <form action='https://aptframework.dev.java.net/gooey/contents.html'>
+  <a href='https://aptframework.dev.java.net/gooey/contents.html' 
+  style='text-decoration: none;'><input type=submit value='Gooey Contents'/></a></form>
+<td>
+  <form action='https://aptframework.dev.java.net/foundation/contents.html'>
+    <a href='https://aptframework.dev.java.net/foundation/contents.html'
+      style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+</table>

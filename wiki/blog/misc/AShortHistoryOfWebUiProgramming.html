@@ -1,0 +1,59 @@
+
+Web 1.0, XUL, Ajax, Laszlo, Flex and Silverlight have a common approach - declare the UI view using  markup (HTML or XML), and use JavaScript to handle the UI events and manipulate the UI. JavaFX/Swing is a notable exception - which is exciting and/or risky?! 'Cos Web developers know and love JavaScript and HTML, so XML plus JavaScript is right up their alley.
+
+If you're a Java UI programmer, there's GWT, Wicket and Echo. And with a great new Java plugin in the works, maybe Swing applets will be considered again in some quarters? But all web developers know JavaScript, and not necessarily Java, Groovy, <i>et al</i>, so probably JavaScript/Swing is a better bet than Java/Swing? Imagine having an XML schema for a flashy JavaFX/Swing toolkit, call it JavaFXml, with great JavaScript bindings, so make that JavaScriptFXml ;)
+
+<img alt="1008232_network_spheres.jpg" src="http://weblogs.java.net/blog/evanx/archive/1008232_network_spheres.jpg" width="200" height="300" align=left vspace=8 hspace=16>
+Anyway, let's look at the short history of web programming...
+
+
+<b>HTML, CGI, Perl</b>
+The Web started with HTML. HTML forms could be submitted via a submit button. Apache's Common Gateway Interface (CGI) enabled server-side scripts to process the form data, and generate an HTML result page. Perl, being a popular scripting language at the time eg. with Linux system administrators, suddenly became the popular language for CGI scripts, and many "sysadmins" suddenly became "webmasters." 
+
+
+<b>JavaScript, DHTML</b>
+Netscape invents JavaScript for client-side UI scripting in web browsers, "designed to be easier for non-programmers to work with." Microsoft adopts it too for IE, calling it JScript. So it becomes the de facto standard - the lingua franca of web designers everywhere. HTML plus CSS plus DOM plus JavaScript equals "Dynamic HTML" (DHTML). Web designers suddenly become "web developers." 
+
+
+<b>Java Applets</b> 
+While certainly suitable for experienced programmers, this was not so great for "web designers," despite promising books such as <i>"Teach Yourself Programming, Java, AWT and Swing in 24 hours."</i> Actually this stuff is not <i>"for Dummies."</i> Not to mention some technical issues with the plugin like startup time, browser crashes, download size, <i>etcetera.</i> So web developers stick with JavaScript, which they know and love, to do neat DHTML things on the client-side. 
+
+<b>PHP</b>
+Web developers know HTML, some JavaScript for client-side scripting, and some Perl for server-side CGI scripts. PHP gives them embedded server-scripting in their HTML pages. <i>Poifect!</i> Web developers become hard-code PHP programmers. 
+
+<b>Java JSPs, Servlets</b> 
+Schools started teaching Java, and enterprises got Java programmers, and we started spreading our Java love across the internets and intranets. But the majority of the web developers are not gonna suddenly jump off the PHP bandwagon and onto the server-side Java supertanker, notwithstanding the availability of the above-mentioned books - because 21 days is quite a long time.
+
+<img alt="internetexplorer3.jpg" src="http://weblogs.java.net/blog/evanx/archive/internetexplorer3.jpg" width="188" height="300" align=right vspace=8 hspace=16>
+<b>Flash</b>
+Woohoo, let's add animations, interactivity and multimedia to spice up web pages!
+
+<b>XUL</b>
+Fantastic technology - XML UI markup plus JavaScript logic -  way ahead of its time! If IE hadn't taken over the world and crushed Netscape, then maybe XUL would have taken over the Web?!
+
+<b>Ajax</b>
+Let's load content asynchronously, without having to submit and reload the whole page, and script the UI using JavaScript as per usual. <i>Poifect!</i>
+
+<b>Laszlo</b>
+Great stuff, inspired by Flash and XUL. If it was opensourced earlier, and/or bought by Adobe and renamed to Flex, or bought by Sun and renamed to JavaScriptFX...
+
+<b>Flex</b>
+Inspired by Laszlo, and currently taking over the RIA world, athough the Web is still owned by DHTML/Ajax.
+
+<b>Silverlight</b>
+Ditto.
+
+<b>JavaFX</b>
+Too early to tell. How is it gonna be better than Flex and Silverlight? What JavaFX tools for web designers?
+
+<b>Summary</b>
+
+Everything from HTML, through to XUL, Ajax, Laszlo, Flex and Silverlight, have a common approach, namely let's declare the UI view using markup (HTML or XML), and use JavaScript to handle the UI events and manipulate the UI. 
+
+<img alt="1008231_network_spheres.jpg" src="http://weblogs.java.net/blog/evanx/archive/1008231_network_spheres.jpg" width="200" height="300" align=left vspace=8 hspace=16>
+Given the predilection of web developers towards JavaScript and XML, one wonders if the JavaFX initiative shouldn't have embraced JavaScript with an XML thingymajig also, like Microsoft (XAML) and Adobe (MXML) chose to do, rather than introducing a new scripting language? 'Cos in any event, the visual aspects of an UI should be designed by designers, using a GUI builder tool, rather than programmed by a programmer?
+
+With a great new Java plugin in the works, and other JavaFX-induced improvements for client-side Java, maybe Java/Swing applets will be the preferred option for many of the Java programmers out there, rather than moving to one of the available scripting languages on the JVM eg. JavaScript, Groovy, JRuby, JPython, JavaFX Script?
+
+If we want JavaFX/Swing to succeed in the browser, surely we need a GUI tool to design those flashy UIs, generate XML,and be scriptable using JavaScript first, and otherwise Groovy, Java <i>et al</i>, for programmers that prefer those other JVM languages.
+

@@ -1,0 +1,70 @@
+
+We gonna consider the definition and evolution of computer UI. But first, what is a computer? It's a number crunching machine that interfaces to a human being, innit. Actually, "data crud'ing" is probably a better depiction than "number crunching" in the world of business information systems. 
+
+<img alt="fractals250.jpg" src="http://weblogs.java.net/blog/evanx/archive/fractals250.jpg" width="250" height="195" align=left vspace=8 hspace=8 />
+<b>An Irrelevant Aside on Irrevence and Metaphysics</b>
+
+But let's back up a bit! Computers are created by man, for man. We're told that God created the world, and God created man, who created computers. But who created this "God," this incredible leverager of physics, creator of nature, lover of life, guider of conscience?
+
+Many scientists believe there is no God. They have an unshakeable faith in the laws of physics, which they desperately strive to understand fully and properly, without approximation or simplification. One might say they believe in God without realising it - depending on what God is, which we don't know, but whose DNA might be glimpsed in the undiscovered unified theory of the universe?
+
+But what has this got to do with computers? Well, maybe God is an AI - an unbelievably massive computer, existing on a scale too small and at the same time too large, too intrisic and too extraneous for us to fathom? Maybe our Big Bang and our Universe was created by an AI from another universe in other dimensions, who went into "God-mode"? Yeeaah baby!
+
+<br><b>The Evolution of UI</b>
+
+Let's consider the evolution of the computer UI...
+UI 0.0 - Punch cards and big buttons to press eg. "Execute Program," 
+and flashing lights.
+<br>UI 0.1 - Character-based terminals with a "submit" button (see also Web 1.0)
+<br>UI 0.2 - Character-based terminals with key-typed events
+<br>UI 0.3 - Rich Graphical Client/Server Applications (see also RIA)
+<br>UI 1.0 - Web 1.0 - HTML forms with a "submit" button
+<br>UI 2.0 - Web 2.0 - AJAX
+<br>UI 3.0 - Rich Internet Applications - Laszlo, Flex, JavaFX - consuming web services
+
+The UI of the Internet is the Web, whose simple "hypertext" exposed and exploded the Internet into humanity's information network. 
+
+But arguably it temporarily regressed programming from a rich homogeneous client/server architecture to a clunky client-side built with HTML/CSS plus Javascript?!
+
+We know that applets didn't succeed initiallly as expected. Now Sun is breathing new life into applets with JavaFX and the Java6 update10 plugin, rather than concede to Flex et al, and we hope that client-side Java will enjoy a resurgence of sorts, as a competitive RIA platform?
+
+<br><b>UI Defined</b>
+
+So what's the UI vibe? I mean, what's the problem and what solutions we got? Firstly, let's separate the UI into logical MVC components, and label them the UI-view (visual), UI-controller (logic), and UI-model (data). 
+
+<img alt="spring250.jpg" src="http://weblogs.java.net/blog/evanx/archive/spring250.jpg" width="250" height="187" align=right vspace=8 hspace=8 />
+The problem with UI programming is that we gotta construct a UI-view, and respond to UI events in the UI-controller. Web applications might use DHTML to construct the UI-view, while Swing and some other toolkits, including Web ones like Wicket and Echo, assemble a component tree.
+
+The UI-view is clearly a visual thing, and so i (as in <i>me myself and i</i>) think it should be built using a visual WYSIWYG tool ie. a UI builder!? Whether it's an HTML UI, Flex or Swing GUI, it doesn't matter! Use Netbeans, FlexBuilder or whatever to create the visual aspects of the UI - <i>problem solved, silver bullet loaded, safety on!</i>
+
+Now that we have a UI-view, we gotta process its UI events ie. code our UI-controller. We'll use Javascript (or Java courtesy of GWT), or an AJAX Javascript client library. Completing the picture, the UI-model is a server-side bean, or an EJB exposed via webservices. 
+
+While it might get slightly tricky writing custom Javascript code which has to be tested across multiple browsers, this is not an issue if we are using a nifty AJAX library, GWT, Flex, Laszlo or some such thing. 
+
+On the Swing side of the coin, we create listeners and SwingWorkers and what-not in our UI-controller. Also we wanna bind our components to UI-model beans, with validation 'cos users occassionally bash the wrong keys, heh heh!
+
+<br><b>Web programming vs Swing</b>
+
+So is "web programming" easier than Swing RIA programming? Who knows!? Firstly "web programming" is a very broad term, 'cos there's a mountain of available options, eg. GWT, Wicket, and also JSF/Seam which seems to be an emerging standard of sorts for JEE?
+
+<img alt="design250.jpg" src="http://weblogs.java.net/blog/evanx/archive/design250.jpg" width="250" height="167" align=left vspace=8 hspace=8 />
+Firstly assuming that the UI-view is always constructed using a UI builder, then we don't have to write any code for the UI-view, just drag and drop. So there's no difference in coding difficulty between various approaches for the UI-view 'cos there is no coding! (Having said that, UI builder's may not be available yet for some toolkits?)
+
+Secondly let's assume that in the web approach, we use frameworks to automate and simplify everything as far as possible, eg. using AOP, convention-over-configuration, annotations, injection, binding and validation, eg. JEE/EJB3/Seam. 
+
+Given the above, i would say that Swing programming is more tedious than Web programming!? 'Cos Swing is quite low-level stuff - we gotta create listeners, register them, create workers, runners, and what-not. We have fine-grained control over the GUI, but we pay handsomely for that, D'oh! We aint got no convention-over-configuration, and we aint got no AOP. 
+
+<br><b>Swing's pain points</b>
+
+So what are the pain points of stock-standard Java/Swing GUI programming, as opposed to other languages on the JVM with Swing bindings and builders and what-not? And can we anesthetise that pain? 
+
+Surely one option is something like the <a href="http://code.google.com/p/javabuilders/wiki/JavaSwingBuilder">JavaSwingBuilder</a>, where we define the Swing UI using markup, and our framework constructs the GUI, and conveniently wires up our event handlers and what-not. But what if we wish to use the Netbeans' GUI builder to design our UI-views?!
+
+Arguably a problem is the "low-level" plumbing and boilerplate, for events, background vs EDT threads, and beans eg. firing property changed events. 
+
+So can't we eliminate boilerplate code from Swing as far as possible, using annotations, AOP, convention-over-configuration, eg. for beans binding, events and tasks? Then how would Java/Swing RIA programming stack up against Flex, JSF/Seam, <i>etcetera?</i> As my aging aunt says, "Who knows!?" ;)
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

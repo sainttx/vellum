@@ -1,0 +1,157 @@
+
+Gooey Beans Info //htmltitle
+
+
+Let's get us some simplistic "beans binding" to support the :{Presentation Model} pattern. //http://www.martinfowler.com/eaaDev/PresentationModel.html 
+We explicitly declare our properties so as to enjoy IDE auto-completion
+and refactoring capabilities. <i>"Wa wa wee wa!"</i> Cos string references are fragile 
+with respect to renaming getters and setters, and so we avoid them, like whatsit,
+the plague ;)
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/beanInfo.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Beans Info, a compelling documentary"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/beanInfo.html'> 
+<a href='http://aptframework.dev.java.net/gooey/beanInfo.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Beans Info' />
+</a>
+</form>
+</table>
+
+
+Code Snippet //section 
+
+We implement a POJO :{Presentation Model} //http://www.martinfowler.com/eaaDev/PresentationModel.html
+object as follows.
+
+<pre class='java'>
+public class PersonModel {    
+    private String firstNames;
+    private String lastName;
+    private String phone;
+    private String email;
+    private Date birthDate;
+    private BigInteger idNumber;
+    private BigDecimal creditScore;
+    private Integer dependents;
+    private PersonTitle title;
+    private PersonGender gender;
+    private PersonMaritalStatus maritalStatus;
+    private Boolean confirmed;
+    ...    
+    @IntegerRangeValidator(minimum = 0, maximum = 9, inclusive = true)
+    public void setDependents(Integer dependents) {
+        this.dependents = dependents;
+    }
+    ...
+}
+</pre>
+
+where we have illustrated a validation annotation. 
+Alternatively we specify the um, properties' properties, including validators, 
+in an explicit bean info class, as follows.
+This is <i>sans</i> magic, quite trivial and quite programmable. 
+<i>"It's nice, I like. High five!"</i>
+
+<pre class='java'>
+public class PersonModelInfo extends QBeanInfo<PersonModel> {
+    final QProperty firstNames = createProperty("firstNames");
+    final QProperty lastName = createProperty("lastName");
+    final QProperty phone = createProperty("phone");
+    final QProperty email = createProperty("email");
+    final QProperty birthDate = createProperty("birthDate");
+    final QProperty idNumber = createProperty("idNumber");
+    final QProperty creditScore = createProperty("creditScore");
+    final QProperty dependents = createProperty("dependents");
+    final QProperty title = createProperty("title");
+    final QProperty gender = createProperty("gender");
+    final QProperty maritalStatus = createProperty("maritalStatus");
+    final QProperty confirmed = createProperty("confirmed");
+    
+    public PersonModelInfo() {
+        super(PersonModel.class);
+        birthDate.setFormatPattern("yyyy-MM-dd");        
+        birthDate.setPropertyValueType(dateType);
+        birthDate.addValidator(new QFutureDateValidator(false));
+        email.setPropertyValueType(emailType);
+        dependents.addValidator(new QIntegerRangeValidator(0, 9, false));
+        title.setPropertyValueType(enumType);
+        gender.setPropertyValueType(enumType);
+        maritalStatus.setPropertyValueType(enumType);
+        confirmed.setPropertyValueType(booleanType);
+    }   
+}
+</pre>
+
+We use the above info class to refer to our properties in an explicit, 
+refactorable fashion. 
+When we refactor our bean ie. rename properties (ie. their getter/setter methods) 
+then we need to change the property name here, and we're good to go. Cos they're 
+a pair like Mutt and Jeff.
+
+~QProperty stores additional information besides 
+wrapping the underlying ~PropertyDescriptor, eg. 
+~formatPattern and ~propertyValueType 
+relate to formatting, and also there a list of validators.
+
+
+Demo //section
+
+<a href="http://aptframework.dev.java.net/jnlp/personinfo.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+   &nbsp; <i>(PersonInfo, 150k/500k, unsandboxed, Java6)</i>
+<br>
+
+<!--
+src="http://weblogs.java.net/blog/evanx/archive/personalInfoForm700.png" width="700" height="338" 
+src="http://weblogs.java.net/blog/evanx/archive/personalInfoBean.png" width="700" height="337" 
+src="http://weblogs.java.net/blog/evanx/archive/personInfoDependents.png" width="700" height="330" 
+-->
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/personInfoDependents700.png" width="700" height="334" 
+/>
+
+You can refresh the "BeanInfo" tab (and also the "Console" tab) to see that the 
+values entered into our form are written to our Presentation Model. 
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/personInfoDependentsBean.png" width="700" height="330" 
+/>
+
+where use ~formatPattern to override the default formatting for that 
+~propertyValueType (eg. date, timestamp, currency) and ~propertyType 
+(eg. ~Date, ~Integer et al).
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/beanInfo.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/beanInfo.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Beans Info' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/jnlp/personinfo.jnlp'>
+    <a href='http://aptframework.dev.java.net/jnlp/personinfo.jnlp' 
+      style='text-decoration: none;'><input type=submit value='Person Info Demo'/></a>
+  </form>
+</table>

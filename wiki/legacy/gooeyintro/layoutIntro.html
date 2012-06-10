@@ -1,0 +1,192 @@
+
+Group Layout //htmltitle
+
+We use :{GroupLayout} //http://swing-layout.dev.java.net
+to assemble simple subpanels. 
+For complicated forms, programming layout becomes (very) difficult,
+and so it's saner to use a GUI designer such as Netbeans.
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/groupLayout.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Group Layout Therapy, a psychological drama"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/groupLayout.html'> 
+<a href='http://aptframework.dev.java.net/gooey/groupLayout.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Group Layout Therapy' />
+</a>
+</form>
+</table>
+
+Demo //section
+
+Our Address Form is in play again.
+
+<a href="http://aptframework.dev.java.net/jnlp/addressform.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+   &nbsp; <i>(AddressForm, 150k/500k, unsandboxed, Java6)</i>
+
+<!--
+<img alt="addressFormLayout.png" src="http://weblogs.java.net/blog/evanx/archive/addressFormLayout.png" 
+width="700" height="332" />
+
+<img alt="addressFormLayout600.png" src="http://weblogs.java.net/blog/evanx/archive/addressFormLayout600.png" 
+width="600" height="307" />
+-->
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/addressFormGroupLayout700.png" width="700" height="308" />
+
+Code glance //section
+
+We configure our component properties in ~AddressFormPanelProperties
+so that ~AddressFormLayoutPanel below is relatively neat. 
+
+<pre class='java'>
+public class AddressFormLayoutPanel extends JPanel {
+    AddressFormPanelProperties properties = 
+        dependencyContainer.getInstance(AddressFormPanelProperties.class);
+        
+    public AddressFormGroupLayoutPanel() {
+        initComponents();
+    }
+    
+    private void initComponents() {
+        addVerticalPanel(
+                createHorizontalPanel(
+                createInputComponentPanel(properties.firstName, firstName),
+                createInputComponentPanel(properties.lastName, lastName),
+                createInputComponentPanel(properties.email, email, true),
+                createInputComponentPanel(properties.phone, phone)
+                ),
+                createHorizontalPanel(
+                createInputComponentPanel(properties.address1, address1, true),
+                createInputComponentPanel(properties.address2, address2, true)
+                ),
+                createHorizontalPanel(
+                createInputComponentPanel(properties.postalCode, postalCode),
+                createInputComponentPanel(properties.city, city),
+                createInputComponentPanel(properties.state, state, true),
+                createInputComponentPanel(properties.country, country),
+                createInputComponentPanel(properties.postable, postable)
+                )
+                );
+    }
+    ...
+    private JTextField firstName = new JTextField();
+    private JTextField lastName = new JTextField();
+    private JTextField phone = new JTextField();
+    private JTextField email = new JTextField();
+    private JTextField address1 = new JTextField();
+    private JTextField address2 = new JTextField();
+    private JTextField city = new JTextField();
+    private JTextField state = new JTextField();
+    private JTextField postalCode = new JTextField();
+    private JComboBox country = new JComboBox(new Object[] {"South Africa", "Zimbabwe"});
+    private JCheckBox postable = new JCheckBox();
+}
+</pre>
+
+where ~createInputComponentPanel() creates a subpanel with an input component 
+and it's label above it. 
+
+
+Punchline //section
+
+Our ~AddressFormLayoutPanel and its ~AddressFormLayoutPanelProperties
+is delibrately interchangeable with a form produced using Netbeans' GUI designer
+so that we can choose to program our form view as above, or otherwise 
+design our form using Netbeans.
+
+
+Sneak Preview //section
+
+The next step is beans binding for our form, woohoo!
+
+Our :{Presentation Model} //http://www.martinfowler.com/eaaDev/PresentationModel.html
+class is a separate testable class which we bind 
+to our form. Our controller is also implemented 
+as a separate class, which interacts with the components in our forms, 
+and of course our presentation model beans. 
+
+So to summarise, our MVC architecture consists of the following.
+<ul>
+<li class="q">
+    View classes eg. produced using Netbeans GUI designer.
+<li class="q">
+    Presentation Model classes which can be developed using TDD.
+<li class="q">
+    Controller class which implements event listeners 
+and manipulates the view and model.
+</ul>
+
+We provide beans binding support,
+so that the controller can conveniently invoke a single method to update a 
+presentation model from a form, and visa versa. 
+
+The controller needs to manipulate the components in the view eg. 
+~setEnabled(), ~requestFocusInWindow() <i>et cetera.</i> 
+Since Netbeans makes our components ~private to the form, we 
+provide proxies that are bound to the actual components using reflection. 
+We call them "adapters" because they give ~JTextField, ~JComboBox et al, 
+a unified interface eg. ~QInputComponent. These adapters support the binding 
+of the components to the presentation model.
+
+Separating the view and controller in this fashion is fairly tedious, 
+but hopefully enables separation of concerns, and improves 
+testability eg. where we can mock up our view 
+to facilitate the test-driven development of our controller. This 
+is something i know nothing about, but i suspect is well important!?
+
+Anyway, here is a sneak preview. 
+
+<a href="http://aptframework.dev.java.net/jnlp/personinfo.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+   &nbsp; <i>(PersonInfo, 150k/500k, unsandboxed, Java6)</i>
+<br>
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/personalInfoForm700.png" width="700" height="338" />
+
+You can refresh the "BeanInfo" tab (and also the "Console" tab) to see that the 
+values entered into our form are written to our Presentation Model. 
+
+<img src="http://weblogs.java.net/blog/evanx/archive/personalInfoBean.png" width="700" height="337" />
+
+In this demo, we use ~QLayout which is ~GroupLayout therapy for simple subpanels. 
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/groupLayout.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/groupLayout.html' 
+      style="text-decoration: none;">
+      <input type=submit value='Group Layout Therapy' />
+  </a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"> 
+      <input type=submit value='Other Gooey Stories'/>
+    </a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/jnlp/personinfo.jnlp'>
+    <a href='http://aptframework.dev.java.net/jnlp/personinfo.jnlp' 
+      style='text-decoration: none;'><input type=submit value='Person Info Demo'/>
+    </a>
+  </form>
+</table>

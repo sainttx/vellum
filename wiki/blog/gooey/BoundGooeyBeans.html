@@ -1,0 +1,47 @@
+In the <a href='http://weblogs.java.net/blog/evanx/archive/2006/12/gooey_beans_inf.html'>Gooey Beans Info</a> prequel, we explicitly declare properties. Now we allow a bean info instance to be bound to a specific bean, in order to support bound properties ie. firing <tt>PropertyChangeEvent</tt>'s.
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Bound Gooey Beans:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+In our bean, we instantiate a bound bean info class with <tt>PropertyChangeSupport</tt> as follows. 
+
+<pre>
+public class BakedBean {
+    public final BakedBeanInfo info = new BakedBeanInfo(this);
+    
+    private BigInteger barcode;
+    private String label;
+    private Integer bakingTemparature;
+    private BigDecimal medianLength;
+    ...   
+    public BakedBean() {
+    }
+    ...
+    public void setBarcode(BigInteger barcode) {
+        this.barcode = barcode;
+        info.barcode.firePropertyChanged(barcode);
+    }
+}
+</pre>
+
+where we use property "literals" from our bean info to <tt>firePropertyChanged()</tt>. 
+
+We can add <tt>PropertyChangeListener</tt>'s as follows.
+
+<pre>
+public class BakedBeanDemo implements PropertyChangeListener, Runnable {
+    BakedBean bean = new BakedBean();
+    ...
+    public BakedBeanDemo() {
+        ...
+        bean.info.getPropertyChangeSupport().addPropertyChangeListener(this);
+    }
+    ...    
+} 
+</pre>
+
+<img alt="bakedBeansDemo" src="http://weblogs.java.net/blog/evanx/archive/bakedBeansDemo.png" width="700" height="325" /
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.

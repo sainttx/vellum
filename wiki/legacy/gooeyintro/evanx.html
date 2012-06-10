@@ -1,0 +1,76 @@
+
+
+
+
+<pre class='java'>
+public enum Actors {
+    student,
+    registrar,
+    financialInstitution,
+    
+}   
+</pre>
+
+
+<pre class='java'>
+public interface Student {
+    String getFirstName();
+    String getLastName();
+    int getStudentId();
+    Email getEmailAddress();
+    List<Seminar> getSeminars();
+}
+</pre>
+
+
+<pre class='java'>
+public interface StudentUseCases {
+    void obtainStudentLoan();
+    void enrollInSeminar();
+    void attendSeminar();
+    void dropSeminar();
+    void finishSeminar();
+    void dropOutOfSchool();
+    
+    
+}
+</pre>
+
+<pre class='java'>
+</pre>
+
+<pre class='java'>
+public class WaiterUseCases {
+    void orderFood() {
+    }
+    
+}
+</pre>
+
+<pre class='java'>
+</pre>
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/eventProxy.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/eventProxy.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Event Proxy' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/gooeyController.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/gooeyController.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey MVnC' /></a>
+  </form>  
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+     <a href='http://aptframework.dev.java.net/foundation/contents.html'
+     style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+  </form>
+</table>

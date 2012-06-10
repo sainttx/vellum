@@ -1,0 +1,107 @@
+
+Gooey Bean Aspect //htmltitle
+
+We use :{CGLIB} //http://cglib.sf.net 
+to enhance a half-baked Java Bean with no ~firePropertyChange()
+invocations in its setters, into a bean that does fire ~PropertyChangeEvent's 
+from its setters.
+
+
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/beanAspect.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Bean Aspect, a tale of inner discovery"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/beanAspect.html'> 
+<a href='http://aptframework.dev.java.net/gooey/beanAspect.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Bean Aspect' />
+</a>
+</form>
+</table>
+
+
+Code Snippet //section 
+
+Our ~QBeanInterceptor registers the ~PropertyDescriptor's setters methods
+into a ~setterMap.
+
+<pre class='java'>
+public class QBeanInterceptor extends QInterceptor {
+    BeanInfo beanInfo;
+    Map<Method, PropertyDescriptor> setterMap = new HashMap();
+    BeanPropertySupport beanAnnotation;
+    boolean fireByDefault;
+    ...
+    public Object invoke(Object target, Method method, Object[] args,
+            MethodProxy proxy) throws Throwable {
+        Object oldValue = null;
+        Object newValue = null;
+        PropertyDescriptor propertyDescriptor = null;
+        if (args.length == 1 && fireAtWill(method)) {
+            newValue = args[0];
+            propertyDescriptor = setterMap.get(method);
+            if (propertyDescriptor != null) {
+                oldValue = getOldValue(target, propertyDescriptor);
+            }
+        }
+        Object result = super.invoke(target, method, args, proxy);
+        if (propertyDescriptor != null) {
+            QBean bean = (QBean) target;
+            bean.getPropertyChangeSupport().firePropertyChange(
+                    propertyDescriptor.getName(), oldValue, newValue);
+        }
+        return result;
+    }
+    ...
+}    
+</pre>
+
+where if the method is a key to an associated ~PropertyDescriptor 
+in ~setterMap, then we invoke ~firePropertyChange() 
+to fire a ~PropertyChangeEvent.
+
+Demo //section
+
+Here is a trivial demo that is hardly worth downloading. And it's quite large, 
+because it depends on a CGLIB jar. 
+
+<a href="http://aptframework.dev.java.net/jnlp/beanaspect.jnlp">
+    <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch" /></a>
+  &nbsp; <i>(BeanAspectDemo, 250k/850k, unsandboxed, Java6)</i>
+
+<img 
+alt="Screenshot"
+src="http://weblogs.java.net/blog/evanx/archive/beanAspectDemo.png" width="700" height="222" 
+/>
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/beanAspect.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/beanAspect.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Bean Aspect' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+     <a href='http://aptframework.dev.java.net/foundation/contents.html'
+     style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+  </form>
+</table>

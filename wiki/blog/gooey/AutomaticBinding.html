@@ -1,0 +1,93 @@
+
+In the <a href="http://weblogs.java.net/blog/evanx/archive/2008/06/mvnc_architectu.html">Gooey MvnC</a> prequel, we advocate an MVC-type architecture for programming a Swing UI panel, using convention-over-configuration to automate event handling, thread switching and beans binding. 
+
+In the <a href="http://weblogs.java.net/blog/evanx/archive/2008/07/gooey_event_pro.html">Gooey Event Proxy</a> prequel, we introduced a minimalistic helper class towards the above strategy, illustrating the automatic wiring of events, for starters.
+
+Now we present automatic binding by convention-over-configuration, in order to bind components in the view to properties in the presentation model, automatically, by matching component names to property names.
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey Auto Bind:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+Our helper binds components to bean properties as follows.
+
+<pre>
+public class GEventHelper {
+    protected Map<Field, Component> components = new HashMap();
+    ...
+    public void bind(GBean bean) {
+        GBeanInfo beanInfo = new GBeanInfo(bean.getClass());
+        for (Component component : components.values()) {
+            GPropertyInfo propertyInfo =
+                    beanInfo.getPropertyInfo(component.getName());
+            if (propertyInfo != null) {
+                inputComponentAdapterFactory.create(component).bind(
+                        new GBeanProperty(bean, propertyInfo));
+            }
+        }
+    }
+}
+</pre>
+where <tt>GBeanInfo</tt> and <tt>GPropertyInfo</tt> are wrappers for <tt>java.beans.BeanInfo</tt> and <tt>PropertyDescriptor</tt>, and <tt>GBeanProperty</tt> ties in a reference to a bean instance.
+
+For example, <tt>GTextFieldBinding</tt> below is used to establish a binding between a <tt>JTextField</tt> and a bean property.
+
+<pre>
+public class GTextFieldBinding
+        implements ActionListener, FocusListener, PropertyChangeListener {
+    JTextField component;
+    GBeanProperty property;
+
+    public GTextFieldBinding(JTextField component, GBeanProperty property) {
+        this.component = component;
+        this.property = property;
+        updateComponent();
+        property.addPropertyChangeListener(this);
+        component.addActionListener(this);
+        component.addFocusListener(this);
+    }
+    ...
+}
+</pre>
+where the binding implements various listeners, and registers itself as a listener on the component's events eg. <tt>FocusEvent</tt>, and also as a <tt>PropertyChangeListener</tt> on the bean property.
+
+In the <tt>focusLost()</tt> event handler below, we push the edited value into the bean property. 
+
+<pre>
+    @Override
+    public void focusLost(FocusEvent event) {
+        updateProperty();
+    }
+    
+    public void updateProperty() {
+        try {
+            property.parse(component.getText());
+        } catch (GPropertyException e) {
+            property.handleException(e);
+        }
+    }
+</pre>    
+
+In <tt>propertyChange()</tt> below, we invoke <tt>updateComponent()</tt>
+to pull the value from the bean into the component.
+
+<pre>
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        if (event.getPropertyName().equals(property.getName())) {
+            updateComponent();
+        }
+    }
+    
+    public void updateComponent() {
+        try {
+            component.setText(property.format());
+        } catch (GPropertyException e) {
+            property.handleException(e);
+        }
+    }
+</pre>
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

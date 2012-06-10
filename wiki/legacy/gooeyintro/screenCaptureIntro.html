@@ -1,0 +1,75 @@
+
+For documentation purposes (and perhaps remote support), we need 
+snapshot images of our application. 
+So let's build such support directly into our application itself.
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="https://aptframework.dev.java.net/gooey/screenCapture.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Screen Capture"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, the GUI part of a trilogy in 42 parts"</span>
+</div>
+</a>
+</p>
+
+<p>
+<table>
+<tr>
+<td>
+<form action='https://aptframework.dev.java.net/gooey/screenCapture.html'> 
+<a href='https://aptframework.dev.java.net/gooey/screenCapture.html' 
+  style="text-decoration: none;">
+<input type=submit value="Read Screen Capture" />
+</a>
+</form>
+</table>
+
+   
+
+Code Snippets //section 
+
+We can capture whole desktop, and save it to a PNG file, as follows. 
+
+<pre class='java'>    
+    public void captureScreen(String fileName) throws Exception {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        BufferedImage image = new Robot().createScreenCapture(new Rectangle(screenSize));
+        ImageIO.write(image, "png", new File(fileName));
+    }
+</pre>
+
+Alternatively, we might capture our ~JFrame, including its window decoration, as follows.  
+
+<pre class='java'>
+    public void captureFrame(JFrame frame, String fileName) throws Exception {
+        BufferedImage image = new Robot().createScreenCapture(frame.getBounds());
+        ImageIO.write(image, "png", new File(fileName));
+    }
+</pre>
+
+
+<br>
+
+<table>
+<tr>
+<td>
+<form action='https://aptframework.dev.java.net/gooey/screenCapture.html'> 
+<a href='https://aptframework.dev.java.net/gooey/screenCapture.html' 
+  style="text-decoration: none;">
+<input type=submit value="Screen Capture" />
+</a>
+</form>    
+<td>    
+  <form action='https://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='https://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Gooey Content'/></a>
+  </form>
+<td>
+  <form action='https://aptframework.dev.java.net/foundation/contents.html'>
+    <a href='https://aptframework.dev.java.net/foundation/contents.html'
+      style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+  </form>
+</table>

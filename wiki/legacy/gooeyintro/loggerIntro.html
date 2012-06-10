@@ -1,0 +1,144 @@
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/logger.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold; font-size: 10pt;"><span style="color: black;">Click here to read "Gooey Logger, a story inspired by real events"</span>
+<br><span style="font-style: italic; color: black; font-size: 10pt;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<p>
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/logger.html'> 
+<a style="text-decoration: none;" 
+  href='http://aptframework.dev.java.net/gooey/logger.html'> 
+<input type=submit value='Gooey Logger' />
+</a>
+</form>
+<td>
+<form action='http://aptframework.dev.java.net/gooey/contents.html'>
+<a style="text-decoration: none;" href='http://aptframework.dev.java.net/gooey/contents.html'> 
+<input type=submit value='Contents' />
+</a>
+</form>
+</table>
+</p>
+
+<br>
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+<b>Spoiler Warning!</b> The following pitch is a spoiler for the actual um, article...
+</p>
+
+<br>
+<p>
+<span style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt; font-style: italic; font-weight: bold;">Stairwell Pitch</span>
+</p>
+
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+Logging is a fundamental tool of software development. But using <tt>System.out.println()</tt> is 
+for monitoring is um, not very convenient. So we rather implement a logger which 
+can accept variable arguments, infer the class and method by default, and format 
+our objects nicely for us.
+</p>
+
+<br>
+<p>
+<span style="font-family: Verdana, Helvetica, Arial, sans-serif; font-style: italic; font-weight: bold; font-size: 10pt;">Demos</span>
+
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+You can see this type of logger in service in the <i>CookieJar,</i> its Address Form demo, and other true stories.
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/jnlp/cookiejar.jnlp'> 
+<a style="text-decoration: none;" 
+  href='http://aptframework.dev.java.net/jnlp/cookiejar.jnlp'> 
+<input type=submit value='CookieJNLP' />
+</a>
+</form>
+<td>
+<form action='http://aptframework.dev.java.net/jnlp/addressform.jnlp'>
+<a style="text-decoration: none;" href='http://aptframework.dev.java.net/jnlp/addressform.jnlp'> 
+<input type=submit value='Address Form' />
+</a>
+</form>
+</table>
+</p>
+
+<br>
+<p>
+<span style="font-family: Verdana, Helvetica, Arial, sans-serif; font-style: italic; font-weight: bold; font-size: 10pt;">Implementation</span>
+
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+I like the Java Logging API. So we implement a logger in the spirit of <tt>java.util.logging.Logger</tt>.
+
+
+<pre style="font-size: 11pt; font-family: 'courier new', courier, mono; background-color: fafafa;"><span style='color: #000099; font-weight: bold'>public</span> <span style='color: #000099; font-weight: bold'>class</span> QLogger {
+    <span style='color: #000099; font-weight: bold'>protected</span> <span style='color: #000099; font-weight: bold'>static</span> QLoggerProperties properties = <span style='color: #000099; font-weight: bold'>new</span> <span style='font-weight: bold'>QLoggerProperties</span>();
+    <span style='color: #000099; font-weight: bold'>protected</span> <span style='color: #000099; font-weight: bold'>static</span> QLoggerFormatter formatter = <span style='color: #000099; font-weight: bold'>new</span> <span style='font-weight: bold'>QLoggerFormatter</span>();
+    ...
+    <span style='color: #000099; font-weight: bold'>protected</span> String loggerName;
+    <span style='color: #000099; font-weight: bold'>protected</span> Level level;
+
+    <span style='color: #000099; font-weight: bold'>protected</span> Logger delegateFileLogger;
+
+    <span style='color: #000099; font-weight: bold'>public</span> <span style='font-weight: bold'>QLogger</span>(String loggerName) {
+        <span style='color: #000099; font-weight: bold'>this</span>.loggerName = loggerName;
+        String levelKey = loggerName + <span style='color: #99006b'>".level"</span>;
+        String levelValue = System.<span style='font-weight: bold'>getProperty</span>(levelKey, <span style='color: #99006b'>"INFO"</span>);
+        <span style='font-weight: bold'>setLevel</span>(Level.<span style='font-weight: bold'>parse</span>(levelValue));
+        ...
+    }
+
+    <span style='color: #000099; font-weight: bold'>public</span> <span style='color: #000099; font-weight: bold'>void</span> <span style='font-weight: bold'>entering</span>(Object ... args) {
+        <span style='font-weight: bold'>logp</span>(Level.FINER, <span style='color: #99006b'>"entering:"</span> + formatter.<span style='font-weight: bold'>formatArgs</span>(args));
+    }
+    ...
+}
+</pre>
+
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+We get the desired verbosity level for this logger from the command-line 
+system properties, eg. <tt>-Dlogger.level=FINEST</tt>.
+
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+We implement the following method to log if the message has a sufficient <tt>level</tt>.
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+<pre style="font-size: 11pt; font-family: 'courier new', courier, mono; background-color: fafafa;">    <span style='color: #000099; font-weight: bold'>public</span> <span style='color: #000099; font-weight: bold'>void</span> <span style='font-weight: bold'>logp</span>(Level level, String string) {
+        <span style='color: #000099; font-weight: bold'>if</span> (!isLoggable(level)) <span style='color: #000099; font-weight: bold'>return</span>;
+        StackTraceElement frame = <span style='font-weight: bold'>getStackFrame</span>();
+        String className = <span style='font-weight: bold'>getSimpleClassName</span>(frame.<span style='font-weight: bold'>getClassName</span>());
+        QLogRecord record = <span style='color: #000099; font-weight: bold'>new</span> <span style='font-weight: bold'>QLogRecord</span>(level, string);
+        record.<span style='font-weight: bold'>setSourceClassName</span>(className);
+        record.<span style='font-weight: bold'>setSourceMethodName</span>(frame.<span style='font-weight: bold'>getMethodName</span>());
+        record.<span style='font-weight: bold'>setLoggerName</span>(loggerName);
+        record.<span style='font-weight: bold'>setLineNumber</span>(frame.<span style='font-weight: bold'>getLineNumber</span>());
+        <span style='color: #000099; font-weight: bold'>if</span> (delegateFileLogger != <span style='color: #000099; font-weight: bold'>null</span>) delegateFileLogger.<span style='font-weight: bold'>log</span>(record);
+        <span style='font-weight: bold'>log</span>(record);
+    }
+</pre>
+
+<p style="font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;">
+where by default we get the stack frame, if it's loggable, and pay the performance price.
+Hopefully we can afford it. 
+
+<p>
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/logger.html'> 
+<a style="text-decoration: none;" href='http://aptframework.dev.java.net/gooey/logger.html'> <input type=submit value='Gooey Logger' />
+</a>
+</form>
+<td>
+<form action='http://aptframework.dev.java.net/gooey/contents.html'>
+<a style="text-decoration: none;" href='http://aptframework.dev.java.net/gooey/contents.html'> <input type=submit value='Contents' />
+</a>
+</form>
+</table>
+</div>

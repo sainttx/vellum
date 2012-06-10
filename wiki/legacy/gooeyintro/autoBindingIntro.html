@@ -1,0 +1,121 @@
+
+Gooey Auto Binding //htmltitle
+
+In the <a href="http://aptframework.dev.java.net/gooey/gooeyController.html"
+>Gooey MvnC</a> prequel, we advocate an MVC-type architecture for 
+programming a Swing UI panel, using convention-over-configuration 
+to automate event handling, thread switching and beans binding. 
+
+In the :{Gooey Event Proxy} prequel, //http://aptframework.dev.java.net/gooey/eventProxy.html 
+we introduced a minimalistic helper class towards the above strategy,  
+illustrating the automatic wiring of events, for starters.
+
+Now we present automatic binding 
+by convention-over-configuration, in order to bind components in the view 
+to properties in the presentation model, automatically, 
+by matching component names 
+to property names.
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/autoBinding.html'> 
+<a href='http://aptframework.dev.java.net/gooey/autoBinding.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Auto Binding' />
+</a>
+
+</form>
+</table>
+
+
+Salient Code //section 
+
+Our helper binds components to bean properties as follows.
+
+<pre class='java'>
+public class GEventHelper {
+    protected Map<Field, Component> components = new HashMap();
+    ...
+    public void bind(GBean bean) {
+        GBeanInfo beanInfo = new GBeanInfo(bean.getClass());
+        for (Component component : components.values()) {
+            GPropertyInfo propertyInfo =
+                    beanInfo.getPropertyInfo(component.getName());
+            if (propertyInfo != null) {
+                inputComponentAdapterFactory.create(component).bind(
+                        new GBeanProperty(bean, propertyInfo));
+            }
+        }
+    }
+}
+</pre>
+
+where ~GBeanInfo and ~GPropertyInfo are wrappers for ~java.beans.BeanInfo
+and ~PropertyDescriptor, and ~GBeanProperty ties in a reference to 
+a bean instance.
+
+For example, ~GTextFieldBinding below is used to establish a binding 
+between a ~JTextField and a bean property.
+
+<pre class='java'>
+public class GTextFieldBinding
+        implements ActionListener, FocusListener, PropertyChangeListener {
+    JTextField component;
+    GBeanProperty property;
+
+    public GTextFieldBinding(JTextField component, GBeanProperty property) {
+        this.component = component;
+        this.property = property;
+        updateComponent();
+        property.addPropertyChangeListener(this);
+        component.addActionListener(this);
+        component.addFocusListener(this);
+    }
+    ...
+}    
+</pre>
+
+where the binding implements various listeners, and registers itself 
+as a listener on the component's events eg. ~FocusEvent, and 
+also as a ~PropertyChangeListener on the bean property.
+
+In the ~focusLost() event handler below, we push the edited value into
+the bean property. 
+
+<pre class='java'>
+    @Override
+    public void focusLost(FocusEvent event) {
+        updateProperty();
+    }
+    
+    public void updateProperty() {
+        try {
+            property.parse(component.getText());
+        } catch (GPropertyException e) {
+            property.handleException(e);
+        }
+    }
+</pre>    
+
+In ~propertyChange() below, we invoke ~updateComponent()
+to pull the value from the bean into the component.
+
+<pre class='java'>
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        if (event.getPropertyName().equals(property.getName())) {
+            updateComponent();
+        }
+    }
+    
+    public void updateComponent() {
+        try {
+            component.setText(property.format());
+        } catch (GPropertyException e) {
+            property.handleException(e);
+        }
+    }
+</pre>
+
+The full article is reposited 
+<a href="http://aptframework.dev.java.net/gooey/autoBinding.html">here</a>.

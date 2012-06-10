@@ -1,0 +1,339 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="http://www.movabletype.org/" />
+
+<title>Evan Summers's Blog: Invetigation in Process 2: Event Pump DTs</title>
+
+<link rel="stylesheet" href="http://weblogs.java.net/blog/styles-site.css" type="text/css" />
+<link rel="stylesheet" href="http://www.java.net/css/main.css" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://weblogs.java.net/blog/evanx/index.rdf" />
+<link rel="alternate" type="application/atom+xml" title="Atom" href="http://weblogs.java.net/blog/evanx/atom.xml" />
+
+<link rel="start" href="http://weblogs.java.net/blog/evanx/" title="Home" />
+<link rel="prev" href="http://weblogs.java.net/blog/evanx/archive/2006/11/gooey_logger_1.html" title="Gooey Logger" />
+
+
+
+
+
+
+<!--  Begin SiteCatalyst code  -->
+<script language="JavaScript">
+<!--
+var s_channel="Evan Summers's Blog";
+//--></script>
+<!--  End SiteCatalyst code  -->
+
+</head>
+
+<body>
+
+<!--  Masthead  -->
+<div class="topline">
+
+<div class="topbar">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" height="25">
+<tr>
+<td width="100%" rowspan="2"><a href="http://www.java.net"><img src="/images/header_jnet_new.jpg" width="500" height="60" border="0" alt="The Source for Java Technology Collaboration"></a></td>
+ <td nowrap="nowrap" style="vertical-align:middle">
+ <div id="login">
+ 
+<div><strong>
+  Logged in: evanx</strong> | <strong>   <a href="https://www.dev.java.net/servlets/Logout">Logout</a> </strong>
+
+  &nbsp;
+</div>
+ 
+</div>
+</td> 
+</tr>
+</table>
+</div>
+
+<!--  Tabs  -->
+
+
+<noindex>
+<div class="tabs" id="toptabs">
+<table cellspacing=0 cellpadding=4 border=0>
+<tbody>
+
+<tr>
+<td><a href="https://www.dev.java.net/servlets/StartPage">My       pages</a> </td>
+<td><a       href="http://community.java.net/projects/">Projects</a></td>
+<td><a href="http://community.java.net">Communities</a>   </td>
+<th><a href="http://www.java.net">java.net</a></th>
+</tr></tbody></table></div>
+</noindex>
+
+
+
+<table id="main" cellspacing="2" cellpadding="2" width="100%" border="0">
+
+  <tbody>
+  <tr valign=top>
+    <td id="leftcol" width="150" rowspan="2">
+	<img src="http://today.java.net/im/a.gif" width="150" height="1"><br />
+<div id="navcolumn">
+<!--   COMMUNITY LINKS   -->
+<noindex>
+<div class="toolgroup" id="communitylinks">
+<div class="label"><strong>Get Involved</strong></div>
+<div class="body">
+<div><a href="https://java-net.dev.java.net/">java-net Project</a></div>
+
+<div><a href="http://www.java.net/request_project.csp">Request a Project</a></div>
+<div><a href="http://community.java.net/help_wanted/">Project&nbsp;Help&nbsp;Wanted&nbsp;Ads</a></div>
+<div><a href="http://community.java.net/projects/publicize.csp">Publicize your Project</a></div>
+<!-- <div><a href="#">Success Stories</a></div>  -->
+<div><a href="http://today.java.net/cs/user/create/bl">Submit Content</a></div>
+</div>
+</div>
+
+<div class="toolgroup" id="communitylinks">
+<div class="label"><strong>Get Informed</strong></div>
+
+<div class="body">
+<div><a href="http://www.java.net/about.csp">About java.net</a></div>
+<div><a href="http://today.java.net/pub/q/articles">Articles</a></div>
+<div><a href="http://weblogs.java.net/">Weblogs</a></div>
+<div><a href="http://today.java.net/today/news/">News</a></div>
+<div><a href="http://www.java.net/events">Events</a></div>
+<div><a href="http://today.java.net/today/alsotoday.csp">Also in Java Today</a></div>
+<div><a href="http://safari.java.net">java.net Online Books</a></div>
+<div><a href="http://today.java.net/today/archive/">java.net Archives</a></div>
+
+</div>
+</div>
+
+<div class="toolgroup" id="communitylinks">
+<div class="label"><strong>Get Connected</strong></div>
+<div class="body">
+<div><a href="http://forums.java.net">java.net Forums</a></div>
+<div><a href="http://wiki.java.net/">Wiki</a> and <a href="http://wiki.java.net/bin/view/Javapedia/WebHome">Javapedia</a></div>
+<div><a href="http://wiki.java.net/bin/view/People/WebHome">People</a>, <a href="http://partners.java.net">Partners</a>, and <a href="http://wiki.java.net/bin/viewauth/Javanet/JobsWiki">Jobs</a> </div>
+
+<div><a href="http://community.java.net/jugs/listing.csp">Java User Groups</a></div>
+<div><!--  <a href="https://java-net.dev.java.net/servlets/ProjectMailingListList">Newsletters</a> and  --><a href="http://today.java.net/pub/q/rsschannels">RSS Feeds</a></div>
+</div>
+</div>
+
+<div class="toolgroup" id="communitylinks">
+<div class="label"><b>Search</b></div>
+<div class="body">
+<form action="http://onesearch.sun.com/search/onesearch/index.jsp">
+<div>Web and Projects:</div>
+<div><input type="text" name="qt" class="medium" size="14" onfocus="if( this.value==this.defaultValue ) this.value='';" value=""/>
+<input type="hidden" name="col" value="all-unfiltered">
+<input type="hidden" name="qt" value="+url:java.net">
+
+<input type="submit" border="0" class="buttonred" value=" &raquo; "></div>
+</form>
+<div>Online Books:</div>
+<form action="http://safari.java.net/JVXSL.asp" method="post">
+<input type="hidden" name="s" value="1" />
+<input type="hidden" name="b" value="1" />
+<input type="hidden" name="t" value="1" />
+<input type="hidden" name="f" value="1" />
+<input type="hidden" name="c" value="1" />
+<input type="hidden" name="l" value="1" />
+<input type="hidden" name="view" value="section" />
+<div><input name="se_text" type="text" value="" class="medium" size="14" />
+<input class="buttonred" value=" &raquo; " border="0" type="submit"></div>
+</form>
+<div><a href="/search.csp">Advanced Search</a></div>
+
+</div>
+</div>
+</noindex>
+
+</div>
+<br />
+</td>
+<td height="3" colspan="2"><img src="http://today.java.net/images/a.gif" width="1" height="3"><br /></td>
+</tr>
+<tr> 
+<td width="10"><img src="http://today.java.net/images/a.gif" width="10" height="1"></td>
+<td width="100%" valign="top">
+
+
+
+
+<div class="link-note">
+
+<a href="http://weblogs.java.net/blog/evanx/index.rdf"><img src="http://www.java.net/images/rss_weblogs.gif" width="80" height="15" vspace="4" hspace="10" border="0" alt="Syndicate this blog (XML)" align="right" /></a><br />
+</div>
+
+
+
+<img src="/images/people/evan_summers.jpg" border="0" height="68" width="99" alt="Evan Summers" align="left" vspace="3" hspace="6" />
+
+
+
+
+<h2><a href="http://weblogs.java.net/blog/evanx/">Evan Summers's Blog</a></h2>
+
+<div class="small" align="right">
+<a href="http://weblogs.java.net/blog/evanx/archive/2006/11/gooey_logger_1.html">&laquo;Gooey Logger</a> |
+
+
+<a href="http://weblogs.java.net/blog/evanx/">Main</a>
+
+</div>
+
+<div class="grayline"></div>
+
+<h3>Invetigation in Process 2: Event Pump DTs</h3>
+
+<span class="ltcaption1">Posted by <b>evanx</b> on November 22, 2006 at 02:40 AM</a> | <a href="http://weblogs.java.net/blog/evanx/archive/2006/11/invetigation_in.html#comments">Comments (0)</a>
+
+</span>
+
+<br /><br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+It is often convenient to execute long tasks synchronously, that is to say, 
+to wait for the task to complete, so that we can then do something appropriate
+like update the GUI. In order for our GUI to remain responsive while 
+our long task is executing, we can use 
+<a style='font-family: Verdana, Helvetica, Arial, sans-serif; font-weight: normal; text-decoration: underline; color: gray;' href='http://foxtrot.sf.net'><span style='color: black;'>foxtrot.sf.net</span></a>
+which manages to hook into the <span style='font-family: "courier new", courier, mono;'>EventDispatchThread.pumpEvents()</span> 
+method to keep the events rolling. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<br>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<table>
+<tr>
+<td>
+<form action='http://aptframework.dev.java.net/edt/eventPump.html'> 
+<a href='http://aptframework.dev.java.net/edt/eventPump.html' 
+style="text-decoration: none;"><input 
+style='font-weight: bold;'
+type=submit value='Read Event Pump DTs' /></a></form>
+</table>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<br>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<p><br><a name='salientology' style='font-family: Verdana, Helvetica, Arial, sans-serif;'><div style='font-family: Verdana, Helvetica, Arial, sans-serif; text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>Salientology</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+In case you don't want to read <a style='font-family: Verdana, Helvetica, Arial, sans-serif; font-weight: normal; text-decoration: underline; color: gray; font-style: italic;' href='http://aptframework.dev.java.net/edt/eventPump.html'><span style='color: black;'>Event Pump DTs</span></a>,
+a scifi space opera, in all its gory detail, 
+we extract some salient bits and present them below.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<br>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<p><br><a name='code_glance' style='font-family: Verdana, Helvetica, Arial, sans-serif;'><div style='font-family: Verdana, Helvetica, Arial, sans-serif; text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>Code Glance</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+We might introduce a <span style='font-family: "courier new", courier, mono;'>doInBackgroundAndWait()</span> method as below.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<pre style='font-size: 12pt; border: 1px dashed #ccc; background-color: #fafafa; font-family: "courier new", courier, mono; font-size: 11pt;'><span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>public</span> <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>class</span> QEdtInvoker {
+    ...
+    <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>public</span> &lt;T&gt; T <span style='font-weight: bold; font-family: "courier new", courier, mono;'>doInBackgroundAndWait</span>(<span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>final</span> Callable callable) 
+    <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>throws</span> Exception {
+        <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>final</span> QEventPump eventPump = <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>new</span> <span style='font-weight: bold; font-family: "courier new", courier, mono;'>QEventPump</span>();
+        SwingWorker worker = <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>new</span> <span style='font-weight: bold; font-family: "courier new", courier, mono;'>SwingWorker</span>() {
+            <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>protected</span> Object <span style='font-weight: bold; font-family: "courier new", courier, mono;'>doInBackground</span>() <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>throws</span> Exception {
+                <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>try</span> {
+                    <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>return</span> callable.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>call</span>();
+                } <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>finally</span> {
+                    eventPump.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>done</span>();
+                }
+            }
+        };
+        worker.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>execute</span>();
+        eventPump.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>pumpEvents</span>(); 
+        <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>try</span> {
+            <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>return</span> (T) worker.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>get</span>();
+        } <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>catch</span> (Exception e) {
+            <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>throw</span> <span style='font-weight: bold; font-family: "courier new", courier, mono;'>getActualCause</span>(e);
+        }
+    }
+}
+</pre>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+An alternative to actually pumping events is to a use an "invisible" modal <span style='font-family: "courier new", courier, mono;'>Dialog</span> to disable 
+and block our application while executing a "background" task (synchronously).
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<pre style='border: 1px dashed #ccc; background-color: #fafafa; font-family: "courier new", courier, mono; font-size: 11pt;'><span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>public</span> <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>class</span> QEventPump {
+    <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>protected</span> JDialog dialog;
+    
+    <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>public</span> <span style='font-weight: bold; font-family: "courier new", courier, mono;'>QEventPump</span>(JFrame frame) {        
+        dialog = <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>new</span> <span style='font-weight: bold; font-family: "courier new", courier, mono;'>JDialog</span>(frame, <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>true</span>);
+        dialog.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>setUndecorated</span>(<span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>true</span>);
+        dialog.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>setBounds</span>(0, 0, 0, 0);
+    }
+    
+    <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>public</span> <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>void</span> <span style='font-weight: bold; font-family: "courier new", courier, mono;'>pumpEvents</span>() {
+        dialog.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>setVisible</span>(<span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>true</span>);
+       
+    }
+    
+    <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>public</span> <span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>void</span> <span style='font-weight: bold; font-family: "courier new", courier, mono;'>done</span>() {
+       dialog.<span style='font-weight: bold; font-family: "courier new", courier, mono;'>setVisible</span>(<span style='color: #000099; font-weight: bold; font-family: "courier new", courier, mono;'>false</span>);
+    }    
+}
+</pre>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+In this case we aren't actually pumping all events on our frame, but are disabling mouse and keyboard events by means of the modal dialog, which invokes the EDT's <span style='font-family: "courier new", courier, mono;'>pumpEventsForHierachy()</span> method. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<p><br><a name='demo' style='font-family: Verdana, Helvetica, Arial, sans-serif;'><div style='font-family: Verdana, Helvetica, Arial, sans-serif; text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>Demo</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+The following demo displays an undecorated modal dialog which overlays our status bar (to appear
+to be our status bar) and displays a progress bar and a cancel button, while blocking 
+our application. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<a href="http://aptframework.dev.java.net/jnlp/addressform.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+(AddressFormDemo, 150k/500k, unsandboxed, Java5)
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<br>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'>
+<table>
+<tr>
+<td>
+<form action='http://aptframework.dev.java.net/edt/eventPump.html'> 
+<a href='http://aptframework.dev.java.net/edt/eventPump.html' 
+style="text-decoration: none;"><input type=submit value='Read Event Pump DTs' /></a></form>
+<td>
+<form action='http://aptframework.dev.java.net/gooey/contents.html'>
+<a href='http://aptframework.dev.java.net/gooey/contents.html'
+style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a></form>
+<td>
+<form action='http://aptframework.dev.java.net/jnlp/addressform.jnlp'>
+<a href='http://aptframework.dev.java.net/jnlp/addressform.jnlp' 
+style='text-decoration: none;'><input type=submit value='Address Form Demo'/></a></form>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+

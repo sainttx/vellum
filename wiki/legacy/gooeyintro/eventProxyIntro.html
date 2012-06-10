@@ -1,0 +1,144 @@
+
+Gooey Event Proxy //htmltitle
+
+In the <a href="http://aptframework.dev.java.net/gooey/gooeyController.html"
+>Gooey MvnC</a> prequel, we consider an MVC-type separation for 
+programming a Swing UI panel, and convention-over-configuration 
+to automate events, threading and beans binding. 
+
+Now as an illustration of the above intent, 
+we implement a minimalistic helper class to create dynamic proxies 
+for event listeners wired to event handler methods in our controller.
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/eventProxy.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Event Proxy"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, part of a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/eventProxy.html'> 
+<a href='http://aptframework.dev.java.net/gooey/eventProxy.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Event Proxy' />
+</a>
+
+</form>
+</table>
+
+
+Salient Samples //section 
+
+In our controller, we implement event handler methods as follows. 
+
+<pre class='java'>
+public class LoginController implements GEventController {
+   LoginView view = new LoginView();
+   LoginModel model = new LoginModel();
+   GEventHelper eventHelper = new GEventHelper(this, view, model);
+   ...   
+   void usernameFocusLost() {
+      ... // check that username is valid
+   }
+   
+   void cancelActionPerformed() {
+      ... // handle cancel button pressed
+   }   
+   
+   SwingWorker okActionPerformed() {
+      ... // worker for OK button pressed to login
+   }      
+}
+</pre>
+
+Our helper creates dynamic proxies as event listeners 
+registered on our components, as follows.
+
+<pre class='java'>
+public class GEventHelper {
+    protected GEventController controller;
+    protected Map<Field, Component> components = new HashMap();
+    protected Map<Component, GBeanProperty> bindings = new HashMap();
+
+    public GEventHelper(GEventController controller, Component view, GBean model) {
+        this.controller = controller;
+        initComponents(view); // populate components map
+        bind(model); // create bindings/listeners
+        connectController();
+    }
+    ...
+    public void connectController() {
+        for (Component component : components.values()) {
+            if (GInputComponentAdapterFactory.isInputComponent(component)) {
+                GInputComponentAdapterFactory.create(component).addActionListener(
+                        (ActionListener) createListenerProxy(component,
+                        ActionListener.class));
+                GInputComponentAdapterFactory.create(component).addFocusListener(
+                        (FocusListener) createListenerProxy(component,
+                        FocusListener.class));
+                ... // other events
+            }
+        }
+    }
+    
+    protected Object createListenerProxy(Component source, Class listenerType) {
+        return Proxy.newProxyInstance(
+                source.getClass().getClassLoader(),
+                new Class[]{listenerType},
+                new GEventProxy(controller, source));
+    }
+    ...
+}
+</pre>
+
+where our ~GEventProxy below will invoke methods in our controller 
+eg. ~usernameFocusLost() when ~focusLost() is invoked on a proxy listener
+registered on a component named ~"username". 
+
+<pre class='java'>
+public class GEventProxy implements InvocationHandler {
+   ...
+   protected void invoke(Method method, Object[] args) {
+        for (Method eventMethod : eventMethods.values()) {
+            if (eventMethod.getName().equalsIgnoreCase(
+                    component.getName() + method.getName())) {
+                invokeHandler(eventMethod, args);
+                break;
+            }
+        }
+    }
+}    
+</pre>
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/eventProxy.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/eventProxy.html' 
+      style="text-decoration: none;"><input type=submit value='Read Gooey Event Proxy' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/gooeyController.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/gooeyController.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey MVnC' /></a>
+  </form>  
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+     <a href='http://aptframework.dev.java.net/foundation/contents.html'
+     style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+  </form>
+</table>

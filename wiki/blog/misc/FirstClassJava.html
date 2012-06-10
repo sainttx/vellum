@@ -1,0 +1,35 @@
+
+Who knows why i have a dislike for symbols like ->, => and even := ?! 
+It's pathological, i know that, and i have an obsessive-compulsive (dis)order when it comes to code, and so be it. 
+
+So in the <a href="http://weblogs.java.net/blog/evanx/archive/2008/04/first_class_jav_2.html">previous posting</a> in this series of reports on my pointless coffee shop doodlings, i suggested the likes of <tt>username.property</tt> to refer to a <tt>PropertyDescriptor</tt> eg. for the purpose of toolable bindings, where by "toolable" i mean auto-completable, machine-verifiable and safely refactorable, using an IDE. If nothing else, this conforms to the current notation vis-a-vis <tt>.class</tt> eg. <tt>Person.class</tt>. 
+
+<img alt="at-200.jpg" src="http://weblogs.java.net/blog/evanx/archive/at-200.jpg" width="200" height="150" align=left vspace=8 hspace=8 />
+Now i'm thinking <tt>@person.username.property</tt> or <tt>$person.username.property</tt> don't look too bad, although many others suggest <tt>person#username</tt> of course, citing JavaDoc's notations, which i say is like the tail wagging the dog, but so be it. 
+
+So what's the big idea? Actually there is no big idea - only a small incremental idea, which is... Let's enable code that is fully toolable, refactorable, et cetera. Which means no references to properties in string literals eg. <tt>bind("username", ...)</tt>. And code that still looks as nice and natural as possible, which to me means using the dot notation as far as possible eg. <tt>@company.contactPerson.displayName</tt>.
+
+Let's imagine some code...
+
+<pre>
+public class LoginController extends BasicController {
+    LoginView view = new LoginView();
+    LoginModel model = new LoginModel();
+
+    public LoginController() {
+        bind(view.usernameComponent, @model.username.property);
+        ...
+    }
+    ...
+}
+</pre>
+
+where alternatively, the above might reference the <tt>java.reflection.Field</tt> literal as <tt>@view.usernameComponent.field</tt>.
+
+This notation eg. <tt>@person.username.property</tt> actually represents a tuple of the instance plus the <tt>PropertyDescriptor</tt>, whereas <tt>@Person.username.property</tt> might literally be the <tt>PropertyDescriptor</tt>, from which we can get the declaring class ie. <tt>Person.class</tt> eg. via <tt>getReadMethod().getDeclaringClass()</tt>.
+<tt>Method</tt>'s are a bit troublesome 'cos of overloading, in which case one might need to refer to their parameter signature to differentiate them eg. <tt>@view.load(Weapon, Ammo).method</tt> 
+which i don't like the look of, but so be it. 
+
+Talking about methods, what about "first class methods", anonymous methods, closures or what-ever. Because people find anonymous classes a bit tedious, and many people are aggrieved that Java hasn't got closures like all other popular languages!? 
+
+My feeling at this minute is that if, like generics, closures can't be implemented simply, then they shouldn't be implemented at all, if the code examples look almost as unreadable as line noise!?

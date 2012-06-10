@@ -1,0 +1,35 @@
+We introduce a generic table model supporting a list of backing beans, with simplistic "beans binding" facilitated by <tt>java.beans.PropertyDescriptor</tt>.
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey Table Model, an informative column:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+We implement a table model in our application as follows.
+<pre>
+public class ProductMovementDetailTableModel extends GTableModel<ProductMovementDetail> {
+    ProductMovementDetailInfo info = new ProductMovementDetailInfo();
+    
+    GTableColumn productId = createColumn(info.productId);
+    GTableColumn label = createColumn(info.label);
+    GTableColumn productUnit = createColumn(info.productUnit);
+    GTableColumn unitCost = createColumn(info.unitCost);
+    GTableColumn quantity = createColumn(info.quantity);
+    GTableColumn amount = createColumn(info.amount);
+    
+    public ProductMovementDetailTableModel() {
+        super(ProductMovementDetail.class);
+        ... // setEditable() on column objects
+    }    
+}
+</pre>
+where we create column objects to contain metadata eg. column headings, types, <i>et cetera.</i>
+
+Each row of the table has a backing bean, eg. <tt>ProductMovementDetail</tt> in the above example. As presented in the <a href='https://aptframework.dev.java.net/gooey/beanInfo.html'><u>Gooey Beans Info</u></a> prequel, we define metadata for the bean's properties in a "bean info" object, eg. <tt>ProductMovementDetailInfo</tt>. The column objects wrap "property info" objects which are created in the bean info class. 
+
+A controller is implemented to handle events from the table component, eg. row selection and cell editing. The beans and column objects are used in these event handlers to reference rows and columns.
+
+Disclaimer: This design predates JSR 295 (Beans Binding), which is the future, and so will be presented in future, in this series' 2nd Edition ;)
+
+Incidently, the days of my publishing an article every month in this <a href='https://aptframework.dev.java.net/foundation/contents.html'><u>Foundation</u></a> series seem to have come to an end, because i've been travelling. Right now i'm in Germany, and from next week i'll be cycling across southern France and northern Spain (woohoo!) without a computer, so um, zero productivity...
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

@@ -1,0 +1,78 @@
+
+We expose a "presentation model" bean using an interface, used to create a dynamic proxy, 
+with a backing ~Map of property/values eg. for GUI prototyping, or otherwise a ~java.bean. 
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="https://aptframework.dev.java.net/gooey/beanProxy.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Bean Proxy"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, the GUI part of a trilogy in 42 parts"</span>
+</div>
+</a>
+</p>
+
+<p>
+<table>
+<tr>
+<td>
+<form action='https://aptframework.dev.java.net/gooey/beanProxy.html'> 
+<a href='https://aptframework.dev.java.net/gooey/beanProxy.html' 
+  style="text-decoration: none;">
+<input type=submit value="Read Gooey Bean Proxy" />
+</a>
+</form>
+</table>
+   
+
+Code Snippet //section 
+
+We expose the properties of the presentation model using an interface as follows.
+
+<pre class='java'>    
+public interface PersonInfo extends GObservableBean {
+    GProperty<String> username();
+    GProperty<String> firstNames();
+    GProperty<String> lastName();
+    GProperty<String> displayName();
+    GProperty<String> email();
+    GProperty<Date> birthday();
+    GProperty<Date> lastLogin();
+    GProperty<BigDecimal> score();
+    GProperty<PersonTitle> title();
+    GProperty<PersonGender> gender();
+    GProperty<PersonMaritalStatus> maritalStatus();
+}
+</pre>
+
+In this case, we can use "dynamic proxies" (from ~java.lang.reflect), to access our bean 
+properties, rather than looking them up using string literal references eg. via ~BeanInfo. 
+Our proxy object will use the ~Method name to look up the property. 
+
+Also, we have the option of not creating a backing bean for starters, which lends itself 
+towards rapid prototyping, since the above property interface is clearly quite concise. 
+
+<br>
+
+<table>
+<tr>
+<td>
+<form action='https://aptframework.dev.java.net/gooey/beanProxy.html'> 
+<a href='https://aptframework.dev.java.net/gooey/beanProxy.html' 
+  style="text-decoration: none;">
+<input type=submit value="Gooey Bean Proxy" />
+</a>
+</form>    
+<td>    
+  <form action='https://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='https://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Gooey Content'/></a>
+  </form>
+<td>
+  <form action='https://aptframework.dev.java.net/foundation/contents.html'>
+    <a href='https://aptframework.dev.java.net/foundation/contents.html'
+      style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+  </form>
+</table>

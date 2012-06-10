@@ -1,0 +1,43 @@
+
+
+This "Jelly Beans" series deals with data entities, as required for the "Gooey Beans" series' demos. Together with "Hyper Beans", i'm calling them the "Foundation Trilogy" :)
+
+And yes, it's a scifi/fantasy trilogy in 42 parts, essentially about writing database applications using Swing.
+
+So we create our "database" as an in-memory-only object graph, which is populated with test data when we startup our app. That is, we "save" our entity beans in a <tt>TreeMap</tt>, without actually persisting them to a database. For GUI prototyping and demos, this is not as useless as it sounds ;)
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: #ccff00;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/database.png" width="32" height="32" align="left" hspace="8"/> <b>Mock Persistence:</b> <i>A part of the "Jelly Beans" part of a trilogy in 42 parts"</i></div></a>
+
+We create test data at startup as follows.
+
+<pre> 
+public class ContactTestData {
+    ...
+    DPerson jackSparrow = 
+            createPerson("jsparrow", "Jack Sparrow", "captjs@blackpearl");
+    ...
+    DCountry jamaicaCountry = 
+            createCountry("jm", "Jamaica", "jm", 1876, jmd);
+    ...
+    DRegion portRoyalRegion = 
+            createCityRegion(jamaicaRegion, "Port Royal");
+    ...    
+    protected DPerson createPerson(String personId, String personName, 
+            String emailAddress) {
+        DPerson person = new DPerson();
+        person.setPersonId(personId);
+        ...
+        entityManager.personInfo.save(person); 
+        return person;
+    }
+    ...        
+}
+</pre>
+
+where <tt>entityManager</tt> declares our "entity info" objects e.g. <tt>DPersonInfo</tt>, which serve as "data access objects" e.g. for <tt>DPerson</tt> entities. 
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

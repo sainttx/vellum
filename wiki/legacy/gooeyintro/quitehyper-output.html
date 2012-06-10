@@ -1,0 +1,334 @@
+
+<title>Enhanced DTs: Boiler Room DTs</title>
+
+<style type='text/css'>
+    p,li {
+    font-family: Verdana, Helvetica, Arial, sans-serif; 
+    font-size: 10pt;
+    }
+    blockquote {
+    font-family: Verdana, Helvetica, Arial, sans-serif; 
+    font-size: 10pt;
+    font-style: italic;
+    }
+    .java,pre {
+    background-color: fafafa; 
+    padding-left: 4px; 
+    border: 1px dashed #ccc; 
+    font-family: 'courier new', courier, mono; 
+    font-size: 11pt; 
+    width: 800px; 
+    clear: both; 
+    overflow: auto; 
+    padding-bottom: 0.2em;
+    }    
+</style>    
+
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/boilerplate1_250.jpg" width="250" height="167"
+vspace=8 hspace=16 align=left />
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p><br><a name='title' style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 12pt;'><div style='text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: darkgray;'>Enhanced DTs: Boiler Room DTs</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Sometimes our code seems a bit messy, or verbose, with repetitive boilerplate, or whatever. 
+After fighting it every which way, we realise there's just no way getting around it. <i>D'oh!</i>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+So what to do? One "solution" is to isolate messy code in a class whose main job is... 
+to isolate our messy code! You know, like sweeping it under a rug. So that it doesn't clutter 
+up our important code. If it's pure brainless boilerplate with no logic, then we can 
+look the other way when we have to edit it, and when we don't.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Having piles of anonymous classes, and anonymous classes within anonymous classes, 
+does tend to look a bit messy. Closures would neaten them up somewhat, 
+but we don't have closures yet. In the meantime... let's sweep them under the rug!
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p><br><a name='our_gui_example' style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'><div style='text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>Our GUI Example</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+For example, let's consider the following fantasy Email application. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<img alt="supportassistantgui.png" src="http://weblogs.java.net/blog/evanx/archive/supportassistantgui.png" width="799" height="258" />
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+which we might implement as follows.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<pre style='background-color: white; font-family: "courier new", courier, mono;'><span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>class</span> SupportAssistantGui <span style='color: #000099; font-weight: bold;'>extends</span> JFrame <span style='color: #000099; font-weight: bold;'>implements</span> ActionListener {
+    ...
+    QConnection connection = QSession.<span style='font-weight: bold;'>getSession</span>().<span style='font-weight: bold;'>getConnection</span>();
+    ...    
+    JButton checkForNewMessagesButton = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>JButton</span>(<span style='color: #99006b;'>"Check for new messages"</span>);
+    JButton replyButton = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>JButton</span>(<span style='color: #99006b;'>"Reply"</span>);
+    JButton replyToAllButton = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>JButton</span>(<span style='color: #99006b;'>"Reply to all"</span>);
+    InboxTableModel inboxTableModel = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>InboxTableModel</span>();
+    JComboBox reply = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>JComboBox</span>(<span style='color: #000099; font-weight: bold;'>new</span> Object[] {
+        <span style='color: #99006b;'>"It must be a data problem."</span>,
+        <span style='color: #99006b;'>"It must be a hardware problem."</span>,
+        <span style='color: #99006b;'>"It must be the wrong version."</span>,
+        <span style='color: #99006b;'>"That's weird - it worked yesterday."</span>,
+        <span style='color: #99006b;'>"Somebody must have changed my code."</span>,
+        <span style='color: #99006b;'>"I haven't touched that module in weeks."</span>,
+        <span style='color: #99006b;'>"It works on my machine."</span>
+    });
+    ...
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>actionPerformed</span>(ActionEvent event) {
+        <span style='color: #000099; font-weight: bold;'>if</span> (event.<span style='font-weight: bold;'>getSource</span>() == checkForNewMessagesButton) {
+            checkForNewMessagesButton.<span style='font-weight: bold;'>setEnabled</span>(<span style='color: #000099; font-weight: bold;'>false</span>);
+            SwingWorker worker = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>SwingWorker</span>() {
+                <span style='color: #000099; font-weight: bold;'>protected</span> Object <span style='font-weight: bold;'>doInBackground</span>() <span style='color: #000099; font-weight: bold;'>throws</span> Exception {
+                    <span style='font-weight: bold;'>checkForNewMessages</span>();
+                    <span style='font-weight: bold;'>publish</span>(); <span style='color: #777;'>// invokes process() in the EDT</span>
+                    <span style='color: #000099; font-weight: bold;'>return</span> <span style='color: #000099; font-weight: bold;'>null</span>;
+                }
+                <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>process</span>() {
+                }
+                <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>done</span>() {
+                    checkForNewMessagesButton.<span style='font-weight: bold;'>setEnabled</span>(<span style='color: #000099; font-weight: bold;'>true</span>);
+                }
+            };
+            worker.<span style='font-weight: bold;'>execute</span>();
+        }
+        ...
+    }
+}
+</pre>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Since it make take some time to check for new email messages, and we don't want to the block the 
+EDT, we invoke <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>checkForNewMessages()</span> using a <a style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt; font-weight: normal; text-decoration: underline; color: gray; font-style: italic;' href='http://swingworker.dev.java.net'><span style='color: black;'>SwingWorker</span></a>
+which will create a thread for us outside the EDT.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<pre style='background-color: white; font-family: "courier new", courier, mono;'>    BasicEdtInvoker invoker = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>BasicEdtInvoker</span>(); 
+    ...
+    <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>checkForNewMessages</span>() {
+        <span style='color: #000099; font-weight: bold;'>try</span> {
+            QRequest message = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>CheckForNewMessagesRequest</span>();
+            <span style='color: #000099; font-weight: bold;'>final</span> QResponse response = connection.<span style='font-weight: bold;'>sendRequest</span>(message);
+            invoker.<span style='font-weight: bold;'>invokeAndWait</span>(<span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>Runnable</span>() {
+                <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>run</span>() {
+                    <span style='font-weight: bold;'>updateGuiWithNewMessages</span>((CheckForNewMessagesResponse) response);
+                }
+            });
+            ...
+        } <span style='color: #000099; font-weight: bold;'>catch</span> (IOException e) {
+            invoker.<span style='font-weight: bold;'>showExceptionDialog</span>(e);
+        }
+    }
+  
+    <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>updateGuiWithNewMessages</span>(CheckForNewMessagesResponse response) {
+       <span style='color: #777;'>... // update inboxView</span>
+    }   
+}
+</pre>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Since the above method is running outside the EDT, we need to invoke any GUI updates
+eg. <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>updateGuiNewMessages()</span>, using <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>invokeAndWait()</span>. Of course we could put this 
+in the <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>process()</span> method in our <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>SwingWorker</span>, and invoke it using <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>publish()</span>.
+And we can update the GUI in the <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>done()</span> method too.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+But let's consider we have a succession of long tasks (eg. communicating 
+with a webservice) with interspersed GUI updates to perform, 
+and let's say we wish to program this relatively naturally 
+without loads of nested anonymous classes.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p><br><a name='edt_support' style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'><div style='text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>EDT Support</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+In the code above, we delegate to an EDT support class,  which is implemented as follows. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<pre style='background-color: white; font-family: "courier new", courier, mono;'><span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>class</span> BasicEdtInvoker {    
+    ...
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>invokeAndWait</span>(<span style='color: #000099; font-weight: bold;'>final</span> Runnable runnable) {
+        <span style='color: #000099; font-weight: bold;'>try</span> {
+            SwingUtilities.<span style='font-weight: bold;'>invokeAndWait</span>(runnable);
+        } <span style='color: #000099; font-weight: bold;'>catch</span> (InvocationTargetException ite) {
+            <span style='font-weight: bold;'>showExceptionDialog</span>(ite.<span style='font-weight: bold;'>getCause</span>());
+        } <span style='color: #000099; font-weight: bold;'>catch</span> (InterruptedException ie) {
+            <span style='font-weight: bold;'>showExceptionDialog</span>(ie);
+        }
+    }
+            
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>startWorker</span>(<span style='color: #000099; font-weight: bold;'>final</span> Runnable runnable) {
+        SwingWorker worker = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>SwingWorker</span>() {
+            <span style='color: #000099; font-weight: bold;'>protected</span> Object <span style='font-weight: bold;'>doInBackground</span>() <span style='color: #000099; font-weight: bold;'>throws</span> Exception {
+                <span style='color: #000099; font-weight: bold;'>try</span> {
+                   runnable.<span style='font-weight: bold;'>run</span>();
+                   <span style='color: #000099; font-weight: bold;'>return</span> <span style='color: #000099; font-weight: bold;'>null</span>;
+                } <span style='color: #000099; font-weight: bold;'>catch</span> (Throwable e) {
+                   <span style='font-weight: bold;'>showExceptionDialog</span>(e);
+                }
+            }
+        };
+        worker.<span style='font-weight: bold;'>execute</span>();
+    }
+    
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>setEnabled</span>(<span style='color: #000099; font-weight: bold;'>final</span> Component component, <span style='color: #000099; font-weight: bold;'>final</span> <span style='color: #000099; font-weight: bold;'>boolean</span> enabled) {
+        <span style='font-weight: bold;'>invokeAndWait</span>(<span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>Runnable</span>() {
+            <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>run</span>() {
+                component.<span style='font-weight: bold;'>setEnabled</span>(enabled);
+            }
+        });
+    }    
+    ...
+    JFrame applicationFrame = application.<span style='font-weight: bold;'>getApplicationFrame</span>();
+    JPanel glassPane = application.<span style='font-weight: bold;'>getGlassPane</span>();
+
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>setWaitCursor</span>(<span style='color: #000099; font-weight: bold;'>final</span> <span style='color: #000099; font-weight: bold;'>boolean</span> waitCursor) {
+        <span style='font-weight: bold;'>invokeAndWait</span>(<span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>Runnable</span>() {
+            <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>run</span>() {
+                <span style='color: #000099; font-weight: bold;'>if</span> (applicationFrame != <span style='color: #000099; font-weight: bold;'>null</span>) {
+                   Cursor cursor = Cursor.<span style='font-weight: bold;'>getPredefinedCursor</span>(Cursor.WAIT_CURSOR);
+                   <span style='color: #000099; font-weight: bold;'>if</span> (!waitCursor) cursor = <span style='color: #000099; font-weight: bold;'>null</span>;
+                   applicationFrame.<span style='font-weight: bold;'>setCursor</span>(cursor);                
+                   <span style='color: #000099; font-weight: bold;'>if</span> (glassPane != <span style='color: #000099; font-weight: bold;'>null</span>) glassPane.<span style='font-weight: bold;'>setVisible</span>(waitCursor);
+                }
+            }
+        });
+    }
+
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>showExceptionDialog</span>(Throwable e) {
+        JOptionPane.<span style='font-weight: bold;'>showMessageDialog</span>(<span style='color: #000099; font-weight: bold;'>null</span>, e.<span style='font-weight: bold;'>getMessage</span>());
+    }    
+}
+</pre>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+So from our <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>doInBackground()</span> methods, we use the above helper to perform any GUI updates,
+using <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>invokeAndWait()</span> as necessary.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p><br><a name='isolated_boilerplated_peer' style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'><div style='text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>Isolated Boilerplated Peer</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Getting back to our application... 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Let's sweep all our messy "closures" in <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>SupportAssistantGui</span> into <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>SupportAssistantGuiInvoker</span>,
+which we implement as follows.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<pre style='background-color: white; font-family: "courier new", courier, mono;'><span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>class</span> SupportAssistantGuiInvoker <span style='color: #000099; font-weight: bold;'>extends</span> BasicEdtInvoker {
+    SupportAssistantGui target;
+    
+    <span style='color: #000099; font-weight: bold;'>protected</span> <span style='font-weight: bold;'>SupportAssistantGuiInvoker</span>(SupportAssistantGui target) {
+        <span style='color: #000099; font-weight: bold;'>this</span>.target = target;
+    }
+    
+    <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>checkForNewMessages</span>() {
+        <span style='font-weight: bold;'>startWorker</span>(<span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>Runnable</span>() {
+            <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>run</span>() {
+                target.<span style='font-weight: bold;'>checkForNewMessages</span>();
+            }
+        });
+    }
+    
+    <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>updateGuiWithNewMessages</span>(<span style='color: #000099; font-weight: bold;'>final</span> CheckForNewMessagesResponse response) {
+        <span style='font-weight: bold;'>invokeAndWait</span>(<span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>Runnable</span>() {
+            <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>run</span>() {
+                target.<span style='font-weight: bold;'>updateGuiWithNewMessages</span>(response);
+            }
+        });
+    }        
+    ...
+}
+</pre>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+So the above is essentially a delegating class, full of boilerplate code, to 
+invoke methods on <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>SupportAssistantGui</span> either in the background, or in the EDT.
+It's messy, but it's simple, and easy to cut and paste the boilerplate, because 
+it's full of all the same boilerplate code. <i>Like i said, we look the other way 
+when we are working on this prodigal class.</i>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Then our main <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>SupportAssistantGui</span> becomes a bit neater, as follows.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<pre style='background-color: white; font-family: "courier new", courier, mono;'><span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>class</span> SupportAssistantGui <span style='color: #000099; font-weight: bold;'>extends</span> JFrame <span style='color: #000099; font-weight: bold;'>implements</span> ActionListener {    
+    SupportAssistantGuiInvoker invoker = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>SupportAssistantGuiInvoker</span>(<span style='color: #000099; font-weight: bold;'>this</span>);
+    ...
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>actionPerformed</span>(ActionEvent event) {
+        <span style='color: #000099; font-weight: bold;'>if</span> (event.<span style='font-weight: bold;'>getSource</span>() == checkForNewMessagesButton) {
+            <span style='color: #000099; font-weight: bold;'>if</span> (event.<span style='font-weight: bold;'>getSource</span>() == checkForNewMessagesButton) {
+                invoker.<span style='font-weight: bold;'>checkForNewMessages</span>();
+            }
+        }
+    }
+    
+    <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>checkForNewMessages</span>() {
+        invoker.<span style='font-weight: bold;'>setEnabled</span>(checkForNewMessagesButton, <span style='color: #000099; font-weight: bold;'>false</span>);
+        <span style='color: #000099; font-weight: bold;'>try</span> {
+            QRequest message = <span style='color: #000099; font-weight: bold;'>new</span> <span style='font-weight: bold;'>CheckForNewMessagesRequest</span>();
+            QResponse response = connection.<span style='font-weight: bold;'>sendRequest</span>(message);
+            invoker.<span style='font-weight: bold;'>updateGuiWithNewMessages</span>((CheckForNewMessagesResponse) response);
+        } <span style='color: #000099; font-weight: bold;'>catch</span> (IOException e) {
+            invoker.<span style='font-weight: bold;'>showExceptionDialog</span>(e);
+        } <span style='color: #000099; font-weight: bold;'>finally</span> {
+            invoker.<span style='font-weight: bold;'>setEnabled</span>(checkForNewMessagesButton, <span style='color: #000099; font-weight: bold;'>true</span>);
+        }
+    }
+    ...
+    <span style='color: #000099; font-weight: bold;'>protected</span> <span style='color: #000099; font-weight: bold;'>void</span> <span style='font-weight: bold;'>updateGuiWithNewMessages</span>(CheckForNewMessagesResponse response) {
+       <span style='color: #777;'>... // update inboxView</span>
+    }   
+}    
+</pre>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+I would say that looks more like we would want it to look, what do you think!? 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p><br><a name='title' style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 12pt;'><div style='text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: darkgray;'>Conclusion</div></a>
+
+<div style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt; font-style: italic; text-align: right; margin-top: -8px;'>"Mmmm... crumbled-up cookie things." Homer Simpson</div>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Even in our favourite language, there are some things that get quite messy, 
+like Swing EDT programming using anonymous classes nested in anonymous classes,
+strung together with anonymous classes. Closures would make the code less verbose. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+In the meantime, we can always isolate code into a peer class, that is full of 
+boilerplate code, and otherwise contains no logic that unsuspecting eye balls 
+will have to glaze over later. Then our important code is less cluttered and 
+easier to read. More donkey work is required up front for this, but the result 
+is neater code that will be easier to read and maintain later. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+In this case, we aren't using any magic tricks, which is good. We are just 
+increasing the number of the classes in our application. It's a logical argument that 
+if you increase the number of artifacts (classes and/or methods) in the application, 
+then the size and complexity of the individual artifacts will tend to decrease. 
+This is my personal silver bullet, if i have one. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Having successfully avoided magic tricks this time, next time we'll start investigating
+what those magic tricks might be! First we'll try dynamic proxies, to remove 
+the boilerplate code. And finally we'll look at using CGLIB's "Enchancer" 
+to get us some Enhanced DTs. 
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p><br><a name='sneak_preview' style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'><div style='text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>Sneak Preview</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+Here's a sneak preview of our <span style='font-family: "courier new", courier, mono; font-size: 10pt;'>SupportAssistantGui</span> demo application.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<a href="http://aptframework.dev.java.net/jnlp/supportassistant.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+<tt>(SupportAssistant, 150k/500k, unsandboxed, Java5)</tt>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/supportassistant_netbeans2.png" width="799" height="417" />
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<p><br><a name='sequels' style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 11pt;'><div style='text-decoration: none; font-weight: bold; font-style: italic; border-bottom: solid 1px; border-color: lightgray;'>Sequels</div></a>
+
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+The related sequels are 
+<a style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt; font-weight: normal; text-decoration: underline; color: gray; font-style: italic;' href='http://aptframework.dev.java.net/edt/edtOptionPane.html'><span style='color: black;'>JOptionPane DTs</span></a>,
+<a style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt; font-weight: normal; text-decoration: underline; color: gray; font-style: italic;' href='http://aptframework.dev.java.net/edt/eventPump.html'><span style='color: black;'>Event Pump DTs</span></a> and
+still to come, the finale <i><u>Enhanced DTs with CGLIB</u></i>.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+See also <a style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt; font-weight: normal; text-decoration: underline; color: gray; font-style: italic;' href='http://weblogs.java.net/blog/evanx/archive/2006/10/enhanced_dts_ex.html'><span style='color: black;'>Progress Worker</span></a>.
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>
+<br>
+<table>
+<tr>
+<td>
+  <form action='http://weblogs.java.net/blog/evanx/archive/2006/11/enhanced_dts_ex_1.html'>
+  <a href='http://weblogs.java.net/blog/evanx/archive/2006/11/enhanced_dts_ex_1.html' 
+  style='text-decoration: none;'><input type=submit value='Comment'/></a></form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+  <a href='http://aptframework.dev.java.net/gooey/contents.html' 
+  style='text-decoration: none;'><input type=submit value='Contents'/></a></form>
+</table>
+<p style='font-family: Verdana, Helvetica, Arial, sans-serif; font-size: 10pt;'>

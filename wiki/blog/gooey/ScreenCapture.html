@@ -1,0 +1,26 @@
+
+For documentation purposes (and perhaps remote support), we need snapshot images of our application. So let's build such support directly into our application itself.
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow; border-top: 0px; margin: 0px;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/><b>Screen Capture:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+We can capture whole desktop, and save it to a PNG file, as follows. 
+<pre>
+    public void captureScreen(String fileName) throws Exception {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        BufferedImage image = new Robot().createScreenCapture(new Rectangle(screenSize));
+        ImageIO.write(image, "png", new File(fileName));
+    }
+</pre>
+
+Alternatively, we might capture our <tt>JFrame</tt>, including its window decoration, as follows.  
+<pre>
+    public void captureFrame(JFrame frame, String fileName) throws Exception {
+        BufferedImage image = new Robot().createScreenCapture(frame.getBounds());
+        ImageIO.write(image, "png", new File(fileName));
+    }
+</pre>
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.

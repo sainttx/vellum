@@ -1,0 +1,21 @@
+
+In <a href='http://blogs.sun.com/chrisoliver/entry/poor_man%27s_multi-vm'>Poor man's Multi-VM</a>, <a href='http://blogs.sun.com/chrisoliver'>Chris Oliver</a> discusses his <tt>JApplication</tt> class, which he uses for his awesome <a href='http://blogs.sun.com/chrisoliver/entry/more_f3_demos'>F3 demos</a>.
+
+<img alt="f3demo.png" src="http://weblogs.java.net/blog/evanx/archive/f3demo.png" width="500" height="369" />
+
+Let's take a walk through his <a href='http://blogs.sun.com/chrisoliver/resource/japp.zip'>JApplication code</a> to see how he achieves this feat...
+
+<tt>JApplication</tt> creates a server which listens for connections, installs itself in the system tray and provides an application manager frame.
+
+To launch an application, we open a socket connection, and the send through the command-line parameters for the application to the server, ie. <tt>-classpath</tt>, the main class name and arguments for the <tt>main()</tt> method, just as on the regular command-line for <tt>java</tt>.
+
+The server creates a <tt>URLClassLoader</tt> with the specified jars, and runs the main class in a new thread.
+
+When starting a new application, a thread group is created. The server installs new streams for <tt>System.out</tt> and <tt>System.err</tt>, which direct the output to the streams for the current thread group. 
+
+The output stream for the thread group is the output stream for the socket connection used to launch the application. <tt>System.exit()</tt> is trapped using a <tt>SecurityManager</tt>, and the streams for the thread group are closed. 
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

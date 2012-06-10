@@ -1,0 +1,116 @@
+Enhanced DTs //htmltitle
+
+<!--
+src="http://weblogs.java.net/blog/evanx/archive/boilerplate_blue200.jpg" width="200" height="133"
+-->
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/boilerplate_blue250.jpg" width="250" height="167"
+vspace=8 hspace=16 align=left /> 
+
+We try some magic tricks to avoid boilerplate EDT code. First we use dynamic proxies. 
+This makes the code is more difficult to navigate using our IDE. Nevertheless it is 
+potentially useful for general utility classes whose methods should all run in the 
+EDT, eg. to enable EDT-agnostic programming in background threads.
+
+Finally, we investigate using byte code manipulation using :{CGLib}. //http://cglib.sf.net
+We intercept invocations, inspect for annotations, and then 
+run the method in the background or in the EDT, according to the annotation. 
+This seems to be a better option than dynamic proxies, since we don't need 
+to introduce an interface, and navigation in our IDE is unaffected. 
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/edt/enhanced.html'> 
+<a href='http://aptframework.dev.java.net/edt/enhanced.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Enhanced DTs' />
+</a>
+</form>
+</table>
+
+<br>
+
+Code sample //section
+
+We continue with our fantasy ~SupportAssistantGui application from the :{Boiler Room} prequel. //http://aptframework.dev.java.net/article/boilerRoom.html
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/edtEnhancedInbox700.png" width="700" height="228"
+vspace=0 hspace=0 />
+
+<pre class='java'> 
+public class SupportAssistantGui implements ActionListener {
+    ...
+    JButton checkForNewMessagesButton = new JButton("Check for new messages");
+    ...
+    @InBackgroundAnnotation()
+    protected void checkForNewMessages() { 
+        swingHelper.setEnabled(checkForNewMessagesButton, false);
+        try {
+            ...
+            updateGuiWithNewMessages((CheckForNewMessagesResponse) response);
+        } catch (IOException e) {
+            swingHelper.showExceptionDialog(e);
+        } finally {
+            swingHelper.setEnabled(checkForNewMessagesButton, true);
+        }
+    }
+    
+    @InEdtAnnotation()
+    protected void updateGuiWithNewMessages(CheckForNewMessagesResponse response) {
+        ...
+    }
+    ...
+}
+</pre>
+
+where the method annotations determine whether that method is invoked in the EDT using 
+~invokeAndWait() or in a background ~SwingWorker thread, courtesy of :{CGLIB}'s //http://cglib.sf.net
+interceptor. 
+
+Demo //section
+
+The following screenshot shows the method interceptor invocating methods in 
+succession, switching into a background thread for a long task (so as not to block to the EDT),
+and then back into the EDT, thanks to the annotations on the
+methods been invoked, ie. to update the GUI intermittently during the 
+series of long tasks. 
+
+<a href="http://aptframework.dev.java.net/jnlp/supportassistant.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+<i>(SupportAssistant, 200k/650k, unsandboxed, Java5)</i>
+
+<img
+src="http://weblogs.java.net/blog/evanx/archive/supportAssistantConsole700.png" width="700" height="284" 
+vspace=0 hspace=0 />
+
+where the first ~true or ~false indicates the EDT. 
+
+<!--
+src="http://weblogs.java.net/blog/evanx/archive/edtEnhancedConsole700.png" width="700" height="235" 
+-->
+
+<br>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/edt/enhanced.html'> 
+<a href='http://aptframework.dev.java.net/edt/enhanced.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Enhanced DTs' />
+</a>
+</form>
+<td>
+<form action='http://aptframework.dev.java.net/gooey/contents.html'>
+<a href='http://aptframework.dev.java.net/gooey/contents.html'
+style="text-decoration: none;"> 
+<input type=submit value='Other Gooey Stories'/>
+</a>
+</form>
+<td>
+  <form action='http://aptframework.dev.java.net/jnlp/supportassistant.jnlp'>
+  <a href='http://aptframework.dev.java.net/jnlp/supportassistant.jnlp' 
+  style='text-decoration: none;'><input type=submit value='Support Assistant Demo'/></a></form>  
+</table>
+</div>

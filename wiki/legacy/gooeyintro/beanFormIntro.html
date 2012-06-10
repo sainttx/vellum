@@ -1,0 +1,128 @@
+
+Gooey Beans Form //htmltitle
+
+We use an MVC architecture, with some simple
+"beans binding" from our form to our model.
+Our "model" is a POJO, as in the 
+:{Presentation Model} pattern. //http://www.martinfowler.com/eaaDev/PresentationModel.html 
+We explicitly declare our properties in a model info class as presented earlier in 
+:{Gooey Beans Info}. //http://aptframework.dev.java.net/gooey/beanInfo.html
+
+In our controller we create "adapters" for the input components in our form,
+eg. ~JTextField, ~JFormattedTextField, ~JCheckBox and ~JComboBox. Our form might be created 
+using Matisse, so we bind our adapters to our form's (~private) input components 
+using reflection.
+
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/beanForm.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Beans Form, an historical drama"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/beanForm.html'> 
+<a href='http://aptframework.dev.java.net/gooey/beanForm.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Beans Form' />
+</a>
+</form>
+</table>
+
+
+Code Snippet //section 
+
+We implemented a //http://www.martinfowler.com/eaaDev/PresentationModel.html
+model object in :{Gooey Beans Info}, //http://aptframework.dev.java.net/gooey/beanInfo.html
+and a form in :{Group Layout Therapy}. //http://aptframework.dev.java.net/gooey/groupLayout.html
+We now implement the controller as follows.
+
+<pre class='java'>
+public class PersonInfoController implements ActionListener, QGooeyWorksheet {    
+    ...
+    PersonInfoForm form = new PersonInfoForm();
+    PersonInfoModel model = new PersonInfoModel();
+    PersonInfoModelInfo modelInfo = new PersonInfoModelInfo();
+    
+    QGooeyFormHelper<PersonInfoModel> gooey = 
+            new QGooeyFormHelper(this, model);
+    ...    
+    QTextFieldAdapter lastName =
+            gooey.createTextFieldAdapter(modelInfo.lastName);    
+    QFormattedTextFieldAdapter dependents =
+            gooey.createFormattedTextFieldAdapter(modelInfo.dependents);
+    QCheckBoxAdapter confirmed =
+            gooey.createCheckBoxAdapter(modelInfo.confirmed);
+    QComboBoxAdapter title =
+            gooey.createComboBoxAdapter(modelInfo.title);
+    ...    
+    public PersonInfoController() {
+        gooey.setForm(form);
+    }
+    
+    public void actionPerformed(ActionEvent event) {
+        try {
+            gooey.refreshModel();
+            ... // process model
+            gooey.refreshForm();
+            gooey.publishInfo(Level.INFO, null);
+        } catch (Exception e) {
+            gooey.publishException(e, Level.WARNING, null);
+        }
+    }
+    ...
+}
+</pre>
+
+where the component adapters are created with a bean property courtesy of our 
+"model info" class. They enable beans binding to our POJO presentation 
+model object. We provide methods to refresh our model from the form, 
+and visa versa, as seen in the above ~actionPerformed() method. 
+
+Our input component adapters are connected to the components on our form 
+using reflection, when we invoke ~setForm() in the above constructor.  
+If this form is created using Netbeans, then 
+those components are ~private. That's fine because we manipulate them in 
+our controller via the adapters.
+
+Demo //section
+
+We continue with the same demo as in the prequel 
+:{Gooey Beans Info}. //http://aptframework.dev.java.net/gooey/beanInfo.html
+
+<a href="http://aptframework.dev.java.net/jnlp/personinfo.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch" /></a>
+   &nbsp; <i>(PersonInfo, 150k/500k, unsandboxed, Java6)</i>
+<br>
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/personInfoJudy.png" width="700" height="209"
+/>
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/beanForm.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/beanForm.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Beans Form' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/jnlp/personinfo.jnlp'>
+    <a href='http://aptframework.dev.java.net/jnlp/personinfo.jnlp' 
+      style='text-decoration: none;'><input type=submit value='Person Info Demo'/></a>
+  </form>
+</table>

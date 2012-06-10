@@ -1,0 +1,54 @@
+
+Having defined style objects in the <a href='http://weblogs.java.net/blog/evanx/archive/2006/12/hyper_beans_1_h.html'><u>Hyper Style</u></a> prequel, we build an "HTML builder" to generate HTML/CSS.
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: cyan;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/print_printer.png" width="32" height="32" align="left" hspace="8"/> <b>HTML Builder:</b> <i>A part of the "Hyper Beans" part of a trilogy in 42 parts"</i></div></a>
+
+<pre>
+public class QHyperArticleHtmlBuilder extends QHtmlBuilder {
+    QStyle anchorStyle = createStyle("anchorStyle", a);
+    QStyle sectionStyle = createStyle("sectionStyle", div);
+    QStyle subsectionStyle = createStyle("subsectionStyle", div);
+    ...    
+    public String buildSubSectionHeading(String anchorName, String text) {
+        return buildAnchorHeading(subsectionStyle, anchorName, text);
+    }
+    
+    protected String buildAnchorHeading(QStyle divStyle, 
+            String anchorName, String text) {
+        QMutableElement element = create(p);
+        element.add(br);
+        element.add(create(a, anchorStyle, name.create(anchorName)))
+        .add(create(div, divStyle, text));
+        return element.buildHtml();
+    }
+
+    public String buildLink(String url, String label) {
+        QMutableElement element = create(a, anchorStyle, href.create(url));
+        element.add(create(span, underlineStyle))
+        .add(create(span, linkStyle, label));
+        return element.buildHtml();
+    }
+}
+</pre>
+
+where <tt>QHtmlBuilder</tt> defines the "immutable HTML elements" eg. <tt>pre</tt>, <tt>div</tt>, <tt>p</tt>, <i>et al</i>, from which we create mutable elements, with attributes (eg. <tt>name</tt>, <tt>href</tt>, <i>et al</i>), a given style i.e. CSS <tt>class</tt>, child elements, and/or text content. 
+
+Besides HTML fragments for sections headings and what-not,  we get out the CSS text as follows.
+
+<pre>
+pre.javaStyle {
+  font-family: courier new, courier, mono;
+  background-color: #fbfbfb;
+  font-size: 11pt;
+  width: 800px;
+  border: dashed 1px;
+  border-color: lightgray;
+  padding-left: 4px;
+}
+</pre>    
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

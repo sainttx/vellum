@@ -1,0 +1,90 @@
+
+Bound Gooey Beans //htmltitle
+
+In the :{Gooey Beans Info} prequel, //http://aptframework.dev.java.net/gooey/beanInfo.html
+we explicitly declare properties. Now we allow a bean info instance to be bound to a specific bean, 
+in order to support bound properties ie. firing ~PropertyChangeEvent's.
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/boundBean.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Bound Gooey Beans, a short story"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, the GUI part of a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/boundBean.html'> 
+<a href='http://aptframework.dev.java.net/gooey/boundBean.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Bound Gooey Beans' />
+</a>
+</form>
+</table>
+
+
+Code Snippet //section 
+
+In our bean, we instantiate a bound bean info class with ~PropertyChangeSupport as follows. 
+
+<pre class='java'>
+public class BakedBean {
+    public final BakedBeanInfo info = new BakedBeanInfo(this);
+    
+    private BigInteger barcode;
+    private String label;
+    private Integer bakingTemparature;
+    private BigDecimal medianLength;
+    ...   
+    public BakedBean() {
+    }
+    ...
+    public void setBarcode(BigInteger barcode) {
+        this.barcode = barcode;
+        info.barcode.firePropertyChanged(barcode);
+    }
+}
+</pre>
+
+where we use property "literals" from our bean info to ~firePropertyChanged(). 
+
+We can add ~PropertyChangeListener's as follows.
+
+<pre class='java'>
+public class BakedBeanDemo implements PropertyChangeListener, Runnable {
+    BakedBean bean = new BakedBean();
+    ...
+    public BakedBeanDemo() {
+        ...
+        bean.info.getPropertyChangeSupport().addPropertyChangeListener(this);
+    }
+    ...    
+}   
+</pre>
+
+<img alt="bakedBeansDemo" src="http://weblogs.java.net/blog/evanx/archive/bakedBeansDemo.png" width="700" height="325" />
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/boundBean.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/boundBean.html' 
+      style="text-decoration: none;"><input type=submit value='Bound Gooey Beans' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+  <a href='http://aptframework.dev.java.net/foundation/contents.html'
+  style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a></form>
+</table>

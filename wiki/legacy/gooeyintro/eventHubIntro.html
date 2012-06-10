@@ -1,0 +1,95 @@
+
+Gooey Event Hub //htmltitle
+
+We implement a event listener list singleton supporting weak references.
+Then we can add listeners to an object we wish to observe, and fire events to its observers, 
+without implementing any such support in the observed objects eg. ~addListener(), 
+~removeListener(), ~fireEvent().
+We can choose to fire an event in a background ~SwingWorker thread, 
+or in the EDT eg. using ~invokeLater() or ~invokeAndWait(). 
+So we might use this event hub as a basic event/message bus. 
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/eventHub.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Event Hub, a scifi action thriller"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, the GUI part of a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/eventHub.html'> 
+<a href='http://aptframework.dev.java.net/gooey/eventHub.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Event Hub' />
+</a>
+</form>
+</table>
+
+<br>
+
+Code Snippet //section 
+
+We create ~BackgroundEvent and ~UpdateGuiEvent classes to enable some EDT 
+switching as follows. 
+
+<pre class='java'>
+    public EventHubDemo() {
+        ...
+    public void actionPerformed(ActionEvent event) {
+        if (checkForNewMessagesAction.equalsActionCommand(event)) {
+           checkForNewMessagesAction.setEnabled(false);
+           eventHub.fireEventInBackground(new BackgroundEvent(this, event));
+        } ...
+    }
+    
+    protected void doInBackground(ActionEvent event, JProgressBar progressBar) {
+        if (checkForNewMessagesAction.equalsActionCommand(event)) {
+           try {
+              ...
+              eventHub.fireEventAndWait(new UpdateGuiEvent(this, event));
+           } catch (Exception e) {
+              eventHub.fireEventAndWait(new ExceptionEvent(this, event, e));
+           }
+        } ...
+    } 
+</pre>
+
+where we wish to handle ~checkForNewMessagesAction in a background ~SwingWorker thread,
+and once completed, switch back into the EDT to update the GUI.
+
+
+Demo //section
+
+<a href="http://aptframework.dev.java.net/jnlp/eventhub.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+   &nbsp; <i>(EventHub, 150k/500k, unsandboxed, Java6)</i>
+<br>
+
+<img src="http://weblogs.java.net/blog/evanx/archive/eventHubBackground.png" width="700" height="250" />
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/eventHub.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/eventHub.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Event Hub' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+    <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+        <a href='http://aptframework.dev.java.net/foundation/contents.html'
+           style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+    </form>
+</table>

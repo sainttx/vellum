@@ -1,0 +1,143 @@
+
+Gooey MVnC //htmltitle
+
+Rather than put our "application logic" in a "messy" view class, we create a 
+separate "controller" class, with event handlers.
+
+We wish this controller class to be as neat and tidy as possible
+eg. with minimal boilerplate or much else besides our application logic. 
+
+Let's explore how we might achieve this, using an 
+annotation-driven application framework, with some AOP
+and convention-over-configuration.
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/gooeyController.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey MVnC"</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/gooeyController.html'> 
+<a href='http://aptframework.dev.java.net/gooey/gooeyController.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey MVnC' />
+</a>
+
+</form>
+</table>
+
+Please submit your comments and suggestions for discussion below. 
+This is an ideas-in-progress,
+without an implementation (yet). 
+As such this article should be considered 
+to be a first exploratory draft of a design-in-progress...
+
+Next month, i'll whip up some kinda prototype, if it's deemed worth it, 
+and if i'm still unemployed ie. with time on my hands. 
+
+<table cellspacing="2px" cellpadding="4px" style="background-color: lightgray">
+<tr style="background-color: lightgray: color: white">
+<td align="center" colspan="4"><b>Gooey MVnC Guidelines Cheatsheet</b></td>
+<tr valign="top" style="background-color: #eee">
+    <td style="background-color: #eee"></td>
+    <td style="background-color: #eee"><i><b>View</b></i>&nbsp;</td>
+    <td><i><b>Controller</b>&nbsp;</i></td>
+    <td><i><b>Model</b> beans</i>&nbsp;</td>
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Code</b></i></td>
+    <td>Messy</td>    
+    <td>Neat</td>    
+    <td>Trivial</td>    
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Tool</b></i></td>
+    <td>GUI Designer</td>&nbsp;
+    <td></td>    
+    <td></td>    
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Rules</b></i></td>
+    <td>No logic</td>
+    <td>No strings</td>    
+    <td></td>
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Automation</b></i>&nbsp;</td>
+    <td>Beans Binding</td>
+    <td>Events &amp; Tasks&nbsp;</td>
+    <td>Validation</td>
+</tr>
+<tr valign="top" style="background-color: white">
+    <td style="background-color: #eee"><i><b>Tricks</b></i></td>
+    <td>Resource injection&nbsp;</td>
+    <td>AOP</td>    
+    <td></td>
+</tr>
+</table>
+
+
+Code Snippet //section 
+
+Our controller class includes annotations in order to enable our framework 
+infrastructure to automatically map events from our GUI components
+to event handler methods, and to support background tasks and EDT-switching 
+via AOP.
+
+<pre class='java'>
+public class LoginController extends GBasicController {
+   @View LoginView view = new LoginView(); // JPanel with components
+   @FormBean User user = new User(); // for form fields auto binding
+   ...
+   @BackgroundTask void fetchUsers() throws DatabaseException {
+      ... // long running task
+   }
+
+   @BackgroundTaskDone void fetchUsersDone() {
+      ... // update GUI with results from task
+   }
+
+   @EventHandler void okActionPerformed() {
+      ... // handle OK button pressed
+   }
+   
+   @EventHander void usernameEntered() throw DataException {
+      ... // validate username exists in database
+      view.password.requestFocusInWindow();
+   }
+   ...   
+}
+</pre>
+
+Annotations in our model beans, eg. ~User, relate to binding and validation,
+where we wish to support automatic binding of view components to bean 
+properties, eg. by matching component names to bean property names. 
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/gooeyController.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/gooeyController.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey MVnC' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+     <a href='http://aptframework.dev.java.net/foundation/contents.html'
+     style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+  </form>
+</table>

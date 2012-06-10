@@ -1,0 +1,46 @@
+
+We wanna style our documents and reports using neutral Java objects, to generate output artifacts e.g. HTML with CSS, and/or other formats, e.g. PDF and Excel (for reports). We model our style objects after CSS, e.g. <tt>font-family</tt>, <tt>font-weight</tt>, <tt>text-decoration</tt>, <i>et al</i>. 
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: cyan;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/print_printer.png" width="32" height="32" align="left" hspace="8"/> <b>Hyper Style:</b> <i>A part of the "Hyper Beans" part of a trilogy in 42 parts"</i></div></a>
+
+We implement style objects for generating this series of articles, using <a href='http://java.net/projects/quitehyper'><u>quitehyper</u></a>.
+
+<pre>
+public class GooeyBeansStyleManager extends QStyleManager {
+    QStyle javaStyle = createStyle("javaStyle");
+    QStyle paragraphStyle = createStyle("paragraphStyle");
+    QStyle sectionStyle = createStyle("sectionStyle");
+    QStyle subsectionStyle = createStyle("subsectionStyle");
+    ...
+    List<QFontFamily> courier = Arrays.asList(newCourierFontFamily, 
+            courierFontFamily, monospacedFontFamily);
+
+    List<QFontFamily> verdana = Arrays.asList(verdanaFontFamily, 
+            helveticaFontFamily, arialFontFamily, sansserifFontFamily);
+    
+    public GooeyArticleStyleManager() {
+        javaStyle.setFontFamily(courier);
+        javaStyle.setFontSize(11);
+        javaStyle.setBorder(dashedLine, 1);
+        javaStyle.setBorderColor(lightgrayColor);
+        javaStyle.setPadding(4, leftLocation);
+        javaStyle.setWidth(800);
+        javaStyle.setBackgroundColor(0xf4f4f4);
+        paragraphStyle.setFontFamily(verdana);
+        paragraphStyle.setFontSize(10);
+        sectionStyle.setFontFamily(verdana);
+        sectionStyle.setFontWeight(boldFontWeight);
+        sectionStyle.setFontStyle(italicFontStyle);
+        ...
+    }
+    ...
+}
+</pre>
+
+where we statically import style <tt>enums</tt> and constants, e.g. <tt>lightgrayColor</tt>, <tt>dashedLine</tt>, <tt>boldFontWeight</tt>, <i>et al</i>.
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

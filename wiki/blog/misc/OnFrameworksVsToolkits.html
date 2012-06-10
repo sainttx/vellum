@@ -1,0 +1,37 @@
+
+In response to a comment by one of newest heroes Michael Bushe (eg. of <a href="http://java.net/projects/eventbus">EventBus</a> fame) to my article
+<a href="http://weblogs.java.net/blog/evanx/archive/2006/10/enhanced_dts_ex.html">Enhanced DTs 1</a>, i wrote an essay of sorts, which i repeat below. Cos i was trying to distill my thoughts about some quite gooey stuff, and I can only think by writing eg. code and words about code. But then i am mental. <i>"Quite literally. Only joking, that wouldn't work of course."</i> heh heh.
+
+Also to the point, that blog entry was my first correct move in breaking up a long article (becoming more unmanageable by the day) into a series of byte-sized chunks, much like breaking up an unweildy framework into a set of light and fluffy toolkits. 
+
+In a postscript to that article, i mentioned another heffalump article that had become quite unmanageable, quite literally, and i was squashing that after three months of work, d'oh! And rewriting it, as <a href="http://aptframework.dev.java.net/gooey/contents.html">Gooey Beans</a> (my online vanity non-book), Woohoo! <i>"What? You were asking if i was writing a book? Yes, actually i am, so..." hee hee.</i> Because for me writing a toolkit or wha'ever, and writing an article about a toolkit, are two intertwined exercises. Check it. 
+
+<tt>essay.run()</tt>
+
+Writing an integrated framework where everything is tightly coupled, decreases its general usefulness. If it's a bag of tools, then different people can pick and choose which tool(s) they might or might not want to use, to give them some added convenience in some situtations, where it works for them. <i>Hang on, i'm sure i'm quoting this verbatim from what someone else said that i read very recently?!</i>
+
+Also from an article-writing side, one should be able to explain and demonstrate individual aspects of the framework in isolation, as independently useful toolkits, eg. beans binding, actions, and what-have-you. Because if you can't explain the software to someone in byte-size chunks that they can play with and understand, then that also decreases its general usefulness.
+
+So i want to try to separate the "framework" into more discrete toolkits, that can be used on their own. For instance maybe you want to construct a panel using Matisse, but matisse doesn't have beans binding (yet), so you want to use binding for that, ie. Presentation Model pattern - which i love, especially now that i know what it's called :)
+
+Actually quitegooey just started for dinky webstart demos, then i thought to use it as an experimental (minimal) framework - an R&D exercise actually, to keep me on my toes and able to contribute to the discussions on JSR295 and 296. 
+Writing articles is for me a design exercise. I find when i write articles, i'm standing back and can spot design flaws and see areas for improvement. So the writing process for me is a most important reflective design exercise.
+
+On the issue of using less reflection. I have a love-hate relationship with reflection, and with annotations. It's so tempting and easy to overuse these shiny things. So finding the balance is hard. I think i've found a better balance in the past few days, and i'll be writing it up of course, and publishing it very soon, in byte size chunks :)
+
+The other difficult balance, is trying the keep the application code more concise, more straighforward, and more agile (to changing domain requirements, and refactoring) - vs the simplicity, transparency and flexibility of the framework classes - which maybe we should call a convenience library that gets reused by most of application classes, to keep them agile from a domain/business/logic programming perspective. But frameworks tend to become a straight-jacket, which is my pet hate!
+
+My personal silver bullet is that the laws of um, physics, or the theory of complex systems or something, dictate that it's logical that the complexity of a class and its methods can only be reduced by increasing the number of classes (and/or methods), if mass (functionality) aint gonna be destroyed!?
+
+So i've decided to bite that bullet and increase the number of classes, and use reflection and annotations in hopefully a more balanced way, to drastically simplify the framework classes (if not the application class count), to reduce the corresponding magic happening behind the scenes, and simplify the (individual) application classes, while still keeping them refactorable. In short, to find beauty in simplicity.
+
+Most programmers aren't gonna like it cos so many classes, and i don't like it much (yet). But i do believe in simplicity and clarity, all round, with no magic black boxes. I want an application which is totally recognisable as a traditional 
+Swing application, where the "framework" just smooths over some rough edges eg. actions, configuration, and beans binding to enable presentation model pattern. And you can pick and choose when, where and which rough edges to smooth over, or not, without your application classes looking totally different when they are using some part of the framework, or not.
+
+So i'm arguing in favour of simplistic convenience toolkits for different aspects of an application, that you can opt in - rather than an over-arching framework that contains your application like a um, straight-jacket. It would be a framework only in the sense that the toolkits are "internally consistent," ie. from the same toolbag, rather than a hodge-podge of toolbags.
+
+Actually the most crucial issue for me is toolability and refactoring. I mean the basic IDE stuff like auto-completion, renaming, and navigating code. I gotta have it! So i really don't like string references. 
+
+So for example, my current thinking is that every view class has a "properties" class, and every presentation model class has a "bean info" class (to refer to its properties). All this just to avoid string references!
+
+I liked annotations as a way to get around string references. But i lost my balance there i think, and i'm trying to strike a new balance.

@@ -1,0 +1,82 @@
+
+Gooey Formatter //htmltitle
+
+We implement a singleton for formatting objects into strings, where 
+custom formatters ie. for specific types, are registered with the singleton.
+
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/gooey/formatter.html">
+<img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" 
+align="left" hspace="8"/>
+<div style="border-bottom: solid 1px; background-color: yellow;">
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Gooey Formatter, an objective expose" ;)</span>
+<br><span style="font-style: italic; color: black;">A part of "Gooey Beans, a trilogy in 42 parts"</span>
+</a>
+</div>
+</a>
+</p>
+
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/gooey/formatter.html'> 
+<a href='http://aptframework.dev.java.net/gooey/formatter.html' 
+  style="text-decoration: none;">
+<input type=submit value='Read Gooey Formatter' />
+</a>
+</form>
+</table>
+
+
+Code Snippet //section 
+
+Our singleton is implemented as follows. 
+
+<pre class='java'>
+public class QDefaultFormatter implements QFormatter {
+    public Map<Class, QFormatter> formatterMap = new HashMap();
+    ...
+    public void register(Class type, QFormatter formatter) {
+        formatterMap.put(type, formatter);
+    }
+    
+    public void register(QLabelMapFormatter formatter) {
+        QResourceMap resourceMap = new QResourceMap(formatter.getType());
+        resourceMap.configureEnumLabelMap(formatter.getType(), 
+            formatter.getLabelMap());
+        formatterMap.put(formatter.getType(), formatter);
+    }
+    ...
+    public String format(Object object) {
+        if (object == null) return "";
+        ...
+        QFormatter formatter = formatterMap.get(object.getClass());
+        if (formatter != null) return formatter.format(object);
+        return object.toString();
+    }
+    ...
+}
+</pre>
+
+where ~formatterMap is our registry map eg. for ~QLabelMapFormatter instances, which 
+map ~enum values to labels from our resource bundle.
+
+<br>
+
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/gooey/formatter.html'> 
+    <a href='http://aptframework.dev.java.net/gooey/formatter.html' 
+      style="text-decoration: none;"><input type=submit value='Gooey Formatter' /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+    <a href='http://aptframework.dev.java.net/gooey/contents.html'
+      style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/jnlp/personinfo.jnlp'>
+    <a href='http://aptframework.dev.java.net/jnlp/personinfo.jnlp' 
+      style='text-decoration: none;'><input type=submit value='Person Info Demo'/></a>
+  </form>
+</table>

@@ -1,0 +1,167 @@
+<style>
+.underlineStyle {
+  color: #bbbbbb;
+  text-underline-style: dotted;
+  text-decoration: none;
+  border-bottom: dotted 1px;
+  border-color: #bbbbbb;
+}
+span.codeStyle {
+  font-family: courier new, courier, mono;
+  font-size: 10pt;
+}
+span.linkStyle {
+  color: black;
+}
+span.urlStyle {
+  color: black;
+}
+pre.javaStyle {
+  font-family: courier new, courier, mono;
+  background-color: #fbfbfb;
+  font-size: 11pt;
+  width: 800px;
+  border: dashed 1px;
+  border-color: lightgray;
+  padding-left: 4px;
+}
+p.paragraphStyle,li.paragraphStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  color: #333333;
+  font-size: 10pt;
+}
+blockquote.blockquoteStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  color: #333333;
+  font-size: 10pt;
+}
+a.anchorStyle:link,a.anchorStyle:hover,a.anchorStyle:active,a.anchorStyle:visited {
+  text-decoration: none;
+}
+div.bannerStyle,span.bannerStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
+}
+div.subbannerStyle,span.subbannerStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 11pt;
+  font-style: italic;
+}
+div.titleStyle,span.titleStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
+  font-style: italic;
+  border-bottom: solid 2px;
+  border-color: darkgray;
+}
+div.sectionStyle,span.sectionStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+  font-style: italic;
+  border-bottom: solid 2px;
+  border-color: darkgray;
+}
+div.subsectionStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+  font-style: italic;
+  border-bottom: dotted 1px;
+  border-color: lightgray;
+}
+div.quoteStyle {
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 10pt;
+  font-style: italic;
+  text-Align: right;
+  margin-top: -8px;
+}
+</style>
+<!--
+This series is about defining, styling and/or generating documents and reports, 
+using Java code, eg. as an alternative to XML or even HTML/CSS templates, 
+even though the primary target is typically HTML/CSS. But later we wanna 
+output PDF also (eg. for business documents and reports, eg. using iText), 
+maybe LaTeX for articles (altho i think HTML is fine, and printing from 
+Firefox and using PDFCreator is quite OK), and Excel is really great for reports 
+(and we can use Apache POI), and of course we wanna support ODF cos it's nice, 
+and OpenOffice it's nice. For starters we'll look at how articles can be styled 
+and processed using quitehyper. This first article looks at style objects (for CSS). 
+The next article will look at generating CSS using those styles. 
+Later we'll look at processing HTML eg. to apply those styles using CSS, 
+but most importantly, to perform syntax highlighting of preformatted code snippet blocks. 
+-->
+<p>
+Passwords should never be seen in clear text eg. in transfer objects, 
+or in database columns. So we hash them up. Nothing to it.
+<p>
+<p>
+<p>
+<a style='text-decoration: none; color: black;' 
+href="http://aptframework.dev.java.net/jelly/passwordHash.html">
+<div class="hyperBeansTitleBoxStyle" style="border-bottom: solid 1px; background-color: #ccff00;; font-weight: bold;">
+<img src="http://weblogs.java.net/blog/evanx/archive/database.png" 
+border="0" width="32" height="32" align="left" hspace="8"/>
+<span style="font-style: normal; font-weight: bold;"><span style="color: black;">Click here to read "Password Hash"</span>
+<br><span style="font-style: italic; color: black;">Part of the "Jelly Beans" part of a trilogy in 42 parts</span>
+</div>
+</a>
+</p>
+<p>
+<p>
+<table>
+<tr><td>
+<form action='http://aptframework.dev.java.net/jelly/passwordHash.html'> 
+<a href='http://aptframework.dev.java.net/jelly/passwordHash.html' 
+  style="text-decoration: none;">
+<input type=submit value="Read Password Hash" />
+</a>
+</form>
+</table>
+<p>
+<p>
+<p>
+<!--name='code_snippet'--><br><b><u><i>Code Snippet</i></u></b>
+
+<p>
+<p>
+<pre><span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>class</span> PasswordHasher {
+    String algorithm = <span style='color: #99006b;'>"SHA-256"</span>;
+    
+    <span style='color: #000099; font-weight: bold;'>public</span> String <span style='font-weight: bold;'>hashPassword</span>(byte[] passwordBytes) 
+    <span style='color: #000099; font-weight: bold;'>throws</span> NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.<span style='font-weight: bold;'>getInstance</span>(algorithm);
+        byte[] hashBytes = digest.<span style='font-weight: bold;'>digest</span>(passwordBytes);
+        String hashString = Base64.<span style='font-weight: bold;'>encode</span>(hashBytes);
+        <span style='color: #000099; font-weight: bold;'>return</span> hashString;
+    }
+    
+    <span style='color: #000099; font-weight: bold;'>public</span> <span style='color: #000099; font-weight: bold;'>boolean</span> <span style='font-weight: bold;'>verifyPassword</span>(byte[] passwordBytes, String hashString) 
+    <span style='color: #000099; font-weight: bold;'>throws</span> NoSuchAlgorithmException {
+        <span style='color: #000099; font-weight: bold;'>return</span> <span style='font-weight: bold;'>hashPassword</span>(passwordBytes).<span style='font-weight: bold;'>equals</span>(hashString);
+    }
+}    
+</pre>
+<p>
+<p>
+<br>
+<p>
+<table>
+<tr><td>
+  <form action='http://aptframework.dev.java.net/jelly/passwordHash.html'> 
+    <a href='http://aptframework.dev.java.net/jelly/passwordHash.html' 
+      style="text-decoration: none;"><input type=submit value="Password Hash" /></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/jelly/contents.html'>
+    <a href='http://aptframework.dev.java.net/jelly/contents.html'
+      style="text-decoration: none;"><input type=submit value='Jelly Contents'/></a>
+  </form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+    <a href='http://aptframework.dev.java.net/foundation/contents.html'
+      style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a>
+</table>

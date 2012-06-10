@@ -1,0 +1,119 @@
+
+
+Event Pump DTs //htmltitle
+
+<img 
+src="http://weblogs.java.net/blog/evanx/archive/pump3_blue.jpg" width="200" height="150" 
+vspace=16 hspace=16 align="left"/>
+<br>
+It is often convenient to execute long tasks synchronously, that is to say, 
+to wait for the task to complete, so that we can then do something appropriate
+like update the GUI. In order for our GUI to remain responsive while 
+our long task is executing, we can use 
+:{foxtrot.sf.net} //http://foxtrot.sf.net
+which manages to hook into the ~EventDispatchThread.pumpEvents() 
+method to keep the events rolling. 
+
+<br>
+
+<table>
+<tr>
+<td>
+<form action='http://aptframework.dev.java.net/edt/eventPump.html'> 
+<a href='http://aptframework.dev.java.net/edt/eventPump.html' 
+style="text-decoration: none;"><input 
+style='font-weight: bold;'
+type=submit value='Read Event Pump DTs' /></a></form>
+</table>
+
+
+Salientology //section
+
+In case you don't want to read :{Event Pump DTs}, //http://aptframework.dev.java.net/edt/eventPump.html
+a scifi space opera, in all its gory detail, 
+we extract some salient bits and present them below.
+
+Code Glance //section 
+
+We might introduce a ~doInBackgroundAndWait() method as below.
+
+<pre class='java'>
+public class QEdtInvoker {
+    ...
+    public &lt;T&gt; T doInBackgroundAndWait(final Callable callable) 
+    throws Exception {
+        final QEventPump eventPump = new QEventPump();
+        SwingWorker worker = new SwingWorker() {
+            protected Object doInBackground() throws Exception {
+                try {
+                    return callable.call();
+                } finally {
+                    eventPump.done();
+                }
+            }
+        };
+        worker.execute();
+        eventPump.pumpEvents(); 
+        try {
+            return (T) worker.get();
+        } catch (Exception e) {
+            throw getActualCause(e);
+        }
+    }
+}
+</pre>
+
+An alternative to actually pumping events is to a use an "invisible" modal ~Dialog to disable 
+and block our application while executing a "background" task (synchronously).
+
+<pre class='java'>
+public class QEventPump {
+    protected JDialog dialog;
+    
+    public QEventPump(JFrame frame) {        
+        dialog = new JDialog(frame, true);
+        dialog.setUndecorated(true);
+        dialog.setBounds(0, 0, 0, 0);
+    }
+    
+    public void pumpEvents() {
+        dialog.setVisible(true);
+       
+    }
+    
+    public void done() {
+       dialog.setVisible(false);
+    }    
+}
+</pre>
+
+In this case we aren't actually pumping all events on our frame, but are disabling mouse and keyboard events by means of the modal dialog, which invokes the EDT's ~pumpEventsForHierachy() method. 
+
+
+Demo //section 
+
+The following demo displays an undecorated modal dialog which overlays our status bar (to appear
+to be our status bar) and displays a progress bar and a cancel button, while blocking 
+our application. 
+
+<a href="http://aptframework.dev.java.net/jnlp/addressform.jnlp">
+   <img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/></a>
+(AddressFormDemo, 150k/500k, unsandboxed, Java6)
+
+<br>
+
+<table>
+<tr>
+<td>
+<form action='http://aptframework.dev.java.net/edt/eventPump.html'> 
+<a href='http://aptframework.dev.java.net/edt/eventPump.html' 
+style="text-decoration: none;"><input type=submit value='Read Event Pump DTs' /></a></form>
+<td>
+<form action='http://aptframework.dev.java.net/gooey/contents.html'>
+<a href='http://aptframework.dev.java.net/gooey/contents.html'
+style="text-decoration: none;"><input type=submit value='Other Gooey Stories'/></a></form>
+<td>
+<form action='http://aptframework.dev.java.net/jnlp/addressform.jnlp'>
+<a href='http://aptframework.dev.java.net/jnlp/addressform.jnlp' 
+style='text-decoration: none;'><input type=submit value='Address Form Demo'/></a></form>
+</table>

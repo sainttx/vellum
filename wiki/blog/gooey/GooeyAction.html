@@ -1,0 +1,92 @@
+
+The top story today is... Java is GPL'ed! The future begins today! And now for something completely unmomentous...
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey Action</b>, <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+Here's the Address Form demo using actions. 
+
+<img alt="addressFormActionIcon.png" src="http://weblogs.java.net/blog/evanx/archive/addressFormActionIcon.png" width="600" height="157" />
+
+As you can see we have actions that have been configured with icons and keystrokes, and we use these to configure toolbar buttons and menu items. <i>"But Why?"</i> So that we can disable one action object, to disable the button, menu item and keystroke associated with it. Also we ensure consistency in each screen eg. of the label and tooltip in the toolbar and menus, and also across the application, using global defaults, eg. for icons and keystrokes. 
+
+Here's a code snippet of our concrete action to give you a gist.
+
+<pre>
+public class AddressFormPanel extends JPanel implements ActionListener {    
+    AddressFormPanelProperties properties = new AddressFormPanelProperties();
+    ...
+    QAction newAction = new QAction(properties.newAction);
+    QAction deleteAction = new QAction(properties.deleteAction);
+    QAction editAction = new QAction(properties.editAction);
+    QAction saveAction = new QAction(properties.saveAction);
+    QAction cancelAction = new QAction(properties.cancelAction);
+
+    JToolBar toolBar = createSmallIconToolBar(
+        newAction, deleteAtion, editAction, saveAction, cancelAction
+    );
+    ...
+    public void actionPerformed(ActionEvent event) {        
+        if (newAction.equalsActionCommand(event)) {
+            ...
+        } else if (deleteAction.equalsActionCommand(event)) {
+            ...
+        }
+        ...
+        setEnabled();
+    }
+
+    public void setEnabled() {
+        saveAction.setEnabled(isEdited());
+        cancelAction.setEnabled(isEdited());
+        deleteAction.setEnabled(isSelected());
+        ...    
+    }
+    ...
+}
+</pre>
+
+As you can see, we have an action properties object, into which we can inject resources, eg. translations. We use this properties object to create our concrete action, which we can then use to create our menu items and toolbar buttons. 
+
+We keep a global map of default action properties, and for each screen we can create new actions, and/or reference a global action, where we can override the defaults, eg. typically the tooltip eg. from a vague "Save data" default to a more informative "Save this Address Form."
+
+Our sample application code is as follows.
+
+<pre>
+public class AddressFormPanel extends JPanel implements ActionListener {    
+    AddressFormPanelProperties properties = new AddressFormPanelProperties();
+    ...
+    QAction newAction = new QAction(properties.newAction);
+    QAction deleteAction = new QAction(properties.deleteAction);
+    QAction editAction = new QAction(properties.editAction);
+    QAction saveAction = new QAction(properties.saveAction);
+    QAction cancelAction = new QAction(properties.cancelAction);
+
+    JToolBar toolBar = createSmallIconToolBar(
+        newAction, deleteAtion, editAction, saveAction, cancelAction
+    );
+    ...
+    public void actionPerformed(ActionEvent event) {        
+        if (newAction.equalsActionCommand(event)) {
+            ...
+        } else if (deleteAction.equalsActionCommand(event)) {
+            ...
+        }
+        ...
+        setEnabled();
+    }
+
+    public void setEnabled() {
+        saveAction.setEnabled(isEdited());
+        cancelAction.setEnabled(isEdited());
+        deleteAction.setEnabled(isSelected());
+        ...    
+    }
+    ...
+}
+</pre>
+where we reference the actions in our <tt>actionPerformed()</tt> method, and also of course to enable/disable them depending on the current state.
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.

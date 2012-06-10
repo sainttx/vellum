@@ -1,0 +1,40 @@
+
+We implement a event listener list singleton supporting weak references. 
+
+Then we can add listeners to an object we wish to observe, and fire events to its observers, without implementing any such support in the observed objects eg. <tt>addListener()</tt>, <tt>removeListener()</tt>, <tt>fireEvent()</tt>. 
+
+We can choose to fire an event in a background <tt>SwingWorker</tt> thread, or in the EDT e.g. using <tt>invokeLater()</tt> or <tt>invokeAndWait()</tt>. So we might use this event hub as a basic event/message bus. 
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>Gooey Event Hub, a scifi action thriller:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+We create <tt>BackgroundEvent</tt> and <tt>UpdateGuiEvent</tt> classes to enable some EDT switching as follows. 
+
+<pre>
+    public EventHubDemo() {
+        ...
+    public void actionPerformed(ActionEvent event) {
+        if (checkForNewMessagesAction.equalsActionCommand(event)) {
+           checkForNewMessagesAction.setEnabled(false);
+           eventHub.fireEventInBackground(new BackgroundEvent(this, event));
+        } ...
+    }
+    
+    protected void doInBackground(ActionEvent event, JProgressBar progressBar) {
+        if (checkForNewMessagesAction.equalsActionCommand(event)) {
+           try {
+              ...
+              eventHub.fireEventAndWait(new UpdateGuiEvent(this, event));
+           } catch (Exception e) {
+              eventHub.fireEventAndWait(new ExceptionEvent(this, event, e));
+           }
+        } ...
+    } 
+</pre>
+
+where we wish to handle <tt>checkForNewMessagesAction</tt> in a background <tt>SwingWorker</tt> thread, and once completed, switch back into the EDT to update the GUI.
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+
