@@ -1,0 +1,139 @@
+
+
+
+I spotted this handy <a href='http://www.codeandcoffee.com/2007/06/22/how-to-setup-a-subversion-server-on-linux/'><u>blog entry</u></a>
+and so decided to give it a go, on a brand new $15 linux VDS. Here are my notes, which are consequently a rehash of that blog. 
+
+<b><tt>useradd svn</tt></b>
+
+Let's decide that <tt>svnserve</tt> will run as user <tt>svn</tt>, and access repositories off its home directory i.e. <tt>/home/svn</tt>.
+
+So we create the user <tt>svn</tt> with <tt>useradd</tt>, which creates its home directory <tt>/home/svn</tt>. 
+
+<pre>
+# useradd svn
+</pre>
+
+<b><tt>svnadmin create</tt></b>
+
+We create repository using <tt>svnadmin</tt> e.g. <tt>/home/svn/aptframework</tt>.
+
+<pre>
+# useradd svn
+# su - svn
+$ svnadmin create aptframework
+</pre>
+
+If this host is <tt>aptframework.net</tt>, then this repository's URL will be <tt>svn://aptframework.net/aptframework</tt>.
+
+<b><tt>vi svnserve.conf</tt></b>
+
+In the <tt>svnserve.conf</tt> for our repository, we uncomment as follows.
+
+<pre>
+$ vi /home/svn/aptframework/conf/svnserve.conf
+anon-access = read
+auth-access = write
+password-db = passwd
+</pre>
+
+We might want to have <tt>anon-access</tt> set to <tt>none</tt> e.g. for private stuff. 
+
+In the specified <tt>passwd-db</tt> file, we add usernames and passwords for ourselves.
+
+<pre>
+$ vi /home/svn/aptframework/conf/passwd
+evanx = sshssh 
+</pre>
+
+If we want to use a common password file for multiple repositories e.g. <tt>/home/svn/passwd</tt>, then...
+
+<pre>
+$ mv /home/svn/aptframework/conf/passwd /home/svn/passwd
+$ vi /home/svn/aptframework/conf/svnserve.conf
+password-db = /home/svn/passwd
+</pre>
+where we specify the absolute path for <tt>password-db</tt> in <tt>svnserve.conf</tt>. 
+
+<b><tt>xinetd</tt></b>
+
+We add an <tt>svn</tt> config for <tt>xinetd</tt> in subdirectory <tt>/etc/xinetd.d/</tt> as follows
+
+<pre>
+# vi /etc/xinetd.d/svn
+service svn {
+  port = 3690
+  socket_type = stream
+  protocol = tcp
+  wait = no
+  user = svn
+  server = /usr/bin/svnserve
+  server_args = -i -r /home/svn
+}
+</pre>
+where <tt>svnserve</tt> runs as user <tt>svn</tt>, and serves repositories off <tt>/home/svn</tt>.
+
+We restart <tt>xinetd</tt> for the changes to take effect. 
+
+<pre>
+# /etc/init.d/xinetd restart
+</pre>
+
+<b><tt>svn checkout</tt></b>
+
+Now we can checkout a "working copy" of repository using <tt>svn://aptframework.net/aptframework</tt> URL.
+
+Let's add and commit the standard (although optional) directories <tt>trunk</tt>, <tt>branches</tt> and <tt>tags</tt>.
+
+<pre>
+# cd /tmp
+# svn co svn://aptframework.net/aptframework aptframework --username evanx
+# cd aptframework
+# mkdir trunk
+# mkdir branches
+# mkdir tags
+# svn add trunk
+# svn add branches
+# svn add tags
+# svn commit -m "" --username evan
+</pre>
+
+<b><tt>svn import</tt></b>
+
+Finally we can import our source as follows, e.g. from <tt>/projects/aptframework/src</tt>.
+
+<pre>
+# cd /projects/aptframework
+# svn import src svn://aptframework.net/aptframework/trunk/src -m "" --username evanx
+</pre>
+
+Or for the whole shebang, e.g. <tt>src</tt>, <tt>lib</tt> and what-have-you...
+
+<pre>
+# cd /projects
+# svn import aptframework svn://aptframework.net/aptframework/trunk -m "" --username evanx
+</pre>
+
+We can do a test checkout to a <tt>tmp</tt> directory to make sure it looks ok, e.g. we checkout just the <tt>src</tt> directory as follows.
+
+<pre>
+# svn co svn://aptframework.net/aptframework/trunk/src /tmp/aptframework-src --username evanx
+</pre>
+
+<b>And again...</b>
+
+When things don't go as planned, we just recreate the repository from scratch as follows. 
+
+<pre>
+# su - svn
+$ rm -rf aptframework
+$ svnadmin create aptframework
+$ vi aptframework/conf/svnserve.conf
+$ vi aptframework/conf/passwd
+</pre>
+
+To re-import source, we'll need to search and destroy all those <tt>.svn</tt> hidden directories e.g. in our <tt>src</tt>, innit.
+
+<h3>Conclusion</h3>
+
+Setting up and serving a subversion repository is quite trivial. We create an <tt>svn</tt> user, configure <tt>svnserve</tt> in <tt>xinetd</tt>, and use <tt>svnadmin</tt> to create repositories. 
