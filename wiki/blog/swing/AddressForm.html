@@ -1,0 +1,123 @@
+
+<p>
+Here's having a go at John's <a href='http://weblogs.java.net/blog/joconner/archive/2006/10/more_informatio.html'>address form</a> using <a href='http://java.net/projects/gridbaglady'>http://java.net/projects/gridbaglady</a>.
+
+<!--break-->
+
+Here is the jumble of code...
+
+<pre>
+public class AddressFormPanel extends JPanel {    
+    JTextField firstName = new JTextField();
+    JTextField lastName = new JTextField();
+    JTextField phone = new JTextField();
+    JTextField email = new JTextField();
+    JTextField address1 = new JTextField();
+    JTextField address2 = new JTextField();
+    JTextField city = new JTextField();
+    JTextField state = new JTextField();
+    JTextField postalCode = new JTextField();
+    JTextField country = new JTextField();
+    
+    JButton newButton = new JButton("New");
+    JButton deleteButton = new JButton("Delete");
+    JButton editButton = new JButton("Edit");
+    JButton saveButton = new JButton("Save");
+    JButton cancelButton = new JButton("Cancel");
+
+    JList selectionList = new JList();
+    
+    JSplitPane splitPane = new JSplitPane();
+    
+    public AddressFormPanel() {
+        super(new GridBagLayout());
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.add(new JLabel("Last Name"), 
+                Gbc.xyi(1, 0, 2).east());
+        formPanel.add(lastName, 
+                Gbc.xyi(2, 0, 2).horizontal());
+        formPanel.add(new JLabel("First Name"), 
+                Gbc.xyi(3, 0, 2));
+        formPanel.add(firstName, 
+                Gbc.xyi(4, 0, 2).horizontal());
+        formPanel.add(new JLabel("Phone"), 
+                Gbc.xyi(1, 1, 2).east());
+        formPanel.add(phone, 
+                Gbc.xyi(2, 1, 2).horizontal());
+        JPanel emailPanel = new JPanel(new GridBagLayout());
+        emailPanel.add(new JLabel("Email"), 
+                Gbc.xyi(1, 0, 2));
+        emailPanel.add(email, 
+                Gbc.xyi(2, 0, 2).horizontal());
+        formPanel.add(emailPanel, 
+                Gbc.xyi(3, 1, 0).gridwidth(2).horizontal());        
+        formPanel.add(new JLabel("Address 1"), 
+                Gbc.xyi(1, 2, 2).east());
+        formPanel.add(address1, 
+                Gbc.xyi(2 , 2, 2).gridwidth(3).horizontal());
+        formPanel.add(new JLabel("Address 2"), 
+                Gbc.xyi(1, 3, 2).east());
+        formPanel.add(address2, 
+                Gbc.xyi(2, 3, 2).gridwidth(3).horizontal());
+        formPanel.add(new JLabel("City"), 
+                Gbc.xyi(1, 4, 2).east());
+        formPanel.add(city, 
+                Gbc.xyi(2, 4, 2).horizontal());
+        formPanel.add(new JLabel("State"), 
+                Gbc.xyi(1, 5, 2).east());
+        formPanel.add(state, 
+                Gbc.xyi(2, 5, 2).horizontal());
+        formPanel.add(new JLabel("Postal Code"), 
+                Gbc.xyi(3, 5, 2).east());
+        formPanel.add(postalCode, 
+                Gbc.xyi(4, 5, 2).horizontal());
+        formPanel.add(new JLabel("Country"), 
+                Gbc.xyi(1, 6, 2).east());
+        formPanel.add(country, 
+                Gbc.xyi(2, 6, 2).horizontal());
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.add(newButton, 
+                Gbc.xyi(1, 0, 2));
+        buttonPanel.add(deleteButton, 
+                Gbc.xyi(2, 0, 2));
+        buttonPanel.add(editButton, 
+                Gbc.xyi(3, 0, 2));
+        buttonPanel.add(saveButton, 
+                Gbc.xyi(4, 0, 2));
+        buttonPanel.add(cancelButton, 
+                Gbc.xyi(5, 0, 2));
+        JScrollPane scrollPane = new JScrollPane(selectionList);
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+        leftPanel.add(scrollPane, 
+                Gbc.xyi(0, 0, 4).both());
+        rightPanel.add(formPanel, 
+                Gbc.xyi(0, 0, 4).horizontal().north());
+        rightPanel.add(buttonPanel, 
+                Gbc.xyi(0, 1, 4).south().top(8));
+        rightPanel.add(new JPanel(), 
+                Gbc.xyi(0, 2, 0).vertical());
+        splitPane.setLeftComponent(leftPanel);
+        splitPane.setRightComponent(rightPanel);
+        splitPane.setDividerLocation(100);
+        add(splitPane, 
+                Gbc.xyi(0, 0, 2).both());
+    }   
+}
+</pre>
+
+where <tt>Gbc.xyi()</tt> is a static convenience method with parameters <tt>gridx</tt>, <tt>gridy</tt> and an "inset" for all round. 
+
+Yes, it is like the Matrix. It's easy though because you got auto-completion, error highlighting et al, in your IDE, which you don't have if you were to edit this as an XML thingy. But it's probably easier and faster to use a GUI builder. Anyway, the more you use Gbc, the more second-nature it becomes - like with anything. 
+
+Here's the picture... 
+
+<img alt="addressForm2.png" src="http://weblogs.java.net/blog/evanx/archive/addressForm2.png" width="600" height="304" />
+
+For hand coding, i find i gotta stick to one layout manager (the Matrix) otherwise i get very confused, very quickly. 
+
+To simplify layout, i reckon its best to have as many subpanels as possible. And a "spacer panel" or two is usually called for, certainly with Gbc.
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.

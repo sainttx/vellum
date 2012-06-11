@@ -1,0 +1,73 @@
+
+<img alt="boilerplate1_300_color.jpg" src="http://weblogs.java.net/blog/evanx/archive/boilerplate1_300_color.jpg" width="300" height="200" vspace=8 hspace=16 align=left />
+Here is an extract from an upcoming article, called "Enhanced DTs" about EDT "boilerplate" programming.
+
+It starts off looking at moving your boilerplate sideways into a separate class, and then ends off using CGLIB's interceptor mechanism (which CGLIB calls an "enchancer," hence the name of the article). On the way, we explore some other interesting EDT stuff like Foxtrot. 
+
+So anyway, this blog is an extract which is a preview - can you get any more noncommital than that?!</i>
+
+<b><tt>extract().start()</tt></b>
+
+In addition to the standard <tt>SwingWorker</tt> we know and love, other convenient workers built on this are popping up, e.g. <tt>BackgroundWorker</tt> in <a href='http://weblogs.java.net/blog/rbair/archive/2006/06/swing_and_non_b.html'>"Swing and Non Blocking JAX-WS"</a>, and <tt>Task</tt> in Hans Muller's <a href='http://developers.sun.com/learning/javaoneonline/2006/desktop/TS-3399.pdf'>JavaOne2006 JSR296 slides</a>. 
+
+Richard Bair's <a href='http://today.java.net/pub/a/today/2006/10/11/web-swinging.html'>Web Swinging</a> presents <a href='http://swingx-ws.dev.java.net/'>SwingX-WS</a>, a beautiful and convenient API for Swing clients to access webservices - and plain old websites, eg. to do some screen scraping, data mining, or whatever.
+
+<i>If you haven't read that article yet, drop everything right now! Seriously! They have even implemented <tt>XmlHttpRequest</tt> for Swing clients, with an <tt>onReady</tt> listener. It's seriously awesome.</i>
+
+When accessing resources and services over the network, especially the internet, but actually any network, then background threading becomes a necessity, i.e. using <tt>SwingWorker</tt>. One can automate this, e.g. <tt>SwingX-WS</tt> will send the <tt>XmlHttpRequest</tt> in a background worker, which later fires an <tt>onReadyState</tt> event to be <tt>PropertyChangeListener</tt>, in the EDT.
+
+But while our long tasks are running, what should we be doing, or more likely not allowing? For instance, the button that launched that task should probably be disabled. Because for example, hitting the "Get New Messages" button repeatedly in rapid succession doesn't really speed up the process of getting new messages from the email server (apparently). 
+
+Maybe we want to block the whole application, or at least the current panel, eg. using a modal dialog, or glass pane, while that task is executing. We might want to support a progress bar, and a cancel button. (See Kirill's great looking "progress glasspane" on <a href='http://flamingo.dev.java.net'>flamingo.dev.java.net</a>.)
+
+So maybe we want some enchanced SwingWorker's at our disposal to drop into our code, as in the following example, which uses an enhanced worker of the blocking (modal) dialog variety, with a progress bar built-in for added convenience. 
+
+<pre>
+    protected void refresh() {
+        refreshButton.setEnabled(false);
+        try {
+            DProgressWorker<ListModel, String> worker = new DProgressWorker(
+                    new DDefaultProgressDialog(frame, "Simulating long task", true)) {
+                protected Object doInBackground() throws Exception {
+                    for (int i = 50; i < 100; i++) {
+                        taskProgress(i);
+                        if (i%10 == 1) taskInfo(Level.INFO, "Mmmmm.... " + i + "st donut");
+                        Thread.sleep(50);
+                    }
+                    return new DefaultListModel();
+                }
+            };
+            ListModel listModel = worker.get();
+        } catch (DCancelledException e) {
+            logger.warning(e);
+        } catch (Throwable e) {
+            dialogHelper.showExceptionDialog(e, null);
+        } finally {
+            refreshButton.setEnabled(true);            
+        }
+    }
+</pre>
+I'll leave the blow-by-blow discussion of its implementation for a follow-up article, but here is a sneak preview... 
+
+<a href="http://jroller.com/resources/e/evanx/progressworker.jnlp"><img border="0" src="http://javadesktop.org/javanet_images/webstart.small.gif" alt="Launch"/>
+<tt>(Progress Worker Demo, 110k/440k, unsandboxed, Java5)</tt></a>
+
+You'll see that we introduce a "task listener" with which we construct our "progress worker." The worker publishes its current progress to the task listener, which in this example is a dialog with a progress bar and what-not.
+
+Here is a screenshot of the demo running. 
+
+<img alt="progressworker.png" src="http://weblogs.java.net/blog/evanx/archive/progressworker.png" width="638" height="285" />
+
+The next part of this "mini-series" will look at using this progress worker in a nonblocking fashion, where it publishes the progress to a status "mini-bar" at the bottom of the frame. 
+
+<b><tt>postscript()</tt></b>
+
+<i>Incidently i've been evolving a GUI "framework" which i'm using for these WebStart demos, and writing an article called GooeyBeans, with some beans binding and configuration and what-not. I did a bunch of stuff yesterday till all hours which got me to waking up this morning realising that so much of that software and article is actually rubbish.  Gutting. But i am happy that it's gonna be much better than it is. That's what R&amp;D is all about, making rubbish so that you don't make rubbish.
+
+So i've renamed that article to "Squashed Gooey Beans," which is like, squashed and deprecrated, and not gonna be "published." It's on <a href='http://quitegooey.dev.java.net'>quitegooey.dev.java.net</a> but please don't read it. I'm gonna rehash it, but hopefully not re-hash it, if you know what i mean. No, not hashish, i mean "making a hash of it." 
+
+Firstly i'm gonna make it a toolbag of toolkits rather than a "framework." Safer that way. Better that way. More application classes, but less smoke and mirrors aka reflection in the toolkit. That's why i'm happy that i'm breaking up this Enhanced DTs article into a mini-series, because that was also starting to look like an article to be renamed "Squashed DTs" at a later stage.
+
+Funnily enough i realised last week that quitewriter was rubbish too. Anyway, i've redone 
+quitewriter as <a href='http://quitehyper.dev.java.net'>quitehyper.dev.java.net</a> and now i'm happy with that, very very happy in fact. Cos its so nice an' minimal, like... Mmmmm... crumpled up cookie thingies. 
+</i>
