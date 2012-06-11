@@ -1,0 +1,54 @@
+
+Let's use reflection to set a bunch of configurable values via the command-line using "system properties."
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: yellow;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/kcoloredit.png" width="32" height="32" align="left" hspace="8"/> <b>System Properties:</b> <i>A part of "Gooey Beans, a trilogy in 42 parts"</i></div></a>
+
+We put our configurable properties into a separate object, specifying the default values, as follows.
+<pre>
+public class CommandoDemoProperties {    
+    public String host = "aptframework.net";
+    public int port = 80;
+    public int sslPort = 443;
+    public boolean useSSL = true;    
+    public String clientKeyStoreFileName = "keystores/client.private";    
+    public String serverKeyStoreFileName = "keystores/server.public";    
+    ...
+}    
+</pre>
+We create the following helper to inject any command-line parameters via reflection, 
+according to the field names, eg. <tt>-Dport=8080</tt>.
+<pre>
+public class QSystemPropertyHelper {
+    ...
+    protected void injectSystemProperties(Object properties) 
+    throws IllegalAccessException {
+        for (Field field : properties.getClass().getFields()) {
+            Class type = field.getType();
+            String key = field.getName();
+            Object defaultValue = field.get(properties);
+            Object value = defaultValue;
+            String string = System.getProperty(key);
+            if (string == null) continue;
+            if (type == String.class) {
+                value = string;
+            } else if (type == Integer.class || type == int.class) {
+                value = Integer.getInteger(key);
+            } else if (type == Boolean.class || type == boolean.class) {
+                value = Boolean.getBoolean(key);
+            } else {
+                logger.warning(key, type);
+            }
+            if (value != defaultValue) {
+                field.set(properties, value);
+            }
+        }
+    }    
+}
+</pre>
+where we support properties which are strings, integers or boolean values. 
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+

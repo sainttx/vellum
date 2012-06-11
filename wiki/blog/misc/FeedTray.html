@@ -1,0 +1,16 @@
+
+Here is a sneak preview of a trivial feed reader app using the Java6 <tt>SystemTray</tt>. It checks a few preconfigured (Java) feeds every 10 minutes, popping up a message when a new article is spotted. 
+
+<a href="http://aptframework.dev.java.net/jnlp/feedtray.jnlp"><img border="0" src="https://aptframework.dev.java.net/gooey/images/webstart.small.gif" alt="Launch" width="88" height="23"/></a> &nbsp; <i>(FeedTray, 1M/250k, unsandboxed, Java6)</i>
+
+The <a href='http://java.net/projects/feedtrove'><tt>feedtrove</a></tt> app itself is small (18k using pack200), but depends on <a href='http://java.net/projects/rome'><tt>ROME</a></tt> and <a href='http://AppFramework.dev.java.net'><tt>AppFramework</tt></a> and their dependencies ie. <a href='http://jdom.org'><tt>jDOM</a></tt> and <tt>SwingWorker</tt>, so the total packed size is around 250k, and unpacked, well... much more!
+
+<a href="http://aptframework.dev.java.net/jnlp/feedtray.jnlp" border="0"><img border="0" src="http://aptframework.dev.java.net/evanx/images/feedtray.png"/></a>
+
+Note that when you minimise or close the window, the frame is disposed, but the app still runs in the <tt>SystemTray</tt>. You have to right-click on the <tt>TrayIcon</tt> and choose "Exit" to exit the app and dispose its JVM instance. 
+
+You can browse the code for this exercise at <a href='http://java.net/projects/feedtrove'><tt>http://java.net/projects/feedtrove></tt></a>. See the classes <tt>FeedTrayApplication</tt> (and it's resource file), <tt>FeedSystemTray</tt>, <tt>FeedManager</tt>, <tt>FeedReader</tt>. 
+
+<tt>FeedTrove</tt> requires <a href='http://rome.dev.java.net'><tt>rome.dev.java.net</tt></a> (which requires <a href='http://jdom.org'><tt>jdom.org</a>)</tt>, and <a href='http://AppFramework.dev.java.net'><tt>AppFramework.dev.java.net</tt></a> (which requires <a href='http://swing-worker.dev.java.net'><tt>swing-worker</a></tt> i/e. <tt>org.jdesktop.SwingWorker)</tt>.
+
+Also see <a href='http://java.sun.com/developer/technicalArticles/J2SE/Desktop/javase6/systemtray/'>New System Tray Functionality in Java SE 6</a>, on the Sun Developer Network, and <a href='http://weblogs.java.net/blog/mister__m/archive/2007/02/displaying_mess.html'>Displaying messages in the system tray</a>, by Michael Nascimento Santos.
