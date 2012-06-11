@@ -1,0 +1,59 @@
+Let's define a minimal property interface.
+
+<pre>
+public interface Property<V> {
+  public void set(V value);
+  public V get();   
+}
+</pre>
+
+where its implementation wraps a <tt>java.bean.PropertyDescriptor</tt>. 
+
+Now baked beans...
+
+<pre>
+public interface BakedBeanInfo<B> {
+  public Property getProperty(String propertyName);
+}
+</pre>
+
+where its implementation wraps a <tt>java.bean.BeanInfo</tt>, and constructs a collection of the bean's <tt>Property</tt> instances. 
+
+Now the trick is we expose our bean/properties as an interface...
+
+<pre>
+public interface PersonInfo {
+   Property<String> username();
+   Property<String> displayName();
+   Property<Integer> age();
+   ...
+}
+</pre>
+
+where we use dynamic proxies to create a bean, and/or bean info, without worrying about the implementation (eg. <tt>QBeanInfo</tt>  presented in <a href='http://weblogs.java.net/blog/evanx/archive/2006/12/gooey_beans_inf.html'>Gooey Bean Info</a> et al). 
+
+<pre>
+   PersonInfo personBean = GBeanFactory.createObservable(PersonInfo.class);
+   ...
+   GTableModel<PersonInfo> tableModel = new GTableModel(PersonInfo.class);
+   GForm<PersonInfo> form = new GForm(PersonInfo.class);
+   ...
+      logger.info(tableModel.getSelected().displayName().get());
+      form.set(tableModel.getSelected());      
+</pre>
+
+where we bind to a backing bean instance (eg. <tt>Person.class</tt>) i.e. a POJO/<tt>java.bean</tt> with accessors/mutators - or not e.g. just use the proxy instance as our presentation model.
+
+Lemme repeat... For prototyping, we might not worry about creating a <tt>Person.class</tt>, but just use the bean info interface to create our observable beans (via dynamic proxy), with built-in <tt>PropertyChangeSupport.</tt>
+
+Our <tt>Property</tt> implementation might let us specify (default) presentation properties (eg. label, display width, format et al) of that property, and attach validators, as in <i>Gooey Bean Form</i>.
+
+waddaya think?!
+
+PS. The next installment on <i>Gooey Beans</i> is immiment at last, about <tt>JTable</tt>'s, since i got the demo working, as in the following sneak preview, woohoo! :) 
+
+<img alt="divvy.png" src="http://weblogs.java.net/blog/evanx/archive/divvy.png" width="700" height="373" />
+
+Notice how the selection works, e.g. click on the search icon to select the pirate, and enter a blank booty barcode to select some booty! Later i'll look at a popup finder for entities, rather than switching tabs as it currently works.
+
+Before all that, i'll implement and write an article on the above baked beans, to publish this month in <i>Gooey Beans</i> - and then publish the <tt>TableModel</tt> article in a coupla of weeks, before i set off on my travels to UK, Russia, Nepal, Ireland et al - <i>Eet's nice... very very frikkin nice! Woohoo! Mmmmm.... Planet Earth...</i>

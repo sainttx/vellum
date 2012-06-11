@@ -1,0 +1,73 @@
+I gave an overview of what and where JSR 295 and 296 are, with special emphasis that both have public java.net sites with active mailing lists, where all the excitement is happening, and open to everyone to join the fun, which is "A Very Good Thing" :) 
+<!--break-->
+
+So i gave this talk, discussing the following stuff:
+<ul>
+<li>JSR 296
+<li>JSR 295
+<li>Swing - "the State of the Nation" according to um, Me!
+<li>The Problem with Strings
+<li>Gooey (my upcoming thingymajig in the near future)
+<li>Meme (my upcoming thingy in the far distance)
+<li>Technical writing 
+<li>Opensource
+</ul>
+
+<b>JSRs 295 and 296</b>
+
+I gave an overview of what and where JSR 295 and 296 are, with special emphasis that both have public java.net sites with active mailing lists, where all the excitement is happening, and open to everyone to join the fun, which is "A Very Good Thing" :) 
+
+<i>"It's the way of the future, It's the way of the future, It's the way of the future..." (Howard Hughes' character in the Aviator, loosing it.) I used to say that incessantly to my niece to irritate her. Then i left somewhere for three weeks, and returned, lapsing immediately into "It's the way of the future, It's the way of the future..." as soon as she entered my vicinity. Heh heh. No, i hadn't been mumbling it for three weeks! ;)</i>
+
+I suggested that JSR 296 was well scoped to address basic good practice of Swing development, namely Lifecycle, Resource Injection, Actions/Tasks, and Session State.
+
+I suggested that i wasn't sure about JSR 295's scope, because on the one hand it is designed to be "beans binding for everything" ie. to bind one property to another property generically, and on the other hand it is implemented specifically as "beans binding for Swing components." I think it might be layered as such, eg. basic property-to-property beans binding (and groups of bindings), and building a Swing layer on top of that, or next to that, which might reuse/extend some basic interfaces, but otherwise is very specific eg. to <tt>JTable</tt> et al. I've lost track a little bit there, with all the frenetic activity :)
+
+<b>Swing</b>
+
+I suggested that Swing is onwards and upwards at the moment :)
+<ul>
+<li>Netbeans is shaping up very nicely, eg. with Matisse, and next up, JSRs 296 and 295 support in Netbeans 6.0.
+<li>WebStart is a potentially fantastic technology, and hopefully it's shortcomings (eg. scalability, i'm told) will be ironed out, so that it can deliver on its awesome potential. 
+<li>Swing potentially fits in very well with the JEE juggernaut, eg. using WebStart, webservices and/or JPA et al. 
+<li>Consumer JRE, perhaps prompted by JavaFX, will benefit Java/Swing too, and other languages on the platform, eg. Groovy/Swing et al. 
+</ul>
+
+<b>Strings</b>
+
+I was banging on as usual about the problem with string references eg. for properties for binding, JPA queries (in strings), component names for resources, et al - they're not toolable as in refactoring, auto-completion... 
+
+I suggested that software naturally degrades, and without refactoring, a broken window left unrepaired will lead to a horribly run-down building before very long.  
+
+Test coverage is meant to address this ie. to make refactoring feasible. But what about maximum assistance from the IDE, eg. auto-completion et al, when it comes to referencing properties, resources, XML elements, in JPA queries, et al!? 
+
+In an ideal world, the language together with the tools will enable totally safe refactoring on one hand, as well as maximum productivity on the other, ie. prompting, auto-completion, and error highlighting. And of course we always want compile-time errors rather than runtime ones eg. caused by unresolved string references. 
+
+<b>Gooey</b>
+
+After a year so in development, i'm getting to stage where i want to whip this dodgy framework of mine into some kinda state, to release. My goals are to address <i>my</i> requirements as follows ;)
+
+<ul>
+<li>A "container for worksheets," ie. a frame with a menu bar, tool bar, status bar, and main tabbed pane, with lifecycle support eg. for launching worksheets as new tabs. (See <i>Framewarez</i> altho out-of-date - <i>Gooey Frame</i> due in coming months.) 
+<li>Simplistic beans binding, as in a "presentation model" approach for forms, and tables. (See <i>Gooey Bean Info</i> et al.)
+<li>MVC architecture, where Netbeans is used for the View, ie. designing pretty forms, but our controller is the main event, 
+and has no generated uneditable code. (See <i>Gooey Beans Form</i>.) 
+<li>For forms, we use bound "input component adapters" to enable the controller to control components in the View, eg. <tt>setEnabled()</tt> and what-not, ie. via delegation. These are bound to the Model beans on the one side, and the Swing components on other ie. in the View. (See <i>Gooey Beans Form</i>, and upcoming <i>Gooey Table Model</i> in August.)
+<li>Support for basic automated layout eg. of beans-bound forms, for rapid prototyping, while fully expecting to switch over to Netbeans' designer at a moment's notice when things get real. (See <i>Gooey Beans Form</i>, and <i>Group Layout Therapy</i>.) 
+</ul>
+
+<b>Meme</b>
+
+This will be an experimental ORM using meta entity objects, and entity property objects to reference "tables and columns" for queries, ie. so that entities are refactorable, without fear of breaking queries. 
+(See the <i>Dog House</i> article.) 
+
+<b>Technical Writing</b>
+
+I do technical writing as a design exercise. When you write about code, you notice areas for improvement. It's like a self review mechanism, innit. Aiii.
+
+Also writing reinforces my "Simplicity through Multiplicity" principle. The more classes, and the more methods, the better. If it's easier to explain, then it's probably easier to read and understand too. 
+
+<b>Opensource</b>
+
+I discussed the difference between the GPL and Apache licenses, and suggested that people license frameworks and such-like under Apache, so that companies can reuse their code, without having to track what they're changing - which potentially makes it impractical to assimilate your framework into their code-base. "If you love something, set it free." ;) It's counter-intuitive that it's best to surrender control, but invariably that turns out to be best option, in hindsight.
+
