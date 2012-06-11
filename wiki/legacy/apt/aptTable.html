@@ -1,0 +1,401 @@
+
+Bean Curd: Turn Tables //title
+
+
+Introduction //section
+
+Scott Violet's blog 
+:{Ease of Swing Development - Beans Binding} //http://weblogs.java.net/blog/zixle/archive/2006/05/ease_of_swing_d.html
+introduces :{JSR 295}, //http://www.jcp.org/en/jsr/detail?id=295
+which aims to provide a standardised API for binding GUI components to beans, yay!
+
+<img alt="" src="images/skicable1.jpg" 
+width="263" height="224" align=left vspace=4 hspace=16 />
+
+In an earlier blog, I wished for 
+:{Explicit Reflection} //http://weblogs.java.net/blog/evanx/archive/2006/05/explicit_reflec.html
+of fields and methods, for "stringless referencing." I should amend that to include properties, 
+in addition to fields and methods, for the purposes of bean binding.
+
+We glean from :{Graham Hamilton's} //http://weblogs.java.net/blog/kgh/
+:{JavaOne 2006 slides}, //http://weblogs.java.net/blog/kgh/archive/2006/05/slides_for_java_2.html
+that "lightweight references" of methods (for GUI event handlers), 
+and hopefully also of properties (for "bean binding"), 
+are in the works for Dolphin, which is expected out in 2008. 
+
+In the meantime, I've been using an approach to reference and bind properties, which I present here. I 
+have applied this to object-relational mapping, forms (Swing and HTML), and tables (Swing, HTML and PDF). 
+It works nicely for me. Probably because of my personal <i>"no string references attached"</i> rule. 
+<i>"Woohoo, look me!" ;)</i>
+
+I'll present a Swing ~JTable example here. In a follow-up blog, 
+I'll show the same approach used for ORM with "native queries" - now that is cool, so look out for that in a week or two. 
+<i>I've been wanting to write about that six months, and now the time has come, I'm so excited!</i>
+
+Problem //section
+
+Consider that we are building a CRUD application for a database of users. 
+<i>You know, CURD, as in... create, um, update, delete, you know, CUD. What is the R for? Google knows.</i>
+
+So anyway, these users are cows that need to login to our new MMORP, 
+<i>"World of Animal Farm Revisited: Cult of the Raging Bulls."</i> 
+
+So we gonna have a ~CowBean class, with properties ~realName, ~username, ~password, et cetera. 
+
+<pre class='java'>
+public class CowBean {
+   protected String realName;
+   protected String username;
+   protected String password;
+   protected int earId;
+
+   public void setRealName(String realName) {
+      this.realName = realName;
+   }
+
+   ... // other getters and setters
+}
+</pre>
+
+Say we wanna build a GUI form for editing a cow. For when customers phone our call center saying, 
+"Update my real name on your system, cow!" <i>"Who you calling a cow? I aint nobody's cow!"</i>
+
+<a href='http://everaldo.com'>
+<img alt="attach" src="http://weblogs.java.net/blog/evanx/archive/attach.png" width="32" height="32"
+hspace=8 align=left border=0 />
+</a>
+
+So we would want to bind text fields to properties, eg. ~CowForm.realNameField 
+would be bound to ~CowBean.realName. Then when the text field is edited on the screen, 
+we invoke ~setRealName() with the value from the text field, 
+ie. ~realNameField.getText(). We might code it explicitly as follows.
+
+<pre class='java'>
+   public void actionPerformed(ActionEvent event) {
+      if (event.getSource() == realNameField) {
+         cowBean.setRealName(realNameField.getText());
+      }
+   }
+</pre>
+
+In order to do this binding in a framework, we would refer to the ~realName property 
+using a string ie. ~"realName", maybe as follows.
+
+<pre class='java'>
+      GBeanBinding cowBeanBinding = new GBeanBinding(CowBean.class); 
+      cowBeanBinding.bind(realNameField, "text", "realName");
+</pre>
+
+Now we get to the rub...
+
+
+String References //section
+
+There are a couple of problems with using string literals as references to properties (and fields and methods).
+
+The most serious problem is that they make refactoring fragile. For example, 
+consider that we wish to rename the ~realName property to just ~name. 
+The problem is that our IDE doesn't know to change the string reference ~"realName" as well.  
+
+<!--img alt="" src="http://weblogs.java.net/blog/evanx/archive/Cows3.jpg" width="103" height="147"
+align=left vspace=4 hspace=16 /-->
+
+So we can, and probably will, overlook renaming the string reference, since there is 
+no prompting by the IDE or compiler to tell us to do so. This will definitely result in a runtime error. 
+"That's gonna hurt in the morning!" Ok, this problem should be solved using unit tests 
+to make sure that fragile string references are valid.
+
+Hey, I'm lazy. So i don't like string references, because they do not take advantage 
+of the IDE's prompting, auto-completion, and error highlighting. In this sense, they are not readily "toolable." 
+
+Like when we rename the ~realName property to ~name, ~"realName" 
+string references are not underlined with a swigly red line. <i>"Where are you, you silly error!? 
+Don't you make me come down there to find you!"</i>
+
+And worse, we can't type ~"use" and press ~Control-Space to have that 
+completed to ~"username" for us by the IDE. We have to actually type the whole thing out. 
+<i>"Thaaat's mentil! I'm a developer, not a typewriter!"</i>
+
+So the two related problems with string references are that they are "fragile" and not readily "toolable."
+
+
+Explicit Bean Info //section
+
+A possible future solution to this problem is to introduce a convention into the 
+language for the explicit referencing of properties. 
+
+For example, imagine a notation where ~CowBean:realName is a reference to the 
+"realName" ~PropertyDescriptor. This might be compiled into bytecode as 
+~Introspector.getBeanInfo(CowBean.class).getPropertyDescriptor("realName") for all I care.
+
+The important thing is that it is recognised by the IDE for refactoring, prompting, completion and error-detection.
+
+<i>But back to the real world of today...</i>
+ 
+In the absence of such a language feature, we could define references to our properties 
+in explicit bean info classes as follows (where our ~GBeanInfo superclass implements ~BeanInfo).
+
+<pre class='java'>
+public class CowBeanInfo extends GBeanInfo<CowBean> {
+   public final GPropertyDescriptor realName = createPropertyDescriptor();
+   public final GPropertyDescriptor username = createPropertyDescriptor();
+   public final GPropertyDescriptor password = createPropertyDescriptor();
+   ... // references to other properties
+}
+</pre>
+
+In the ~GBeanInfo superclass, we would configure and verify each ~GPropertyDescriptor 
+property descriptor, ie. find its corresponding ~java.beans.PropertyDescriptor 
+using its field name as the property name.
+
+<i>Hey, I guess one could easily write an Ant task to generate our explicit bean info classes. 
+So maybe I'll try that one of these days, and write a follow-up article on it.</i>
+
+But anyway if ~CowBean is used by only one component, we find it convenient 
+to absorb the above into that component, as we will now demonstrate. <i>"Please stand back, cows and bulls!"</i>
+
+
+The Table Model //section
+
+Consider that we wish to build a ~JTable, which will display ~CowBean instances. 
+So let's build the table model for starters.
+
+<a href='http://everaldo.com'>
+<img alt="7" src="http://weblogs.java.net/blog/evanx/archive/7days.png" 
+width="32" height="32" 
+align=left hspace=8 border=0
+</a>
+
+Let's say that we are using a Swing application framework that extends Swing components, 
+eg. the framework's ~GTableColumn extends Swing's ~TableColumn. 
+Excuse this obfuscation, but this is how I do it in ~aptframework, and yes, 
+this is an insidious attempt to assimilate you. <i>That is, assuming you are not a cow already. 
+Do you like grass? That's always a give-away.</i>
+
+So our ~CowTableModel might be coded as follows.
+
+<pre class='java'>
+public class CowTableModel extends GTableModel<CowBean> {
+   
+   @TableColumnProperties(width = 150, label = "Mofo's real name")
+   GTableColumn realNameColumn = createTableColumn();
+
+   @TableColumnProperties(width = 100, label = "L33t cow handle")
+   GTableColumn usernameColumn = createTableColumn();
+
+   ... // other column declarations
+
+   public CowTableModel() {
+      super();
+      super.configure();
+   }
+}
+</pre>
+
+As you can see, we use an annotation to configure some default GUI properties in the code. 
+Just to be different.
+
+Incidently, notice that the above table model implementation exposes the column components explicitly, 
+in keeping with the <i>"no string references attached"</i> rule, for later when we want 
+to play nicely with them in our IDE. That is, we can manipulate columns by referencing them explicitly, 
+eg. ~passwordColumn.setRenderer().
+<i>"Carry on, soldier!"</i>
+
+Now there are a few things we need to accomplish. Firstly we must bind ~realNameColumn 
+to the ~realName property of ~CowBean.
+
+<a href='http://everaldo.com'>
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/button_cancel.png" 
+width="32" height="32" hspace=8 align=left border=0 />
+</a>
+
+For the reasons given earlier, we want to avoid using a 
+string literal reference, eg. ~realNameColumn.setBindingPropertyName("realName").
+
+As you might guess, that ~configure() method lurking in the constructor comes into play... 
+
+
+The Table Model Superclass //section
+
+So let's look at the implementation of the framework's ~GTableModel superclass, 
+in particular this ~configure() method. 
+
+<pre class='java'>
+public class GTableModel<Bean> extends AbstractTableModel {
+   protected GBeanInfo beanInfo;
+   protected Class beanClass; // eg. CowBean.class
+   protected List<Bean> beanList = new ArrayList();
+   protected List<GTableColumn> columnList = new ArrayList();
+
+   ...
+
+   public void configure() {
+      for (Field field : getClass().getFields()) {
+         if (field.getType() == GTableColumn.class) {
+            field.setAccessible(true);
+            GTableColumn column = (GTableColumn) field.get(this);
+            column.configure(field);
+         }
+      }
+   }   
+
+   ... // some methods required by AbstractTableModel as below
+
+   public int getColumnCount() {
+      return columnList.size();
+   }
+
+   public String getColumnName(int columnIndex) {
+      return columnList.get(columnIndex).getLabel();
+   }   
+}
+</pre>
+
+<a href='http://everaldo.com'>
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/search.png" width="32" height="32"
+align=left hspace=8 border=0
+</a>
+
+Please excuse liberties taken in my code samples for the sake of brevity, eg. omitting reflection 
+exception handling in the above example. <i>I'm actually having to type this stuff by hand you know!</i>
+
+So the ~configure() method uses reflection to invoke ~column.configure(field) 
+on the columns declared in the table model. 
+
+
+The Table Column //section
+
+So let's check out the ~GTableColumn implementation, 
+in particular its ~configure(field) method.
+
+<pre class='java'>
+public class GTableColumn<Value> extends TableColumn {
+   protected GPropertyDescriptor propertyDescriptor;
+   ...
+   public void configure(Field field) {
+      String propertyName = field.getName(); // eg. "realNameColumn"
+      propertyName = removeEndsWith(propertyName, "Column"); // eg. to "realName"
+      setBindingPropertyName(propertyName);
+      TableColumnProperties properties = field.getAnnotation(TableColumnProperties.class);
+      if (properties != null) configure(properties);
+      ... // configure from resource bundle, using propertyName
+      ... // configure from preferences, using propertyName
+   }
+   ...
+}
+</pre>
+
+So the ~configure(field) method sets the default "binding property name" for binding 
+this component to a property in the bean, eg. ~CowBean.realName. 
+It uses the component's field name as a clue, eg. from ~"realNameColumn" 
+we cunningly deduce that the default binding property name might be ~"realName". 
+<i>"Dr Watson, do you concur?"</i>
+
+<!--img alt="" src="http://weblogs.java.net/blog/evanx/archive/cowToy1.jpg" 
+width="85" height="130" align=left vspace=4 hspace=16 /-->
+
+Also, the column can configure itself using annotations. In our table model code sample above, 
+remember we specified a default width and label for the column using a ~TableColumnProperties annotation. 
+<i>Hopefully we are on the same page here. Because this article has only one page, so...</i>
+
+At this stage, we would also want to configure our column via resource bundles and user preferences. 
+For example, our default column label might be translated in a resource bundle.
+
+We might want to set the width of the column to the user's preference from last time 
+the user ran the application. 
+That is, when they use the mouse to change the column width, 
+we might wanna remember that for next time using the Preferences API.
+
+So we configure the column from externalised properties and preferences, 
+using the field name as the key. 
+In the case of resource bundles, this is fragile, since if you rename the column field, 
+then you need to remember to rename the key in the resource bundles as well. 
+<i>Darn, we just can't win!</i>
+
+Unit Testing the Fragile Bits //section
+
+This brings us to unit tests we should implement. <i>"I'll give you two to start with, 
+and if you need more, then lemme know. Globalisation, Streamlining..." (From the "The Office" heh heh)</i>
+
+First we check that our binding is valid. For example, if we have a ~realNameColumn 
+component bound to ~CowBean.class with a binding property name of ~"realName" then, 
+upon reflection, we should find a ~CowBean.realName property. 
+
+The thing is that when we rename a property in the bean, we have to remember to rename 
+components that will be bound to that property eg. ~realNameColumn. 
+And we will forget, so we need unit tests to remind us, because the IDE and the compiler aint gonna.
+
+<a href='http://everaldo.com'>
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/whatsnext.png" width="32" height="32"
+align=left hspace=8 border=0 />
+</a>
+
+Also we need to remember to rename keys in our resource bundles. So we should have unit 
+tests that confirm that all our labels are translated in all our resource bundles. 
+<i>"With all those things out there? Well you can count me out!" (Bill Paxton's character in the movie "Aliens" heh heh)</i>
+
+For example, since we have a ~realNameColumn component, our resource bundles should 
+contain a key like ~"CowTableModel.realNameColumn.label". 
+
+This is fragile because as soon as we rename components, all our resource bundles break. 
+<i>"Dammit to hell, Leeroy, why'd you rush in there like that and rename things?!"</i>
+
+
+Conclusion //section
+
+We present an approach for binding GUI components to data beans, without using string references.
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/cowSuit.jpg" 
+width="103" height="158" align=right vspace=4 hspace=16 />
+
+This is achieved using reflection on the component names, and assuming that by default, 
+their names match the binding property names in the backing bean, 
+eg. ~realNameColumn and ~realNameField are bound to ~realName.
+
+However, when we rename components, or properties, we need to take care to rename them in multiple places, 
+including in the resource bundles.
+
+That is the price we pay, if we wish not to use string literal references, as a rule. 
+Those are similarly fragile, and not readily toolable. 
+
+We hope that Dolphin will make things better via property references. In the meantime, 
+if you can think of a better way, or some tweaks, please comment.
+
+I look forward to continuing this series, in particular, applying a similar approach 
+to object-relational mapping, to enable native queries. So look out for that article which is coming up.
+
+Postscript //section
+
+I miss writing tongue-in-cheek articles. You know, trying to get all riled up, 
+emotions flying off the handle, and old gripes bursting out of my chest like a scifi movie. 
+Goddamn, this technical article is so dry and boring! Sorry about that. Hey I'll spice it up 
+before I publish it. And the next one too. Hey that'll be easy, it'll be about persistence 
+so I can slag off Hibernate and slaughter some other sacred cows 
+while I'm at it, so check it out, cow! :)
+
+Sequels //section
+
+Further articles in this series are 
+:{Bean Curd 2: The SQL} //http://aptframework.dev.java.net/article/aptMeme.html
+about native queries and persistence, and
+:{Panel Beater} //http://aptframework.dev.java.net/article/aptForm.html
+which looks at putting fields and forms onto ~JPanel's.
+
+<br>
+
+<table>
+<tr>
+<td>
+  <form action='http://weblogs.java.net/blog/evanx/archive/2006/05/bean_curd_chapt_1.html'>
+  <a href='http://weblogs.java.net/blog/evanx/archive/2006/05/bean_curd_chapt_1.html' 
+  style='text-decoration: none;'><input type=submit value='Discuss'/></a></form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+  <a href='http://aptframework.dev.java.net/gooey/contents.html' 
+  style='text-decoration: none;'><input type=submit value='Gooey Contents'/></a></form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+  <a href='http://aptframework.dev.java.net/foundation/contents.html'
+  style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a></form>
+</table>
+

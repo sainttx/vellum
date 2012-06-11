@@ -1,0 +1,848 @@
+
+Swing and Roundabouts 3: Framewarez //title
+
+Prequels //section
+"The People can be depended upon to meet any national crisis. Just bring them the real facts, and beer." Abraham Lincoln //quote
+
+See 
+:{Turn Tables},  //http://aptframework.dev.java.net/article/aptTable.html
+:{Panel Beater} and //http://aptframework.dev.java.net/article/aptForm.html
+:{Inside Action}. //http://aptframework.dev.java.net/article/aptAction.html
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/gold3_crop.jpg" width="233" height="224" 
+align=left vspace=4 hspace=8 border=0 />
+
+<i>Disclaimer: As always, this is a "noisy" article (because i like writing noisy articles and i wrote this article, so...), 
+but luckily the noise is clearly demarcated using italicalised text this time. So please feel free to skip such text. 
+</i>
+
+Introduction //section
+"Beer is proof that God loves us and wants us to be happy." Benjamin Franklin //quote
+
+<i>
+Our monastery operates a brewery. Our highly popular 
+"Dosy Abbot" ale has kept us in food and, um, ale, for the past 368 years. 
+
+So we need to keep track of our ingredients, products, orders, and what-not.  
+Now some of us newer younger monks are interested in computers, 
+in addition to beer of course. And we got the go-ahead from the Abbot
+to write a stock control system, woohoo! So we wrote this Swing desktop app.
+And I got nominated to write this article.
+</i>
+
+So our application has of a whole bunch of CURD worksheets, eg. for editing products, 
+product categories, suppliers, customers, etcetera. Then we have to 
+capture and view transactions, representing stock movements and related financial 
+documents, eg. purchase orders, invoices, delivery notes, stock transfers, stock takes, 
+etcetera.
+
+So we need to assemble all these worksheets into an application framework, with access control. 
+In the first instance, the user should login. Then we display the "menu system" to enable
+the user to launch "worksheets." Users typically have limited access, ie. to a specific
+subset of worksheets. <i>For example, 
+it's not a good idea to give the Abbot access to everything because a little bit of 
+knowledge is a very dangerous thing. But stock transfers to our pantry, 
+and the shrinkage report on our finished products, is for the Abbot's eyes only.</i>
+
+The design presented here is an improved sugar-coated redesign of the "access system"
+of :{aptframework.dev.java.net}. //http://aptframework.dev.java.net
+
+
+Worksheet Framewarez //section
+"Beer... Now there's a temporary solution." Homer Simpson //quote
+
+<i>
+Before we wrote our brewery warez, 
+we used a spreadsheet to manage the monastery. (And we still do, to tell the truth.)
+So when the Abbot OK'ed us writing a computer program to do the same thing, 
+he "requested" that we stick to the spreadsheet metaphor. </i>
+
+So we call our 
+"programs" <i>worksheets,</i> and we can open any number of worksheets as 
+tabs at the bottom of the screen, like a spreadsheet program.
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/menu.png" width="585" height="247" />
+
+Our application framewarez is a ~JFrame, with a ~JMenuBar, and a ~JTabbedPane. 
+Our worksheets are launched from the menu. Worksheets render themselves as ~JPanel's, which we add 
+to the tabbed pane. 
+
+And here's a Web Start demo, woohoo! <i>You can read about The Making Of this Web Starter
+in next week's Trip and Tick 2 article, including why it runs outside of the sandbox, 
+and so is jarsigned, and see a Request for Help on sandboxing these thingymajigs.</i>
+
+<a href="https://aptframework.dev.java.net/jnlp/aptframework.jnlp"><img alt="webstart.small.gif" src="http://weblogs.java.net/blog/evanx/archive/webstart.small.gif" border="0"/></a>
+~(AptFramework, Java5, 235k/635k, unsandboxed)
+
+
+Defining the Menus //section
+"Without question, the greatest invention in the history of mankind is beer. The wheel does not go nearly as well with pizza." Dave Barry //quote
+
+We need to configure our menu items. That is, their labels, icons, keystrokes
+and the associated worksheet to launch, eg. "Edit Product" launches ~ZProductWorksheet.
+
+Our framework provides a ~GMenuConfigurator for us to extend as follows.
+
+<pre class='java'>
+package org.trappist.belgium.brouwerij.menu;
+...    
+public class ZMenuConfigurator extends GMenuConfigurator {
+
+    ... // system menu eg. lock screen, logout, exit
+    
+    @MenuAnnotation(
+        label = "Edit"
+    )
+    GMenuConfiguration topEdit = createMenu(null);
+    
+    @MenuAnnotation(
+        label = "Edit Product", 
+        worksheet = ZProductWorksheet.class, 
+        icon = "yast_security", 
+        toolTip = "Edit products",
+        ordinal = 2
+    )
+    GMenuConfiguration editProduct = createMenu(topEdit);
+    
+    ... // menus for all other worksheets in the application
+
+    @MenuAnnotation(
+        label = "Help"
+    )
+    GMenuConfiguration topHelp = createMenu(null);
+    
+    @MenuAnnotation(
+        label = "Online help", 
+        icon = "lifesaver", 
+        ordinal = 3
+    )
+    GMenuConfiguration helpOnlineHelp = createMenu(topHelp);
+        
+    @MenuAnnotation(
+        label = "About", 
+        icon = "lightbulb", 
+        ordinal = 4
+    )
+    GMenuConfiguration helpAbout = createMenu(topHelp);
+        
+    public ZMenuConfigurator() {
+        super();
+        super.configure();
+    }
+}    
+</pre>
+
+where the ~GMenuConfigurator superclass is implemented as follows.
+
+<pre class='java'>
+package greenscreen.menu;
+...    
+public class GMenuConfigurator {
+    
+    protected List<GMenuConfiguration> menuList = new ArrayList();
+
+    protected GMenuConfigurator() {
+    }
+    
+    protected GMenuConfiguration createMenu(GMenuConfiguration parentMenu) {
+        GMenuConfiguration menu = new GMenuConfiguration();
+        menu.setParentMenu(parentMenu);
+        menuList.add(menu);
+        return menu;
+    }
+    
+    protected void configure() {
+        ... // read externalised list of MenuConfiguration objects
+        for (Field field : getClass().getFields()) {
+            if (field.getType() == GMenuConfiguration.class) {
+                field.setAccessible(true);
+                configure(field, (GMenuConfiguration) field.get(this));           
+            }
+        }
+    }
+    
+    protected void configure(Field field, GMenuConfiguration menu) {
+        menu.setMenuId(field.getName());
+        ... // configure using MenuAnnotation
+        ... // override with externalised configuration
+    }
+    
+    public void writeConfigurationFile(File configurationFile) {
+        ...
+    }
+
+    protected void readConfigurationFile(File configurationFile) {
+        ...
+    }    
+}    
+</pre>
+
+where ~writeConfigurationFile() is invoked by the developer to generate 
+an externalised configuration file, as presented further below.
+
+
+Leveraging the IDE for rapid prototyping //section
+"Homer no function well beer without." Homer Simpson //quote
+
+Using Java code to capture defaults as above, enables us to leverage the IDE, eg. enjoy auto-completion
+on the worksheet class names. We can take this further for icons, by generating 
+content for an "icon class" as follows.
+
+<pre class='java'>
+public class GIconClassGenerator {
+   ...
+   public void generate(String iconDirectory) {
+      for (String fileName : getFileNameList(iconDirectory)) {
+         if (!ileName.endsWith(".png")) {
+            String camelCaseFileName = toCamelCase(fileName);
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("public final GIcon " + camelCaseFileName);
+            buffer.append(" = createIcon(\"" + fileName + "\");");         
+            System.out.println(buffer);
+         }
+      }
+   }
+}
+</pre>
+
+where ~getFileNameList() lists all the files in the given directory.
+
+
+Externalising the Menu Configuration //section
+"What I like to drink most is beer that belongs to others." Diogenes. //quote
+
+We adopt an approach where we code our defaults in the first instance,
+for rapid prototyping, as in the above ~ZMenuConfigurator.
+At any stage, we can then externalise these defaults, 
+eg. by invoking ~writeConfigurationFile() to emit content for a resource bundle, 
+and/or XML configuration file, in order to support translation and customisation.
+
+When the application starts up, we load the configuration file to override 
+the coded defaults, eg. using ~readConfigurationFile() in the above ~GMenuConfigurator.
+
+We read and parse the configuration data into configuration objects, eg. using JAXB2 to bind the following 
+configuration object to XML.
+
+<pre class='java'>
+@XmlElement(name = "menu")
+public class GMenuConfiguration {    
+    @XmlAttribute protected GMenuConfiguration parentMenu;
+    @XmlAttribute protected Class worksheetClass;
+    @XmlAttribute protected String menuId;
+    @XmlAttribute protected String keyStroke;
+    @XmlAttribute protected Character mnemonic;
+    @XmlAttribute protected String iconName;
+    @XmlAttribute protected String label;
+    @XmlAttribute protected String toolTip; 
+    @XmlAttribute protected Integer ordinal;
+    
+    ... // getters and setters
+    ... // configure(GMenuConfiguration), 
+          // to overwrite with non-null properties from another instance
+}    
+</pre>
+
+<i>
+A diatribe on XML follows. I choose Java to program
+the default configuration, because Java is more programmable, toolable
+and beautiful than XML. So i love tools like JAXB2, to map XML to Java, using annotations, 
+so that i can program XML in Java. Which, as a Java programmer, i naturally prefer.
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/bottle_150b.jpg" width="150" height="201" 
+align=right vspace=4 hspace=16 border=0 />
+
+Similarly with SQL, OQL et al, as addressed in 
+:{Bean Curd 2: The SQL}. //http://aptframework.dev.java.net/article/aptMeme.html
+Anyway, i expect that Dolphin will
+introduce querying into the language, in response to LINQ.
+</i>
+
+
+Users and Roles //section
+"All right, brain, let's back to killing you with beer." Homer Simpson //quote
+
+Since our worksheets are created by the developer, the menu configuration 
+ie. what worksheets we have available, is not editable by the system administrator.
+However, the users, user roles, and menu access control lists, must be editable 
+by an administrative user. So we provide worksheets for that, eg. ~ZUserWorksheet,
+~ZUserRoleWorksheet and ~ZMenuAccessWorksheet.
+
+Our "access control lists" indicate which user roles have access to a given 
+menu (or menu item). To keep things tidy, we have DAOs for menus, as well as 
+users and user roles. Our users have a many-to-many relationship to user roles,
+and our user roles have a many-to-many relationship to our menus. Therefore, 
+we might have "membership" tables, and so DAO's for those too.
+
+<pre class='java'>
+public class ZAccessEntityManager extends MEntityManager {
+   public ZMenuInfo menu = new ZMenuInfo();
+   public ZMenuMembershipInfo menuMembership = new ZMenuMembershipInfo();
+   public ZUserInfo user = new ZUserInfo();
+   public ZUserRoleInfo userRole = new ZUserRoleInfo();
+   public ZUserRoleMembershipInfo userRoleMembership = new ZUserRoleMembershipInfo();
+   ...
+}   
+</pre>
+
+where :{meme.dev.java.net}'s ~MEntityManager was introduced in //http://meme.dev.java.net
+:{Bean Curd 2: The SQL}. //http://aptframework.dev.java.net/article/aptMeme.html
+
+We might get a filtered list of those menus available for a given user role
+by invoking ~entityManager.menuMembership.getMenuList(userRole) which might be 
+implemented as follows.
+
+<pre class='java'>
+public class ZMenuMembershipInfo extends MEntityBean<ZMenuMembership> {
+   ...   
+   public List<ZMenu> getMenuList(ZUserRole userRole) {
+      List<ZMenu> menuList = new ArrayList();
+      for (ZMenuMembership membership : super.getExtentEntityList()) {
+         if (membership.getUserRole().equals(userRole))) {
+            menuList.add(membership.getMenu());
+         }
+      }
+      return menuList;
+   }      
+}
+</pre>
+
+where ~MEntityBean.getExtentEntityList() gets all the entities, ie. rows in this database table.
+
+
+Menu Bar Configurator //section
+"I have feelings too - like I want beer, or I'm going crazy." Homer Simpson //quote
+
+When the user logs into the application, we need to build the menu bar, including 
+only those menus and menu items (which mostly correspond to worksheets) to 
+which that user has access.
+
+We filter the list of all available menus down to the accessible menus,
+and then populate the ~JMenuBar as follows.
+
+<pre class='java'>
+    public void configure(JMenuBar menuBar, List<ZMenu> menuBeanList) {
+        menuBar.removeAll();
+        for (ZMenu parentMenuBean : getMenuBeanList(menuBeanList, null)) {
+            JMenu topMenu = createMenu(menuBeanList, parentMenuBean);
+            topMenu.setIcon(null);
+            if (topMenu.getMenuComponentCount() > 0) {
+                menuBar.add(topMenu);
+            }
+        }
+        menuBar.repaint();
+    }
+
+    protected List<ZMenu> getMenuBeanList(List<ZMenu> menuBeanList, ZMenu parentMenuBean) {
+        List<ZMenu> list = new ArrayList();
+        for (ZMenu menuBean : menuBeanList) {
+            if (menuBean.getParentMenu() == parentMenuBean) {
+                list.add(menuBean);
+            }
+        }
+        return list;
+    }
+    
+    protected JMenu createMenu(List<ZMenu> menuBeanList, ZMenu parentMenuBean) {
+        JMenu menu = createMenu(parentMenuBean);
+        for (ZMenu menuBean : getMenuBeanList(menuBeanList, parentMenuBean)) {
+            if (getMenuList(menuBeanList, menuBean).size() != 0) {
+                menu.add(createMenu(menuBeanList, menuBean));
+            } else {
+                menu.add(createMenuItem(menuBean));
+            }
+        }
+        return menu;
+    }
+    
+    protected JMenuItem createMenuItem(ZMenu menuBean) {
+        GAction action = createMenuAction(menuBean);
+        JMenuItem menuItem = createMenuItem(action);
+        return menuItem;
+    }
+</pre>
+
+where ~createMenu(ZMenu) creates a ~JMenu component from our ~ZMenu entity,
+similar to the above ~createMenuItem(ZMenu).
+
+We have an ~ordinal property on our ~ZMenu Jitem. If this is nonzero, then it 
+indicates that we wish to include this item in our tool bar, using the ordinal value 
+as its order in the tool bar. 
+
+<pre class='java'>
+    public void configure(JToolBar toolBar, List<ZMenu> menuBeanList) {
+        toolBar.removeAll();
+        Map<Integer, ZMenu> menuBeanMap = new TreeMap();
+        for (ZMenu menuBean : menuBeanList) {
+           if (menuBean.getOrdinal() != 0) {
+              menuBeanMap.put(menuBean.getOrdinal(), menuBean);
+           }
+        }
+        for (ZMenu menuBean : menuBeanMap.values()) {        
+            GAction action = createMenuAction(menuBean);
+            JButton button = createButton(action);
+            button.setText(null);
+            toolBar.add(button);
+        }
+        toolBar.repaint();
+    }
+</pre>
+
+where ~createMenuAction() creates a Swing ~Action using the menu configuration.
+
+
+Worksheet Cookie Puncher //section
+"Beer needs sports, and sports needs beer - it has always been thus." Peter Richmond //quote
+
+We introduce an interface for worksheets, so that our framewarez can juggle them.
+
+<pre class='java'>
+public interface ZWorksheet {
+    public void openWorksheet();
+    public boolean closeWorksheet();
+    public String getWorksheetLabel();
+    public GPanel getWorksheetPanel();
+    public String getWorksheetHelp();    
+}       
+</pre>
+
+The ~openWorksheet() method might request focus for some component,
+so we will invoke it after the worksheet tab is realised, eg. using ~SwingUtilities.invokeLater().
+
+<img alt="" src_local="images/beer5_250b.jpg" src="http://weblogs.java.net/blog/evanx/archive/beer5_250b.jpg" width="250" height="221" 
+align="left" hspace="16" vspace="4" />
+
+The ~closeWorksheet() method confirms that the worksheet can be closed, eg. 
+asks if the user wishes to save changes, if there are any.
+
+When the framewarez opens the worksheet, it gets the label for the tab using ~getWorksheetLabel(),
+and the content ~JPanel of the worksheet using ~getWorksheetPanel().
+
+If the user selects the help menu item, our framewarez might get the help 
+for the currently active worksheet using ~getWorksheetHelp().
+This might be the actual HTML text to display, or it might be a bookmark into the help manual, 
+which makes more sense.
+
+
+One of Many Worksheets //section
+"Work is the curse of the drinking class." Oscar Wilde //quote
+
+We make all of our worksheets implement the above interface. Let's consider our 
+~ZProductWorksheet. In MVC-speak, this mashes our MVC three-ball into one class.
+Additionally, we reference POJO model objects, ie. instances of ~ZProductBean, 
+to complete the picture.
+
+It would be better to split this class up, eg. put the table into ~ZProductTable
+and the form into ~ZProductForm. But we aint gonna worry about that right now.
+
+<pre class='java'>
+public class ZProductWorksheet implements ZWorksheet, GActionListener, GFieldListener {
+    
+    @WorksheetContextAnnotation()
+    ZWorksheetContext context = ZWorksheetContext.createWorksheetContext(this);
+        
+    @WorksheetConfigurationAnnotation()
+    ZProductWorksheetConfiguration configuration = new ZProductWorksheetConfiguration();
+    
+    @ComponentAnnotation(label = "Products")
+    GPanel worksheetPanel = context.createPanel();
+    
+    @LayoutAnnotation(gridy = 0)
+    GToolBar worksheetToolBar = context.createToolBar(worksheetPanel);
+    
+    @ComponentAnnotation(label = "Close worksheet")
+    GAction closeAction = context.createAction(worksheetToolBar);
+    
+    ... // more actions eg. new, find, save, undo
+    
+    @LayoutAnnotation(gridy = 1)
+    GTabbedPane tabbedPane = context.createTopTabbedPane(worksheetPanel);
+    
+    @ComponentAnnotation(label = "Products")
+    GTabPanel tableTabPanel = context.createTabPanel(tabbedPane);
+    
+    @ComponentAnnotation(label = "Details")
+    GTabPanel formTabPanel = context.createTabPanel(tabbedPane);
+
+    @ComponentAnnotation()
+    GTable<ZProductBean> productForm = context.createTable(tableTabPanel, ZProductBean.class);
+    
+    @ComponentAnnotation(label = "Product Id", width = 100)
+    GField productIdField = context.createField(productForm);
+
+    ... // other columns
+
+    @LayoutAnnotation(spacer = Gbc.BOTH, flow = Gbc.HORIZONTAL)
+    GForm<ZProductBean> productForm = context.createForm(formTabPanel, ZProductBean.class);
+
+    @ComponentAnnotation(label = "Product Id", width = 100)
+    GTextField productIdColumn = context.createTextField(productForm);
+    
+    ...// other fields
+    
+    List<ZProductBean> productBeanList = new ArrayList();
+        
+    public ZProductWorksheet() {        
+        context.configure(this);        
+        productTable.setDataList(context.entityManager.product.getExtentEntityList());
+        productForm.setBean(productTable.getBeanList().get(0));
+    }
+    
+    public void openWorksheet() {
+       productTable.requestFocusInWindow();
+    }
+
+    public boolean closeWorksheet() {
+       if (productForm.isChanged()) {
+          if (!context.showConfirmDialog(configuration.confirmCloseWithoutSave)) {
+             return false;
+          }
+       }
+       return true;
+    }
+        
+    public GToolBar getWorksheetToolBar() {
+        return worksheetToolBar;
+    }
+    
+    public GPanel getWorksheetPanel() {
+        return worksheetPanel;
+    }
+    
+    public String getWorksheetHelp() {
+        return configuration.worksheetHelp;
+    }
+    
+    public String getWorksheetLabel() {
+        return configuration.worksheetLabel;
+    }
+    
+    public void actionPerformed(GActionEvent event) {
+        context.traceLogger.entering(event);
+        if (event.getAction().equals(newAction)) {
+           ...
+        } else if (event.getAction().equals(findAction)) {
+           ...
+        } else if (event.getAction().equals(saveAction)) {
+            ...
+        } else if (event.getAction().equals(closeAction)) {
+            context.closeWorksheet(this);
+        } else if (event.getAction() == helpAction) {
+            helpActionPerformed();
+        } else {
+            context.traceLogger.warning(event);
+        }
+        setEnabled();
+    }
+
+    public void helpActionPerformed() {
+        context.framewarez.showHelp(getWorksheetHelp());
+    }
+    
+    public void setEnabled() {
+       saveAction.setEnabled(productForm.isChanged());
+       undoAction.setEnabled(productForm.isChanged());
+    }        
+    ...
+}    
+</pre>
+
+As you can see, we annotate everything, even if we dunno why we would want to (yet). 
+<i>Mmmm, Duff, mmmm, annotations...</i>
+
+Note that we use our tabbed framewarez to display our help as a new tab in ~helpActionPerformed(). 
+In general, we favour opening a tab rather than popping up a ~JDialog. For one thing, 
+this allows the user to switch between tabs to remind themselves what they are
+doing. If we really need a modal dialog, then we will use one, but otherwise we go for tabs.
+
+
+Worksheet Configuration Class //section
+"Beer, the cause and solution to all of life's problems." Homer Simpson //quote
+
+We distill translatable strings into a worksheet configuration class as follows.
+
+<pre class='java'>
+public class ZProductWorksheetConfiguration {
+
+    String worksheetLabel = "Products";        
+    
+    String worksheetHelp =  
+        "<b>Product catalogue maintenance worksheet</b> \n\n" +
+        "Use this worksheet to maintain our catalogue of beer products.";    
+        
+    String confirmCloseWithoutSave = "Close without saving changes?";
+    
+    ... // other messages, eg. exception messages, dialog messages
+}    
+</pre>
+
+This class can be externalised to an XML file for customisation and translation. 
+In addition to the above strings, our configuration bundle implicitly includes the 
+configuration of our components, to override the defaults specified in the annotations,
+notably the labels and tooltips, eg. the tooltip for ~closeAction, 
+tab label for ~tableTabPanel, column label for ~productIdColumn, et cetera.
+
+The configuration might be generated for a resource bundle as follows.
+
+<pre class='java'>
+    productWorksheet.message.worksheetLabel = Products
+    productWorksheet.message.confirmCloseWithoutSave = Close without saving changes?
+    productWorksheet.message.worksheetHelp = <b>Product catalogue maintenance worksheet</b> ...
+    productWorksheet.panel.worksheetPanel.label = Products
+    productWorksheet.action.closeAction.toolTip = Close worksheet
+    productWorksheet.tab.tableTabPanel.label = Products
+    productWorksheet.tab.formTabPanel.label = Details
+    productWorksheet.field.productIdField.label = Product Id
+    productWorksheet.column.productIdColumn.label = Product Id
+</pre>
+
+Alternatively, its XML representation might look like the following.
+
+<pre class='html'>
+    <worksheetConfiguration name="productWorksheet">
+        <message name="worksheetLabel" value="Products"/>
+        <message name="confirmCloseWithoutSave" value="Close without saving changes?"/>
+        <message name="worksheetHelp">
+            <b>Product catalogue maintenance worksheet</b>
+            Use this worksheet to maintain our catalogue of beer products.          
+        </message>
+        <panel name="worksheetPanel" label="Products"/>
+        <action name="closeAction" toolTip="Close worksheet"/>
+        <tab name="tableTabPanel" label="Products"/>
+        <tab name="formTabPanel" label="Details"/>
+        <field name="productIdField" label="Product Id"/>
+        <column name="productIdColumn" label="Product Id"/>
+    </worksheetConfiguration>
+</pre>
+
+In our ~ZWorksheetContext.configure() method, 
+we would parse the above into a list of ~MessageConfiguration, 
+~ActionConfiguration, ~PanelConfiguration, ~TabConfiguration, 
+~FieldConfiguration and ~ColumnConfiguration objects. And then 
+apply these configurations to our ~ZProductWorksheetConfiguration instance,
+and the components of our ~ZProductWorksheet, to override the defaults
+eg. as specified in annotations.
+
+
+Framewarez //section
+"Without hydrogen and oxygen, there would be no water, a vital ingredient in beer." Dave Barry. //quote
+
+Our framewarez is implemented as follows. For starters, we show a login tab. Once the 
+user has logged in, we configure the menu bar appropriately according to the user's
+access permissions. Then the user can start launching worksheets. 
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/login.png" width="585" height="247" />
+
+<pre class='java'>
+public class ZAccessFrame implements GFieldListener, ActionListener, GTableListener {
+    
+    @WorksheetContextAnnotation()
+    ZWorksheetContext context = ZWorksheetContext.createWorksheetContext(this);
+    
+    @WorksheetConfigurationAnnotation()
+    ZAccessFrameConfiguration configuration = new ZAccessFrameConfiguration();
+    
+    @LayoutAnnotation()
+    GFrame mainFrame = context.createFrame();
+    
+    @LayoutAnnotation()
+    GMenuBar mainMenuBar = context.createMenuBar(mainFrame);
+    
+    @LayoutAnnotation(gridy = 0)
+    GToolBar mainToolBar = context.createToolBar();
+    
+    @LayoutAnnotation(gridy = 1)
+    GTabbedPane mainTabbedPane = context.createBottomTabbedPane(mainPanel);
+    
+    @LayoutAnnotation()
+    GPanel textPanel = context.createPanel();
+    
+    @LayoutAnnotation(top = 20, gridy = 2)
+    GTextPane textPane = context.createTextPane(textPanel);
+    
+    @LayoutAnnotation()
+    @ComponentAnnotation(label = "Login")
+    GPanel loginPanel = context.createPanel();
+    
+    @LayoutAnnotation(gridy = 1)
+    GForm loginForm = context.createForm(loginPanel, ZLoginBean.class);
+    
+    @LayoutAnnotation(gridx = 0, width = 100)
+    @ComponentAnnotation(label = "Username")
+    GTextField usernameField = context.createTextField(loginForm);
+    
+    @LayoutAnnotation(gridx = 1, width = 100)
+    @ComponentAnnotation(label = "Password")
+    GPasswordField passwordField = context.createPasswordField(loginForm);
+
+    @LayoutAnnotation(gridx = 2)
+    GAction loginAction = context.createButton(loginForm);
+        
+    ZLoginBean loginBean = new ZLoginBean(this);
+    
+    
+    public ZAccessFrame() {
+        context.configure(this);
+        loginForm.setBean(loginBean);
+        setEnabled();
+    }
+
+    public void fieldChanged(GFieldEvent event) {
+        context.fieldLogger.entering(event);
+        if (event.getField() == usernameField) {
+            usernameChanged();
+        } else if (event.getField() == passwordField) {
+            passwordChanged();
+        }
+        setEnabled();
+    }
+        
+    protected void usernameChanged() {
+        loginBean.validateUsername();
+        passwordField.setEnabled(true);
+        passwordField.requestFocusInWindow();
+    }
+    
+    protected void passwordChanged() {
+        loginForm.getBean();
+        loginBean.validate();
+        loginAction.setEnabled(true);
+        loginAction.requestFocusInWindow();
+    }
+    
+    protected void setEnabled() {
+        loginAction.setEnabled(loginBean.validate());
+    }
+    
+    public void actionPerformed(ActionEvent event) {
+        ZMenu menu = context.entityManager.menu.getNullableEntityBean(event.getActionCommand());
+        context.actionLogger.entering(event, menu);
+        if (menu != null && menu.getWorksheetClass() != null) {
+            openWorksheet(menu.getWorksheetClass());
+        } else if (loginAction.isSource(event)) {
+            loginActionPerformed();
+        } else if (context.accessData.systemLogout.isSource(event)) {
+            logoutActionPerformed();
+        } else if (context.accessData.systemExit.isSource(event)) {
+            exitActionPerformed();
+        } else if (context.accessData.helpOnlineHelp.isSource(event)) {
+            helpActionPerformed();
+        } else if (context.accessData.helpAbout.isSource(event)) {
+            aboutActionPerformed();
+        } else {
+            context.traceLogger.warning(event);
+        }
+        setEnabled();
+    }
+        
+    public void loginActionPerformed() {
+        loginForm.getBean();
+        loginBean.validate();
+        loginUser();
+    }
+    
+    protected void loginUser() {
+        context.setUser(loginBean.getUser());
+        showMenu();
+    }
+
+    protected void showMenu() {
+        context.configure(mainMenuBar, context.getUser());
+        context.configure(mainToolBar, context.getUser());
+        mainMenuBar.requestFocusInWindow();
+    }
+        
+    protected void logoutActionPerformed() {
+        context.setUser(null);
+        loginBean = new ZLoginBean(this);
+        loginForm.setBean(loginBean);
+        mainTabbedPane.removeAll();
+        mainTabbedPane.addTab(loginPanel);
+        username.requestFocusInWindow();
+    }
+    
+    protected void openWorksheet(Class worksheetClass) {
+        try {
+            ZWorksheet worksheet = (ZWorksheet) worksheetClass.newInstance();
+            openWorksheet(worksheet);
+        } catch (Exception e) {
+            throw new GWrappedRuntimeException(context, e, 
+                configuration.openWorksheetError, worksheetClass);
+        }
+    }
+    
+    protected void openWorksheet(final ZWorksheet worksheet) {
+        String tabName = worksheet.getWorksheetLabel();
+        int index = mainTabbedPane.indexOfTab(tabName);
+        if (mainTabbedPane.indexOfTab(tabName) >= 0) {
+            mainTabbedPane.setSelectedIndex(mainTabbedPane.indexOfTab(tabName));
+            return;
+        }
+        JPanel worksheetPanel = worksheet.getWorksheetPanel();
+        mainTabbedPane.addTab(tabName, worksheetPanel);
+        mainTabbedPane.setSelectedComponent(worksheetPanel);
+        worksheet.openWorksheet();
+    }
+    
+    public void closeWorksheet(ZWorksheet worksheet) {
+        if (worksheet.closeWorksheet()) {
+            mainTabbedPane.remove(worksheet.getWorksheetPanel());
+        }
+    }    
+    ...    
+}
+    
+</pre>
+
+Not rocket science, just framewarez, so...
+
+A handy trick is to enable automatic login, eg. via ~-DautoLoginUser=test.
+Then in development mode, we can press F6 to compile and run the framewarez, and 
+straight-away click on the toolbar icon for the worksheet we are working on, to preview and test it in a tight 
+loop without the niggle of logging in a million times a day. For this reason if nothing else, we need to 
+minimise our application startup time, eg. by using lazy initialisation, and also not overriding our default 
+configuration from externalised configuration files and preferences, eg. via ~-DsuppressExternalisedConfiguration=true 
+
+
+Conclusion //section
+"The answers aren't at the bottom of a beer bottle, they're on TV!" Homer Simpson. //quote
+
+We present a design of a ~JFrame with a ~JTabbedPane for worksheets. We install a ~JMenuBar 
+on the ~JFrame for launching worksheets. Menu items are configured in the application, and overridden
+with the externalised configuration, eg. using JAXB2 to persist the configuration to an XML file. This enables
+translation and customisation. 
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/leffe.jpg" width="240" height="180" 
+align=right vspace=4 hspace=16 border=0 />
+
+Access control to the menu items is based on user roles. This is persisted to the database, and maintained
+by the administrative user using worksheets, ie. for users and user roles, and the corresponding 
+menu access control lists. 
+
+<i>
+This design is implemented in :{aptframework.dev.java.net}, //http://aptframework.dev.java.net
+minus some refinements presented here. If you wish to dive deeper into some undocumented non-sugar-coated code, you can look there. 
+</i>
+
+<i>Here's that Web Start demo again... </i> 
+
+<a href="https://aptframework.dev.java.net/jnlp/aptframework.jnlp"><img alt="webstart.small.gif" src="http://weblogs.java.net/blog/evanx/archive/webstart.small.gif" border="0"/></a>
+~(AptFramework, Java5, 235k/635k, unsandboxed)
+
+<br>
+
+<table>
+<tr>
+<td>
+  <form action='http://weblogs.java.net/blog/evanx/archive/2006/07/swing_and_round_3.html'>
+  <a href='http://weblogs.java.net/blog/evanx/archive/2006/07/swing_and_round_3.html' 
+  style='text-decoration: none;'><input type=submit value='Discuss'/></a></form>
+<td>
+  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
+  <a href='http://aptframework.dev.java.net/gooey/contents.html' 
+  style='text-decoration: none;'><input type=submit value='Gooey Contents'/></a></form>
+<td>
+  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
+  <a href='http://aptframework.dev.java.net/foundation/contents.html'
+  style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a></form>
+</table>
+
