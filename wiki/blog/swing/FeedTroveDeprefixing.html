@@ -1,0 +1,76 @@
+
+I have one very simple rule for design, namely to create as many classes as possible! Let's name this "Evan's Rule of Simplicity by Multiplicity."
+
+<!--break-->
+
+So I just noticed a simple cue to refactor out a class. Consider the following GUI construction. 
+
+<pre>
+public class MainView {
+    JTabbedPane mainTabbedPane = new JTabbedPane();
+    ...
+    DefaultMutableTreeNode categoryRootTreeNode = new DefaultMutableTreeNode(new CheckBoxModel("All", false));
+    DefaultTreeModel categoryTreeModel = new DefaultTreeModel(categoryRootTreeNode);
+    JTree categoryTree  = new JTree(categoryTreeModel);    
+    ...    
+    public MainView() {
+        categoryTree.setEditable(true);    
+        ...
+    }
+    ...
+}</pre>    
+
+You see we have a few related components <tt>categoryTree</tt>, <tt>categoryTreeModel</tt> and <tt>categoryRootTreeNode</tt>. They all start with the same prefix ie. <tt>category</tt>, so as to distinguish them from other trees. 
+
+So the clue is when seeing such prefixes, refactor them out to a class so as to "de-prefix" them, as follows. 
+
+<pre>
+public class CategoryTreeView {    
+    DefaultMutableTreeNode rootTreeNode = new DefaultMutableTreeNode(new CheckBoxModel("All", false));
+    DefaultTreeModel treeModel = new DefaultTreeModel(rootTreeNode);
+    JTree tree  = new JTree(treeModel);
+    
+    Map<Category, DefaultMutableTreeNode> treeNodeMap = new HashMap();
+    Map<Feed, DefaultMutableTreeNode> feedTreeNodeMap = new HashMap();
+    
+    TreeCellRenderer renderer = new CheckBoxTreeCellRenderer();
+    CheckBoxTreeCellEditor editor = new CheckBoxTreeCellEditor();
+    ...
+    public CategoryTreeView() {
+        tree.setEditable(true);
+        ...
+    }        
+    ...
+}
+</pre>    
+
+So let's name this "Evan's Rule of Fixing by Deprefixing."
+
+A further step might be refactoring this to extend something eg. <tt>JTree</tt> or <tt>DefaultTreeModel</tt>, rather than being a composition.
+
+We hook up that class, to a now simpler <tt>MainView</tt>.
+
+<pre>
+public class MainView {    
+    JTabbedPane mainTabbedPane = new JTabbedPane();
+    ...
+    CategoryTreeView categoryTreeView = new CategoryTreeView();
+    ...        
+    public MainView() {
+        ...
+    }
+    ...
+} 
+</pre>
+
+So our increasingly complex system progressively devolves to a collection of increasingly simple classes. It's nice! 
+
+PS. Here is (another) sneak preview of this feed reader toy that's been distracting me of late, and the actual reason i wrote this blog entry, ie. as an excuse for this postscript, as will be the case with all entries in this series - I know, gutting. 
+
+PPS. That's from The Office when David Brent says, "Well, there's good news and bad news. The bad news is that Neil will be taking over both branches, and some of you will lose your jobs. Those of you who are kept on will have to relocate to Swindon, if you wanna stay. I know, gutting. On a more positive note, the good news is, I've been promoted, so... every cloud... You're still thinking about the bad news aren't you?" 
+
+<a href="http://aptframework.dev.java.net/jnlp/feedtray.jnlp"><img border="0" src="http://weblogs.java.net/blog/evanx/archive/webstart.small.gif" alt="Launch" width="88" height="23"/></a><i> &nbsp; (FeedTrove, 1M/350k, unsandboxed, Java6)</i>
+<p>
+<img border="0" src="http://aptframework.dev.java.net/evanx/images/feedtray20070617.png"/>
+
+There seems to be the odd GUI feeze-up but i don't know why!? I'm doing every GUI-ish thing on the EDT as far as i can see. Personally i suspect <tt>JEditorPane!</tt> ;) Anyway, one can dispose the frame into the system tray, and pop it up again.
