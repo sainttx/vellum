@@ -1,0 +1,32 @@
+Let's look at neatening up those messy <tt>equals()</tt> and <tt>hashCode()</tt> methods in our entities.  
+
+<a href="https://code.google.com/p/vellum/">
+<div style="border-bottom: solid 1px; background-color: #ccff00;"><img border=0 src="http://weblogs.java.net/blog/evanx/archive/database.png" width="32" height="32" align="left" hspace="8"/> <b>Entity Equals:</b> <i>A part of the "Jelly Beans" part of a trilogy in 42 parts"</i></div></a>
+
+<pre>
+public class Feed {
+    private int id;
+    private String uri;
+    ...
+    private Comparable[] values() {
+        return new Comparable[] {id, uri};
+    }
+    
+    public boolean equals(Object object)  {
+        if (object instanceof Feed) {
+            Feed feed = (Feed) object;
+            return typeHelper.equals(values(), feed.values());
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return typeHelper.hashCode(values());
+    }
+}
+</pre>
+where we implement a <tt>values()</tt> method to return an array of our IDs et al for <tt>hashCode()</tt> and <tt>equals()</tt>, and utilise a helper class.
+
+<h2>Resources</h2>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
