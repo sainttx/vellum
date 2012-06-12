@@ -1,40 +1,23 @@
 
-
-Swing and Roundabouts 2: Inside Action //title
-
-Prequels //section
-
-See :{Turn Tables} //http://aptframework.dev.java.net/article/aptTable.html
-and :{Panel Beater}. //http://aptframework.dev.java.net/article/aptForm.html
-
 Introduction //section
 "To err is human, but to really foul things up you need a computer." Paul Ehrlich //quote
 
-Swing actions are used for buttons, menu items and keystrokes. 
-For example, a "Save" action event might be initiated by the user
+Swing actions are used for buttons, menu items and keystrokes. For example, a "Save" action event might be initiated by the user
 using a menu item, button or keystroke eg. Ctrl-S. 
 
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/olive2_250.jpg" width="250" height="191"
-align=left hspace=16 />
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/olive2_250.jpg" width="250" height="191" align=left hspace=16 />
 
-We need to configure actions centrally, so that consistent labels, icons,
-mnemonics and keystrokes are associated with a given action, such as "Save." 
-And also so that we can enable and disable an action, without having to attend 
-to every associated button, menu item and keystroke. 
+We need to configure actions centrally, so that consistent labels, icons, mnemonics and keystrokes are associated with a given action, such as "Save." And also so that we can enable and disable an action, without having to attend to every associated button, menu item and keystroke. 
 
-So we build an "action framework." 
-<i>Why? Because it's fun, it's useful, and it's legal, so it's a must!</i>
+So we build an "action framework." <i>Why? Because it's fun, it's useful, and it's legal, so it's a must!</i>
 
 Our action framework is copied from :{greenscreen.dev.java.net}, //http://greenscreen.dev.java.net
 but we will try to improve upon that design here, in particular simplify it, so that 
 anyone can reimplement it from scratch in a few days, or paste and hack it 
 into their project. 
-Since i redesigned and reimplemented :{greenscreen} //http://greenscreen.dev.java.net
-some months ago, it's about time to redo that again. 
-So i'm writing this article to present and improve upon that design.
-So this is an exercise in "design by explanation." 
-Because if it's not easy to explain, then it's not simple enough.
 
+Since i redesigned and reimplemented :{greenscreen} //http://greenscreen.dev.java.net
+some months ago, it's about time to redo that again. So i'm writing this article to present and improve upon that design. So this is an exercise in "design by explanation." Because if it's not easy to explain, then it's not simple enough.
 
 Uncle Vinnie's Application //section
 <!--br/><i>"Programming today is a race between software engineers striving to build bigger and 
@@ -45,21 +28,14 @@ Rich Cook.
 <!--img alt="" src="http://weblogs.java.net/blog/evanx/archive/Ottidoro_200.jpg" width="200" height="164" 
 align=right hspace=16 /-->
 
-Our boss, Uncle Vinnie (from Chicago) wants to modernise our operation. Cos we going
-legit. And being a legit business, you gotta have these computers and 
-photocopies and fax machines and shredders and stuff like that, you know, 
-to make it look legit.
+Our boss, Uncle Vinnie (from Chicago) wants to modernise our operation. Cos we going legit. And being a legit business, you gotta have these computers and photocopies and fax machines and shredders and stuff like that, you know, to make it look legit.
 
 <!--img alt="" src="http://weblogs.java.net/blog/evanx/archive/olive8_crop.jpg" width="92" height="202" 
 align=right hspace=16 /-->
 
-So we're in the olive oil business. Like everyone else in the neighbourhood.
-We got different products, like Extra virgin, and some other types and brands. 
+So we're in the olive oil business. Like everyone else in the neighbourhood. We got different products, like Extra virgin, and some other types and brands. 
 
-We gonna build a database front-end application to save our products, and 
-stock quantities and such. Vinnie said we'll leave the supplier and customer
-records for Phase N. As in, No time soon, probably Never. In the meantime 
-Vinnie uses that little black notebook in his pocket for those. Old habits...
+We gonna build a database front-end application to save our products, and stock quantities and such. Vinnie said we'll leave the supplier and customer records for Phase N. As in, No time soon, probably Never. In the meantime Vinnie uses that little black notebook in his pocket for those. Old habits...
 
 For our application, we prefix class names with ~Vinnie. <i>Of coz.</i>
 
@@ -133,16 +109,9 @@ public class VinnieProductWorksheet implements ActionListener {
 <!--img alt="olive8_crop.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive8_crop.jpg" width="92" height="202" 
 align=right hspace=16 /-->
 
-Rather than using "dependency injection," we use an approach of exposing all our 
-dependencies via a context object. If you don't like that, then think of it as a 
-shorthand notation to indicate where dependency injection is required. <i>Capice?</i>
+Rather than using "dependency injection," we use an approach of exposing all our dependencies via a context object. If you don't like that, then think of it as a shorthand notation to indicate where dependency injection is required. <i>Capice?</i>
 
-In the above code, we have used annotations to configure our actions, and also 
-more direct methods, eg. invoking ~setToolTip() et al in the ~configure() method.
-If you don't like this trick with using annotations for configuration, think of it 
-as a shorthand notation to indicate which setters you gonna invoke in the ~configure() method.
-Of course, these settings should be externalised, eg. in a resource bundle, for translation
-and customisation. But Uncle Vinnie says its OK to hardcode defaults here for rapid prototyping.
+In the above code, we have used annotations to configure our actions, and also more direct methods, eg. invoking ~setToolTip() et al in the ~configure() method. If you don't like this trick with using annotations for configuration, think of it as a shorthand notation to indicate which setters you gonna invoke in the ~configure() method. Of course, these settings should be externalised, eg. in a resource bundle, for translation and customisation. But Uncle Vinnie says its OK to hardcode defaults here for rapid prototyping.
 
 
 Action Configuration Object //section
@@ -171,29 +140,19 @@ public class ActionConfiguration {
 }
 </pre>
 
-We will configure common actions centrally, eg. label, tooltip, keystroke et al, 
-using this class. Also, we will externalise our action configuration by serialising 
-a list of instances of this class. We might use JAXB to persist our action configuration 
-to an XML file. In which case, we can just add JAXB2 annotations into the above 
-class, and Vinnie's your Uncle, woohoo!
+We will configure common actions centrally, eg. label, tooltip, keystroke et al, using this class. Also, we will externalise our action configuration by serialising a list of instances of this class. We might use JAXB to persist our action configuration to an XML file. In which case, we can just add JAXB2 annotations into the above class, and Vinnie's your Uncle, woohoo!
 
-Common actions like ~saveAction would have an null ~worksheetClass. 
-If a property is not specified, then it will be null, which indicates 
-we should use the default for that action, eg. from the common action configuration.
+Common actions like ~saveAction would have an null ~worksheetClass. If a property is not specified, then it will be null, which indicates we should use the default for that action, eg. from the common action configuration.
 
-In the case of common actions, our worksheet's actions typically only override the ~toolTip
-eg. "Save product" for the ~saveAction of ~VinnieProductWorksheet.
+In the case of common actions, our worksheet's actions typically only override the ~toolTip eg. "Save product" for the ~saveAction of ~VinnieProductWorksheet.
 
 
 Our Own Actions //section
 "The most reliable components are the ones you leave out." Gordon Bell //quote
 
-Swing has an ~AbstractAction class with an abstract ~actionPerformed() method. 
-So we gonna extend this class. 
+Swing has an ~AbstractAction class with an abstract ~actionPerformed() method. So we gonna extend this class. 
 
-~AbstractAction has a ~Map for its configuration, with keys ~Action.ACTION_COMMAND_KEY,
-~NAME and ~SHORT_DESCRIPTION. I was tryna
-explain to Uncle Vinnie that it might look better to use fields rather than this map. He said, no problem.
+~AbstractAction has a ~Map for its configuration, with keys ~Action.ACTION_COMMAND_KEY, ~NAME and ~SHORT_DESCRIPTION. I was tryna explain to Uncle Vinnie that it might look better to use fields rather than this map. He said, no problem.
 
 <pre class='java'>
 public class GAction extends AbstractAction {
@@ -269,9 +228,7 @@ public class GAction extends AbstractAction {
 }    
 </pre>
 
-
-<!--img alt="olive3_250.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive3_250.jpg" width="250" height="188" 
-align=left hspace=16 vspace="8" /-->
+<!--img alt="olive3_250.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive3_250.jpg" width="250" height="188" align=left hspace=16 vspace="8" /-->
 
 The ~actionPerformed() method delegates to an event helper dependency.
 Also we introduce some methods for handling keystrokes, because i can never
@@ -279,17 +236,10 @@ remember the ~InputMap and ~ActionMap stuff.
 
 We implement a ~configure() method to configure an action using an ~ActionConfiguration.
 
-
 Event helper //section
-<!--br/><i>"The price of reliability is the pursuit of the utmost simplicity. 
-It is a price which the very rich find most hard to pay." Edsger Dijkstra
-</i-->
+<!--br/><i>"The price of reliability is the pursuit of the utmost simplicity. It is a price which the very rich find most hard to pay." Edsger Dijkstra</i-->
 
-Our event helper is just an event dispatcher to our controller. In effect, it 
-does "automatic event listener registration" by inspecting the controller,
-In particular it checks if the controller implements the relevant listener interface
-eg. ~ActionListener, ie. handles a given event. If so, it forwards the 
-event to the controller, eg. invokes ~actionPerformed(ActionEvent).
+Our event helper is just an event dispatcher to our controller. In effect, it does "automatic event listener registration" by inspecting the controller, In particular it checks if the controller implements the relevant listener interface eg. ~ActionListener, ie. handles a given event. If so, it forwards the event to the controller, eg. invokes ~actionPerformed(ActionEvent).
 
 <pre class='java'>
 public class GEventHelper implements FocusListener, ActionListener, WindowListener {
@@ -324,67 +274,46 @@ public class GEventHelper implements FocusListener, ActionListener, WindowListen
 }
 </pre>
 
-We might extend this class as ~VinnieEventHelper to override methods eg. 
-the ~beforeEvent() amd ~afterEvent() aspects. Then we need to configure 
-our context to use this customised event helper.
+We might extend this class as ~VinnieEventHelper to override methods e.g. the ~beforeEvent() amd ~afterEvent() aspects. Then we need to configure our context to use this customised event helper.
 
+<!--img alt="olive7_75.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive7_75.jpg" width="75" height="121" align=left hspace=16 /-->
 
-<!--img alt="olive7_75.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive7_75.jpg" width="75" height="121"
-align=left hspace=16 /-->
 Basic context //section
-<!--br/><i>"The first 90% of the code accounts for the first 90% of the development time. 
-The remaining 10% of the code accounts for the other 90% of the development time." Tom Cargill
-</i-->
+<!--br/><i>"The first 90% of the code accounts for the first 90% of the development time. The remaining 10% of the code accounts for the other 90% of the development time." Tom Cargill</i-->
 
-As mentioned earlier, we get into an awful mess by using "customised cloned contexts" 
-rather than IoC dependency injection. 
+As mentioned earlier, we get into an awful mess by using "customised cloned contexts" rather than IoC dependency injection. 
 
-Firstly we have our "framework context" class, which 
-exposes all dependencies required by our framework.
+Firstly we have our "framework context" class, which exposes all dependencies required by our framework.
 
 <pre class='java'>
 public void GContext {
-
    public static GContext frameworkContext = new GContext();
-
    public static GLogger eventLogger = new GLogger(this, "eventLogger");
-   // logger verbosity set via system properties eg. -DeventLogger.level=FINEST
-   // eg. setLevel(Level.parse(System.getProperty(loggerName + ".level", "INFO")));
    
    public static GFormatter formatter = new GFormatter(this);
-   
-   public GEventHelper eventHelper = new GEventHelper(this);
-   
-   ...
 
+   public GEventHelper eventHelper = new GEventHelper(this);
+   ...
    protected GContext() {
    }
    
    public static GContext getInstance() {
       return frameworkContext;  
    }
-   
    ...
 }        
 </pre>
 
-
 <!--img alt="olive4_crop.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive4_crop.jpg" width="153" height="146"
 align=right hspace=16 vspace="32 "/-->
 
-We don't want null pointer exceptions, so we instantiate references such as ~eventHelper,
-with default implementations.
+We don't want null pointer exceptions, so we instantiate references such as ~eventHelper, with default implementations.
 
-Unfortunately we have to take great care when constructing the above context object. For example, if ~GLogger 
-references something on ~this halfbaked context that we pass to its constructor, 
-eg. ~formatter, then we get a null pointer exception when we construct ~eventLogger, because 
-~formatter is created after ~eventLogger.
+Unfortunately we have to take great care when constructing the above context object. For example, if ~GLogger references something on ~this halfbaked context that we pass to its constructor, eg. ~formatter, then we get a null pointer exception when we construct ~eventLogger, because ~formatter is created after ~eventLogger.
 
 
 Worksheet context //section
-<!--br/><i>"When a programming language is created that allows programmers to program in simple English, 
-it will be discovered that programmers cannot speak English." 
-</i-->
+<!--br/><i>"When a programming language is created that allows programmers to program in simple English, it will be discovered that programmers cannot speak English." </i-->
 
 For event handling, we extend this to include a reference to our worksheet object, eg. ~VinnieProductWorksheet.
 
@@ -416,9 +345,7 @@ public void GWorksheetContext extends GContext {
 
 When the worksheet is set, we pass this on to the event helper as the controller.
 
-We will introduce our ~GActionConfigurator later. This is used to 
-configure the common actions of our application in a central, externalisable way.
-We do this so that our action properties are customisable and translatable.
+We will introduce our ~GActionConfigurator later. This is used to configure the common actions of our application in a central, externalisable way. We do this so that our action properties are customisable and translatable.
 
 
 Custom cloned contexts //section
@@ -460,59 +387,29 @@ public void VinnieWorksheetContext extends GWorksheetContext {
 }        
 </pre>
 
-When we create our application context, we override some of the default dependencies 
-in the framework context with our customised application ones, eg. ~VinnieFormatter, 
-as in the above constructor.
+When we create our application context, we override some of the default dependencies in the framework context with our customised application ones, eg. ~VinnieFormatter, as in the above constructor.
 
-When we run our application, we customise the framework context instance to the 
-application context instance, as in the above ~main() method. So when 
-classes invoke ~GContext.getInstance() they will get a reference to 
-our customised application context.
+When we run our application, we customise the framework context instance to the application context instance, as in the above ~main() method. So when classes invoke ~GContext.getInstance() they will get a reference to our customised application context.
 
-<img alt="" 
-src="http://weblogs.java.net/blog/evanx/archive/OliveOil_bottle.jpg" width="180" height="246" 
-align=left hspace=16 />
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/OliveOil_bottle.jpg" width="180" height="246" align=left hspace=16 />
 
-When a worksheet creates a context for itself, ie. in ~createWorksheetContext()
-above, then the application 
-context is cloned, and the worksheet reference is set on the cloned context, which 
-is now customised for that worksheet. 
+When a worksheet creates a context for itself, ie. in ~createWorksheetContext() above, then the application context is cloned, and the worksheet reference is set on the cloned context, which is now customised for that worksheet. 
 
-As i said earlier, it's nasty. But dependency handling is difficult, since there are 
-typically loads of dependencies. Some dependencies are customised for specific classes 
-eg. ~GEventHelper is created as a peer to a specific worksheet class instance, 
-eg. ~VinnieProductWorksheet. Others are singletons, 
-but also customisable for our application eg. ~GFormatter.
-Others are both customisable for our application, and for a specific instance, 
-eg. ~GEventHelper is customised as ~VinnieEventHelper in our application, 
-and is created by the framework for each worksheet instance, eg. in the 
-~createWorksheetContext() method above.
+As i said earlier, it's nasty. But dependency handling is difficult, since there are typically loads of dependencies. Some dependencies are customised for specific classes eg. ~GEventHelper is created as a peer to a specific worksheet class instance, eg. ~VinnieProductWorksheet. Others are singletons, but also customisable for our application eg. ~GFormatter. 
 
-As nasty as our "cloned customised context" mechanism is, it is relatively simple
-compared to a dependency injection framework. And we can avoid XML configurations. 
-<i>Vinnie absolutely insists on this, and otherwise goes flying off the handle.</i>
+Others are both customisable for our application, and for a specific instance, eg. ~GEventHelper is customised as ~VinnieEventHelper in our application, and is created by the framework for each worksheet instance, eg. in the ~createWorksheetContext() method above.
 
-So we need to pass the relevant context through to our constructors. But we pass 
-one dependency only ie. this context, to expose all the rest of our dependencies. 
-And we need not declare all our dependencies in our client classes, only the context. 
-<i>So Vinnie finds it terribly convenient. Which explains why i do it this way. 
-Because The Boss is always right.
-Even when he's wrong... Especially when he's wrong, actually.</i>
+As nasty as our "cloned customised context" mechanism is, it is relatively simple compared to a dependency injection framework. And we can avoid XML configurations. <i>Vinnie absolutely insists on this, and otherwise goes flying off the handle.</i>
+
+So we need to pass the relevant context through to our constructors. But we pass one dependency only ie. this context, to expose all the rest of our dependencies. And we need not declare all our dependencies in our client classes, only the context. <i>So Vinnie finds it terribly convenient. Which explains why i do it this way. Because The Boss is always right. Even when he's wrong... Especially when he's wrong, actually.</i>
 
 Central Configuration Station //section
 <!--br/><i>"Undetectable errors are infinite in variety, in contrast to detectable errors, 
 which by definition are limited."</i-->
 
+Lemme tell ya, Vinnie did a stint in jail once, on a trumped up charge of knocking over a cigarette truck. On the inside, when he wasn't pushing weights in the yard, he was in the library learning computers. He came out looking like a jock and talking like a geek. That's when he said we was gonna go legit, and we was gonna get all computerised to prove it.
 
-Lemme tell ya, Vinnie did a stint in jail once, on a trumped up charge of knocking over a cigarette truck.
-On the inside, when he wasn't pushing weights in the yard, he was in the library learning computers. 
-He came out looking like a 
-jock and talking like a geek. That's when he said we was gonna go legit, and we was gonna 
-get all computerised to prove it.
-
-So when Vinnie says we want our common actions to be 
-configured centrally in one place as below, just like he learnt in prison,
-that's how we gonna do them.
+So when Vinnie says we want our common actions to be configured centrally in one place as below, just like he learnt in prison, that's how we gonna do them.
 
 <pre class='java'>
 public class VinnieActionConfigurator extends GActionConfigurator {
@@ -537,10 +434,7 @@ public class VinnieActionConfigurator extends GActionConfigurator {
 }   
 </pre>
 
-Where we of course to override these defaults from an externalised configuration file,
-eg. in the ~configure() method.
-
-
+Where we of course to override these defaults from an externalised configuration file, eg. in the ~configure() method.
 
 Action configurator //section
 <!--br/><i>"UNIX is basically a simple operating system, but you have to be a genius 
@@ -648,11 +542,7 @@ public abstract class GActionConfigurator {
 }   
 </pre>
 
-The ~configure() method gets the list of ~ActionConfiguration's created
-in our subclass eg. ~VinnieActionConfigurator. It configures them 
-using the field name as the action command, extracting the ~ActionAnnotation,
-and finally overriding with the externalised configuration, eg. loaded from an XML file 
-to which the ~actionConfigurationList was previously persisted, eg. using JAXB2.
+The ~configure() method gets the list of ~ActionConfiguration's created in our subclass eg. ~VinnieActionConfigurator. It configures them using the field name as the action command, extracting the ~ActionAnnotation, and finally overriding with the externalised configuration, eg. loaded from an XML file to which the ~actionConfigurationList was previously persisted, eg. using JAXB2.
 
 When we launch our application, we might set ~GWorksheetContext.actionConfigurator as follows.
 
@@ -664,13 +554,10 @@ When we launch our application, we might set ~GWorksheetContext.actionConfigurat
    }
 </pre>
 
-
 The ~GWorksheetContext.configure() method will delegate to the ~configureWorksheet()
 in the above ~GActionConfigurator to configure the worksheet's actions appropriately.
 Defaults are used where these are defined, ie. in common actions. Defaults are overridden with the
 externalised configuration eg. from an XML configuration file. 
-
-
 
 Action items //section
 <!--br/><i>"A printer consists of three main parts: the case, the jammed paper tray and the blinking red light."
@@ -694,11 +581,7 @@ Using our actions, we can create buttons and menu items.
     }
 </pre>
 
-This causes the ~JButton instances to invoke ~configurePropertiesFromAction() 
-(in their ~AbstractButton superclass) to get their label et al from the action. 
-When the button is pressed, the ~actionPerformed()
-method in ~GAction will be invoked, which forwards the event to ~GEventHelper,
-which in turn will forward the event to our worksheet, that is if it implements ~ActionListener.
+This causes the ~JButton instances to invoke ~configurePropertiesFromAction() (in their ~AbstractButton superclass) to get their label et al from the action. When the button is pressed, the ~actionPerformed() method in ~GAction will be invoked, which forwards the event to ~GEventHelper, which in turn will forward the event to our worksheet, that is if it implements ~ActionListener.
 
 Menu items are created similarly, as below.
 
@@ -728,14 +611,9 @@ We continue our Swing adventures from earlier articles
 We present the action framework of :{greenscreen.dev.java.net}, //http://greenscreen.dev.java.net 
 with some simplification. 
 
-We look at Swing Actions, which are used for buttons, menu items and keystrokes.
-We configure actions centrally, so that consistent labels, icons,
-mnemonics and keystrokes are associated with common actions, such as "Save." 
-And also so that we can enable and disable actions, and this will filter through automatically
-to any buttons, menu items and keystrokes associated to that action. 
+We look at Swing Actions, which are used for buttons, menu items and keystrokes. We configure actions centrally, so that consistent labels, icons, mnemonics and keystrokes are associated with common actions, such as "Save." And also so that we can enable and disable actions, and this will filter through automatically to any buttons, menu items and keystrokes associated to that action. 
 
-The configuration of actions is designed to be externalisable eg. in XML configuration files
-using JAXB2.
+The configuration of actions is designed to be externalisable eg. in XML configuration files using JAXB2.
 
 Time for pizza... with loads of olive oil!  
 
@@ -744,21 +622,3 @@ Sequel //subsection
 The next article in this series is :{Framewarez} //http://aptframework.dev.java.net/article/aptAccess.html
 which will look at building an application frame with menu and tool bars, for housing worksheets, 
 using the actions and worksheet context presented here.
-
-<br>
-
-<table>
-<tr>
-<td>
-  <form action='http://weblogs.java.net/blog/evanx/archive/2006/06/swing_and_round_4.html'>
-  <a href='http://weblogs.java.net/blog/evanx/archive/2006/06/swing_and_round_4.html' 
-  style='text-decoration: none;'><input type=submit value='Discuss'/></a></form>
-<td>
-  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
-  <a href='http://aptframework.dev.java.net/gooey/contents.html' 
-  style='text-decoration: none;'><input type=submit value='Gooey Contents'/></a></form>
-<td>
-  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
-  <a href='http://aptframework.dev.java.net/foundation/contents.html'
-  style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a></form>
-</table>

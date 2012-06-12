@@ -1,0 +1,624 @@
+
+Introduction //section
+"To err is human, but to really foul things up you need a computer." Paul Ehrlich //quote
+
+Swing actions are used for buttons, menu items and keystrokes. For example, a "Save" action event might be initiated by the user
+using a menu item, button or keystroke eg. Ctrl-S. 
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/olive2_250.jpg" width="250" height="191" align=left hspace=16 />
+
+We need to configure actions centrally, so that consistent labels, icons, mnemonics and keystrokes are associated with a given action, such as "Save." And also so that we can enable and disable an action, without having to attend to every associated button, menu item and keystroke. 
+
+So we build an "action framework." <i>Why? Because it's fun, it's useful, and it's legal, so it's a must!</i>
+
+Our action framework is copied from <a href="">greenscreen.dev.java.net}, //http://greenscreen.dev.java.net
+but we will try to improve upon that design here, in particular simplify it, so that 
+anyone can reimplement it from scratch in a few days, or paste and hack it 
+into their project. 
+
+Since i redesigned and reimplemented <a href="">greenscreen} //http://greenscreen.dev.java.net
+some months ago, it's about time to redo that again. So i'm writing this article to present and improve upon that design. So this is an exercise in "design by explanation." Because if it's not easy to explain, then it's not simple enough.
+
+Uncle Vinnie's Application //section
+<!--br/><i>"Programming today is a race between software engineers striving to build bigger and 
+better idiot-proof programs, and the Universe trying to produce bigger and better idiots."
+Rich Cook. 
+</i-->
+
+<!--img alt="" src="http://weblogs.java.net/blog/evanx/archive/Ottidoro_200.jpg" width="200" height="164" 
+align=right hspace=16 /-->
+
+Our boss, Uncle Vinnie (from Chicago) wants to modernise our operation. Cos we going legit. And being a legit business, you gotta have these computers and photocopies and fax machines and shredders and stuff like that, you know, to make it look legit.
+
+<!--img alt="" src="http://weblogs.java.net/blog/evanx/archive/olive8_crop.jpg" width="92" height="202" 
+align=right hspace=16 /-->
+
+So we're in the olive oil business. Like everyone else in the neighbourhood. We got different products, like Extra virgin, and some other types and brands. 
+
+We gonna build a database front-end application to save our products, and stock quantities and such. Vinnie said we'll leave the supplier and customer records for Phase N. As in, No time soon, probably Never. In the meantime Vinnie uses that little black notebook in his pocket for those. Old habits...
+
+For our application, we prefix class names with <tt>Vinnie. <i>Of coz.</i>
+
+<pre>
+public class VinnieProductWorksheet implements ActionListener {
+
+   protected VinnieWorksheetContext context = VinnieWorksheetContext.createContext(this);
+
+   @ActionAnnotation(tooltip = "New product")
+   GAction newAction = context.createAction();
+   
+   @ActionAnnotation(
+      tooltip = "Find product", 
+      label = "Find", 
+      keystroke = "control F", 
+      mnemonic = 'F', 
+      icon = "search.png"
+   )
+   GAction findByNameAction = context.createAction();
+   
+   @ActionAnnotation(tooltip = "Delete product")
+   GAction deleteAction = context.createAction();
+   
+   @ActionAnnotation(tooltip = "Save product")
+   GAction saveAction = context.createAction();
+   
+   @ActionAnnotation(tooltip = "Exit worksheet")
+   GAction exitAction = context.createAction();      
+   ...   
+   
+   public VinnieProductWorksheet() {
+      context.configure();      
+      configure();
+      setEnabled();
+      addToolBar(newAction, findByNameAction, deleteAction, saveAction, exitAction);
+      ...
+   }
+
+   protected void configure() {
+      exitAction.setToolTip("Exit worksheet"); // override default
+      deleteAction.setKeyStoke(null); // remove default keystroke
+      ...
+   }
+   
+   public void actionPerformed(ActionEvent event) {
+      context.eventLogger.entering(event);
+      if (newAction.isSource(event)) {
+         ...
+      }
+      ...
+      setEnabled();
+   }
+   
+   protected void setEnabled() {
+      saveAction.setEnabled(productModel.isChanged());
+      deleteAction.setEnabled(!productModel.isEmpty());
+   }
+
+   protected void addToolBar(GAction ... actions) {
+      for (GAction action : actions) {
+         JButton button = new JButton();
+         button.setAction(action);
+         toolBar.add(button);
+      }
+   }   
+   ...       
+}
+</pre>
+
+
+<!--img alt="olive8_crop.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive8_crop.jpg" width="92" height="202" 
+align=right hspace=16 /-->
+
+Rather than using "dependency injection," we use an approach of exposing all our dependencies via a context object. If you don't like that, then think of it as a shorthand notation to indicate where dependency injection is required. <i>Capice?</i>
+
+In the above code, we have used annotations to configure our actions, and also more direct methods, eg. invoking <tt>setToolTip() et al in the <tt>configure() method. If you don't like this trick with using annotations for configuration, think of it as a shorthand notation to indicate which setters you gonna invoke in the <tt>configure() method. Of course, these settings should be externalised, eg. in a resource bundle, for translation and customisation. But Uncle Vinnie says its OK to hardcode defaults here for rapid prototyping.
+
+
+Action Configuration Object //section
+<!--br/><i>"No computer has ever been designed that is ever aware of what it's doing; 
+but most of the time, users aren't either."
+</i-->
+
+Firstly, let's introduce an action configuration object as follows. 
+
+<pre>
+@XmlRootElement(name="action")
+public class ActionConfiguration {    
+    @XmlAttribute protected Class worksheetClass; 
+        // eg. com.mafia.chicago.vinnie.productworksheet.VinnieProductWorksheet
+    @XmlAttribute protected String actionCommand; // eg. "save"
+    @XmlAttribute protected String keyStroke; // eg. "control S"
+    @XmlAttribute protected Character mnemonic; // eg. 'S'
+    @XmlAttribute protected String iconName; // eg. disk.png
+    @XmlAttribute protected String label; // "Save"
+    @XmlAttribute protected String toolTip; 
+    @XmlAttribute protected Integer ordial;
+    
+    ... // getters and setters
+    ... // configure(ActionConfiguration), to overwrite with non-null properties from another instance
+    ... // cloneActionConfiguration()
+}
+</pre>
+
+We will configure common actions centrally, eg. label, tooltip, keystroke et al, using this class. Also, we will externalise our action configuration by serialising a list of instances of this class. We might use JAXB to persist our action configuration to an XML file. In which case, we can just add JAXB2 annotations into the above class, and Vinnie's your Uncle, woohoo!
+
+Common actions like <tt>saveAction would have an null <tt>worksheetClass. If a property is not specified, then it will be null, which indicates we should use the default for that action, eg. from the common action configuration.
+
+In the case of common actions, our worksheet's actions typically only override the <tt>toolTip eg. "Save product" for the <tt>saveAction of <tt>VinnieProductWorksheet.
+
+
+Our Own Actions //section
+"The most reliable components are the ones you leave out." Gordon Bell //quote
+
+Swing has an <tt>AbstractAction class with an abstract <tt>actionPerformed() method. So we gonna extend this class. 
+
+<tt>AbstractAction has a <tt>Map for its configuration, with keys <tt>Action.ACTION_COMMAND_KEY, <tt>NAME and <tt>SHORT_DESCRIPTION. I was tryna explain to Uncle Vinnie that it might look better to use fields rather than this map. He said, no problem.
+
+<pre>
+public class GAction extends AbstractAction {
+    
+    protected GContext context;
+
+    protected String actionCommand;
+    protected String keyStroke;
+    protected char mnemonic;
+    protected String iconName;
+    protected String label;
+    protected String toolTip;
+
+    public GAction(GContext context) {
+        super();
+        this.context = context;
+    }
+    
+    public void setActionCommand(String actionCommand) {
+        this.actionCommand = actionCommand;
+        super.putValue(Action.ACTION_COMMAND_KEY, actionCommand);
+    }
+    
+    public void setLabel(String label) {
+        this.label = label;
+        super.putValue(Action.NAME, label);
+    }
+    
+    public String getLabel() {
+        return label;
+    }
+    
+    public void setToolTip(String toolTip) {
+        this.toolTip = toolTip;
+        super.putValue(Action.SHORT_DESCRIPTION, toolTip);
+    }
+
+    ... // other getters and setters
+ 
+    public void configure(ActionConfiguration configuration) {
+       setActionCommand(configuration.getActionCommand());
+       setLabel(configuration.getLabel());
+       setKeyStroke(configuration.getKeyStroke());
+       ... // other properties
+    }
+
+    public void putKeyStrokeAncestor(JComponent component) {
+        putKeyStroke(component, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+    
+    public void putKeyStrokeInWindow(JComponent component) {
+        putKeyStroke(component, JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+    
+    public void putKeyStroke(JComponent component) {
+        putKeyStroke(component, JComponent.WHEN_FOCUSED);
+    }
+    
+    /**
+     * @see JComponent#WHEN_FOCUSED
+     * @see JComponent#WHEN_IN_FOCUSED_WINDOW
+     * @see JComponent#WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+     */    
+    public void putKeyStroke(JComponent component, int inputMapId) {
+        component.getActionMap().put(actionCommand, this);
+        component.getInputMap(inputMapId).put(KeyStroke.getKeyStroke(keyStroke), actionCommand);
+    }
+   
+    public void actionPerformed(ActionEvent event) {
+        context.eventHelper.actionPerformed(event);
+    }
+        
+}    
+</pre>
+
+<!--img alt="olive3_250.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive3_250.jpg" width="250" height="188" align=left hspace=16 vspace="8" /-->
+
+The <tt>actionPerformed() method delegates to an event helper dependency.
+Also we introduce some methods for handling keystrokes, because i can never
+remember the <tt>InputMap and <tt>ActionMap stuff. 
+
+We implement a <tt>configure() method to configure an action using an <tt>ActionConfiguration.
+
+Event helper //section
+<!--br/><i>"The price of reliability is the pursuit of the utmost simplicity. It is a price which the very rich find most hard to pay." Edsger Dijkstra</i-->
+
+Our event helper is just an event dispatcher to our controller. In effect, it does "automatic event listener registration" by inspecting the controller, In particular it checks if the controller implements the relevant listener interface eg. <tt>ActionListener, ie. handles a given event. If so, it forwards the event to the controller, eg. invokes <tt>actionPerformed(ActionEvent).
+
+<pre>
+public class GEventHelper implements FocusListener, ActionListener, WindowListener {
+
+    protected GContext context;
+    protected Object controller = null;
+    
+    public GEventHelper(GContext context) {
+        this.context = context;
+    }
+
+    public void setController(Object controller) {
+        this.controller = controller;
+    }
+    
+    public void actionPerformed(ActionEvent event) {
+        beforeEvent();
+        context.actionLogger.entering(event.getSource());
+        try {
+            if (controller instanceof ActionListener) {
+                ActionListener actionListener = (ActionListener) controller;
+                actionListener.actionPerformed(event);
+            }
+        } catch (Throwable e) {
+            context.exceptionHelper.severe(e);
+        }
+        afterEvent(); 
+    }
+
+    ... // other listeners
+    ... // beforeEvent(), afterEvent() overridable aspects
+}
+</pre>
+
+We might extend this class as <tt>VinnieEventHelper to override methods e.g. the <tt>beforeEvent() amd <tt>afterEvent() aspects. Then we need to configure our context to use this customised event helper.
+
+<!--img alt="olive7_75.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive7_75.jpg" width="75" height="121" align=left hspace=16 /-->
+
+Basic context //section
+<!--br/><i>"The first 90% of the code accounts for the first 90% of the development time. The remaining 10% of the code accounts for the other 90% of the development time." Tom Cargill</i-->
+
+As mentioned earlier, we get into an awful mess by using "customised cloned contexts" rather than IoC dependency injection. 
+
+Firstly we have our "framework context" class, which exposes all dependencies required by our framework.
+
+<pre>
+public void GContext {
+   public static GContext frameworkContext = new GContext();
+   public static GLogger eventLogger = new GLogger(this, "eventLogger");
+   
+   public static GFormatter formatter = new GFormatter(this);
+
+   public GEventHelper eventHelper = new GEventHelper(this);
+   ...
+   protected GContext() {
+   }
+   
+   public static GContext getInstance() {
+      return frameworkContext;  
+   }
+   ...
+}        
+</pre>
+
+<!--img alt="olive4_crop.jpg" src="http://weblogs.java.net/blog/evanx/archive/olive4_crop.jpg" width="153" height="146"
+align=right hspace=16 vspace="32 "/-->
+
+We don't want null pointer exceptions, so we instantiate references such as <tt>eventHelper, with default implementations.
+
+Unfortunately we have to take great care when constructing the above context object. For example, if <tt>GLogger references something on <tt>this halfbaked context that we pass to its constructor, eg. <tt>formatter, then we get a null pointer exception when we construct <tt>eventLogger, because <tt>formatter is created after <tt>eventLogger.
+
+
+Worksheet context //section
+<!--br/><i>"When a programming language is created that allows programmers to program in simple English, it will be discovered that programmers cannot speak English." </i-->
+
+For event handling, we extend this to include a reference to our worksheet object, eg. <tt>VinnieProductWorksheet.
+
+<pre>
+public void GWorksheetContext extends GContext {
+
+   public static GActionConfigurator actionConfigurator;
+
+   protected Object worksheet = null;
+   
+   public GWorksheetContext() {
+      super.eventHelper = new GEventHelper(this);
+   }
+   
+   public void setWorksheet(Object worksheet) {
+      this.worksheet = worksheet;
+      super.eventHelper.setController(worksheet);
+   }
+   
+   public void configure() {
+      ... // configure actions using actionConfigurator
+      for (Field field : worksheet.getFields()) {
+         ... // configure components in the worksheet
+      }
+   }   
+   ...
+}        
+</pre>
+
+When the worksheet is set, we pass this on to the event helper as the controller.
+
+We will introduce our <tt>GActionConfigurator later. This is used to configure the common actions of our application in a central, externalisable way. We do this so that our action properties are customisable and translatable.
+
+
+Custom cloned contexts //section
+"The computer is a stupid machine with the ability to do incredibly smart things, while computer programmers are smart people with the ability to do incredibly stupid things. They are, in short, a perfect match." Bill Bryson //quote
+
+We then extend our framework worksheet context for our application, as follows.
+
+<pre>
+public void VinnieWorksheetContext extends GWorksheetContext {
+
+   public static 
+   VinnieWorksheetContext applicationContext = new VinnieWorksheetContext();
+   ...
+   
+   protected VinnieWorksheetContext() {
+      super();
+      super.formatter = new VinnieFormatter(this);
+   }
+
+   public static VinnieWorksheetContext createWorksheetContext(Object worksheet) {
+      VinnieWorksheetContext worksheetContext = applicationContext.cloneContext();
+      worksheetContext.eventHelper = new VinnieEventHelper(this);
+      worksheetContext.setWorksheet(worksheet);
+      return worksheetContext;
+   }
+
+   public VinnieWorksheetContext cloneContext() {
+      try {
+         return (VinnieWorksheetContext) clone();
+      } catch (Exception e) {
+         throw new RuntimeException();
+      }     
+   }
+   
+   public static void main(String[] args) {
+      GContext.frameworkContext = applicationContext;
+      ... // launch VinnieApplicationFrame
+   }
+}        
+</pre>
+
+When we create our application context, we override some of the default dependencies in the framework context with our customised application ones, eg. <tt>VinnieFormatter, as in the above constructor.
+
+When we run our application, we customise the framework context instance to the application context instance, as in the above <tt>main() method. So when classes invoke <tt>GContext.getInstance() they will get a reference to our customised application context.
+
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/OliveOil_bottle.jpg" width="180" height="246" align=left hspace=16 />
+
+When a worksheet creates a context for itself, ie. in <tt>createWorksheetContext() above, then the application context is cloned, and the worksheet reference is set on the cloned context, which is now customised for that worksheet. 
+
+As i said earlier, it's nasty. But dependency handling is difficult, since there are typically loads of dependencies. Some dependencies are customised for specific classes eg. <tt>GEventHelper is created as a peer to a specific worksheet class instance, eg. <tt>VinnieProductWorksheet. Others are singletons, but also customisable for our application eg. <tt>GFormatter. 
+
+Others are both customisable for our application, and for a specific instance, eg. <tt>GEventHelper is customised as <tt>VinnieEventHelper in our application, and is created by the framework for each worksheet instance, eg. in the <tt>createWorksheetContext() method above.
+
+As nasty as our "cloned customised context" mechanism is, it is relatively simple compared to a dependency injection framework. And we can avoid XML configurations. <i>Vinnie absolutely insists on this, and otherwise goes flying off the handle.</i>
+
+So we need to pass the relevant context through to our constructors. But we pass one dependency only ie. this context, to expose all the rest of our dependencies. And we need not declare all our dependencies in our client classes, only the context. <i>So Vinnie finds it terribly convenient. Which explains why i do it this way. Because The Boss is always right. Even when he's wrong... Especially when he's wrong, actually.</i>
+
+Central Configuration Station //section
+<!--br/><i>"Undetectable errors are infinite in variety, in contrast to detectable errors, 
+which by definition are limited."</i-->
+
+Lemme tell ya, Vinnie did a stint in jail once, on a trumped up charge of knocking over a cigarette truck. On the inside, when he wasn't pushing weights in the yard, he was in the library learning computers. He came out looking like a jock and talking like a geek. That's when he said we was gonna go legit, and we was gonna get all computerised to prove it.
+
+So when Vinnie says we want our common actions to be configured centrally in one place as below, just like he learnt in prison, that's how we gonna do them.
+
+<pre>
+public class VinnieActionConfigurator extends GActionConfigurator {
+
+   @ActionAnnotation(
+      tooltip = "Save", 
+      label = "Save", 
+      keystroke = "control S", 
+      mnemonic = 'S', 
+      icon = "disk.png"
+   )
+   ActionConfiguration saveAction = createActionConfiguration();
+  
+   ... // many other common actions, eg. new, find, delete, cancel, refresh, next, previous, exit
+   
+   protected VinnieActionConfigurator() {
+      setSmallIconPackage("com.everaldo.icons.crystal.16x16");
+      setLargeIconPackage("com.everaldo.icons.crystal.32x32");
+      setDefaultIconName("misc");
+      configure();
+   }      
+}   
+</pre>
+
+Where we of course to override these defaults from an externalised configuration file, eg. in the <tt>configure() method.
+
+Action configurator //section
+<!--br/><i>"UNIX is basically a simple operating system, but you have to be a genius 
+to understand the simplicity." 
+</i-->
+
+Let's look at our action configuration superclass.
+
+<pre>
+public abstract class GActionConfigurator {
+
+   protected Map&lt;String, ActionConfiguration&gt; externalisedActionConfigurationMap = null;
+   protected List&lt;ActionConfiguration&gt; commonActionConfigurationList = new ArrayList();
+   protected Map&lt;String, ActionConfiguration&gt; commonActionConfigurationMap = new HashMap();
+
+   protected GContext context = GContext.getInstance();
+   
+   protected String smallIconPackage = "icons.16x16";
+   protected String largeIconPackage = "icons.32x32";
+   protected String defaultIconName = "misc.png";
+   
+   protected GActionConfigurator() {
+   }
+
+   public void setSmallIconPackage(String iconPackage) {
+      this.smallIconPackage = iconPackage;
+   }
+
+   ... // setter for largeIconPackage, defaultIconName
+   
+   public ActionConfiguration createActionConfiguration() {
+      ActionConfiguration actionConfiguration = new ActionConfiguration();
+      actionConfigurationList.add(actionConfiguration); // configure central action
+      return actionConfiguration;
+   }
+
+   public void configure() {
+      ... // load externalisedActionConfigurationMap eg. from XML file eg. using JAXB
+      for (ActionConfiguration commonActionConfiguration : commonActionConfigurationList) {
+         configure(field, commonActionConfiguration);
+      }
+   }
+
+   protected void configure(Field field, ActionConfiguration commonActionConfiguration) {
+      String actionCommand = field.getName();
+      commonActionConfiguration.setActionCommand(actionCommand);
+      ... // configure defaults from ActionAnnotation
+      commonActionConfiguration = coalesce(commonActionConfiguration, 
+          externalisedActionConfigurationMap.get(actionCommand));
+      commonActionConfigurationMap.add(commonActionConfiguration.getActionCommand(), 
+          commonActionConfiguration);
+   }
+
+   protected ActionConfiguration coalesce(ActionConfiguration actionConfiguration, 
+          ActionConfiguration overridingActionConfiguration) {
+      if (actionConfiguration == null) return overridingActionConfiguration;
+      if (overridingActionConfiguration == null) return actionConfiguration;
+      actionConfiguration = actionConfiguration.cloneActionConfiguration();
+      actionConfiguration.configure(overridingActionConfiguration);
+      return actionConfiguration;
+   }   
+   
+   public void configureWorksheet(Object worksheet) {
+      for (Field field : worksheet.getClass().getFields()) {
+         field.setAccessible(true);
+         if (field.getType() == GAction.class) {
+            configure(field, (GAction) field.get(worksheet), worksheet); 
+         }
+      }
+   }
+
+   protected void configure(Field field, GAction action, Object worksheet) {
+      String actionCommand = field.getName();
+      action.setActionCommand(actionCommand);            
+      ... // configure defaults from ActionAnnotation
+      ActionConfiguration commonActionConfiguration = 
+          commonConfigurationMap.get(action.getActionCommand());
+      String key = worksheet.getClass().getName() + "." + action.getActionCommand();
+      ActionConfiguration externalisedActionConfiguration = 
+          externalisedActionConfigurationMap.get(key);
+      ActionConfiguration actionConfiguration = 
+          coalesce(commonActionConfiguration, externalisedActionConfiguration);
+      if (actionConfiguration != null) {
+         action.configure(actionConfiguration);
+      } else {
+         // not a common action, and its configuration is not externalised (yet)
+         ... // maybe generate the XML to cut and paste into our configuration file
+      }
+      configureIcon(action, smallIconPackage);
+   }
+      
+   protected void configureIcon(GAction action, String iconPackage) {
+      if (action.getIconName() == null || action.getIconName().trim().length() == 0) {
+         action.setIconName(defaultIconName);
+      }
+      String iconName = iconPackage + "." + action.getIconName() + ".png";
+      URL iconImageUrl = getClass().getResource(iconName);
+      try {
+         ImageIcon imageIcon = new ImageIcon(iconImageUrl);
+         action.setIcon(imageIcon);
+      } catch (Exception e) {
+         context.fileLogger.warning(e, iconName, iconImageUrl);
+      }
+   }   
+}   
+</pre>
+
+The <tt>configure() method gets the list of <tt>ActionConfiguration's created in our subclass eg. <tt>VinnieActionConfigurator. It configures them using the field name as the action command, extracting the <tt>ActionAnnotation, and finally overriding with the externalised configuration, eg. loaded from an XML file to which the <tt>actionConfigurationList was previously persisted, eg. using JAXB2.
+
+When we launch our application, we might set <tt>GWorksheetContext.actionConfigurator as follows.
+
+<pre>
+   public static void main(String[] args) {
+      GWorksheetContext.actionConfigurator = new VinnieActionConfigurator();
+      GContext.frameworkContext = VinnieWorksheetContext.applicationContext;      
+      ... // launch VinnieApplicationFrame
+   }
+</pre>
+
+The <tt>GWorksheetContext.configure() method will delegate to the <tt>configureWorksheet()
+in the above <tt>GActionConfigurator to configure the worksheet's actions appropriately.
+Defaults are used where these are defined, ie. in common actions. Defaults are overridden with the
+externalised configuration eg. from an XML configuration file. 
+
+Action items //section
+<!--br/><i>"A printer consists of three main parts: the case, the jammed paper tray and the blinking red light."
+</i-->
+
+Using our actions, we can create buttons and menu items. 
+
+<pre>
+    public JButton createToolBarIconOnlyButton(GAction action) {
+        JButton button = new JButton();
+        button.setAction(action);
+        button.setText(null);
+        return button;
+    }
+
+    public JButton createTextOnlyButton(GAction action) {
+        JButton button = new JButton();
+        button.setAction(action);
+        button.setIcon(null);
+        return button;
+    }
+</pre>
+
+This causes the <tt>JButton instances to invoke <tt>configurePropertiesFromAction() (in their <tt>AbstractButton superclass) to get their label et al from the action. When the button is pressed, the <tt>actionPerformed() method in <tt>GAction will be invoked, which forwards the event to <tt>GEventHelper, which in turn will forward the event to our worksheet, that is if it implements <tt>ActionListener.
+
+Menu items are created similarly, as below.
+
+<pre>
+    public JMenuItem createMenuItem(GAction action) {
+        JMenuItem menuItem = new JMenuItem();
+        menuItem.setAction(action);
+        return menuItem;
+    }    
+</pre>
+
+Finally, keystrokes are activated on components' input maps, 
+using <tt>putKeyStroke() methods presented above in <tt>GAction.
+
+
+
+Conclusion //section
+"Computers make very fast, very accurate mistakes." //quote
+
+<!--img alt="pizza1_200.jpg" src="http://weblogs.java.net/blog/evanx/archive/pizza1_200.jpg" width="200" height="133" 
+align=right hspace=32 vspace="8" /-->
+
+We continue our Swing adventures from earlier articles 
+<a href="">Event DTs}, //http://aptframework.dev.java.net/article/edt.html
+<a href="">Turn Tables} and //http://aptframework.dev.java.net/article/aptTable.html
+<a href="">Panel Beater}.  //http://aptframework.dev.java.net/article/aptForm.html
+We present the action framework of <a href="">greenscreen.dev.java.net}, //http://greenscreen.dev.java.net 
+with some simplification. 
+
+We look at Swing Actions, which are used for buttons, menu items and keystrokes. We configure actions centrally, so that consistent labels, icons, mnemonics and keystrokes are associated with common actions, such as "Save." And also so that we can enable and disable actions, and this will filter through automatically to any buttons, menu items and keystrokes associated to that action. 
+
+The configuration of actions is designed to be externalisable eg. in XML configuration files using JAXB2.
+
+Time for pizza... with loads of olive oil!  
+
+Sequel</h3>
+
+The next article in this series is <a href="">Framewarez} //http://aptframework.dev.java.net/article/aptAccess.html
+which will look at building an application frame with menu and tool bars, for housing worksheets, 
+using the actions and worksheet context presented here.
