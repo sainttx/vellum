@@ -1,89 +1,54 @@
+<!--break-->
 
-Bean Curd 1F: Panel Beater //title
+<h3>Prequels</h3>
+<i>"When you think of things, you find sometimes that a Thing which seemed very Thingish inside you is quite different when it gets out into the open and has other people looking at it." Winnie the Pooh</i>
 
-
-Prequels //section
-"When you think of things, you find sometimes that a Thing which seemed very Thingish inside you is quite different when it gets out into the open and has other people looking at it." Winnie the Pooh //quote
-
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/eeyore_side_crop.jpg" width="134" height="151"     
-align=left hspace=16 vspace=4 />
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/eeyore_side_crop.jpg" width="134" height="151" align=left hspace=16 vspace=4 />
 
 <!--img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_sit_crop_150.jpg" width="150" height="174"     
 align=left hspace=16 border=0 /-->
 
-In :{Bean Curd 1: Turn Tables} //http://aptframework.dev.java.net/article/aptTable.html
-we introduced an "explicit properties" approach, where the property descriptors
-are absorbed into our ~TableColumn objects, 
-which are declared in our custom ~TableModel.
+In <a href="http://weblogs.java.net/blog/evanx/archive/2006/05/bean_curd_chapt.html">Turn Tables</a> we introduced an "explicit properties" approach, where the property descriptors are absorbed into our <tt>TableColumn</tt> objects, which are declared in our custom <tt>TableModel</tt>.
 
-In :{Bean Curd 2: The SQL}, //http://aptframework.dev.java.net/article/aptMeme.html
-we apply the <i>explicit properties</i> approach to object-relational mapping (ORM), 
-to support "native queries," for loading <i>entity beans.</i>
+In <a href="http://weblogs.java.net/blog/evanx/archive/2006/06/bean_curd_2_the.html">The SQL}</a> we apply the <i>explicit properties</i> approach to object-relational mapping (ORM), to support "native queries," for loading <i>entity beans.</i>
 
-I wrapped up my May blogs in :{Mayhem Roundup}, //http://weblogs.java.net/blog/evanx/archive/2006/06/mayhem_roundup_1.html
-including the above <i>Bean Curds 1 and 2</i>, in particular the rationale of Bean Curd 
-approach ie. "explicit properties with implicit binding." 
-Mayhem Roundup also presented some of the comments and discussion from other May articles, 
-including Java vs scripting, and GPL vs CDDL.
-
-Another (technical) Swing article I wrote in addition to Bean Curd 1 is 
-:{Event DTs}. //http://aptframework.dev.java.net/article/edt.html
+Another (technical) Swing article I wrote in addition to "Swing turntables" is <a href="http://javakenai-dev.cognisync.net/blog/2006/05/30/swing-and-roundabouts-1-event-dts">Event DTs</a>
 
 As always, this is a noisy article. The noisy bits are italicised, just so you know.
 
+<h3>Introduction</h3>
+<i>"I didn't look around because if you look around and see a Very Fierce Heffalump looking down at you, sometimes you forget what you were going to say. It's hard to be brave, when you're only a Very Small Animal." Piglet</i>
 
-Introduction //section
-"I didn't look around because if you look around and see a Very Fierce Heffalump looking down at you, sometimes you forget what you were going to say. It's hard to be brave, when you're only a Very Small Animal." Piglet //quote
-
-The application archetype I'm mostly interested in is database front-ends.  
-You could call these CURD applications, for Create, Update, Retrieve and Delete.
-Some other people call them CRUD applications, and that's OK ;)
+The application archetype I'm mostly interested in is database front-ends. You could call these CURD applications, for Create, Update, Retrieve and Delete. Some other people call them CRUD applications, and that's OK ;)
 
 So we use an ORM to load our "entity beans" from the database. We view and edit 
-these in our Swing application. Finally we'll save them back to the database 
-(using our ORM's entity manager). Or we create new entity beans in Swing,
-and save those to the database. Or we delete entity beans from the database. <i>It's all the same, urm, crud.</i>
+these in our Swing application. Finally we'll save them back to the database (using our ORM's entity manager). Or we create new entity beans in Swing, and save those to the database. Or we delete entity beans from the database. <i>It's all the same, urm, crud.</i>
 
-~JTable is great for browsing the database. But in this article 
-we look at viewing and editing an entity object using a Swing "form."
-This is a ~JPanel with components on it like ~JTextField, 
-~JComboBox, and ~JCheckbox.
+<tt>JTable</tt> is great for browsing the database. But in this article we look at viewing and editing an entity object using a Swing "form." This is a <tt>JPanel</tt> with components on it like <tt>JTextField</tt>, <tt>JComboBox</tt>, and <tt>JCheckbox</tt>.
 
-Colleagues and I have (re)implemented a similar approach (ie. Bean Curd 1 plus this) for a few projects. 
-Most recently it is implemented in :{greenscreen.dev.java.net}, //http://greenscreen.dev.java.net
-which is used by :{aptframework.dev.java.net}. This paper //http://aptframework.dev.java.net
-presents a refined design compared to <i>greenscreen,</i> in particular with respect to validation, 
-which will make it's way into <i>greenscreen</i> in coming weeks (or months). 
+Colleagues and I have (re)implemented a similar approach for a few projects. Most recently it is implemented in <a href="">java.net/projects/greenscreen}, which is used by <a href="">java.net/projects/aptframework</a>. This paper presents a refined design compared to <i>greenscreen,</i> in particular with respect to validation, which will make it's way into <i>greenscreen</i> in coming weeks (or months). 
 
-It is a simple Swing GUI data binding framework, eg. one can implement 80% of it from scratch 
-in a few days. <i>Because 80% of <u>greenscreen</u> took me three days... and nights. I forgot about the nights, actually.
-The remaining 20% might take a little while longer ;) It has a few downsides I'm sure, 
-but it works for us. I'm sure it breaks a few laws of OO, gravity and what-not. So at least it acheives that objective! ;)</i>
+It is a simple Swing GUI data binding framework, e.g. one can implement 80% of it from scratch in a few days. <i>Because 80% of <u>greenscreen</u> took me three days... and nights. I forgot about the nights, actually. The remaining 20% might take a little while longer ;) It has a few downsides I'm sure, but it works for us. I'm sure it breaks a few laws of OO, gravity and what-not. So at least it acheives that objective! ;)</i>
 </i>
 
-<img alt="tigger-hacking" src="http://weblogs.java.net/blog/evanx/archive/tigger-hacking_out_175.jpg" width="175" height="164" 
-align=right hspace=16 vspace=8 />
+<img alt="tigger-hacking" src="http://weblogs.java.net/blog/evanx/archive/tigger-hacking_out_175.jpg" width="175" height="164" align=right hspace=16 vspace=8 />
 
-Entity bean //section
-"And the Small and Sorry Rabbit rushed through the mist at the noise, and it suddenly turned into Tigger; a Friendly Tigger, a Grand Tigger, a Large and Helpful Tigger, a Tigger who bounced, if he bounced at all, in just the beautiful way a Tigger ought to bounce." A. A. Milne //quote
+<h3>Entity bean</h3>
+<i>"And the Small and Sorry Rabbit rushed through the mist at the noise, and it suddenly turned into Tigger; a Friendly Tigger, a Grand Tigger, a Large and Helpful Tigger, a Tigger who bounced, if he bounced at all, in just the beautiful way a Tigger ought to bounce." A. A. Milne</i>
 
-<i>My friend Tigger wrote this bouncy Swing app to keep a handy list of our friends in the 
-forest. Like Roo, Piglet, Eeyore, Rabbit and Owl. Tigger asked me to write this article for him. 
-Because he has a rule about writing documentation. That rule is that he gets me 
-to do it for him. </i>
+<i>My friend Tigger wrote this bouncy Swing app to keep a handy list of our friends in the forest. Like Roo, Piglet, Eeyore, Rabbit and Owl. Tigger asked me to write this article for him. Because he has a rule about writing documentation. That rule is that he gets me to do it for him.</i>
 
-Let's start with our entity bean. <i>That is to say, let's climb up the tree, and then look down,
-rather than the other way around.</i>
+Let's start with our entity bean. <i>That is to say, let's climb up the tree, and then look down, rather than the other way around.</i>
 
-<pre class='java'>
+<pre>
 /**
  * This is a for my friends.
  * @author Tigger
  */
 public class FriendEntityBean {
-   protected String friendName; // eg. "Pooh"
-   protected FriendType friendType; // an enum, eg. POOH_BEAR
-   protected ForestFood favouriteFood; // eg. a reference to honey in Pooh's case
+   protected String friendName; // e.g. "Pooh"
+   protected FriendType friendType; // an enum, e.g. POOH_BEAR
+   protected ForestFood favouriteFood; // e.g. a reference to honey in Pooh's case
    protected Date birthday;
    protected int age; // when the system is first deployed
 
@@ -91,16 +56,12 @@ public class FriendEntityBean {
 }
 </pre>
 
+<h3>Presentation Model bean</h3>
+<i>"It's a funny thing, how everything looks the same in a mist." Piglet</i>
 
+In a simplistic CURD application, the bean we view and edit in our form might be our raw entity bean. <i>But to get flexibility, Tigger likes to wrap his entity beans into more chewy beans, as follows.</i>
 
-Presentation Model bean //section
-"It's a funny thing, how everything looks the same in a mist." Piglet //quote
-
-In a simplistic CURD application, the bean we view and edit in our form
-might be our raw entity bean. <i>But to get flexibility, Tigger
-likes to wrap his entity beans into more chewy beans, as follows.</i>
-
-<pre class='java'>
+<pre>
 public class FriendFormBean {
    protected FriendEntityBean entityBean;
    protected FriendEntityBean originalEntityBean; // for isChanged()
@@ -160,32 +121,20 @@ public class FriendFormBean {
 }
 </pre>
 
-The above bean is a "model bean" representing the data to be displayed in our form. 
-Since this is mostly data in the entity bean, we delegate to the entity bean a lot.
+The above bean is a "model bean" representing the data to be displayed in our form. Since this is mostly data in the entity bean, we delegate to the entity bean a lot.
 
-<img alt="heffalump" src="http://weblogs.java.net/blog/evanx/archive/heffalump_125.jpg" width="125" height="104"     
-align=left hspace=16 />    
+<img alt="heffalump" src="http://weblogs.java.net/blog/evanx/archive/heffalump_125.jpg" width="125" height="104" align=left hspace=16 />    
 
-<i>It isn't really a bean, it's just a POJO. As Owl will tell you. But Tigger likes to call
-everything a bean.</i>
+<i>It isn't really a bean, it's just a POJO. As Owl will tell you. But Tigger likes to call everything a bean.</i>
     
-We show some simple validation mechanisms above. One, we can throw
-a ~GValidationException in our mutators, eg. ~setAge(). 
-Two, we might have a method like ~getValidationMessage()
-to check that our data is OK eg. before we save it to the database. 
-Three, we might put annotations on our mutators, eg. ~IntegerRangeValidationAnnotation. 
-And finally... <i>Oh, that's still to come, in the next section.</i> 
+We show some simple validation mechanisms above. One, we can throw a <tt>GValidationException</tt> in our mutators, e.g. <tt>setAge()</tt>. Two, we might have a method like <tt>getValidationMessage()</tt> to check that our data is OK e.g. before we save it to the database. Three, we might put annotations on our mutators, e.g. <tt>IntegerRangeValidationAnnotation</tt>. And finally... <i>Oh, that's still to come, in the next section.</i> 
+ 
+<h3>Formative Panel</h3>
+<i>"This writing business. Pencils and what-not. Overrated if you ask me. Silly stuff. Nothing in it." Eeyore</i>
 
-    
-Formative Panel //section
-"This writing business. Pencils and what-not. Overrated if you ask me. Silly stuff. Nothing in it." Eeyore //quote
+<i>Tigger implements a "form" as a <tt>JPanel</tt> with a number of "fields" on it. With a whole honey pot of annotations. And ever since Tigger heard of this MVC thing, he tries to label things along those lines. So our form is called a "view." Of the "model bean" we introduced above.</i>
 
-<i>Tigger implements a "form" as a ~JPanel with a number of "fields" on it. 
-With a whole honey pot of annotations.
-And ever since Tigger heard of this MVC thing, he tries to label things along those lines. So our form is called
-a "view." Of the "model bean" we introduced above.</i>
-
-<pre class='java'>
+<pre>
 public FriendFormView extends JPanel {
 
    GFormHelper<FriendFormBean> helper = new GFormHelper(this, FriendFormBean.class);
@@ -221,55 +170,23 @@ public FriendFormView extends JPanel {
 }
 </pre>
 
-As in :{Bean Curd 1}, we let our components get created in the order they are declared, 
-and then finally invoke ~configure() in the constructor. This reflects on 
-the declared fields, so that they can configure themselves using their own ~Field, 
-eg. they extract their own field name to be used as the implicit property name for beans binding.
-And they also extract annotations, which we can use to configure the component,
-including annotations for validation and layout, as above.
+As in <a href="http://weblogs.java.net/blog/evanx/archive/2006/05/bean_curd_chapt.html">Swing Turntables</a>, we let our components get created in the order they are declared, and then finally invoke <tt>configure()</tt> in the constructor. This reflects on the declared fields, so that they can configure themselves using their own <tt>Field</tt>, e.g. they extract their own field name to be used as the implicit property name for beans binding. And they also extract annotations, which we can use to configure the component, including annotations for validation and layout, as above.
 
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/tigger_beer_175.jpg" width="175" height="162"  align=left hspace=16 />
+In the example above, we include the default label and display width for each field in the <tt>PropertyAnnotation</tt>. But we should translate/customise these in a resource bundle. In the case of the display width, we might save and load this using the Preferences API. For example, our fields might listen for a keystroke to increase and decrease their size.
 
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/tigger_beer_175.jpg" width="175" height="162"  
-align=left hspace=16 />
+We might also include layout settings in our <tt>LayoutAnnotation</tt>, e.g. <tt>gridx</tt>, <tt>gridy</tt>. We try to use <tt>GridBagLayout</tt> exclusively. But by default we use <tt>FlowLayout</tt> to flow fields horizontally in a subpanel, and then <tt>GridBagLayout</tt> to stack subpanels, and throw in a "spacer panel" or two, according to the annotations, e.g. <tt>fill</tt>, <tt>anchor</tt>, <tt>flow</tt>, and <tt>spacer</tt>. We have introduced <tt>flow</tt> and <tt>spacer</tt>, to compliment <tt>GridBagLayout</tt>'s <tt>fill</tt> and <tt>anchor</tt>, you see.
 
-In the example above, we include the default label and display width for each 
-field in the ~PropertyAnnotation. But we should translate/customise these in a resource bundle.
-In the case of the display width, we might save and load this using the Preferences API. For example,
-our fields might listen for a keystroke to increase and decrease their size.
+<i>In general, when writing business apps, enterprise apps, database-front-ends, and such like, we are more interested in keeping it bouncy than anything else. Our "screens" (and reports and what-not), must be quick to implement, and easy for developers to extend and change. So that their weekends are free as in beer. Tiggers are agile and fuzzy creatures, and like to write software that is agile and fuzzy too.</i>
 
-We might also include layout settings in our ~LayoutAnnotation, eg. ~gridx, ~gridy.
-We try to use ~GridBagLayout exclusively. But by default we use
-~FlowLayout to flow fields horizontally in a subpanel, and then ~GridBagLayout
- to stack subpanels, and throw in a "spacer panel" or two, according to the 
-annotations, eg. ~fill, ~anchor, ~flow, and ~spacer.
-We have introduced ~flow and ~spacer, to compliment ~GridBagLayout's 
-~fill and ~anchor, you see.
+<i>A GUI designer tool makes it easy to build beautiful GUIs, without having to be a Swing expert. Roo prefers GUI designers, and Tigger prefers IDE-agnostic frameworks. Who is right? Owl says they both are right. And that makes them both happy.</i>
 
-<i>In general, when writing business apps, enterprise apps, database-front-ends, and such like,
-we are more interested in keeping it bouncy than anything else. Our "screens" (and reports
-and what-not), must be quick to implement, and easy for developers to extend and change.
-So that their weekends are free as in beer. Tiggers are agile and fuzzy creatures, 
-and like to write software that is agile and fuzzy too.</i>
+<h3>Swing honey pot</h3>
+<i>"It's always useful to know where a friend-or-relation is, whether you want him or whether you don't." Roo</i>
 
-<i>A GUI designer tool makes it easy to build beautiful GUIs, without having to be a Swing 
-expert. Roo prefers GUI designers, and Tigger prefers IDE-agnostic frameworks. Who is right? Owl 
-says they both are right. And that makes them both happy.</i>
+There a few places where we can put our "framework" code. We could have a superclass (which extends <tt>JPanel</tt>). Or we could put it into a friendly helper class, which we delegate to. This is what Tigger does. That is to say, he prefers composition and delegation to inheritance. In this case, it is possible to have methods in the superclass, that delegate to the helper. <i>And in other superclasses too, although none come to mind immediately.</i>
 
-
-
-
-Swing honey pot //section
-"It's always useful to know where a friend-or-relation is, whether you want him or whether you don't." Roo //quote
-
-
-There a few places where we can put our "framework" code. We could have a superclass
-(which extends ~JPanel). Or we could put it into a friendly helper class, 
-which we delegate to. This is what Tigger does. That is to say, he prefers composition
-and delegation to inheritance. In this case, it is possible to have methods
-in the superclass, that delegate to the helper. <i>And in other superclasses too, although
-none come to mind immediately.</i>
-
-<pre class='java'>
+<pre>
 public class GFormHelper<Bean> implements ActionListener, FocusListener {
    protected JPanel viewObject;
    protected Bean bean;
@@ -354,76 +271,55 @@ public class GFormHelper<Bean> implements ActionListener, FocusListener {
       }   
    }
    
-   ... // lots of other methods, eg. createComboBox() et al
+   ... // lots of other methods, e.g. createComboBox() et al
 }
 </pre>
 
-We use a trick for "automatic" event listener registration, where if our controller is an
-ActionListener, then we forward it action events from its components. Similarly 
-with other types of events, eg. FocusListener. 
+We use a trick for "automatic" event listener registration, where if our controller is an ActionListener, then we forward it action events from its components. Similarly with other types of events, e.g. FocusListener. 
 
-<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_beer_crop.jpg" width="180" height="165"     
-align=right hspace=8 />
+<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_beer_crop.jpg" width="180" height="165" align=right hspace=8 />
+Note that we ignore action events when we are reading from the bean into the form's fields in <tt>setModelBean()</tt>. In this case, the user is not editing a field, but the developer refreshing the fields from the current values of the bean properties.
 
-Note that we ignore action events when we are reading from the bean into the form's
-fields in ~setModelBean(). In this case, the user is not editing a field,
-but the developer refreshing the fields from the current values of the bean properties.
+When an <tt>ActionEvent</tt> occurs on the field, we invoke the overloaded <tt>actionPerformed()</tt> above, with a reference to the relevant field as the second argument. We then update the bean with the new value from the field. At this point, the bean's mutator might throw a <tt>GValidationException</tt>.
 
-When an ~ActionEvent occurs on the field, we invoke the overloaded 
-~actionPerformed() above, with a reference to the relevant field as the second 
-argument. We then update the bean with the new value from the field. At this point, the 
-bean's mutator might throw a ~GValidationException.
+We make sure we catch exceptions that are thrown by event handlers, and display those to the user. Exceptions might be tiny unexpected errors, like null pointers, caused by the developer having too much to do, too soon. Or they might be expected exceptions, like validation exceptions, caused by the user making a big Heffalump mistake like typing the wrong thing at the wrong time, which is totally not allowed of course. 
 
-We make sure we catch exceptions that are thrown by event handlers, and display
-those to the user. Exceptions might be tiny unexpected errors, like null pointers, caused by the developer
-having too much to do, too soon. Or they might be expected exceptions, like validation 
-exceptions, caused by the user making a big Heffalump mistake like typing the wrong thing
-at the wrong time, which is totally not allowed of course. 
+If the user enters a field and we throw a validation exception, we should keep focus on that field, so that the user can get his act together e.g. enter a valid value. In the case of a <tt>JFormattedTextField</tt>, we can use an <tt>InputVerifier</tt> to nail this too. 
 
-If the user
-enters a field and we throw a validation exception, we should keep focus on that field,
-so that the user can get his act together eg. enter a valid value. 
-In the case of a ~JFormattedTextField, we can use an ~InputVerifier 
-to nail this too. 
+<h3>One field component</h3>
+<i>"The most wonderful thing about Tiggers is, I'm the only one!" Tigger</i>
 
+We extend the Swing components <tt>JTextField</tt>, <tt>JFormattedTextField</tt>, <tt>JComboBox</tt>, <tt>JPasswordField</tt>, <tt>JCheckBox</tt> etcetera, in a minimal way, in order to implement <tt>GFieldComponent</tt> so that they all start looking like nails, to be hammered into our form.
 
-One field component //section
-"The most wonderful thing about Tiggers is, I'm the only one!" Tigger //quote
-
-We extend the Swing components ~JTextField, ~JFormattedTextField, ~JComboBox, 
-~JPasswordField, ~JCheckBox etcetera, in a minimal way, in order to implement ~GFieldComponent 
-so that they all start looking like nails, to be hammered into our form.
-
-<pre class='java'>
+<pre>
 public interface GFieldComponent<Value> extends GLayoutComponent {
    public void configure(Field field, GBeanInfo beanInfo);
    public void setFieldValue(Value value);
    public Value getFieldValue();
    public String format(Value value);
    public Value parse(String string); // throws GParseException, GValidationException
-   ... // other methods, eg. requestFocusInWindow(), used by GFormHelper
+   ... // other methods, e.g. requestFocusInWindow(), used by GFormHelper
 }
 </pre>    
 
-
-Laying it out //section
-"Always watch where you are going. Otherwise, you may step on a piece of the Forest that was left out by mistake." //quote
+<h3>Laying it out</h3>
+<i>"Always watch where you are going. Otherwise, you may step on a piece of the Forest that was left out by mistake."</i>
     
-Components that we are gonna add to the form panel, need to implement the ~GLayoutComponent interface,
-ie. our fields, but also buttons and what-not.
+Components that we are gonna add to the form panel, need to implement the <tt>GLayoutComponent</tt> interface, i.e. our fields, but also buttons and what-not.
 
-<pre class='java'>
+<pre>
 public interface GLayoutComponent {
    public GLayoutConstraints getLayoutConstraints();
 }
 </pre>
 
-We extend ~GridBagConstraints to make it :{chocolaty}. //http://gridbaglady.dev.java.net
-<pre class='java'>
+We extend <tt>GridBagConstraints</tt> to make it chocolaty (see http://java.net/projects/gridbaglady).
+
+<pre>
 public class GLayoutConstraints extends GridBagConstraints {
-   protected int flow; // to mix in flowing sub-panels, ie. using FlowLayout
+   protected int flow; // to mix in flowing sub-panels, i.e. using FlowLayout
    protected int spacer; // for adding spacer panels
-      // ie. JPanel with gbc.fill set to this spacer value
+      // i.e. JPanel with gbc.fill set to this spacer value
    ...
    
    public GLayoutConstraints() {
@@ -442,25 +338,18 @@ public class GLayoutConstraints extends GridBagConstraints {
 }
 </pre>
 
-But for the purposes of keeping this article bear-shaped, let's just pretend we use 
-the vanilla ~GridBagConstraints.
+But for the purposes of keeping this article bear-shaped, let's just pretend we use the vanilla <tt>GridBagConstraints</tt>.
 
+<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_rabbit_crop.jpg" width="163" height="136" align=left hspace=16 vspace=4 />
 
-<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_rabbit_crop.jpg" width="163" height="136"     
-align=left hspace=16 vspace=4 />
+<h3>Text field example</h3>
+<i>"It's a funny thing about Tiggers," whispered Tigger to Roo, "how Tiggers never get lost." "Why don't they, Tigger?" "They just don't," explained Tigger. "That's how it is."</i>
 
-Text field example //section
-"It's a funny thing about Tiggers," whispered Tigger to Roo, "how Tiggers never get lost." "Why don't they, Tigger?" "They just don't," explained Tigger. "That's how it is." //quote
+Our field components implement the <tt>GFieldComponent</tt> interface, and delegate to a helper e.g. <tt>GTextFieldHelper</tt>. This helper is a thin customised extension of <tt>GFieldComponentHelper</tt> which handles the common functionality e.g. beans binding, for which it uses <tt>GProperty</tt>, as we will see later.
 
-Our field components implement the ~GFieldComponent interface,
-and delegate to a helper eg. ~GTextFieldHelper. This helper is a thin 
-customised extension of ~GFieldComponentHelper which handles 
-the common functionality eg. beans binding, for which it uses ~GProperty, as we will see later.
-
-<i>It sounds convoluted when put into words, so maybe Tigger lost the plot here. Which can happen when Winnie the Pooh comes
-over for a 11 o' clock smackerel of something. He disrupts Tigger's train of thought, you see.</i>
+<i>It sounds convoluted when put into words, so maybe Tigger lost the plot here. Which can happen when Winnie the Pooh comes over for a 11 o' clock smackerel of something. He disrupts Tigger's train of thought, you see.</i>
     
-<pre class='java'>
+<pre>
 public class GTextField<Value> extends JTextField implements GFieldComponent<Value> {
 
    GTextFieldHelper<Value> helper = new GTextFieldHelper(this);
@@ -498,23 +387,18 @@ public class GTextField<Value> extends JTextField implements GFieldComponent<Val
 }      
 </pre>
 
-<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_slouch_100.jpg" width="100" height="147" 
-align=right hspace=16 vspace=8 />
+<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_slouch_100.jpg" width="100" height="147" align=right hspace=16 vspace=8 />
 
-In the case of ~GCheckBox, it's ~getFieldValue() will invoke ~isSelected() and return a ~Boolean. 
+In the case of <tt>GCheckBox</tt>, it's <tt>getFieldValue()</tt> will invoke <tt>isSelected()</tt> and return a <tt>Boolean</tt>. 
     
-~GComboBox's ~getFieldValue()
-delegates to its ~GComboBoxModel to lookup the object value associated with it's ~getSelected() label, as we will see later.
+<tt>GComboBox</tt>'s <tt>getFieldValue()</tt> delegates to its <tt>GComboBoxModel</tt> to lookup the object value associated with it's <tt>getSelected()</tt> label, as we will see later.
 
+<h3>Field component helpers</h3>
+<i>'What?' said Piglet, with a jump. And then to show that he hadn't been startled, he jumped up and down once or twice more in an exercising sort of way.</i>
 
-Field component helpers //section
-'What?' said Piglet, with a jump. And then to show that he hadn't been startled, he jumped up and down once or twice more in an exercising sort of way. //quote
+Our <tt>GTextFieldHelper</tt> keeps a reference to its peer <tt>GTextField</tt>, and performs any functionality specific to <tt>JTextField</tt>. But otherwise, the <tt>GFieldComponentHelper</tt> superclass is the main Heffalump.
 
-Our ~GTextFieldHelper keeps a reference to its peer ~GTextField,
-and performs any functionality specific to ~JTextField. But otherwise, the ~GFieldComponentHelper superclass
-is the main Heffalump.
-
-<pre class='java'>
+<pre>
 public class GTextFieldHelper<Value> extends GFieldComponentHelper<Value> {
    GTextField<Value> textField;
    
@@ -531,12 +415,11 @@ public class GTextFieldHelper<Value> extends GFieldComponentHelper<Value> {
 }   
 </pre>
 
-The ~configure() methods extract the configuration annotations from the ~Field.
+The <tt>configure()</tt> methods extract the configuration annotations from the <tt>Field</tt>.
 
-~GComboBoxHelper and ~GCheckBoxHelper are very much like the above.
-The Heffalump superclass is implemented as follows.
+<tt>GComboBoxHelper</tt> and <tt>GCheckBoxHelper</tt> are very much like the above. The Heffalump superclass is implemented as follows.
 
-<pre class='java'>
+<pre>
 /**
  * Superclass for GTextFieldHelper, GComboBoxHelper, GCheckBoxHelper, et al.
  * @author Tigger
@@ -608,23 +491,16 @@ public class GFieldComponentHelper<Value> implements ActionListener, FocusListen
 }      
 </pre>
     
-We use the ~GProperty property descriptor wrapper, to read and write that property's values 
-to and from our bean, eg. an instance of ~FriendFormBean. And also
-to format, parse and validate property values to and from their 
-string representations. <i>Heh heh... Hm... Eh?</i>
+We use the <tt>GProperty</tt> property descriptor wrapper, to read and write that property's values to and from our bean, e.g. an instance of <tt>FriendFormBean</tt>. And also to format, parse and validate property values to and from their string representations. <i>Heh heh... Hm... Eh?</i>
 
+<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_sit_side_crop3.jpg" width="115" height="95" align=left hspace=16 vspace=8 border=0 />
 
-<img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_sit_side_crop3.jpg" width="115" height="95" 
-align=left hspace=16 vspace=8 border=0 />
+<h3>Combo box</h3>
+<i>"I used to believe in forever, but forever is too good to be true." Winnie the Pooh</i>
 
-Combo box //section
-"I used to believe in forever, but forever is too good to be true." Winnie the Pooh //quote
+We implement <tt>GComboBox</tt> as follows. <i>I don't understand this, so I'm just gonna present it. Any questions, post them. Then my people will get hold of Tigger's people and get back to your people.</i>
 
-We implement ~GComboBox as follows. <i>I don't understand this, so
-I'm just gonna present it. Any questions, post them. Then my people will get 
-hold of Tigger's people and get back to your people.</i>
-
-<pre class='java'>
+<pre>
 public class GComboBox<Value> extends JComboBox implements GFieldComponent<Value> {
 
    GComboBoxHelper<Value> helper = new GComboBoxHelper(this);
@@ -657,17 +533,14 @@ public class GComboBox<Value> extends JComboBox implements GFieldComponent<Value
 }      
 </pre>
 
-~GComboBoxHelper in turn delegates the ~format() and ~parse()
-to ~GComboBoxModel. <i>I asked Tigger why so much delegation, from the component
-to the helper, to the model. He said, "To make it more bouncy, of course!"</i> 
+<tt>GComboBoxHelper</tt> in turn delegates the <tt>format()</tt> and <tt>parse()</tt> to <tt>GComboBoxModel</tt>. <i>I asked Tigger why so much delegation, from the component to the helper, to the model. He said, "To make it more bouncy, of course!"</i> 
 
-
-Combo box model //section
-"I don't see much sense in that," said Piglet. "No," said Pooh humbly, "there isn't. But there was going to be when I began it. It's just that something happened to it along the way." //quote
+<h3>Combo box model</h3>
+<i>"I don't see much sense in that," said Piglet. "No," said Pooh humbly, "there isn't. But there was going to be when I began it. It's just that something happened to it along the way."</i>
 
 We implement a "generic" combo box model to be reusable by all combo boxes. 
     
-<pre class='java'>
+<pre>
 public class GComboBoxModel<Value> extends DefaultComboBoxModel {
    GComboBoxHelper<Value> helper;
    List<Value> valueList = new ArrayList();
@@ -734,23 +607,18 @@ public class GComboBoxModel<Value> extends DefaultComboBoxModel {
 }
 </pre>
 
-<!--img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_lift_crop.jpg" width="119" height="186"
-align=right  hspace=16 /-->
+<!--img alt="eeyore" src="http://weblogs.java.net/blog/evanx/archive/eeyore_lift_crop.jpg" width="119" height="186" align=right  hspace=16 /-->
 
-A null value might correspond to a selection of "All" or "None" or both. 
-So we offer methods like ~isSelectAll() so we can check, ie. when the value is null,
-and we have "All" and "None" as available selections, when which is it?
+A <tt>null</tt> value might correspond to a selection of "All" or "None" or both. So we offer methods like <tt>isSelectAll()</tt> so we can check, i.e. when the value is null, and we have "All" and "None" as available selections, when which is it?
 
 <i>There is Another Big Issue. Usually we want to support auto-completion for combo boxes. But we gonna dodge that issue for now.</i>
 
+<h3>Filling the combo box</h3>
+<i>"Company means Food... and Listening-to-Me-Humming and such like." Winnie the Pooh</i>
 
-Filling the combo box //section
-"Company means Food... and Listening-to-Me-Humming and such like." Winnie the Pooh //quote
+We might populate a combo box model from an <tt>enum type</tt> as follows.    
 
-    
-We might populate a combo box model from an ~enum type as follows.    
-
-<pre class='java'>
+<pre>
    public void addFriendTypes(GComboBox comboBox) {
       for (FriendType friendType : FriendType.values()) {
          comboBox.getComboBoxModel().add(friendType.toString(), friendType);
@@ -758,26 +626,18 @@ We might populate a combo box model from an ~enum type as follows.
    }
 </pre>
 
-Another example would be populating from a database
-table, eg. via a DAO method eg. ~foodComboBoxModel.addAll(entityManager.food.getEntityList()).
+Another example would be populating from a database table, e.g. via a DAO method e.g. <tt>foodComboBoxModel.addAll(entityManager.food.getEntityList())</tt>.
 
-<i>For very large tables, ie. "high volume" combo boxen, we gotta treat those as A Special Case. 
-With auto-completion and reactive fetching and populating of the combo box. 
-And multi-column combo boxes and database lookup-popups. Here's a suggestion, 
-let's seriously forget about all that for now. 
-And leave it for <u>Swing and Roundabouts: My big fat geeky combo box</u>.</i>
+<i>For very large tables, i.e. "high volume" combo boxen, we gotta treat those as A Special Case. With auto-completion and reactive fetching and populating of the combo box. And multi-column combo boxes and database lookup-popups. Here's a suggestion, let's seriously forget about all that for now. And leave it for "Swing and Roundabouts: My big fat geeky combo box".</i>
 
 <i>Hope they bought that? Phew, that was a close one. Tigger better work out how to do all that at some stage!</i>
 
+<h3>Bean wiring</h3>
+<i>"Poetry and Hums aren't things which you get, they're things which get you. And all you can do is go where they can find you." Winnie the Pooh</i>
 
-Bean wiring //section
-"Poetry and Hums aren't things which you get, they're things which get you. And all you can do is go where they can find you." Winnie the Pooh //quote
+We should have introduced the <tt>GBeanInfo</tt> and <tt>GProperty</tt> wrappers sooner. Here they are, later.
 
-We should have introduced the ~GBeanInfo and ~GProperty wrappers sooner.
-Here they are, later.
- 
-
-<pre class='java'>
+<pre>
 public class GBeanInfo<Bean> {
    protected BeanInfo beanInfo;
    protected Map<String, GProperty> propertyMap;
@@ -801,9 +661,9 @@ public class GBeanInfo<Bean> {
 }
 </pre>
 
-We use ~GProperty to read and write to the bean, basically.
+We use <tt>GProperty</tt> to read and write to the bean, basically.
 
-<pre class='java'>
+<pre>
 public class GProperty<Value> {
    protected GBeanInfo beanInfo;
    protected PropertyDescriptor propertyDescriptor;
@@ -854,30 +714,23 @@ public class GProperty<Value> {
 }      
 </pre>
 
-We store meta-data extracted from annotations in ~GProperty, required to perform conversion and validation. 
-So let's introduce ~GValidator and ~GFormatter implementations below, to see what we're getting.
+We store meta-data extracted from annotations in <tt>GProperty</tt>, required to perform conversion and validation. So let's introduce <tt>GValidator</tt> and <tt>GFormatter</tt> implementations below, to see what we're getting.
 
+<!--img alt="Pooh" src="http://weblogs.java.net/blog/evanx/archive/Pooh_100.jpg" width="100" height="124" align=left hspace=16 /-->
 
-<!--img alt="Pooh" src="http://weblogs.java.net/blog/evanx/archive/Pooh_100.jpg" width="100" height="124" 
-align=left hspace=16 /-->
+<h3>Validation annotation station</h3>
+<i>Pooh looked at his two paws. He knew that one of them was the right, and he knew that when you had decided which one of them was the right, then the other was the left, but he never could remember how to begin.</i>
 
-Validation annotation station //section
-Pooh looked at his two paws. He knew that one of them was the right, and he knew that when you had decided which one of them was the right, then the other was the left, but he never could remember how to begin. //quote
-
-
-Our list of ~GValidator's in ~GProperty is constructed from validation annotations, 
-eg. ~StringValidatorAnnotation, ~IntegerRangeValidatorAnnotation, ~DateRangeValidatorAnnotation, 
-and any number of other validation annotations we wish to introduce. 
+Our list of <tt>GValidator</tt>'s in <tt>GProperty</tt> is constructed from validation annotations, e.g. <tt>StringValidatorAnnotation</tt>, <tt>IntegerRangeValidatorAnnotation</tt>, <tt>DateRangeValidatorAnnotation</tt>, and any number of other validation annotations we wish to introduce. 
 
 Let's consider the following example.
 
-<pre class='java'>
+<pre>
 public class GStringValidator extends GValidator<String> {   
    protected Integer minimumLength;
    protected Integer maximumLength;
    protected boolean nullable = false;
    protected boolean empty = false;
-   
    ...
    public void validate(String value) {
       if (value == null) {
@@ -901,12 +754,11 @@ public class GStringValidator extends GValidator<String> {
 }
 </pre>
 
-Our ~GValidator superclass keeps a reference to its ~GProperty, so that our 
-validation exception messages can report the ~label of the invalid property to the user, eg. "Friend's name is null". 
+Our <tt>GValidator</tt> superclass keeps a reference to its <tt>GProperty</tt>, so that our validation exception messages can report the <tt>label</tt> of the invalid property to the user, e.g. "Friend's name is null". 
 
-We might create an ~InputVerifier for a ~JFormattedTextField as follows.
+We might create an <tt>InputVerifier</tt> for a <tt>JFormattedTextField</tt> as follows.
 
-<pre class='java'>
+<pre>
 public class GPropertyVerifier extends InputVerifier {
    GProperty property;
    
@@ -933,33 +785,22 @@ public class GPropertyVerifier extends InputVerifier {
 }                
 </pre>
    
-Annotation aches and panes //section
-"Don't underestimate the value of Doing Nothing, of just going along, listening to all the things you can't hear, and not bothering." Roo //quote
+<h3>Annotation aches and panes</h3>
+<i>"Don't underestimate the value of Doing Nothing, of just going along, listening to all the things you can't hear, and not bothering." Roo</i>
 
-<img alt="eeyoreg" src="http://weblogs.java.net/blog/evanx/archive/eeyore_fallen_small.jpg" width="90" height="91" 
-align=left hspace=8 />
+<img alt="eeyoreg" src="http://weblogs.java.net/blog/evanx/archive/eeyore_fallen_small.jpg" width="90" height="91" align=left hspace=8 />
+Unfortunately annotations do not support null values or inheritance, so we work around that, e.g. using hacks like default values of -1 and empty strings i.e. "" to mimic null values. <i>And cut and paste between annotations like a crazed Heffalump. Very messy stuff.</i>
 
-Unfortunately annotations do not support null values
-or inheritance, so we work around that, eg. using hacks like default values of -1 and empty strings ie. ""
-to mimic null values. <i>And cut and paste between annotations like a crazed Heffalump. Very messy stuff.</i>
+<i>Tigger wishes that Annotations were POJOs. Where specifying values is like setting bean properties. But they aren't. So we always convert or extract annotations into objects right away, and then conveniently forget about them. Then we can use nulls for properties not specified in the annotation, e.g. in the above <tt>GStringValidator</tt> example, <tt>minimumLength</tt> is null by default.</i>
 
-<i>Tigger wishes that Annotations were POJOs. Where specifying values is like setting bean properties. 
-But they aren't. So we always convert or extract annotations into objects right away, and then 
-conveniently forget about them. Then we can use 
-nulls for properties not specified in the annotation, eg. in the above ~GStringValidator example, 
-~minimumLength is null by default.</i>
+<h3>Parsing and formatting</h3>
+<i>"I thought Tiggers were smaller than that." "Not the big ones," said Tigger</i>
 
-          
-Parsing and formatting //section
-"I thought Tiggers were smaller than that." "Not the big ones," said Tigger //quote
-
-Our fields need to "format and parse." That is, they need to convert between objects
-and strings, and visa versa. <i>Because Pooh and friends read and write strings, but computers
-are objects and references which are ones and zeroes.</i>
+Our fields need to "format and parse." That is, they need to convert between objects and strings, and visa versa. <i>Because Pooh and friends read and write strings, but computers are objects and references which are ones and zeroes.</i>
 
 <i>One bouncy way of doing this is having one Heffalump helper to format and parse them all.</i>
 
-<pre class='java'>
+<pre>
 public class ForestFriendsFormatter extends GDefaultFormatter {
    ...
    public String format(Object value, GProperty property) {
@@ -979,32 +820,20 @@ public class ForestFriendsFormatter extends GDefaultFormatter {
       return super.parse(string, property);
    }
    
-   ... // custom formatting, eg. format(ForestFood)
+   ... // custom formatting, e.g. format(ForestFood)
 }
 </pre>
 
-Actually much of the above would be in the superclass ie. ~GDefaultFormatter.
-We extend that to customise it, eg. for our special types eg. ~FriendType and ~ForestFood.
+Actually much of the above would be in the superclass i.e. <tt>GDefaultFormatter</tt>. We extend that to customise it, e.g. for our special types e.g. <tt>FriendType</tt> and <tt>ForestFood</tt>.
 
-<i>As you can see, we don't buy into anything too fancy here in the forest. 
-We have visiting to do, afternoon naps and things that keep us busy. 
-So when we write software, which we 
-do strictly mornings only, we hope that it works.
-If it doesn't, we fix it tomoro, time permitting.
-And anyway... what are cyclic dependencies, by the way?
-</i>
+<i>As you can see, we don't buy into anything too fancy here in the forest. We have visiting to do, afternoon naps and things that keep us busy. So when we write software, which we do strictly mornings only, we hope that it works. If it doesn't, we fix it tomoro, time permitting. And anyway... what are cyclic dependencies, by the way?</i>
 
+<h3>Custom fields</h3>
+<i>"Tiggers can't climb downwards, because their tails get in the way, only upwards." Tigger</i>
 
-Custom fields //section
-"Tiggers can't climb downwards, because their tails get in the way, only upwards." Tigger //quote
+We might implement custom fields, and overwrite <tt>format()</tt> and <tt>parse()</tt>, which are otherwise delegated by the <tt>GFieldComponent</tt>, firstly to its <tt>GFieldComponentHelper</tt> helper, then to its <tt>GProperty</tt> property descriptor, and finally to the <tt>GFormatter</tt> implementation. <i>Uh Hm. This is what Tigger calls 'whOOPy' programming, all this delegation and inheritance and friends-and-relations, is what makes it so nice and bouncy!</i>
 
-We might implement custom fields, and overwrite ~format() and ~parse(), which are otherwise delegated
-by the ~GFieldComponent, firstly to its ~GFieldComponentHelper helper, then to its ~GProperty property descriptor, 
-and finally to the ~GFormatter implementation. <i>Uh Hm. This is 
-what Tigger calls 'whOOPy' programming, all this delegation and inheritance and friends-and-relations, is what makes it so nice 
-and bouncy!</i>
-
-<pre class='java'>
+<pre>
 public FriendTypeField extends GComboBoxField<FriendType> {
 
    public FriendTypeField() {
@@ -1033,12 +862,9 @@ public FriendTypeField extends GComboBoxField<FriendType> {
 }   
 </pre>
 
-A Small Problem is that our component factory creates regular text fields and what-not. 
-So we can extend our factory ie. ~GFormHelper to introduce 
-a factory method like ~createFriendTypeField(), 
-or we can use the ~GFormHelper.configure(comboBox) method, as follows.
+A Small Problem is that our component factory creates regular text fields and what-not. So we can extend our factory i.e. <tt>GFormHelper</tt> to introduce a factory method like <tt>createFriendTypeField()</tt>, or we can use the <tt>GFormHelper.configure(comboBox)</tt> method, as follows.
 
-<pre class='java'>
+<pre>
    FriendTypeField friendTypeField = new FriendTypeField();
    ...
    public void configure() {
@@ -1047,19 +873,16 @@ or we can use the ~GFormHelper.configure(comboBox) method, as follows.
    }
 </pre>
 
-Or we can pass our ~GFormHelper context through to our custom combo box, so that its 
-~GComboBox superclass can invoke ~helper.configure(this) for us.
+Or we can pass our <tt>GFormHelper</tt> context through to our custom combo box, so that its <tt>GComboBox</tt> superclass can invoke <tt>helper.configure(this)</tt> for us.
 
 <i>So many choices and decisions... Time to have Owl over for tea and a little smackerel of something, shall we?</i>    
 
-
-
-Form programming //section
-"Bounding up trees is easy for Tiggers. The difficulty is in the climbing down, backwards." Tigger //quote
+<h3>Form programming</h3>
+<i>"Bounding up trees is easy for Tiggers. The difficulty is in the climbing down, backwards." Tigger</i>
 
 Our form controller class might be implemented as follows.
 
-<pre class='java'>
+<pre>
 public FriendFormController implements ActionListener, GFieldListener {   
    FriendFormView friendFormView = new FriendFormView();   
    FriendFormBean friendFormBean = new FriendFormBean();   
@@ -1135,106 +958,42 @@ public FriendFormController implements ActionListener, GFieldListener {
 }   
 </pre>
 
-To make it bouncy, we might introduce our own new event specifically for fields, for when the value
-of a field is changed by the user. When they tab out of the field (which is a "focus lost" ~FocusEvent), 
-or press Enter (which causes an ~ActionEvent), we might invoke ~fieldChanged(). 
+To make it bouncy, we might introduce our own new event specifically for fields, for when the value of a field is changed by the user. When they tab out of the field (which is a "focus lost" <tt>FocusEvent</tt>), or press Enter (which causes an <tt>ActionEvent</tt>), we might invoke <tt>fieldChanged()</tt>. 
 
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/tigger_sit_125.jpg" width="125" height="167" 
-align=right hspace=16 />
-
-We might throw a ~documentChanged() event handler into 
-our ~GFieldListener, which comes into play when the user is editing a text field or what-not, 
-courtesy of our ~GFormHelper listening for a ~DocumentEvent and turning that into a ~GFieldEvent.
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/tigger_sit_125.jpg" width="125" height="167" align=right hspace=16 />
+We might throw a <tt>documentChanged()</tt> event handler into our <tt>GFieldListener</tt>, which comes into play when the user is editing a text field or what-not, courtesy of our <tt>GFormHelper</tt> listening for a <tt>DocumentEvent</tt> and turning that into a <tt>GFieldEvent</tt>.
 
 <i>OK, let's wrap up. Time for a nap!</i>
 
-Summary //section
-"When late morning rolls around and you're feeling a bit out of sorts, don't worry; you're probably just a little eleven o'clockish." Winnie the Pooh //quote
+<h3>Summary</h3>
+<i>"When late morning rolls around and you're feeling a bit out of sorts, don't worry; you're probably just a little eleven o'clockish." Winnie the Pooh</i>
 
-We continue from Bean Curd 1, to apply "explicit properties" to the Swing 
-~JPanel and its fields.
+We continue from <i>Swing Turntables</i>, to apply "explicit properties" to the Swing <tt>JPanel</tt> and its fields.
 
-We explicitly declare field components in our form, eg.
-~JTextField, ~JComboBox et al. Bean binding is performed implicitly, 
-using the field names of the components. Annotations are used to specify layout, 
-validation and stuff.
-Oh, and we introduce an interface for fields, to make them all look like honey pots. 
-Our field components delegate to helpers and property descriptors to do all the work.
+We explicitly declare field components in our form, e.g. <tt>JTextField</tt>, <tt>JComboBox</tt> et al. Bean binding is performed implicitly, using the field names of the components. Annotations are used to specify layout, validation and stuff. Oh, and we introduce an interface for fields, to make them all look like honey pots. Our field components delegate to helpers and property descriptors to do all the work.
 
-We program to a beautiful bouncy POJO "form model" rather than heavy Swing models.
-We reference our components as necessary, 
-eg. to invoke ~setEnabled(), ~requestFocusInWindow(), et al, and also to 
-identify them as the source of events in our event handlers.
+We program to a beautiful bouncy POJO "form model" rather than heavy Swing models. We reference our components as necessary, e.g. to invoke <tt>setEnabled()</tt>, <tt>requestFocusInWindow()</tt>, et al, and also to identify them as the source of events in our event handlers.
 
-But we don't have to worry about extracting, converting and validating
-values from fields. We put that into a framework, where it belongs. A very simple 
-framework mind you.
+But we don't have to worry about extracting, converting and validating values from fields. We put that into a framework, where it belongs. A very simple framework mind you.
 
-The framework handles events nicely and politely for us too. It does automatic
-event registration, event filtering (eg. ignoring events when they should be 
-ignored), and introduces a handy custom event for fields, to hide the vagarities
-of ~ActionEvent and ~FocusEvent, which 
-are mixed up with other types of components. Finally, it makes sure that exceptions 
-thrown by event handlers are handled eg. the user is told.
+The framework handles events nicely and politely for us too. It does automatic event registration, event filtering (eg. ignoring events when they should be ignored), and introduces a handy custom event for fields, to hide the vagarities of <tt>ActionEvent</tt> and <tt>FocusEvent</tt>, which are mixed up with other types of components. Finally, it makes sure that exceptions thrown by event handlers are handled e.g. the user is told.
 
 <i>And now for smackerel of something to eat, and then a lovely nap!</i>
 
-    
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/bees_and_sunflowers_175.jpg" width="175" height="131" 
-align=left hspace=16 vspace=24 />
+<img alt="" src="http://weblogs.java.net/blog/evanx/archive/bees_and_sunflowers_175.jpg" width="175" height="131" align=left hspace=16 vspace=24 />
 
-Sequels //section
-"Before beginning a Search, it is wise to ask someone what you are looking for before you begin looking for it." Winnie the Pooh //quote
+<h3>Sequels</h3>
+<i>"Before beginning a Search, it is wise to ask someone what you are looking for before you begin looking for it." Winnie the Pooh</i>
 
-The next article in this Swing series is 
-:{Inside Action} //http://aptframework.dev.java.net/article/aptAction.html
-on Swing Actions (for buttons, toolbars, menus and hotkeys), and 
-then :{Framewarez} //http://aptframework.dev.java.net/article/aptAccess.html
-on building a tabbed application frame for our 
-"worksheets."
+The next article in this Swing series is <a href="http://weblogs.java.net/blog/evanx/archive/2006/06/swing_and_round_4.html">Inside Action</a> on Swing Actions (for buttons, toolbars, menus and hotkeys), and then <a href="http://weblogs.java.net/blog/evanx/archive/2006/07/swing_and_round_3.html">Framewarez</a> on building a tabbed application frame for our "worksheets."
 
+<h3>Thanks</h3>
 
-Thanks //section
+This blog was written using Netbeans, and previewed using Firefox (as hoofed in <a href="http://weblogs.java.net/blog/evanx/archive/2006/06/netbeans_my_web_1.html">Netbeans, my weblogging tool</a>. It was started in my sister's house, carried on in my brother's house, continued in my sister's office, and finished in my mom's cottage, on my new Windows XP notebook (as mooted in <a href="http://weblogs.java.net/blog/evanx/archive/2006/05/my_desktop_os_w.html">My Desktop OS: Windows XP</a> so... 
+now you know! 
 
-This blog was written using Netbeans, and previewed using Firefox 
-(as hoofed in :{Netbeans, my weblogging tool}). //http://weblogs.java.net/blog/evanx/archive/2006/06/netbeans_my_web_1.html
-It was started in my sister's house, 
-carried on in my brother's house, continued in my sister's office, and finished in my mom's cottage, on my new Windows XP notebook
-(as mooted in :{My Desktop OS: Windows XP}), //http://weblogs.java.net/blog/evanx/archive/2006/05/my_desktop_os_w.html
-so... 
-now you know! Pictures from :{yotophoto.com}, //http://yotophoto.com
-and :{flickr.com}, //http://flickr.com
-notably :{agnieszka}. //http://flickr.com/people/agnieszka/
+Pictures from http://yotophoto.com and flickr.com, notably http://flickr.com/people/agnieszka/
 
-<br>
+<h2>Resources</h2>
 
-<table>
-<tr>
-<td>
-  <form action='http://weblogs.java.net/blog/evanx/archive/2006/06/bean_curd_1f_sw.html'>
-  <a href='http://weblogs.java.net/blog/evanx/archive/2006/06/bean_curd_1f_sw.html' 
-  style='text-decoration: none;'><input type=submit value='Discuss'/></a></form>
-<td>
-  <form action='http://aptframework.dev.java.net/gooey/contents.html'>
-  <a href='http://aptframework.dev.java.net/gooey/contents.html' 
-  style='text-decoration: none;'><input type=submit value='Gooey Contents'/></a></form>
-<td>
-  <form action='http://aptframework.dev.java.net/foundation/contents.html'>
-  <a href='http://aptframework.dev.java.net/foundation/contents.html'
-  style="text-decoration: none;"><input type=submit value='Foundation Trilogy'/></a></form>
-</table>
-
-<!--
-Featured Prequel //section
-"You can't always sit in your corner of the forest and wait for people to come to you... you have to go to them sometimes." Eeyore //quote
-
-<img alt="" src="http://weblogs.java.net/blog/evanx/archive/tigger_honey_pot_125.jpg" 
-width="125" height="176" 
-align=right hspace=16 vspace=16 />
-<i>I'm gonna use this soapblog to punt my previous article, 
-:{Mayhem Roundup}, //http://weblogs.java.net/blog/evanx/archive/2006/06/mayhem_roundup_1.html
-because if I don't, who will? ;) So this is a roundup of that Roundup article
-of my May blogs, including <i>Bean Curds 1 and 2,</i> in particular the rationale of their <i>"explicit properties with implicit binding"</i> approach
-used here.  </i>
--->
-    
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
