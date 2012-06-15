@@ -8,7 +8,7 @@ To use passwordless login capabilities via certificate authentication using SSL 
 
 This guide will walk you through the steps of setting up your own PKI as well as how to set up Tomcat to handle Certificate-based authentication.
 
-==== HowtoForge MySQL openssl guide ====
+==== !HowtoForge MySQL openssl guide ====
 
 The following article includes creating self-signed server and client certs using openssl, albeit for the purpose of an MySQL SSL connection:
 
