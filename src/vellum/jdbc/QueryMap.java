@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package vellum.sql.common;
+package vellum.jdbc;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

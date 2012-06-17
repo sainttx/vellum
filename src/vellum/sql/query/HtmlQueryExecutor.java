@@ -5,7 +5,7 @@
  */
 package vellum.sql.query;
 
-import vellum.sql.common.RowSets;
+import vellum.jdbc.RowSets;
 import vellum.exception.Exceptions;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
