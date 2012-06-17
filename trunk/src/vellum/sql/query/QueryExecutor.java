@@ -6,7 +6,7 @@
  */
 package vellum.sql.query;
 
-import vellum.sql.common.RowSets;
+import vellum.jdbc.RowSets;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import com.sun.rowset.CachedRowSetImpl;

@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import vellum.sql.common.QueryMap;
+import vellum.jdbc.QueryMap;
 import venigma.data.AdminRole;
 import venigma.data.AdminUser;
 
