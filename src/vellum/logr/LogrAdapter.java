@@ -31,7 +31,7 @@ public class LogrAdapter implements Logr {
     }
 
     @Override
-    public void warning(String message, Object... args) {
+    public void warn(String message, Object... args) {
         handler.handle(new LogrRecord(LogrLevel.WARN, message, args));
     }
 

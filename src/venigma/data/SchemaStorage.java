@@ -67,7 +67,7 @@ public class SchemaStorage {
                 try {
                     connection.createStatement().execute(sqlStatement);
                 } catch (SQLException e) {
-                    logger.warning(e.getMessage());
+                    logger.warn(e.getMessage());
                 }
             }
         }

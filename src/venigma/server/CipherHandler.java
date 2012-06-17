@@ -43,7 +43,7 @@ public class CipherHandler {
         try {
             process();
         } catch (IOException e) {
-            logger.warning(e.getMessage());
+            logger.warn(e.getMessage());
         } catch (Exception e) {
             logger.warning(e, null);
             reply(e);

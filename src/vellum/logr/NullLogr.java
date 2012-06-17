@@ -30,7 +30,7 @@ public class NullLogr implements Logr {
     }
 
     @Override
-    public void warning(String message, Object... args) {
+    public void warn(String message, Object... args) {
     }
 
     @Override

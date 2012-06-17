@@ -29,7 +29,7 @@ public class CipherConnection {
 
     public void open() throws IOException {
         if (socket != null) {
-            logger.warning("already open");
+            logger.warn("already open");
             Streams.close(socket);
         }
         this.socket = clientContext.createSocket();
@@ -42,7 +42,7 @@ public class CipherConnection {
 
     public void close() throws IOException {
         if (socket == null) {
-            logger.warning("already closed");
+            logger.warn("already closed");
         } else {
             logger.info("close", socket.getRemoteSocketAddress());            
             socket.close();
