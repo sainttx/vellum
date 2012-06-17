@@ -28,12 +28,11 @@ public class SimpleLogrHandler implements LogrHandler {
     }
 
     @Override
-    public void handle(LogrRecord message) {
-        if (message.getLevel().ordinal() >= level.ordinal()) {
-            err.println(formatter.format(context, message));
-            Throwable throwable = getThrowable(message.getArgs());
-            if (throwable != null) {
-                throwable.printStackTrace(err);
+    public void handle(LogrRecord record) {
+        if (record.getLevel().ordinal() >= level.ordinal()) {
+            err.println(formatter.format(context, record));
+            if (record.getThrowable() != null) {
+                record.getThrowable().printStackTrace(err);
             }
         }
     }
