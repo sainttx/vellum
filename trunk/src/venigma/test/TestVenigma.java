@@ -109,7 +109,7 @@ public class TestVenigma implements Runnable {
         request.setPassword(properties.secretKeyPass.toCharArray());
         CipherResponse response = clientConnection.sendCipherRequest(request);
         if (response.getResponseType() != CipherResponseType.OK) {
-            logger.warning("client start response", response);
+            logger.warn("client start response", response);
             System.exit(1);
         }
         return response;
@@ -123,7 +123,7 @@ public class TestVenigma implements Runnable {
         request.setPassword(properties.secretKeyPass.toCharArray());
         CipherResponse response = clientConnection.sendCipherRequest(request);
         if (response.getResponseType() != CipherResponseType.OK) {
-            logger.warning("client generate key response", response);
+            logger.warn("client generate key response", response);
             System.exit(1);
         }
         return response;

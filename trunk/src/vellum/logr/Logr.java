@@ -17,7 +17,7 @@ public interface Logr {
 
     public void info(String message, Object ... args);
 
-    public void warning(String message, Object ... args);
+    public void warn(String message, Object ... args);
     
     public void error(String message, Object ... args);
 
