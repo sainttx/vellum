@@ -113,7 +113,7 @@ public class TimestampedList<T extends Timestamped>  {
     }
 }}}
 
-where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such interference which would be bang out of order.
+where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>!LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such interference which would be bang out of order.
 
 Note that since we <tt>add()</tt> elements at the head of the list, so it's in reverse chronological order.
 
