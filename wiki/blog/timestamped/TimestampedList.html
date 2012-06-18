@@ -103,6 +103,7 @@ public class TimestampedList<T extends Timestamped>  {
     }
 
     private void prune(long timestamp) {
+        if (timestamp == 0) timestamp = System.currentTimeMillis();
         while (linkedList.size() > 0) {
             T last = linkedList.getLast();
             if (last != null && last.getTimestampMillis() < timestamp - capacityMillis) {
