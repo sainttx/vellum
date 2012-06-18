@@ -87,7 +87,7 @@ public class TimestampedComparator implements Comparator<Timestamped> {
 
 <h2>Timestamped List</h2>
 
-Now have the namesake of this article, a list of timestamped thingies with a time-based capacity - a "circular buffer" or FILO queue, or some such thing.
+Now have the namesake of this article, a list for timestamped thingies, with a time-based capacity - a "circular buffer" or FILO queue, or some such thing.
 {{{
 public class TimestampedList<T extends Timestamped>  {
 
