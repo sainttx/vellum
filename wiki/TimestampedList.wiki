@@ -83,10 +83,6 @@ public class TimestampedList<T extends Timestamped>  {
         this.capacityMillis = capacityMillis;
     }
     
-    public synchronized int size() {
-        return linkedList.size();
-    }
-
     public synchronized void add(T element) {
         prune(element.getTimestampMillis());
         linkedList.add(0, element);
@@ -101,7 +97,17 @@ public class TimestampedList<T extends Timestamped>  {
             linkedList.remove(last);
         }
     }
+}}}
 
+where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such interference which would be bang out of order.
+
+Note that since we <tt>add()</tt> elements at the head of the list, so it's in reverse chronological order.
+
+Crucially, when we <tt>add()</tt> an element at the head, we <tt>prune()</tt> older elements from the tail, so that our list is not growing out of control. 
+
+In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy?
+
+{{{
     public synchronized List<T> getList() {
         return getList(System.currentTimeMillis());
     }
@@ -120,12 +126,7 @@ public class TimestampedList<T extends Timestamped>  {
     }    
 }
 }}}
-
-where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such interference which would be bang out of order.
-
-Also in order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation.
-
-Note that, crucially, when we <tt>add()</tt> an element, we <tt>prune()</tt> off the older elements, so that our list is not growing out of control. 
+where the <tt>getSubList()</tt> requests a latest so-many elements (or less). In this case we can display the last so-many elements (in reverse chronological order).
 
 Let's test this thing. 
 
