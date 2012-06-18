@@ -71,6 +71,20 @@ We might want equality by the timestamp for this element.
     }
 }}}
 
+Also, a comparator will undoubtedly be required at some stage. 
+
+{{{
+public class TimestampedComparator implements Comparator<Timestamped> {
+
+    @Override
+    public int compare(Timestamped o1, Timestamped o2) {
+        if (o1.getTimestampMillis() < o2.getTimestampMillis()) return -1;
+        if (o1.getTimestampMillis() > o2.getTimestampMillis()) return 1;
+        else return 0;
+    }    
+}
+}}}
+
 <h2>Timestamped</h2>
 
 {{{
@@ -133,20 +147,20 @@ Let's test this thing.
 {{{
 public class TimestampedListTest implements Runnable {
 
-    long capacityMillis = 20;
-    long scheduledInterval = 4;
+    long capacityMillis = 30;
+    long scheduledInterval = 10;
     long scheduledDelay = 0;
+    boolean verbose = false;
     final TimestampedList timestampedList = new TimestampedList(capacityMillis);
     ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
             this, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
-    boolean quiet = false;
             
     @Override
     public void run() {
         long timestamp = System.currentTimeMillis();
         String value = "record at " + timestamp;
         timestampedList.add(new TimestampedElement(value, timestamp));
-        if (!quiet) {
+        if (verbose) {
             System.out.println(value);
         }
     }
@@ -162,32 +176,42 @@ where we schedule a thread to insert records all the while.
 
 {{{    
     public void check() throws Exception {
-        long millis0 = System.currentTimeMillis();
+        verbose = true;
+        long startMillis = System.currentTimeMillis();
         Thread.sleep(capacityMillis);
-        quiet = true;
-        long millis1 = System.currentTimeMillis();
-        List<Timestamped> list = timestampedList.getList(millis1);
+        verbose = false;
+        List<Timestamped> list = timestampedList.getList(startMillis + capacityMillis);
         SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
         set.addAll(list);
         Assert.assertEquals("first", list.get(0).getTimestampMillis(), set.last().getTimestampMillis());
         Collections.reverse(list);
         Assert.assertEquals("last", list.get(0).getTimestampMillis(), set.first().getTimestampMillis());
-        for (Timestamped element : list) {
-            System.out.println("entry " + element.getTimestampMillis());
-        }
-        System.out.println("capacity " + (capacityMillis/scheduledInterval));
-        System.out.println("size " + list.size());
-        System.out.println("first " + set.first().getTimestampMillis());
-        System.out.println("last " + set.last().getTimestampMillis());
-        System.out.flush();
-        Assert.assertTrue("first", set.first().getTimestampMillis() >= millis0);
-        Assert.assertTrue("last time" , set.last().getTimestampMillis() >= millis0 + capacityMillis - scheduledInterval);
+        Assert.assertTrue("first", set.first().getTimestampMillis() >= startMillis);
+        Assert.assertTrue("last time" , set.last().getTimestampMillis() >= startMillis + capacityMillis - scheduledInterval);
         Assert.assertTrue("capacityMillis", 
                 set.last().getTimestampMillis() - set.first().getTimestampMillis() <= capacityMillis);
-    }
+        System.out.println("startMillis " + startMillis);
+        System.out.println("first " + set.first().getTimestampMillis());
+        System.out.println("last " + set.last().getTimestampMillis());
+        System.out.println("size " + list.size());
+        System.out.println("capacity " + (capacityMillis/scheduledInterval));
+    }    
 }}}
 
-Given that how unpredictable time is, ironically, we can't be sure of the size of the list. However, i found that changing an <assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass. <i>"Put that in your internet, put that in your twitter right there."</i>
+We observe the output and nod, ponderously.
+
+{{{
+record at 1340050675290
+record at 1340050675300
+record at 1340050675310
+startMillis 1340050675281
+first 1340050675290
+last 1340050675310
+size 3
+capacity 3
+}}}
+
+Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
 
 <h3>Resources</h3>
 
