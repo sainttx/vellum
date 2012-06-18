@@ -1,7 +1,7 @@
 
 <h1>Timestamped List</h1>
 
-We herewith continue the no-hit wonder <i>"Timestamped: a trilogy in a few parts,"</i> this being the second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and a special <tt>List</tt> to store them, with a time-based capacity. 
+We herewith continue the no-hit wonder <i>"Timestamped: a trilogy in a few parts,"</i> this being the second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and use a <tt>LinkedList</tt> to gather them, with a time-based capacity. 
 
 <img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg"/>
 
@@ -87,7 +87,7 @@ public class TimestampedComparator implements Comparator<Timestamped> {
 
 <h2>Timestamped List</h2>
 
-Now have the namesake of this article, a list for timestamped thingies, with a time-based capacity - a "circular buffer" or FILO queue, or some such thing.
+Now have the namesake of this article, a list of timestamped thingies, with a time-based capacity - a "circular buffer" or FILO queue, or some such thing.
 <pre>
 public class TimestampedList<T extends Timestamped>  {
 
@@ -103,7 +103,7 @@ public class TimestampedList<T extends Timestamped>  {
         linkedList.add(0, element);
     }
 
-    private synchronized void prune(long timestamp) {
+    private void prune(long timestamp) {
         while (linkedList.size() > 0) {
             T last = linkedList.getLast();
             if (last != null && last.getTimestampMillis() < timestamp - capacityMillis) {
