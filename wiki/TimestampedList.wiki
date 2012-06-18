@@ -9,14 +9,14 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 
 <h2>Timestamped</h2>
 
-Herewith the namesake interface of this series.
+I give you the namesake interface of this series.
 {{{
 public interface Timestamped {
     public long getTimestampMillis();    
 }
 }}}
 
-Have an adapter for a Log4j logging event. 
+Also have an adapter for a Log4j logging event. 
 {{{
 public class TimestampedLoggingEventAdapter implements Timestamped {
     LoggingEvent loggingEvent;
@@ -54,7 +54,7 @@ public class TimestampedElement<T> implements Timestamped {
 }
 }}}
 
-We might want equality by the timestamp. 
+We might want equality by the timestamp for this element.
 
 {{{
     @Override
