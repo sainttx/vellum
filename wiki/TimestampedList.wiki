@@ -9,15 +9,15 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 
 <h2>Timestamped</h2>
 
-I give you the namesake interface of this series.
-{{{
+Without further ado, I give you the namesake interface of this series.
+<pre>
 public interface Timestamped {
     public long getTimestampMillis();    
 }
-}}}
+</pre>
 
 Also have an adapter for a Log4j logging event. 
-{{{
+<pre>
 public class TimestampedLoggingEventAdapter implements Timestamped {
     LoggingEvent loggingEvent;
 
@@ -30,10 +30,10 @@ public class TimestampedLoggingEventAdapter implements Timestamped {
         return loggingEvent.getTimeStamp();
     }
 }
-}}}
+</pre>
 
 Or a generic wrapped element.
-{{{
+<pre>
 public class TimestampedElement<T> implements Timestamped {
     T element;
     long timestampMillis;
@@ -52,11 +52,11 @@ public class TimestampedElement<T> implements Timestamped {
         return timestampMillis;
     }
 }
-}}}
+</pre>
 
 We might want equality by the timestamp for this element.
 
-{{{
+<pre>
     @Override
     public int hashCode() {
         return (int) (timestampMillis % Integer.MAX_VALUE);
@@ -69,11 +69,11 @@ We might want equality by the timestamp for this element.
         }
         return false;
     }
-}}}
+</pre>
 
 Also, a comparator will undoubtedly be required at some stage. 
 
-{{{
+<pre>
 public class TimestampedComparator implements Comparator<Timestamped> {
 
     @Override
@@ -83,12 +83,12 @@ public class TimestampedComparator implements Comparator<Timestamped> {
         else return 0;
     }    
 }
-}}}
+</pre>
 
 <h2>Timestamped List</h2>
 
 Now have the namesake of this article, a list for timestamped thingies, with a time-based capacity - a "circular buffer" or FILO queue, or some such thing.
-{{{
+<pre>
 public class TimestampedList<T extends Timestamped>  {
 
     LinkedList<T> linkedList = new LinkedList();
@@ -112,7 +112,7 @@ public class TimestampedList<T extends Timestamped>  {
             linkedList.remove(last);
         }
     }
-}}}
+</pre>
 
 where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>!LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such guaranteed interference - a ticking timebomb, one might say, aptly.
 
@@ -124,7 +124,7 @@ Observe that the <tt>prune()</tt> implementation assumes that elements are added
 
 In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy? And do we really need everything <tt>synchronized</tt>?
 
-{{{
+<pre>
     public synchronized List<T> getList() {
         return getList(System.currentTimeMillis());
     }
@@ -141,12 +141,12 @@ In order to inspect the contents, we use <tt>getList()</tt>, which returns a def
             return new ArrayList(linkedList.subList(0, size));
         }
     }
-}}}
+</pre>
 where the <tt>getSubList()</tt> requests the latest so-many elements (or less), in reverse chronological order, for us to display e.g. in a servlet, later in this series.
 
 Let's test this thing. 
 
-{{{
+<pre>
 public class TimestampedListTest implements Runnable {
 
     long capacityMillis = 30;
@@ -173,10 +173,10 @@ public class TimestampedListTest implements Runnable {
         check();
         future.cancel(true);
     }    
-}}}
+</pre>
 where we schedule a thread to insert records all the while.
 
-{{{    
+<pre>    
     private void check() throws Exception {
         verbose = true;
         long startMillis = System.currentTimeMillis();
@@ -199,11 +199,11 @@ where we schedule a thread to insert records all the while.
         System.out.println("size " + list.size());
         System.out.println("capacity " + (capacityMillis/scheduledInterval));
     }    
-}}}
+</pre>
 
 Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
 
-{{{
+<pre>
 record at 1340050675290
 record at 1340050675300
 record at 1340050675310
@@ -212,7 +212,7 @@ first 1340050675290
 last 1340050675310
 size 3
 capacity 3
-}}}
+</pre>
 
 We observe the output and nod, ponderously.
 
