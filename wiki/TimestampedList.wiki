@@ -199,7 +199,7 @@ where we schedule a thread to insert records all the while.
     }    
 }}}
 
-Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
+Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
 
 {{{
 record at 1340050675290
