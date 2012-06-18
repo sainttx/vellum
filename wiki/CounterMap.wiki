@@ -156,7 +156,7 @@ public class Maps {
 0 BWARN
 }}}
 
-<p>As so often seems to be the case, we have a million DEBUG messages, a thousand and one ERRORs, with very little INFO to go on, and no bloody warning!  <i>"Put that in your internet, put that in your twitter right there."</i>
+<p>As so often seems to be the case, we have a million DEBUG messages, a thousand and one ERRORs, with very little INFO to go on, and no bloody warning! <i>"Put that in your internet, put that in your twitter right there."</i>
 
 <h2>Resources</h2>
 

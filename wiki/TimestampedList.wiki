@@ -1,0 +1,197 @@
+
+<h1>Timestamped List</h1>
+
+We herewith continue the no-hit wonder <i>"Timestamped: a trilogy in a few parts,"</i> this being the second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and a special <tt>List</tt> to store them, with a time-based capacity. 
+
+We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
+
+<h2>Timestamped</h2>
+
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg"/>
+
+Herewith the namesake interface of this series.
+{{{
+public interface Timestamped {
+    public long getTimestampMillis();    
+}
+}}}
+
+Have an adapter for a Log4j logging event. 
+{{{
+public class TimestampedLoggingEventAdapter implements Timestamped {
+    LoggingEvent loggingEvent;
+
+    public TimestampedLoggingEventAdapter(LoggingEvent loggingEvent) {
+        this.loggingEvent = loggingEvent;
+    }
+
+    @Override
+    public long getTimestampMillis() {
+        return loggingEvent.getTimeStamp();
+    }
+}
+}}}
+
+Or a generic wrapped element.
+{{{
+public class TimestampedElement<T> implements Timestamped {
+    T element;
+    long timestampMillis;
+
+    public TimestampedElement(T element, long timestampMillis) {
+        this.element = element;
+        this.timestampMillis = timestampMillis;
+    }
+
+    public T getElement() {
+        return element;
+    }
+    
+    @Override
+    public long getTimestampMillis() {
+        return timestampMillis;
+    }
+}
+}}}
+
+We might want equality by the timestamp. 
+
+{{{
+    @Override
+    public int hashCode() {
+        return (int) (timestampMillis % Integer.MAX_VALUE);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Timestamped) {
+            return timestampMillis == ((Timestamped) obj).getTimestampMillis();
+        }
+        return false;
+    }
+}}}
+
+<h2>Timestamped</h2>
+
+{{{
+public class TimestampedList<T extends Timestamped>  {
+
+    LinkedList<T> linkedList = new LinkedList();
+    long capacityMillis;
+
+    public TimestampedList(long capacityMillis) {
+        this.capacityMillis = capacityMillis;
+    }
+    
+    public synchronized int size() {
+        return linkedList.size();
+    }
+
+    public synchronized void add(T element) {
+        prune(element.getTimestampMillis());
+        linkedList.add(0, element);
+    }
+
+    private synchronized void prune(long timestamp) {
+        while (linkedList.size() > 0) {
+            T last = linkedList.getLast();
+            if (last != null && last.getTimestampMillis() < timestamp - capacityMillis) {
+                return;
+            }
+            linkedList.remove(last);
+        }
+    }
+
+    public synchronized List<T> getList() {
+        return getList(System.currentTimeMillis());
+    }
+    
+    public synchronized List<T> getList(long millis) {
+        prune(millis);
+        return new ArrayList(linkedList);
+    }
+
+    public synchronized List<T> getSubList(int size) {
+        if (linkedList.size() <= size) {
+            return new ArrayList(linkedList);
+        } else {
+            return new ArrayList(linkedList.subList(0, size));
+        }
+    }    
+}
+}}}
+
+where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such interference which would be bang out of order.
+
+Also in order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation.
+
+Note that, crucially, when we <tt>add()</tt> an element, we <tt>prune()</tt> off the older elements, so that our list is not growing out of control. 
+
+Let's test this thing. 
+
+{{{
+public class TimestampedListTest implements Runnable {
+
+    long capacityMillis = 20;
+    long scheduledInterval = 4;
+    long scheduledDelay = 0;
+    final TimestampedList timestampedList = new TimestampedList(capacityMillis);
+    ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
+            this, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
+    boolean quiet = false;
+            
+    @Override
+    public void run() {
+        long timestamp = System.currentTimeMillis();
+        String value = "record at " + timestamp;
+        timestampedList.add(new TimestampedElement(value, timestamp));
+        if (!quiet) {
+            System.out.println(value);
+        }
+    }
+    
+    @Test
+    public void test() throws Exception {
+        check();
+        check();
+        future.cancel(true);
+    }    
+}}}
+where we schedule a thread to insert records all the while.
+
+{{{    
+    public void check() throws Exception {
+        long millis0 = System.currentTimeMillis();
+        Thread.sleep(capacityMillis);
+        quiet = true;
+        long millis1 = System.currentTimeMillis();
+        List<Timestamped> list = timestampedList.getList(millis1);
+        SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
+        set.addAll(list);
+        Assert.assertEquals("first", list.get(0).getTimestampMillis(), set.last().getTimestampMillis());
+        Collections.reverse(list);
+        Assert.assertEquals("last", list.get(0).getTimestampMillis(), set.first().getTimestampMillis());
+        for (Timestamped element : list) {
+            System.out.println("entry " + element.getTimestampMillis());
+        }
+        System.out.println("capacity " + (capacityMillis/scheduledInterval));
+        System.out.println("size " + list.size());
+        System.out.println("first " + set.first().getTimestampMillis());
+        System.out.println("last " + set.last().getTimestampMillis());
+        System.out.flush();
+        Assert.assertTrue("first", set.first().getTimestampMillis() >= millis0);
+        Assert.assertTrue("last time" , set.last().getTimestampMillis() >= millis0 + capacityMillis - scheduledInterval);
+        Assert.assertTrue("capacityMillis", 
+                set.last().getTimestampMillis() - set.first().getTimestampMillis() <= capacityMillis);
+    }
+}}}
+
+Given that how unpredictable time is, ironically, we can't be sure of the size of the list. However, i found that changing an <assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass. <i>"Put that in your internet, put that in your twitter right there."</i>
+
+<h3>Resources</h3>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+
+<h2>Coming soon</h2>
+
+We'll capture log records into our <tt>TimestampedList</tt>, and analyse a sample of logs e.g. for the last minute, to realise  when the wheels are starting to come off our app. 
