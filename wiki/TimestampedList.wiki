@@ -176,7 +176,7 @@ public class TimestampedListTest implements Runnable {
 where we schedule a thread to insert records all the while.
 
 {{{    
-    public void check() throws Exception {
+    private void check() throws Exception {
         verbose = true;
         long startMillis = System.currentTimeMillis();
         Thread.sleep(capacityMillis);
@@ -199,7 +199,7 @@ where we schedule a thread to insert records all the while.
     }    
 }}}
 
-We observe the output and nod, ponderously.
+Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
 
 {{{
 record at 1340050675290
@@ -212,7 +212,7 @@ size 3
 capacity 3
 }}}
 
-Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
+We observe the output and nod, ponderously.
 
 <h3>Resources</h3>
 
