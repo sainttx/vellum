@@ -141,7 +141,7 @@ In order to inspect the contents, we use <tt>getList()</tt>, which returns a def
     }    
 }
 }}}
-where the <tt>getSubList()</tt> requests a latest so-many elements (or less). In this case we can display the last so-many elements (in reverse chronological order).
+where the <tt>getSubList()</tt> requests the latest so-many elements (or less). In this case we can display the last so-many elements (in reverse chronological order).
 
 Let's test this thing. 
 
