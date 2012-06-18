@@ -116,9 +116,9 @@ public class TimestampedList<T extends Timestamped>  {
 
 where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>!LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such interference - which would be bang of order, and as such, is a guaranteed encounter; a ticking timebomb - apt one might say, but still best avoided altogether.
 
-Note that since we <tt>add()</tt> elements at the head of the list, so it's in reverse chronological order.
+Note that since we <tt>add()</tt> elements at the head of the list, so it's in reverse chronological order. 
 
-Crucially, when we <tt>add()</tt> an element at the head, we <tt>prune()</tt> older elements from the tail, so that our list is not growing out of control. 
+Crucially, when we <tt>add()</tt> an element at the head, we <tt>prune()</tt> older elements from the tail, so that our list is not growing out of control. We assume elements are added in chronological order, otherwise your mileage will be off-road.
 
 In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy?
 
