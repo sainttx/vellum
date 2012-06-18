@@ -23,8 +23,7 @@ public class StorageRuntimeException extends RuntimeException {
 
     public StorageRuntimeException(StorageExceptionType storageExceptionType, Object ... args) {
         super(StorageExceptions.formatMessage(storageExceptionType, args));
-        this.storageExceptionType = storageExceptionType;
-        
+        this.storageExceptionType = storageExceptionType;        
     }
     
     public StorageExceptionType getStorageExceptionType() {
