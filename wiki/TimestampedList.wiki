@@ -120,7 +120,7 @@ Note that since we <tt>add()</tt> elements at the head of the list, it's in reve
 
 Crucially, when we <tt>add()</tt> an element at the head, we <tt>prune()</tt> older elements from the tail, so that our list is not growing out of control. The <tt>prune()</tt> implementation assume elements are added in chronological order, otherwise your mileage will be going off-road.
 
-In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy?
+In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy? And do we really need everything <tt>synchronized</tt>?
 
 {{{
     public synchronized List<T> getList() {
