@@ -188,7 +188,8 @@ where we schedule a thread to insert records all the while.
         Collections.reverse(list);
         Assert.assertEquals("last", list.get(0).getTimestampMillis(), set.first().getTimestampMillis());
         Assert.assertTrue("first", set.first().getTimestampMillis() >= startMillis);
-        Assert.assertTrue("last time" , set.last().getTimestampMillis() >= startMillis + capacityMillis - scheduledInterval);
+        Assert.assertTrue("last time" , 
+                set.last().getTimestampMillis() >= startMillis + capacityMillis - scheduledInterval);
         Assert.assertTrue("capacityMillis", 
                 set.last().getTimestampMillis() - set.first().getTimestampMillis() <= capacityMillis);
         System.out.println("startMillis " + startMillis);
