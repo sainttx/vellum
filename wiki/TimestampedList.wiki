@@ -15,7 +15,6 @@ public interface Timestamped {
     public long getTimestampMillis();    
 }
 </pre>
-
 Also have an adapter for a Log4j logging event. 
 <pre>
 public class TimestampedLoggingEventAdapter implements Timestamped {
@@ -31,7 +30,6 @@ public class TimestampedLoggingEventAdapter implements Timestamped {
     }
 }
 </pre>
-
 Or a generic wrapped element.
 <pre>
 public class TimestampedElement<T> implements Timestamped {
@@ -53,9 +51,7 @@ public class TimestampedElement<T> implements Timestamped {
     }
 }
 </pre>
-
 We might want equality by the timestamp for this element.
-
 <pre>
     @Override
     public int hashCode() {
@@ -70,9 +66,7 @@ We might want equality by the timestamp for this element.
         return false;
     }
 </pre>
-
 Also, a comparator will undoubtedly be required at some stage. 
-
 <pre>
 public class TimestampedComparator implements Comparator<Timestamped> {
 
@@ -113,8 +107,7 @@ public class TimestampedList<T extends Timestamped>  {
         }
     }
 </pre>
-
-where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>!LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such guaranteed interference - a ticking timebomb, one might say, aptly.
+where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such guaranteed interference - a ticking timebomb, one might say, aptly.
 
 We add elements at the head of the list, so it's in reverse chronological order. 
 
@@ -123,7 +116,6 @@ Crucially, when we <tt>add()</tt> an element at the head, we <tt>prune()</tt> ol
 Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be going off-road.
 
 In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy? And do we really need everything <tt>synchronized</tt>?
-
 <pre>
     public synchronized List<T> getList() {
         return getList(System.currentTimeMillis());
@@ -145,7 +137,6 @@ In order to inspect the contents, we use <tt>getList()</tt>, which returns a def
 where the <tt>getSubList()</tt> requests the latest so-many elements (or less), in reverse chronological order, for us to display e.g. in a servlet, later in this series.
 
 Let's test this thing. 
-
 <pre>
 public class TimestampedListTest implements Runnable {
 
@@ -175,7 +166,6 @@ public class TimestampedListTest implements Runnable {
     }    
 </pre>
 where we schedule a thread to insert records all the while.
-
 <pre>    
     private void check() throws Exception {
         verbose = true;
@@ -200,9 +190,7 @@ where we schedule a thread to insert records all the while.
         System.out.println("capacity " + (capacityMillis/scheduledInterval));
     }    
 </pre>
-
-Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
-
+Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt>'s to a <tt>System.out.println()</tt>'s here and there, makes the test pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
 <pre>
 record at 1340050675290
 record at 1340050675300
@@ -213,7 +201,6 @@ last 1340050675310
 size 3
 capacity 3
 </pre>
-
 We observe the output and nod, ponderously.
 
 <h3>Resources</h3>

@@ -1,14 +1,17 @@
 
-We herewith continue the no-hit wonder series <i>"Timestamped: a trilogy in a few parts,"</i> which kicked off with <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/07/counter-map">Counter Map</a>.
 
-Ultimately we gonna hook up a remote Log4j appender, to gather stats to display via a web page, and/or to determine when things are going horribly wrong, in order to notify ourselves via Gtalk et al, but lemme not get ahead of myself.
+In this here second part of the "Timestamped" series, we introduce the namesake Timestamped interface, and use a LinkedList to collect such things, with a time-based capacity. 
 
-In this here second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and use a <tt>LinkedList</tt> to collect them, with a time-based capacity. 
+<!--break-->
+
+Ultimately we gonna hook up a remote Log4j appender, to gather stats to display via a handy HTTP server, and to compute when things are perhaps going horribly wrong, in order to notify ourselves via Gtalk - but lemme not get ahead of myself.
+
+Incidently we kicked off this no-hit wonder series with <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/07/counter-map">Counter Map</a>, which does not feature further yet, so ignore that for now.
 
 <p>   
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
 <div style="border-bottom: solid 1px; background-color: #ccff00;">
-<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Timestamp List:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Timestamped List:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
 </a>
 
@@ -18,8 +21,7 @@ public interface Timestamped {
     public long getTimestampMillis();    
 }
 </pre>
-
-Also have an adapter for a Log4j logging event. 
+Also take an adapter for a Log4j logging event. 
 <pre>
 public class TimestampedLoggingEventAdapter implements Timestamped {
     LoggingEvent loggingEvent;
@@ -34,7 +36,6 @@ public class TimestampedLoggingEventAdapter implements Timestamped {
     }
 }
 </pre>
-
 Or a generic wrapped element.
 <pre>
 public class TimestampedElement<T> implements Timestamped {
@@ -56,9 +57,7 @@ public class TimestampedElement<T> implements Timestamped {
     }
 }
 </pre>
-
 We might want equality by the timestamp for this element.
-
 <pre>
     @Override
     public int hashCode() {
@@ -73,9 +72,7 @@ We might want equality by the timestamp for this element.
         return false;
     }
 </pre>
-
 Also, a comparator will undoubtedly be required at some stage. 
-
 <pre>
 public class TimestampedComparator implements Comparator<Timestamped> {
 
@@ -90,7 +87,7 @@ public class TimestampedComparator implements Comparator<Timestamped> {
 
 <h2>Timestamped List</h2>
 
-Now have the namesake of this article, a list of timestamped thingies, with a time-based capacity - a "circular buffer" or FILO queue, or some such thing.
+Now let's introduce the namesake of this article, a list of timestamped thingies, with a time-based capacity - a "circular buffer" or FILO queue, some might call it.
 <pre>
 public class TimestampedList<T extends Timestamped>  {
 
@@ -116,8 +113,7 @@ public class TimestampedList<T extends Timestamped>  {
         }
     }
 </pre>
-
-where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>!LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt> or some such guaranteed interference - a ticking timebomb, one might say, aptly.
+where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose a <tt>LinkedList</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt>, whose mere presence would be a guaranteed ticking timebomb, one might say, aptly.
 
 We add elements at the head of the list, so it's in reverse chronological order. 
 
@@ -126,7 +122,6 @@ Crucially, when we <tt>add()</tt> an element at the head, we <tt>prune()</tt> ol
 Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be going off-road.
 
 In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy? And do we really need everything <tt>synchronized</tt>?
-
 <pre>
     public synchronized List<T> getList() {
         return getList(System.currentTimeMillis());
@@ -148,7 +143,6 @@ In order to inspect the contents, we use <tt>getList()</tt>, which returns a def
 where the <tt>getSubList()</tt> requests the latest so-many elements (or less), in reverse chronological order, for us to display e.g. in a servlet, later in this series.
 
 Let's test this thing. 
-
 <pre>
 public class TimestampedListTest implements Runnable {
 
@@ -179,6 +173,7 @@ public class TimestampedListTest implements Runnable {
 </pre>
 where we schedule a thread to insert records all the while.
 
+The perform the <tt>check()</tt> twice... just to make sure! ;)
 <pre>    
     private void check() throws Exception {
         verbose = true;
@@ -203,9 +198,7 @@ where we schedule a thread to insert records all the while.
         System.out.println("capacity " + (capacityMillis/scheduledInterval));
     }    
 </pre>
-
-Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt> to a <tt>System.out.println()</tt> makes all tests pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
-
+Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt>'s to a <tt>System.out.println()</tt>'s here and there, makes the test pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
 <pre>
 record at 1340050675290
 record at 1340050675300
@@ -216,7 +209,6 @@ last 1340050675310
 size 3
 capacity 3
 </pre>
-
 We observe the output and nod, ponderously.
 
 <h3>Resources</h3>
