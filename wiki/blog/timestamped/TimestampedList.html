@@ -90,9 +90,8 @@ public class TimestampedComparator implements Comparator<Timestamped> {
 Now let's introduce the namesake of this article, a list of timestamped thingies, with a time-based capacity - a "circular buffer" or FILO queue, some might call it.
 <pre>
 public class TimestampedList<T extends Timestamped>  {
-
-    LinkedList<T> linkedList = new LinkedList();
     long capacityMillis;
+    LinkedList<T> linkedList = new LinkedList();
 
     public TimestampedList(long capacityMillis) {
         this.capacityMillis = capacityMillis;
@@ -119,7 +118,7 @@ We add elements at the head of the list, so it's in reverse chronological order.
 
 Crucially, when we <tt>add()</tt> an element at the head, we <tt>prune()</tt> older elements from the tail, so that our list is not growing out of control. 
 
-Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be going off-road.
+Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be taking an off-road detour.
 
 In order to inspect the contents, we use <tt>getList()</tt>, which returns a defensive copy, and so is a helluva costly operation. Perhaps you could recommend an alternative strategy? And do we really need everything <tt>synchronized</tt>?
 <pre>
@@ -145,7 +144,6 @@ where the <tt>getSubList()</tt> requests the latest so-many elements (or less), 
 Let's test this thing. 
 <pre>
 public class TimestampedListTest implements Runnable {
-
     long capacityMillis = 30;
     long scheduledInterval = 10;
     long scheduledDelay = 0;
@@ -173,7 +171,7 @@ public class TimestampedListTest implements Runnable {
 </pre>
 where we schedule a thread to insert records all the while.
 
-The perform the <tt>check()</tt> twice... just to make sure! ;)
+We perform the <tt>check()</tt> twice... just to make sure! ;)
 <pre>    
     private void check() throws Exception {
         verbose = true;
@@ -198,7 +196,7 @@ The perform the <tt>check()</tt> twice... just to make sure! ;)
         System.out.println("capacity " + (capacityMillis/scheduledInterval));
     }    
 </pre>
-Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt>'s to a <tt>System.out.println()</tt>'s here and there, makes the test pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
+Given how unpredictable time is, ironically, we can't be sure of the size of the list. However, we find that changing a few <tt>assertTrue()</tt>'s to some <tt>System.out.println()</tt>'s here and there, makes the test pass 100%, woohoo! <i>"Put that in your internet, put that in your twitter right there."</i>
 <pre>
 record at 1340050675290
 record at 1340050675300
