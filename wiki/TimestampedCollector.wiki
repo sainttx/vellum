@@ -42,11 +42,11 @@ public class TimestampedCollector<T extends Timestamped>  {
 }}}
 
 {{{
-public class TimestamperCollectorTest implements Runnable {
+public class TimestampedCollectorTest implements Runnable {
     long capacityMillis = 30;
     long scheduledInterval = 10;
     long scheduledDelay = 0;
-    final TimestampedCollector collector = new TimestampedCollector(capacityMillis);
+    final TimestampedCollector<TimestampedElement> collector = new TimestampedCollector(capacityMillis);
     ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
             this, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
     boolean verbose = false;
@@ -63,19 +63,32 @@ public class TimestamperCollectorTest implements Runnable {
     
     @Test
     public void test() throws Exception {
+        long millis = System.currentTimeMillis();
         check();
         check();
         future.cancel(true);
+        Assert.assertTrue(collector.tailDeque(1).size() <= 1);
+        for (TimestampedElement t  : collector.tailDeque(3)) {
+            System.out.println(t.getElement());
+            Assert.assertTrue(t.getTimestamp() > millis);
+            millis = t.getTimestamp();
+        }
+        
     }
     
     private void check() throws Exception {
-        verbose = true;
         long startMillis = System.currentTimeMillis();
+        verbose = true;
         Thread.sleep(capacityMillis);
         verbose = false;
-        Deque<Timestamped> deque = collector.newDeque(startMillis + capacityMillis);
+        Deque<TimestampedElement> deque = collector.newDeque(startMillis + capacityMillis);
         SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
         set.addAll(deque);
+        System.out.println("size " + deque.size());
+        System.out.println("startMillis " + startMillis);
+        System.out.println("first " + set.first().getTimestamp());
+        System.out.println("last " + set.last().getTimestamp());
+        System.out.println("capacity " + (capacityMillis/scheduledInterval));
         Assert.assertEquals("first", deque.getFirst().getTimestamp(), set.first().getTimestamp());
         Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
         Assert.assertTrue("first", set.first().getTimestamp() >= startMillis);
@@ -83,30 +96,27 @@ public class TimestamperCollectorTest implements Runnable {
                 set.last().getTimestamp() >= startMillis + capacityMillis - scheduledInterval);
         Assert.assertTrue("capacityMillis", 
                 set.last().getTimestamp() - set.first().getTimestamp() <= capacityMillis);
-        System.out.println("size " + deque.size());
-        System.out.println("startMillis " + startMillis);
-        System.out.println("first " + set.first().getTimestamp());
-        System.out.println("last " + set.last().getTimestamp());
-        System.out.println("capacity " + (capacityMillis/scheduledInterval));
     }    
 }
 }}}
 
 <pre>
-record at 1340137798399
-record at 1340137798409
-record at 1340137798419
+record at 1340146100550
+record at 1340146100560
+record at 1340146100570
 size 3
-startMillis 1340137798394
-first 1340137798399
-last 1340137798419
+startMillis 1340146100545
+first 1340146100550
+last 1340146100570
 capacity 3
-record at 1340137798429
-record at 1340137798439
-record at 1340137798449
+record at 1340146100580
+record at 1340146100590
+record at 1340146100600
 size 3
-startMillis 1340137798428
-first 1340137798429
-last 1340137798449
+startMillis 1340146100577
+first 1340146100580
+last 1340146100600
 capacity 3
-</pre>
+record at 1340146100580
+record at 1340146100590
+record at 1340146100600</pre>
