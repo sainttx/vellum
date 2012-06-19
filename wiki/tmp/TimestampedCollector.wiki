@@ -1,0 +1,42 @@
+
+
+<pre>
+public class TimestampedCollector<T extends Timestamped>  {
+    long capacityMillis;
+    long latestMillis;
+    LinkedList<T> linkedList = new LinkedList();
+    
+    public TimestampedCollector(long capacityMillis) {
+        this.capacityMillis = capacityMillis;
+    }
+    
+    public synchronized void addLast(T element) {
+        if (element.getTimestamp() == 0 || element.getTimestamp() < latestMillis) {
+            throw new IllegalArgumentException();
+        }
+        latestMillis = element.getTimestamp();
+        prune(latestMillis);
+        linkedList.addLast(element);
+    }
+
+    public synchronized Deque<T> newDeque(long latestTimestamp) {
+        prune(latestTimestamp);
+        return new ArrayDeque(linkedList);
+    }
+
+    public synchronized Deque<T> tailDeque(int capacity) {
+        if (linkedList.size() <= capacity) {
+            return new ArrayDeque(linkedList);
+        } else {
+            return new ArrayDeque(linkedList.subList(linkedList.size() - capacity, linkedList.size()));
+        }
+    }    
+    
+    private void prune(long latestTimestamp) {
+        while (linkedList.size() > 0 && 
+                linkedList.getLast().getTimestamp() < latestTimestamp - capacityMillis) {
+            linkedList.removeLast();
+        }
+    }
+}
+</pre>
