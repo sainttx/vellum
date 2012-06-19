@@ -1,6 +1,6 @@
 
 
-<pre>
+{{{
 public class TimestampedCollector<T extends Timestamped>  {
     long capacityMillis;
     long latestMillis;
@@ -39,4 +39,4 @@ public class TimestampedCollector<T extends Timestamped>  {
         }
     }
 }
-</pre>
+}}}
