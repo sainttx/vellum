@@ -40,3 +40,73 @@ public class TimestampedCollector<T extends Timestamped>  {
     }
 }
 }}}
+
+{{{
+public class TimestamperCollectorTest implements Runnable {
+    long capacityMillis = 30;
+    long scheduledInterval = 10;
+    long scheduledDelay = 0;
+    final TimestampedCollector collector = new TimestampedCollector(capacityMillis);
+    ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
+            this, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
+    boolean verbose = false;
+            
+    @Override
+    public void run() {
+        long timestamp = System.currentTimeMillis();
+        String value = "record at " + timestamp;
+        collector.addLast(new TimestampedElement(value, timestamp));
+        if (verbose) {
+            System.out.println(value);
+        }
+    }
+    
+    @Test
+    public void test() throws Exception {
+        check();
+        check();
+        future.cancel(true);
+    }
+    
+    private void check() throws Exception {
+        verbose = true;
+        long startMillis = System.currentTimeMillis();
+        Thread.sleep(capacityMillis);
+        verbose = false;
+        Deque<Timestamped> deque = collector.newDeque(startMillis + capacityMillis);
+        SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
+        set.addAll(deque);
+        Assert.assertEquals("first", deque.getFirst().getTimestamp(), set.first().getTimestamp());
+        Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
+        Assert.assertTrue("first", set.first().getTimestamp() >= startMillis);
+        Assert.assertTrue("last time" , 
+                set.last().getTimestamp() >= startMillis + capacityMillis - scheduledInterval);
+        Assert.assertTrue("capacityMillis", 
+                set.last().getTimestamp() - set.first().getTimestamp() <= capacityMillis);
+        System.out.println("size " + deque.size());
+        System.out.println("startMillis " + startMillis);
+        System.out.println("first " + set.first().getTimestamp());
+        System.out.println("last " + set.last().getTimestamp());
+        System.out.println("capacity " + (capacityMillis/scheduledInterval));
+    }    
+}
+}}}
+
+<pre>
+record at 1340137798399
+record at 1340137798409
+record at 1340137798419
+size 3
+startMillis 1340137798394
+first 1340137798399
+last 1340137798419
+capacity 3
+record at 1340137798429
+record at 1340137798439
+record at 1340137798449
+size 3
+startMillis 1340137798428
+first 1340137798429
+last 1340137798449
+capacity 3
+</pre>
