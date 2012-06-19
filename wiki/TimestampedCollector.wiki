@@ -34,8 +34,8 @@ public class TimestampedCollector<T extends Timestamped>  {
     
     private void prune(long latestTimestamp) {
         while (linkedList.size() > 0 && 
-                linkedList.getLast().getTimestamp() < latestTimestamp - capacityMillis) {
-            linkedList.removeLast();
+                linkedList.getFirst().getTimestamp() < latestTimestamp - capacityMillis) {
+            linkedList.removeFirst();
         }
     }
 }
