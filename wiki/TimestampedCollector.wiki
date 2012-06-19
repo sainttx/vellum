@@ -3,7 +3,7 @@
 {{{
 public class TimestampedCollector<T extends Timestamped>  {
     long capacityMillis;
-    long latestMillis;
+    long lastTimestamp;
     LinkedList<T> linkedList = new LinkedList();
     
     public TimestampedCollector(long capacityMillis) {
@@ -11,16 +11,16 @@ public class TimestampedCollector<T extends Timestamped>  {
     }
     
     public synchronized void addLast(T element) {
-        if (element.getTimestamp() == 0 || element.getTimestamp() < latestMillis) {
+        if (element.getTimestamp() == 0 || element.getTimestamp() < lastTimestamp) {
             throw new IllegalArgumentException();
         }
-        latestMillis = element.getTimestamp();
-        prune(latestMillis);
+        lastTimestamp = element.getTimestamp();
+        prune(lastTimestamp);
         linkedList.addLast(element);
     }
 
-    public synchronized Deque<T> newDeque(long latestTimestamp) {
-        prune(latestTimestamp);
+    public synchronized Deque<T> newDeque(long lastTimestamp) {
+        prune(lastTimestamp);
         return new ArrayDeque(linkedList);
     }
 
