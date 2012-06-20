@@ -66,7 +66,7 @@ We might want equality by the timestamp for this element.
         return false;
     }
 }}}
-By my calculation, that <tt>hashCode()</tt> is good for the last 24 days of millis. 
+By my calculation, that <tt>hashCode()</tt> is good for the last 24 days of millis without any collisions.
 
 Also, a comparator will undoubtedly be required at some stage. 
 {{{
