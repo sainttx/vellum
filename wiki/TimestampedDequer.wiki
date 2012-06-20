@@ -205,7 +205,7 @@ where we will schedule a thread to insert records all the while. But first, let'
         Assert.assertEquals(1, dequer.tail(5).size());
     }
 }}}
-where we have slept for the longer than the <tt>capacityMillis</tt>, and so we expect the first element to be <tt>prune()</tt>'d off by the final <tt>snapshot</tt>.
+where we have slept for the longer than the <tt>capacityMillis</tt>, and so we expect the first element to be <tt>prune()</tt>'ed off by the time of the final <tt>snapshot</tt>.
 
 Now let's get threaded.
 {{{    
