@@ -2,7 +2,6 @@
 <h1>Timestamped List</h1>
 
 We herewith continue the no-hit wonder <i>"Timestamped: a trilogy in a few parts,"</i> this being the second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and use an <tt>ArrayDeque</tt> to gather them, with a time-based capacity. 
-
 <img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg"/>
 
 We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
@@ -84,9 +83,9 @@ public class TimestampedComparator implements Comparator<Timestamped> {
 Now let's introduce the namesake of this article, a thingy to manage a collection of timestamped thingies, with a time-based capacity - a "circular buffer" or LIFO, some might call it. 
 
 Actually we use a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">Deque</a> which is 
-<blockquote>
+<quote>
 A linear collection that supports element insertion and removal at both ends. The name deque is short for "double ended queue" and is usually pronounced "deck."    
-</blockquote>
+</quote>
 We use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation.
 <blockquote>
 This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue.    
