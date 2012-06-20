@@ -2,6 +2,7 @@
 <h1>Timestamped List</h1>
 
 We herewith continue the no-hit wonder <i>"Timestamped: a trilogy in a few parts,"</i> this being the second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and use an <tt>ArrayDeque</tt> to gather them, with a time-based capacity. 
+
 <img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg"/>
 
 We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
