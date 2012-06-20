@@ -291,7 +291,7 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
             System.out.printf("interval, capacity, size: %d, %d, %d\n", 
                     scheduledInterval, expectedCapacity, deque.size());
             Assert.assertTrue("size min", deque.size() > 0);
-            Doh.assertTrue("size max", deque.size() <= expectedCapacity);
+            Woohoo.assertTrue("size max", deque.size() <= expectedCapacity);
             future.cancel(true);
             Thread.sleep(scheduledInterval);
         }
@@ -312,7 +312,7 @@ D'oh! size max
 }}}
 Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. Gutting. So for that we have used the following util class to "assert" that the size is more or less what we expect.
 {{{
-public class Doh {
+public class Woohoo {
 
     public static void assertTrue(String message, boolean condition) {
         if (!condition) {
@@ -320,7 +320,7 @@ public class Doh {
         }
     }
 }}}
-Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo!
+Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! Heh heh.
 <i>"Put that in your internet, put that in your twitter right there."</i> ;)
 
 <h3>Credits</h3>
