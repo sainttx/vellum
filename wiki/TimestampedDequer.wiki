@@ -93,7 +93,7 @@ We use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util
 <blockquote>
 <i>"This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue."</i>
 </blockquote>
-Fantastic.
+Fantastic. Let's get us some of that.
 {{{
 public class TimestampedDequer<T extends Timestamped>  {
     long capacityMillis;
