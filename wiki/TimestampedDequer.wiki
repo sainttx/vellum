@@ -1,0 +1,330 @@
+
+<h1>Timestamped List</h1>
+
+We herewith continue the no-hit wonder <i>"Timestamped: a trilogy in a few parts,"</i> this being the second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and use a <tt>LinkedList</tt> to gather them, with a time-based capacity. 
+
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg"/>
+
+We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
+
+<h2>Timestamped</h2>
+
+
+
+Without further ado, I give you the namesake interface of this series.
+<pre>
+public interface Timestamped {
+    public long getTimestamp();    
+}
+</pre>
+Also take an adapter for a Log4j logging event. 
+<pre>
+public class TimestampedLoggingEventAdapter implements Timestamped {
+    LoggingEvent loggingEvent;
+
+    public TimestampedLoggingEventAdapter(LoggingEvent loggingEvent) {
+        this.loggingEvent = loggingEvent;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return loggingEvent.getTimeStamp();
+    }
+}
+</pre>
+And a generic wrapped element.
+<pre>
+public class TimestampedElement<T> implements Timestamped {
+    T element;
+    long timestamp;
+
+    public TimestampedElement(T element, long timestamp) {
+        this.element = element;
+        this.timestamp = timestamp;
+    }
+
+    public T getElement() {
+        return element;
+    }
+    
+    @Override
+    public long getTimestamp() {
+        return timestamp;
+    }
+}
+</pre>
+We might want equality by the timestamp for this element.
+<pre>
+    @Override
+    public int hashCode() {
+        return (int) (timestampMillis & Integer.MAX_VALUE);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Timestamped) {
+            return timestamp == ((Timestamped) obj).getTimestamp();
+        }
+        return false;
+    }
+</pre>
+Also, a comparator will undoubtedly be required at some stage. 
+<pre>
+public class TimestampedComparator implements Comparator<Timestamped> {
+
+    @Override
+    public int compare(Timestamped o1, Timestamped o2) {
+        if (o1.getTimestamp() < o2.getTimestamp()) return -1;
+        if (o1.getTimestamp() > o2.getTimestamp()) return 1;
+        else return 0;
+    }    
+}
+</pre>
+
+<h2>Timestamped Dequer</h2>
+
+Now let's introduce the namesake of this article, a thingy to manage a collection of timestamped thingies, with a time-based capacity - a "circular buffer" or LIFO, some might call it. 
+
+Actually we use a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">Deque</a> which is 
+<blockquote>
+A linear collection that supports element insertion and removal at both ends. The name deque is short for "double ended queue" and is usually pronounced "deck."    
+</blockquote>
+We use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation.
+<blockquote>
+This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue.    
+</blockquote>
+Fantastic.
+<pre>
+public class TimestampedDequer<T extends Timestamped>  {
+    long capacityMillis;
+    long lastTimestamp;
+    ArrayDeque<T> deque = new ArrayDeque();
+    
+    public TimestampedDequer(long capacityMillis) {
+        this.capacityMillis = capacityMillis;
+    }
+    
+    public synchronized void addLast(T element) {
+        if (element.getTimestamp() == 0 || element.getTimestamp() < lastTimestamp) {
+            deque.clear(); // throw our toys out the cot
+        } else {
+            lastTimestamp = element.getTimestamp();
+            prune(lastTimestamp);
+            deque.addLast(element);
+        }
+    }
+
+    private void prune(long latestTimestamp) {
+        while (deque.size() > 0 && 
+                deque.getFirst().getTimestamp() <= latestTimestamp - capacityMillis) {
+            deque.removeFirst();
+        }
+    }
+}
+</pre>
+where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose an <tt>ArrayDeque</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt>, whose mere presence would be a guaranteed ticking timebomb, one might say, aptly.
+
+Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control. 
+
+Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be taking an off-road detour.
+
+In order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
+<pre>
+    public synchronized Deque<T> snapshot(long lastTimestamp) {
+        prune(lastTimestamp);
+        return deque.clone();
+    }
+</pre>
+which returns a defensive copy, and so is a costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode?
+
+Another use case is to get the tail i.e. the latest so-many elements (or less) e.g. for us to display in a servlet. 
+<pre>
+    public synchronized Deque<T> tail(int size) {
+        Deque tail = new ArrayDeque();
+        Iterator<T> it = deque.descendingIterator();
+        for (int i = 0; i < size && it.hasNext(); i++) {
+            tail.addFirst(it.next());
+        }
+        return tail;
+    }    
+</pre>
+
+Let's test this thing. 
+<pre>
+public class TimestampedDequer<T extends Timestamped>  {
+    long capacityMillis = 90;
+    long scheduledInterval = 10;
+    long scheduledDelay = 0;
+    final TimestampedDequer<TimestampedElement> dequer = new TimestampedDequer(capacityMillis);
+    boolean verbose = false;
+    
+    Runnable scheduledRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            addLast();
+        }
+    };
+
+    private void addLast() {
+        long timestamp = System.currentTimeMillis();
+        String value = "record at " + timestamp;
+        dequer.addLast(new TimestampedElement(value, timestamp));
+        if (verbose) {
+            System.out.println(value);
+        }
+    }
+</pre>
+where we will schedule a thread to insert records all the while. But first, let's try without threads.
+<pre>
+    @Test
+    public void test() throws Exception {
+        Assert.assertEquals(0, dequer.tail(2).size());
+        check();
+        check();
+    }
+    
+    private void check() throws Exception {
+        Thread.sleep(capacityMillis);
+        Assert.assertEquals(0, dequer.snapshot(System.currentTimeMillis()).size());
+        Assert.assertEquals(0, dequer.tail(2).size());
+        addLast();
+        Assert.assertEquals(1, dequer.tail(2).size());
+        Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
+        Thread.sleep(capacityMillis/2);
+        Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
+        Assert.assertEquals(1, dequer.tail(2).size());
+        addLast();
+        Assert.assertEquals(2, dequer.tail(5).size());
+        Assert.assertEquals(2, dequer.snapshot(System.currentTimeMillis()).size());
+        Thread.sleep(capacityMillis*2/3);
+        Assert.assertEquals(2, dequer.tail(5).size());
+        Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
+        Assert.assertEquals(1, dequer.tail(5).size());
+    }
+</pre>
+where we have slept for the longer than the <tt>capacityMillis</tt>, and so we expect the first element to be <tt>prune()</tt>'d off by the final <tt>snapshot</tt>.
+
+Now let's get threaded.
+<pre>    
+    @Test
+    public void testConcurrently() throws Exception {
+        ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
+                    scheduledRunnable, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
+        checkConcurrently();
+        checkConcurrently();
+        future.cancel(true);
+        Thread.sleep(scheduledInterval);
+    }
+    
+    private void checkConcurrently() throws Exception {
+        long startMillis = System.currentTimeMillis();
+        System.out.println("startMillis " + startMillis);
+        verbose = true;
+        Thread.sleep(capacityMillis);
+        int expectedCapacity = (int) (capacityMillis / scheduledInterval);
+        verbose = false;
+        long stopMillis = System.currentTimeMillis();
+        System.out.println("stopMillis " + stopMillis);
+        Deque<TimestampedElement> deque = dequer.snapshot(stopMillis);
+        long firstTimestamp = deque.getFirst().getTimestamp();   
+        long lastTimestamp = deque.getLast().getTimestamp();   
+        System.out.println("size " + deque.size());
+        System.out.println("first " + firstTimestamp);
+        System.out.println("last " + lastTimestamp);
+        Assert.assertTrue("first time", firstTimestamp >= startMillis);        
+        Assert.assertTrue("last time", lastTimestamp >= firstTimestamp);
+        Assert.assertTrue("capacityMillis min", lastTimestamp - firstTimestamp >= 0);        
+        Assert.assertTrue("capacityMillis max", lastTimestamp - firstTimestamp <= capacityMillis);        
+        Assert.assertTrue("size min", deque.size() > 0);
+        Assert.assertTrue("size max", deque.size() <= expectedCapacity);
+        checkSet(deque);
+    }    
+</pre>
+Again, we check twice, just to make sure of the <tt>prune()>/tt>'ing. 
+<pre>
+scheduledInterval 10
+record at 1340231378158
+record at 1340231378168
+record at 1340231378178
+...
+record at 1340231378228
+record at 1340231378238
+startMillis 1340231378157
+stopMillis 1340231378247
+size 9
+first 1340231378158
+last 1340231378238
+...
+startMillis 1340231378249
+stopMillis 1340231378339
+size 9
+first 1340231378258
+last 1340231378338
+</pre>
+
+We survey the output and nod, ponderously.
+
+Just for good measure, we using our <tt>TimestampedComparator</tt> to get a sorted set.
+<pre>
+    private void checkSet(Deque<TimestampedElement> deque) throws Exception {
+        SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
+        set.addAll(deque);        
+        Assert.assertEquals("first", deque.getFirst().getTimestamp(), set.first().getTimestamp());
+        Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
+    }
+</pre>
+
+Finally, let's vary the <tt>scheduledInterval</tt>.
+<pre>
+    @Test
+    public void testScheduledIntervals() throws Exception {
+        while (--scheduledInterval > 0) {
+            ScheduledFuture future = Executors.newScheduledThreadPool(10).scheduleAtFixedRate(
+                    scheduledRunnable, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
+            Thread.sleep(capacityMillis);
+            int expectedCapacity = (int) (capacityMillis / scheduledInterval);
+            long stopMillis = System.currentTimeMillis();
+            Deque<TimestampedElement> deque = dequer.snapshot(stopMillis);
+            System.out.printf("interval, capacity, size: %d, %d, %d\n", 
+                    scheduledInterval, expectedCapacity, deque.size());
+            Assert.assertTrue("size min", deque.size() > 0);
+            Doh.assertTrue("size max", deque.size() <= expectedCapacity);
+            future.cancel(true);
+            Thread.sleep(scheduledInterval);
+        }
+    }
+</pre>
+Where we loop the <tt>scheduledInterval</tt> down to 1ms. 
+<pre>
+interval, capacity, size: 9, 10, 10
+interval, capacity, size: 8, 11, 11
+interval, capacity, size: 7, 12, 12
+interval, capacity, size: 6, 15, 15
+interval, capacity, size: 5, 18, 17
+interval, capacity, size: 4, 22, 22
+interval, capacity, size: 3, 30, 29
+interval, capacity, size: 2, 45, 44
+D'oh! size max
+interval, capacity, size: 1, 90, 91
+</pre>
+Given how unpredictable time is, ironically, with those threads and what-not, we observe can't predict the size of the list. So for that we have used the following util class to "assert" that the size is more or less what we expect.
+<pre>
+public class Doh {
+
+    public static void assertTrue(String message, boolean condition) {
+        if (!condition) {
+            System.err.printf("D'oh! %s\n", message);
+        }
+    }
+</pre>
+Heh heh. <i>"Put that in your internet, put that in your twitter right there."</i> ;)
+
+
+<h3>Resources</h3>
+
+https://code.google.com/p/vellum/ - where i will collate these articles and their code.
+
+<h2>Coming soon</h2>
+
+We'll capture log records into our <tt>TimestampedList</tt>, and analyse a sample of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether. 
