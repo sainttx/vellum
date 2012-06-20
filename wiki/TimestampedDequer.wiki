@@ -320,7 +320,8 @@ public class Doh {
         }
     }
 }}}
-Heh heh. <i>"Put that in your internet, put that in your twitter right there."</i> ;)
+Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo!
+<i>"Put that in your internet, put that in your twitter right there."</i> ;)
 
 <h3>Credits</h3>
 
