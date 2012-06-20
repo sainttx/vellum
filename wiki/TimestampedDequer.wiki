@@ -216,7 +216,6 @@ Now let's get threaded.
         checkConcurrently();
         checkConcurrently();
         future.cancel(true);
-        Thread.sleep(scheduledInterval);
     }
     
     private void checkConcurrently() throws Exception {
