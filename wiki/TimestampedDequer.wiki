@@ -1,5 +1,5 @@
 
-<h1>Timestamped List</h1>
+<h1>Timestamped Dequer</h1>
 
 We herewith continue the no-hit wonder <i>"Timestamped: a trilogy in a few parts,"</i> this being the second part, where we introduce an interface for so-called <tt>Timestamped</tt> records, and use an <tt>ArrayDeque</tt> to gather them, with a time-based capacity. 
 
