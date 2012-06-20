@@ -85,11 +85,11 @@ Now let's introduce the namesake of this article, a thingy to manage a collectio
 
 Actually we use a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">Deque</a> which is...
 <blockquote>
-A linear collection that supports element insertion and removal at both ends. The name deque is short for "double ended queue" and is usually pronounced "deck."    
+<i>A linear collection that supports element insertion and removal at both ends. The name deque is short for "double ended queue" and is usually pronounced "deck."</i>
 </blockquote>
 We use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation.
 <blockquote>
-This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue.    
+<i>"This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue."</i>
 </blockquote>
 Fantastic.
 {{{
