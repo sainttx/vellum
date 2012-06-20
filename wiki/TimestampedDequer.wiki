@@ -128,7 +128,7 @@ Crucially, when we add an element at the tail, we <tt>prune()</tt> older element
 
 Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be taking an off-road detour. We expect our server time to be adjusted by <tt>NTP</tt> occassionally, for instance. 
 
-It should definitely not go without saying that if we are digesting logs from multiple servers or what-have-you., the above so-called "dequer" aint gonna work, baby. It's gonna come up empty.
+It should definitely not go without saying that if we are digesting logs from multiple servers or what-have-you., the above so-called "dequer" aint gonna work, baby. It's gonna come up empty, baby.
 
 In order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
 {{{
