@@ -10,13 +10,13 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 <h2>Timestamped</h2>
 
 Without further ado, I give you the namesake interface of this series.
-<pre><code>
+{{{
 public interface Timestamped {
     public long getTimestamp();    
 }
-</code></pre>
+}}}
 Also take an adapter for a Log4j logging event. 
-<pre><code>
+{{{
 public class TimestampedLoggingEventAdapter implements Timestamped {
     LoggingEvent loggingEvent;
 
@@ -29,9 +29,9 @@ public class TimestampedLoggingEventAdapter implements Timestamped {
         return loggingEvent.getTimeStamp();
     }
 }
-</code></pre>
+}}}
 And a generic wrapped element.
-<pre><code>
+{{{
 public class TimestampedElement<T> implements Timestamped {
     T element;
     long timestamp;
@@ -50,9 +50,9 @@ public class TimestampedElement<T> implements Timestamped {
         return timestamp;
     }
 }
-</code></pre>
+}}}
 We might want equality by the timestamp for this element.
-<pre><code>
+{{{
     @Override
     public int hashCode() {
         return (int) (timestampMillis & Integer.MAX_VALUE);
@@ -65,9 +65,9 @@ We might want equality by the timestamp for this element.
         }
         return false;
     }
-</code></pre>
+}}}
 Also, a comparator will undoubtedly be required at some stage. 
-<pre><code>
+{{{
 public class TimestampedComparator implements Comparator<Timestamped> {
 
     @Override
@@ -77,7 +77,7 @@ public class TimestampedComparator implements Comparator<Timestamped> {
         else return 0;
     }    
 }
-</code></pre>
+}}}
 
 <h2>Timestamped Dequer</h2>
 
@@ -92,7 +92,7 @@ We use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util
 This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue.    
 </blockquote>
 Fantastic.
-<pre><code>
+{{{
 public class TimestampedDequer<T extends Timestamped>  {
     long capacityMillis;
     long lastTimestamp;
@@ -119,7 +119,7 @@ public class TimestampedDequer<T extends Timestamped>  {
         }
     }
 }
-</code></pre>
+}}}
 where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose an <tt>ArrayDeque</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt>, whose mere presence would be a guaranteed ticking timebomb, one might say, aptly.
 
 Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control. 
@@ -129,16 +129,16 @@ Observe that the <tt>prune()</tt> implementation assumes that elements are added
 It does not go without saying that if we are digesting logs from multiple servers or what-have-you., the above so-called "dequer" aint gonna work, baby. It's gonna come up empty.
 
 In order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
-<pre><code>
+{{{
     public synchronized Deque<T> snapshot(long lastTimestamp) {
         prune(lastTimestamp);
         return deque.clone();
     }
-</code></pre>
+}}}
 which returns a defensive copy, and so is a costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode?
 
 Another use case is to get the tail i.e. the latest so-many elements (or less) e.g. for us to display in a servlet. 
-<pre><code>
+{{{
     public synchronized Deque<T> tail(int size) {
         Deque tail = new ArrayDeque();
         Iterator<T> it = deque.descendingIterator();
@@ -147,10 +147,10 @@ Another use case is to get the tail i.e. the latest so-many elements (or less) e
         }
         return tail;
     }    
-</code></pre>
+}}}
 
 Let's test this thing. 
-<pre><code>
+{{{
 public class TimestampedDequer<T extends Timestamped>  {
     long capacityMillis = 90;
     long scheduledInterval = 10;
@@ -174,9 +174,9 @@ public class TimestampedDequer<T extends Timestamped>  {
             System.out.println(value);
         }
     }
-</code></pre>
+}}}
 where we will schedule a thread to insert records all the while. But first, let's try without threads.
-<pre><code>
+{{{
     @Test
     public void test() throws Exception {
         Assert.assertEquals(0, dequer.tail(2).size());
@@ -202,11 +202,11 @@ where we will schedule a thread to insert records all the while. But first, let'
         Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
         Assert.assertEquals(1, dequer.tail(5).size());
     }
-</code></pre>
+}}}
 where we have slept for the longer than the <tt>capacityMillis</tt>, and so we expect the first element to be <tt>prune()</tt>'d off by the final <tt>snapshot</tt>.
 
 Now let's get threaded.
-<pre><code>    
+{{{    
     @Test
     public void testConcurrently() throws Exception {
         ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
@@ -240,9 +240,9 @@ Now let's get threaded.
         Assert.assertTrue("size max", deque.size() <= expectedCapacity);
         checkSet(deque);
     }    
-</code></pre>
+}}}
 Again, we check twice, just to make sure of the <tt>prune()>/tt>'ing. 
-<pre><code>
+{{{
 scheduledInterval 10
 record at 1340231378158
 record at 1340231378168
@@ -261,22 +261,22 @@ stopMillis 1340231378339
 size 9
 first 1340231378258
 last 1340231378338
-</code></pre>
+}}}
 
 We survey the output and nod, ponderously.
 
 Just for good measure, we using our <tt>TimestampedComparator</tt> to get a sorted set.
-<pre><code>
+{{{
     private void checkSet(Deque<TimestampedElement> deque) throws Exception {
         SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
         set.addAll(deque);        
         Assert.assertEquals("first", deque.getFirst().getTimestamp(), set.first().getTimestamp());
         Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
     }
-</code></pre>
+}}}
 
 Finally, let's vary the <tt>scheduledInterval</tt>.
-<pre><code>
+{{{
     @Test
     public void testScheduledIntervals() throws Exception {
         while (--scheduledInterval > 0) {
@@ -294,9 +294,9 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
             Thread.sleep(scheduledInterval);
         }
     }
-</code></pre>
+}}}
 Where we loop the <tt>scheduledInterval</tt> down to 1ms. 
-<pre><code>
+{{{
 interval, capacity, size: 9, 10, 10
 interval, capacity, size: 8, 11, 11
 interval, capacity, size: 7, 12, 12
@@ -307,9 +307,9 @@ interval, capacity, size: 3, 30, 29
 interval, capacity, size: 2, 45, 44
 D'oh! size max
 interval, capacity, size: 1, 90, 91
-</code></pre>
+}}}
 Given how unpredictable time is, ironically, with those threads and what-not, we observe can't predict the size of the list. So for that we have used the following util class to "assert" that the size is more or less what we expect.
-<pre><code>
+{{{
 public class Doh {
 
     public static void assertTrue(String message, boolean condition) {
@@ -317,7 +317,7 @@ public class Doh {
             System.err.printf("D'oh! %s\n", message);
         }
     }
-</code></pre>
+}}}
 Heh heh. <i>"Put that in your internet, put that in your twitter right there."</i> ;)
 
 <h3>Credits</h3>
