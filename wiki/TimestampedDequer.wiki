@@ -307,8 +307,8 @@ interval, capacity, size: 5, 18, 17
 interval, capacity, size: 4, 22, 22
 interval, capacity, size: 3, 30, 29
 interval, capacity, size: 2, 45, 44
-D'oh! size max
 interval, capacity, size: 1, 90, 91
+D'oh! size max
 }}}
 Given how unpredictable time is, ironically, with those threads and what-not, we apparently can't predict the size of the list. Gutting. So for that we have used the following util class to "assert" that the size is more or less what we expect.
 {{{
