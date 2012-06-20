@@ -332,4 +332,4 @@ https://code.google.com/p/vellum/ - where i will collate these articles and thei
 
 <h2>Coming soon</h2>
 
-We'll capture log records using our <tt>TimestampedDequer</tt>, and analyse a sample of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether. 
+We'll capture log records using our <tt>TimestampedDequer</tt>, and periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether. 
