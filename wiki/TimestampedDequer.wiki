@@ -120,7 +120,7 @@ public class TimestampedDequer<T extends Timestamped>  {
     }
 }
 }}}
-where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose an <tt>ArrayDeque</tt> rather than extend one, in order to prevent someone even considering a <tt>remove()</tt> or <tt>add()</tt>, whose mere presence would be a guaranteed ticking timebomb, one might say, aptly.
+where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose an <tt>ArrayDeque</tt> and <tt>synchronize</tt> it for our purposes.
 
 Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control. 
 
@@ -322,7 +322,7 @@ Heh heh. <i>"Put that in your internet, put that in your twitter right there."</
 
 <h3>Credits</h3>
 
-Thanks for my colleague Zacharius Visage, for his kind reviews and valuable input!
+Thanks to my colleague Zacharius Visage, for his kind reviews and valuable input!
 
 <h3>Resources</h3>
 
