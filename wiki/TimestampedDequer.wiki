@@ -322,6 +322,9 @@ public class Doh {
 </pre>
 Heh heh. <i>"Put that in your internet, put that in your twitter right there."</i> ;)
 
+<h3>Credits</h3>
+
+Thanks for my colleague Zacharius Visage, for his kind reviews and valuable input!
 
 <h3>Resources</h3>
 
