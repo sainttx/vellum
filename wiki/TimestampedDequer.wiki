@@ -241,7 +241,7 @@ Now let's get threaded.
         checkSet(deque);
     }    
 }}}
-Again, we check twice, just to make sure of the <tt>prune()>/tt>'ing. 
+Again, we check twice, just to make sure of the <tt>prune()</tt>'ing. 
 {{{
 scheduledInterval 10
 record at 1340231378158
