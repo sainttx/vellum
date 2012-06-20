@@ -83,7 +83,7 @@ public class TimestampedComparator implements Comparator<Timestamped> {
 
 <h2>Timestamped Dequer</h2>
 
-Now let's introduce the namesake of this article, a thingy to manage a collection of timestamped thingies, with a time-based capacity - a "circular buffer" or LIFO, some might call it. 
+Now let's introduce the namesake of this article, a collector of timestamped thingies, with a time-based capacity - a "circular buffer," some might call it. 
 
 Actually we use a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">Deque</a> which is...
 <blockquote>
