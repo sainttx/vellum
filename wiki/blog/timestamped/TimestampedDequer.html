@@ -131,9 +131,10 @@ public class TimestampedDequer<T extends Timestamped>  {
 </pre>
 where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose an <tt>ArrayDeque</tt> and <tt>synchronize</tt> it "externally" for our purposes.
 
-Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control. 
+<img src="http://jroller.com/evanx/resource/topdeck-bar.jpg" align="left" hspace="8"/>
+Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control. We wanna keep it minty.
 
-Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be taking an off-road detour. We expect our host's time to be adjusted by <tt>NTP</tt> occassionally, for instance. 
+Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be taking an off-road detour. We expect our host's time to be adjusted by <tt>NTP</tt> occassionally, for instance.
 
 It should definitely not go without saying that if we are digesting logs from multiple servers or what-have-you., the above so-called "dequer" aint gonna work, baby. It's gonna come up empty. Don't shuffle this deque, baby.
 
@@ -144,7 +145,7 @@ In order to analyse the contents for the desired interval, we take a <tt>snapsho
         return deque.clone();
     }
 </pre>
-which returns a defensive copy, and so is a relatively costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode? Perhaps take inspiration from that <a href="http://mechanitis.blogspot.com/2011/06/dissecting-disruptor-whats-so-special.html">Disruptor</a> thingymajig?
+which returns a defensive copy, and so is a relatively costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode? Taking inspiration from that <a href="http://mechanitis.blogspot.com/2011/06/dissecting-disruptor-whats-so-special.html">Disruptor</a> thingymajig, perchance?
 
 Another use case is to get the tail i.e. the latest so-many elements e.g. for us to display in a servlet. 
 <pre>
@@ -331,7 +332,7 @@ Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our 
 
 <h3>Credits</h3>
 
-Thanks to my colleague Zacharius Visage, for his kind reviews and valuable input!
+Thanks to my colleague Zach Visage at BizSwitch.net, for his kind reviews and indispensible input!
 
 <h3>Resources</h3>
 
