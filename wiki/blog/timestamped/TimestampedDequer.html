@@ -99,16 +99,16 @@ Again, if we use this <tt>Comparator</tt> to construct a <a href="http://docs.or
     <tt>SortedSet</tt> - The elements are ordered using their natural ordering, or by a Comparator typically provided at sorted set creation time.
 </blockquote>
       
-<img src="http://weblogs.java.net/sites/default/files/bicycle-guardians-deck-back-crop.jpg" align="right" hspace="8"/>
+<img src="http://weblogs.java.net/sites/default/files/bicycle-ghost-deck-white-256.jpg" align="right" hspace="16"/>
 So our inclination would be collect <tt>Timestamped</tt> elements in a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html"><tt>List</tt></a>, or a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Queue.html"><tt>Queue</tt></a> perhaps.
 <blockquote>
     <tt>Queue</tt> - A collection designed for holding elements prior to processing.
 </blockquote>
 That sounds rather appropriate for our digestive purposes. 
 
-<h2>Deque Collector</h2>
+<h2>Timestamped Deque</h2>
 
-Now let's introduce the crux of this article, a collector of timestamped thingies, with a time-based capacity - a <a href="http://en.wikipedia.org/wiki/Circular_buffer">circular buffer</a>, some might call it.
+Now let's introduce the namesake of this article, a deque collector of timestamped thingies, with a time-based capacity - a <a href="http://en.wikipedia.org/wiki/Circular_buffer">circular buffer</a>, some might call it.
 
 So we use the <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">java.util.Deque</a> found in Java 1.6, courtesy of those most excellent gentlemen, Doug Lea and Josh Bloch. Its javadoc describes it thus...
 <blockquote>
@@ -149,13 +149,13 @@ public class TimestampedDequer<T extends Timestamped>  {
 </pre>
 
 <img src="http://weblogs.java.net/sites/default/files/arcane-deck-white-back-300.jpg" align="left" hspace="16"/>
-where we compose an <tt>ArrayDeque</tt> and <tt>synchronize</tt> it "externally" for our purposes, considering that it will be digesting log records continually, whilst being under interrogation by HTTP requests and what-not. 
+where we compose an <tt>ArrayDeque</tt> and <tt>synchronize</tt> it "externally" for our purposes, considering that it will be digesting log records continually, whilst being under interrogation by RMX, HTTP requests and what-not. 
 
-Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control. We wanna keep it minty.
+Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control.
 
-Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. If we are digesting logs from multiple servers or what-have-you, the above so-called "dequer" aint gonna work. <i>It's gonna come up empty, baby. So don't shuffle this deque, baby. (As Elvis might have said.)</i>
+Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. However we expect our host's time to be adjusted by <tt>NTP</tt> occassionally - hence the <tt>clear()</tt>.
 
-However we expect our host's time to be adjusted by <tt>NTP</tt> occassionally - hence the <tt>deque.clear()</tt>.
+If we are digesting logs from multiple servers or what-have-you, the above so-called "dequer" aint gonna work. <i>It's gonna come up empty, baby. Don't shuffle this deque, baby. (As Elvis might have said.)</i> Nevermind, we'll deal with that scenario later in this series.
 
 In order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
 <pre>
@@ -223,6 +223,7 @@ where we check twice, just to make sure of the <tt>prune()</tt>'ing.
 </pre>
 where since we have slept for longer than the <tt>capacityMillis</tt>, and so we expect the first element to be <tt>prune()</tt>'ed off by the time of the final <tt>snapshot</tt>.
 
+<img src="http://weblogs.java.net/sites/default/files/bicycle-guardians-deck-back-crop.jpg" align="right" hspace="16"/>
 Given that the purpose of this <tt>Timestamped</tt> series is reducing information overload, we'll tail off here for now, and leave the threaded test for the next week.
 
 Thereafter, we'll see about using our <tt>TimestampedDequer</tt> for real, to periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether. 
@@ -235,4 +236,3 @@ https://code.google.com/p/vellum/ - where i will collate these articles and thei
 
 Thanks to my colleague Zach Visagie at BizSwitch.net, for his kind reviews and indispensible input!
 
-Images of BicycleCards.com.
