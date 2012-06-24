@@ -11,7 +11,7 @@ Incidently we kicked off this no-hit wonder series with <a href="http://weblogs.
 
 <p>   
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
-<div style="border-bottom: solid 1px; background-color: #ccff00;">
+<div style="border-bottom: solid 1px; color: #ffffff; background-color: #aaaaaa;">
 <img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Timestamped Deque:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
 </a>
@@ -64,7 +64,7 @@ We might want equality by the timestamp for this element.
 <pre>
     @Override
     public int hashCode() {
-        return (int) (timestampMillis & Integer.MAX_VALUE);
+        return (int) (timestamp & Integer.MAX_VALUE);
     }
 
     @Override
@@ -151,11 +151,11 @@ public class TimestampedDequer<T extends Timestamped>  {
 <img src="http://weblogs.java.net/sites/default/files/arcane-deck-white-back-300.jpg" align="left" hspace="16"/>
 where we compose an <tt>ArrayDeque</tt> and <tt>synchronize</tt> it "externally" for our purposes, considering that it will be digesting log records continually, whilst being under interrogation by RMX, HTTP requests and what-not. 
 
-Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control.
+When we add an element at the tail, we <tt>prune()</tt> expired elements from the head.
 
 Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. However we expect our host's time to be adjusted by <tt>NTP</tt> occassionally - hence the <tt>clear()</tt>.
 
-If we are digesting logs from multiple servers or what-have-you, the above so-called "dequer" aint gonna work. <i>It's gonna come up empty, baby. Don't shuffle this deque, baby. (As Elvis might have said.)</i> Nevermind, we'll deal with that scenario later in this series.
+If we are digesting logs from multiple servers or what-have-you, the above so-called "dequer" aint gonna work. <i>It's gonna come up empty, baby. Don't shuffle this deque, baby. (As Elvis might have said.)</i> We'll deal with that scenario another time.
 
 In order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
 <pre>
@@ -166,7 +166,7 @@ In order to analyse the contents for the desired interval, we take a <tt>snapsho
 </pre>
 which returns a defensive copy, and so is a relatively costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode, as a fun exercise? Taking inspiration from that <a href="http://mechanitis.blogspot.com/2011/06/dissecting-disruptor-whats-so-special.html">Disruptor</a> thingymajig, perchance, as well as <tt>ArrayDeque</tt> itself?
 
-Another use case is to get the tail i.e. the latest so-many elements e.g. for us to display in a servlet. 
+Another use case is to get the tail i.e. the latest so-many elements e.g. to display via a servlet, or attach to an email alert. 
 <pre>
     public synchronized Deque<T> tail(int size) {
         Deque tail = new ArrayDeque();
@@ -226,7 +226,7 @@ where since we have slept for longer than the <tt>capacityMillis</tt>, and so we
 <img src="http://weblogs.java.net/sites/default/files/bicycle-guardians-deck-back-crop.jpg" align="right" hspace="16"/>
 Given that the purpose of this <tt>Timestamped</tt> series is reducing information overload, we'll tail off here for now, and leave the threaded test for the next week.
 
-Thereafter, we'll see about using our <tt>TimestampedDequer</tt> for real, to periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether. 
+Thereafter, we'll see about using our <tt>TimestampedDequer</tt> for real, to periodically analyse the latest <tt>deque</tt> of logs e.g. every minute, to detect when our app's wheels are wobbling or even coming off altogether. 
 
 <h3>Resources</h3>
 
