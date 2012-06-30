@@ -1,9 +1,9 @@
 
-In this here second part of the "Timestamped" series, we introduce the namesake Timestamped interface, and use a Deque from Java 1.6 to collect such things, but introducing a time-based capacity. 
+In this here second part of the "Timestamped" series, we introduce its namesake Timestamped interface, and use a Deque from Java6 to collect such things, and impose a time-based capacity for that. 
 
 <!--break-->
 
-Ultimately we gonna hook up a remote Log4j appender, to display stats on demand via HTTP, and notify ourselves via Gtalk when the wheels are coming off. <i>An appender that is itself a webserver and XMPP communicator? What fun!</i> But lemme not get ahead of myself.
+Ultimately we gonna hook up a remote Log4j appender, to digest logs in order to provide salient information via RMX and HTTP, and notify ourselves via Gtalk when the wheels are wobbling or even coming off altogether. <i>What fun!</i> But lemme not get ahead of myself.
 
 <h3>Prequels</h3>
 
@@ -24,7 +24,7 @@ public interface Timestamped {
 </pre>
 which returns the timestamp in "millis" ala <tt>System.currentTimeMillis()</tt>.
 
-Also take an adapter for a Log4j logging event. 
+Also take an adapter for Log4j's <tt>LoggingEvent</tt>. 
 <pre>
 public class TimestampedLoggingEventAdapter implements Timestamped {
     LoggingEvent loggingEvent;
@@ -75,14 +75,12 @@ We might want equality by the timestamp for this element.
         return false;
     }
 </pre>
-By my calculation, that <tt>hashCode()</tt> is good for a cycle of 24 days of millis without any collisions.
-
-We assume duplicates are possible i.e. where two or more events have the same millisecond timestamp, and so we might loose records if we add such elements to a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Set.html"><tt>Set</tt></a>, because its javadoc describes it thus,
+By my calculation, that <tt>hashCode()</tt> is good for a cycle of 24 days of millis without collisions... except when timestamps coincide! Indeed duplicate timestamps are possible i.e. where two or more events occur at the same millisecond, and so we might loose records if we add such elements to a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Set.html"><tt>Set</tt></a>, whose javadoc describes it thus:
 <blockquote>
     <tt>Set</tt> - A collection that contains no duplicate elements. More formally, sets contain no pair of elements e1 and e2 such that e1.equals(e)
 </blockquote>
 
-Also, a comparator will undoubtedly be required at some stage. 
+A comparator will undoubtedly be required at some stage. 
 <pre>
 public class TimestampedComparator implements Comparator<Timestamped> {
 
@@ -99,18 +97,18 @@ Again, if we use this <tt>Comparator</tt> to construct a <a href="http://docs.or
     <tt>SortedSet</tt> - The elements are ordered using their natural ordering, or by a Comparator typically provided at sorted set creation time.
 </blockquote>
       
-<img src="http://weblogs.java.net/sites/default/files/bicycle-ghost-deck-white-256.jpg" align="right" hspace="16"/>
+<img src="http://jroller.com/evanx/resource/bicycle-ghost-deck-white-256.jpg" align="right" hspace="16"/>
 So our inclination would be collect <tt>Timestamped</tt> elements in a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html"><tt>List</tt></a>, or a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Queue.html"><tt>Queue</tt></a> perhaps.
 <blockquote>
     <tt>Queue</tt> - A collection designed for holding elements prior to processing.
 </blockquote>
-That sounds rather appropriate for our digestive purposes. 
+That sounds rather appropriate for our digestive purposes to find the ghost in the machine. 
 
-<h2>Timestamped Deque</h2>
+<h2>Deque collector</h2>
 
-Now let's introduce the namesake of this article, a deque collector of timestamped thingies, with a time-based capacity - a <a href="http://en.wikipedia.org/wiki/Circular_buffer">circular buffer</a>, some might call it.
+So let's introduce the namesake of this article, a collector of timestamped thingies - a <a href="http://en.wikipedia.org/wiki/Circular_buffer">circular buffer</a>, some might call it - and impose a time-based capacity thereupon.
 
-So we use the <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">java.util.Deque</a> found in Java 1.6, courtesy of those most excellent gentlemen, Doug Lea and Josh Bloch. Its javadoc describes it thus...
+So we use the <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">java.util.Deque</a> found in Java 1.6, courtesy of those most excellent gentlemen, Doug Lea and Josh Bloch. Its javadoc describes it thus:
 <blockquote>
     <tt>Deque</tt> - A linear collection that supports element insertion and removal at both ends. The name deque is short for "double ended queue" and is usually pronounced "deck."
 </blockquote>
@@ -139,34 +137,32 @@ public class TimestampedDequer<T extends Timestamped>  {
         }
     }
 
-    private void prune(long latestTimestamp) {
+    private void prune(long lastTimestamp) {
         while (deque.size() > 0 && 
-                deque.getFirst().getTimestamp() <= latestTimestamp - capacityMillis) {
+                deque.getFirst().getTimestamp() <= lastTimestamp - capacityMillis) {
             deque.removeFirst();
         }
     }
 }
 </pre>
 
-<img src="http://weblogs.java.net/sites/default/files/arcane-deck-white-back-300.jpg" align="left" hspace="16"/>
+<img src="http://jroller.com/evanx/resource/arcane-deck-white-back-300.jpg" align="left" hspace="16"/>
 where we compose an <tt>ArrayDeque</tt> and <tt>synchronize</tt> it "externally" for our purposes, considering that it will be digesting log records continually, whilst being under interrogation by RMX, HTTP requests and what-not. 
 
-When we add an element at the tail, we <tt>prune()</tt> expired elements from the head.
+When we add an element onto the tail, we <tt>prune()</tt> expired elements from the head. Observe that the above implementation assumes that elements are added in chronological order. However we expect our host's time to be adjusted by <tt>NTP</tt> occassionally - hence we <tt>clear()</tt> i.e. when we encounter an eventuality that we don't play nicely with.
 
-Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. However we expect our host's time to be adjusted by <tt>NTP</tt> occassionally - hence the <tt>clear()</tt>.
+If we are digesting logs from multiple servers or what-have-you, the above so-called "dequer" aint gonna work, baby - it's gonna come up empty, baby. Don't shuffle this deque, baby. <i>(As Elvis might have said.)</i> We'll deal with such a handful another time.
 
-If we are digesting logs from multiple servers or what-have-you, the above so-called "dequer" aint gonna work. <i>It's gonna come up empty, baby. Don't shuffle this deque, baby. (As Elvis might have said.)</i> We'll deal with that scenario another time.
-
-In order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
+Now, in order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
 <pre>
     public synchronized Deque<T> snapshot(long lastTimestamp) {
         prune(lastTimestamp);
         return deque.clone();
     }
 </pre>
-which returns a defensive copy, and so is a relatively costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode, as a fun exercise? Taking inspiration from that <a href="http://mechanitis.blogspot.com/2011/06/dissecting-disruptor-whats-so-special.html">Disruptor</a> thingymajig, perchance, as well as <tt>ArrayDeque</tt> itself?
+which returns a defensive copy, and so is a relatively costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode, as an exercise? Taking inspiration from that <a href="http://mechanitis.blogspot.com/2011/06/dissecting-disruptor-whats-so-special.html">Disruptor</a> thingymajig, perchance, as well as <tt>ArrayDeque</tt> itself? One that supports aggregating from multiple servers, methinks.
 
-Another use case is to get the tail i.e. the latest so-many elements e.g. to display via a servlet, or attach to an email alert. 
+Another use-case is to get the tail i.e. the latest so-many elements, for informational purposes e.g. to display via a servlet, or attach to an email alert.
 <pre>
     public synchronized Deque<T> tail(int size) {
         Deque tail = new ArrayDeque();
@@ -177,11 +173,12 @@ Another use case is to get the tail i.e. the latest so-many elements e.g. to dis
         return tail;
     }    
 </pre>
+where we use <tt>descendingIterator()</tt> to read from the tail of the deque, and <tt>addFirst()</tt> to rectify the order.
 
 Let's test this thing. 
 <pre>
 public class TimestampedDequerTest  {
-    final TimestampedDequer<TimestampedElement> dequer = new TimestampedDequer(capacityMillis);
+    TimestampedDequer<TimestampedElement> dequer = new TimestampedDequer(capacityMillis);
     boolean verbose = false;
     
     private void addLast() {
@@ -195,38 +192,37 @@ public class TimestampedDequerTest  {
 
     @Test
     public void test() throws Exception {
-        Assert.assertEquals(0, dequer.tail(2).size());
         check();
         check();
     }
 </pre>
-where we check twice, just to make sure of the <tt>prune()</tt>'ing. 
+where we <tt>check()</tt> twice... just to make sure. Of <tt>prune()</tt>, that is. 
 <pre>
     private void check() throws Exception {
         Thread.sleep(capacityMillis);
         Assert.assertEquals(0, dequer.snapshot(System.currentTimeMillis()).size());
-        Assert.assertEquals(0, dequer.tail(2).size());
+        Assert.assertEquals(0, dequer.tail(4).size());
         addLast();
-        Assert.assertEquals(1, dequer.tail(2).size());
+        Assert.assertEquals(1, dequer.tail(4).size());
         Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
         Thread.sleep(capacityMillis/2);
         Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
-        Assert.assertEquals(1, dequer.tail(2).size());
+        Assert.assertEquals(1, dequer.tail(4).size());
         addLast();
-        Assert.assertEquals(2, dequer.tail(5).size());
+        Assert.assertEquals(2, dequer.tail(4).size());
         Assert.assertEquals(2, dequer.snapshot(System.currentTimeMillis()).size());
-        Thread.sleep(capacityMillis*2/3);
-        Assert.assertEquals(2, dequer.tail(5).size());
+        Thread.sleep(capacityMillis/2);
+        Assert.assertEquals(2, dequer.tail(4).size());
         Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
-        Assert.assertEquals(1, dequer.tail(5).size());
+        Assert.assertEquals(1, dequer.tail(4).size());
     }
 </pre>
-where since we have slept for longer than the <tt>capacityMillis</tt>, and so we expect the first element to be <tt>prune()</tt>'ed off by the time of the final <tt>snapshot</tt>.
+<img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-back-crop.jpg" align="right" hspace="16"/>
+where expect the final <tt>snapshot()</tt> to loose an element to <tt>prune()</tt>'ing, given the two half <tt>capacityMillis</tt> sleeps since the first <tt>addList()</tt>.
 
-<img src="http://weblogs.java.net/sites/default/files/bicycle-guardians-deck-back-crop.jpg" align="right" hspace="16"/>
-Given that the purpose of this <tt>Timestamped</tt> series is reducing information overload, we'll tail off here for now, and leave the threaded test for the next week.
+Considering that the purpose of this <tt>Timestamped</tt> series is reducing information overload, we'll tail off here for now, and leave the "heavy-dropping" for next week, namely, testing with threads.
 
-Thereafter, we'll see about using our <tt>TimestampedDequer</tt> for real, to periodically analyse the latest <tt>deque</tt> of logs e.g. every minute, to detect when our app's wheels are wobbling or even coming off altogether. 
+Thereafter, we'll see about using our <tt>TimestampedDequer</tt> to analyse the latest <tt>deque</tt> of logs e.g. every minute, to detect when our app might be coming down like a house of cards.
 
 <h3>Resources</h3>
 
