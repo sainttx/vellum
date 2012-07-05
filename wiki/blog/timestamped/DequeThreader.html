@@ -5,7 +5,7 @@ Last week we introduced the trivial namesake Timestamped interface, and used the
 
 <p>   
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
-<div style="border-bottom: solid 1px; color: #000000; background-color: #ccff00;">
+<div style="border-bottom: solid 1px; color: #444444; background-color: #ccff00;">
 <img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Deque shredder:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
 </a>
@@ -57,13 +57,13 @@ public class TimestampedDequer<T extends Timestamped>  {
 where we use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation of Java6.
 
 <img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-rider-black-front-crop.jpg" align="right" hspace="8"/>
-As discussed last time, we remove expired elements from the head when we add the latest element to the tail, to make it self-pruning. We provide a sychronized <tt>snapshot()</tt> and <tt>tail()</tt> for a couple of use-cases as follows... 
+As discussed last time, we remove expired elements from the head when we add the latest element to the tail, to make it self-pruning. And we provide a sychronized <tt>snapshot()</tt> and <tt>tail()</tt> for a couple of use-cases as follows... 
 
-Most importantly, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. the last minute, for an automated status check every minute, possibly invoked externally via JMX or HTTP, for the purpose of triggering alerts, e.g. via Gtalk, SMS and email. <i>Shew!</tt>
+Most importantly, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. the last minute, for an automated status check every minute, possibly invoked externally via JMX or HTTP, for the purpose of triggering alerts, e.g. via Gtalk, SMS and email. <i>Shew!</i>
 
-Furthermore, we will use <tt>tail()</tt> to examine the latest records, e.g. to display in an HTTP response, and to attach to a notification email.
+Furthermore, we will use a size-based <tt>tail()</tt> e.g. to display the latest so-many records in a status web page, and to attach to an email alert.
 
-Now let's do us some "heavy-dropping" with threads - ouch!
+Now let's do us some "heavy-dropping" with threads - woohoo!
 <pre>
 public class TimestampedDequerTest  {
     long capacityMillis = 90;
@@ -92,8 +92,8 @@ public class TimestampedDequerTest  {
     public void testConcurrently() throws Exception {
         ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                     scheduledRunnable, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
-        check();
-        check();
+        checkConcurrently();
+        checkConcurrently();
         future.cancel(true);
     }
 </pre>
@@ -101,7 +101,7 @@ where we use a <tt>ScheduledExecutorService</tt> to schedule a thread to regular
 
 We check twice, just to make sure... ;) Actually we do want to make sure of the <tt>prune()</tt>'ing, following the sleep for <tt>capacityMillis</tt>.
 <pre>    
-    private void check() throws Exception {
+    private void checkConcurrently() throws Exception {
         long startMillis = System.currentTimeMillis();
         System.out.println("startMillis " + startMillis);
         verbose = true;
@@ -125,7 +125,7 @@ We check twice, just to make sure... ;) Actually we do want to make sure of the 
         checkSet(deque);
     }    
 </pre>
-<i>What we gots?</i>
+<i>which prints...</i>
 <pre>
 scheduledInterval 10
 record at 1340231378158
@@ -146,7 +146,7 @@ size 9
 first 1340231378258
 last 1340231378338
 </pre>
-We survey the output and nod, ponderously.
+We survey this output and nod, ponderously.
 
 As an aside just for good measure, we use our <tt>TimestampedComparator</tt> to get a sorted set.
 <pre>
@@ -179,7 +179,7 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
         }
     }
 </pre>
-where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my gods... surely this will not end well?!</i>
+where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my gods - surely this will not end well!</i>
 <pre>
 interval, capacity, size: 9, 10, 10
 interval, capacity, size: 8, 11, 11
@@ -201,9 +201,9 @@ public class Woohoo {
             System.err.printf("D'oh! %s\n", message);
         }
     }
+}
 </pre>
-Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! Heh heh.
-<i>"Put that in your internet, put that in your twitter right there."</i> ;)
+Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! Heh heh. <i>"Put that in your internet, put that in your twitter right there."</i> ;)
 
 <h3>Resources</h3>
 
