@@ -148,7 +148,7 @@ last 1340231378338
 </pre>
 We survey this output and nod, ponderously.
 
-As an aside just for good measure, we use our <tt>TimestampedComparator</tt> to get a sorted set.
+Just for good measure, we use a <tt>TimestampedComparator</tt> to create a <tt>SortedSet</tt>, and check that the first and last timestamps match. 
 <pre>
     private void checkSet(Deque<TimestampedElement> deque) throws Exception {
         SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
@@ -157,7 +157,6 @@ As an aside just for good measure, we use our <tt>TimestampedComparator</tt> to 
         Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
     }
 </pre>
-where the check that the first and last timestamps match. 
 
 Finally, let's vary the <tt>scheduledInterval</tt>. 
 <pre>
