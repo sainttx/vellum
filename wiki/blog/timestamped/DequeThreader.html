@@ -1,107 +1,17 @@
 
-<img src="http://weblogs.java.net/sites/default/files/bicycle-guardians-deck-back-crop.jpg" align="right" hspace="8"/>
-
-In this here second part of the "Timestamped" series, we introduce the namesake Timestamped interface, and use a Deque to collect such things, with a time-based capacity. 
+Last week we introduced the trivial namesake Timestamped interface, and used the excellent ArrayDeque of Java6 to collect such things, imposing a time-based capacity and some external synchronization. Now let's test this with some threads.
 
 <!--break-->
 
-Ultimately we gonna hook up a remote Log4j appender, to gather stats to display via a handy HTTP server, and to compute when things are perhaps going horribly wrong, in order to notify ourselves via Gtalk - but lemme not get ahead of myself.
-
-Incidently we kicked off this no-hit wonder series with <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/07/counter-map">Counter Map</a>, which does not feature further yet, so ignore that for now.
-
 <p>   
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
-<div style="border-bottom: solid 1px; background-color: #ccff00;">
-<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Timestamped Deque:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
+<div style="border-bottom: solid 1px; color: #000000; background-color: #ccff00;">
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Deque shredder:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
 </div>
 </a>
 
+Just to remind the reader, and for completeness herewithin, our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">deque collector</a> for our <tt>Timestamped</tt> thingies, looks like follows.
 
-Without further ado, I give you the namesake interface of this series.
-<pre>
-public interface Timestamped {
-    public long getTimestamp();    
-}
-</pre>
-Also take an adapter for a Log4j logging event. 
-<pre>
-public class TimestampedLoggingEventAdapter implements Timestamped {
-    LoggingEvent loggingEvent;
-
-    public TimestampedLoggingEventAdapter(LoggingEvent loggingEvent) {
-        this.loggingEvent = loggingEvent;
-    }
-
-    @Override
-    public long getTimestamp() {
-        return loggingEvent.getTimeStamp();
-    }
-}
-</pre>
-And a generic wrapped element.
-<pre>
-public class TimestampedElement<T> implements Timestamped {
-    T element;
-    long timestamp;
-
-    public TimestampedElement(T element, long timestamp) {
-        this.element = element;
-        this.timestamp = timestamp;
-    }
-
-    public T getElement() {
-        return element;
-    }
-    
-    @Override
-    public long getTimestamp() {
-        return timestamp;
-    }
-}
-</pre>
-We might want equality by the timestamp for this element.
-<pre>
-    @Override
-    public int hashCode() {
-        return (int) (timestampMillis & Integer.MAX_VALUE);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Timestamped) {
-            return timestamp == ((Timestamped) obj).getTimestamp();
-        }
-        return false;
-    }
-</pre>
-By my calculation, that <tt>hashCode()</tt> is good for the last 24 days of millis without any collisions.
-
-Also, a comparator will undoubtedly be required at some stage. 
-<pre>
-public class TimestampedComparator implements Comparator<Timestamped> {
-
-    @Override
-    public int compare(Timestamped o1, Timestamped o2) {
-        if (o1.getTimestamp() < o2.getTimestamp()) return -1;
-        if (o1.getTimestamp() > o2.getTimestamp()) return 1;
-        else return 0;
-    }    
-}
-</pre>
-
-<h2>Timestamped Deque Collector</h2>
-
-Now let's introduce the namesake of this article, a collector of timestamped thingies, with a time-based capacity - a "circular buffer," some might call it, or something of that nature.
-
-Actually we use a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Deque.html">Deque</a>, which is...
-<blockquote>
-<i>A linear collection that supports element insertion and removal at both ends. The name deque is short for "double ended queue" and is usually pronounced "deck."</i>
-</blockquote>
-We use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation.
-<blockquote>
-<i>"This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue."</i>
-</blockquote>
-Fantastic. Let's get us some of that.
 <pre>
 public class TimestampedDequer<T extends Timestamped>  {
     long capacityMillis;
@@ -128,28 +38,12 @@ public class TimestampedDequer<T extends Timestamped>  {
             deque.removeFirst();
         }
     }
-}
-</pre>
-where, considering a scenario where this is continuously digesting log records at a helluva rate, we compose an <tt>ArrayDeque</tt> and <tt>synchronize</tt> it "externally" for our purposes.
 
-<img src="http://jroller.com/evanx/resource/topdeck-bar.jpg" align="left" hspace="8"/>
-Crucially, when we add an element at the tail, we <tt>prune()</tt> older elements from the head, so that our list is not growing out of control. We wanna keep it minty.
-
-Observe that the <tt>prune()</tt> implementation assumes that elements are added in chronological order. Otherwise your mileage will be taking an off-road detour. We expect our host's time to be adjusted by <tt>NTP</tt> occassionally, for instance.
-
-It should definitely not go without saying that if we are digesting logs from multiple servers or what-have-you., the above so-called "dequer" aint gonna work, baby. It's gonna come up empty. Don't shuffle this deque, baby.
-
-In order to analyse the contents for the desired interval, we take a <tt>snapshot()</tt>.
-<pre>
     public synchronized Deque<T> snapshot(long lastTimestamp) {
         prune(lastTimestamp);
         return deque.clone();
     }
-</pre>
-which returns a defensive copy, and so is a relatively costly operation. Perhaps you could recommend an alternative strategy? Perhaps we could implement a special concurrent deque implementation in a future episode? Taking inspiration from that <a href="http://mechanitis.blogspot.com/2011/06/dissecting-disruptor-whats-so-special.html">Disruptor</a> thingymajig, perchance?
 
-Another use case is to get the tail i.e. the latest so-many elements e.g. for us to display in a servlet. 
-<pre>
     public synchronized Deque<T> tail(int size) {
         Deque tail = new ArrayDeque();
         Iterator<T> it = deque.descendingIterator();
@@ -158,9 +52,18 @@ Another use case is to get the tail i.e. the latest so-many elements e.g. for us
         }
         return tail;
     }    
+}
 </pre>
+where we use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation of Java6.
 
-Let's test this thing. 
+<img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-rider-black-front-crop.jpg" align="right" hspace="8"/>
+As discussed last time, we remove expired elements from the head when we add the latest element to the tail, to make it self-pruning. We provide a sychronized <tt>snapshot()</tt> and <tt>tail()</tt> for a couple of use-cases as follows... 
+
+Most importantly, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. the last minute, for an automated status check every minute, possibly invoked externally via JMX or HTTP, for the purpose of triggering alerts, e.g. via Gtalk, SMS and email. <i>Shew!</tt>
+
+Furthermore, we will use <tt>tail()</tt> to examine the latest records, e.g. to display in an HTTP response, and to attach to a notification email.
+
+Now let's do us some "heavy-dropping" with threads - ouch!
 <pre>
 public class TimestampedDequerTest  {
     long capacityMillis = 90;
@@ -185,49 +88,20 @@ public class TimestampedDequerTest  {
             System.out.println(value);
         }
     }
-</pre>
-where we will schedule a thread to insert records all the while. But first, let's try without threads.
-<pre>
-    @Test
-    public void test() throws Exception {
-        Assert.assertEquals(0, dequer.tail(2).size());
-        check();
-        check();
-    }
-    
-    private void check() throws Exception {
-        Thread.sleep(capacityMillis);
-        Assert.assertEquals(0, dequer.snapshot(System.currentTimeMillis()).size());
-        Assert.assertEquals(0, dequer.tail(2).size());
-        addLast();
-        Assert.assertEquals(1, dequer.tail(2).size());
-        Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
-        Thread.sleep(capacityMillis/2);
-        Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
-        Assert.assertEquals(1, dequer.tail(2).size());
-        addLast();
-        Assert.assertEquals(2, dequer.tail(5).size());
-        Assert.assertEquals(2, dequer.snapshot(System.currentTimeMillis()).size());
-        Thread.sleep(capacityMillis*2/3);
-        Assert.assertEquals(2, dequer.tail(5).size());
-        Assert.assertEquals(1, dequer.snapshot(System.currentTimeMillis()).size());
-        Assert.assertEquals(1, dequer.tail(5).size());
-    }
-</pre>
-where we have slept for longer than the <tt>capacityMillis</tt>, and so we expect the first element to be <tt>prune()</tt>'ed off by the time of the final <tt>snapshot</tt>.
-
-Now let's get threaded.
-<pre>    
     @Test
     public void testConcurrently() throws Exception {
         ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                     scheduledRunnable, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
-        checkConcurrently();
-        checkConcurrently();
+        check();
+        check();
         future.cancel(true);
     }
-    
-    private void checkConcurrently() throws Exception {
+</pre>
+where we use a <tt>ScheduledExecutorService</tt> to schedule a thread to regularly add records into the deque. 
+
+We check twice, just to make sure... ;) Actually we do want to make sure of the <tt>prune()</tt>'ing, following the sleep for <tt>capacityMillis</tt>.
+<pre>    
+    private void check() throws Exception {
         long startMillis = System.currentTimeMillis();
         System.out.println("startMillis " + startMillis);
         verbose = true;
@@ -251,7 +125,7 @@ Now let's get threaded.
         checkSet(deque);
     }    
 </pre>
-Again, we check twice, just to make sure of the <tt>prune()</tt>'ing. 
+<i>What we gots?</i>
 <pre>
 scheduledInterval 10
 record at 1340231378158
@@ -272,10 +146,9 @@ size 9
 first 1340231378258
 last 1340231378338
 </pre>
-
 We survey the output and nod, ponderously.
 
-Just for good measure, we use our <tt>TimestampedComparator</tt> to get a sorted set.
+As an aside just for good measure, we use our <tt>TimestampedComparator</tt> to get a sorted set.
 <pre>
     private void checkSet(Deque<TimestampedElement> deque) throws Exception {
         SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
@@ -284,8 +157,9 @@ Just for good measure, we use our <tt>TimestampedComparator</tt> to get a sorted
         Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
     }
 </pre>
+where the check that the first and last timestamps match. 
 
-Finally, let's vary the <tt>scheduledInterval</tt>.
+Finally, let's vary the <tt>scheduledInterval</tt>. 
 <pre>
     @Test
     public void testScheduledIntervals() throws Exception {
@@ -305,7 +179,7 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
         }
     }
 </pre>
-Where we loop the <tt>scheduledInterval</tt> down to 1ms. 
+where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my gods... surely this will not end well?!</i>
 <pre>
 interval, capacity, size: 9, 10, 10
 interval, capacity, size: 8, 11, 11
@@ -318,7 +192,7 @@ interval, capacity, size: 2, 45, 44
 interval, capacity, size: 1, 90, 91
 D'oh! size max
 </pre>
-Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. Gutting. So for that we have used the following util class to "assert" that the size is more or less what we expect.
+Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. D'oh! So for that we have used the following util class to see if the size is more or less what we expect.
 <pre>
 public class Woohoo {
 
@@ -331,14 +205,10 @@ public class Woohoo {
 Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! Heh heh.
 <i>"Put that in your internet, put that in your twitter right there."</i> ;)
 
-<h3>Credits</h3>
-
-Thanks to my colleague Zach Visage at BizSwitch.net, for his kind reviews and indispensible input!
-
 <h3>Resources</h3>
 
 https://code.google.com/p/vellum/ - where i will collate these articles and their code.
 
-<h2>Coming soon</h2>
+<h2>Coming later</h2>
 
 We'll capture log records using our <tt>TimestampedDequer</tt>, and periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether. 
