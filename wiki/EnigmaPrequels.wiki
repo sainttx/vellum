@@ -1,7 +1,8 @@
-
 === The Enigma Prequels ===
 
-This series was published on my [http://weblogs.java.net/evanx blog] some years but and for completeness is <tt>rehashed</tt> here on this wiki. 
+This series was published on my [http://weblogs.java.net/evanx blog] some years ago, but and is <tt>rehashed</tt> here on this wiki, to be rehashed in an upcoming series to be called "Venigma." 
+
+The first new article in that series will be "Salt and Passphrase" not least because this dated PasswordHash is dangerously deficient of salt.
 
 [PasswordHash Password Hash]
 
@@ -10,5 +11,3 @@ This series was published on my [http://weblogs.java.net/evanx blog] some years 
 [Enigma Enigma]
 
 [Encryptic Encryptic]
-
-
