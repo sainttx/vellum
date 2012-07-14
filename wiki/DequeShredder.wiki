@@ -116,7 +116,7 @@ We check twice, just to make sure... ;) Actually we do want to make sure of the 
         checkSet(deque);
     }    
 }}}
-<i>which prints...</i>
+which prints...
 {{{
 scheduledInterval 10
 record at 1340231378158
