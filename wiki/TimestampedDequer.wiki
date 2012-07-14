@@ -211,10 +211,6 @@ Considering that the purpose of this <tt>Timestamped</tt> series is reducing inf
 
 Thereafter, we'll see about using our <tt>TimestampedDequer</tt> to analyse the latest <tt>deque</tt> of logs e.g. every minute, to detect when our app might be coming down like a house of cards.
 
-<h3>Resources</h3>
-
-https://code.google.com/p/vellum/ - where i will collate these articles and their code.
-
 <h3>Credits</h3>
 
 Thanks to my colleague Zach Visagie at BizSwitch.net, for his kind reviews and indispensible input!
