@@ -41,7 +41,7 @@ public class TimestampedLoggingEventAdapter implements Timestamped {
 </pre>
 And a generic wrapped element.
 <pre>
-public class TimestampedElement<T> implements Timestamped {
+public class TimestampedElement<T> implements Timestamped, Comparable<Timestamped> {
     T element;
     long timestamp;
 
@@ -58,29 +58,30 @@ public class TimestampedElement<T> implements Timestamped {
     public long getTimestamp() {
         return timestamp;
     }
-}
-</pre>
-We might want equality by the timestamp for this element.
-<pre>
-    @Override
-    public int hashCode() {
-        return (int) (timestamp & Integer.MAX_VALUE);
-    }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Timestamped) {
-            return timestamp == ((Timestamped) obj).getTimestamp();
-        }
-        return false;
-    }
+    public int compareTo(Timestamped other) {
+        if (timestamp < other.getTimestamp()) return -1;
+        if (timestamp > other.getTimestamp()) return 1;
+        else return 0;
+    }    
+}
 </pre>
-By my calculation, that <tt>hashCode()</tt> is good for a cycle of 24 days of millis without collisions... except when timestamps coincide! Indeed duplicate timestamps are possible i.e. where two or more events occur at the same millisecond, and so we might loose records if we add such elements to a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Set.html"><tt>Set</tt></a>, whose javadoc describes it thus:
+
+where we implement <tt>compareTo()</tt> for <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html">natural ordering</a> by the timestamp. 
+
+Since duplicate timestamps are possible i.e. where two or more events occur at the same millisecond, and indeed duplicate log messages at the same time, we forgo implementing <tt>hashCode()</tt> and <tt>equals()</tt>. Imagine we add such elements to a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Set.html"><tt>Set</tt></a>, whose javadoc describes it thus:
 <blockquote>
     <tt>Set</tt> - A collection that contains no duplicate elements. More formally, sets contain no pair of elements e1 and e2 such that e1.equals(e)
 </blockquote>
+Therefore we defer to the default <tt>hashCode()</tt> and <tt>equals()</tt> from <tt>Object</tt>, which are based on object address reference.
 
-A comparator will undoubtedly be required at some stage. 
+We might construct a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/SortedSet.html"><tt>SortedSet</tt></a> of <tt>Timestamped</tt> elements.
+<blockquote>
+    <tt>SortedSet</tt> - The elements are ordered using their natural ordering, or by a Comparator typically provided at sorted set creation time.
+</blockquote>
+
+So if we have not implemented <tt>compareTo()</tt>, then we will need a comparator.
 <pre>
 public class TimestampedComparator implements Comparator<Timestamped> {
 
@@ -92,17 +93,13 @@ public class TimestampedComparator implements Comparator<Timestamped> {
     }    
 }
 </pre>
-Again, if we use this <tt>Comparator</tt> to construct a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/SortedSet.html"><tt>SortedSet</tt></a> of <tt>Timetamped</tt> elements, we might loose some.
-<blockquote>
-    <tt>SortedSet</tt> - The elements are ordered using their natural ordering, or by a Comparator typically provided at sorted set creation time.
-</blockquote>
-      
+
 <img src="http://jroller.com/evanx/resource/bicycle-ghost-deck-white-256.jpg" align="right" hspace="16"/>
-So our inclination would be collect <tt>Timestamped</tt> elements in a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html"><tt>List</tt></a>, or a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Queue.html"><tt>Queue</tt></a> perhaps.
+Our inclination might be collect <tt>Timestamped</tt> elements in a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html"><tt>List</tt></a>, or a <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Queue.html"><tt>Queue</tt></a> perhaps.
 <blockquote>
     <tt>Queue</tt> - A collection designed for holding elements prior to processing.
 </blockquote>
-That sounds rather appropriate for our digestive purposes to find the ghost in the machine. 
+That sounds rather appropriate for our digestive purposes, to find the ghost in the machine. 
 
 <h2>Deque collector</h2>
 
@@ -143,7 +140,6 @@ public class TimestampedDequer<T extends Timestamped>  {
             deque.removeFirst();
         }
     }
-}
 </pre>
 
 <img src="http://jroller.com/evanx/resource/arcane-deck-white-back-300.jpg" align="left" hspace="16"/>

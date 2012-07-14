@@ -151,8 +151,9 @@ We survey this output and nod, ponderously.
 Just for good measure, we use a <tt>TimestampedComparator</tt> to create a <tt>SortedSet</tt>, and check that the first and last timestamps match. 
 <pre>
     private void checkSet(Deque<TimestampedElement> deque) throws Exception {
-        SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
+        SortedSet<Timestamped> set = new TreeSet();
         set.addAll(deque);        
+        Assert.assertEquals("size", deque.size(), set.size());
         Assert.assertEquals("first", deque.getFirst().getTimestamp(), set.first().getTimestamp());
         Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
     }
