@@ -168,7 +168,7 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
     }
 }}}
 where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my word - surely this will not end well!</i>
-{{{
+<pre>
 interval 9: Woohoo! 10 == 10
 interval 8: Woohoo! 11 == 11
 interval 7: Woohoo! 12 == 12
@@ -178,7 +178,7 @@ interval 4: Woohoo! 22 == 22
 interval 3: D'oh! 30 != 29
 interval 2: D'oh! 45 != 44
 interval 1: D'oh! 90 != 89
-}}}
+</pre>
 Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. D'oh! So for that we have used the following util class to see if the size is more or less what we expect...
 {{{
 public class Woohoo {
