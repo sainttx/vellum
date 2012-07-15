@@ -88,7 +88,7 @@ public class TimestampedDequerTest  {
         future.cancel(true);
     }
 }}}
-where we use a <tt>ScheduledExecutorService</tt> to schedule a thread to regularly add records into the deque. 
+where we use a <tt>!ScheduledExecutorService</tt> to schedule a thread to regularly add records into the deque. 
 
 We check twice, just to make sure... ;) Actually we do want to make sure of the <tt>prune()</tt>'ing, following the sleep for <tt>capacityMillis</tt>.
 {{{    
