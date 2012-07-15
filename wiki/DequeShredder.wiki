@@ -170,7 +170,7 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
         }
     }
 }}}
-where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my gods - surely this will not end well!</i>
+where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my word - surely this will not end well!</i>
 {{{
 interval, capacity, size: 9, 10, 10
 interval, capacity, size: 8, 11, 11
@@ -183,7 +183,7 @@ interval, capacity, size: 2, 45, 44
 interval, capacity, size: 1, 90, 91
 D'oh! size max
 }}}
-Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. D'oh! So for that we have used the following util class to see if the size is more or less what we expect.
+Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. D'oh! So for that we have used the following util class to see if the size is more or less what we expect...
 {{{
 public class Woohoo {
 
