@@ -161,10 +161,7 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
             int expectedCapacity = (int) (capacityMillis / scheduledInterval);
             long stopMillis = System.currentTimeMillis();
             Deque<TimestampedElement> deque = dequer.snapshot(stopMillis);
-            System.out.printf("interval, capacity, size: %d, %d, %d\n", 
-                    scheduledInterval, expectedCapacity, deque.size());
-            Assert.assertTrue("size min", deque.size() > 0);
-            Woohoo.assertTrue("size max", deque.size() <= expectedCapacity);
+            Woohoo.assertEquals("interval " + scheduledInterval, expectedCapacity, deque.size());
             future.cancel(true);
             Thread.sleep(scheduledInterval);
         }
@@ -172,27 +169,27 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
 }}}
 where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my word - surely this will not end well!</i>
 {{{
-interval, capacity, size: 9, 10, 10
-interval, capacity, size: 8, 11, 11
-interval, capacity, size: 7, 12, 12
-interval, capacity, size: 6, 15, 15
-interval, capacity, size: 5, 18, 17
-interval, capacity, size: 4, 22, 22
-interval, capacity, size: 3, 30, 29
-interval, capacity, size: 2, 45, 44
-interval, capacity, size: 1, 90, 91
-D'oh! size max
+interval 9: Woohoo! 10 == 10
+interval 8: Woohoo! 11 == 11
+interval 7: Woohoo! 12 == 12
+interval 6: D'oh! 15 != 14
+interval 5: D'oh! 18 != 17
+interval 4: Woohoo! 22 == 22
+interval 3: D'oh! 30 != 29
+interval 2: D'oh! 45 != 44
+interval 1: D'oh! 90 != 89
 }}}
 Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. D'oh! So for that we have used the following util class to see if the size is more or less what we expect...
 {{{
 public class Woohoo {
 
-    public static void assertTrue(String message, boolean condition) {
-        if (!condition) {
-            System.err.printf("D'oh! %s\n", message);
+    public static void assertEquals(String message, Object expected, Object actual) {
+        if (actual.equals(expected)) {
+            System.out.printf("%s: Woohoo! %s == %s\n", message, expected, actual);
+        } else {
+            System.out.printf("%s: D'oh! %s != %s\n", message, expected, actual);
         }
     }
-}
 }}}
 Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! Heh heh.
 
