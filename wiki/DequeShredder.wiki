@@ -45,9 +45,9 @@ public class TimestampedDequer<T extends Timestamped>  {
     }    
 }
 }}}
+<img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-rider-black-front-crop.jpg" align="right" hspace="8"/>
 where we use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>!ArrayDeque</tt></a> implementation of Java6.
 
-<img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-rider-black-front-crop.jpg" align="right" hspace="8"/>
 As discussed last time, we remove expired elements from the head when we add the latest element to the tail, to make it self-pruning. And we provide a sychronized <tt>snapshot()</tt> and <tt>tail()</tt> for a couple of use-cases as follows... 
 
 Most importantly, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. the last minute, for an automated status check every minute, possibly invoked externally via JMX or HTTP, for the purpose of triggering alerts, e.g. via Gtalk, SMS and email. <i>Shew!</i>
