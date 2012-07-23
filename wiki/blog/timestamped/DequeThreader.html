@@ -10,6 +10,36 @@ Last week we introduced the trivial namesake Timestamped interface, and used the
 </div>
 </a>
 
+In the previous installment, we introduced a generic <tt>TimestampedElement</tt>, which we hereby improve with a <tt>compareTo()</tt> for <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html">natural ordering</a> by the timestamp. 
+
+<pre>
+public class TimestampedElement<T> implements Timestamped, Comparable<Timestamped> {
+    T element;
+    long timestamp;
+
+    public TimestampedElement(T element, long timestamp) {
+        this.element = element;
+        this.timestamp = timestamp;
+    }
+
+    public T getElement() {
+        return element;
+    }
+    
+    @Override
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    @Override
+    public int compareTo(Timestamped other) {
+        if (timestamp < other.getTimestamp()) return -1;
+        if (timestamp > other.getTimestamp()) return 1;
+        else return 0;
+    }    
+}
+</pre>
+
 Just to remind the reader, and for completeness herewithin, our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">deque collector</a> for our <tt>Timestamped</tt> thingies, looks like follows.
 
 <pre>
@@ -54,16 +84,16 @@ public class TimestampedDequer<T extends Timestamped>  {
     }    
 }
 </pre>
+<img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-rider-black-front-crop.jpg" align="right" hspace="8"/>
 where we use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation of Java6.
 
-<img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-rider-black-front-crop.jpg" align="right" hspace="8"/>
 As discussed last time, we remove expired elements from the head when we add the latest element to the tail, to make it self-pruning. And we provide a sychronized <tt>snapshot()</tt> and <tt>tail()</tt> for a couple of use-cases as follows... 
 
-Most importantly, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. the last minute, for an automated status check every minute, possibly invoked externally via JMX or HTTP, for the purpose of triggering alerts, e.g. via Gtalk, SMS and email. <i>Shew!</i>
+Most importantly, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. the last minute, for an automated status check every minute, possibly invoked externally via JMX or HTTP, for the purpose of triggering alerts, e.g. via Gtalk, SMS and email. <i>Yoh!</i>
 
 Furthermore, we will use a size-based <tt>tail()</tt> e.g. to display the latest so-many records in a status web page, and to attach to an email alert.
 
-Now let's do us some "heavy-dropping" with threads - woohoo!
+Now let's do us some "heavy-dropping" with threads...
 <pre>
 public class TimestampedDequerTest  {
     long capacityMillis = 90;
@@ -99,7 +129,7 @@ public class TimestampedDequerTest  {
 </pre>
 where we use a <tt>ScheduledExecutorService</tt> to schedule a thread to regularly add records into the deque. 
 
-We check twice, just to make sure... ;) Actually we do want to make sure of the <tt>prune()</tt>'ing, following the sleep for <tt>capacityMillis</tt>.
+We check twice, just to make sure! ;) Actually we want to make sure of the <tt>prune()</tt>'ing, following the sleep for <tt>capacityMillis</tt>.
 <pre>    
     private void checkConcurrently() throws Exception {
         long startMillis = System.currentTimeMillis();
@@ -125,7 +155,7 @@ We check twice, just to make sure... ;) Actually we do want to make sure of the 
         checkSet(deque);
     }    
 </pre>
-<i>which prints...</i>
+which prints...
 <pre>
 scheduledInterval 10
 record at 1340231378158
@@ -146,13 +176,14 @@ size 9
 first 1340231378258
 last 1340231378338
 </pre>
-We survey this output and nod, ponderously.
+We survey this output, eyeing the timestamps, and nod ponderously.
 
 Just for good measure, we use a <tt>TimestampedComparator</tt> to create a <tt>SortedSet</tt>, and check that the first and last timestamps match. 
 <pre>
     private void checkSet(Deque<TimestampedElement> deque) throws Exception {
-        SortedSet<Timestamped> set = new TreeSet(new TimestampedComparator());
+        SortedSet<Timestamped> set = new TreeSet();
         set.addAll(deque);        
+        Assert.assertEquals("size", deque.size(), set.size());
         Assert.assertEquals("first", deque.getFirst().getTimestamp(), set.first().getTimestamp());
         Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
     }
@@ -169,45 +200,42 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
             int expectedCapacity = (int) (capacityMillis / scheduledInterval);
             long stopMillis = System.currentTimeMillis();
             Deque<TimestampedElement> deque = dequer.snapshot(stopMillis);
-            System.out.printf("interval, capacity, size: %d, %d, %d\n", 
-                    scheduledInterval, expectedCapacity, deque.size());
-            Assert.assertTrue("size min", deque.size() > 0);
-            Woohoo.assertTrue("size max", deque.size() <= expectedCapacity);
+            Woohoo.assertEquals("interval " + scheduledInterval, expectedCapacity, deque.size());
             future.cancel(true);
             Thread.sleep(scheduledInterval);
         }
     }
 </pre>
-where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my gods - surely this will not end well!</i>
+where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my word - surely this will not end well!</i>
 <pre>
-interval, capacity, size: 9, 10, 10
-interval, capacity, size: 8, 11, 11
-interval, capacity, size: 7, 12, 12
-interval, capacity, size: 6, 15, 15
-interval, capacity, size: 5, 18, 17
-interval, capacity, size: 4, 22, 22
-interval, capacity, size: 3, 30, 29
-interval, capacity, size: 2, 45, 44
-interval, capacity, size: 1, 90, 91
-D'oh! size max
+interval 9: Woohoo! 10 == 10
+interval 8: Woohoo! 11 == 11
+interval 7: Woohoo! 12 == 12
+interval 6: D'oh! 15 != 14
+interval 5: D'oh! 18 != 17
+interval 4: Woohoo! 22 == 22
+interval 3: D'oh! 30 != 29
+interval 2: D'oh! 45 != 44
+interval 1: D'oh! 90 != 89
 </pre>
-Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. D'oh! So for that we have used the following util class to see if the size is more or less what we expect.
+Given how unpredictable time is, ironically, with those threads and what-not, we can't exactly predict the size of the list. D'oh! So for that we have used the following util class to see if the size is more or less what we expect...
 <pre>
 public class Woohoo {
 
-    public static void assertTrue(String message, boolean condition) {
-        if (!condition) {
-            System.err.printf("D'oh! %s\n", message);
+    public static void assertEquals(String message, Object expected, Object actual) {
+        if (actual.equals(expected)) {
+            System.out.printf("%s: Woohoo! %s == %s\n", message, expected, actual);
+        } else {
+            System.out.printf("%s: D'oh! %s != %s\n", message, expected, actual);
         }
     }
-}
 </pre>
-Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! Heh heh. <i>"Put that in your internet, put that in your twitter right there."</i> ;)
+Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! ;)
+
+Having applied some testing due diligence, we are fairly satisfied that our <tt>Deque</tt> collector is reasonably robust, and so next we'll consider using it to capture log records. We want periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether, and notify ourselves thereof.
 
 <h3>Resources</h3>
 
 https://code.google.com/p/vellum/ - where i will collate these articles and their code.
 
-<h2>Coming later</h2>
 
-We'll capture log records using our <tt>TimestampedDequer</tt>, and periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether. 
