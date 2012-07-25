@@ -10,7 +10,7 @@ Last week we introduced the trivial namesake Timestamped interface, and used the
 </div>
 </a>
 
-In the previous installment, we introduced a generic <tt>TimestampedElement</tt>, which we hereby improve with a <tt>compareTo()</tt> for <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html">natural ordering</a> by the timestamp. 
+In case you missed the update to our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">previous installment</a>, we introduced a generic <tt>TimestampedElement</tt>, which now has a <tt>compareTo()</tt> for <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html">natural ordering</a> by the timestamp. 
 
 <pre>
 public class TimestampedElement<T> implements Timestamped, Comparable<Timestamped> {
@@ -40,7 +40,7 @@ public class TimestampedElement<T> implements Timestamped, Comparable<Timestampe
 }
 </pre>
 
-Just to remind the reader, and for completeness herewithin, our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">deque collector</a> for our <tt>Timestamped</tt> thingies, looks like follows.
+For completeness herewithin, our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">deque collector</a> for our <tt>Timestamped</tt> thingies, looks like follows.
 
 <pre>
 public class TimestampedDequer<T extends Timestamped>  {
@@ -232,7 +232,42 @@ public class Woohoo {
 </pre>
 Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! ;)
 
-Having applied some testing due diligence, we are fairly satisfied that our <tt>Deque</tt> collector is reasonably robust, and so next we'll consider using it to capture log records. We want periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether, and notify ourselves thereof.
+To further increase the intensity, we can allow the schedules to accumulate as follows.
+<pre>
+    @Test
+    public void testCumulativeScheduledIntervals() throws Exception {
+        Deque<ScheduledFuture> futures = new ArrayDeque();
+        int expectedCapacity = 0;
+        while (--scheduledInterval > 0) {
+            expectedCapacity += (int) (capacityMillis / scheduledInterval);
+            ScheduledFuture future = Executors.newScheduledThreadPool(100).scheduleAtFixedRate(
+                    scheduledRunnable, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
+            futures.add(future);
+            Threads.sleep(capacityMillis);
+            long stopMillis = System.currentTimeMillis();
+            Deque<TimestampedElement> deque = dequer.snapshot(stopMillis);
+            Woohoo.assertEquals("interval " + scheduledInterval, expectedCapacity, deque.size());
+            Threads.sleep(scheduledInterval);
+        }
+        for (ScheduledFuture future : futures) {
+            future.cancel(true);
+        }
+    }
+</pre>
+where we only cancel all the scheduled threads when all is said and done. As expected, we get some D'oh's and Woohoo's!
+<pre>
+interval 9: Woohoo! 10 == 10
+interval 8: Woohoo! 21 == 21
+interval 7: D'oh! 33 != 34
+interval 6: Woohoo! 48 == 48
+interval 5: Woohoo! 66 == 66
+interval 4: D'oh! 88 != 89
+interval 3: Woohoo! 118 == 118
+interval 2: D'oh! 163 != 165
+interval 1: D'oh! 253 != 254
+</pre>
+
+Let's wrap this up by asserting that our <tt>Deque</tt> collector is reasonably robust, and so next we'll consider using it to capture log records. We want periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether, and notify ourselves thereof.
 
 <h3>Resources</h3>
 
