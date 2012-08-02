@@ -213,5 +213,5 @@ Thereafter, we'll see about using our <tt>TimestampedDequer</tt> to analyse the 
 
 <h3>Credits</h3>
 
-Thanks to my colleague Zach Visagie at BizSwitch.net, for his kind reviews and indispensible input!
+Thanks to my colleague Zach Visagie at !BizSwitch.net, for his kind reviews and indispensible input!
 
