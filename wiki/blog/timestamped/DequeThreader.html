@@ -1,5 +1,5 @@
 
-Last week we introduced the trivial namesake Timestamped interface, and used the excellent ArrayDeque of Java6 to collect such things, imposing a time-based capacity and some external synchronization. Now let's test this with some threads.
+Last time we introduced the trivial namesake Timestamped interface, and used the excellent ArrayDeque of Java6 to collect such things, imposing a time-based capacity and some external synchronization. Now let's test this with some threads.
 
 <!--break-->
 
@@ -10,7 +10,7 @@ Last week we introduced the trivial namesake Timestamped interface, and used the
 </div>
 </a>
 
-In case you missed the update to our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">previous installment</a>, we introduced a generic <tt>TimestampedElement</tt>, which now has a <tt>compareTo()</tt> for <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html">natural ordering</a> by the timestamp. 
+In case you missed the update to our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">previous installment</a>, our generic <tt>TimestampedElement</tt> now has a <tt>compareTo()</tt> for <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html">natural ordering</a> by the timestamp. 
 
 <pre>
 public class TimestampedElement<T> implements Timestamped, Comparable<Timestamped> {
@@ -40,7 +40,7 @@ public class TimestampedElement<T> implements Timestamped, Comparable<Timestampe
 }
 </pre>
 
-For completeness herewithin, our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">deque collector</a> for our <tt>Timestamped</tt> thingies, looks like follows.
+For completeness herewithin, our <a href="http://weblogs.java.net/blog/evanx/archive/2012/06/27/timestamped-deque">deque collector</a> for our <tt>Timestamped</tt> thingies, follows.
 
 <pre>
 public class TimestampedDequer<T extends Timestamped>  {
@@ -87,13 +87,13 @@ public class TimestampedDequer<T extends Timestamped>  {
 <img src="http://jroller.com/evanx/resource/bicycle-guardians-deck-rider-black-front-crop.jpg" align="right" hspace="8"/>
 where we use the efficient <a href="http://docs.oracle.com/javase/6/docs/api/java/util/ArrayDeque.html"><tt>ArrayDeque</tt></a> implementation of Java6.
 
-As discussed last time, we remove expired elements from the head when we add the latest element to the tail, to make it self-pruning. And we provide a sychronized <tt>snapshot()</tt> and <tt>tail()</tt> for a couple of use-cases as follows... 
+As discussed last time, we remove expired elements from the head when we add the latest element to the tail, to make it self-pruning. And we provide a synchronized <tt>snapshot()</tt> and <tt>tail()</tt> for a couple of use-cases as follows... 
 
-Most importantly, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. the last minute, for an automated status check every minute, possibly invoked externally via JMX or HTTP, for the purpose of triggering alerts, e.g. via Gtalk, SMS and email. <i>Yoh!</i>
+Decisively, we will use <tt>snapshot()</tt> to analyse the latest records for the desired interval e.g. for an automated status check every minute.
 
-Furthermore, we will use a size-based <tt>tail()</tt> e.g. to display the latest so-many records in a status web page, and to attach to an email alert.
+Furthermore, we will use a size-based <tt>tail()</tt> e.g. to display the latest so-many records in a status web page, for informational purposes.
 
-Now let's do us some "heavy-dropping" with threads...
+Now let's do us some "heavy-dropping" with threads, using a <tt>ScheduledExecutorService</tt> to regularly add records to the deque. 
 <pre>
 public class TimestampedDequerTest  {
     long capacityMillis = 90;
@@ -118,18 +118,18 @@ public class TimestampedDequerTest  {
             System.out.println(value);
         }
     }
+
     @Test
     public void testConcurrently() throws Exception {
-        ScheduledFuture future = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(capacity);
+        ScheduledFuture future = executorService.scheduleAtFixedRate(
                     scheduledRunnable, scheduledDelay, scheduledInterval, TimeUnit.MILLISECONDS);
         checkConcurrently();
         checkConcurrently();
         future.cancel(true);
     }
 </pre>
-where we use a <tt>ScheduledExecutorService</tt> to schedule a thread to regularly add records into the deque. 
-
-We check twice, just to make sure! ;) Actually we want to make sure of the <tt>prune()</tt>'ing, following the sleep for <tt>capacityMillis</tt>.
+where we check twice, just to make sure! ;) Actually we want to make sure of the <tt>prune()</tt>'ing, following the sleep for <tt>capacityMillis</tt>.
 <pre>    
     private void checkConcurrently() throws Exception {
         long startMillis = System.currentTimeMillis();
@@ -178,7 +178,7 @@ last 1340231378338
 </pre>
 We survey this output, eyeing the timestamps, and nod ponderously.
 
-Just for good measure, we use a <tt>TimestampedComparator</tt> to create a <tt>SortedSet</tt>, and check that the first and last timestamps match. 
+Just for good measure, we add the records to a <tt>SortedSet</tt>, and check that the first and last timestamps match. 
 <pre>
     private void checkSet(Deque<TimestampedElement> deque) throws Exception {
         SortedSet<Timestamped> set = new TreeSet();
@@ -188,8 +188,9 @@ Just for good measure, we use a <tt>TimestampedComparator</tt> to create a <tt>S
         Assert.assertEquals("last", deque.getLast().getTimestamp(), set.last().getTimestamp());
     }
 </pre>
+where our <tt>TimestampedElement</tt>'s <tt>compareTo()</tt> method enables the natural ordering, and forgoes having to use our <tt>TimestampedComparator</tt> to construct the <tt>SortedSet</tt>.
 
-Finally, let's vary the <tt>scheduledInterval</tt>. 
+Let's vary the <tt>scheduledInterval</tt>. 
 <pre>
     @Test
     public void testScheduledIntervals() throws Exception {
@@ -206,7 +207,7 @@ Finally, let's vary the <tt>scheduledInterval</tt>.
         }
     }
 </pre>
-where we loop the <tt>scheduledInterval</tt> down to 1ms. <i>Oh my word - surely this will not end well!</i>
+where we loop the <tt>scheduledInterval</tt> down to 1ms.
 <pre>
 interval 9: Woohoo! 10 == 10
 interval 8: Woohoo! 11 == 11
@@ -232,7 +233,7 @@ public class Woohoo {
 </pre>
 Selectively using the above drop-in replacement for <tt>Assert</tt>, we get our tests to pass 100%, woohoo! ;)
 
-To further increase the intensity, we can allow the schedules to accumulate as follows.
+To further increase the intensity, we allow the scheduled threads to coalesce.
 <pre>
     @Test
     public void testCumulativeScheduledIntervals() throws Exception {
@@ -267,7 +268,9 @@ interval 2: D'oh! 163 != 165
 interval 1: D'oh! 253 != 254
 </pre>
 
-Let's wrap this up by asserting that our <tt>Deque</tt> collector is reasonably robust, and so next we'll consider using it to capture log records. We want periodically analyse the latest <tt>deque</tt> of logs e.g. for the last minute, to detect when our app's wheels are wobbling or even coming off altogether, and notify ourselves thereof.
+Let's wrap this up by asserting that our <tt>Deque</tt> collector is reasonably robust!? 
+
+Next time, we'll use our timestamped deque to capture log4j records, and as alluded to previously, regularly analyse the latest <tt>deque</tt> of logs to detect when our app's wheels are wobbling or even coming off altogether, and notify ourselves thereof.
 
 <h3>Resources</h3>
 
