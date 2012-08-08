@@ -1,5 +1,7 @@
 = MegaRAID =
 
+== Monitor == 
+
 We can use the following command to the check the state of the MegaRAID controller.
 {{{
   # /opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -a0 -L0
@@ -82,6 +84,8 @@ to boost write performance on the assumption that in the event of a power-failur
     $bin/MegaCli64 -AdpBbuCmd -GetBbuStatus -aALL
   }
 }}}
+
+== Rebuild == 
 
 View the status of all disks.
 {{{
@@ -202,7 +206,8 @@ Slot Number: 5
 Media Error Count: 0
 Other Error Count: 0
 Firmware state: Online
-Foreign State: None}}}
+Foreign State: None
+}}}
 
 == Alarm ==
 
