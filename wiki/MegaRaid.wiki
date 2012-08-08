@@ -93,19 +93,15 @@ View the status of all disks.
 }}}
 
 When MegaRAID controller encounters unrecoverable errors on a drive its state might change as follows, as seen in the event logs. 
-<ul>
-<li> <tt>FAILED</tt> due to errors
-<li> taken <tt>OFFLINE</tt>
-<li> removed from the array, and its state is <tt>UNCONFIGURED(BAD)</tt>.
-</ul>
+ * <tt>FAILED</tt> due to errors
+ * taken <tt>OFFLINE</tt>
+ * removed from the array, and its state is <tt>UNCONFIGURED(BAD)</tt>.
 
 Steps to rebuild a drive are as follows:
-<ul>
-<li> <tt>-pdMakeGood</tt> - goes from <tt>UNCONFIGURED(BAD)</tt> to <tt>UNCONFIGURED(GOOD)</tt>
-<li> <tt>-pdReplaceMissing</tt> - put back into array - goes from <tt>UNCONFIGURED</tt> to just <tt>OFFLINE</tt>
-<li> <tt>-pdRbld</tt> - start rebuilding - goes <tt>REBUILD</tt>
-<li> when rebuild finished is <tt>ONLINE</tt>
-</ul>
+ * <tt>-pdMakeGood</tt> - goes from <tt>UNCONFIGURED(BAD)</tt> to <tt>UNCONFIGURED(GOOD)</tt>
+ * <tt>-pdReplaceMissing</tt> - put back into array - goes from <tt>UNCONFIGURED</tt> to just <tt>OFFLINE</tt>
+ * <tt>-pdRbld</tt> - start rebuilding - goes <tt>REBUILD</tt>
+ * when rebuild finished is <tt>ONLINE</tt>
 
 {{{
 [root@server MegaCli]# ./MegaCli64 -pdmakegood -physdrv[14:5] -a0
