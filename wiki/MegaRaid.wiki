@@ -300,7 +300,7 @@ Adapter 0: Set alarm to Silenced success.
 
 Disable alarm.
 {{{
-[root@biz3 ~]# /opt/MegaRAID/MegaCli/MegaCli64 -adpSetProp AlarmDsbl -a0
+[root@server ~]# /opt/MegaRAID/MegaCli/MegaCli64 -adpSetProp AlarmDsbl -a0
 Adapter 0: Set alarm to Disabled success.
 }}}
 
