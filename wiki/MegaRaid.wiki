@@ -292,13 +292,30 @@ Foreign State: None
 
 == Alarm ==
 
+Silence alarm.
 {{{
 [root@server ~]# /opt/MegaRAID/MegaCli/MegaCli64 -AdpSetProp AlarmSilence -a0
 Adapter 0: Set alarm to Silenced success.
 }}}
 
+Disable alarm.
+{{{
+[root@biz3 ~]# /opt/MegaRAID/MegaCli/MegaCli64 -adpSetProp AlarmDsbl -a0
+Adapter 0: Set alarm to Disabled success.
+}}}
+
+Check alarm status.
 {{{
 [root@server ~]# /opt/MegaRAID/MegaCli/MegaCli64 -adpgetprop alarmdsply -a0
 Adapter 0: Alarm Status is Disabled
+}}}
+
+Check all adapter info for alarm.
+{{
+[root@server ~]# /opt/MegaRAID/MegaCli/MegaCli64 -adpAllInfo -a0 | grep -i alarm
+Alarm           : Present
+Alarm           : Disabled
+Alarm Control   : Yes
+Alarm Disable   : Yes
 }}}
 
