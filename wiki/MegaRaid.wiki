@@ -257,7 +257,7 @@ Event Description: VD 01/1 is now OPTIMAL
 Once complete, we see the following.
 
 {{{
-[root@server MegaCli]# ./MegaCli64 -pdlist -a0 | grep "Slot\|Firm\|For\|Error"
+[root@server MegaCli]# ./MegaCli64 -pdlist -a0 | grep "Slot\|Firmware\|Foreign\|Error"
 Slot Number: 0
 Media Error Count: 0
 Other Error Count: 0
