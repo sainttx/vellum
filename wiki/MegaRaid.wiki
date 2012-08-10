@@ -311,7 +311,7 @@ Adapter 0: Alarm Status is Disabled
 }}}
 
 Check all adapter info for alarm.
-{{
+{{{
 [root@server ~]# /opt/MegaRAID/MegaCli/MegaCli64 -adpAllInfo -a0 | grep -i alarm
 Alarm           : Present
 Alarm           : Disabled
