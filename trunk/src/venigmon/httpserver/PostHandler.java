@@ -3,9 +3,6 @@
  */
 package venigmon.httpserver;
 
-import bizmon.parameter.Entry;
-import bizmon.parameter.ParameterMap;
-import bizmon.parameter.Parameters;
 import bizstat.server.BizstatServer;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -14,6 +11,9 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.parameter.Entry;
+import vellum.parameter.ParameterMap;
+import vellum.parameter.Parameters;
 import vellum.printer.PrintStreamAdapter;
 import vellum.printer.Printer;
 import vellum.util.Lists;

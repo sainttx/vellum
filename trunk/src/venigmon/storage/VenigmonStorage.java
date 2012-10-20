@@ -4,7 +4,6 @@
  */
 package venigmon.storage;
 
-import bizstat1.entity.Host;
 import bizstat.entity.StatusInfo;
 import bizstat.server.BizstatServer;
 import vellum.storage.DataSourceConfig;
