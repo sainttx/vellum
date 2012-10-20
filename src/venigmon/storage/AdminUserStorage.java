@@ -35,19 +35,23 @@ public class AdminUserStorage {
     }
 
     public boolean exists(String email) throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("exists"));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
+            boolean exists = resultSet.next();
+            ok = true;
+            return exists;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     public AdminUser find(String email) throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("find by email"));
             statement.setString(1, email);
@@ -57,42 +61,47 @@ public class AdminUserStorage {
             }
             return get(resultSet);
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     public void insert(AdminUser adminUser) throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
             statement.setString(1, adminUser.getUsername());
             statement.setString(2, adminUser.getEmail());
             statement.setString(3, adminUser.getRole().name());
             int updateCount = statement.executeUpdate();
+            ok = true;
             if (updateCount != 1) {
                 throw new SQLException();
             }
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     public void update(AdminUser AdminUser) throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("update"));
             statement.setString(1, AdminUser.getUsername());
             int updateCount = statement.executeUpdate();
+            ok = true;
             if (updateCount != 1) {
                 throw new SQLException();
             }
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     public List<AdminUser> getList() throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             List<AdminUser> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("list all"));
@@ -100,20 +109,23 @@ public class AdminUserStorage {
             while (resultSet.next()) {
                 list.add(get(resultSet));
             }
+            ok = true;
             return list;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     public void insertAll(List<AdminUser> adminUserList) throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             for (AdminUser adminUser : adminUserList) {
                 insert(adminUser);
             }
+            ok = true;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 }

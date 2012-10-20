@@ -32,15 +32,17 @@ public class SchemaMigrator {
     }
     
     public void migration() throws Exception {
+        boolean ok = false;
         try {
             connection = connectionPool.getConnection();
             if (MIN_VERSION_NUMBER == 0 || !verifySchema()) {
                 createSchema();
             }
+            ok = true;
         } catch (Exception e) {
             e.printStackTrace(printer.getPrintStream());
         } finally {
-            connectionPool.releaseConnection(connection);
+            connectionPool.releaseConnection(connection, ok);
         }        
     }
     

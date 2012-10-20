@@ -55,7 +55,8 @@ public class StatusInfoStorage {
     }
 
     public void insert(StatusInfo statusInfo) throws Exception {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
             statement.setString(1, statusInfo.getHost().getName());
@@ -75,13 +76,15 @@ public class StatusInfoStorage {
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);
             }
+            ok = true;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     public List<StatusInfo> getList(HostServiceKey key) throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             List<StatusInfo> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("list"));
@@ -89,14 +92,16 @@ public class StatusInfoStorage {
             while (resultSet.next()) {
                 list.add(build(resultSet));
             }
+            ok = true;
             return list;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     public List<StatusInfo> getList() throws SQLException {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             List<StatusInfo> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("list"));
@@ -104,9 +109,10 @@ public class StatusInfoStorage {
             while (resultSet.next()) {
                 list.add(build(resultSet));
             }
+            ok = true;
             return list;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
     
