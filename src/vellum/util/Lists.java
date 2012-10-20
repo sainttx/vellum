@@ -1,6 +1,5 @@
 /*
- * Apache Software License 2.0
- * Supported by BizSwitch.net   
+ * Apache Software License 2.0   
  */
 package vellum.util;
 
@@ -14,6 +13,22 @@ import java.util.*;
  */
 public class Lists {
 
+    public static <T> LinkedList<T> sortedLinkedList(Collection<T> collection, Comparator<T> comparator) {
+        LinkedList list = new LinkedList(collection);
+        Collections.sort(list, comparator);
+        return list;
+    }
+    
+    public static <T> LinkedList<T> sortedReverseLinkedList(Collection<T> collection, Comparator<T> comparator) {
+        return sortedLinkedList(collection, Collections.reverseOrder(comparator));
+    }
+
+    public static Map sortByValue(Map map) {
+        Map result = new TreeMap(new MapValueComparator(map));
+        result.putAll(map);
+        return result;
+    }
+    
     /**
      * Compare items in two lists for equality.
      * 
@@ -52,20 +67,18 @@ public class Lists {
      *
      */
     public static String format(Object[] args) {
-        if (args == null) {
-            return "";
-        }
-        if (args.length > 1) {
-            if (args[0] instanceof String) {
-                String string = (String) args[0];
-                if (string.contains("%")) {
-                    return String.format(string, Arrays.copyOfRange(args, 1, args.length));
-                }
-            }
-        }
-        return ArgFormatter.formatter.formatArray(args);
+        return ListFormatter.formatter.formatArray(args);
     }
 
+    /**
+     * Convenience method used in {@code toString()} methods of objects
+     * to format their properties.
+     *
+     */
+    public static String format(Collection collection) {
+        return ListFormatter.formatter.formatArray(collection);
+    }
+    
     /**
      * Create and populate a new fixed length list.
      *
@@ -78,11 +91,12 @@ public class Lists {
         return list;
     }
 
-    public static Map sortByValue(Map map) {
-        Map result = new TreeMap(new MapValueComparator(map));
-        result.putAll(map);
-        return result;
+    public static List<Map.Entry> sortedEntryList(Map map) {
+        List list = new ArrayList(map.entrySet());
+        Collections.sort(list, new MapEntryComparator());
+        return list;
     }
+    
 
     public static List asList(String[] array) {
         List list = new ArrayList();
@@ -99,6 +113,15 @@ public class Lists {
         return null;
     }
 
+    public static boolean contains(String[] array, String string) {
+        for (String item : array) {
+            if (item.equals(string)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public static boolean contains(Map map, Object... keys) {
         for (Object key : keys) {
             if (map.containsKey(key)) {
@@ -151,34 +174,6 @@ public class Lists {
         return Arrays.asList(array).toArray();
     }
 
-
-    public static <T> LinkedList<T> sortedLinkedList(Collection<T> collection, Comparator<T> comparator) {
-        LinkedList list = new LinkedList(collection);
-        Collections.sort(list, comparator);
-        return list;
-    }
-    
-    public static <T> LinkedList<T> sortedReverseLinkedList(Collection<T> collection, Comparator<T> comparator) {
-        return sortedLinkedList(collection, Collections.reverseOrder(comparator));
-    }
-
-
-    public static List<Map.Entry> sortedEntryList(Map map) {
-        List list = new ArrayList(map.entrySet());
-        Collections.sort(list, new MapEntryComparator());
-        return list;
-    }
-    
-
-    public static boolean contains(String[] array, String string) {
-        for (String item : array) {
-            if (item.equals(string)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     public static List toList(byte[] array) {
         List list = new ArrayList();
         for (byte element : array) {
@@ -186,6 +181,5 @@ public class Lists {
         }
         return list;
     }
-       
     
 }
