@@ -5,7 +5,7 @@
 package venigma.data;
 
 import java.sql.*;
-import vellum.jdbc.QueryMap;
+import vellum.query.QueryMap;
 
 /**
  *
