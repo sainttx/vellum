@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.jdbc.QueryMap;
+import vellum.query.QueryMap;
 import vellum.util.Base64;
 import venigma.server.storage.StorageException;
 import venigma.server.storage.StorageExceptionType;
