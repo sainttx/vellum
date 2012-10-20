@@ -6,53 +6,34 @@ package venigmon.storage;
 
 import bizstat.entity.StatusInfo;
 import bizstat.server.BizstatServer;
-import vellum.storage.DataSourceConfig;
-import vellum.storage.StorageExceptionType;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import vellum.storage.DataSourceInfo;
 import javax.sql.DataSource;
-import vellum.query.RowSets;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.ConnectionPool;
-import vellum.storage.StorageRuntimeException;
 import venigmon.storage.schema.SchemaPrinter;
 
 /**
  *
  * @author evan
  */
-public class VenigmonStorage implements ConnectionPool {
+public class VenigmonStorage {
 
     Logr logger = LogrFactory.getLogger(VenigmonStorage.class);
     BizstatServer server;
-    DataSourceConfig dataSourceInfo;
+    DataSourceInfo dataSourceInfo;
+    ConnectionPool connectionPool; 
     DataSource dataSource;
 
-    public VenigmonStorage(BizstatServer server, DataSourceConfig dataSourceInfo) {
+    public VenigmonStorage(BizstatServer server, ConnectionPool connectionPool) {
         this.server = server;
-        this.dataSourceInfo = dataSourceInfo;
+        this.connectionPool = connectionPool;
     }
 
     public void init() throws Exception {
         Class.forName(dataSourceInfo.getDriver());
         new SchemaStorage(this).verifySchema();
-        new SchemaPrinter().handle(this, System.out, "PUBLIC");
-    }
-
-    @Override
-    public Connection getConnection() {
-        try {
-            return DriverManager.getConnection(dataSourceInfo.getUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword());
-        } catch (SQLException e) {
-            throw new StorageRuntimeException(StorageExceptionType.CONNECTION_ERROR, e);
-        }
-    }
-
-    @Override
-    public void releaseConnection(Connection connection) {
-        RowSets.close(connection);
+        new SchemaPrinter().handle(connectionPool, System.out, "PUBLIC");
     }
 
     public AdminUserStorage getAdminUserStorage() {
@@ -74,4 +55,9 @@ public class VenigmonStorage implements ConnectionPool {
             logger.warn(e, "setStatusInfo", statusInfo);
         }        
     }
+
+    public ConnectionPool getConnectionPool() {
+        return connectionPool;
+    }
+        
 }

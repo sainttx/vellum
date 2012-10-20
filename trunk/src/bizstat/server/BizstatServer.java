@@ -16,6 +16,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.h2.tools.Server;
 import vellum.config.ConfigMap;
 import vellum.config.PropertiesMap;
+import vellum.storage.ConnectionPool;
+import vellum.storage.SimpleConnectionPool;
 import venigmon.storage.VenigmonStorage;
 
 /**
@@ -58,7 +60,8 @@ public class BizstatServer implements Runnable {
             h2Server = Server.createTcpServer().start();            
         }    
         if (config.getDataSourceInfo() != null && config.getDataSourceInfo().isEnabled()) {
-            dataStorage = new VenigmonStorage(this, config.getDataSourceInfo());
+            ConnectionPool connectionPool = new SimpleConnectionPool(config.getDataSourceInfo());
+            dataStorage = new VenigmonStorage(this, connectionPool);
             dataStorage.init();
         }
         configStorage = new BizstatConfigStorage(this);

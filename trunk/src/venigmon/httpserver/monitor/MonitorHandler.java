@@ -52,16 +52,18 @@ public class MonitorHandler {
         printer.println("<link rel='stylesheet' href='monitor.css'/>");
         printer.println("</head>");
         printer.println("<body>");
+        boolean ok = false;
         try {
             connection = connectionPool.getConnection();
             queryDatabase();
             if (MIN_VERSION_NUMBER == 0 || !verifySchema()) {
                 createSchema();
             }
+            ok = true;
         } catch (Exception e) {
             e.printStackTrace(printer.getPrintStream());
         } finally {
-            connectionPool.releaseConnection(connection);
+            connectionPool.releaseConnection(connection, ok);
         }
     }
 

@@ -37,7 +37,8 @@ public class SchemaStorage {
     }
 
     private boolean verifySchemaVersion() throws Exception {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             databaseMetaData = connection.getMetaData();
             logger.info("databaseProductName " + databaseMetaData.getDatabaseProductName());
@@ -53,14 +54,16 @@ public class SchemaStorage {
                 catalog = resultSet.getString(1);
                 logger.info(catalog);
             }
+            ok = true;
             return versionNumber >= MIN_VERSION_NUMBER;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
     private void createSchema() throws Exception {
-        Connection connection = storage.getConnection();
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
         try {
             String sqlScriptName = "create.sql";
             InputStream stream = getClass().getResourceAsStream(sqlScriptName);
@@ -84,8 +87,9 @@ public class SchemaStorage {
             PreparedStatement preparedStatement = connection.prepareStatement(insertSchemaVersion);
             preparedStatement.setInt(1, CURRENT_VERSION_NUMBER);
             preparedStatement.execute();
+            ok = true;
         } finally {
-            storage.releaseConnection(connection);
+            storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 }

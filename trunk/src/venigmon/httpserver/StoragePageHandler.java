@@ -31,18 +31,20 @@ public class StoragePageHandler extends AbstractPageHandler {
     public StoragePageHandler(BizstatServer context) {
         super();
         this.context = context;
-        this.connectionPool = context.getDataStorage();
+        this.connectionPool = context.getDataStorage().getConnectionPool();
     }
     
     @Override
     protected void handle() throws Exception {
         connection = connectionPool.getConnection();
+        boolean ok = false;
         try {
             connection = connectionPool.getConnection();
             queryDatabaseTime();
             printSchema();
+            ok = true;
         } finally {
-            connectionPool.releaseConnection(connection);
+            connectionPool.releaseConnection(connection, ok);
         }
     }
 

@@ -8,23 +8,25 @@ package vellum.storage;
  *
  * @author evan
  */
-public class DataSourceConfig {
+public class DataSourceInfo {
     String driver;
     String name;
     String url;
     String user;
     String password;
     boolean enabled;
+    Integer poolSize; 
     
-    public DataSourceConfig() {
+    public DataSourceInfo() {
     }
     
-    public DataSourceConfig(String driver, String url, String user, String password, boolean enabled) {
+    public DataSourceInfo(String driver, String url, String user, String password, boolean enabled, Integer poolSize) {
         this.driver = driver;
         this.url = url;
         this.user = user;
         this.password = password;
         this.enabled = enabled;
+        this.poolSize = poolSize;
     }
     
     public String getDriver() {
@@ -70,5 +72,8 @@ public class DataSourceConfig {
     public boolean isEnabled() {
         return enabled;
     }
-       
+
+    public Integer getPoolSize() {
+        return poolSize;
+    }               
 }

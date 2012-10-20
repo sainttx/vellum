@@ -39,6 +39,7 @@ public class SchemaPrinter {
         printer.println("</head>");
         printer.println("<body>");
         connection = connectionPool.getConnection();
+        boolean ok = false;
         try {
             RowSet rowSet = RowSets.getRowSet(connection, "select * from meta_revision order by update_time desc");
             print(rowSet);
@@ -59,10 +60,11 @@ public class SchemaPrinter {
                     printCatalog(catalog);
                 }
             }
+            ok = true;
         } catch (Exception e) {
             e.printStackTrace(printer.getPrintStream());
         } finally {
-            connectionPool.releaseConnection(connection);
+            connectionPool.releaseConnection(connection, ok);
         }
     }
 

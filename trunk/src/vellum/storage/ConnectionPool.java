@@ -13,6 +13,6 @@ import java.sql.SQLException;
  */
 public interface ConnectionPool {
     public Connection getConnection() throws SQLException;
-    public void releaseConnection(Connection connection) throws SQLException;
+    public void releaseConnection(Connection connection, boolean ok) throws SQLException;
     
 }

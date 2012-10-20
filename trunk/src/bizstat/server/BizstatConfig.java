@@ -22,7 +22,7 @@ import vellum.config.ConfigExceptionType;
 import vellum.config.PropertiesMap;
 import vellum.datatype.Millis;
 import vellum.lifecycle.Initialisable;
-import vellum.storage.DataSourceConfig;
+import vellum.storage.DataSourceInfo;
 
 /**
  *
@@ -61,7 +61,7 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
     Map<StatusChangeType, Integer> repeatCountMap = new HashMap();
     Map<StatusChangeType, Long> notifyIntervalMap = new HashMap();
     int threadPoolSize = 10;
-    DataSourceConfig dataSourceConfig;
+    DataSourceInfo dataSourceConfig;
     HttpServerConfig httpServerConfig;
     
     public BizstatConfig(BizstatServer server) {
@@ -96,12 +96,13 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
         }
     }
     private void initDataSourceConfig(PropertiesMap props) {
-        dataSourceConfig = new DataSourceConfig(
+        dataSourceConfig = new DataSourceInfo(
                 props.getString("driver"),
                 props.getString("url"),
                 props.getString("user"),
                 props.getString("password", null),
-                props.getBoolean("enabled", true)
+                props.getBoolean("enabled", true),
+                props.getInt("poolSize", 0)
                 );
     }
     
@@ -165,13 +166,11 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
         return outputSize;
     }
 
-    public DataSourceConfig getDataSourceInfo() {
+    public DataSourceInfo getDataSourceInfo() {
         return dataSourceConfig;
     }
 
     public HttpServerConfig getHttpServerConfig() {
         return httpServerConfig;
-    }
-        
-        
+    }               
 }

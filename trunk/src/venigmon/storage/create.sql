@@ -48,30 +48,29 @@ create table admin_user (
   locale varchar(32)
 );
 
-create table service (
-  service_id int auto_increment, 
-  service_name text
-);
-
 create table host_ (
   host_id int auto_increment, 
   host_name text
 );
 
-create table status_info (
+create table service (
+  service_id int auto_increment, 
+  service_name text
+);
+
+create table record (
   host_ varchar(32),
   service varchar(32),
   status varchar(16),
   time_ timestamp,
-  dispatched_time timestamp,
-  notified_time timestamp,
   exit_code integer,
   out_ varchar,
   err_ varchar
 );
 
-create table value_ (
-  value_id int auto_increment, 
+create table metric_record (
+  metric_id int auto_increment, 
+  name_ varchar(32),
   host_ varchar(32),
   service varchar(32),
   value_ float,
