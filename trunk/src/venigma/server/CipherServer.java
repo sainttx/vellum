@@ -43,7 +43,7 @@ public class CipherServer extends Thread implements Closeable {
             } catch (SocketException e) {
                 logger.warn(e.getMessage());
             } catch (Exception e) {
-                logger.warning(e, null);
+                logger.warn(e, null);
             }
         }                    
         Streams.close(serverSocket);
