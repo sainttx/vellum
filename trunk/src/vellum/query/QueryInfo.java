@@ -3,7 +3,7 @@
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
-package vellum.sql.query;
+package vellum.query;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;

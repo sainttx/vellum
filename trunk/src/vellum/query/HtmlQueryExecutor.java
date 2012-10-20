@@ -3,15 +3,13 @@
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
-package vellum.sql.query;
+package vellum.query;
 
-import vellum.jdbc.RowSets;
 import vellum.exception.Exceptions;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.printer.Printer;
 import vellum.util.Calendars;
-import vellum.util.Types;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

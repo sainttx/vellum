@@ -4,9 +4,8 @@
  * Supported by BizSwitch.net
  *
  */
-package vellum.sql.query;
+package vellum.query;
 
-import vellum.jdbc.RowSets;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import com.sun.rowset.CachedRowSetImpl;
