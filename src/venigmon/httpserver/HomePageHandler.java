@@ -5,7 +5,7 @@ package venigmon.httpserver;
 
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.HostServiceStatus;
-import bizstat1.entity.Service;
+import bizstat.entity.Service;
 import bizstat.entity.StatusInfo;
 import bizstat.server.BizstatMessageBuilder;
 import bizstat.server.BizstatServer;
@@ -14,13 +14,12 @@ import java.util.Iterator;
 import vellum.util.DateFormats;
 import vellum.util.Strings;
 import java.util.List;
-import net.bizswitch.bizmon.bizlog.AbstractPageHandler;
-import net.bizswitch.bizmon.bizlog.LogRecord;
+import java.util.logging.LogRecord;
 import vellum.datatype.Millis;
 import vellum.html.TablePrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
-import vellum.util.ListFormatter;
+import vellum.format.ListFormats;
 import venigmon.storage.VenigmonStorage;
 
 /**
@@ -146,7 +145,7 @@ public class HomePageHandler extends AbstractPageHandler {
            p.trd(Millis.formatTime(record.getTimestamp()), 
                    record.getContext().getName(),
                    record.getLevel(), record.getMessage(),
-                   ListFormatter.displayFormatter.formatArray(record.getArgs()));
+                   ListFormats.displayFormatter.formatArray(record.getArgs()));
        }
        p.tbodyClose();
        p.tableDivClose();

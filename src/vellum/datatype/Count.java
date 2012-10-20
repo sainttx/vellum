@@ -3,7 +3,7 @@
  * Supported by BizSwitch.net
  * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  */
-package vellum.util;
+package vellum.datatype;
 
 /**
  *

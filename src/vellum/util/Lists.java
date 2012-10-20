@@ -3,6 +3,9 @@
  */
 package vellum.util;
 
+import vellum.datatype.MapEntryComparator;
+import vellum.datatype.MapValueComparator;
+import vellum.format.ListFormats;
 import java.util.*;
 
 /**
@@ -67,7 +70,7 @@ public class Lists {
      *
      */
     public static String format(Object[] args) {
-        return ListFormatter.formatter.formatArray(args);
+        return ListFormats.formatter.formatArray(args);
     }
 
     /**
@@ -76,7 +79,7 @@ public class Lists {
      *
      */
     public static String format(Collection collection) {
-        return ListFormatter.formatter.formatArray(collection);
+        return ListFormats.formatter.formatArray(collection);
     }
     
     /**

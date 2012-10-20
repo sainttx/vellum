@@ -9,14 +9,14 @@ import vellum.exception.Exceptions;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.printer.Printer;
-import vellum.util.Calendars;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Date;
 import javax.sql.RowSet;
-import vellum.util.ArgFormatter;
+import vellum.format.ArgFormats;
+import vellum.format.CalendarFormats;
 
 /**
  *
@@ -109,11 +109,11 @@ public class HtmlQueryExecutor {
             for (int index = 1; index <= md.getColumnCount(); index++) {
                 String typeName = md.getColumnTypeName(index);
                 Object value = set.getObject(index);
-                String string = ArgFormatter.displayFormatter.format(value);
+                String string = ArgFormats.displayFormatter.format(value);
                 if (string.endsWith(".0")) {
                     string = string.substring(0, string.length() - 2);
                 } else if (typeName.equals("date")) {
-                    string = Calendars.dateFormat.format((Date) value);
+                    string = CalendarFormats.dateFormat.format((Date) value);
                 }
                 out.printf("<td class='%sCell'>%s\n", typeName, string);
             }

@@ -2,13 +2,9 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package vellum.util;
+package vellum.format;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import vellum.util.Calendars;
 import vellum.util.Strings;
 import vellum.util.Types;
 
@@ -16,75 +12,63 @@ import vellum.util.Types;
  *
  * @author evan
  */
-public class ArgFormatter {
+public class ListFormats {
 
-    public static ArgFormatter formatter = new ArgFormatter();
-    public static ArgFormatter verboseFormatter = new ArgFormatter();
-    public static ArgFormatter displayFormatter = new ArgFormatter();
-
-    public static final String DEFAULT_DELIMITER = ", ";
+    public static final String SPACE_DELIMITER = " ";
     public static final String COMMA_DELIMITER = ", ";
+    public static final String DASHED_DELIMITER = "-";
+    public static final String BAR_DELIMITER = "|";
+    
     public static final String SINGLE_QUOTE = "'";
     public static final String DOUBLE_QUOTE = "\"";
+
+    public static final String DEFAULT_DELIMITER = COMMA_DELIMITER;
     
+    public static ListFormats formatter = new ListFormats(false, COMMA_DELIMITER);
+    public static ListFormats displayFormatter = new ListFormats(true, COMMA_DELIMITER);
+    public static ListFormats barExportFormatter = new ListFormats(true, BAR_DELIMITER);
+    public static ListFormats spacedDisplayFormatter = new ListFormats(true, SPACE_DELIMITER);
+    public static ListFormats spacedPrintFormatter = new ListFormats(true, SPACE_DELIMITER);
+    public static ListFormats dashedFormatter = new ListFormats(true, DASHED_DELIMITER);
+    public static ListFormats verboseFormatter = new ListFormats(false, COMMA_DELIMITER);
+
     static {
-        verboseFormatter.verbose = true;
-        displayFormatter.displayable = true;
+        verboseFormatter.verbose = true;        
     }
     
-    boolean displayable = true;
-    boolean verbose = false;
+    TypeFormats typeFormatter;
+    
     String delimiter = COMMA_DELIMITER;
     String quote = DOUBLE_QUOTE;
-            
-    public ArgFormatter() {
-    }
+    boolean displayable = false;
+    boolean verbose = false;    
     
-    public ArgFormatter(boolean displayable, String delimiter) {
+    private ListFormats(boolean displayable, String delimiter) {
         this.displayable = displayable;
         this.delimiter = delimiter;
+        typeFormatter = new TypeFormats(displayable);
     }
     
-    public String format(Object arg) {
-        if (arg == null) {
-            if (displayable) return "";
-            return "null";
-        } else if (arg instanceof Class) {
-            return ((Class) arg).getSimpleName();
-        } else if (arg instanceof Date) {
-            return Calendars.timestampFormat.format((Date) arg);
-        } else if (Strings.isEmpty(arg.toString())) {
-            return "empty";
-        } else if (arg instanceof byte[]) {
-            return String.format("[%s]", formatArray(toList((byte[]) arg)));
-        } else if (arg instanceof Object[]) {
-            return String.format("[%s]", formatArray((Object[]) arg));
-        } else if (arg instanceof String[]) {
-            return String.format("[%s]", formatArray((String[]) arg));
-        } else {
-            return arg.toString();
-        }
-    }    
+    
+    public String formatArray(Collection collection) {
+        return formatArray(collection.toArray());
+    }
 
     public String formatArgs(Object ... args) {
         return formatArray(args);
-    }
-
-    public String formatArray(Collection collection) {
-        return formatArray(collection.toArray());
     }
     
     public String formatArray(Object[] args) {
         if (args == null) {
             if (displayable) return "";
-            return "null[]";
+            return "{null}";
         }
         StringBuilder builder = new StringBuilder();
         for (Object arg : args) {
             if (builder.length() > 0) {
                 builder.append(delimiter);
             }
-            String string = format(arg);
+            String string = typeFormatter.format(arg);
             if (string.contains(delimiter)) {
                 builder.append("{");
                 builder.append(string);
@@ -138,12 +122,6 @@ public class ArgFormatter {
         return builder.toString();
     }
 
-    public List toList(byte[] array) {
-        List list = new ArrayList();
-        for (byte element : array) {
-            list.add(element);
-        }
-        return list;
-    }
     
 }
+

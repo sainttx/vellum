@@ -1,5 +1,5 @@
 
-package venigmon.http.monitor;
+package venigmon.httpserver.monitor;
 
 import vellum.printer.PrintStreamAdapter;
 import vellum.printer.StreamPrinter;
@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.RowSet;
 import vellum.html.TablePrinter;
+import vellum.query.RowSets;
+import vellum.storage.ConnectionPool;
 
 /**
  *
