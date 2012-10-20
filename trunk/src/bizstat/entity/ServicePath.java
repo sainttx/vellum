@@ -1,0 +1,79 @@
+/*
+ * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * 
+ */
+package bizstat.entity;
+
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
+import vellum.util.Args;
+import bizstat.server.BizstatServer;
+import vellum.type.UniqueList;
+import java.util.List;
+import vellum.config.PropertiesMap;
+import vellum.entity.AbstractIdEntity;
+import vellum.entity.ConfigurableEntity;
+
+/**
+ *
+ * @author evan
+ */
+public class ServicePath extends AbstractIdEntity implements ConfigurableEntity {
+    static Logr logger = LogrFactory.getLogger(ServicePath.class);
+    
+    String name;
+    String label;
+    boolean enabled = true;
+
+    transient Network network;
+    transient List<Service> serviceList = new UniqueList();
+    transient List<ContactGroup> contactGroupList = new UniqueList();
+    
+    public ServicePath() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Service> getServiceList() {
+        return serviceList;
+    }
+
+    public List<ContactGroup> getContactGroupList() {
+        return contactGroupList;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    @Override
+    public Comparable getId() {
+        return name;
+    }
+    
+    @Override
+    public String toString() {
+        return Args.format(name, serviceList);
+    }
+
+    @Override
+    public void set(BizstatServer server, PropertiesMap properties) {
+        label = properties.getString("label", null);
+        enabled = properties.getBoolean("enabled", true);
+        network = server.getConfigStorage().find(Network.class, properties.getString("network"));
+        network.getServicePathList().add(this);
+        for (String serviceName : properties.splitCsv("services")) {
+            Service service = server.getConfigStorage().find(Service.class, serviceName);
+            logger.info("services add", name, serviceName);
+            serviceList.add(service);
+        }
+    }
+    
+}

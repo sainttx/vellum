@@ -1,0 +1,73 @@
+/*
+ * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * 
+ */
+package bizstat.server;
+
+import vellum.datatype.Millis;
+import vellum.util.Calendars;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
+import bizstat.entity.*;
+import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import vellum.util.DateFormats;
+
+/**
+ *
+ * @author evan
+ */
+public class BizstatScheduler implements Runnable {
+
+    Logr logger = LogrFactory.getLogger(BizstatScheduler.class);
+    
+    BizstatServer server;
+
+    public BizstatScheduler(BizstatServer server) {
+        this.server = server;
+    }
+
+    @Override
+    public void run() {
+        for (Network network : server.networkList) {
+            if (network.isEnabled()) {
+                schedule(network);
+            }
+        }
+    }        
+    
+    private void schedule(Network network) {
+        for (Host host : network.getHostList()) {
+            if (host.isEnabled()) {
+                schedule(host);
+            }
+        }
+    }
+    
+    private void schedule(Host host) {
+        for (Service service : host.getServiceList()) {
+            if (service.isEnabled() && service.getScheduleTime() != null) {
+                schedule(host, service);
+            }
+        }
+    }
+    
+    private void schedule(Host host, Service service) {
+        Calendar calendar = Calendar.getInstance();
+        Calendars.setTime(calendar, service.getScheduleTime());
+        long currentMillis = System.currentTimeMillis();
+        long scheduleMillis = calendar.getTimeInMillis();
+        if (scheduleMillis < currentMillis) scheduleMillis += Millis.fromDays(1);
+        long initialDelay =  scheduleMillis - currentMillis;
+        if (initialDelay < 0) initialDelay += Millis.fromDays(1);
+        long period = service.getIntervalMillis();
+        logger.info("schedule", host, service, 
+                DateFormats.timeFormat.format(service.getScheduleTime()), 
+                calendar.getTime(), initialDelay, period);
+        server.getStatus(new HostServiceKey(host, service)).schedule(initialDelay, period);
+    }
+    
+      
+    
+}
