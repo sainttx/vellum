@@ -4,9 +4,9 @@
  */
 package venigmon.storage;
 
-import bizstat1.entity.Host;
+import bizstat.entity.Host;
 import bizstat.entity.HostServiceKey;
-import bizstat1.entity.Service;
+import bizstat.entity.Service;
 import bizstat.entity.StatusInfo;
 import bizstat.enumtype.ServiceStatus;
 import java.sql.*;

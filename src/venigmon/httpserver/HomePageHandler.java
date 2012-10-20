@@ -14,7 +14,6 @@ import java.util.Iterator;
 import vellum.util.DateFormats;
 import vellum.util.Strings;
 import java.util.List;
-import java.util.logging.LogRecord;
 import vellum.datatype.Millis;
 import vellum.html.TablePrinter;
 import vellum.logr.LogrFactory;
@@ -97,33 +96,30 @@ public class HomePageHandler extends AbstractPageHandler {
         out.printf("</div>\n");
     }
 
-    private void print(List<LogRecord> records) {
+    private void print(List<LogrRecord> records) {
         out.printf("<h3>log</h3>\n");
         out.printf("<table class='resultSet'>\n");
         int rowCount = 0;
-        for (LogRecord message : records) {
+        for (LogrRecord message : records) {
             out.printf("<tr class=row%d>\n", ++rowCount % 2);
             String string = Strings.escapeXml(message.getMessage().trim());
-            if (message.getConciseMessage() != null) {
-                string = message.getConciseMessage();
-            }
             string = string.trim();
             StringBuilder detailBuilder = new StringBuilder();
             if (string.length() > 0) {
                 detailBuilder.append(string);
             }
-            if (message.getDetail() != null) {
+            if (message.getMessage() != null) {
                 if (detailBuilder.length() > 0) {
                     detailBuilder.append("<br>");
                 }
                 detailBuilder.append("<pre>");
-                detailBuilder.append(Strings.escapeXml(message.getDetail().trim()));
+                detailBuilder.append(Strings.escapeXml(message.getMessage().trim()));
                 detailBuilder.append("</pre>");
             }
             out.printf("<td>%s<td>%s<td><b>%s</b><td>%s\n",
                     DateFormats.formatTime(message.getTimestamp()),
                     message.getLevel(),
-                    message.getCategory(),
+                    message.getContext().getName(),
                     detailBuilder.toString());
         }
         out.printf("</table>\n");

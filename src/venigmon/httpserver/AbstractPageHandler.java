@@ -19,10 +19,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.zip.GZIPOutputStream;
-import server.parameter.ParameterMap;
-import server.parameter.Parameters;
+import vellum.parameter.Entry;
+import vellum.parameter.ParameterMap;
+import vellum.parameter.Parameters;
 
 /**
  *

@@ -10,7 +10,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Date;
 import javax.sql.RowSet;
-import net.bizswitch.bizmon.bizlog.AbstractPageHandler;
 import vellum.html.TablePrinter;
 import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
