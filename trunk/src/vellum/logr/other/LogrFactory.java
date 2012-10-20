@@ -3,8 +3,9 @@
  * (c) Copyright 2012, Evan Summers
  */
 
-package vellum.logr;
+package vellum.logr.other;
 
+import vellum.logr.simple.SimpleLogrProvider;
 import org.slf4j.LoggerFactory;
 
 /**

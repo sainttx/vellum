@@ -3,9 +3,13 @@
  * (c) Copyright 2012, Evan Summers
  */
 
-package vellum.logr;
+package vellum.logr.simple;
 
-import vellum.logr.*;
+import vellum.logr.other.Logr;
+import vellum.logr.other.LogrAdapter;
+import vellum.logr.other.LogrContext;
+import vellum.logr.other.LogrLevel;
+import vellum.logr.other.LogrProvider;
 
 /**
  *
