@@ -5,6 +5,7 @@
  */
 package vellum.util;
 
+import vellum.format.CalendarFormats;
 import vellum.exception.ArgsRuntimeException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -42,7 +43,7 @@ public class Convertors {
       } else if (propertyType == BigDecimal.class) {
          return BigDecimal.valueOf(Double.parseDouble(string));
       } else if (propertyType == Date.class) {
-         return Calendars.parseDate(string);
+         return CalendarFormats.parseDate(string);
       }
       throw new ArgsRuntimeException(propertyType, string);
    }

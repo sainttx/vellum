@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.RowSet;
 import javax.sql.rowset.CachedRowSet;
-import vellum.util.ListFormatter;
+import vellum.format.ListFormats;
 
 /**
  *
@@ -34,11 +34,11 @@ public class RowSets {
     public static Logr logger = LogrFactory.getLogger(RowSets.class);
 
     public static String formatArgsQuoted(Object[] array) {
-        return ListFormatter.formatter.formatQuote(array);
+        return ListFormats.formatter.formatQuote(array);
     }
 
     public static String formatArgs(Object ... args) {
-        return ListFormatter.formatter.formatArray(args);
+        return ListFormats.formatter.formatArray(args);
     }
     
     public static void close(Statement statement) {

@@ -12,7 +12,7 @@ import vellum.printer.Printer;
 import vellum.util.Types;
 import java.sql.ResultSetMetaData;
 import javax.sql.RowSet;
-import vellum.util.ArgFormatter;
+import vellum.format.ArgFormats;
 
 /**
  *
@@ -45,7 +45,7 @@ public class HtmlRowSetPrinter {
             out.printf("<tr class='row%d'>\n", resultCount % 2);
             for (int index = 1; index <= md.getColumnCount(); index++) {
                Object value = set.getObject(index);
-               String string = ArgFormatter.displayFormatter.format(value);
+               String string = ArgFormats.displayFormatter.format(value);
                if (string.endsWith(".0")) {
                   string = string.substring(0, string.length() - 2);
                }

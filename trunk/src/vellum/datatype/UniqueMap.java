@@ -3,8 +3,9 @@
  * Supported by BizSwitch.net
  * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
  */
-package vellum.util;
+package vellum.datatype;
 
+import vellum.format.ArgFormats;
 import java.util.HashMap;
 
 /**
@@ -15,7 +16,7 @@ public class UniqueMap<K, V> extends HashMap<K, V> {
 
     public V put(K key, V value) {
         if (key == null) {
-            throw new NullPointerException(ArgFormatter.formatter.formatArgs(key, value));
+            throw new NullPointerException(ArgFormats.formatter.formatArgs(key, value));
         }
         V previous = super.put(key, value);
         if (previous != null) {

@@ -2,7 +2,7 @@
  * (c) Copyright 2011, iPay (Pty) Ltd
  */
 
-package vellum.util;
+package vellum.datatype;
 
 import java.util.Comparator;
 import java.util.Map;

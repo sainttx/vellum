@@ -4,6 +4,8 @@
  */
 package vellum.util;
 
+import vellum.format.ArgFormats;
+
 /**
  * Utility methods related to classes.
  * Utility methods for specific types eg {@code String}, are found in {@code Strings}.
@@ -17,7 +19,7 @@ public class Args {
      * 
      */
     public static String format(Object ... args) {
-        return ArgFormatter.formatter.formatArray(args);
+        return ArgFormats.formatter.formatArray(args);
     }
     
     /**

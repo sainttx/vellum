@@ -2,19 +2,22 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package vellum.util;
+package vellum.format;
 
 import java.util.Collection;
 import java.util.Date;
+import vellum.util.DateFormats;
+import vellum.util.Lists;
+import vellum.util.Strings;
 /**
  *
  * @author evan
  */
-public class TypeFormatter {
+public class TypeFormats {
 
-    public static TypeFormatter formatter = new TypeFormatter(false);
-    public static TypeFormatter verboseFormatter = new TypeFormatter(true);
-    public static TypeFormatter displayFormatter = new TypeFormatter(true);
+    public static TypeFormats formatter = new TypeFormats(false);
+    public static TypeFormats verboseFormatter = new TypeFormats(true);
+    public static TypeFormats displayFormatter = new TypeFormats(true);
     
     static {
         verboseFormatter.verbose = true;
@@ -24,7 +27,7 @@ public class TypeFormatter {
     boolean displayable = false;
     boolean verbose = false;
     
-    TypeFormatter(boolean displayable) {
+    TypeFormats(boolean displayable) {
         this.displayable = displayable;
     }
     

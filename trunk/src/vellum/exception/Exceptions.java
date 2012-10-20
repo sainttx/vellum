@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import vellum.util.Strings;
-import vellum.util.ArgFormatter;
+import vellum.format.ArgFormats;
 
 /**
  * Utility methods related to exceptions.
@@ -25,7 +25,7 @@ public class Exceptions {
     }
 
     public static String getMessage(Object[] args) {
-        return ArgFormatter.formatter.format(args);
+        return ArgFormats.formatter.format(args);
     }
 
     public static RuntimeException newRuntimeException(Object ... args) {
