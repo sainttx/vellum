@@ -8,8 +8,6 @@ import vellum.storage.StorageExceptionType;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import bizstat.server.BizstatServer;
-import vellum.entity.EntityMap;
-import vellum.entity.IdEntity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
