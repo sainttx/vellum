@@ -12,7 +12,7 @@ import vellum.printer.Printer;
 import vellum.util.Types;
 import java.sql.ResultSetMetaData;
 import javax.sql.RowSet;
-import vellum.util.formatter.ArgFormatter;
+import vellum.util.ArgFormatter;
 
 /**
  *

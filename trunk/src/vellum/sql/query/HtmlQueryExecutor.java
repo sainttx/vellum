@@ -18,7 +18,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Date;
 import javax.sql.RowSet;
-import vellum.util.formatter.ArgFormatter;
+import vellum.util.ArgFormatter;
 
 /**
  *

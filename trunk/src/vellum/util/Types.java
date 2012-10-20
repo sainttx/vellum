@@ -4,8 +4,6 @@
  */
 package vellum.util;
 
-import vellum.util.formatter.ArgFormatter;
-
 /**
  * Utility methods related to classes.
  * Utility methods for specific types eg {@code String}, are found in {@code Strings}.

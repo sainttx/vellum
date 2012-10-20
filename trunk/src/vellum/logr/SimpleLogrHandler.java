@@ -10,7 +10,7 @@ import vellum.logr.LogrContext;
 import vellum.logr.LogrRecord;
 import vellum.logr.LogrLevel;
 import java.io.PrintStream;
-import vellum.util.formatter.ArgFormatter;
+import vellum.util.ArgFormatter;
 
 /**
  *

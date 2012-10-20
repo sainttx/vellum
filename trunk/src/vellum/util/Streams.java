@@ -5,20 +5,17 @@
  */
 package vellum.util;
 
+import java.io.*;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.exception.ArgsRuntimeException;
 import vellum.exception.Exceptions;
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
+import vellum.exception.SizeRuntimeException;
 
 /**
  *
@@ -26,6 +23,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class Streams {
 
+    public static final String fileSeparator = System.getProperty("file.separator");
     public static final String userHomeDir = System.getProperty("user.home");
     public static Logr logger = LogrFactory.getLogger(Streams.class);
 
@@ -189,4 +187,84 @@ public class Streams {
         srcFile.renameTo(destFile);
         logger.info("replaceFile", srcFileName, destFileName);
     }
+    
+    public static List<String> readLineList(InputStream stream, int capacity) {
+        List<String> lineList = new ArrayList();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        while (true) {
+            try {
+                String line = reader.readLine();
+                if (line == null) {
+                    return lineList;
+                }
+                lineList.add(line);
+                if (lineList.size() > capacity) {
+                    throw new SizeRuntimeException(lineList.size());
+                }                
+            } catch (Exception e) {
+                throw Exceptions.newRuntimeException(e);
+            }
+        }
+    }
+
+    public static void read(InputStream stream, StringBuilder builder) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        while (true) {
+            try {
+                String line = reader.readLine();
+                if (line == null) {
+                    return;
+                }
+                if (builder != null) {
+                    builder.append(line);
+                    builder.append("\n");
+                }
+            } catch (Exception e) {
+                throw Exceptions.newRuntimeException(e);
+            }
+        }
+    }
+    
+    public static String readString(InputStream stream, long capacity) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder builder = new StringBuilder();
+        while (true) {
+            try {
+                String line = reader.readLine();
+                if (line == null) {
+                    return builder.toString();
+                }
+                builder.append(line);
+                builder.append("\n");
+                if (builder.length() > capacity) {
+                    throw new SizeRuntimeException(builder.length());
+                }
+            } catch (Exception e) {
+                throw Exceptions.newRuntimeException(e);
+            }
+        }
+    }
+
+    public static void flush() {
+        System.out.flush();
+        System.err.flush();
+    }
+
+    public static void printStackTrace(Exception e) {
+        flush();
+        e.printStackTrace(System.err);
+    }
+
+    public static PrintWriter newPrintWriter(OutputStream outputStream) {        
+        return new PrintWriter(outputStream);
+    }
+
+    public static String baseName(String fileName) {
+        int index = fileName.lastIndexOf(fileSeparator);
+        if (index >= 0) {
+            return fileName.substring(index + 1);
+        }
+        return fileName;
+    }
+    
 }

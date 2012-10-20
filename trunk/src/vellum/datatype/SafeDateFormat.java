@@ -1,6 +1,5 @@
 /*
- * Apache Software License 2.0
- * Supported by BizSwitch.net   
+ * Apache Software License 2.0   
  *
  */
 package vellum.datatype;
@@ -8,10 +7,11 @@ package vellum.datatype;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import vellum.exception.ParseRuntimeException;
 
 /**
  *
- * @author evanx
+ * @author evans
  */
 public class SafeDateFormat {
 
@@ -34,13 +34,22 @@ public class SafeDateFormat {
       return dateFormat.format(date);
    }
 
-   public synchronized Date parse(String string) throws ParseException {
+   public synchronized Date parse(String string){
+       return parse(string, null);
+       
+   }
+   
+   public synchronized Date parse(String string, Date defaultValue){
       if (string == null || string.isEmpty()) {
-         return null;
+         return defaultValue;
       }
       if (string.length() > pattern.length()) {
           string = string.substring(0, pattern.length());
       }
-      return dateFormat.parse(string);
+        try {
+            return dateFormat.parse(string);
+        } catch (ParseException e) {
+            throw new ParseRuntimeException(string, e);
+        }
    }
 }

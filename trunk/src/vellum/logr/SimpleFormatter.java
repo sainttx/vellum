@@ -7,7 +7,7 @@ package vellum.logr;
 import vellum.logr.LogrContext;
 import vellum.logr.LogrFormatter;
 import vellum.logr.LogrRecord;
-import vellum.util.formatter.ArgFormatter;
+import vellum.util.ArgFormatter;
 
 /**
  *
