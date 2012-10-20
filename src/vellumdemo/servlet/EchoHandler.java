@@ -3,12 +3,13 @@
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
-package servlet.common;
+package vellumdemo.servlet;
 
 import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.Set;
  */
 public class EchoHandler implements HttpHandler {
 
+    @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         StringBuilder response = new StringBuilder();
         Headers headers = httpExchange.getRequestHeaders();
