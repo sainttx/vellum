@@ -3,13 +3,14 @@
  * (c) Copyright 2012, Evan Summers
  */
 
-package vellum.logr;
+package vellum.logr.simple;
 
 import vellum.logr.LogrHandler;
 import vellum.logr.LogrContext;
 import vellum.logr.LogrRecord;
 import vellum.logr.LogrLevel;
 import java.io.PrintStream;
+import vellum.logr.other.SimpleFormatter;
 import vellum.util.ArgFormatter;
 
 /**

@@ -1,6 +1,6 @@
 /*
  */
-package vellum.logr;
+package vellum.logr.other;
 
 /**
  *
