@@ -134,7 +134,15 @@ public class Calendars {
         return calendar.get(Calendar.YEAR);
     }
 
-    public static void main(String[] args) {
-        System.err.println(getCurrentYear());
+    public static void setTime(Calendar calendar, int hour, int minute, int second) {
+        calendar.set(HOUR_OF_DAY, hour);
+        calendar.set(MINUTE, minute);
+        calendar.set(SECOND, second);
+        calendar.set(MILLISECOND, 0);        
+    }
+    
+    public static void setTime(Calendar calendar, Date time) {
+        Calendar timeCal = newCalendar(time);
+        setTime(calendar, timeCal.get(HOUR_OF_DAY), timeCal.get(MINUTE), timeCal.get(SECOND));
     }
 }

@@ -8,11 +8,7 @@ import vellum.enumtype.DelimiterType;
 import vellum.exception.Exceptions;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class contains several useful methods for working with Strings,
@@ -40,6 +36,52 @@ public class Strings {
         return null;
     }
 
+    /**
+     * Format args using pattern.
+     * 
+     */
+    public static String format(String string, Object[] args) {
+        List list = new ArrayList();
+        for (Object arg : args) {
+            if (arg instanceof Date) {
+                arg = DateFormats.timestampFormat.format((Date) arg);
+            }
+            list.add(arg);
+        }
+        return String.format(string, list.toArray());
+    }
+
+    /**
+     * Join list of lines.
+     * 
+     * @return 
+     */
+    public static String joinLines(List<String> lineList) {
+        StringBuilder builder = new StringBuilder();
+        for (String line : lineList) {
+            if (builder.length() > 0) {
+                builder.append("\n");
+            }
+            builder.append(line);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * check equality.
+     * 
+     */
+    public static boolean equals(List<String> list, List<String> otherList) {
+        if (list == null || otherList == null || list.size() != otherList.size()) return false;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) == null || otherList.get(i) == null) return false;
+            if (!list.get(i).equals(otherList.get(i))) {
+                return false;                
+            }
+        }
+        return true;
+    }
+    
     /**
      * This class cannot be instantiated, since all of its methods are static.
      *
