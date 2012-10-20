@@ -36,7 +36,7 @@ public class JulAdapter implements LogrHandler {
     
     Level getLevel(LogrLevel level) {
         if (level == LogrLevel.TRACE) return Level.FINER;
-        else if (level == LogrLevel.DEBUG) return Level.FINE;
+        else if (level == LogrLevel.VERBOSE) return Level.FINE;
         else if (level == LogrLevel.INFO) return Level.INFO;
         else if (level == LogrLevel.WARN) return Level.WARNING;
         else if (level == LogrLevel.ERROR) return Level.SEVERE;

@@ -20,7 +20,7 @@ import vellum.util.ArgFormatter;
 public class SimpleLogrHandler implements LogrHandler {
     LogrContext context;
     PrintStream err = System.err;
-    LogrLevel level = LogrLevel.DEBUG;
+    LogrLevel level = LogrLevel.VERBOSE;
     SimpleFormatter formatter = new SimpleFormatter();
     
     public SimpleLogrHandler(LogrContext context, LogrLevel level) {
