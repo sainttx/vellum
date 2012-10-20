@@ -6,9 +6,9 @@
 package server.adhocquery;
 
 import server.common.PageHandler;
-import vellum.sql.query.HtmlQueryExecutor;
-import vellum.sql.query.QueryInfo;
-import vellum.sql.query.QueryInfoMap;
+import vellum.query.HtmlQueryExecutor;
+import vellum.query.QueryInfo;
+import vellum.query.QueryInfoMap;
 
 /**
  *
