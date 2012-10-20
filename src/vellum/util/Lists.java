@@ -4,12 +4,7 @@
  */
 package vellum.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import vellum.util.formatter.ArgFormatter;
+import java.util.*;
 
 /**
  * Utility methods related to classes.
@@ -155,5 +150,42 @@ public class Lists {
     public static Object[] toArray(String[] array) {
         return Arrays.asList(array).toArray();
     }
+
+
+    public static <T> LinkedList<T> sortedLinkedList(Collection<T> collection, Comparator<T> comparator) {
+        LinkedList list = new LinkedList(collection);
+        Collections.sort(list, comparator);
+        return list;
+    }
+    
+    public static <T> LinkedList<T> sortedReverseLinkedList(Collection<T> collection, Comparator<T> comparator) {
+        return sortedLinkedList(collection, Collections.reverseOrder(comparator));
+    }
+
+
+    public static List<Map.Entry> sortedEntryList(Map map) {
+        List list = new ArrayList(map.entrySet());
+        Collections.sort(list, new MapEntryComparator());
+        return list;
+    }
+    
+
+    public static boolean contains(String[] array, String string) {
+        for (String item : array) {
+            if (item.equals(string)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static List toList(byte[] array) {
+        List list = new ArrayList();
+        for (byte element : array) {
+            list.add(element);
+        }
+        return list;
+    }
+       
     
 }

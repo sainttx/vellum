@@ -5,13 +5,13 @@
  */
 package vellum.util;
 
-import vellum.datatype.SafeDateFormat;
 import vellum.exception.Exceptions;
 import java.text.ParseException;
 import static java.util.Calendar.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import vellum.datatype.SafeDateFormat;
 
 /**
  *
@@ -26,7 +26,6 @@ public class Calendars {
     public static final SafeDateFormat millisTimestampFormat = new SafeDateFormat(millisTimestampPattern);
     public static final SafeDateFormat timeFormat = new SafeDateFormat("HH:mm:ss");
     public static final SafeDateFormat shortTimeFormat = new SafeDateFormat("HH:mm");
-
 
     public static long getIntervalMillis(Date from, Date to) {
         return Math.abs(to.getTime() - from.getTime());
@@ -81,19 +80,11 @@ public class Calendars {
     }
 
     public static Calendar parseCalendar(SafeDateFormat dateFormat, String string) {
-        try {
-            return newCalendar(dateFormat.parse(string));
-        } catch (ParseException e) {
-            throw Exceptions.newRuntimeException(e);
-        }
+        return newCalendar(dateFormat.parse(string));
     }
 
     public static Date parse(SafeDateFormat dateFormat, String string) {
-        try {
-            return dateFormat.parse(string);
-        } catch (ParseException e) {
-            throw Exceptions.newRuntimeException(e);
-        }
+        return dateFormat.parse(string);
     }
 
     public static Date parseTimestampMillis(String string) {

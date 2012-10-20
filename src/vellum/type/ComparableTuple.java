@@ -6,7 +6,7 @@ package vellum.type;
 
 import vellum.util.Args;
 import vellum.util.Comparables;
-import vellum.util.formatter.ArgFormatter;
+import vellum.util.ArgFormatter;
 
 /**
  *
