@@ -4,10 +4,10 @@
  * Supported by BizSwitch.net
  */
 
-package vellum.sql.resource;
+package vellum.query;
 
-import vellum.sql.query.QueryInfo;
-import vellum.sql.query.QueryInfoMap;
+import vellum.query.QueryInfo;
+import vellum.query.QueryInfoMap;
 import java.io.InputStream;
 
 /**

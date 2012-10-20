@@ -4,7 +4,7 @@
  * Supported by BizSwitch.net
  */
 
-package vellum.sql.query;
+package vellum.query;
 
 import vellum.parameter.Parameters;
 import vellum.util.Args;

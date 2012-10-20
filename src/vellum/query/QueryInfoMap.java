@@ -3,13 +3,12 @@
  * Apache Software License 2.0
  * Supported by BizSwitch.net
  */
-package vellum.sql.query;
+package vellum.query;
 
 import vellum.exception.Exceptions;
 import vellum.parameter.Parameters;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.sql.resource.QueryResource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
