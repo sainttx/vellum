@@ -10,8 +10,6 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import bizstat.entity.*;
 import java.util.*;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import vellum.util.DateFormats;
 
 /**
