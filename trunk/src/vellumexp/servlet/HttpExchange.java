@@ -2,7 +2,7 @@
  * Copyright 2011, Evan Summers
  * Apache Software License 2.0
  */
-package servlet.common;
+package vellumexp.servlet;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
