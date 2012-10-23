@@ -12,7 +12,7 @@ import java.util.Collection;
  */
 public class StatusInfos {
 
-    public static String toString(Collection<StatusInfo> collection) {
+    public static String toString(Collection<ServiceRecord> collection) {
         return String.format("%d %s", collection.size(), collection.iterator().next());
     }
 

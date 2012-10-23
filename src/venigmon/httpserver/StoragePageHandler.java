@@ -39,6 +39,7 @@ public class StoragePageHandler extends AbstractPageHandler {
         try {
             connection = connectionPool.getConnection();
             queryDatabaseTime();
+            print(RowSets.getRowSet(connection, "select * from service_record"));
             printSchema();
             ok = true;
         } finally {
@@ -65,7 +66,6 @@ public class StoragePageHandler extends AbstractPageHandler {
 
     private void printSchema() throws Exception {
         databaseMetaData = connection.getMetaData();
-        print(RowSets.getRowSet(connection, "select * from status_info"));
         RowSet rowSet = RowSets.getRowSet(connection, "select * from schema_revision order by update_time desc");
         print(rowSet);
         rowSet.first();

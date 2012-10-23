@@ -42,6 +42,10 @@ public class Service extends AbstractIdEntity implements ConfigurableEntity {
     public Service() {
     }
 
+    public Service(String name) {
+        this.name = name;
+    }
+    
     @Override
     public void setName(String name) {
         this.name = name;

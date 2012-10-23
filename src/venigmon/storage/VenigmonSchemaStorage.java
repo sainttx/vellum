@@ -15,15 +15,16 @@ import vellum.logr.LogrFactory;
  *
  * @author evan
  */
-public class SchemaStorage {
+public class VenigmonSchemaStorage {
 
     static final int MIN_VERSION_NUMBER = 0;
-    static final int CURRENT_VERSION_NUMBER = 2;
-    Logr logger = LogrFactory.getLogger(SchemaStorage.class);
+    static final int CURRENT_VERSION_NUMBER = 0;
+    
+    Logr logger = LogrFactory.getLogger(VenigmonSchemaStorage.class);
     VenigmonStorage storage;
     DatabaseMetaData databaseMetaData;
 
-    public SchemaStorage(VenigmonStorage storage) {
+    public VenigmonSchemaStorage(VenigmonStorage storage) {
         this.storage = storage;
     }
 
@@ -33,7 +34,7 @@ public class SchemaStorage {
         } else if (verifySchemaVersion()) {
         } else {
             createSchema();
-        }
+        }        
     }
 
     private boolean verifySchemaVersion() throws Exception {
@@ -56,6 +57,8 @@ public class SchemaStorage {
             }
             ok = true;
             return versionNumber >= MIN_VERSION_NUMBER;
+        } catch (Exception e) {
+            throw e;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
@@ -65,7 +68,7 @@ public class SchemaStorage {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            String sqlScriptName = "create.sql";
+            String sqlScriptName = getClass().getSimpleName() + ".sql";
             InputStream stream = getClass().getResourceAsStream(sqlScriptName);
             logger.verbose(sqlScriptName);
             byte[] bytes = new byte[stream.available()];

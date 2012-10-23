@@ -40,7 +40,7 @@ public class BizstatNotifier implements Runnable {
         logger.info("notifyStatus", notifyStatusSet.last());
         for (HostServiceStatus status : notifyStatusSet) {
             status.setNotifiedMillis(server.notifiedMillis);
-            server.getDataStorage().insert(status.getStatusInfo());
+            server.getDataStorage().insert(status.getServiceRecord());
             notifyContact(status);
         }
         for (BizstatContactNotifier contactNotifier : contactNotifierMap.values()) {
@@ -51,12 +51,12 @@ public class BizstatNotifier implements Runnable {
     private void notifyContact(HostServiceStatus status) {
         for (ContactGroup contactGroup : status.getContactGroupList()) {
             if (contactGroup.isEnabled()) {
-                notifyStatus(contactGroup, status.getStatusInfo());
+                notifyStatus(contactGroup, status.getServiceRecord());
             }
         }
     }
 
-    private void notifyStatus(ContactGroup contactGroup, StatusInfo statusInfo) {
+    private void notifyStatus(ContactGroup contactGroup, ServiceRecord statusInfo) {
         logger.info("notify", contactGroup, statusInfo);
         for (Contact contact : contactGroup.getContactList()) {
             if (contact.isEnabled() && !server.isStopped()) {

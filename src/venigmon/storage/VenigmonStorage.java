@@ -5,8 +5,8 @@
 package venigmon.storage;
 
 import vellum.datatype.EntityCache;
-import bizstat.entity.StatusInfo;
-import vellum.storage.DataSourceInfo;
+import bizstat.entity.ServiceRecord;
+import vellum.storage.DataSourceConfig;
 import javax.sql.DataSource;
 import vellum.datatype.SimpleEntityCache;
 import vellum.logr.Logr;
@@ -21,12 +21,12 @@ import venigmon.schema.SchemaPrinter;
 public class VenigmonStorage {
 
     Logr logger = LogrFactory.getLogger(VenigmonStorage.class);
-    DataSourceInfo dataSourceInfo;
+    DataSourceConfig dataSourceInfo;
     ConnectionPool connectionPool;
     DataSource dataSource;
     EntityCache<String> entityCache;
 
-    public VenigmonStorage(DataSourceInfo dataSourceInfo) {
+    public VenigmonStorage(DataSourceConfig dataSourceInfo) {
         this(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceInfo));
     }
             
@@ -37,7 +37,7 @@ public class VenigmonStorage {
     
     public void init() throws Exception {
         Class.forName(dataSourceInfo.getDriver());
-        new SchemaStorage(this).verifySchema();
+        new VenigmonSchemaStorage(this).verifySchema();
         new SchemaPrinter().handle(connectionPool, System.out, "PUBLIC");
     }
 
@@ -45,8 +45,8 @@ public class VenigmonStorage {
         return new AdminUserStorage(this);
     }
 
-    public StatusInfoStorage getStatusInfoStorage() {
-        return new StatusInfoStorage(this);
+    public ServiceRecordStorage getServiceRecordStorage() {
+        return new ServiceRecordStorage(this);
     }
 
     public <T> T getEntity(Class<T> type, String name) {
@@ -57,11 +57,11 @@ public class VenigmonStorage {
         return value;
     }
 
-    public void insert(StatusInfo statusInfo) {
+    public void insert(ServiceRecord serviceRecord) {
         try {
-            getStatusInfoStorage().insert(statusInfo);
+            getServiceRecordStorage().insert(serviceRecord);
         } catch (Exception e) {
-            logger.warn(e, "setStatusInfo", statusInfo);
+            logger.warn(e, "setStatusInfo", serviceRecord);
         }
     }
 

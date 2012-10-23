@@ -16,12 +16,12 @@ import java.util.Queue;
  */
 public class SimpleConnectionPool implements ConnectionPool {
 
-    DataSourceInfo dataSourceInfo;
+    DataSourceConfig dataSourceInfo;
     Queue<Connection> connectionQueue = new LinkedList();
     int poolSize = 0;
     int taken = 0;
 
-    public SimpleConnectionPool(DataSourceInfo dataSourceInfo) {
+    public SimpleConnectionPool(DataSourceConfig dataSourceInfo) {
         if (dataSourceInfo.getPoolSize() != null) {
             this.poolSize = dataSourceInfo.getPoolSize();
         } 

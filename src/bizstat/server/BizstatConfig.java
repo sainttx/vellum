@@ -6,11 +6,9 @@ package bizstat.server;
 
 import venigmon.httpserver.HttpServerConfig;
 import bizstat.enumtype.StatusChangeType;
-import vellum.util.Bytes;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Systems;
-import bizstat.enumtype.ServiceStatus;
 import vellum.datatype.TimePeriod;
 import java.io.File;
 import java.util.Collection;
@@ -20,9 +18,8 @@ import java.util.Map;
 import vellum.config.ConfigException;
 import vellum.config.ConfigExceptionType;
 import vellum.config.PropertiesMap;
-import vellum.datatype.Millis;
 import vellum.lifecycle.Initialisable;
-import vellum.storage.DataSourceInfo;
+import vellum.storage.DataSourceConfig;
 
 /**
  *
@@ -61,7 +58,7 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
     Map<StatusChangeType, Integer> repeatCountMap = new HashMap();
     Map<StatusChangeType, Long> notifyIntervalMap = new HashMap();
     int threadPoolSize = 10;
-    DataSourceInfo dataSourceConfig;
+    DataSourceConfig dataSourceConfig;
     HttpServerConfig httpServerConfig;
     
     public BizstatConfig(BizstatServer server) {
@@ -92,18 +89,8 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
     private void initDataSourceConfig() {
         String dataSource = properties.getString("dataSource", null);
         if (dataSource != null) {
-            initDataSourceConfig(server.configMap.find("DataSource", dataSource).getProperties());
+            dataSourceConfig = new DataSourceConfig(server.configMap.find("DataSource", dataSource).getProperties());
         }
-    }
-    private void initDataSourceConfig(PropertiesMap props) {
-        dataSourceConfig = new DataSourceInfo(
-                props.getString("driver"),
-                props.getString("url"),
-                props.getString("user"),
-                props.getString("password", null),
-                props.getBoolean("enabled", true),
-                props.getInt("poolSize", 0)
-                );
     }
     
     @Override
@@ -166,7 +153,7 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
         return outputSize;
     }
 
-    public DataSourceInfo getDataSourceInfo() {
+    public DataSourceConfig getDataSourceInfo() {
         return dataSourceConfig;
     }
 

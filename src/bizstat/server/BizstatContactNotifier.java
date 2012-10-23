@@ -22,14 +22,14 @@ public class BizstatContactNotifier implements Runnable {
     BizstatServer server;
     Contact contact;
     Date notifyTime = null;
-    List<StatusInfo> statusInfoList = new ArrayList();
+    List<ServiceRecord> statusInfoList = new ArrayList();
     
     public BizstatContactNotifier(BizstatServer server, Contact contact) {
         this.server = server;
         this.contact = contact;
     }
 
-    public List<StatusInfo> getStatusInfoList() {
+    public List<ServiceRecord> getStatusInfoList() {
         return statusInfoList;
     }
     

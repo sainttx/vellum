@@ -4,7 +4,7 @@
  */
 package bizstat.server;
 
-import bizstat.entity.StatusInfo;
+import bizstat.entity.ServiceRecord;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -12,13 +12,13 @@ import java.util.TreeSet;
  *
  * @author evans
  */
-public class StatusInfoSet extends TreeSet<StatusInfo> {
+public class StatusInfoSet extends TreeSet<ServiceRecord> {
 
     public StatusInfoSet() {
-        super(new Comparator<StatusInfo>() {
+        super(new Comparator<ServiceRecord>() {
 
             @Override
-            public int compare(StatusInfo o1, StatusInfo o2) {
+            public int compare(ServiceRecord o1, ServiceRecord o2) {
                 return o1.getKey().compareTo(o2.getKey());
             }
         });

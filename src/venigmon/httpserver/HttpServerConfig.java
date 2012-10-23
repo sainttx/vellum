@@ -4,6 +4,8 @@
  */
 package venigmon.httpserver;
 
+import vellum.config.PropertiesMap;
+
 /**
  *
  * @author evan
@@ -11,7 +13,12 @@ package venigmon.httpserver;
 public class HttpServerConfig {
     boolean enabled;
     int port;
-
+    
+    public HttpServerConfig(PropertiesMap props) {
+        this(props.getInt("port"),
+                props.getBoolean("enabled", true));
+    }
+    
     public HttpServerConfig(int port, boolean enabled) {
         this.port = port;
         this.enabled = enabled;

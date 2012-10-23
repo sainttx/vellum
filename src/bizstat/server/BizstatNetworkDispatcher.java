@@ -60,9 +60,9 @@ public class BizstatNetworkDispatcher implements Runnable {
                         }
                     } else {
                         logger.info("checkServicePath blocked", service);
-                        StatusInfo statusInfo = new StatusInfo(host, service, server.dispatcherMillis);
-                        statusInfo.setServiceStatus(ServiceStatus.BLOCKED);
-                        server.setStatusInfo(statusInfo);
+                        ServiceRecord statusRecord = new ServiceRecord(host, service, server.dispatcherMillis);
+                        statusRecord.setServiceStatus(ServiceStatus.BLOCKED);
+                        server.setStatusInfo(statusRecord);
                     }
                     statusKeySet.add(key);
                 } else {
@@ -90,10 +90,10 @@ public class BizstatNetworkDispatcher implements Runnable {
                     checkHostService(host, service);
                 } catch (Exception e) {
                     logger.warn(e, "checkHost", host, service);
-                    StatusInfo statusInfo = new StatusInfo(host, service, server.dispatcherMillis);
-                    statusInfo.setServiceStatus(ServiceStatus.INDETERMINATE);
-                    statusInfo.setException(e);
-                    server.setStatusInfo(statusInfo);
+                    ServiceRecord statusRecord = new ServiceRecord(host, service, server.dispatcherMillis);
+                    statusRecord.setServiceStatus(ServiceStatus.INDETERMINATE);
+                    statusRecord.setException(e);
+                    server.setStatusInfo(statusRecord);
                 }
                 statusKeySet.add(key);
             } else {

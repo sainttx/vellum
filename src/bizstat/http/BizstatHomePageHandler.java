@@ -7,7 +7,7 @@ import venigmon.httpserver.*;
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.HostServiceStatus;
 import bizstat.entity.Service;
-import bizstat.entity.StatusInfo;
+import bizstat.entity.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import bizstat.server.BizstatServer;
 import java.util.Collection;
@@ -48,15 +48,15 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
     }
 
     private void selectStatus() throws Exception {
-        print("stored status", storage.getStatusInfoStorage().getList());
+        print("stored status", storage.getServiceRecordStorage().getList());
     }
 
-    private void print(String label, Collection<StatusInfo> statusInfos) {
+    private void print(String label, Collection<ServiceRecord> statusInfos) {
         out.printf("<h3>%s</h3>\n", label);
         out.printf("<div class='resultSet'>\n");
         out.printf("<table>\n");
         int index = 0;
-        for (StatusInfo statusInfo : statusInfos) {
+        for (ServiceRecord statusInfo : statusInfos) {
             out.printf("<tr class=row%d><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
                     ++index % 2,
                     Millis.formatTime(statusInfo.getTimestamp()),
@@ -86,11 +86,11 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
         int index = 0;
         for (HostServiceKey key : context.getStatusMap().keySet()) {
             HostServiceStatus status = context.getStatusMap().get(key);
-            if (status.getServiceStatus() != null && status.getStatusInfo() != null) {
+            if (status.getServiceStatus() != null && status.getServiceRecord() != null) {
                 out.printf("<tr class=row%d><td>%s<td><b>%s</b><td>%s<td>%s\n",
                         ++index % 2,
                         key.getHost(), key.getService(), status.getServiceStatus(),
-                        BizstatMessageBuilder.buildOutText(status.getStatusInfo()));
+                        BizstatMessageBuilder.buildOutText(status.getServiceRecord()));
             }
         }
         out.printf("</table>\n");

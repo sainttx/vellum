@@ -7,7 +7,7 @@ package venigmon.storage;
 import bizstat.entity.Host;
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.Service;
-import bizstat.entity.StatusInfo;
+import bizstat.entity.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import java.sql.*;
 import vellum.storage.StorageExceptionType;
@@ -22,18 +22,18 @@ import vellum.storage.StorageException;
  *
  * @author evan
  */
-public class StatusInfoStorage {
+public class ServiceRecordStorage {
 
-    static QueryMap sqlMap = new QueryMap(StatusInfoStorage.class);
-    Logr logger = LogrFactory.getLogger(StatusInfoStorage.class);
+    static QueryMap sqlMap = new QueryMap(ServiceRecordStorage.class);
+    Logr logger = LogrFactory.getLogger(ServiceRecordStorage.class);
     VenigmonStorage storage;
 
-    public StatusInfoStorage(VenigmonStorage storage) {
+    public ServiceRecordStorage(VenigmonStorage storage) {
         this.storage = storage;
     }
 
-    private StatusInfo build(ResultSet resultSet) throws SQLException {
-        StatusInfo statusInfo = new StatusInfo(
+    private ServiceRecord build(ResultSet resultSet) throws SQLException {
+        ServiceRecord statusInfo = new ServiceRecord(
                 storage.getEntity(Host.class, resultSet.getString("host_")),
                 storage.getEntity(Service.class, resultSet.getString("service")),
                 resultSet.getTimestamp("dispatched_time").getTime()
@@ -54,24 +54,32 @@ public class StatusInfoStorage {
         
     }
 
-    public void insert(StatusInfo statusInfo) throws Exception {
+    public void insert(ServiceRecord serviceRecord) throws StorageException, SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
-            statement.setString(1, statusInfo.getHost().getName());
-            statement.setString(2, statusInfo.getService().getName());
-            statement.setString(3, statusInfo.getServiceStatus().name());
-            statement.setTimestamp(4, new Timestamp(statusInfo.getTimestamp()));
-            statement.setTimestamp(5, new Timestamp(statusInfo.getDispatchedMillis()));
-            if (statusInfo.getNotifiedMillis() > 0) {
-                statement.setTimestamp(6, new Timestamp(statusInfo.getNotifiedMillis()));
+            statement.setString(1, serviceRecord.getHost().getName());
+            statement.setString(2, serviceRecord.getService().getName());
+            if (serviceRecord.getServiceStatus() == null) {
+                statement.setString(3, null);
+            } else {
+                statement.setString(3, serviceRecord.getServiceStatus().name());                
+            }
+            statement.setTimestamp(4, new Timestamp(serviceRecord.getTimestamp()));
+            if (serviceRecord.getDispatchedMillis() == 0) {
+                statement.setTimestamp(5, null);                
+            } else {
+                statement.setTimestamp(5, new Timestamp(serviceRecord.getDispatchedMillis()));
+            }
+            if (serviceRecord.getNotifiedMillis() > 0) {
+                statement.setTimestamp(6, new Timestamp(serviceRecord.getNotifiedMillis()));
             } else {
                 statement.setTimestamp(6, null);                
             }
-            statement.setInt(7, statusInfo.getExitCode());
-            statement.setString(8, statusInfo.getOutText());
-            statement.setString(9, statusInfo.getErrText());
+            statement.setInt(7, serviceRecord.getExitCode());
+            statement.setString(8, serviceRecord.getOutText());
+            statement.setString(9, serviceRecord.getErrText());
             int insertCount = statement.executeUpdate();
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);
@@ -82,11 +90,11 @@ public class StatusInfoStorage {
         }
     }
 
-    public List<StatusInfo> getList(HostServiceKey key) throws SQLException {
+    public List<ServiceRecord> getList(HostServiceKey key) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            List<StatusInfo> list = new ArrayList();
+            List<ServiceRecord> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("list time"));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -99,11 +107,11 @@ public class StatusInfoStorage {
         }
     }
 
-    public List<StatusInfo> getList() throws SQLException {
+    public List<ServiceRecord> getList() throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            List<StatusInfo> list = new ArrayList();
+            List<ServiceRecord> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("list time"));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -114,6 +122,5 @@ public class StatusInfoStorage {
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
-    }
-    
+    }    
 }

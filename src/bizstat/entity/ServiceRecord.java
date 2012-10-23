@@ -16,7 +16,7 @@ import vellum.util.Strings;
  *
  * @author evan
  */
-public class StatusInfo extends LongIdEntity implements Timestamped {
+public class ServiceRecord extends LongIdEntity implements Timestamped {
 
     String[] args;
     String outText;
@@ -31,18 +31,29 @@ public class StatusInfo extends LongIdEntity implements Timestamped {
     transient HostServiceKey key;
     transient List<String> outList;
     
-    public StatusInfo() {
+    public ServiceRecord() {
+    }
+
+    public ServiceRecord(HostServiceKey key) {
+        this.key = key;
     }
     
-    public StatusInfo(HostServiceKey key, long dispatchedMillis) {
+    public ServiceRecord(HostServiceKey key, long dispatchedMillis) {
         this.key = key;
         this.dispatchedMillis = dispatchedMillis;
     }
 
-    public StatusInfo(Host host, Service service, long dispatchedMillis) {
+    public ServiceRecord(Host host, Service service, long dispatchedMillis) {
         this(new HostServiceKey(host, service), dispatchedMillis);
     }
     
+    public ServiceRecord(Host host, Service service, ServiceStatus serviceStatus, long timestampMillis, String outText) {
+        this(new HostServiceKey(host, service));
+        this.serviceStatus = serviceStatus;
+        this.timestampMillis = timestampMillis;
+        this.outText = outText;        
+    }
+        
     public HostServiceKey getKey() {
         return key;
     }

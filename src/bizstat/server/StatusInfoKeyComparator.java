@@ -3,17 +3,17 @@
  */
 package bizstat.server;
 
-import bizstat.entity.StatusInfo;
+import bizstat.entity.ServiceRecord;
 import java.util.Comparator;
 
 /**
  *
  * @author evans
  */
-public class StatusInfoKeyComparator implements Comparator<StatusInfo> {
+public class StatusInfoKeyComparator implements Comparator<ServiceRecord> {
 
     @Override
-    public int compare(StatusInfo o1, StatusInfo o2) {
+    public int compare(ServiceRecord o1, ServiceRecord o2) {
         return o1.getKey().compareTo(o2.getKey());
     }
 }

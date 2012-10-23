@@ -42,9 +42,9 @@ public class HostServiceStatus implements Runnable {
     ServiceStatus serviceStatus;
     ServiceStatus notifiedServiceStatus;
     StatusChangeType statusChangeType;
-    StatusInfo statusInfo;
-    StatusInfo notifiedStatusInfo;
-    StatusInfo previousStatusInfo;
+    ServiceRecord serviceRecord;
+    ServiceRecord notifiedStatusInfo;
+    ServiceRecord previousStatusInfo;
     List<ContactGroup> contactGroupList = new UniqueList();
     ScheduledFuture scheduledFuture;
     boolean outputChanged = false;
@@ -82,7 +82,7 @@ public class HostServiceStatus implements Runnable {
         server.setStatusInfo(new HostServiceExecuter(server, key).execute());
     }
 
-    public void setNotifiedStatusInfo(StatusInfo notifiedStatusInfo) {
+    public void setNotifiedStatusInfo(ServiceRecord notifiedStatusInfo) {
         this.notifiedStatusInfo = notifiedStatusInfo;
         this.notifiedServiceStatus = notifiedStatusInfo.getServiceStatus();
         this.notifiedMillis = notifiedStatusInfo.getNotifiedMillis();
@@ -101,7 +101,7 @@ public class HostServiceStatus implements Runnable {
     }
 
     public void setNotifiedMillis(long notifiedMillis) {
-        this.notifiedStatusInfo = statusInfo;
+        this.notifiedStatusInfo = serviceRecord;
         this.notifiedServiceStatus = serviceStatus;
         this.notifiedMillis = notifiedMillis;
     }
@@ -134,8 +134,8 @@ public class HostServiceStatus implements Runnable {
         return serviceStatus;
     }
 
-    public StatusInfo getStatusInfo() {
-        return statusInfo;
+    public ServiceRecord getServiceRecord() {
+        return serviceRecord;
     }
 
     public int getRepeatCount() {
@@ -168,8 +168,8 @@ public class HostServiceStatus implements Runnable {
         this.serviceStatus = serviceStatus;
     }
 
-    public void setStatusInfo(StatusInfo statusInfo) {
-        previousStatusInfo = this.statusInfo;
+    public void setStatusInfo(ServiceRecord statusInfo) {
+        previousStatusInfo = this.serviceRecord;
         receivedMillis = System.currentTimeMillis();
         if (service.getNotifyType() == NotifyType.OUTPUT_CHANGED) {
             outputChanged = false;
@@ -184,7 +184,7 @@ public class HostServiceStatus implements Runnable {
             statusInfo.setServiceStatus(ServiceStatus.UNKNOWN);
         }
         setServiceStatus(statusInfo.getServiceStatus());
-        this.statusInfo = statusInfo;
+        this.serviceRecord = statusInfo;
         parseMetrics();
     }
 
@@ -194,7 +194,7 @@ public class HostServiceStatus implements Runnable {
     
     private void parseMetrics() {
         Map<String, String> metrics = new HashMap();
-        for (String line : statusInfo.outList) {
+        for (String line : serviceRecord.outList) {
             if (line.startsWith("value ")) {
                 logger.info("parseMetrics", line);
                 String[] words = line.split(" ");

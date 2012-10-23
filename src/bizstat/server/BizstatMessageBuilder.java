@@ -5,7 +5,7 @@ package bizstat.server;
 
 import vellum.util.DateFormats;
 import vellum.util.Lists;
-import bizstat.entity.StatusInfo;
+import bizstat.entity.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import java.util.Date;
 import java.util.LinkedList;
@@ -18,18 +18,18 @@ import vellum.datatype.IntegerCounterMap;
  */
 public class BizstatMessageBuilder {
 
-    List<StatusInfo> statusInfos;
+    List<ServiceRecord> statusInfos;
     StringBuilder messageBuilder = new StringBuilder();
     IntegerCounterMap<ServiceStatus> counterMap = new IntegerCounterMap();
 
-    public BizstatMessageBuilder(LinkedList<StatusInfo> statusInfos) {
+    public BizstatMessageBuilder(LinkedList<ServiceRecord> statusInfos) {
         this.statusInfos = statusInfos;
     }
 
     public String buildHtml() {
         StringBuilder textBuilder = new StringBuilder();
         textBuilder.append(spanStyle("font-size: 14pt;", buildMessage()));
-        for (StatusInfo statusInfo : statusInfos) {
+        for (ServiceRecord statusInfo : statusInfos) {
             textBuilder.append("\n<hr>");
             textBuilder.append(spanStyle("font-size: 12pt;", buildHtmlMessage(statusInfo)));
             textBuilder.append("\n<br>");
@@ -50,7 +50,7 @@ public class BizstatMessageBuilder {
 
     public String buildMessage() {
         if (messageBuilder.length() == 0) {
-            for (StatusInfo statusInfo : statusInfos) {
+            for (ServiceRecord statusInfo : statusInfos) {
                 counterMap.increment(statusInfo.getServiceStatus());
             }
             append(ServiceStatus.CRITICAL);
@@ -67,7 +67,7 @@ public class BizstatMessageBuilder {
             }
             messageBuilder.append(String.format("%d %s", counterMap.getInt(serviceStatus), serviceStatus));
             StringBuilder builder = new StringBuilder();
-            for (StatusInfo statusInfo : statusInfos) {
+            for (ServiceRecord statusInfo : statusInfos) {
                 if (statusInfo.getServiceStatus() == serviceStatus) {
                     if (builder.length() > 0) {
                         builder.append(", ");
@@ -83,7 +83,7 @@ public class BizstatMessageBuilder {
         }
     }
 
-    public static String buildHtmlMessage(StatusInfo statusInfo) {
+    public static String buildHtmlMessage(ServiceRecord statusInfo) {
         StringBuilder builder = new StringBuilder();
         builder.append(DateFormats.timeFormat.format(new Date(statusInfo.getTimestamp())));
         builder.append(" ");
@@ -99,7 +99,7 @@ public class BizstatMessageBuilder {
         return builder.toString();
     }
 
-    public static String buildTextMessage(StatusInfo statusInfo) {
+    public static String buildTextMessage(ServiceRecord statusInfo) {
         StringBuilder builder = new StringBuilder();
         builder.append(DateFormats.timeFormat.format(new Date(statusInfo.getTimestamp())));
         builder.append(" ");
@@ -122,7 +122,7 @@ public class BizstatMessageBuilder {
         return builder.toString();
     }
     
-    public static String buildOutText(StatusInfo statusInfo) {
+    public static String buildOutText(ServiceRecord statusInfo) {
         if (statusInfo.getOutText() != null) {
             String text = statusInfo.getOutText().trim();
             int index = text.lastIndexOf("\n");

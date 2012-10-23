@@ -4,11 +4,13 @@
  */
 package vellum.storage;
 
+import vellum.config.PropertiesMap;
+
 /**
  *
  * @author evan
  */
-public class DataSourceInfo {
+public class DataSourceConfig {
     String driver;
     String name;
     String url;
@@ -17,10 +19,19 @@ public class DataSourceInfo {
     boolean enabled;
     Integer poolSize; 
     
-    public DataSourceInfo() {
+    public DataSourceConfig() {
+    }
+
+    public DataSourceConfig(PropertiesMap props) {
+        this(props.getString("driver"),
+                props.getString("url"),
+                props.getString("user"),
+                props.getString("password", null),
+                props.getBoolean("enabled", true),
+                props.getInt("poolSize", 0));
     }
     
-    public DataSourceInfo(String driver, String url, String user, String password, boolean enabled, Integer poolSize) {
+    public DataSourceConfig(String driver, String url, String user, String password, boolean enabled, Integer poolSize) {
         this.driver = driver;
         this.url = url;
         this.user = user;
