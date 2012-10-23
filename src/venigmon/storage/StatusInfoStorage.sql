@@ -1,25 +1,25 @@
 
--- exists
-select count(1) from status_info 
+-- exists host service
+select count(1) from record 
 where host_name = ? and service_name = ?
 ;
 
--- find
-select * from status_info 
-where key_alias = ? and revision_number = ?
+-- find host service
+select * from record 
+where host_name = ? and service_name = ?
 ;
 
--- list
-select * from status_info
+-- list time
+select * from record
 order by time_ desc
 ;
 
--- delete
-delete from status_info where id = ?
+-- delete id
+delete from record where record_id = ?
 ;
 
 -- insert
-insert into status_info (
+insert into record (
   host_,
   service,
   status,

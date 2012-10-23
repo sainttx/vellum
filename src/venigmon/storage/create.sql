@@ -59,6 +59,7 @@ create table service (
 );
 
 create table record (
+  record_id int auto_increment, 
   host_ varchar(32),
   service varchar(32),
   status varchar(16),

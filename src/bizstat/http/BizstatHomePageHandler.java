@@ -1,10 +1,15 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package venigmon.httpserver;
+package bizstat.http;
 
+import venigmon.httpserver.*;
+import bizstat.entity.HostServiceKey;
+import bizstat.entity.HostServiceStatus;
+import bizstat.entity.Service;
 import bizstat.entity.StatusInfo;
 import bizstat.server.BizstatMessageBuilder;
+import bizstat.server.BizstatServer;
 import java.util.Collection;
 import java.util.Iterator;
 import vellum.util.DateFormats;
@@ -21,18 +26,24 @@ import venigmon.storage.VenigmonStorage;
  *
  * @author evans
  */
-public class HomePageHandler extends AbstractPageHandler {
+public class BizstatHomePageHandler extends AbstractPageHandler {
 
+    BizstatServer context;
     VenigmonStorage storage;
 
-    public HomePageHandler(VenigmonStorage storage) {
+    public BizstatHomePageHandler(BizstatServer context) {
         super();
-        this.storage = storage;
+        this.context = context;
+        this.storage = context.getDataStorage();       
     }
 
     @Override
     protected void handle() throws Exception {
+        printStatus();
         selectStatus();
+        if (false) {
+            printServices();
+        }
         printLog(LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
     }
 
@@ -53,6 +64,34 @@ public class HomePageHandler extends AbstractPageHandler {
                     statusInfo.getService(),
                     statusInfo.getServiceStatus(),
                     BizstatMessageBuilder.buildOutText(statusInfo));
+        }
+        out.printf("</table>\n");
+        out.printf("</div>\n");
+    }
+
+    private void printServices() {
+        out.printf("<h3>services</h3>\n");
+        out.printf("<table>\n");
+        for (Service service : context.getServiceList()) {
+            out.printf("<tr><td><i>%s</i>\n", service.getName());
+        }
+        out.printf("</table>\n");
+        out.println("<hr>");
+    }
+
+    private void printStatus() {
+        out.printf("<h3>latest status</h3>\n");
+        out.printf("<div class='resultSet'>\n");
+        out.printf("<table>\n");
+        int index = 0;
+        for (HostServiceKey key : context.getStatusMap().keySet()) {
+            HostServiceStatus status = context.getStatusMap().get(key);
+            if (status.getServiceStatus() != null && status.getStatusInfo() != null) {
+                out.printf("<tr class=row%d><td>%s<td><b>%s</b><td>%s<td>%s\n",
+                        ++index % 2,
+                        key.getHost(), key.getService(), status.getServiceStatus(),
+                        BizstatMessageBuilder.buildOutText(status.getStatusInfo()));
+            }
         }
         out.printf("</table>\n");
         out.printf("</div>\n");

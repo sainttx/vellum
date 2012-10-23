@@ -34,8 +34,8 @@ public class StatusInfoStorage {
 
     private StatusInfo build(ResultSet resultSet) throws SQLException {
         StatusInfo statusInfo = new StatusInfo(
-                storage.get(Host.class, resultSet.getString("host_")),
-                storage.get(Service.class, resultSet.getString("service")),
+                storage.getEntity(Host.class, resultSet.getString("host_")),
+                storage.getEntity(Service.class, resultSet.getString("service")),
                 resultSet.getTimestamp("dispatched_time").getTime()
                 );
         statusInfo.setTimestampMillis(getTimestamp(resultSet, "time_", 0));
@@ -87,7 +87,7 @@ public class StatusInfoStorage {
         boolean ok = false;
         try {
             List<StatusInfo> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list time"));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(build(resultSet));
@@ -104,7 +104,7 @@ public class StatusInfoStorage {
         boolean ok = false;
         try {
             List<StatusInfo> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list time"));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(build(resultSet));

@@ -4,9 +4,10 @@
  */
 package bizstat.server;
 
-import venigmon.httpserver.BizstatHttpServer;
+import bizstat.http.BizstatHttpServer;
 import bizstat.entity.*;
 import bizstat.enumtype.ServiceStatus;
+import bizstat.http.BizstatTypeCache;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import java.util.*;
@@ -61,7 +62,7 @@ public class BizstatServer implements Runnable {
         }    
         if (config.getDataSourceInfo() != null && config.getDataSourceInfo().isEnabled()) {
             ConnectionPool connectionPool = new SimpleConnectionPool(config.getDataSourceInfo());
-            dataStorage = new VenigmonStorage(this, connectionPool);
+            dataStorage = new VenigmonStorage(new BizstatTypeCache(this), connectionPool);
             dataStorage.init();
         }
         configStorage = new BizstatConfigStorage(this);

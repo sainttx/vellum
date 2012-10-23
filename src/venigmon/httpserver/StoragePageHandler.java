@@ -1,7 +1,6 @@
 
 package venigmon.httpserver;
 
-import bizstat.server.BizstatServer;
 import vellum.util.Types;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -15,6 +14,7 @@ import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
 import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
+import venigmon.storage.VenigmonStorage;
 
 /**
  *
@@ -22,16 +22,14 @@ import vellum.storage.StorageExceptionType;
  */
 public class StoragePageHandler extends AbstractPageHandler {
 
-    BizstatServer context;
     ConnectionPool connectionPool;
     Connection connection;
     DatabaseMetaData databaseMetaData;
     int revisionNumber;
     
-    public StoragePageHandler(BizstatServer context) {
+    public StoragePageHandler(VenigmonStorage storage) {
         super();
-        this.context = context;
-        this.connectionPool = context.getDataStorage().getConnectionPool();
+        this.connectionPool = storage.getConnectionPool();
     }
     
     @Override
