@@ -34,6 +34,10 @@ public class Host extends AbstractIdEntity implements ConfigurableEntity {
     public Host() {
     }
 
+    public Host(String name) {
+        this.name = name;
+    }
+    
     @Override
     public void setName(String name) {
         this.name = name;

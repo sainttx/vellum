@@ -15,8 +15,8 @@ import vellum.util.RowSets;
  *
  * @author evan
  */
-public class SchemaStorage {
-    Logr logger = LogrFactory.getLogger(SchemaStorage.class);
+public class VenigmaSchemaStorage {
+    Logr logger = LogrFactory.getLogger(VenigmaSchemaStorage.class);
     
     static final int MIN_VERSION_NUMBER = 0;
     static final int CURRENT_VERSION_NUMBER = 2;
@@ -24,7 +24,7 @@ public class SchemaStorage {
     Connection connection;
     DatabaseMetaData databaseMetaData;
 
-    public SchemaStorage(Connection connection) {
+    public VenigmaSchemaStorage(Connection connection) {
         this.connection = connection;
     }
 

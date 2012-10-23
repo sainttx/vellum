@@ -47,7 +47,7 @@ public class CipherStorage {
             initEncryptedDatabase();
         }
         Connection connection = getConnection();
-        new SchemaStorage(connection).verifySchema();
+        new VenigmaSchemaStorage(connection).verifySchema();
         releaseConnection(connection);
     }
 

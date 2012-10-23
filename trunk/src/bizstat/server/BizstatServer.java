@@ -97,7 +97,7 @@ public class BizstatServer implements Runnable {
     void test() {
         HostServiceKey key = new HostServiceKey(hostList.get(0), serviceList.get(0));
         HostServiceStatus status = getStatus(key);
-        StatusInfo statusInfo = new StatusInfo(key, System.currentTimeMillis());
+        ServiceRecord statusInfo = new ServiceRecord(key, System.currentTimeMillis());
         statusInfo.setServiceStatus(ServiceStatus.UNKNOWN);
         statusInfo.setTimestampMillis(System.currentTimeMillis());
         statusInfo.setExitCode(2);
@@ -168,7 +168,7 @@ public class BizstatServer implements Runnable {
         return status;
     }
 
-    public synchronized void setStatusInfo(StatusInfo statusInfo) {
+    public synchronized void setStatusInfo(ServiceRecord statusInfo) {
         HostServiceStatus status = getStatus(statusInfo.getKey());
         status.setStatusInfo(statusInfo);
         logger.info("setStatusInfo", statusInfo);

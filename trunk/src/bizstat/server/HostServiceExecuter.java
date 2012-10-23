@@ -22,20 +22,20 @@ public class HostServiceExecuter {
     BizstatServer server;
     BizstatConfig config;
     HostServiceKey key;
-    StatusInfo statusInfo;
+    ServiceRecord statusInfo;
     
     public HostServiceExecuter(BizstatServer server, HostServiceKey key) {
         this.server = server;
         this.config = server.getConfig();
         this.key = key;
-        this.statusInfo = new StatusInfo(key, server.dispatcherMillis);
+        this.statusInfo = new ServiceRecord(key, server.dispatcherMillis);
     }
 
-    public StatusInfo execute() {
+    public ServiceRecord execute() {
         return exec(config.getCheckScript(), key.getService().getName(), key.getHost().getName());
     }
 
-    private StatusInfo exec(String... args) {
+    private ServiceRecord exec(String... args) {
         logger.verbose("exec", Lists.format(args));
         statusInfo.setArgs(args);
         if (config.isExec()) {

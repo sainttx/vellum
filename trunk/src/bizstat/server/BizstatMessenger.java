@@ -24,9 +24,9 @@ public class BizstatMessenger {
     ProcessBuilder processBuilder = new ProcessBuilder();
     Map environment = processBuilder.environment();
     List<String> argList = new ArrayList();
-    LinkedList<StatusInfo> statusInfoList;
+    LinkedList<ServiceRecord> statusInfoList;
 
-    public BizstatMessenger(BizstatServer server, Contact contact, List<StatusInfo> statusInfoList) {
+    public BizstatMessenger(BizstatServer server, Contact contact, List<ServiceRecord> statusInfoList) {
         this.server = server;
         this.contact = contact;
         this.statusInfoList = Lists.sortedReverseLinkedList(statusInfoList, 
@@ -34,7 +34,7 @@ public class BizstatMessenger {
     }
 
     public void send() {
-        StatusInfo statusInfo = statusInfoList.getFirst();
+        ServiceRecord statusInfo = statusInfoList.getFirst();
         logger.info("send", statusInfoList.size(), statusInfo);
         String message = BizstatMessageBuilder.buildTextMessage(statusInfo);
         String text = statusInfo.getOutText();
@@ -56,7 +56,7 @@ public class BizstatMessenger {
         }
     }
 
-    private void send(StatusInfo statusInfo, String message, String text) {
+    private void send(ServiceRecord statusInfo, String message, String text) {
         logger.info("send", message);
         argList.add(server.config.notifyScript);
         argList.add(statusInfo.getHost().getName());
