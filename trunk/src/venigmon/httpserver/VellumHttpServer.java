@@ -2,11 +2,8 @@
  */
 package venigmon.httpserver;
 
-import bizstat.server.BizstatServer;
-import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -19,16 +16,14 @@ import vellum.logr.LogrFactory;
  *
  * @author evans
  */
-public class BizstatHttpServer {
-    Logr logger = LogrFactory.getLogger(BizstatHttpServer.class);
-    BizstatServer context; 
+public class VellumHttpServer {
+    private Logr logger = LogrFactory.getLogger(VellumHttpServer.class);
     HttpServer httpServer;
     HttpServerConfig config;     
     ThreadPoolExecutor executor = new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
     
-    public BizstatHttpServer(BizstatServer context, HttpServerConfig config) {
-        this.context = context;
-        this.config  = config;
+    public VellumHttpServer(HttpServerConfig config) {
+        this.config = config;
     }    
 
     private boolean portAvailable(int port) {
@@ -56,17 +51,23 @@ public class BizstatHttpServer {
         }
         return true;
     }
+
+    public void start(HttpHandler httpHandler) throws Exception {
+        start();
+        httpServer.createContext("/", httpHandler);
+    }
     
     public void start() throws Exception {
         waitPort(config.getPort(), 4000, 500);
         InetSocketAddress socketAddress = new InetSocketAddress(config.getPort());
         httpServer = HttpServer.create(socketAddress, 4);
         httpServer.setExecutor(executor);
-        httpServer.createContext("/", createHomePageHandler());
-        httpServer.createContext("/storage", createStoragePageHandler());
-        httpServer.createContext("/post", createPostHandler());
         httpServer.start();
         logger.info("start", config.getPort());
+    }
+
+    public void createContext(String contextName, HttpHandler httpHandler) {
+        httpServer.createContext(contextName, httpHandler);
     }
 
     public boolean stop() {
@@ -76,36 +77,5 @@ public class BizstatHttpServer {
             return true;
         }        
         return false;
-    }
-
-    private HttpHandler createHomePageHandler() {
-        return new HttpHandler() {
-
-            @Override
-            public void handle(HttpExchange he) throws IOException {
-                new HomePageHandler(context).handle(he);    
-            }
-        };        
-    }
-    
-    private HttpHandler createStoragePageHandler() {
-        return new HttpHandler() {
-
-            @Override
-            public void handle(HttpExchange he) throws IOException {
-                new StoragePageHandler(context).handle(he);    
-            }
-        };        
-    }
-
-    private HttpHandler createPostHandler() {
-        return new HttpHandler() {
-
-            @Override
-            public void handle(HttpExchange he) throws IOException {
-                new PostHandler(context).handle(he);    
-            }
-        };        
-    }
-    
+    }    
 }

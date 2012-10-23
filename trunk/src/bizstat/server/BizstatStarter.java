@@ -4,8 +4,6 @@
  */
 package bizstat.server;
 
-import bizstat.entity.StatusInfo;
-import bizstat.enumtype.ServiceStatus;
 import bizstat.filewatcher.DirWatcherListener;
 import bizstat.filewatcher.DirWatcherTask;
 import java.io.File;
@@ -13,7 +11,6 @@ import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.h2.tools.Server;
 import vellum.config.ConfigEntry;
 import vellum.config.ConfigMap;
 import vellum.config.ConfigParser;

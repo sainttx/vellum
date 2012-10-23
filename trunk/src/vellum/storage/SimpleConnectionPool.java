@@ -21,11 +21,11 @@ public class SimpleConnectionPool implements ConnectionPool {
     int poolSize = 0;
     int taken = 0;
 
-    public SimpleConnectionPool(DataSourceInfo dataSourceConfig) {
-        if (dataSourceConfig.getPoolSize() != null) {
-            this.poolSize = dataSourceConfig.getPoolSize();
+    public SimpleConnectionPool(DataSourceInfo dataSourceInfo) {
+        if (dataSourceInfo.getPoolSize() != null) {
+            this.poolSize = dataSourceInfo.getPoolSize();
         } 
-        this.dataSourceInfo = dataSourceConfig;
+        this.dataSourceInfo = dataSourceInfo;
     }
 
     @Override

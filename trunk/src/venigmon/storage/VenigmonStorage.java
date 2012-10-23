@@ -4,13 +4,14 @@
  */
 package venigmon.storage;
 
+import vellum.datatype.EntityCache;
 import bizstat.entity.StatusInfo;
-import bizstat.server.BizstatServer;
 import vellum.storage.DataSourceInfo;
 import javax.sql.DataSource;
+import vellum.datatype.SimpleEntityCache;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.storage.ConnectionPool;
+import vellum.storage.*;
 import venigmon.schema.SchemaPrinter;
 
 /**
@@ -20,16 +21,20 @@ import venigmon.schema.SchemaPrinter;
 public class VenigmonStorage {
 
     Logr logger = LogrFactory.getLogger(VenigmonStorage.class);
-    BizstatServer server;
     DataSourceInfo dataSourceInfo;
-    ConnectionPool connectionPool; 
+    ConnectionPool connectionPool;
     DataSource dataSource;
+    EntityCache<String> entityCache;
 
-    public VenigmonStorage(BizstatServer server, ConnectionPool connectionPool) {
-        this.server = server;
+    public VenigmonStorage(DataSourceInfo dataSourceInfo) {
+        this(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceInfo));
+    }
+            
+    public VenigmonStorage(EntityCache typeCache, ConnectionPool connectionPool) {
+        this.entityCache = typeCache;
         this.connectionPool = connectionPool;
     }
-
+    
     public void init() throws Exception {
         Class.forName(dataSourceInfo.getDriver());
         new SchemaStorage(this).verifySchema();
@@ -43,21 +48,24 @@ public class VenigmonStorage {
     public StatusInfoStorage getStatusInfoStorage() {
         return new StatusInfoStorage(this);
     }
-    
-    public <T> T get(Class<T> type, String name) {
-        return server.getConfigStorage().get(type, name);
+
+    public <T> T getEntity(Class<T> type, String name) {
+        T value = entityCache.get(type, name);
+        if (value == null) {
+            throw new StorageException(StorageExceptionType.NOT_FOUND, name);
+        }
+        return value;
     }
-    
+
     public void insert(StatusInfo statusInfo) {
         try {
             getStatusInfoStorage().insert(statusInfo);
         } catch (Exception e) {
             logger.warn(e, "setStatusInfo", statusInfo);
-        }        
+        }
     }
 
     public ConnectionPool getConnectionPool() {
         return connectionPool;
     }
-        
 }

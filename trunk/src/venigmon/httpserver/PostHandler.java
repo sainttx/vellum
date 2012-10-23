@@ -18,6 +18,7 @@ import vellum.printer.PrintStreamAdapter;
 import vellum.printer.Printer;
 import vellum.util.Lists;
 import vellum.util.Strings;
+import venigmon.storage.VenigmonStorage;
 
 /**
  *
@@ -25,8 +26,7 @@ import vellum.util.Strings;
  */
 public class PostHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
-
-    BizstatServer context;
+    VenigmonStorage storage;
     HttpExchange httpExchange;
     String urlQuery;
     String path;
@@ -34,9 +34,9 @@ public class PostHandler implements HttpHandler {
     Printer out;
     ParameterMap parameterMap = new ParameterMap();
 
-    public PostHandler(BizstatServer context) {
+    public PostHandler(VenigmonStorage storage) {
         super();
-        this.context = context;
+        this.storage = storage;
     }
     
     @Override

@@ -23,7 +23,5 @@ public class HttpServerConfig {
 
     public boolean isEnabled() {
         return enabled;
-    }
-        
-        
+    }                
 }
