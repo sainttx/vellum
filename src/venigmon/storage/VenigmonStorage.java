@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.ConnectionPool;
-import venigmon.storage.schema.SchemaPrinter;
+import venigmon.schema.SchemaPrinter;
 
 /**
  *
