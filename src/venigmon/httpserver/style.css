@@ -119,6 +119,11 @@ td.int8Cell, td.numericCell, td.int4Cell, td.float8Cell {
     text-align: right;
 }
 
+td.rowLabel {
+    text-align: right;
+    font-weight: bold;
+}
+
 .pageInfo {
     margin-bottom: 2px;
     font-family: monospace;

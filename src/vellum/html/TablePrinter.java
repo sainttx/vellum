@@ -97,6 +97,13 @@ public class TablePrinter extends HtmlPrinter {
         trClose();
     }
 
+    public void trhd(String label, Object value) {
+        tr();
+        out.printf("<td class='rowLabel'>%s</td>\n", label);
+        out.printf("<td>%s</td>\n", value);
+        trClose();
+    }
+    
     public void tdClose() {
         out.printf("</td>\n");
     }

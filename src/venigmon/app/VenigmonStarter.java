@@ -22,6 +22,7 @@ import vellum.logr.LogrLevel;
 import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
+import vellum.util.Threads;
 import venigmon.httpserver.HttpServerConfig;
 import venigmon.httpserver.VenigmonHttpServer;
 import venigmon.storage.VenigmonSchemaStorage;
@@ -61,7 +62,8 @@ public class VenigmonStarter {
         httpServer.start();
         logger.info("HTTP server started");
         testPost();
-        //stop();
+        Threads.sleep(4000);
+        stop();
     }
     
     private void testPost() throws IOException {

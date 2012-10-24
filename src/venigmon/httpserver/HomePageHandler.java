@@ -40,19 +40,21 @@ public class HomePageHandler extends AbstractPageHandler {
         print("stored status", storage.getServiceRecordStorage().getList());
     }
 
-    private void print(String label, Collection<ServiceRecord> statusInfos) {
+    private void print(String label, Collection<ServiceRecord> serviceRecords) {
         out.printf("<h3>%s</h3>\n", label);
         out.printf("<div class='resultSet'>\n");
         out.printf("<table>\n");
         int index = 0;
-        for (ServiceRecord statusInfo : statusInfos) {
-            out.printf("<tr class=row%d><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
+        for (ServiceRecord serviceRecord : serviceRecords) {
+            out.printf("<tr class=row%d><td><a href='view/serviceRecord/%d'>%d</a><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
                     ++index % 2,
-                    Millis.formatTime(statusInfo.getTimestamp()),
-                    statusInfo.getHost(),
-                    statusInfo.getService(),
-                    statusInfo.getServiceStatus(),
-                    BizstatMessageBuilder.buildOutText(statusInfo));
+                    serviceRecord.getId(),
+                    serviceRecord.getId(),
+                    Millis.formatTime(serviceRecord.getTimestamp()),
+                    serviceRecord.getHostName(),
+                    serviceRecord.getServiceName(),
+                    serviceRecord.getServiceStatus(),
+                    BizstatMessageBuilder.buildOutText(serviceRecord));
         }
         out.printf("</table>\n");
         out.printf("</div>\n");
@@ -107,6 +109,5 @@ public class HomePageHandler extends AbstractPageHandler {
        }
        p.tbodyClose();
        p.tableDivClose();
-    }
-    
+    }    
 }
