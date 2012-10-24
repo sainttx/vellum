@@ -36,7 +36,6 @@ public class HostServiceStatus implements Runnable {
     long changedMillis;
     long notifiedMillis;
     long receivedMillis;
-    HostServiceKey key;
     Host host;
     Service service;
     ServiceStatus serviceStatus;
@@ -48,20 +47,21 @@ public class HostServiceStatus implements Runnable {
     List<ContactGroup> contactGroupList = new UniqueList();
     ScheduledFuture scheduledFuture;
     boolean outputChanged = false;
-    
-    public HostServiceStatus(BizstatServer server, HostServiceKey key) {
+    transient HostServiceKey hostServiceKey; 
+
+    public HostServiceStatus(BizstatServer server, HostServiceKey hostServiceKey) {
         this.server = server;
         this.config = server.getConfig();
-        this.key = key;
-        this.host = key.getHost();
-        this.service = key.getService();
+        this.hostServiceKey = hostServiceKey;
+        this.host = hostServiceKey.getHost();
+        this.service = hostServiceKey.getService();        
         contactGroupList.addAll(host.getNetwork().getContactGroupList());
         contactGroupList.addAll(host.getContactGroupList());
-        contactGroupList.addAll(service.getContactGroupList());
+        contactGroupList.addAll(service.getContactGroupList());        
     }
 
-    public HostServiceKey getKey() {
-        return key;
+    public HostServiceStatus(BizstatServer server, Host host, Service service) {
+        this(server, new HostServiceKey(host, service));
     }
 
     public List<ContactGroup> getContactGroupList() {
@@ -79,7 +79,7 @@ public class HostServiceStatus implements Runnable {
     }
 
     public void executeStatusInfo() {
-        server.setStatusInfo(new HostServiceExecuter(server, key).execute());
+        server.setStatusInfo(new HostServiceExecuter(server, host, service).execute());
     }
 
     public void setNotifiedStatusInfo(ServiceRecord notifiedStatusInfo) {
@@ -270,5 +270,9 @@ public class HostServiceStatus implements Runnable {
     @Override
     public String toString() {
         return Args.format(host, service, serviceStatus, notifiedServiceStatus);
+    }
+
+    public HostServiceKey getHostServiceKey() {
+        return hostServiceKey;
     }
 }

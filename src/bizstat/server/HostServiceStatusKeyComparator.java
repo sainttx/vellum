@@ -14,6 +14,6 @@ public class HostServiceStatusKeyComparator implements Comparator<HostServiceSta
 
     @Override
     public int compare(HostServiceStatus o1, HostServiceStatus o2) {
-        return o1.getKey().compareTo(o2.getKey());
+        return o1.getHostServiceKey().compareTo(o2.getHostServiceKey());
     }
 }
