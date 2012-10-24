@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import vellum.lifecycle.Startable;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -16,7 +17,7 @@ import vellum.logr.LogrFactory;
  *
  * @author evans
  */
-public class VellumHttpServer {
+public class VellumHttpServer implements Startable {
     private Logr logger = LogrFactory.getLogger(VellumHttpServer.class);
     HttpServer httpServer;
     HttpServerConfig config;     
