@@ -47,7 +47,7 @@ public class VenigmonStarter {
 
     public void init() throws Exception {
         initConfig();        
-        if (configProperties.getBoolean("h2TcpServer")) {
+        if (configProperties.getBoolean("startH2TcpServer")) {
             h2Server = Server.createTcpServer().start();            
         }            
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource", 
@@ -61,9 +61,11 @@ public class VenigmonStarter {
     public void start() throws Exception {
         httpServer.start();
         logger.info("HTTP server started");
-        testPost();
-        Threads.sleep(4000);
-        stop();
+        if (configProperties.getBoolean("testPost", false)) {
+            testPost();
+            Threads.sleep(4000);
+            stop();
+        }
     }
     
     private void testPost() throws IOException {
