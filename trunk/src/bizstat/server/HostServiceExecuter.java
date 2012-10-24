@@ -24,11 +24,11 @@ public class HostServiceExecuter {
     HostServiceKey key;
     ServiceRecord statusInfo;
     
-    public HostServiceExecuter(BizstatServer server, HostServiceKey key) {
+    public HostServiceExecuter(BizstatServer server, Host host, Service service) {
         this.server = server;
         this.config = server.getConfig();
         this.key = key;
-        this.statusInfo = new ServiceRecord(key, server.dispatcherMillis);
+        this.statusInfo = new ServiceRecord(host, service, server.dispatcherMillis);
     }
 
     public ServiceRecord execute() {

@@ -28,34 +28,31 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
     long timestampMillis;
     transient ServiceStatus serviceStatus;
     transient Throwable exception;
-    transient HostServiceKey key;
+    transient Host host;
+    transient Service service;
     transient List<String> outList;
     
     public ServiceRecord() {
     }
 
-    public ServiceRecord(HostServiceKey key) {
-        this.key = key;
+    public ServiceRecord(Host host, Service service) {
+        this.host = host;
+        this.service = service;
     }
     
-    public ServiceRecord(HostServiceKey key, long dispatchedMillis) {
-        this.key = key;
+    public ServiceRecord(Host host, Service service, long dispatchedMillis) {
+        this(host, service);
         this.dispatchedMillis = dispatchedMillis;
     }
-
-    public ServiceRecord(Host host, Service service, long dispatchedMillis) {
-        this(new HostServiceKey(host, service), dispatchedMillis);
-    }
-    
     public ServiceRecord(Host host, Service service, ServiceStatus serviceStatus, long timestampMillis, String outText) {
-        this(new HostServiceKey(host, service));
+        this(host, service);
         this.serviceStatus = serviceStatus;
         this.timestampMillis = timestampMillis;
         this.outText = outText;        
     }
         
     public HostServiceKey getKey() {
-        return key;
+        return new HostServiceKey(host, service);
     }
 
     public Host getHost() {
@@ -183,6 +180,6 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
 
     @Override
     public String toString() {
-        return Args.format(key, serviceStatus, Millis.formatTime(dispatchedMillis));
+        return Args.format(host, service, serviceStatus, Millis.formatTime(dispatchedMillis));
     }    
 }

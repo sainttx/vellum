@@ -97,7 +97,7 @@ public class BizstatServer implements Runnable {
     void test() {
         HostServiceKey key = new HostServiceKey(hostList.get(0), serviceList.get(0));
         HostServiceStatus status = getStatus(key);
-        ServiceRecord statusInfo = new ServiceRecord(key, System.currentTimeMillis());
+        ServiceRecord statusInfo = new ServiceRecord(key.getHost(), key.getService(), System.currentTimeMillis());
         statusInfo.setServiceStatus(ServiceStatus.UNKNOWN);
         statusInfo.setTimestampMillis(System.currentTimeMillis());
         statusInfo.setExitCode(2);
@@ -162,8 +162,8 @@ public class BizstatServer implements Runnable {
     public HostServiceStatus getStatus(HostServiceKey key) {
         HostServiceStatus status = statusMap.get(key);
         if (status == null) {
-            status = new HostServiceStatus(this, key);
-            statusMap.put(status.getKey(), status);
+            status = new HostServiceStatus(this, key.getHost(), key.getService());
+            statusMap.put(status.getHostServiceKey(), status);
         }
         return status;
     }
