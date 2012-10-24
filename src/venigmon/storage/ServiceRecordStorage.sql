@@ -15,7 +15,7 @@ order by time_ desc
 ;
 
 -- delete id
-delete from service_record where record_id = ?
+delete from service_record where service_record_id = ?
 ;
 
 -- insert

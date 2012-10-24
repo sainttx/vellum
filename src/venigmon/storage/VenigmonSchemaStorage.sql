@@ -1,7 +1,4 @@
 
-drop table status_info;
-drop table record;
-
 drop table schema_revision;
 drop table organisation; 
 drop table contact_group;
@@ -79,7 +76,7 @@ create table service (
 );
 
 create table service_record (
-  record_id int auto_increment, 
+  service_record_id int auto_increment, 
   host_ varchar(32),
   service varchar(32),
   status varchar(16),

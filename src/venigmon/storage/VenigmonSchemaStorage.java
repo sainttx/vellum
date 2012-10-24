@@ -17,8 +17,8 @@ import vellum.logr.LogrFactory;
  */
 public class VenigmonSchemaStorage {
 
-    static final int MIN_VERSION_NUMBER = 0;
-    static final int CURRENT_VERSION_NUMBER = 0;
+    static final int MIN_VERSION_NUMBER = 1;
+    static final int CURRENT_VERSION_NUMBER = 1;
     
     Logr logger = LogrFactory.getLogger(VenigmonSchemaStorage.class);
     VenigmonStorage storage;

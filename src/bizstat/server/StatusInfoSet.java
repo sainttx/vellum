@@ -19,7 +19,7 @@ public class StatusInfoSet extends TreeSet<ServiceRecord> {
 
             @Override
             public int compare(ServiceRecord o1, ServiceRecord o2) {
-                return o1.getKey().compareTo(o2.getKey());
+                return o1.getHostServiceKey().compareTo(o2.getHostServiceKey());
             }
         });
     }

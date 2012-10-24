@@ -18,6 +18,8 @@ import vellum.util.Strings;
  */
 public class ServiceRecord extends LongIdEntity implements Timestamped {
 
+    String hostName;
+    String serviceName;
     String[] args;
     String outText;
     String errText;
@@ -36,31 +38,46 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
     }
 
     public ServiceRecord(Host host, Service service) {
+        this(host.getName(), service.getName());
         this.host = host;
         this.service = service;
+    }
+
+    public ServiceRecord(String hostName, String serviceName) {
+        this.hostName = hostName;
+        this.serviceName = serviceName;
     }
     
     public ServiceRecord(Host host, Service service, long dispatchedMillis) {
         this(host, service);
         this.dispatchedMillis = dispatchedMillis;
     }
-    public ServiceRecord(Host host, Service service, ServiceStatus serviceStatus, long timestampMillis, String outText) {
-        this(host, service);
+    
+    public ServiceRecord(String hostName, String serviceName, ServiceStatus serviceStatus, long timestampMillis, String outText) {
+        this(hostName, serviceName);
         this.serviceStatus = serviceStatus;
         this.timestampMillis = timestampMillis;
         this.outText = outText;        
     }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
         
-    public HostServiceKey getKey() {
+    public HostServiceKey getHostServiceKey() {
         return new HostServiceKey(host, service);
     }
 
     public Host getHost() {
-        return getKey().getHost();
+        return host;
     }
     
     public Service getService() {
-        return getKey().getService();
+        return service;
     }
     
     public String[] getArgs() {
