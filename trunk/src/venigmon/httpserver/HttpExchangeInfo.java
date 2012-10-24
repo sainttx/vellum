@@ -5,12 +5,14 @@
 package venigmon.httpserver;
 
 import com.sun.net.httpserver.HttpExchange;
+import java.beans.PropertyDescriptor;
 import java.util.List;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.Entry;
 import vellum.parameter.ParameterMap;
 import vellum.parameter.Parameters;
+import vellum.util.Beans;
 import vellum.util.Strings;
 
 /**
@@ -23,6 +25,9 @@ public class HttpExchangeInfo {
     HttpExchange httpExchange;
     ParameterMap parameterMap;
     String urlQuery;
+    boolean headersParsed = false;
+    boolean acceptGzip = false;
+    boolean agentWget = false;
 
     public HttpExchangeInfo(HttpExchange httpExchange) {
         this.httpExchange = httpExchange;
@@ -62,6 +67,10 @@ public class HttpExchangeInfo {
         }
     }
 
+    public String getParameter(String key) {
+        return parameterMap.get(key);
+    }
+    
     private void put(String string) {
         Entry<String, String> entry = Parameters.parseEntry(string);
         if (entry != null) {
@@ -71,11 +80,46 @@ public class HttpExchangeInfo {
     }
 
     public void parseHeaders() {
+        headersParsed = true;
         for (String key : httpExchange.getRequestHeaders().keySet()) {
             List<String> values = httpExchange.getRequestHeaders().get(key);
             logger.info("parseHeaders", key, values);
+            if (key.equals("Accept-encoding")) {
+                if (values.contains("gzip")) {
+                    acceptGzip = true;
+                }
+            } else if (key.equals("User-agent")) {
+                for (String value : values) {
+                    if (value.toLowerCase().contains("wget")) {
+                        agentWget = true;
+                    }
+                }
+            }
         }
         logger.verbose("parseHeaders");
     }
 
+    public void setBean(Object bean) {
+        for (PropertyDescriptor property : Beans.getPropertyMap(bean.getClass()).values()) {
+            String stringValue = parameterMap.get(property.getName());
+            if (stringValue != null) {
+                Beans.parse(bean, property, stringValue);
+            }
+        }
+    }
+
+    public boolean isAgentWget() {
+        if (!headersParsed) {
+            parseHeaders();
+        }
+        return agentWget;
+    }
+
+    public boolean isAcceptGzip() {
+        if (!headersParsed) {
+            parseHeaders();
+        }
+        return acceptGzip;
+    }
+    
 }

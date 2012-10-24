@@ -9,6 +9,11 @@ select * from service_record
 where host_name = ? and service_name = ?
 ;
 
+-- find id
+select * from service_record 
+where service_record_id = ?
+;
+
 -- list time
 select * from service_record
 order by time_ desc

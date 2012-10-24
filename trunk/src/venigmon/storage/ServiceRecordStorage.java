@@ -33,16 +33,15 @@ public class ServiceRecordStorage {
     }
 
     private ServiceRecord build(ResultSet resultSet) throws SQLException {
-        ServiceRecord statusInfo = new ServiceRecord(
-                storage.getEntity(Host.class, resultSet.getString("host_")),
-                storage.getEntity(Service.class, resultSet.getString("service")),
-                resultSet.getTimestamp("dispatched_time").getTime()
-                );
-        statusInfo.setTimestampMillis(getTimestamp(resultSet, "time_", 0));
-        statusInfo.setNotifiedMillis(getTimestamp(resultSet, "notified_time", 0));
-        statusInfo.setServiceStatus(ServiceStatus.valueOf(resultSet.getString("status")));
-        statusInfo.setOutText(resultSet.getString("out_"));
-        return statusInfo;
+        ServiceRecord serviceRecord = new ServiceRecord(resultSet.getString("host_"),                
+                resultSet.getString("service"));
+        serviceRecord.setId(resultSet.getLong("service_record_id"));
+        serviceRecord.setDispatchedMillis(getTimestamp(resultSet, "dispatched_time", 0));
+        serviceRecord.setTimestampMillis(getTimestamp(resultSet, "time_", 0));
+        serviceRecord.setNotifiedMillis(getTimestamp(resultSet, "notified_time", 0));
+        serviceRecord.setServiceStatus(ServiceStatus.valueOf(resultSet.getString("status")));
+        serviceRecord.setOutText(resultSet.getString("out_"));
+        return serviceRecord;
     }
     
     private long getTimestamp(ResultSet resultSet, String columnName, long defaultValue) throws SQLException {
@@ -54,6 +53,22 @@ public class ServiceRecordStorage {
         
     }
 
+    public ServiceRecord find(long id) throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("find id"));
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            return build(resultSet);
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+    
     public void insert(ServiceRecord serviceRecord) throws StorageException, SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
