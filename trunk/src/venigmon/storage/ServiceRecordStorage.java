@@ -59,8 +59,8 @@ public class ServiceRecordStorage {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
-            statement.setString(1, serviceRecord.getHost().getName());
-            statement.setString(2, serviceRecord.getService().getName());
+            statement.setString(1, serviceRecord.getHostName());
+            statement.setString(2, serviceRecord.getServiceName());
             if (serviceRecord.getServiceStatus() == null) {
                 statement.setString(3, null);
             } else {

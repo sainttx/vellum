@@ -28,6 +28,10 @@ public class HttpExchangeInfo {
         this.httpExchange = httpExchange;
     }
 
+    public String getPath() {
+        return httpExchange.getRequestURI().getPath();
+    }
+    
     public String[] splitPath() {
         return httpExchange.getRequestURI().getPath().substring(1).split("/");
     }
@@ -39,7 +43,7 @@ public class HttpExchangeInfo {
         return parameterMap;
     }
 
-    public void parseParameterMap() {
+    private void parseParameterMap() {
         parameterMap = new ParameterMap();
         urlQuery = httpExchange.getRequestURI().getQuery();
         if (urlQuery == null) {
@@ -73,4 +77,5 @@ public class HttpExchangeInfo {
         }
         logger.verbose("parseHeaders");
     }
+
 }

@@ -58,9 +58,7 @@ public class PostHandler implements HttpHandler {
     
     private void store(String hostName, String serviceName, String text) throws StorageException, SQLException {
         logger.info("store", hostName, serviceName, text);
-        Host host = new Host(hostName);
-        Service service = new Service(serviceName);
-        ServiceRecord serviceRecord = new ServiceRecord(host, service, ServiceStatus.UNKNOWN, System.currentTimeMillis(), text);
+        ServiceRecord serviceRecord = new ServiceRecord(hostName, serviceName, ServiceStatus.UNKNOWN, System.currentTimeMillis(), text);
         storage.getServiceRecordStorage().insert(serviceRecord);
     }
 

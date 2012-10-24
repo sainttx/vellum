@@ -31,6 +31,7 @@ import vellum.parameter.Parameters;
 public abstract class AbstractPageHandler implements HttpHandler {
 
     protected HttpExchange httpExchange;
+    protected HttpExchangeInfo httpExchangeInfo;
     protected String urlQuery;
     protected String path;
     protected String[] pathArgs;
@@ -52,7 +53,9 @@ public abstract class AbstractPageHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
-        path = httpExchange.getRequestURI().getPath();
+        httpExchangeInfo = new HttpExchangeInfo(httpExchange);
+        path = httpExchangeInfo.getPath();
+        logger.info(path);
         parsePath();
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         parseHeaders();

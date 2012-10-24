@@ -25,7 +25,6 @@ public class VenigmonHttpServer extends VellumHttpServer {
     @Override
     public void start() throws Exception {
         super.start();
-        httpServer.createContext("/", createStoragePageHandler());
         httpServer.createContext("/home", createHomePageHandler());
         httpServer.createContext("/storage", createStoragePageHandler());
         httpServer.createContext("/post", createPostHandler());        
