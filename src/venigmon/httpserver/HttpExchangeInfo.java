@@ -25,6 +25,7 @@ public class HttpExchangeInfo {
     HttpExchange httpExchange;
     ParameterMap parameterMap;
     String urlQuery;
+    String[] args;
     boolean headersParsed = false;
     boolean acceptGzip = false;
     boolean agentWget = false;
@@ -38,7 +39,10 @@ public class HttpExchangeInfo {
     }
     
     public String[] splitPath() {
-        return httpExchange.getRequestURI().getPath().substring(1).split("/");
+        if (args == null) {
+            args = httpExchange.getRequestURI().getPath().substring(1).split("/");
+        }
+        return args;
     }
 
     public ParameterMap getParameterMap() {
@@ -120,6 +124,14 @@ public class HttpExchangeInfo {
             parseHeaders();
         }
         return acceptGzip;
+    }
+
+    public String getPathString(int index, String defaultValue) {
+        String[] args = splitPath();
+        if (args.length > index) {
+            return args[index];
+        }
+        return defaultValue;                
     }
     
 }

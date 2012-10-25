@@ -18,19 +18,19 @@ import venigmon.schema.SchemaPrinter;
  *
  * @author evan
  */
-public class VenigmonStorage {
+public class CrocStorage {
 
-    Logr logger = LogrFactory.getLogger(VenigmonStorage.class);
+    Logr logger = LogrFactory.getLogger(CrocStorage.class);
     DataSourceConfig dataSourceInfo;
     ConnectionPool connectionPool;
     DataSource dataSource;
     EntityCache<String> entityCache;
 
-    public VenigmonStorage(DataSourceConfig dataSourceInfo) {
+    public CrocStorage(DataSourceConfig dataSourceInfo) {
         this(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceInfo));
     }
             
-    public VenigmonStorage(EntityCache typeCache, ConnectionPool connectionPool) {
+    public CrocStorage(EntityCache typeCache, ConnectionPool connectionPool) {
         this.entityCache = typeCache;
         this.connectionPool = connectionPool;
     }

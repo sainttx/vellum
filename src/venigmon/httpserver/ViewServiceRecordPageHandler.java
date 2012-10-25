@@ -7,16 +7,16 @@ import bizstat.entity.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import vellum.datatype.Millis;
 import vellum.html.TablePrinter;
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
  * @author evans
  */
 public class ViewServiceRecordPageHandler extends AbstractPageHandler {
-    VenigmonStorage storage;
+    CrocStorage storage;
 
-    public ViewServiceRecordPageHandler(VenigmonStorage storage) {
+    public ViewServiceRecordPageHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }

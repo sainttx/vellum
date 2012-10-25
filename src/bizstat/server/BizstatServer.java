@@ -19,7 +19,7 @@ import vellum.config.ConfigMap;
 import vellum.config.PropertiesMap;
 import vellum.storage.ConnectionPool;
 import vellum.storage.SimpleConnectionPool;
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
@@ -32,7 +32,7 @@ public class BizstatServer implements Runnable {
     PropertiesMap configProperties;
     BizstatConfig config;
     BizstatConfigStorage configStorage;
-    VenigmonStorage dataStorage;
+    CrocStorage dataStorage;
     BizstatHttpServer httpServer;
     BizstatGtalkConnection gtalk;
     boolean stopped = false;
@@ -62,7 +62,7 @@ public class BizstatServer implements Runnable {
         }    
         if (config.getDataSourceInfo() != null && config.getDataSourceInfo().isEnabled()) {
             ConnectionPool connectionPool = new SimpleConnectionPool(config.getDataSourceInfo());
-            dataStorage = new VenigmonStorage(new BizstatTypeCache(this), connectionPool);
+            dataStorage = new CrocStorage(new BizstatTypeCache(this), connectionPool);
             dataStorage.init();
         }
         configStorage = new BizstatConfigStorage(this);
@@ -174,7 +174,7 @@ public class BizstatServer implements Runnable {
         logger.info("setStatusInfo", statusInfo);
     }
 
-    public VenigmonStorage getDataStorage() {
+    public CrocStorage getDataStorage() {
         return dataStorage;
     }
 

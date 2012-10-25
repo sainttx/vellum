@@ -21,10 +21,10 @@ public class VenigmonSchemaStorage {
     static final int CURRENT_VERSION_NUMBER = 1;
     
     Logr logger = LogrFactory.getLogger(VenigmonSchemaStorage.class);
-    VenigmonStorage storage;
+    CrocStorage storage;
     DatabaseMetaData databaseMetaData;
 
-    public VenigmonSchemaStorage(VenigmonStorage storage) {
+    public VenigmonSchemaStorage(CrocStorage storage) {
         this.storage = storage;
     }
 

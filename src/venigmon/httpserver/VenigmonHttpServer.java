@@ -2,7 +2,7 @@
  */
 package venigmon.httpserver;
 
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
@@ -10,9 +10,9 @@ import venigmon.storage.VenigmonStorage;
  */
 public class VenigmonHttpServer {
     VellumHttpServer httpServer;
-    VenigmonStorage storage;
+    CrocStorage storage;
     
-    public VenigmonHttpServer(VenigmonStorage storage, HttpServerConfig config) {
+    public VenigmonHttpServer(CrocStorage storage, HttpServerConfig config) {
         this.storage = storage;
         httpServer = new VellumHttpServer(config);
     }    

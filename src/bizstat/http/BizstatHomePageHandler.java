@@ -20,7 +20,7 @@ import vellum.html.TablePrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
@@ -29,7 +29,7 @@ import venigmon.storage.VenigmonStorage;
 public class BizstatHomePageHandler extends AbstractPageHandler {
 
     BizstatServer context;
-    VenigmonStorage storage;
+    CrocStorage storage;
 
     public BizstatHomePageHandler(BizstatServer context) {
         super();

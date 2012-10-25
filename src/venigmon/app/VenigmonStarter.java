@@ -26,7 +26,7 @@ import vellum.util.Threads;
 import venigmon.httpserver.HttpServerConfig;
 import venigmon.httpserver.VenigmonHttpServer;
 import venigmon.storage.VenigmonSchemaStorage;
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
@@ -35,7 +35,7 @@ import venigmon.storage.VenigmonStorage;
 public class VenigmonStarter {
 
     Logr logger = LogrFactory.getLogger(VenigmonStarter.class);
-    VenigmonStorage storage;
+    CrocStorage storage;
     VenigmonHttpServer httpServer;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
@@ -52,7 +52,7 @@ public class VenigmonStarter {
         }            
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource", 
                 configProperties.getString("dataSource")).getProperties());
-        storage = new VenigmonStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
+        storage = new CrocStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
         new VenigmonSchemaStorage(storage).verifySchema();
         httpServer = new VenigmonHttpServer(storage, new HttpServerConfig(configMap.get("HttpServer", 
                 configProperties.getString("httpServer")).getProperties()));
