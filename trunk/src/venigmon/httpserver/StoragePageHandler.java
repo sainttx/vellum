@@ -14,7 +14,7 @@ import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
 import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
@@ -27,7 +27,7 @@ public class StoragePageHandler extends AbstractPageHandler {
     DatabaseMetaData databaseMetaData;
     int revisionNumber;
     
-    public StoragePageHandler(VenigmonStorage storage) {
+    public StoragePageHandler(CrocStorage storage) {
         super();
         this.connectionPool = storage.getConnectionPool();
     }

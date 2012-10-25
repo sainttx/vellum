@@ -8,7 +8,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
@@ -16,9 +16,9 @@ import venigmon.storage.VenigmonStorage;
  */
 public class VenigmonHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(VenigmonHttpHandler.class);
-    VenigmonStorage storage;
+    CrocStorage storage;
 
-    public VenigmonHttpHandler(VenigmonStorage storage) {
+    public VenigmonHttpHandler(CrocStorage storage) {
         this.storage = storage;
     }
     

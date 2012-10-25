@@ -15,7 +15,7 @@ import vellum.html.TablePrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
-import venigmon.storage.VenigmonStorage;
+import venigmon.storage.CrocStorage;
 
 /**
  *
@@ -23,9 +23,9 @@ import venigmon.storage.VenigmonStorage;
  */
 public class HomePageHandler extends AbstractPageHandler {
 
-    VenigmonStorage storage;
+    CrocStorage storage;
 
-    public HomePageHandler(VenigmonStorage storage) {
+    public HomePageHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }

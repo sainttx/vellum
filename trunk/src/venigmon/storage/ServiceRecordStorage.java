@@ -26,9 +26,9 @@ public class ServiceRecordStorage {
 
     static QueryMap sqlMap = new QueryMap(ServiceRecordStorage.class);
     Logr logger = LogrFactory.getLogger(ServiceRecordStorage.class);
-    VenigmonStorage storage;
+    CrocStorage storage;
 
-    public ServiceRecordStorage(VenigmonStorage storage) {
+    public ServiceRecordStorage(CrocStorage storage) {
         this.storage = storage;
     }
 

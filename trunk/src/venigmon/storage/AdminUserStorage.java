@@ -19,9 +19,9 @@ import vellum.query.QueryMap;
 public class AdminUserStorage {
 
     static QueryMap sqlMap = new QueryMap(AdminUserStorage.class);
-    VenigmonStorage storage;
+    CrocStorage storage;
 
-    public AdminUserStorage(VenigmonStorage storage) {
+    public AdminUserStorage(CrocStorage storage) {
         this.storage = storage;
     }
 
