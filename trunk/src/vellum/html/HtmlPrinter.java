@@ -35,7 +35,7 @@ public class HtmlPrinter {
     }    
 
     public void spanf(String style, String format, Object ... args) {
-        out.printf("<span class='%s'>%s</span>\n", String.format(format, args));
+        out.printf("<span class='%s'>%s</span>\n", style, String.format(format, args));
     }    
     
     public void a_(String href, String text) {
