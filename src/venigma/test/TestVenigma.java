@@ -20,9 +20,9 @@ import venigma.provider.CipherConnection;
 import venigma.provider.ClientConfig;
 import venigma.provider.ClientContext;
 import venigma.provider.VProvider;
-import venigma.provider.keystoretool.KeyToolBuilder;
-import venigma.provider.keystoretool.KeyToolBuilderConfig;
-import venigma.provider.keystoretool.KeyToolBuilderlProperties;
+import venigma.provider.keytool.KeyToolBuilder;
+import venigma.provider.keytool.KeyToolBuilderConfig;
+import venigma.provider.keytool.KeyToolBuilderlProperties;
 import venigma.server.*;
 
 /**

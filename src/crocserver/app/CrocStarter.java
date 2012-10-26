@@ -49,13 +49,13 @@ public class CrocStarter {
     VellumHttpServer httpServer;
     VellumHttpsServer httpsServer;
     CrocTrustManager trustManager;
-    
+
     public void init() throws Exception {
         initConfig();
         if (configProperties.getBoolean("startH2TcpServer")) {
-            h2Server = Server.createTcpServer().start();    
-        }            
-        dataSourceConfig = new DataSourceConfig(configMap.get("DataSource", 
+            h2Server = Server.createTcpServer().start();
+        }
+        dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
         storage = new CrocStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
         trustManager = new CrocTrustManager(storage);
@@ -66,7 +66,6 @@ public class CrocStarter {
                     configMap.find("HttpServer", httpServerConfigName).getProperties());
             if (httpServerConfig.isEnabled()) {
                 httpServer = new VellumHttpServer(httpServerConfig);
-                httpServer.createContext("/", new CrocHttpHandler(storage));
             }
         }
         String httpsServerConfigName = configProperties.getString("httpsServer", null);
@@ -76,7 +75,7 @@ public class CrocStarter {
             if (httpsServerConfig.isEnabled()) {
                 httpsServer = new VellumHttpsServer(httpsServerConfig);
                 httpsServer.init(Keystores.createSSLContext(trustManager));
-                httpsServer.createContext("/", new CrocHttpHandler(storage));
+                httpsServer.init(Keystores.createSSLContext());
             }
         }
     }
@@ -84,12 +83,14 @@ public class CrocStarter {
     public void start() throws Exception {
         if (httpServer != null) {
             httpServer.start();
+            httpServer.startContext("/", new CrocHttpHandler(storage));
             logger.info("HTTP server started");
         }
         if (httpsServer != null) {
             httpsServer.start();
+                httpsServer.startContext("/", new CrocHttpHandler(storage));
             logger.info("HTTPS secure server started");
-        }        
+        }
         if (configProperties.getBoolean("testPost", false)) {
             try {
                 testPost();
@@ -99,7 +100,7 @@ public class CrocStarter {
             }
         }
     }
-    
+
     private void testPost() throws IOException {
         URL url = new URL(configProperties.getString("testPostUrl"));
         URLConnection connection = url.openConnection();
@@ -112,12 +113,17 @@ public class CrocStarter {
     }
 
     public void stop() throws Exception {
-        httpServer.stop();
+        if (httpServer != null) {
+            httpServer.stop();
+        }
+        if (httpsServer != null) {
+            httpsServer.stop();
+        }
         if (h2Server != null) {
             h2Server.stop();
         }
     }
-    
+
     private void initConfig() throws Exception {
         confFileName = getString("conf");
         configMap = ConfigParser.newInstance(new FileInputStream(new File(confFileName)));
@@ -135,7 +141,7 @@ public class CrocStarter {
         }
         return string;
     }
-    
+
     public static void main(String[] args) throws Exception {
         try {
             CrocStarter starter = new CrocStarter();
