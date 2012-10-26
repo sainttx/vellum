@@ -19,12 +19,12 @@ public class CrocHttpServer {
         this.storage = storage;
         httpServer = new VellumHttpServer(config);
     }    
-
+    
     public void start() throws Exception {
         httpServer.start(new CrocHttpHandler(storage));
     }
     
     public boolean stop() {
-        return httpServer.stop();        
+        return httpServer.stop();
     }
 }

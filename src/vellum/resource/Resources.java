@@ -17,7 +17,7 @@ public class Resources {
     public static String getString(Class type, String key) {
         try {
             ResourceBundle bundle = getBundle(type);
-            return bundle.getString(key);        
+            return bundle.getString(key);
         } catch (Exception e) {
             Exceptions.warn(e);
             return type.getSimpleName() + "." + key;

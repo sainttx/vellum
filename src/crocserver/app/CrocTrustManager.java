@@ -4,16 +4,24 @@
  */
 package crocserver.app;
 
-import vellumdemo.enigmademo.*;
+import crocserver.storage.CrocStorage;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 /**
  *
  * @author evan
  */
-public class EmptyTrustManager implements X509TrustManager {
-    
+public class CrocTrustManager implements X509TrustManager {
+    Logr logger = LogrFactory.getLogger(CrocTrustManager.class);
+    CrocStorage storage;
+
+    public CrocTrustManager(CrocStorage storage) {
+        this.storage = storage;
+    }
+        
     @Override
     public X509Certificate[] getAcceptedIssuers() {
         return null;
@@ -21,9 +29,11 @@ public class EmptyTrustManager implements X509TrustManager {
     
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        logger.info("checkClientTrusted");
     }
     
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        logger.info("checkServerTrusted");
     }
 }

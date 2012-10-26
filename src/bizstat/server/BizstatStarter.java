@@ -77,8 +77,8 @@ public class BizstatStarter implements Runnable, DirWatcherListener {
             BizstatServer newServer = new BizstatServer();
             newServer.init(configMap, configProperties);
             logger.info("stop");
-            server.setStopped(true);            
-            serverThread.join();            
+            server.setStopped(true);    
+            serverThread.join();    
             server.shutdown(true);
             server = newServer;
             server.start();
@@ -120,7 +120,7 @@ public class BizstatStarter implements Runnable, DirWatcherListener {
     }
 
     public static void main(String[] args) throws Exception {
-        BizstatStarter starter = new BizstatStarter();        
+        BizstatStarter starter = new BizstatStarter();
         starter.init();
         starter.run();
     }

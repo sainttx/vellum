@@ -68,7 +68,7 @@ public class ConfigParser {
             }
             blockStarted = true;
         } else {
-            throw new ConfigParserException(lineCount, type, name, line);            
+            throw new ConfigParserException(lineCount, type, name, line);    
         }
     }
         
@@ -78,7 +78,7 @@ public class ConfigParser {
         } else if (line.equals("}")) {
             endBlock();
         } else {
-            throw new ConfigParserException(lineCount, type, name, line);                
+            throw new ConfigParserException(lineCount, type, name, line);        
         }
     }
     

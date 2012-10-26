@@ -93,7 +93,7 @@ public class SchemaPrinter {
             out._tr();
         }
         out._tbody();
-        out._table();        
+        out._table();
     }
     
     private void print(ResultSet resultSet) throws Exception {

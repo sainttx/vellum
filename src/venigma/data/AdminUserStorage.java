@@ -30,7 +30,7 @@ public class AdminUserStorage {
         adminUser.setUsername(resultSet.getString("username"));
         adminUser.setRole(AdminRole.valueOf(resultSet.getString("role_")));
         adminUser.setLastLogin(resultSet.getTimestamp("last_login"));
-        return adminUser;        
+        return adminUser;
     }
 
     public boolean exists(String email) throws SQLException {
@@ -55,18 +55,18 @@ public class AdminUserStorage {
         statement.setString(1, adminUser.getUsername());
         statement.setString(2, adminUser.getEmail());
         statement.setString(3, adminUser.getRole().name());
-        int updateCount = statement.executeUpdate();        
+        int updateCount = statement.executeUpdate();
         if (updateCount != 1) {
-            throw new SQLException();            
+            throw new SQLException();    
         }
     }
 
     public void update(AdminUser AdminUser) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("update"));
         statement.setString(1, AdminUser.getUsername());
-        int updateCount = statement.executeUpdate();        
+        int updateCount = statement.executeUpdate();
         if (updateCount != 1) {
-            throw new SQLException();            
+            throw new SQLException();    
         }
     }
     

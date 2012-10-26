@@ -67,7 +67,7 @@ public class HttpEchoServer {
        httpsConnector.setAttribute("keystoreFile", keystorePath);
        httpsConnector.setAttribute("clientAuth", true);
        httpsConnector.setAttribute("sslProtocol", "TLS");
-       httpsConnector.setAttribute("SSLEnabled", true);        
+       httpsConnector.setAttribute("SSLEnabled", true);
     }
     
     HttpServlet echoServlet = new HttpServlet() {
@@ -105,7 +105,7 @@ public class HttpEchoServer {
             if (string == null) {
                 break;
             }
-            printer.println(string);            
+            printer.println(string);    
             System.out.println(string);
         }
     }

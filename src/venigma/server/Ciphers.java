@@ -41,7 +41,7 @@ public class Ciphers {
         SecretKey key = aes.generateKey();
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(key);
         KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(secretKeyPassword);
-        keyStore.setEntry(keyAlias, entry, prot);        
+        keyStore.setEntry(keyAlias, entry, prot);
     }
 
     public static void writeKeyStore(KeyStore keyStore, String fileName, char[] storePassword) throws Exception {

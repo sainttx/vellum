@@ -13,6 +13,6 @@ package vellum.util;
 public class Intervals {
 
     public static String formatDuration(long startMillis) {
-        return String.format("%ds", (System.currentTimeMillis() - startMillis) / 1000);        
+        return String.format("%ds", (System.currentTimeMillis() - startMillis) / 1000);
     }
 }

@@ -111,7 +111,7 @@ public class Contact extends AbstractIdEntity implements ConfigurableEntity<Bizs
 
     public PropertiesMap getPropertiesMap() {
         PropertiesMap map = new PropertiesMap();
-        map.put("name", name);        
+        map.put("name", name);
         map.put("fullName", fullName);
         map.put("sms", sms);
         map.put("email", email);

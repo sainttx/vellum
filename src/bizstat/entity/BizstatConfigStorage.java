@@ -42,7 +42,7 @@ public class BizstatConfigStorage implements Storage, ConfigMapInitialisable {
     }
 
     public void put(IdEntity entity) {
-        getMap(entity.getClass()).put(entity);        
+        getMap(entity.getClass()).put(entity);
     }
     
     public <E> List<E> getExtentList(Class<E> entityType) {
@@ -85,14 +85,14 @@ public class BizstatConfigStorage implements Storage, ConfigMapInitialisable {
             if (type != null) {
                 logger.trace("init", type);
                 ConfigurableEntity configEntity = (ConfigurableEntity) type.newInstance();
-                configEntity.setName(entry.getName());            
+                configEntity.setName(entry.getName());    
                 put(configEntity);
                 map.put(entry, configEntity);
             }
         }
         for (ConfigEntry entry : map.keySet()) { 
                 ConfigurableEntity configEntity = map.get(entry);
-                configEntity.config(server, entry.getProperties());                                        
+                configEntity.config(server, entry.getProperties());                                
         }
     }
     

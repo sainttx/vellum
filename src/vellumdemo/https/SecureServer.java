@@ -38,7 +38,7 @@ public class SecureServer {
         kmf.init(ks, password);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(ks);
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());        
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
     }
 
     private HttpsConfigurator createHttpsConfigurator() throws Exception {

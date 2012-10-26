@@ -42,9 +42,9 @@ public class ClientContext {
     public void config(ClientConfig properties, char[] keyStorePassword, char[] keyPassword, char[] trustStorePassword) throws Exception {
         configured = true;
         this.config = properties;
-        this.keyStorePassword = keyStorePassword;        
-        this.trustStorePassword = trustStorePassword;        
-        this.keyPassword = keyPassword;        
+        this.keyStorePassword = keyStorePassword;
+        this.trustStorePassword = trustStorePassword;
+        this.keyPassword = keyPassword;
         this.serverInetAddress = InetAddress.getByName(properties.serverIp);
         this.serverSocketAddress = new InetSocketAddress(serverInetAddress, properties.sslPort);
         initKeyManagers();
@@ -73,7 +73,7 @@ public class ClientContext {
         InputStream inputStream = new FileInputStream(config.trustStore);
         trustStore.load(inputStream, trustStorePassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(trustStore);        
+        trustManagerFactory.init(trustStore);
         this.trustManagers = trustManagerFactory.getTrustManagers();
     }
     

@@ -57,7 +57,7 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
         this(hostName, serviceName);
         this.serviceStatus = serviceStatus;
         this.timestampMillis = timestampMillis;
-        this.outText = outText;        
+        this.outText = outText;
     }
 
     public String getHostName() {

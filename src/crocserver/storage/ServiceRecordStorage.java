@@ -96,18 +96,18 @@ public class ServiceRecordStorage {
             if (serviceRecord.getServiceStatus() == null) {
                 statement.setString(3, null);
             } else {
-                statement.setString(3, serviceRecord.getServiceStatus().name());                
+                statement.setString(3, serviceRecord.getServiceStatus().name());        
             }
             statement.setTimestamp(4, new Timestamp(serviceRecord.getTimestamp()));
             if (serviceRecord.getDispatchedMillis() == 0) {
-                statement.setTimestamp(5, null);                
+                statement.setTimestamp(5, null);        
             } else {
                 statement.setTimestamp(5, new Timestamp(serviceRecord.getDispatchedMillis()));
             }
             if (serviceRecord.getNotifiedMillis() > 0) {
                 statement.setTimestamp(6, new Timestamp(serviceRecord.getNotifiedMillis()));
             } else {
-                statement.setTimestamp(6, null);                
+                statement.setTimestamp(6, null);        
             }
             statement.setInt(7, serviceRecord.getExitCode());
             statement.setString(8, serviceRecord.getOutText());

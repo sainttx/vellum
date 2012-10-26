@@ -18,7 +18,7 @@ public class Base64 {
         if (bytes == null) {
             return null;
         }
-        return new BASE64Encoder().encode(bytes);        
+        return new BASE64Encoder().encode(bytes);
     }
 
     public static byte[] decode(String string) {
@@ -26,7 +26,7 @@ public class Base64 {
             return null;
         }
         try {
-            return new BASE64Decoder().decodeBuffer(string);        
+            return new BASE64Decoder().decodeBuffer(string);
         } catch (Exception e) {
             throw Exceptions.newRuntimeException(e);
         }

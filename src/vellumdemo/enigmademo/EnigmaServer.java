@@ -47,7 +47,7 @@ public class EnigmaServer extends Thread {
     protected void initTrustManagers() throws Exception {
         TrustManagerFactory trustManagerFactory = 
                 TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(keyStore);        
+        trustManagerFactory.init(keyStore);
         this.trustManagers = trustManagerFactory.getTrustManagers();
     }
     

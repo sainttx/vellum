@@ -16,5 +16,5 @@ public interface EntityConnection<I extends Comparable, E extends IdEntity> {
     public E find(I id) throws SQLException;
     public void insert(E entity) throws SQLException;
     public void update(E entity) throws SQLException;
-    public void delete(E entity) throws SQLException;        
+    public void delete(E entity) throws SQLException;
 }

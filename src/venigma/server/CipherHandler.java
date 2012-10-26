@@ -74,7 +74,7 @@ public class CipherHandler {
         subject = getSubject();
         responseType = context.requestAuth.auth(request, subject);
         if (responseType != CipherResponseType.OK) {
-            reply(new CipherResponse(responseType));            
+            reply(new CipherResponse(responseType));    
             return;
         }
         if (request.requestType == CipherRequestType.PING) {
@@ -110,7 +110,7 @@ public class CipherHandler {
             
     protected void reply(CipherResponse response) throws IOException {
         logger.info("reply", response);
-        JsonSockets.write(socket, response);                
+        JsonSockets.write(socket, response);        
     }
 
     protected CipherResponse decrypt() throws Exception {
@@ -178,17 +178,17 @@ public class CipherHandler {
         if (context.storage.getAdminUserStorage().exists(user.getUsername())) {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_EXISTS);
         }        
-        context.storage.getAdminUserStorage().insert(user);        
+        context.storage.getAdminUserStorage().insert(user);
         return new CipherResponse(CipherResponseType.OK);
     }
     
     protected CipherResponse generateKey() throws Exception {
         logger.info("generateKey", request.getKeyInfo());
         if (request.getKeySize() == 0) {
-            return new CipherResponse(CipherResponseType.ERROR_NO_KEY_SIZE);            
+            return new CipherResponse(CipherResponseType.ERROR_NO_KEY_SIZE);    
         }
         if (request.getKeySize() != 128 && request.getKeySize() != 192 && request.getKeySize() != 256) {
-            return new CipherResponse(CipherResponseType.ERROR_INVALID_KEY_SIZE);            
+            return new CipherResponse(CipherResponseType.ERROR_INVALID_KEY_SIZE);    
         }
         if (storage.getKeyInfoStorage().exists(request.getKeyInfo())) {
             return new CipherResponse(CipherResponseType.ERROR_KEY_ALREADY_EXISTS);

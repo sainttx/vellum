@@ -54,10 +54,10 @@ public class HostServiceStatus implements Runnable {
         this.config = server.getConfig();
         this.hostServiceKey = hostServiceKey;
         this.host = hostServiceKey.getHost();
-        this.service = hostServiceKey.getService();        
+        this.service = hostServiceKey.getService();
         contactGroupList.addAll(host.getNetwork().getContactGroupList());
         contactGroupList.addAll(host.getContactGroupList());
-        contactGroupList.addAll(service.getContactGroupList());        
+        contactGroupList.addAll(service.getContactGroupList());
     }
 
     public HostServiceStatus(BizstatServer server, Host host, Service service) {
@@ -177,7 +177,7 @@ public class HostServiceStatus implements Runnable {
                 outputChanged = true;
                 serviceRecord.setServiceStatus(ServiceStatus.WARNING);
             } else {
-                serviceRecord.setServiceStatus(ServiceStatus.OK);                
+                serviceRecord.setServiceStatus(ServiceStatus.OK);        
             }
         }
         if (serviceRecord.getServiceStatus() == null) {

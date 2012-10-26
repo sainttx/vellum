@@ -90,7 +90,7 @@ public class ArgFormats {
                 builder.append(string);
                 builder.append("}");
             } else {
-                builder.append(string);                
+                builder.append(string);        
             }
         }
         return builder.toString();
@@ -111,7 +111,7 @@ public class ArgFormats {
                 builder.append(quote);
             }
         }
-        return builder.toString();        
+        return builder.toString();
     }
     
     public static String formatVerbose(Object[] args) {

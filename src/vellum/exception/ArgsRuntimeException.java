@@ -14,7 +14,7 @@ public class ArgsRuntimeException extends RuntimeException {
     
     public ArgsRuntimeException(Object ... args) {
         super(Exceptions.getMessage(args), Exceptions.getThrowable(args));
-        this.args = args;        
+        this.args = args;
     }
 
 }

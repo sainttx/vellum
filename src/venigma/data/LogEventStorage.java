@@ -24,16 +24,16 @@ public class LogEventStorage {
         logEvent.setId(resultSet.getLong("event_id"));
         logEvent.setMessage(resultSet.getString("message"));
         logEvent.setTimestamp(resultSet.getTimestamp("time_"));
-        return logEvent;        
+        return logEvent;
     }
 
     public long insert(LogEvent logEvent) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
         statement.setString(1, logEvent.getMessage());
         statement.setTimestamp(2, new Timestamp(logEvent.getTimestamp().getTime()));
-        int updateCount = statement.executeUpdate();        
+        int updateCount = statement.executeUpdate();
         if (updateCount != 1) {
-            throw new SQLException();            
+            throw new SQLException();    
         }
         ResultSet generatedKeys = statement.getGeneratedKeys();
         if (!generatedKeys.next()) {

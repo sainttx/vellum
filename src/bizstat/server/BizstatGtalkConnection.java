@@ -38,13 +38,13 @@ public class BizstatGtalkConnection implements MessageListener {
 
     public void connect() {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration("talk.google.com", 5222, "gmail.com");
-        connectionConfig.setSecurityMode(ConnectionConfiguration.SecurityMode.required);        
-        connection = new XMPPConnection(connectionConfig);        
+        connectionConfig.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
+        connection = new XMPPConnection(connectionConfig);
         try {
             connection.connect();
             connection.login(username, password);
             Presence presence = new Presence(Presence.Type.available);
-            connection.sendPacket(presence);        
+            connection.sendPacket(presence);
         } catch (Exception e) {
             logger.warn(e, null);
             e.printStackTrace(System.err);
@@ -79,6 +79,6 @@ public class BizstatGtalkConnection implements MessageListener {
     }
 
     public void close() {
-        connection.disconnect();        
+        connection.disconnect();
     }
 }

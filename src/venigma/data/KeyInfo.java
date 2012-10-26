@@ -117,7 +117,7 @@ public class KeyInfo extends AbstractIdEntity {
     public void decrypt(char[] password) throws Exception {
         Cipher cipher = getCipher(Cipher.DECRYPT_MODE, password);
         byte[] decryptedBytes = cipher.doFinal(encryptedKey);
-        secretKey = new SecretKeySpec(decryptedBytes, "AES");        
+        secretKey = new SecretKeySpec(decryptedBytes, "AES");
     }
     
     private Cipher getCipher(int mode, char[] password) throws Exception {

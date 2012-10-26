@@ -28,7 +28,7 @@ public class ServiceConfigurator {
     public ServiceConfigurator(BizstatServer server, PropertiesMap properties, Service service) {
         this.server = server;
         this.properties = properties;
-        this.service = service;        
+        this.service = service;
     }
     
     public void configure() {
