@@ -97,11 +97,11 @@ public class BizstatServer implements Runnable {
     void test() {
         HostServiceKey key = new HostServiceKey(hostList.get(0), serviceList.get(0));
         HostServiceStatus status = getStatus(key);
-        ServiceRecord statusInfo = new ServiceRecord(key.getHost(), key.getService(), System.currentTimeMillis());
-        statusInfo.setServiceStatus(ServiceStatus.UNKNOWN);
-        statusInfo.setTimestampMillis(System.currentTimeMillis());
-        statusInfo.setExitCode(2);
-        dataStorage.insert(statusInfo);
+        ServiceRecord serviceRecord = new ServiceRecord(key.getHost(), key.getService(), System.currentTimeMillis());
+        serviceRecord.setServiceStatus(ServiceStatus.UNKNOWN);
+        serviceRecord.setTimestampMillis(System.currentTimeMillis());
+        serviceRecord.setExitCode(2);
+        dataStorage.insert(serviceRecord);
     }
     
     public void sendAdminMessage(String message) {
@@ -168,10 +168,10 @@ public class BizstatServer implements Runnable {
         return status;
     }
 
-    public synchronized void setStatusInfo(ServiceRecord statusInfo) {
-        HostServiceStatus status = getStatus(statusInfo.getHostServiceKey());
-        status.setStatusInfo(statusInfo);
-        logger.info("setStatusInfo", statusInfo);
+    public synchronized void setserviceRecord(ServiceRecord serviceRecord) {
+        HostServiceStatus status = getStatus(serviceRecord.getHostServiceKey());
+        status.setserviceRecord(serviceRecord);
+        logger.info("setserviceRecord", serviceRecord);
     }
 
     public CrocStorage getDataStorage() {

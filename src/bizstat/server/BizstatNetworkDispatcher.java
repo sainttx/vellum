@@ -54,7 +54,7 @@ public class BizstatNetworkDispatcher implements Runnable {
                 HostServiceStatus status = server.getStatus(key);
                 if (!statusKeySet.contains(key)) {
                     if (ok) {
-                        status.executeStatusInfo();
+                        status.executeserviceRecord();
                         if (!status.getServiceStatus().isOk()) {
                             ok = false;
                         }
@@ -62,7 +62,7 @@ public class BizstatNetworkDispatcher implements Runnable {
                         logger.info("checkServicePath blocked", service);
                         ServiceRecord statusRecord = new ServiceRecord(host, service, server.dispatcherMillis);
                         statusRecord.setServiceStatus(ServiceStatus.BLOCKED);
-                        server.setStatusInfo(statusRecord);
+                        server.setserviceRecord(statusRecord);
                     }
                     statusKeySet.add(key);
                 } else {
@@ -93,7 +93,7 @@ public class BizstatNetworkDispatcher implements Runnable {
                     ServiceRecord statusRecord = new ServiceRecord(host, service, server.dispatcherMillis);
                     statusRecord.setServiceStatus(ServiceStatus.INDETERMINATE);
                     statusRecord.setException(e);
-                    server.setStatusInfo(statusRecord);
+                    server.setserviceRecord(statusRecord);
                 }
                 statusKeySet.add(key);
             } else {
@@ -108,7 +108,7 @@ public class BizstatNetworkDispatcher implements Runnable {
             HostServiceStatus status = server.getStatus(key);
             long dispatchedThresholdMillis = server.dispatcherMillis - service.getIntervalMillis();
             if (status.getDispatchedMillis() < dispatchedThresholdMillis) {
-                status.executeStatusInfo();
+                status.executeserviceRecord();
                 return true;
             } else {
                 logger.info("skip interval", host, service, dispatchedThresholdMillis, service.getIntervalMillis());

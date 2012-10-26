@@ -42,8 +42,8 @@ public class HostServiceStatus implements Runnable {
     ServiceStatus notifiedServiceStatus;
     StatusChangeType statusChangeType;
     ServiceRecord serviceRecord;
-    ServiceRecord notifiedStatusInfo;
-    ServiceRecord previousStatusInfo;
+    ServiceRecord notifiedserviceRecord;
+    ServiceRecord previousserviceRecord;
     List<ContactGroup> contactGroupList = new UniqueList();
     ScheduledFuture scheduledFuture;
     boolean outputChanged = false;
@@ -75,17 +75,17 @@ public class HostServiceStatus implements Runnable {
 
     @Override
     public void run() {
-        executeStatusInfo();
+        executeserviceRecord();
     }
 
-    public void executeStatusInfo() {
-        server.setStatusInfo(new HostServiceExecuter(server, host, service).execute());
+    public void executeserviceRecord() {
+        server.setserviceRecord(new HostServiceExecuter(server, host, service).execute());
     }
 
-    public void setNotifiedStatusInfo(ServiceRecord notifiedStatusInfo) {
-        this.notifiedStatusInfo = notifiedStatusInfo;
-        this.notifiedServiceStatus = notifiedStatusInfo.getServiceStatus();
-        this.notifiedMillis = notifiedStatusInfo.getNotifiedMillis();
+    public void setNotifiedserviceRecord(ServiceRecord notifiedserviceRecord) {
+        this.notifiedserviceRecord = notifiedserviceRecord;
+        this.notifiedServiceStatus = notifiedserviceRecord.getServiceStatus();
+        this.notifiedMillis = notifiedserviceRecord.getNotifiedMillis();
     }
 
     public ServiceStatus getNotifiedServiceStatus() {
@@ -101,7 +101,7 @@ public class HostServiceStatus implements Runnable {
     }
 
     public void setNotifiedMillis(long notifiedMillis) {
-        this.notifiedStatusInfo = serviceRecord;
+        this.notifiedserviceRecord = serviceRecord;
         this.notifiedServiceStatus = serviceStatus;
         this.notifiedMillis = notifiedMillis;
     }
@@ -168,23 +168,23 @@ public class HostServiceStatus implements Runnable {
         this.serviceStatus = serviceStatus;
     }
 
-    public void setStatusInfo(ServiceRecord statusInfo) {
-        previousStatusInfo = this.serviceRecord;
+    public void setserviceRecord(ServiceRecord serviceRecord) {
+        previousserviceRecord = this.serviceRecord;
         receivedMillis = System.currentTimeMillis();
         if (service.getNotifyType() == NotifyType.OUTPUT_CHANGED) {
             outputChanged = false;
-            if (previousStatusInfo != null && !Strings.equals(previousStatusInfo.getOutList(), statusInfo.getOutList())) {
+            if (previousserviceRecord != null && !Strings.equals(previousserviceRecord.getOutList(), serviceRecord.getOutList())) {
                 outputChanged = true;
-                statusInfo.setServiceStatus(ServiceStatus.WARNING);
+                serviceRecord.setServiceStatus(ServiceStatus.WARNING);
             } else {
-                statusInfo.setServiceStatus(ServiceStatus.OK);                
+                serviceRecord.setServiceStatus(ServiceStatus.OK);                
             }
         }
-        if (statusInfo.getServiceStatus() == null) {
-            statusInfo.setServiceStatus(ServiceStatus.UNKNOWN);
+        if (serviceRecord.getServiceStatus() == null) {
+            serviceRecord.setServiceStatus(ServiceStatus.UNKNOWN);
         }
-        setServiceStatus(statusInfo.getServiceStatus());
-        this.serviceRecord = statusInfo;
+        setServiceStatus(serviceRecord.getServiceStatus());
+        this.serviceRecord = serviceRecord;
         parseMetrics();
     }
 
@@ -215,7 +215,7 @@ public class HostServiceStatus implements Runnable {
             if (valueString != null) {
                 try {
                     float value = Float.parseFloat(valueString);
-                    logger.info("setStatusInfo value", valueString, value);
+                    logger.info("setserviceRecord value", valueString, value);
                 } catch (NumberFormatException pe) {
                     logger.warn(pe, "parseMetrics", metric.getName(), valueString);
                 }

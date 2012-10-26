@@ -56,8 +56,8 @@ public class BizstatNotifier implements Runnable {
         }
     }
 
-    private void notifyStatus(ContactGroup contactGroup, ServiceRecord statusInfo) {
-        logger.info("notify", contactGroup, statusInfo);
+    private void notifyStatus(ContactGroup contactGroup, ServiceRecord serviceRecord) {
+        logger.info("notify", contactGroup, serviceRecord);
         for (Contact contact : contactGroup.getContactList()) {
             if (contact.isEnabled() && !server.isStopped()) {
                 BizstatContactNotifier contactNotifier = contactNotifierMap.get(contact);
@@ -65,7 +65,7 @@ public class BizstatNotifier implements Runnable {
                     contactNotifier = new BizstatContactNotifier(server, contact);
                     contactNotifierMap.put(contact, contactNotifier);
                 }
-                contactNotifier.getStatusInfoList().add(statusInfo);
+                contactNotifier.getserviceRecordList().add(serviceRecord);
             }
         }
     }

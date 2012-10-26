@@ -17,7 +17,7 @@ import vellum.entity.ConfigurableEntity;
  *
  * @author evan
  */
-public class MetricInfo extends AbstractIdEntity implements ConfigurableEntity {
+public class MetricInfo extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
     String name;
     String label;
     String description;
@@ -98,7 +98,7 @@ public class MetricInfo extends AbstractIdEntity implements ConfigurableEntity {
     }
             
     @Override
-    public void set(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesMap properties) {
         String serviceName = properties.getString("service", name);
         service = server.getConfigStorage().find(Service.class, serviceName);
         valueMap = StatusChangeType.newValueMap(properties.splitCsv("values"));

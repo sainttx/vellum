@@ -92,7 +92,7 @@ public class BizstatConfigStorage implements Storage, ConfigMapInitialisable {
         }
         for (ConfigEntry entry : map.keySet()) { 
                 ConfigurableEntity configEntity = map.get(entry);
-                configEntity.set(server, entry.getProperties());                                        
+                configEntity.config(server, entry.getProperties());                                        
         }
     }
     

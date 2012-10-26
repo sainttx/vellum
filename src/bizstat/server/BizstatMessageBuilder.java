@@ -18,26 +18,26 @@ import vellum.datatype.IntegerCounterMap;
  */
 public class BizstatMessageBuilder {
 
-    List<ServiceRecord> statusInfos;
+    List<ServiceRecord> serviceRecords;
     StringBuilder messageBuilder = new StringBuilder();
     IntegerCounterMap<ServiceStatus> counterMap = new IntegerCounterMap();
 
-    public BizstatMessageBuilder(LinkedList<ServiceRecord> statusInfos) {
-        this.statusInfos = statusInfos;
+    public BizstatMessageBuilder(LinkedList<ServiceRecord> serviceRecords) {
+        this.serviceRecords = serviceRecords;
     }
 
     public String buildHtml() {
         StringBuilder textBuilder = new StringBuilder();
         textBuilder.append(spanStyle("font-size: 14pt;", buildMessage()));
-        for (ServiceRecord statusInfo : statusInfos) {
+        for (ServiceRecord serviceRecord : serviceRecords) {
             textBuilder.append("\n<hr>");
-            textBuilder.append(spanStyle("font-size: 12pt;", buildHtmlMessage(statusInfo)));
+            textBuilder.append(spanStyle("font-size: 12pt;", buildHtmlMessage(serviceRecord)));
             textBuilder.append("\n<br>");
-            textBuilder.append(statusInfo.getOutText());
+            textBuilder.append(serviceRecord.getOutText());
             textBuilder.append("\n");
-            if (statusInfo.getErrText().length() > 0) {
+            if (serviceRecord.getErrText().length() > 0) {
                 textBuilder.append(String.format("\n<b>stderr:</b>\n"));
-                textBuilder.append(statusInfo.getErrText());
+                textBuilder.append(serviceRecord.getErrText());
                 textBuilder.append("\n");
             }
         }
@@ -50,8 +50,8 @@ public class BizstatMessageBuilder {
 
     public String buildMessage() {
         if (messageBuilder.length() == 0) {
-            for (ServiceRecord statusInfo : statusInfos) {
-                counterMap.increment(statusInfo.getServiceStatus());
+            for (ServiceRecord serviceRecord : serviceRecords) {
+                counterMap.increment(serviceRecord.getServiceStatus());
             }
             append(ServiceStatus.CRITICAL);
             append(ServiceStatus.WARNING);
@@ -67,14 +67,14 @@ public class BizstatMessageBuilder {
             }
             messageBuilder.append(String.format("%d %s", counterMap.getInt(serviceStatus), serviceStatus));
             StringBuilder builder = new StringBuilder();
-            for (ServiceRecord statusInfo : statusInfos) {
-                if (statusInfo.getServiceStatus() == serviceStatus) {
+            for (ServiceRecord serviceRecord : serviceRecords) {
+                if (serviceRecord.getServiceStatus() == serviceStatus) {
                     if (builder.length() > 0) {
                         builder.append(", ");
                     }
                     builder.append(String.format("%s",
-                            statusInfo.getService().getName(),
-                            statusInfo.getHost().getName()));
+                            serviceRecord.getService().getName(),
+                            serviceRecord.getHost().getName()));
                 }
             }
             messageBuilder.append(" (");
@@ -83,33 +83,33 @@ public class BizstatMessageBuilder {
         }
     }
 
-    public static String buildHtmlMessage(ServiceRecord statusInfo) {
+    public static String buildHtmlMessage(ServiceRecord serviceRecord) {
         StringBuilder builder = new StringBuilder();
-        builder.append(DateFormats.timeFormat.format(new Date(statusInfo.getTimestamp())));
+        builder.append(DateFormats.timeFormat.format(new Date(serviceRecord.getTimestamp())));
         builder.append(" ");
         builder.append("<i>");
-        builder.append(statusInfo.getHost().getName());
+        builder.append(serviceRecord.getHost().getName());
         builder.append("</i>");
         builder.append(" ");
         builder.append("<b>");
-        builder.append(statusInfo.getService().getName());
+        builder.append(serviceRecord.getService().getName());
         builder.append("</b>");
         builder.append(" ");
-        builder.append(statusInfo.getServiceStatus().name());
+        builder.append(serviceRecord.getServiceStatus().name());
         return builder.toString();
     }
 
-    public static String buildTextMessage(ServiceRecord statusInfo) {
+    public static String buildTextMessage(ServiceRecord serviceRecord) {
         StringBuilder builder = new StringBuilder();
-        builder.append(DateFormats.timeFormat.format(new Date(statusInfo.getTimestamp())));
+        builder.append(DateFormats.timeFormat.format(new Date(serviceRecord.getTimestamp())));
         builder.append(" ");
-        builder.append(statusInfo.getHost().getName());
+        builder.append(serviceRecord.getHost().getName());
         builder.append(" ");
-        builder.append(statusInfo.getService().getName());
+        builder.append(serviceRecord.getService().getName());
         builder.append(" ");
-        builder.append(statusInfo.getServiceStatus().name());
-        if (statusInfo.getOutText() != null) {
-            String text = statusInfo.getOutText().trim();
+        builder.append(serviceRecord.getServiceStatus().name());
+        if (serviceRecord.getOutText() != null) {
+            String text = serviceRecord.getOutText().trim();
             int index = text.lastIndexOf("\n");
             if (index > 0) {
                 builder.append(" - ");
@@ -122,9 +122,9 @@ public class BizstatMessageBuilder {
         return builder.toString();
     }
     
-    public static String buildOutText(ServiceRecord statusInfo) {
-        if (statusInfo.getOutText() != null) {
-            String text = statusInfo.getOutText().trim();
+    public static String buildOutText(ServiceRecord serviceRecord) {
+        if (serviceRecord.getOutText() != null) {
+            String text = serviceRecord.getOutText().trim();
             int index = text.lastIndexOf("\n");
             if (index > 0) {
                 return text.substring(index + 1);

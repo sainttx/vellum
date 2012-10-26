@@ -22,13 +22,13 @@ public class HostServiceExecuter {
     BizstatServer server;
     BizstatConfig config;
     HostServiceKey key;
-    ServiceRecord statusInfo;
+    ServiceRecord serviceRecord;
     
     public HostServiceExecuter(BizstatServer server, Host host, Service service) {
         this.server = server;
         this.config = server.getConfig();
         this.key = key;
-        this.statusInfo = new ServiceRecord(host, service, server.dispatcherMillis);
+        this.serviceRecord = new ServiceRecord(host, service, server.dispatcherMillis);
     }
 
     public ServiceRecord execute() {
@@ -37,27 +37,27 @@ public class HostServiceExecuter {
 
     private ServiceRecord exec(String... args) {
         logger.verbose("exec", Lists.format(args));
-        statusInfo.setArgs(args);
+        serviceRecord.setArgs(args);
         if (config.isExec()) {
             try {
                 Process process = Runtime.getRuntime().exec(args);
                 InputStream inputStream = process.getInputStream();
                 InputStream errorStream = process.getErrorStream();
-                statusInfo.setExitCode(process.waitFor());
-                statusInfo.setOutList(Streams.readLineList(inputStream, config.getOutputSize()));
-                statusInfo.setErrText(Streams.readString(errorStream));
-                logger.verbose("exec", statusInfo.getExitCode(), statusInfo.getServiceStatus());
-                if (statusInfo.getOutText().length() > 0) {
+                serviceRecord.setExitCode(process.waitFor());
+                serviceRecord.setOutList(Streams.readLineList(inputStream, config.getOutputSize()));
+                serviceRecord.setErrText(Streams.readString(errorStream));
+                logger.verbose("exec", serviceRecord.getExitCode(), serviceRecord.getServiceStatus());
+                if (serviceRecord.getOutText().length() > 0) {
                 }
             } catch (Exception e) {
                 logger.warn(e, null);
-                statusInfo.setServiceStatus(ServiceStatus.INDETERMINATE);
+                serviceRecord.setServiceStatus(ServiceStatus.INDETERMINATE);
             }
         } else {
-            statusInfo.setServiceStatus(ServiceStatus.DISABLED);
+            serviceRecord.setServiceStatus(ServiceStatus.DISABLED);
         }
-        statusInfo.setTimestampMillis(System.currentTimeMillis());
-        return statusInfo;
+        serviceRecord.setTimestampMillis(System.currentTimeMillis());
+        return serviceRecord;
     }        
 
     

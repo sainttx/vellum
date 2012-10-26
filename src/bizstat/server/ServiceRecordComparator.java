@@ -10,10 +10,10 @@ import java.util.Comparator;
  *
  * @author evans
  */
-public class StatusInfoServiceStatusComparator implements Comparator<ServiceRecord> {
+public class ServiceRecordComparator implements Comparator<ServiceRecord> {
 
     @Override
     public int compare(ServiceRecord o1, ServiceRecord o2) {
-        return o1.getServiceStatus().compareTo(o2.getServiceStatus());
+        return o1.getHostServiceKey().compareTo(o2.getHostServiceKey());
     }
 }

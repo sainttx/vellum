@@ -24,27 +24,27 @@ public class BizstatMessenger {
     ProcessBuilder processBuilder = new ProcessBuilder();
     Map environment = processBuilder.environment();
     List<String> argList = new ArrayList();
-    LinkedList<ServiceRecord> statusInfoList;
+    LinkedList<ServiceRecord> serviceRecordList;
 
-    public BizstatMessenger(BizstatServer server, Contact contact, List<ServiceRecord> statusInfoList) {
+    public BizstatMessenger(BizstatServer server, Contact contact, List<ServiceRecord> serviceRecordList) {
         this.server = server;
         this.contact = contact;
-        this.statusInfoList = Lists.sortedReverseLinkedList(statusInfoList, 
-                new StatusInfoServiceStatusComparator());
+        this.serviceRecordList = Lists.sortedReverseLinkedList(serviceRecordList, 
+                new ServiceRecordStatusComparator());
     }
 
     public void send() {
-        ServiceRecord statusInfo = statusInfoList.getFirst();
-        logger.info("send", statusInfoList.size(), statusInfo);
-        String message = BizstatMessageBuilder.buildTextMessage(statusInfo);
-        String text = statusInfo.getOutText();
-        if (statusInfoList.size() > 1) {
-            BizstatMessageBuilder builder = new BizstatMessageBuilder(statusInfoList);
+        ServiceRecord serviceRecord = serviceRecordList.getFirst();
+        logger.info("send", serviceRecordList.size(), serviceRecord);
+        String message = BizstatMessageBuilder.buildTextMessage(serviceRecord);
+        String text = serviceRecord.getOutText();
+        if (serviceRecordList.size() > 1) {
+            BizstatMessageBuilder builder = new BizstatMessageBuilder(serviceRecordList);
             message = builder.buildMessage();
             text = builder.buildHtml();
             logger.info("send", text);
         }
-        send(statusInfo, message, text);
+        send(serviceRecord, message, text);
         if (contact.getIm() != null) {
             if (server.gtalk != null) {
                 try {
@@ -56,18 +56,18 @@ public class BizstatMessenger {
         }
     }
 
-    private void send(ServiceRecord statusInfo, String message, String text) {
+    private void send(ServiceRecord serviceRecord, String message, String text) {
         logger.info("send", message);
         argList.add(server.config.notifyScript);
-        argList.add(statusInfo.getHost().getName());
-        argList.add(statusInfo.getService().getName());
-        argList.add(statusInfo.getServiceStatus().name());
+        argList.add(serviceRecord.getHost().getName());
+        argList.add(serviceRecord.getService().getName());
+        argList.add(serviceRecord.getServiceStatus().name());
         argList.add(contact.getEmail());
         logger.info("notify send", argList);
         processBuilder.command(argList);
-        environment.put("notify_host", statusInfo.getHost().getName());
-        environment.put("notify_service", statusInfo.getService().getName());
-        environment.put("notify_status", statusInfo.getServiceStatus().name());
+        environment.put("notify_host", serviceRecord.getHost().getName());
+        environment.put("notify_service", serviceRecord.getService().getName());
+        environment.put("notify_status", serviceRecord.getServiceStatus().name());
         environment.put("notify_message", message);
         put("notify_", contact.getPropertiesMap());
         send(text);
