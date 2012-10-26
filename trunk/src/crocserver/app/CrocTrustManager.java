@@ -9,29 +9,37 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.KeyStores;
 
 /**
  *
  * @author evan
  */
 public class CrocTrustManager implements X509TrustManager {
+
     Logr logger = LogrFactory.getLogger(CrocTrustManager.class);
     CrocStorage storage;
+    X509TrustManager trustManager;
 
     public CrocTrustManager(CrocStorage storage) {
         this.storage = storage;
     }
-        
+
+    public void init() throws Exception {
+        trustManager = KeyStores.loadTrustManager();
+    }
+
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        return null;
+        logger.info("getAcceptedIssuers");
+        return trustManager.getAcceptedIssuers();
     }
-    
+
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) {
         logger.info("checkClientTrusted");
     }
-    
+
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) {
         logger.info("checkServerTrusted");

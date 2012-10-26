@@ -16,7 +16,7 @@ import javax.net.ssl.SSLParameters;
 import vellum.lifecycle.Startable;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Keystores;
+import vellum.util.KeyStores;
 import vellum.util.Sockets;
 
 /**
@@ -35,7 +35,7 @@ public class VellumHttpsServer implements Startable {
     }    
 
     public void init() throws Exception {
-        sslContext = Keystores.createSSLContext();
+        sslContext = KeyStores.createSSLContext();
     }
     
     public void init(SSLContext sslContext) throws Exception {
@@ -45,12 +45,12 @@ public class VellumHttpsServer implements Startable {
     @Override
     public void start() throws Exception {
         if (sslContext == null) {
-            sslContext = Keystores.createSSLContext();
+            sslContext = KeyStores.createSSLContext();
         }
         Sockets.waitPort(config.getPort(), 4000, 500);
         InetSocketAddress socketAddress = new InetSocketAddress(config.getPort());
         httpsServer = HttpsServer.create(socketAddress, 4);
-        httpsServer.setHttpsConfigurator(Keystores.createHttpsConfigurator(sslContext, config.isClientAuth()));
+        httpsServer.setHttpsConfigurator(KeyStores.createHttpsConfigurator(sslContext, config.isClientAuth()));
         httpsServer.setExecutor(executor);
         httpsServer.start();
         logger.info("start", config.getPort());

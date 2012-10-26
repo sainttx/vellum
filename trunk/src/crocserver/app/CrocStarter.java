@@ -27,9 +27,10 @@ import vellum.util.Streams;
 import vellum.util.Threads;
 import crocserver.storage.CrocSchema;
 import crocserver.storage.CrocStorage;
+import java.security.Security;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
-import vellum.util.Keystores;
+import vellum.util.KeyStores;
 
 /**
  *
@@ -70,12 +71,16 @@ public class CrocStarter {
         }
         String httpsServerConfigName = configProperties.getString("httpsServer", null);
         if (httpsServerConfigName != null) {
+            if (false) {
+                System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
+                Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+            }
             HttpServerConfig httpsServerConfig = new HttpServerConfig(
                     configMap.find("HttpsServer", httpsServerConfigName).getProperties());
             if (httpsServerConfig.isEnabled()) {
                 httpsServer = new VellumHttpsServer(httpsServerConfig);
-                //httpsServer.init(Keystores.createSSLContext(trustManager));
-                httpsServer.init(Keystores.createSSLContext());
+                httpsServer.init(KeyStores.createSSLContext());
+                httpsServer.init(KeyStores.createSSLContext(trustManager));
             }
         }
     }
@@ -88,7 +93,7 @@ public class CrocStarter {
         }
         if (httpsServer != null) {
             httpsServer.start();
-                httpsServer.startContext("/", new CrocHttpHandler(storage));
+            httpsServer.startContext("/", new CrocHttpHandler(storage));
             logger.info("HTTPS secure server started");
         }
         if (configProperties.getBoolean("testPost", false)) {

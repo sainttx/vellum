@@ -28,11 +28,11 @@ public class VellumKeyTool {
     String trustStorePassword;
 
     private void main() throws Exception {
-        keyStorePath = System.getProperty("javax.net.ssl.keyStore");
-        trustStorePath = System.getProperty("javax.net.ssl.trustStore");
-        keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword");
-        trustStorePassword = System.getProperty("javax.net.ssl.trustStorePassword");
-        dname = System.getProperty("dname");
+        keyStorePath = getProperty("javax.net.ssl.keyStore");
+        trustStorePath = getProperty("javax.net.ssl.trustStore");
+        keyStorePassword = getProperty("javax.net.ssl.keyStorePassword");
+        trustStorePassword = getProperty("javax.net.ssl.trustStorePassword");
+        dname = getProperty("dname");
         File keyStoreFile = new File(keyStorePath);
         File trustStoreFile = new File(trustStorePath);
         String keyAlias = Streams.removeFileNameExtension(keyStoreFile);
@@ -52,11 +52,19 @@ public class VellumKeyTool {
         logger.info("keyStoreFile", keyStoreFile.getPath(), keyStoreFile.exists());
         genKeyPair(keyStorePath, keyAlias);
         exportCert(keyStorePath, keyAlias, certFilePath);
-        importCert(trustStorePath, keyAlias, certFilePath);
+        if (false) {
+            importCert(trustStorePath, keyAlias, certFilePath);
+            list(trustStorePath);
+        }
         list(keyStorePath);
-        list(trustStorePath);
     }
 
+    String getProperty(String name) {
+        String value = System.getProperty(name);
+        logger.info("getProperty", name, value);
+        return value;
+    }
+    
     void genKeyPair(String keyStoreFile, String keyAlias) throws Exception {
         keyTool(new String[]{
                     "-genkeypair",
