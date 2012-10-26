@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package venigmon.app;
+package venigmon.httpserver;
 
 import bizstat.server.BizstatServer;
 import java.io.File;
@@ -24,7 +24,7 @@ import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
 import vellum.util.Threads;
 import venigmon.httpserver.HttpServerConfig;
-import venigmon.httpserver.CrocHttpServer;
+import venigmon.app.CrocHttpServer;
 import venigmon.storage.CrocSchema;
 import venigmon.storage.CrocStorage;
 
