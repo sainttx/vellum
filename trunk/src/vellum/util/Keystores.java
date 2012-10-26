@@ -16,7 +16,7 @@ import vellum.exception.Exceptions;
  *
  * @author evan
  */
-public class KeyStores1 {
+public class Keystores {
 
     public static SSLSocketFactory createSSLSocketFactory() throws Exception {
         return createSSLContext().getSocketFactory();
