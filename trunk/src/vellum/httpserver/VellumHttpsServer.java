@@ -3,8 +3,6 @@
 package vellum.httpserver;
 
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 import crocserver.httpserver.HttpServerConfig;
 import java.net.InetSocketAddress;
@@ -12,11 +10,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
 import vellum.lifecycle.Startable;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.KeyStores;
+import vellum.security.KeyStores;
 import vellum.util.Sockets;
 
 /**
@@ -35,7 +32,7 @@ public class VellumHttpsServer implements Startable {
     }    
 
     public void init() throws Exception {
-        sslContext = KeyStores.createSSLContext();
+        sslContext = Keystores.createSSLContext();
     }
     
     public void init(SSLContext sslContext) throws Exception {

@@ -30,7 +30,7 @@ import crocserver.storage.CrocStorage;
 import java.security.Security;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
-import vellum.util.KeyStores;
+import vellum.security.KeyStores;
 
 /**
  *
@@ -60,6 +60,7 @@ public class CrocStarter {
                 configProperties.getString("dataSource")).getProperties());
         storage = new CrocStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
         trustManager = new CrocTrustManager(storage);
+        trustManager.init();
         new CrocSchema(storage).verifySchema();
         String httpServerConfigName = configProperties.getString("httpServer", null);
         if (httpServerConfigName != null) {
@@ -79,7 +80,6 @@ public class CrocStarter {
                     configMap.find("HttpsServer", httpsServerConfigName).getProperties());
             if (httpsServerConfig.isEnabled()) {
                 httpsServer = new VellumHttpsServer(httpsServerConfig);
-                httpsServer.init(KeyStores.createSSLContext());
                 httpsServer.init(KeyStores.createSSLContext(trustManager));
             }
         }
