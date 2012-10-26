@@ -63,7 +63,7 @@ public class CrocStarter {
         logger.info("HTTP server started");
         if (configProperties.getBoolean("testPost", false)) {
             testPost();
-            Threads.sleep(4000);
+            Threads.sleep(16000);
             stop();
         }
     }

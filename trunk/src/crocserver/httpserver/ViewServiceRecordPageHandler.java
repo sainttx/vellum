@@ -25,8 +25,10 @@ public class ViewServiceRecordPageHandler extends AbstractPageHandler {
     protected void handle() throws Exception {
        HtmlPrinter p = new HtmlPrinter(out);
        Long id = Long.parseLong(pathArgs[2]);
-       out.printf("<div class='menuBarDiv'><a href='/'>Home</a></div>\n");
-       out.printf("<span class='pageTitle'>ServiceRecord %d</span>", id);
+       p.div("menuBarDiv");
+       p.a_("/", "Home");
+       p._div();
+       p.spanf("pageTitle", "ServiceRecord %d", id);
        ServiceRecord serviceRecord = storage.getServiceRecordStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
