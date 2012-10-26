@@ -63,6 +63,7 @@ public class PostHandler implements HttpHandler {
     }
 
     private void check(String hostName, String serviceName, String notifyName, String text) throws StorageException, SQLException {
+        storage.getServiceRecordStorage().find(hostName, serviceName);
         
     }
     

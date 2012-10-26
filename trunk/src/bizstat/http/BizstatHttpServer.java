@@ -6,7 +6,7 @@ import bizstat.server.BizstatServer;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import venigmon.httpserver.HttpServerConfig;
-import venigmon.httpserver.VellumHttpServer;
+import vellum.httpserver.VellumHttpServer;
 
 /**
  *

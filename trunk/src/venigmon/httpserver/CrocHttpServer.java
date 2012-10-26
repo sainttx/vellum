@@ -2,23 +2,24 @@
  */
 package venigmon.httpserver;
 
+import vellum.httpserver.VellumHttpServer;
 import venigmon.storage.CrocStorage;
 
 /**
  *
  * @author evans
  */
-public class VenigmonHttpServer {
+public class CrocHttpServer {
     VellumHttpServer httpServer;
     CrocStorage storage;
     
-    public VenigmonHttpServer(CrocStorage storage, HttpServerConfig config) {
+    public CrocHttpServer(CrocStorage storage, HttpServerConfig config) {
         this.storage = storage;
         httpServer = new VellumHttpServer(config);
     }    
 
     public void start() throws Exception {
-        httpServer.start(new VenigmonHttpHandler(storage));
+        httpServer.start(new CrocHttpHandler(storage));
     }
     
     public boolean stop() {

@@ -24,19 +24,19 @@ import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
 import vellum.util.Threads;
 import venigmon.httpserver.HttpServerConfig;
-import venigmon.httpserver.VenigmonHttpServer;
-import venigmon.storage.VenigmonSchemaStorage;
+import venigmon.httpserver.CrocHttpServer;
+import venigmon.storage.CrocSchema;
 import venigmon.storage.CrocStorage;
 
 /**
  *
  * @author evan
  */
-public class VenigmonStarter {
+public class CrocStarter {
 
-    Logr logger = LogrFactory.getLogger(VenigmonStarter.class);
+    Logr logger = LogrFactory.getLogger(CrocStarter.class);
     CrocStorage storage;
-    VenigmonHttpServer httpServer;
+    CrocHttpServer httpServer;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
     BizstatServer server;
@@ -53,8 +53,8 @@ public class VenigmonStarter {
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource", 
                 configProperties.getString("dataSource")).getProperties());
         storage = new CrocStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
-        new VenigmonSchemaStorage(storage).verifySchema();
-        httpServer = new VenigmonHttpServer(storage, new HttpServerConfig(configMap.get("HttpServer", 
+        new CrocSchema(storage).verifySchema();
+        httpServer = new CrocHttpServer(storage, new HttpServerConfig(configMap.get("HttpServer", 
                 configProperties.getString("httpServer")).getProperties()));
     }
 
@@ -106,7 +106,7 @@ public class VenigmonStarter {
     
     public static void main(String[] args) throws Exception {
         try {
-            VenigmonStarter starter = new VenigmonStarter();
+            CrocStarter starter = new CrocStarter();
             starter.init();
             starter.start();
         } catch (Exception e) {

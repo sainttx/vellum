@@ -14,11 +14,11 @@ import venigmon.storage.CrocStorage;
  *
  * @author evans
  */
-public class VenigmonHttpHandler implements HttpHandler {
-    Logr logger = LogrFactory.getLogger(VenigmonHttpHandler.class);
+public class CrocHttpHandler implements HttpHandler {
+    Logr logger = LogrFactory.getLogger(CrocHttpHandler.class);
     CrocStorage storage;
 
-    public VenigmonHttpHandler(CrocStorage storage) {
+    public CrocHttpHandler(CrocStorage storage) {
         this.storage = storage;
     }
     

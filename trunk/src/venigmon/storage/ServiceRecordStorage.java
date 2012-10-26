@@ -57,8 +57,25 @@ public class ServiceRecordStorage {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("find id"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("find (id)"));
             statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            return build(resultSet);
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+    
+    public ServiceRecord find(String hostName, String serviceName) throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("find (host, service)"));
+            statement.setString(1, hostName);
+            statement.setString(2, serviceName);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
                 return null;
@@ -110,7 +127,7 @@ public class ServiceRecordStorage {
         boolean ok = false;
         try {
             List<ServiceRecord> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list time"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list by time"));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(build(resultSet));
@@ -127,7 +144,7 @@ public class ServiceRecordStorage {
         boolean ok = false;
         try {
             List<ServiceRecord> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list time"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list by time"));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(build(resultSet));
