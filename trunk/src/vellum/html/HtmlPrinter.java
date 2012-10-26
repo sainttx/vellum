@@ -30,7 +30,7 @@ public class HtmlPrinter {
         out.printf("<div class='%s'>\n", style);
     }    
 
-    public void divClose() {
+    public void _div() {
         out.printf("</div>\n");
     }    
     
@@ -75,7 +75,7 @@ public class HtmlPrinter {
         out.printf("<tr>\n");
     }
 
-    public void theadClose() {
+    public void _thead() {
         out.printf("</thead>\n");
         out.flush();
     }
@@ -101,33 +101,33 @@ public class HtmlPrinter {
                 td(Types.getStyleClass(value.getClass()), value);
             }
         }
-        trClose();
+        _tr();
     }
 
     public void trhd(String label, Object value) {
         tr();
         out.printf("<td class='rowLabel'>%s</td>\n", label);
         out.printf("<td>%s</td>\n", value);
-        trClose();
+        _tr();
     }
     
     public void tdClose() {
         out.printf("</td>\n");
     }
     
-    public void trClose() {
+    public void _tr() {
         out.printf("</tr>\n");
     }
     
-    public void tbodyClose() {
+    public void _tbody() {
         out.printf("</tbody>\n");
     }
 
-    public void tableClose() {
+    public void _table() {
         out.printf("</table>\n");
     }
 
-    public void tableDivClose() {
+    public void _tableDiv() {
         out.printf("</div>\n");
         out.printf("</table>\n");
     }
