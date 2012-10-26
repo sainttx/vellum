@@ -16,9 +16,11 @@ import vellum.util.Strings;
  * @author evan
  */
 public class VellumKeyTool {
-    Logr logger = LogrFactory.getLogger(getClass());    
+
+    Logr logger = LogrFactory.getLogger(getClass());
     String keyStoreType = "JKS";
-    String keyAlg = "RSA";
+    String providerName = null;
+    String keyAlgName = "RSA";
     String dname = "CN=localhost, OU=local, O=local, L=local, S=local, C=local";
     String keyStorePath;
     String trustStorePath;
@@ -38,8 +40,8 @@ public class VellumKeyTool {
         File certFile = new File(certFilePath);
         logger.info("certFile", certFilePath);
         if (keyStoreFile.exists() || trustStoreFile.exists() || certFile.exists()) {
-            if (dname == null || !Boolean.getBoolean("overwriteKeyStore")) {
-                throw new Exception("require dname and overwriteKeyStore");
+            if (dname == null) {
+                throw new Exception("require dname");
             }
             if (!keyStoreFile.delete()) {
                 throw new Exception("unable to delete " + keyStoreFile.getPath());
@@ -56,61 +58,62 @@ public class VellumKeyTool {
     }
 
     void genKeyPair(String keyStoreFile, String keyAlias) throws Exception {
-        keyTool(new String[] {
-            "-genkeypair", 
-            "-keyalg", keyAlg, 
-            "-keystore", keyStoreFile, 
-            "-storetype", keyStoreType, 
-            "-storepass", keyStorePassword,
-            "-alias", keyAlias, 
-            "-keypass", keyStorePassword, 
-            "-dname", dname
-        });
+        keyTool(new String[]{
+                    "-genkeypair",
+                    "-keyalg", keyAlgName,
+                    "-keystore", keyStoreFile,
+                    "-storetype", keyStoreType,
+                    "-storepass", keyStorePassword,
+                    "-alias", keyAlias,
+                    "-keypass", keyStorePassword,
+                    "-dname", dname
+                });
     }
 
     void exportCert(String keyStore, String alias, String certFile) throws Exception {
-        keyTool(new String[] {
-            "-export", 
-            "-keystore", keyStore, 
-            "-storetype", keyStoreType, 
-            "-storepass", keyStorePassword,
-            "-alias", alias, 
-            "-keypass", keyStorePassword, 
-            "-file", certFile, 
-        });
+        keyTool(new String[]{
+                    "-export",
+                    "-keystore", keyStore,
+                    "-storetype", keyStoreType,
+                    "-storepass", keyStorePassword,
+                    "-alias", alias,
+                    "-keypass", keyStorePassword,
+                    "-file", certFile,
+                    "-rfc"
+                });
     }
-    
+
     void importCert(String trustStore, String trustAlias, String certFile) throws Exception {
-        keyTool(new String[] {
-            "-import", 
-            "-noprompt",
-            "-keystore", trustStore, 
-            "-storetype", keyStoreType, 
-            "-storepass", trustStorePassword,
-            "-alias", trustAlias,
-            "-file", certFile,
-        });
+        keyTool(new String[]{
+                    "-import",
+                    "-noprompt",
+                    "-keystore", trustStore,
+                    "-storetype", keyStoreType,
+                    "-storepass", trustStorePassword,
+                    "-alias", trustAlias,
+                    "-file", certFile
+                });
     }
 
     void list(String keyStore) throws Exception {
-        keyTool(new String[] {
-            "-list", 
-            "-keystore", keyStore, 
-            "-storetype", keyStoreType, 
-            "-storepass", keyStorePassword
-        });
+        keyTool(new String[]{
+                    "-list",
+                    "-keystore", keyStore,
+                    "-storetype", keyStoreType,
+                    "-storepass", keyStorePassword
+                });
     }
-    
+
     void keyTool(String[] args) throws Exception {
         System.out.println(Strings.joinArray(" ", args));
         KeyTool.main(args);
     }
-   
+
     public static void main(String[] args) throws Exception {
         try {
             new VellumKeyTool().main();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-    }    
+    }
 }

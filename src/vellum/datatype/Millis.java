@@ -14,7 +14,7 @@ import vellum.util.DateFormats;
  * @author evan
  */
 public class Millis {
-
+    
     public static long getIntervalMillis(Date from, Date to) {
         return Math.abs(to.getTime() - from.getTime());
     }

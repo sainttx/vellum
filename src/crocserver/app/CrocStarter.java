@@ -37,7 +37,7 @@ import vellum.util.Keystores;
  */
 public class CrocStarter {
 
-    Logr logger = LogrFactory.getLogger(CrocStarter.class);
+    Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
@@ -74,7 +74,7 @@ public class CrocStarter {
                     configMap.find("HttpsServer", httpsServerConfigName).getProperties());
             if (httpsServerConfig.isEnabled()) {
                 httpsServer = new VellumHttpsServer(httpsServerConfig);
-                httpsServer.init(Keystores.createSSLContext(trustManager));
+                //httpsServer.init(Keystores.createSSLContext(trustManager));
                 httpsServer.init(Keystores.createSSLContext());
             }
         }

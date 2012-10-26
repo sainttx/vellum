@@ -45,7 +45,7 @@ public class Keystores {
         return sslContext;
     }
     
-    public static HttpsConfigurator createHttpsConfigurator(SSLContext sslContext) throws Exception {
+    public static HttpsConfigurator createHttpsConfigurator(SSLContext sslContext, final boolean needClientAuth) throws Exception {
         return new HttpsConfigurator(sslContext) {
 
             @Override
@@ -55,7 +55,7 @@ public class Keystores {
                 if (remote.getHostName().equals("localhost")) {
                 }
                 SSLParameters defaultSSLParameters = sslContext.getDefaultSSLParameters();
-                defaultSSLParameters.setNeedClientAuth(false);
+                defaultSSLParameters.setNeedClientAuth(needClientAuth);
                 httpsParameters.setSSLParameters(defaultSSLParameters);
             }
         };

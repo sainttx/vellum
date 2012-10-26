@@ -50,7 +50,7 @@ public class VellumHttpsServer implements Startable {
         Sockets.waitPort(config.getPort(), 4000, 500);
         InetSocketAddress socketAddress = new InetSocketAddress(config.getPort());
         httpsServer = HttpsServer.create(socketAddress, 4);
-        httpsServer.setHttpsConfigurator(Keystores.createHttpsConfigurator(sslContext));
+        httpsServer.setHttpsConfigurator(Keystores.createHttpsConfigurator(sslContext, config.isClientAuth()));
         httpsServer.setExecutor(executor);
         httpsServer.start();
         logger.info("start", config.getPort());

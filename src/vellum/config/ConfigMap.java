@@ -14,7 +14,7 @@ import vellum.type.ComparableTuple;
  */
 public class ConfigMap extends HashMap<ComparableTuple, ConfigEntry> {
     List<ConfigEntry> entryList = new ArrayList();
-    
+
     public ConfigEntry find(String type, String name) {
         ConfigEntry entry = get(ComparableTuple.newInstance(type, name));
         if (entry == null) {
