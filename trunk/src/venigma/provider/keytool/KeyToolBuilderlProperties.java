@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package venigma.provider.keystoretool;
+package venigma.provider.keytool;
 
 import venigma.test.*;
 
