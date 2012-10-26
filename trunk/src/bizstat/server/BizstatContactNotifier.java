@@ -22,15 +22,15 @@ public class BizstatContactNotifier implements Runnable {
     BizstatServer server;
     Contact contact;
     Date notifyTime = null;
-    List<ServiceRecord> statusInfoList = new ArrayList();
+    List<ServiceRecord> serviceRecordList = new ArrayList();
     
     public BizstatContactNotifier(BizstatServer server, Contact contact) {
         this.server = server;
         this.contact = contact;
     }
 
-    public List<ServiceRecord> getStatusInfoList() {
-        return statusInfoList;
+    public List<ServiceRecord> getserviceRecordList() {
+        return serviceRecordList;
     }
     
     @Override
@@ -40,7 +40,7 @@ public class BizstatContactNotifier implements Runnable {
             logger.warn("notify ignore", notifyTime);
         } else {
             notifyTime = new Date();
-            new BizstatMessenger(server, contact, statusInfoList).send();
+            new BizstatMessenger(server, contact, serviceRecordList).send();
         }
     }
  

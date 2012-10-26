@@ -11,7 +11,7 @@ import vellum.config.PropertiesMap;
  *
  * @author evan
  */
-public interface ConfigurableEntity extends IdEntity, Named {
+public interface ConfigurableEntity<C> extends IdEntity, Named {
     public void setName(String name);
-    public void set(BizstatServer server, PropertiesMap properties);
+    public void config(C context, PropertiesMap properties);
 }

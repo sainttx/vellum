@@ -18,7 +18,7 @@ import vellum.entity.ConfigurableEntity;
  *
  * @author evan
  */
-public class Network extends AbstractIdEntity implements ConfigurableEntity {
+public class Network extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
     static Logr logger = LogrFactory.getLogger(Network.class);
     
     String name;
@@ -99,7 +99,7 @@ public class Network extends AbstractIdEntity implements ConfigurableEntity {
     }
     
     @Override
-    public void set(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesMap properties) {
         label = properties.getString("label", null);
         enabled = properties.getBoolean("enabled", true);
         host = server.getConfigStorage().get(Host.class, properties.getString("host", null));

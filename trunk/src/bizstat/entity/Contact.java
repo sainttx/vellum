@@ -15,7 +15,7 @@ import vellum.entity.ConfigurableEntity;
  *
  * @author evan
  */
-public class Contact extends AbstractIdEntity implements ConfigurableEntity {
+public class Contact extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
     String name; 
     String fullName;
     String email;
@@ -97,7 +97,7 @@ public class Contact extends AbstractIdEntity implements ConfigurableEntity {
     }
 
     @Override
-    public void set(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesMap properties) {
         fullName = properties.getString("fullName", null);
         sms = properties.getString("sms", null);
         email = properties.getString("email", null);

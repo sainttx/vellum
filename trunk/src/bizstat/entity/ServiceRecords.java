@@ -10,7 +10,7 @@ import java.util.Collection;
  *
  * @author evans
  */
-public class StatusInfos {
+public class ServiceRecords {
 
     public static String toString(Collection<ServiceRecord> collection) {
         return String.format("%d %s", collection.size(), collection.iterator().next());

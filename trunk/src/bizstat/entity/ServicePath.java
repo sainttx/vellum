@@ -18,7 +18,7 @@ import vellum.entity.ConfigurableEntity;
  *
  * @author evan
  */
-public class ServicePath extends AbstractIdEntity implements ConfigurableEntity {
+public class ServicePath extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
     static Logr logger = LogrFactory.getLogger(ServicePath.class);
     
     String name;
@@ -64,7 +64,7 @@ public class ServicePath extends AbstractIdEntity implements ConfigurableEntity 
     }
 
     @Override
-    public void set(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesMap properties) {
         label = properties.getString("label", null);
         enabled = properties.getBoolean("enabled", true);
         network = server.getConfigStorage().find(Network.class, properties.getString("network"));

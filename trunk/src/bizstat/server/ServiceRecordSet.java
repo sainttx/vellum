@@ -12,9 +12,9 @@ import java.util.TreeSet;
  *
  * @author evans
  */
-public class StatusInfoSet extends TreeSet<ServiceRecord> {
+public class ServiceRecordSet extends TreeSet<ServiceRecord> {
 
-    public StatusInfoSet() {
+    public ServiceRecordSet() {
         super(new Comparator<ServiceRecord>() {
 
             @Override

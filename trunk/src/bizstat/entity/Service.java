@@ -20,7 +20,7 @@ import vellum.type.UniqueList;
  *
  * @author evan
  */
-public class Service extends AbstractIdEntity implements ConfigurableEntity {
+public class Service extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
     Logr logger = LogrFactory.getLogger(Service.class);
     
     String name;
@@ -125,7 +125,7 @@ public class Service extends AbstractIdEntity implements ConfigurableEntity {
     }
         
     @Override
-    public void set(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesMap properties) {
         new ServiceConfigurator(server, properties, this).configure();
     }
     

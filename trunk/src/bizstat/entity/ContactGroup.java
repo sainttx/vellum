@@ -18,7 +18,7 @@ import vellum.entity.ConfigurableEntity;
  *
  * @author evan
  */
-public class ContactGroup extends AbstractIdEntity implements ConfigurableEntity {
+public class ContactGroup extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
     static Logr logger = LogrFactory.getLogger(ContactGroup.class);
 
     String name;
@@ -60,7 +60,7 @@ public class ContactGroup extends AbstractIdEntity implements ConfigurableEntity
     }
 
     @Override
-    public void set(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesMap properties) {
         label = properties.getString("label", null);
         enabled = properties.getBoolean("enabled");
         for (String contactName : properties.splitCsv("contacts")) {

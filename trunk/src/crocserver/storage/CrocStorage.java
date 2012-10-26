@@ -61,7 +61,7 @@ public class CrocStorage {
         try {
             getServiceRecordStorage().insert(serviceRecord);
         } catch (Exception e) {
-            logger.warn(e, "setStatusInfo", serviceRecord);
+            logger.warn(e, "setserviceRecord", serviceRecord);
         }
     }
 
