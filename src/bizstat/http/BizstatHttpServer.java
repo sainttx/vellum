@@ -3,9 +3,9 @@
 package bizstat.http;
 
 import bizstat.server.BizstatServer;
+import crocserver.httpserver.HttpServerConfig;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import venigmon.httpserver.HttpServerConfig;
 import vellum.httpserver.VellumHttpServer;
 
 /**
