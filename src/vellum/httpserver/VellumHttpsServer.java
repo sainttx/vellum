@@ -32,7 +32,7 @@ public class VellumHttpsServer implements Startable {
     }    
 
     public void init() throws Exception {
-        sslContext = Keystores.createSSLContext();
+        sslContext = KeyStores.createSSLContext();
     }
     
     public void init(SSLContext sslContext) throws Exception {
