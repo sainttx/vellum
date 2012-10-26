@@ -9,7 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Date;
 import javax.sql.RowSet;
-import vellum.html.TablePrinter;
+import vellum.html.HtmlPrinter;
 import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
 import vellum.storage.StorageException;
@@ -97,8 +97,8 @@ public class StoragePageHandler extends AbstractPageHandler {
     }
 
     private void print(ResultSet resultSet, String[] columnNames) throws Exception {
-        TablePrinter printer = new TablePrinter(out);
-        printer.table();
+        HtmlPrinter printer = new HtmlPrinter(out);
+        printer.table("resultSet");
         printer.thead();
         for (int i = 0; i < columnNames.length; i++) {
             printer.th(columnNames[i]);
@@ -119,7 +119,7 @@ public class StoragePageHandler extends AbstractPageHandler {
     
     private void print(ResultSet resultSet) throws Exception {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        TablePrinter tablePrinter = new TablePrinter(out);
+        HtmlPrinter tablePrinter = new HtmlPrinter(out);
         tablePrinter.tableDiv("resultSet");
         tablePrinter.thead();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {

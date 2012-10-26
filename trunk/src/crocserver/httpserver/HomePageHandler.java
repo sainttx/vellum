@@ -11,7 +11,7 @@ import vellum.util.DateFormats;
 import vellum.util.Strings;
 import java.util.List;
 import vellum.datatype.Millis;
-import vellum.html.TablePrinter;
+import vellum.html.HtmlPrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
@@ -94,7 +94,7 @@ public class HomePageHandler extends AbstractPageHandler {
     }
     
     private void printLog(Iterator<LogrRecord> iterator) {
-       TablePrinter p = new TablePrinter(out);
+       HtmlPrinter p = new HtmlPrinter(out);
        p.h(3, "log");
        p.tableDiv("resultSet");
        p.thead();
