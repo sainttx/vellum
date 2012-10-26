@@ -67,7 +67,8 @@ create table admin_user (
 
 create table host_ (
   host_id int auto_increment, 
-  host_name text
+  host_name text,
+  public_key text
 );
 
 create table service (
