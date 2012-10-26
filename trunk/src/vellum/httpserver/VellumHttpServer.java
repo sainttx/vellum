@@ -4,6 +4,7 @@ package vellum.httpserver;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import crocserver.httpserver.HttpServerConfig;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -12,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import vellum.lifecycle.Startable;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import venigmon.httpserver.HttpServerConfig;
 
 /**
  *
