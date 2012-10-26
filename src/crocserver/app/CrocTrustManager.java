@@ -9,7 +9,7 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.KeyStores;
+import vellum.security.KeyStores;
 
 /**
  *
@@ -27,6 +27,9 @@ public class CrocTrustManager implements X509TrustManager {
 
     public void init() throws Exception {
         trustManager = KeyStores.loadTrustManager();
+        for (X509Certificate acceptedIssuer : trustManager.getAcceptedIssuers()) {
+            logger.info("acceptedIssuer", acceptedIssuer.getSubjectDN().getName());
+        }
     }
 
     @Override
