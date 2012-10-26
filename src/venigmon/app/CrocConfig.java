@@ -8,6 +8,6 @@ package venigmon.app;
  *
  * @author evan
  */
-public class VenigmonConfig {
+public class CrocConfig {
  
 }

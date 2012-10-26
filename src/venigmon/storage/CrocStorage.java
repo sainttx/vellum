@@ -37,7 +37,7 @@ public class CrocStorage {
     
     public void init() throws Exception {
         Class.forName(dataSourceInfo.getDriver());
-        new VenigmonSchemaStorage(this).verifySchema();
+        new CrocSchema(this).verifySchema();
         new SchemaPrinter().handle(connectionPool, System.out, "PUBLIC");
     }
 

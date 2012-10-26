@@ -15,16 +15,16 @@ import vellum.logr.LogrFactory;
  *
  * @author evan
  */
-public class VenigmonSchemaStorage {
+public class CrocSchema {
 
     static final int MIN_VERSION_NUMBER = 1;
     static final int CURRENT_VERSION_NUMBER = 1;
     
-    Logr logger = LogrFactory.getLogger(VenigmonSchemaStorage.class);
+    Logr logger = LogrFactory.getLogger(CrocSchema.class);
     CrocStorage storage;
     DatabaseMetaData databaseMetaData;
 
-    public VenigmonSchemaStorage(CrocStorage storage) {
+    public CrocSchema(CrocStorage storage) {
         this.storage = storage;
     }
 
