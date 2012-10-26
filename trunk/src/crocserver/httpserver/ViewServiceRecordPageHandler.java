@@ -4,7 +4,6 @@
 package crocserver.httpserver;
 
 import bizstat.entity.ServiceRecord;
-import bizstat.server.BizstatMessageBuilder;
 import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.CrocStorage;

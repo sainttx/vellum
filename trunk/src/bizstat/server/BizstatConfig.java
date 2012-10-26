@@ -73,21 +73,15 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
     }
 
     private void initHttpServerInfoConfig() {
-        String name = properties.getString("httpServer", null);
-        if (name != null) {
-            initHttpServerInfoConfig(server.configMap.find("HttpServer", name).getProperties());
+        String httpServerName = properties.getString("httpServer");
+        if (httpServerName != null) {
+            PropertiesMap props = server.configMap.find("HttpServer", httpServerName).getProperties();
+            httpServerConfig = new HttpServerConfig(props);
         }
     }
     
-    private void initHttpServerInfoConfig(PropertiesMap props) {
-        httpServerConfig = new HttpServerConfig(
-                props.getInt("port"),
-                props.getBoolean("enabled", true)
-                );
-    }
-    
     private void initDataSourceConfig() {
-        String dataSource = properties.getString("dataSource", null);
+        String dataSource = properties.getString("dataSource");
         if (dataSource != null) {
             dataSourceConfig = new DataSourceConfig(server.configMap.find("DataSource", dataSource).getProperties());
         }
