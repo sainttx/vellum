@@ -56,7 +56,7 @@ public class VellumHttpsServer implements Startable {
         logger.info("start", config.getPort());
     }
 
-    public void createContext(String contextName, HttpHandler httpHandler) {
+    public void startContext(String contextName, HttpHandler httpHandler) {
         httpsServer.createContext(contextName, httpHandler);
     }
 

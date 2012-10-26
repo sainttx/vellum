@@ -68,6 +68,22 @@ public class Strings {
     }
 
     /**
+     * Join list of lines.
+     * 
+     * @return 
+     */
+    public static String joinArray(String delimiter, String[] args) {
+        StringBuilder builder = new StringBuilder();
+        for (String arg : args) {
+            if (builder.length() > 0) {
+                builder.append(delimiter);
+            }
+            builder.append(arg);
+        }
+        return builder.toString();
+    }
+
+    /**
      * check equality.
      * 
      */

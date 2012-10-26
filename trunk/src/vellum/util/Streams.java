@@ -266,5 +266,24 @@ public class Streams {
         }
         return fileName;
     }
+
+    public static String removeFileNameExtension(File file) {
+        return removeExtension(file.getName());
+        
+    }
+
+    public static String removeExtension(String fileName) {
+        if (fileName != null) {
+            int index = fileName.lastIndexOf('.');
+            if (index > 0) {
+                fileName = fileName.substring(0, index);
+                index = fileName.lastIndexOf('/');
+                if (index >= 0) {
+                    fileName = fileName.substring(index + 1);
+                }
+            }
+        }
+        return fileName;
+    }
     
 }

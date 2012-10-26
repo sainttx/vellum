@@ -18,7 +18,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Base64;
 import vellum.util.Bytes;
-import venigma.provider.keystoretool.KeyToolBuilder;
+import venigma.provider.keytool.KeyToolBuilder;
 import venigma.server.Ciphers;
 
 /**
