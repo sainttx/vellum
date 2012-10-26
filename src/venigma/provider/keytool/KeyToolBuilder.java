@@ -2,18 +2,11 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package venigma.provider.keystoretool;
+package venigma.provider.keytool;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.security.Key;
-import java.security.KeyStore;
 import java.security.SecureRandom;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Base64;
 
 /**
  *
@@ -30,7 +23,7 @@ public class KeyToolBuilder {
         this.config = config;
         this.properties = properties;
     }
-    
+
     public String[] buildKeyToolGenSecKeyArgs(String secretKeyStoreFile, String secretKeyAlias) {
         return new String[] {
             "-genseckey", 
