@@ -76,44 +76,44 @@ public class SchemaPrinter {
     }
 
     private void print(ResultSet resultSet, String[] columnNames) throws Exception {
-        HtmlPrinter tablePrinter = new HtmlPrinter(printer);
-        tablePrinter.table("resultSet");
-        tablePrinter.thead();
+        HtmlPrinter out = new HtmlPrinter(printer);
+        out.table("resultSet");
+        out.thead();
         for (int i = 0; i < columnNames.length; i++) {
-            tablePrinter.th(columnNames[i]);
+            out.th(columnNames[i]);
         }
-        tablePrinter.theadClose();
-        tablePrinter.tbody();
+        out._thead();
+        out.tbody();
         while (resultSet.next()) {      
-            tablePrinter.tr();
+            out.tr();
             for (int i = 0; i < columnNames.length; i++) {
                 Object value = resultSet.getObject(columnNames[i]);
-                tablePrinter.td(Types.getStyleClass(value.getClass()), value);
+                out.td(Types.getStyleClass(value.getClass()), value);
             }
-            tablePrinter.trClose();
+            out._tr();
         }
-        tablePrinter.tbodyClose();
-        tablePrinter.tableClose();        
+        out._tbody();
+        out._table();        
     }
     
     private void print(ResultSet resultSet) throws Exception {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        HtmlPrinter tablePrinter = new HtmlPrinter(printer);
-        tablePrinter.table("resultSet");
-        tablePrinter.thead();
+        HtmlPrinter out = new HtmlPrinter(printer);
+        out.table("resultSet");
+        out.thead();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-            tablePrinter.th(resultSetMetaData.getColumnName(i));
+            out.th(resultSetMetaData.getColumnName(i));
         }
-        tablePrinter.theadClose();
-        tablePrinter.tbody();
+        out._thead();
+        out.tbody();
         while (resultSet.next()) {      
-            tablePrinter.tr();
+            out.tr();
             for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                tablePrinter.td(resultSetMetaData.getColumnClassName(i), resultSet.getObject(i));
+                out.td(resultSetMetaData.getColumnClassName(i), resultSet.getObject(i));
             }
-            tablePrinter.trClose();
+            out._tr();
         }
-        tablePrinter.tbodyClose();
-        tablePrinter.tableClose();
+        out._tbody();
+        out._table();
     }
 }

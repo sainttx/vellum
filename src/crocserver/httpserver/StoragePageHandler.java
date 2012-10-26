@@ -97,24 +97,24 @@ public class StoragePageHandler extends AbstractPageHandler {
     }
 
     private void print(ResultSet resultSet, String[] columnNames) throws Exception {
-        HtmlPrinter printer = new HtmlPrinter(out);
-        printer.table("resultSet");
-        printer.thead();
+        HtmlPrinter h = new HtmlPrinter(out);
+        h.table("resultSet");
+        h.thead();
         for (int i = 0; i < columnNames.length; i++) {
-            printer.th(columnNames[i]);
+            h.th(columnNames[i]);
         }
-        printer.theadClose();
-        printer.tbody();
+        h._thead();
+        h.tbody();
         while (resultSet.next()) {      
-            printer.tr();
+            h.tr();
             for (int i = 0; i < columnNames.length; i++) {
                 Object value = resultSet.getObject(columnNames[i]);
-                printer.td(Types.getStyleClass(value.getClass()), value);
+                h.td(Types.getStyleClass(value.getClass()), value);
             }
-            printer.trClose();
+            h._tr();
         }
-        printer.tbodyClose();
-        printer.tableClose();        
+        h._tbody();
+        h._table();        
     }
     
     private void print(ResultSet resultSet) throws Exception {
@@ -125,17 +125,17 @@ public class StoragePageHandler extends AbstractPageHandler {
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             tablePrinter.th(resultSetMetaData.getColumnName(i));
         }
-        tablePrinter.theadClose();
+        tablePrinter._thead();
         tablePrinter.tbody();
         while (resultSet.next()) {      
             tablePrinter.tr();
             for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
                 tablePrinter.td(resultSetMetaData.getColumnClassName(i), resultSet.getObject(i));
             }
-            tablePrinter.trClose();
+            tablePrinter._tr();
         }
-        tablePrinter.tbodyClose();
-        tablePrinter.tableDivClose();
+        tablePrinter._tbody();
+        tablePrinter._tableDiv();
     }
     
 }

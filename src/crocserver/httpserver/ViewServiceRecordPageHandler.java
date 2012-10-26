@@ -30,15 +30,15 @@ public class ViewServiceRecordPageHandler extends AbstractPageHandler {
        ServiceRecord serviceRecord = storage.getServiceRecordStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
-       p.theadClose();
+       p._thead();
        p.tbody();
        p.trhd("Id", serviceRecord.getId());
        p.trhd("Time", Millis.formatTime(serviceRecord.getTimestamp()));
        p.trhd("Host", serviceRecord.getHostName());
        p.trhd("Service", serviceRecord.getServiceName());
        p.trhd("Status", serviceRecord.getServiceStatus());
-       p.tbodyClose();
-       p.tableDivClose();
+       p._tbody();
+       p._tableDiv();
        p.pre(serviceRecord.getOutText());
     }    
 }

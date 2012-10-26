@@ -98,7 +98,7 @@ public class HomePageHandler extends AbstractPageHandler {
        p.h(3, "log");
        p.tableDiv("resultSet");
        p.thead();
-       p.theadClose();
+       p._thead();
        p.tbody();
        while (iterator.hasNext()) {
            LogrRecord record = iterator.next();
@@ -107,7 +107,7 @@ public class HomePageHandler extends AbstractPageHandler {
                    record.getLevel(), record.getMessage(),
                    ListFormats.displayFormatter.formatArray(record.getArgs()));
        }
-       p.tbodyClose();
-       p.tableDivClose();
+       p._tbody();
+       p._tableDiv();
     }    
 }
