@@ -6,7 +6,7 @@ package crocserver.httpserver;
 import bizstat.entity.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import vellum.datatype.Millis;
-import vellum.html.TablePrinter;
+import vellum.html.HtmlPrinter;
 import crocserver.storage.CrocStorage;
 
 /**
@@ -23,7 +23,7 @@ public class ViewServiceRecordPageHandler extends AbstractPageHandler {
 
     @Override
     protected void handle() throws Exception {
-       TablePrinter p = new TablePrinter(out);
+       HtmlPrinter p = new HtmlPrinter(out);
        Long id = Long.parseLong(pathArgs[2]);
        out.printf("<div class='menuBarDiv'><a href='/'>Home</a></div>\n");
        out.printf("<span class='pageTitle'>ServiceRecord %d</span>", id);

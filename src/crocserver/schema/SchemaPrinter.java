@@ -9,7 +9,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import javax.sql.RowSet;
-import vellum.html.TablePrinter;
+import vellum.html.HtmlPrinter;
 import vellum.printer.PrintStreamAdapter;
 import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
@@ -76,8 +76,8 @@ public class SchemaPrinter {
     }
 
     private void print(ResultSet resultSet, String[] columnNames) throws Exception {
-        TablePrinter tablePrinter = new TablePrinter(printer);
-        tablePrinter.table();
+        HtmlPrinter tablePrinter = new HtmlPrinter(printer);
+        tablePrinter.table("resultSet");
         tablePrinter.thead();
         for (int i = 0; i < columnNames.length; i++) {
             tablePrinter.th(columnNames[i]);
@@ -98,8 +98,8 @@ public class SchemaPrinter {
     
     private void print(ResultSet resultSet) throws Exception {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        TablePrinter tablePrinter = new TablePrinter(printer);
-        tablePrinter.table();
+        HtmlPrinter tablePrinter = new HtmlPrinter(printer);
+        tablePrinter.table("resultSet");
         tablePrinter.thead();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             tablePrinter.th(resultSetMetaData.getColumnName(i));
