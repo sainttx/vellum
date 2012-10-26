@@ -40,10 +40,9 @@ public class SecureServer {
         tmf.init(ks);
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());        
     }
-    
-    protected void start() throws Exception {
-        init();
-        HttpsConfigurator httpsConfigurator = new HttpsConfigurator(sslContext) {
+
+    private HttpsConfigurator createHttpsConfigurator() throws Exception {
+        return new HttpsConfigurator(sslContext) {
 
             @Override
             public void configure(HttpsParameters httpsParameters) {
@@ -56,8 +55,12 @@ public class SecureServer {
                 httpsParameters.setSSLParameters(defaultSSLParameters);
             }
         };
+    }
+    
+    protected void start() throws Exception {
+        init();
         HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(443), 8);
-        httpsServer.setHttpsConfigurator(httpsConfigurator);
+        httpsServer.setHttpsConfigurator(createHttpsConfigurator());
         httpsServer.setExecutor(new ThreadPoolExecutor(4, 8, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4)));
         httpsServer.createContext("/", new HttpHandler() {
 
