@@ -92,7 +92,7 @@ public class Calendars {
         calendar.set(HOUR_OF_DAY, hour);
         calendar.set(MINUTE, minute);
         calendar.set(SECOND, second);
-        calendar.set(MILLISECOND, 0);        
+        calendar.set(MILLISECOND, 0);
     }
     
     public static void setTime(Calendar calendar, Date time) {

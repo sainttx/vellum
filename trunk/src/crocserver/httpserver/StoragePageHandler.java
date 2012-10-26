@@ -59,7 +59,7 @@ public class StoragePageHandler extends AbstractPageHandler {
     private int querySchemaRevisionNumber() throws Exception {
         RowSet rowSet = RowSets.getRowSet(connection, "select * from schema_revision order by update_time desc");
         if (rowSet.next()) {
-            return rowSet.getInt(1);        
+            return rowSet.getInt(1);
         }
         throw new StorageException(StorageExceptionType.NOT_FOUND);
     }
@@ -114,7 +114,7 @@ public class StoragePageHandler extends AbstractPageHandler {
             h._tr();
         }
         h._tbody();
-        h._table();        
+        h._table();
     }
     
     private void print(ResultSet resultSet) throws Exception {

@@ -15,7 +15,7 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public boolean equals(Object obj) {
-        return Comparables.equals(getId(), Entities.getId(obj));        
+        return Comparables.equals(getId(), Entities.getId(obj));
     }
 
     @Override

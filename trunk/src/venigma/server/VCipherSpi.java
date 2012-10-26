@@ -39,7 +39,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
 
     public void init(int opmode, SecureRandom sr) {
         sr.nextBytes(iv);
-        init(opmode);        
+        init(opmode);
     }
     
     private void init(int opmode) {
@@ -126,7 +126,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
             if (opmode == Cipher.ENCRYPT_MODE) {
                 return encrypt(input);
             } else if (opmode == Cipher.DECRYPT_MODE) {
-                return decrypt(input);                
+                return decrypt(input);        
             } else {
                 throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_MODE);
             }
@@ -145,7 +145,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
             throw new CipherResponseRuntimeException(response);
         }
         iv = response.getIv();
-        return response.getBytes();        
+        return response.getBytes();
     }
 
     private byte[] decrypt(byte[] input) throws IOException {
@@ -157,7 +157,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
         if (response.responseType != CipherResponseType.OK) {
             throw new CipherResponseRuntimeException(response);
         }
-        return response.getBytes();                
+        return response.getBytes();        
     }
     
     @Override

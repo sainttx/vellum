@@ -42,7 +42,7 @@ public class TestJce {
     }
 
     public Key generateKey() throws Exception {
-        KeyGenerator generator = KeyGenerator.getInstance("AES");        
+        KeyGenerator generator = KeyGenerator.getInstance("AES");
         generator.init(256, sr);
         SecretKey key = generator.generateKey();
         logger.info(key.getAlgorithm(), key.getFormat(), key.getEncoded().length, Base64.encode(key.getEncoded()));
@@ -62,7 +62,7 @@ public class TestJce {
         byte[] encryptedBytes = aesEncryptCipher.doFinal(message.getBytes());
         byte[] decryptedBytes = aesDecryptCipher.doFinal(encryptedBytes);
         logger.info(Bytes.formatHex(encryptedBytes));
-        logger.info(new String(decryptedBytes));        
+        logger.info(new String(decryptedBytes));
         logger.info(Bytes.formatHex(aesEncryptCipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV()));
     }
         

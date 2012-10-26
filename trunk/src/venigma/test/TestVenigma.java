@@ -82,7 +82,7 @@ public class TestVenigma implements Runnable {
     private void configProviderContext() throws Exception {
         providerContext.config(providerConfig,
                 properties.keyStorePass.toCharArray(), properties.privateKeyPass.toCharArray(),
-                properties.keyStorePass.toCharArray());        
+                properties.keyStorePass.toCharArray());
     }
     
     private void configClientContext() throws Exception {
@@ -160,7 +160,7 @@ public class TestVenigma implements Runnable {
         providerConfig.cn = properties.providerCn;
         providerConfig.keyStore = properties.providerKeyStoreFile;
         providerConfig.trustStore = properties.providerTrustStoreFile;
-        cipherConfig.privateKeyStore = properties.cipherPrivateKeyStoreFile;        
+        cipherConfig.privateKeyStore = properties.cipherPrivateKeyStoreFile;
         cipherConfig.trustKeyStore = properties.cipherTrustKeyStoreFile;
         cipherConfig.secretKeyStore = properties.cipherSecretKeyStoreFile;
         cipherProperties.keyStorePassword = properties.keyStorePass.toCharArray();
@@ -173,7 +173,7 @@ public class TestVenigma implements Runnable {
     }
     
     private void initKeyToolBuilder() {
-        KeyToolBuilderConfig keyConfig = new KeyToolBuilderConfig();        
+        KeyToolBuilderConfig keyConfig = new KeyToolBuilderConfig();
         KeyToolBuilderlProperties keyProperties = new KeyToolBuilderlProperties();
         keyProperties.setPrivateKeyPass(properties.privateKeyPass);
         keyProperties.setTrustKeyStorePass(properties.trustKeyStorePass);
@@ -222,7 +222,7 @@ public class TestVenigma implements Runnable {
         new File(providerConfig.trustStore).delete();
         new File(cipherConfig.privateKeyStore).delete();
         new File(cipherConfig.trustKeyStore).delete();
-        new File(cipherConfig.secretKeyStore).delete();        
+        new File(cipherConfig.secretKeyStore).delete();
     }
     
     private List<AdminUser> buildUserList() {

@@ -39,14 +39,14 @@ public class PairMap<T extends EntityPair> {
     
     public T get(IdPair idPair) {
         if (idPair == null) {
-            throw StorageExceptionType.ID_NULL.newRuntimeException();            
+            throw StorageExceptionType.ID_NULL.newRuntimeException();    
         }
         return map.get(idPair);
     }
 
     public T find(IdPair idPair) throws StorageException {
         if (idPair == null) {
-            throw StorageExceptionType.ID_NULL.newRuntimeException();            
+            throw StorageExceptionType.ID_NULL.newRuntimeException();    
         }
         if (!map.containsKey(idPair)) {
             throw StorageExceptionType.PAIR_NOT_FOUND.newException();
@@ -56,7 +56,7 @@ public class PairMap<T extends EntityPair> {
 
     public void add(T entityPair) throws StorageException {
         if (entityPair == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();            
+            throw StorageExceptionType.ENTITY_NULL.newException();    
         }
         logger.info("add", entityPair);
         if (map.containsKey(entityPair.getIdPair())) {
@@ -67,7 +67,7 @@ public class PairMap<T extends EntityPair> {
     
     public void update(T entityPair) throws StorageException {
         if (entityPair == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();            
+            throw StorageExceptionType.ENTITY_NULL.newException();    
         }
         logger.info("update", entityPair);
         if (!map.containsKey(entityPair.getIdPair())) {
@@ -77,7 +77,7 @@ public class PairMap<T extends EntityPair> {
 
     public void remove(T entityPair) throws StorageException {
         if (entityPair == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();            
+            throw StorageExceptionType.ENTITY_NULL.newException();    
         }
         logger.info("remove", entityPair);
         if (!map.containsKey(entityPair.getIdPair())) {

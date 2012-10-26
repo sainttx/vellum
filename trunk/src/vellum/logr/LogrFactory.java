@@ -27,7 +27,7 @@ public class LogrFactory {
     }
     
     public static void setProvider(LogrProvider provider) {
-        LogrFactory.provider = provider;        
+        LogrFactory.provider = provider;
     }
             
     public static void setDefaultLevel(LogrLevel defaultLevel) {

@@ -28,7 +28,7 @@ public class CipherServer extends Thread implements Closeable {
     
     public void config(CipherContext context) throws Exception {
         this.context = context;
-        this.serverSocket = context.getServerSocket();        
+        this.serverSocket = context.getServerSocket();
     }
     
     @Override

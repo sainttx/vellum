@@ -33,7 +33,7 @@ public class ListFormats {
     public static ListFormats verboseFormatter = new ListFormats(false, COMMA_DELIMITER);
 
     static {
-        verboseFormatter.verbose = true;        
+        verboseFormatter.verbose = true;
     }
     
     TypeFormats typeFormatter;
@@ -74,7 +74,7 @@ public class ListFormats {
                 builder.append(string);
                 builder.append("}");
             } else {
-                builder.append(string);                
+                builder.append(string);        
             }
         }
         return builder.toString();
@@ -95,7 +95,7 @@ public class ListFormats {
                 builder.append(quote);
             }
         }
-        return builder.toString();        
+        return builder.toString();
     }
     
     public static String formatVerbose(Object[] args) {

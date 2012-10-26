@@ -76,7 +76,7 @@ public class Strings {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) == null || otherList.get(i) == null) return false;
             if (!list.get(i).equals(otherList.get(i))) {
-                return false;                
+                return false;        
             }
         }
         return true;

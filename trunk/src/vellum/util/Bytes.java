@@ -13,20 +13,20 @@ import vellum.exception.ParseRuntimeException;
 public class Bytes {
 
     public static long fromK(long size) {
-        return size*1024;        
+        return size*1024;
     }
 
     public static long fromM(long size) {
-        return size*1024*1024;        
+        return size*1024*1024;
     }
 
     public static long fromG(long size) {
-        return size*1024*1024*1024;        
+        return size*1024*1024*1024;
     }
     
     public static String formatHex(byte[] bytes) {
         if (bytes == null) {
-            return "null{}";            
+            return "null{}";    
         }
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < bytes.length; i++) {

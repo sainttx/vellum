@@ -57,6 +57,6 @@ public class TimestampedDigester<T extends Timestamped> {
         if (sampleSize == 0) {
             return 0;
         }
-        return millis - totalMillis/sampleSize;        
+        return millis - totalMillis/sampleSize;
     }
 }
