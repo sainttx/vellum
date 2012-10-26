@@ -17,7 +17,7 @@ import vellum.logr.LogrFactory;
  */
 public class CrocSchema {
 
-    static final int MIN_VERSION_NUMBER = 1;
+    static final int MIN_VERSION_NUMBER = 0;
     static final int CURRENT_VERSION_NUMBER = 1;
     
     Logr logger = LogrFactory.getLogger(CrocSchema.class);
