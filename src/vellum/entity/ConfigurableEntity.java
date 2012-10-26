@@ -4,7 +4,6 @@
  */
 package vellum.entity;
 
-import bizstat.server.BizstatServer;
 import vellum.config.PropertiesMap;
 
 /**
