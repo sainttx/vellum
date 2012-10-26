@@ -16,6 +16,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
 import crocserver.storage.CrocStorage;
+import vellum.logr.LogrLevel;
 
 /**
  *
@@ -33,7 +34,9 @@ public class HomePageHandler extends AbstractPageHandler {
     @Override
     protected void handle() throws Exception {
         selectStatus();
-        printLog(LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
+        if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
+            printLog(LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
+        }
     }
 
     private void selectStatus() throws Exception {

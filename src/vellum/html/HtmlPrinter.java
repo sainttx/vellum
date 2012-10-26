@@ -33,6 +33,26 @@ public class HtmlPrinter {
     public void _div() {
         out.printf("</div>\n");
     }    
+
+    public void spanf(String style, String format, Object ... args) {
+        out.printf("<span class='%s'>%s</span>\n", String.format(format, args));
+    }    
+    
+    public void a_(String href, String text) {
+        out.printf("<a href='%s'>%s</a>\n", href, text);
+    }    
+    
+    public void a(String href) {
+        out.printf("<a href='%s'>\n", href);
+    }    
+
+    public void a(String style, String href) {
+        out.printf("<a class='%s' href='%s'>\n", style, href);
+    }    
+    
+    public void _a() {
+        out.printf("</a>\n");
+    }    
     
     public void tableDiv(String style) {
         out.printf("<div class='%s'>\n", style);

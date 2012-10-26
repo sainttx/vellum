@@ -87,7 +87,7 @@ public class HttpExchangeInfo {
         headersParsed = true;
         for (String key : httpExchange.getRequestHeaders().keySet()) {
             List<String> values = httpExchange.getRequestHeaders().get(key);
-            logger.info("parseHeaders", key, values);
+            logger.verbose("parseHeaders", key, values);
             if (key.equals("Accept-encoding")) {
                 if (values.contains("gzip")) {
                     acceptGzip = true;
@@ -100,7 +100,6 @@ public class HttpExchangeInfo {
                 }
             }
         }
-        logger.verbose("parseHeaders");
     }
 
     public void setBean(Object bean) {
