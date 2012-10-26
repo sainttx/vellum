@@ -2,9 +2,11 @@
  * Copyright Evan Summers
  * 
  */
-package crocserver.httpserver;
+package crocserver.app;
 
 import bizstat.server.BizstatServer;
+import crocserver.httpserver.CrocHttpHandler;
+import crocserver.httpserver.HttpServerConfig;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,10 +25,9 @@ import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
 import vellum.util.Threads;
-import crocserver.httpserver.HttpServerConfig;
-import crocserver.app.CrocHttpServer;
 import crocserver.storage.CrocSchema;
 import crocserver.storage.CrocStorage;
+import vellum.httpserver.VellumHttpServer;
 
 /**
  *
@@ -36,7 +37,6 @@ public class CrocStarter {
 
     Logr logger = LogrFactory.getLogger(CrocStarter.class);
     CrocStorage storage;
-    CrocHttpServer httpServer;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
     BizstatServer server;
@@ -44,6 +44,7 @@ public class CrocStarter {
     String confFileName;
     ConfigMap configMap;
     Server h2Server;
+    VellumHttpServer httpServer;
 
     public void init() throws Exception {
         initConfig();        
@@ -54,12 +55,12 @@ public class CrocStarter {
                 configProperties.getString("dataSource")).getProperties());
         storage = new CrocStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
         new CrocSchema(storage).verifySchema();
-        httpServer = new CrocHttpServer(storage, new HttpServerConfig(configMap.get("HttpServer", 
+        httpServer = new VellumHttpServer(new HttpServerConfig(configMap.get("HttpServer", 
                 configProperties.getString("httpServer")).getProperties()));
     }
 
     public void start() throws Exception {
-        httpServer.start();
+        httpServer.start(new CrocHttpHandler(storage));
         logger.info("HTTP server started");
         if (configProperties.getBoolean("testPost", false)) {
             testPost();
