@@ -14,11 +14,11 @@ import crocserver.storage.CrocStorage;
  *
  * @author evans
  */
-public class CrocHttpHandler implements HttpHandler {
-    Logr logger = LogrFactory.getLogger(CrocHttpHandler.class);
+public class AdminHttpHandler implements HttpHandler {
+    Logr logger = LogrFactory.getLogger(AdminHttpHandler.class);
     CrocStorage storage;
-
-    public CrocHttpHandler(CrocStorage storage) {
+            
+    public AdminHttpHandler(CrocStorage storage) {
         this.storage = storage;
     }
     
@@ -30,8 +30,12 @@ public class CrocHttpHandler implements HttpHandler {
             new StoragePageHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/serviceRecord/")) {
             new ViewServiceRecordPageHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/post/")) {
-            new PostHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/genKey/")) {
+            new GenKeyHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/publicKey/")) {
+            new GetPublicKeyHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/certReq/")) {
+            new CertReqHandler(storage).handle(httpExchange);
         } else {
             new HomePageHandler(storage).handle(httpExchange);
         }        

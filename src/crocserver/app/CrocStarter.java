@@ -6,7 +6,7 @@ package crocserver.app;
 
 import bizstat.server.BizstatServer;
 import crocserver.gtalk.GtalkConnection;
-import crocserver.httpserver.CrocHttpHandler;
+import crocserver.httpserver.SecureHttpHandler;
 import crocserver.httpserver.HttpServerConfig;
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,17 +104,17 @@ public class CrocStarter {
     public void start() throws Exception {
         if (httpServer != null) {
             httpServer.start();
-            httpServer.startContext("/", new CrocHttpHandler(storage));
+            httpServer.startContext("/", new SecureHttpHandler(storage));
             logger.info("HTTP server started");
         }
         if (publicHttpsServer != null) {
             publicHttpsServer.start();
-            publicHttpsServer.startContext("/", new CrocHttpHandler(storage));
+            publicHttpsServer.startContext("/", new SecureHttpHandler(storage));
             logger.info("public HTTPS secure server started");
         }
         if (privateHttpsServer != null) {
             privateHttpsServer.start();
-            privateHttpsServer.startContext("/", new CrocHttpHandler(storage));
+            privateHttpsServer.startContext("/", new SecureHttpHandler(storage));
             logger.info("private HTTPS secure server started");
         }
         if (gtalkConnection != null) {
