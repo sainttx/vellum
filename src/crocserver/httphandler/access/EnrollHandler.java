@@ -16,7 +16,7 @@ import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceKey;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
 import vellum.security.GeneratedRsaKeyPair;
 
@@ -77,6 +77,8 @@ public class EnrollHandler implements HttpHandler {
         logger.info("generate", dname);
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
         keyPair.generate(dname, new Date(), 999);
+        String alias = "croc-server";
+        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
         ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName,
                 KeyStores.buildCertPem(keyPair.getCert()));
         storage.getServiceKeyStorage().insert(serviceKey);

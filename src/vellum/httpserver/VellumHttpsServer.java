@@ -13,6 +13,7 @@ import javax.net.ssl.SSLContext;
 import vellum.lifecycle.Startable;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
 import vellum.util.Sockets;
 
@@ -32,7 +33,7 @@ public class VellumHttpsServer implements Startable {
     }    
 
     public void init() throws Exception {
-        sslContext = KeyStores.createSSLContext();
+        sslContext = DefaultKeyStores.createSSLContext();
     }
     
     public void init(SSLContext sslContext) throws Exception {
@@ -42,7 +43,7 @@ public class VellumHttpsServer implements Startable {
     @Override
     public void start() throws Exception {
         if (sslContext == null) {
-            sslContext = KeyStores.createSSLContext();
+            sslContext = DefaultKeyStores.createSSLContext();
         }
         Sockets.waitPort(config.getPort(), 4000, 500);
         InetSocketAddress socketAddress = new InetSocketAddress(config.getPort());

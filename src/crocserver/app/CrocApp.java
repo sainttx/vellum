@@ -33,7 +33,7 @@ import crocserver.storage.CrocStorage;
 import java.security.Security;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
-import vellum.security.KeyStores;
+import vellum.security.DefaultKeyStores;
 
 /**
  *
@@ -85,7 +85,7 @@ public class CrocApp {
                     configMap.find("HttpsServer", publicHttpsServerConfigName).getProperties());
             if (httpsServerConfig.isEnabled()) {
                 publicHttpsServer = new VellumHttpsServer(httpsServerConfig);
-                publicHttpsServer.init(KeyStores.createSSLContext());
+                publicHttpsServer.init(DefaultKeyStores.createSSLContext());
             }
         }
         String privateHttpsServerConfigName = configProperties.getString("privateHttpsServer");
@@ -94,7 +94,7 @@ public class CrocApp {
                     configMap.find("HttpsServer", privateHttpsServerConfigName).getProperties());
             if (httpsServerConfig.isEnabled()) {
                 privateHttpsServer = new VellumHttpsServer(httpsServerConfig);
-                privateHttpsServer.init(KeyStores.createSSLContext(trustManager));
+                privateHttpsServer.init(DefaultKeyStores.createSSLContext(trustManager));
             }
         }
         String gtalkConfigName = configProperties.getString("gtalk");
