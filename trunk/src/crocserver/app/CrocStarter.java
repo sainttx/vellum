@@ -5,6 +5,7 @@
 package crocserver.app;
 
 import bizstat.server.BizstatServer;
+import crocserver.gtalk.GtalkConnection;
 import crocserver.httpserver.CrocHttpHandler;
 import crocserver.httpserver.HttpServerConfig;
 import java.io.File;
@@ -48,9 +49,11 @@ public class CrocStarter {
     ConfigMap configMap;
     Server h2Server;
     VellumHttpServer httpServer;
-    VellumHttpsServer httpsServer;
+    VellumHttpsServer publicHttpsServer;
+    VellumHttpsServer privateHttpsServer;
     CrocTrustManager trustManager;
-
+    GtalkConnection gtalkConnection;
+    
     public void init() throws Exception {
         initConfig();
         if (configProperties.getBoolean("startH2TcpServer")) {
@@ -62,7 +65,7 @@ public class CrocStarter {
         trustManager = new CrocTrustManager(storage);
         trustManager.init();
         new CrocSchema(storage).verifySchema();
-        String httpServerConfigName = configProperties.getString("httpServer", null);
+        String httpServerConfigName = configProperties.getString("httpServer");
         if (httpServerConfigName != null) {
             HttpServerConfig httpServerConfig = new HttpServerConfig(
                     configMap.find("HttpServer", httpServerConfigName).getProperties());
@@ -70,19 +73,32 @@ public class CrocStarter {
                 httpServer = new VellumHttpServer(httpServerConfig);
             }
         }
-        String httpsServerConfigName = configProperties.getString("httpsServer", null);
-        if (httpsServerConfigName != null) {
+        String publicHttpsServerConfigName = configProperties.getString("publicHttpsServer");
+        if (publicHttpsServerConfigName != null) {
             if (false) {
                 System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
                 Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
             }
             HttpServerConfig httpsServerConfig = new HttpServerConfig(
-                    configMap.find("HttpsServer", httpsServerConfigName).getProperties());
+                    configMap.find("HttpsServer", publicHttpsServerConfigName).getProperties());
             if (httpsServerConfig.isEnabled()) {
-                httpsServer = new VellumHttpsServer(httpsServerConfig);
-                httpsServer.init(KeyStores.createSSLContext(trustManager));
+                publicHttpsServer = new VellumHttpsServer(httpsServerConfig);
+                publicHttpsServer.init(KeyStores.createSSLContext());
             }
         }
+        String privateHttpsServerConfigName = configProperties.getString("privateHttpsServer");
+        if (privateHttpsServerConfigName != null) {
+            HttpServerConfig httpsServerConfig = new HttpServerConfig(
+                    configMap.find("HttpsServer", privateHttpsServerConfigName).getProperties());
+            if (httpsServerConfig.isEnabled()) {
+                privateHttpsServer = new VellumHttpsServer(httpsServerConfig);
+                privateHttpsServer.init(KeyStores.createSSLContext(trustManager));
+            }
+        }
+        String gtalkConfigName = configProperties.getString("gtalk");
+        if (gtalkConfigName != null) {
+            gtalkConnection = new GtalkConnection(configMap.find("Gtalk", gtalkConfigName).getProperties());
+        }                
     }
 
     public void start() throws Exception {
@@ -91,10 +107,18 @@ public class CrocStarter {
             httpServer.startContext("/", new CrocHttpHandler(storage));
             logger.info("HTTP server started");
         }
-        if (httpsServer != null) {
-            httpsServer.start();
-            httpsServer.startContext("/", new CrocHttpHandler(storage));
-            logger.info("HTTPS secure server started");
+        if (publicHttpsServer != null) {
+            publicHttpsServer.start();
+            publicHttpsServer.startContext("/", new CrocHttpHandler(storage));
+            logger.info("public HTTPS secure server started");
+        }
+        if (privateHttpsServer != null) {
+            privateHttpsServer.start();
+            privateHttpsServer.startContext("/", new CrocHttpHandler(storage));
+            logger.info("private HTTPS secure server started");
+        }
+        if (gtalkConnection != null) {
+            gtalkConnection.open();
         }
         if (configProperties.getBoolean("testPost", false)) {
             try {
@@ -121,11 +145,17 @@ public class CrocStarter {
         if (httpServer != null) {
             httpServer.stop();
         }
-        if (httpsServer != null) {
-            httpsServer.stop();
+        if (publicHttpsServer != null) {
+            publicHttpsServer.stop();
+        }
+        if (privateHttpsServer != null) {
+            privateHttpsServer.stop();
         }
         if (h2Server != null) {
             h2Server.stop();
+        }
+        if (gtalkConnection != null) {
+            gtalkConnection.close();
         }
     }
 
