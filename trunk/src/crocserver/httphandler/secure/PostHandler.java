@@ -25,6 +25,7 @@ import crocserver.storage.CrocStorage;
  * @author evans
  */
 public class PostHandler implements HttpHandler {
+
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
@@ -35,14 +36,14 @@ public class PostHandler implements HttpHandler {
         super();
         this.storage = storage;
     }
-    
+
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         String text = Streams.readString(httpExchange.getRequestBody());
-        String[] args = httpExchangeInfo.splitPath();
+        String[] args = httpExchangeInfo.getPathArgs();
         out = new PrintStream(httpExchange.getResponseBody());
         try {
             String hostName = httpExchangeInfo.getPathString(1, "none");
@@ -58,16 +59,16 @@ public class PostHandler implements HttpHandler {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             e.printStackTrace(out);
             e.printStackTrace(System.err);
-            out.println("ERROR " + e.getMessage());
+            out.printf("ERROR %s\n", e.getMessage());
         }
         httpExchange.close();
     }
 
     private void check(String hostName, String serviceName, String notifyName, String text) throws StorageException, SQLException {
         storage.getServiceRecordStorage().find(hostName, serviceName);
-        
+
     }
-    
+
     private void store(String hostName, String serviceName, String text) throws StorageException, SQLException {
         logger.info("store", hostName, serviceName, text);
         ServiceRecord serviceRecord = new ServiceRecord(hostName, serviceName, ServiceStatus.UNKNOWN, System.currentTimeMillis(), text);

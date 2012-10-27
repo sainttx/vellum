@@ -6,6 +6,7 @@ drop table contact_group_member;
 drop table contact;
 drop table admin_user; 
 drop table service_record;
+drop table service_key;
 drop table metric_record;
 drop table host_;
 drop table service;
@@ -48,10 +49,10 @@ create table contact_group_member (
 create table admin_user (
   username varchar(16), 
   organisation_id integer,
+  display_name varchar(64), 
   email varchar(64),
   role_ varchar(32),
   public_key text,
-  display_name varchar(64), 
   password_hash varchar(64),
   password_salt varchar(32),
   known_phrase varchar(64),
@@ -60,6 +61,7 @@ create table admin_user (
   otp varchar(32),
   otp_expiry timestamp,
   last_login timestamp,
+  created timestamp,
   country varchar(2),
   language_ varchar(2),
   locale varchar(32)
@@ -74,6 +76,14 @@ create table host_ (
 create table service (
   service_id int auto_increment, 
   service_name text
+);
+
+create table service_key (
+  service_key_id int auto_increment, 
+  username varchar(32),
+  host_ varchar(32),
+  service varchar(32),
+  public_key varchar
 );
 
 create table service_record (

@@ -2,13 +2,14 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage;
+package crocserver.storage.servicerecord;
 
 import bizstat.entity.Host;
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.Service;
 import bizstat.entity.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
+import crocserver.storage.CrocStorage;
 import java.sql.*;
 import vellum.storage.StorageExceptionType;
 import java.util.ArrayList;

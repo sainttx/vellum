@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage;
+package crocserver.storage.adminuser;
 
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
@@ -17,14 +17,21 @@ public class AdminUser extends AbstractIdEntity {
     AdminRole role;
     boolean enabled;
     String email;
-    Date timeCreated;
+    Date created;
+    Date updated;
     String createdBy;
     String secondedBy;
     String passwordHash;
     String passwordSalt;
     Date lastLogin;
-
+    String publicKey;
+    
     public AdminUser() {
+    }
+
+    public AdminUser(String username, boolean enabled) {
+        this.username = username;
+        this.enabled = enabled;
     }
     
     public AdminUser(String username, String displayName, AdminRole role, boolean enabled) {
@@ -119,14 +126,26 @@ public class AdminUser extends AbstractIdEntity {
         this.secondedBy = secondedBy;
     }
 
-    public Date getTimeCreated() {
-        return timeCreated;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setTimeCreated(Date timeCreated) {
-        this.timeCreated = timeCreated;
+    public void setCreated(Date created) {
+        this.created = created;
     }
-    
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+        
     @Override
     public String toString() {
         return getId().toString();

@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package crocserver.storage;
+package crocserver.storage.schema;
 
 /**
  *

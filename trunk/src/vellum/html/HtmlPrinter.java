@@ -57,10 +57,12 @@ public class HtmlPrinter {
     public void tableDiv(String style) {
         out.printf("<div class='%s'>\n", style);
         out.printf("<table class='%s'>\n", style);
+        index = 0;
     }
     
     public void table(String style) {
         out.printf("<table class='%s'>\n", style);
+        index = 0;
     }
     
     public void thead() {

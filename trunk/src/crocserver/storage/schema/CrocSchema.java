@@ -2,8 +2,9 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage;
+package crocserver.storage.schema;
 
+import crocserver.storage.CrocStorage;
 import vellum.query.RowSets;
 import java.io.InputStream;
 import java.sql.*;

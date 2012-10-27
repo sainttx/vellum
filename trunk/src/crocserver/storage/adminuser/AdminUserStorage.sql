@@ -9,6 +9,6 @@ select * from admin_user where username = ?;
 select * from admin_user;
 
 -- insert
-insert into admin_user (username, email, role_)
-values (?, ?, ?);
+insert into admin_user (username, display_name, email, role_, created)
+values (?, ?, ?, ?, now());
 
