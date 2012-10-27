@@ -40,7 +40,7 @@ public class CrocTrustManager implements X509TrustManager {
 
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) {
-        logger.info("checkClientTrusted");
+        logger.info("checkClientTrusted " + certs[0].getSubjectDN());
     }
 
     @Override
