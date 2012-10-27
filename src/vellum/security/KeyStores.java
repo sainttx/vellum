@@ -38,8 +38,8 @@ import vellum.logr.LogrFactory;
 public class KeyStores {
 
     static Logr logger = LogrFactory.getLogger(KeyStores.class);
-    public static final String BEGIN_PRIVATE_KEY = formatPem("BEGIN RSA PRIVATE KEY");
-    public static final String END_PRIVATE_KEY = formatPem("END RSA PRIVATE KEY");
+    public static final String BEGIN_PRIVATE_KEY = formatPem("BEGIN PRIVATE KEY");
+    public static final String END_PRIVATE_KEY = formatPem("END PRIVATE KEY");
     public static final String BEGIN_CERT = formatPem("BEGIN CERTIFICATE");
     public static final String END_CERT = formatPem("END CERTIFICATE");
     public static final String BEGIN_CERT_REQ = formatPem("BEGIN CERTIFICATE REQUEST");
@@ -60,21 +60,21 @@ public class KeyStores {
         }
     }
 
-    public static KeyManagerFactory loadKeyManagerFactory(KeyStore keyStore, char[] password) {
+    public static KeyManagerFactory loadKeyManagerFactory(KeyStore keyStore, char[] keyPassword) {
         try {
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, password);
+            kmf.init(keyStore, keyPassword);
             return kmf;
         } catch (Exception e) {
             throw Exceptions.newRuntimeException(e);
         }
     }
 
-    public static KeyStore loadKeyStore(String type, String filePath, char[] password) {
+    public static KeyStore loadKeyStore(String type, String filePath, char[] keyStorePassword) {
         try {
             KeyStore keyStore = KeyStore.getInstance(type);
             FileInputStream inputStream = new FileInputStream(filePath);
-            keyStore.load(inputStream, password);
+            keyStore.load(inputStream, keyStorePassword);
             return keyStore;
         } catch (Exception e) {
             throw Exceptions.newRuntimeException(e);
