@@ -28,6 +28,25 @@ public class ServiceKeyStorage {
         this.storage = storage;
     }
 
+    public void insert(ServiceKey serviceRecord) throws StorageException, SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceKeyQuery.insert.name()));
+            statement.setString(1, serviceRecord.getAdminUserName());
+            statement.setString(2, serviceRecord.getHostName());
+            statement.setString(3, serviceRecord.getServiceName());
+            statement.setString(4, serviceRecord.getPublicKey());
+            int insertCount = statement.executeUpdate();
+            if (insertCount != 1) {
+                throw new StorageException(StorageExceptionType.NOT_INSERTED);
+            }
+            ok = true;
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+
     private ServiceKey build(ResultSet resultSet) throws SQLException {
         ServiceKey seviceKey = new ServiceKey();
         seviceKey.setId(resultSet.getLong(ServiceKeyDatum.service_key_id.name()));
@@ -73,25 +92,6 @@ public class ServiceKeyStorage {
         }
     }
     
-    public void insert(ServiceKey serviceRecord) throws StorageException, SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceKeyQuery.insert.name()));
-            statement.setString(1, serviceRecord.getAdminUserName());
-            statement.setString(2, serviceRecord.getHostName());
-            statement.setString(3, serviceRecord.getServiceName());
-            statement.setString(4, serviceRecord.getPublicKey());
-            int insertCount = statement.executeUpdate();
-            if (insertCount != 1) {
-                throw new StorageException(StorageExceptionType.NOT_INSERTED);
-            }
-            ok = true;
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-
     public List<ServiceKey> getList(String userName) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
@@ -110,4 +110,23 @@ public class ServiceKeyStorage {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
+    
+    public List<ServiceKey> getList() throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            List<ServiceKey> list = new ArrayList();
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(ServiceKeyQuery.list.name()));
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                list.add(build(resultSet));
+            }
+            ok = true;
+            return list;
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+    
 }

@@ -15,6 +15,7 @@ public enum ServiceKeyQuery {
     exists_username_host_service,    
     find_username_host_service,    
     list_by_username,
+    list,
     ;
     
 }

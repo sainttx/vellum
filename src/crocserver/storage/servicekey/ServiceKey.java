@@ -24,10 +24,10 @@ public class ServiceKey extends AbstractIdEntity {
     public ServiceKey() {
     }
 
-    public ServiceKey(String hostName, String serviceName, String adminUserName, String publicKey) {
+    public ServiceKey(String adminUserName, String hostName, String serviceName, String publicKey) {
+        this.adminUserName = adminUserName;
         this.hostName = hostName;
         this.serviceName = serviceName;
-        this.adminUserName = adminUserName;
         this.publicKey = publicKey;
     }
     

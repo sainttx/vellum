@@ -38,6 +38,7 @@ public class AccessHomePageHandler extends AbstractPageHandler {
         htmlPrinter.a_("/", "Home");
         htmlPrinter._div();
         printAdminUsers("admin users", storage.getAdminUserStorage().getList());
+        printServiceKeys("service keys", storage.getServiceKeyStorage().getList());
         printSeviceRecords("service records", storage.getServiceRecordStorage().getList());
         if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
             printLog("log", LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
@@ -47,7 +48,7 @@ public class AccessHomePageHandler extends AbstractPageHandler {
     private void printServiceKeys(String label, Collection<ServiceKey> serviceKeys) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "username", "display name", "email");
+        htmlPrinter.trh("id", "username", "host", "service", "created");
         for (ServiceKey serviceKey : serviceKeys) {
             htmlPrinter.trd(
                     String.format("<a href='/view/serviceKey/%s'>%s</a>", serviceKey.getId(), serviceKey.getId()),
@@ -63,7 +64,7 @@ public class AccessHomePageHandler extends AbstractPageHandler {
     private void printAdminUsers(String label, Collection<AdminUser> adminUsers) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "username", "display name", "email");
+        htmlPrinter.trh("id", "username", "display name", "email", "created");
         for (AdminUser adminUser : adminUsers) {
             htmlPrinter.trd(
                     String.format("<a href='/view/adminUser/%s'>%s</a>", adminUser.getId(), adminUser.getId()),

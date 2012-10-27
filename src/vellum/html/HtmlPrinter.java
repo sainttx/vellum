@@ -74,11 +74,13 @@ public class HtmlPrinter {
     }
 
     public void trh(String... names) {
+        thead();
         trh();
         columnCount = names.length;
         for (String name : names) {
             th(name);
         }
+        _thead();
     }
 
     public void trh() {
@@ -159,9 +161,11 @@ public class HtmlPrinter {
     }
 
     public void pre(String string) {
-        out.printf("<pre>");
-        out.printf(Strings.escapeHtml(string));
-        out.printf("</pre>\n");
+        if (string != null) {
+            out.printf("<pre>");
+            out.printf(Strings.escapeHtml(string));
+            out.printf("</pre>\n");
+        }
     }
     
 
