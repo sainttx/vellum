@@ -1,16 +1,11 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package bizstat.http;
+package crocserver.httphandler.access;
 
-import bizstat.entity.HostServiceKey;
-import bizstat.entity.HostServiceStatus;
-import bizstat.entity.Service;
 import bizstat.entity.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
-import bizstat.server.BizstatServer;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.CrocStorage;
 import java.util.Collection;
 import java.util.Iterator;
 import vellum.util.DateFormats;
@@ -21,30 +16,28 @@ import vellum.html.HtmlPrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
+import crocserver.storage.CrocStorage;
+import vellum.logr.LogrLevel;
 
 /**
  *
  * @author evans
  */
-public class BizstatHomePageHandler extends AbstractPageHandler {
+public class AccessHomePageHandler extends AbstractPageHandler {
 
-    BizstatServer context;
     CrocStorage storage;
 
-    public BizstatHomePageHandler(BizstatServer context) {
+    public AccessHomePageHandler(CrocStorage storage) {
         super();
-        this.context = context;
-        this.storage = context.getDataStorage();       
+        this.storage = storage;
     }
 
     @Override
     protected void handle() throws Exception {
-        printStatus();
         selectStatus();
-        if (false) {
-            printServices();
+        if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
+            printLog(LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
         }
-        printLog(LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
     }
 
     private void selectStatus() throws Exception {
@@ -57,41 +50,15 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
         out.printf("<table>\n");
         int index = 0;
         for (ServiceRecord serviceRecord : serviceRecords) {
-            out.printf("<tr class=row%d><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
+            out.printf("<tr class=row%d><td><a href='/view/serviceRecord/%d'>%d</a><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
                     ++index % 2,
+                    serviceRecord.getId(),
+                    serviceRecord.getId(),
                     Millis.formatTime(serviceRecord.getTimestamp()),
-                    serviceRecord.getHost(),
-                    serviceRecord.getService(),
+                    serviceRecord.getHostName(),
+                    serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus(),
                     BizstatMessageBuilder.buildOutText(serviceRecord));
-        }
-        out.printf("</table>\n");
-        out.printf("</div>\n");
-    }
-
-    private void printServices() {
-        out.printf("<h3>services</h3>\n");
-        out.printf("<table>\n");
-        for (Service service : context.getServiceList()) {
-            out.printf("<tr><td><i>%s</i>\n", service.getName());
-        }
-        out.printf("</table>\n");
-        out.println("<hr>");
-    }
-
-    private void printStatus() {
-        out.printf("<h3>latest status</h3>\n");
-        out.printf("<div class='resultSet'>\n");
-        out.printf("<table>\n");
-        int index = 0;
-        for (HostServiceKey key : context.getStatusMap().keySet()) {
-            HostServiceStatus status = context.getStatusMap().get(key);
-            if (status.getServiceStatus() != null && status.getServiceRecord() != null) {
-                out.printf("<tr class=row%d><td>%s<td><b>%s</b><td>%s<td>%s\n",
-                        ++index % 2,
-                        key.getHost(), key.getService(), status.getServiceStatus(),
-                        BizstatMessageBuilder.buildOutText(status.getServiceRecord()));
-            }
         }
         out.printf("</table>\n");
         out.printf("</div>\n");
@@ -146,6 +113,5 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
        }
        p._tbody();
        p._tableDiv();
-    }
-    
+    }    
 }

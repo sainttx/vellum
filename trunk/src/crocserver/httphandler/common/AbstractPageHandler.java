@@ -1,7 +1,7 @@
 /*
  * (c) Copyright 2011, iPay (Pty) Ltd
  */
-package crocserver.httpserver;
+package crocserver.httphandler.common;
 
 import vellum.exception.Exceptions;
 import vellum.logr.Logr;
@@ -9,6 +9,7 @@ import vellum.logr.LogrFactory;
 import vellum.printer.PrintStreamAdapter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.httpserver.HttpExchangeInfo;
 import vellum.printer.Printer;
 import vellum.util.Streams;
 import vellum.util.Strings;
@@ -86,18 +87,18 @@ public abstract class AbstractPageHandler implements HttpHandler {
 
     protected void printCss() {
         String resourceName = getClass().getSimpleName() + ".css";
-        printCss(resourceName);
+        printCss(AbstractPageHandler.class, resourceName);
     }
 
-    protected void printCss(String resourceName) {
-        out.printf("<style>\n%s\n</style>\n", Streams.readString(getClass(), resourceName));
+    protected void printCss(Class parentClass, String resourceName) {
+        out.printf("<style>\n%s\n</style>\n", Streams.readString(parentClass, resourceName));
     }
 
     protected void printPageHeader() throws IOException {
         out.println("<html>");
         out.println("<head>");
         out.printf("<title>%s</title>", getClass().getSimpleName());
-        printCss("style.css");
+        printCss(AbstractPageHandler.class, "style.css");
         out.println("</head>");
         out.println("<body>");
     }

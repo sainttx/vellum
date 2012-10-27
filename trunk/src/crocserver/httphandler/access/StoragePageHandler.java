@@ -1,6 +1,7 @@
 
-package crocserver.httpserver;
+package crocserver.httphandler.access;
 
+import crocserver.httphandler.common.AbstractPageHandler;
 import vellum.util.Types;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

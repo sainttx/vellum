@@ -1,12 +1,13 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httpserver;
+package crocserver.httphandler.access;
 
 import bizstat.entity.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
@@ -21,14 +22,14 @@ import crocserver.storage.CrocStorage;
  *
  * @author evans
  */
-public class CertReqHandler implements HttpHandler {
+public class GenKeyHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
-    public CertReqHandler(CrocStorage storage) {
+    public GenKeyHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }

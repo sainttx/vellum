@@ -2,7 +2,7 @@
  */
 package crocserver.app;
 
-import crocserver.httpserver.SecureHttpHandler;
+import crocserver.httphandler.secure.SecureHttpHandler;
 import crocserver.httpserver.HttpServerConfig;
 import crocserver.storage.CrocStorage;
 import vellum.httpserver.VellumHttpServer;

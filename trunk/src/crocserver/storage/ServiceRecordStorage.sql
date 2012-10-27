@@ -1,25 +1,25 @@
 
--- exists (host, service)
+-- exists_host_service
 select count(1) from service_record 
 where host_name = ? and service_name = ?
 ;
 
--- find (host, service)
+-- find_host_service
 select * from service_record 
 where host_name = ? and service_name = ?
 ;
 
--- find (id)
+-- find_id
 select * from service_record 
 where service_record_id = ?
 ;
 
--- list by time
+-- list_by_time
 select * from service_record
 order by time_ desc
 ;
 
--- delete (id)
+-- delete_id
 delete from service_record where service_record_id = ?
 ;
 

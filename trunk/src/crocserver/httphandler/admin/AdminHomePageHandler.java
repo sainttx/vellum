@@ -1,10 +1,12 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httpserver;
+package crocserver.httphandler.admin;
 
+import crocserver.httphandler.access.*;
 import bizstat.entity.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
+import crocserver.httphandler.common.AbstractPageHandler;
 import java.util.Collection;
 import java.util.Iterator;
 import vellum.util.DateFormats;
@@ -22,11 +24,11 @@ import vellum.logr.LogrLevel;
  *
  * @author evans
  */
-public class HomePageHandler extends AbstractPageHandler {
+public class AdminHomePageHandler extends AbstractPageHandler {
 
     CrocStorage storage;
 
-    public HomePageHandler(CrocStorage storage) {
+    public AdminHomePageHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -49,7 +51,7 @@ public class HomePageHandler extends AbstractPageHandler {
         out.printf("<table>\n");
         int index = 0;
         for (ServiceRecord serviceRecord : serviceRecords) {
-            out.printf("<tr class=row%d><td><a href='view/serviceRecord/%d'>%d</a><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
+            out.printf("<tr class=row%d><td><a href='/view/serviceRecord/%d'>%d</a><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
                     ++index % 2,
                     serviceRecord.getId(),
                     serviceRecord.getId(),

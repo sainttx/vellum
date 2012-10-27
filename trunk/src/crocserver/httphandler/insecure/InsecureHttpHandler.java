@@ -1,10 +1,13 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httpserver;
+package crocserver.httphandler.insecure;
 
+import crocserver.httphandler.access.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.httphandler.access.AccessHomePageHandler;
+import crocserver.httphandler.secure.PostHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -14,18 +17,17 @@ import crocserver.storage.CrocStorage;
  *
  * @author evans
  */
-public class PublicCrocHttpHandler implements HttpHandler {
-    Logr logger = LogrFactory.getLogger(PublicCrocHttpHandler.class);
+public class InsecureHttpHandler implements HttpHandler {
+
+    Logr logger = LogrFactory.getLogger(InsecureHttpHandler.class);
     CrocStorage storage;
-            
-    public PublicCrocHttpHandler(CrocStorage storage) {
+
+    public InsecureHttpHandler(CrocStorage storage) {
         this.storage = storage;
     }
-    
+
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        String path = httpExchange.getRequestURI().getPath();
-        logger.info("path", path);
-        new HomePageHandler(storage).handle(httpExchange);
+        new InsecureHomePageHandler(storage).handle(httpExchange);
     }
 }
