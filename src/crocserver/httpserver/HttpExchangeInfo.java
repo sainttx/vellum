@@ -38,7 +38,7 @@ public class HttpExchangeInfo {
         return httpExchange.getRequestURI().getPath();
     }
     
-    public String[] splitPath() {
+    public String[] getPathArgs() {
         if (args == null) {
             args = httpExchange.getRequestURI().getPath().substring(1).split("/");
         }
@@ -125,8 +125,12 @@ public class HttpExchangeInfo {
         return acceptGzip;
     }
 
+    public String getPathString(int index) {
+        return getPathString(index, null);
+    }
+    
     public String getPathString(int index, String defaultValue) {
-        String[] args = splitPath();
+        String[] args = getPathArgs();
         if (args.length > index) {
             return args[index];
         }

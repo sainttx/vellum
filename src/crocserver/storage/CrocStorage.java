@@ -4,6 +4,9 @@
  */
 package crocserver.storage;
 
+import crocserver.storage.schema.CrocSchema;
+import crocserver.storage.adminuser.AdminUserStorage;
+import crocserver.storage.servicerecord.ServiceRecordStorage;
 import vellum.datatype.EntityCache;
 import bizstat.entity.ServiceRecord;
 import vellum.storage.DataSourceConfig;
@@ -13,6 +16,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.*;
 import crocserver.schema.SchemaPrinter;
+import crocserver.storage.servicekey.ServiceKeyStorage;
 
 /**
  *
@@ -45,6 +49,10 @@ public class CrocStorage {
         return new AdminUserStorage(this);
     }
 
+    public ServiceKeyStorage getServiceKeyStorage() {
+        return new ServiceKeyStorage(this);
+    }
+    
     public ServiceRecordStorage getServiceRecordStorage() {
         return new ServiceRecordStorage(this);
     }

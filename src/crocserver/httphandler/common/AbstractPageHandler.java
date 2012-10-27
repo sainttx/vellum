@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.zip.GZIPOutputStream;
+import vellum.html.HtmlPrinter;
 
 /**
  *
@@ -32,6 +33,7 @@ public abstract class AbstractPageHandler implements HttpHandler {
     protected String path;
     protected String[] pathArgs;
     protected Printer out;
+    protected HtmlPrinter htmlPrinter;
     protected boolean showMenu = false;
     protected ByteArrayOutputStream baos = null;
 
@@ -47,7 +49,7 @@ public abstract class AbstractPageHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         path = httpExchangeInfo.getPath();
-        pathArgs = httpExchangeInfo.splitPath();
+        pathArgs = httpExchangeInfo.getPathArgs();
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);     
         if (httpExchangeInfo.isAgentWget()) {
             baos = new ByteArrayOutputStream();
@@ -58,6 +60,7 @@ public abstract class AbstractPageHandler implements HttpHandler {
         } else {
             out = new PrintStreamAdapter(httpExchange.getResponseBody());
         }
+        htmlPrinter = new HtmlPrinter(out);
         try {
             printPageHeader();
             if (showMenu) {

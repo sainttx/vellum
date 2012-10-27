@@ -6,17 +6,17 @@ package crocserver.httphandler.access;
 import bizstat.entity.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import crocserver.httphandler.common.AbstractPageHandler;
+import crocserver.storage.adminuser.AdminUser;
 import java.util.Collection;
 import java.util.Iterator;
-import vellum.util.DateFormats;
-import vellum.util.Strings;
-import java.util.List;
 import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.servicekey.ServiceKey;
+import vellum.format.CalendarFormats;
 import vellum.logr.LogrLevel;
 
 /**
@@ -34,20 +34,51 @@ public class AccessHomePageHandler extends AbstractPageHandler {
 
     @Override
     protected void handle() throws Exception {
-        selectStatus();
+        htmlPrinter.div("menuBarDiv");
+        htmlPrinter.a_("/", "Home");
+        htmlPrinter._div();
+        printAdminUsers("admin users", storage.getAdminUserStorage().getList());
+        printSeviceRecords("service records", storage.getServiceRecordStorage().getList());
         if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
-            printLog(LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
+            printLog("log", LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
         }
     }
 
-    private void selectStatus() throws Exception {
-        print("stored status", storage.getServiceRecordStorage().getList());
+    private void printServiceKeys(String label, Collection<ServiceKey> serviceKeys) {
+        htmlPrinter.h(3, label);
+        htmlPrinter.tableDiv("resultSet");
+        htmlPrinter.trh("id", "username", "display name", "email");
+        for (ServiceKey serviceKey : serviceKeys) {
+            htmlPrinter.trd(
+                    String.format("<a href='/view/serviceKey/%s'>%s</a>", serviceKey.getId(), serviceKey.getId()),
+                    serviceKey.getAdminUserName(),
+                    serviceKey.getHostName(),
+                    serviceKey.getServiceName(),
+                    CalendarFormats.timestampFormat.format(serviceKey.getCreated()));
+        }
+        htmlPrinter._table();
+        htmlPrinter._div();
+    }
+    
+    private void printAdminUsers(String label, Collection<AdminUser> adminUsers) {
+        htmlPrinter.h(3, label);
+        htmlPrinter.tableDiv("resultSet");
+        htmlPrinter.trh("id", "username", "display name", "email");
+        for (AdminUser adminUser : adminUsers) {
+            htmlPrinter.trd(
+                    String.format("<a href='/view/adminUser/%s'>%s</a>", adminUser.getId(), adminUser.getId()),
+                    adminUser.getUsername(),
+                    adminUser.getDisplayName(),
+                    adminUser.getEmail(),
+                    CalendarFormats.timestampFormat.format(adminUser.getCreated()));
+        }
+        htmlPrinter._table();
+        htmlPrinter._div();
     }
 
-    private void print(String label, Collection<ServiceRecord> serviceRecords) {
-        out.printf("<h3>%s</h3>\n", label);
-        out.printf("<div class='resultSet'>\n");
-        out.printf("<table>\n");
+    private void printSeviceRecords(String label, Collection<ServiceRecord> serviceRecords) {
+        htmlPrinter.h(3, label);
+        htmlPrinter.tableDiv("resultSet");
         int index = 0;
         for (ServiceRecord serviceRecord : serviceRecords) {
             out.printf("<tr class=row%d><td><a href='/view/serviceRecord/%d'>%d</a><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
@@ -60,58 +91,28 @@ public class AccessHomePageHandler extends AbstractPageHandler {
                     serviceRecord.getServiceStatus(),
                     BizstatMessageBuilder.buildOutText(serviceRecord));
         }
-        out.printf("</table>\n");
-        out.printf("</div>\n");
+        htmlPrinter._tableDiv();
     }
 
-    private void print(List<LogrRecord> records) {
-        out.printf("<h3>log</h3>\n");
-        out.printf("<table class='resultSet'>\n");
-        int rowCount = 0;
-        for (LogrRecord message : records) {
-            out.printf("<tr class=row%d>\n", ++rowCount % 2);
-            String string = Strings.escapeXml(message.getMessage().trim());
-            string = string.trim();
-            StringBuilder detailBuilder = new StringBuilder();
-            if (string.length() > 0) {
-                detailBuilder.append(string);
-            }
-            if (message.getMessage() != null) {
-                if (detailBuilder.length() > 0) {
-                    detailBuilder.append("<br>");
-                }
-                detailBuilder.append("<pre>");
-                detailBuilder.append(Strings.escapeXml(message.getMessage().trim()));
-                detailBuilder.append("</pre>");
-            }
-            out.printf("<td>%s<td>%s<td><b>%s</b><td>%s\n",
-                    DateFormats.formatTime(message.getTimestamp()),
-                    message.getLevel(),
-                    message.getContext().getName(),
-                    detailBuilder.toString());
+    private void printLog(String label, Collection<LogrRecord> records) {
+        printLog(label, records.iterator());
+    }
+
+    private void printLog(String label, Iterator<LogrRecord> iterator) {
+        HtmlPrinter p = new HtmlPrinter(out);
+        p.h(3, label);
+        p.tableDiv("resultSet");
+        p.thead();
+        p._thead();
+        p.tbody();
+        while (iterator.hasNext()) {
+            LogrRecord record = iterator.next();
+            p.trd(Millis.formatTime(record.getTimestamp()),
+                    record.getContext().getName(),
+                    record.getLevel(), record.getMessage(),
+                    ListFormats.displayFormatter.formatArray(record.getArgs()));
         }
-        out.printf("</table>\n");
+        p._tbody();
+        p._tableDiv();
     }
-
-    private void printLog(Collection<LogrRecord> records) {
-        printLog(records.iterator());
-    }
-    
-    private void printLog(Iterator<LogrRecord> iterator) {
-       HtmlPrinter p = new HtmlPrinter(out);
-       p.h(3, "log");
-       p.tableDiv("resultSet");
-       p.thead();
-       p._thead();
-       p.tbody();
-       while (iterator.hasNext()) {
-           LogrRecord record = iterator.next();
-           p.trd(Millis.formatTime(record.getTimestamp()), 
-                   record.getContext().getName(),
-                   record.getLevel(), record.getMessage(),
-                   ListFormats.displayFormatter.formatArray(record.getArgs()));
-       }
-       p._tbody();
-       p._tableDiv();
-    }    
 }

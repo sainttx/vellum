@@ -40,7 +40,7 @@ public class GetPublicKeyHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         String text = Streams.readString(httpExchange.getRequestBody());
-        String[] args = httpExchangeInfo.splitPath();
+        String[] args = httpExchangeInfo.getPathArgs();
         out = new PrintStream(httpExchange.getResponseBody());
         try {
             String hostName = httpExchangeInfo.getPathString(1, "none");

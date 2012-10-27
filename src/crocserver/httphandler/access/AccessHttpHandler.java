@@ -29,8 +29,14 @@ public class AccessHttpHandler implements HttpHandler {
         logger.info("path", path);
         if (path.startsWith("/register/")) {
             new RegisterHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/storage/")) {
+        } else if (path.startsWith("/enroll")) {
+            new EnrollHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/storage")) {
             new StoragePageHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/adminUser/")) {
+            new ViewAdminUserPageHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/serviceKey/")) {
+            new ViewServiceKeyPageHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/serviceRecord/")) {
             new ViewServiceRecordPageHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/genKey/")) {

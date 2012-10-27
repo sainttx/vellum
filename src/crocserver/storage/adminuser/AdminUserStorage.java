@@ -2,8 +2,9 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage;
+package crocserver.storage.adminuser;
 
+import crocserver.storage.CrocStorage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,12 +26,38 @@ public class AdminUserStorage {
         this.storage = storage;
     }
 
+    public void insert(AdminUser adminUser) throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
+            statement.setString(1, adminUser.getUsername());
+            statement.setString(2, adminUser.getDisplayName());
+            statement.setString(3, adminUser.getEmail());
+            if (adminUser.getRole() != null) {
+                statement.setString(4, adminUser.getRole().name());
+            } else {
+                statement.setString(4, null);
+                
+            }
+            int updateCount = statement.executeUpdate();
+            ok = true;
+            if (updateCount != 1) {
+                throw new SQLException();
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+
     private AdminUser get(ResultSet resultSet) throws SQLException {
         AdminUser adminUser = new AdminUser();
         adminUser.setEmail(resultSet.getString("email"));
         adminUser.setUsername(resultSet.getString("username"));
+        adminUser.setDisplayName(resultSet.getString("display_name"));
         adminUser.setRole(AdminRole.valueOf(resultSet.getString("role_")));
         adminUser.setLastLogin(resultSet.getTimestamp("last_login"));
+        adminUser.setCreated(resultSet.getTimestamp("created"));
         return adminUser;
     }
 
@@ -60,24 +87,6 @@ public class AdminUserStorage {
                 return null;
             }
             return get(resultSet);
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-
-    public void insert(AdminUser adminUser) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
-            statement.setString(1, adminUser.getUsername());
-            statement.setString(2, adminUser.getEmail());
-            statement.setString(3, adminUser.getRole().name());
-            int updateCount = statement.executeUpdate();
-            ok = true;
-            if (updateCount != 1) {
-                throw new SQLException();
-            }
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }

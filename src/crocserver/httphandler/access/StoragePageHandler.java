@@ -40,6 +40,8 @@ public class StoragePageHandler extends AbstractPageHandler {
         try {
             connection = connectionPool.getConnection();
             queryDatabaseTime();
+            print(RowSets.getRowSet(connection, "select * from admin_user"));
+            print(RowSets.getRowSet(connection, "select * from service_key"));
             print(RowSets.getRowSet(connection, "select * from service_record"));
             printSchema();
             ok = true;
