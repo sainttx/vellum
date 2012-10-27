@@ -2,7 +2,7 @@
  */
 package crocserver.app;
 
-import crocserver.httpserver.CrocHttpHandler;
+import crocserver.httpserver.SecureHttpHandler;
 import crocserver.httpserver.HttpServerConfig;
 import crocserver.storage.CrocStorage;
 import vellum.httpserver.VellumHttpServer;
@@ -21,7 +21,7 @@ public class CrocHttpServer {
     }    
     
     public void start() throws Exception {
-        httpServer.start(new CrocHttpHandler(storage));
+        httpServer.start(new SecureHttpHandler(storage));
     }
     
     public boolean stop() {
