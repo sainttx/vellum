@@ -15,13 +15,13 @@ import vellum.util.Strings;
  *
  * @author evan
  */
-public class VellumKeyTool {
+public class VKeyTool {
 
     Logr logger = LogrFactory.getLogger(getClass());
     String keyStoreType = "JKS";
     String providerName = null;
     String keyAlgName = "RSA";
-    String dname = "CN=localhost, OU=local, O=local, L=local, S=local, C=local";
+    String dname = KeyStores.LOCAL_DNAME;
     String keyStorePath;
     String trustStorePath;
     String keyStorePassword;
@@ -119,7 +119,7 @@ public class VellumKeyTool {
 
     public static void main(String[] args) throws Exception {
         try {
-            new VellumKeyTool().main();
+            new VKeyTool().main();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
