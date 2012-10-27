@@ -8,7 +8,7 @@ import crocserver.httphandler.access.AccessHomePageHandler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.httphandler.access.CertReqHandler;
-import crocserver.httphandler.access.GetPublicKeyHandler;
+import crocserver.httphandler.access.GetTextHandler;
 import crocserver.httphandler.access.StoragePageHandler;
 import crocserver.httphandler.access.ViewServiceRecordPageHandler;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class AdminHttpHandler implements HttpHandler {
         } else if (path.startsWith("/genKey/")) {
             new GenKeyHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/publicKey/")) {
-            new GetPublicKeyHandler(storage).handle(httpExchange);
+            new GetTextHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/certReq/")) {
             new CertReqHandler(storage).handle(httpExchange);
         } else {

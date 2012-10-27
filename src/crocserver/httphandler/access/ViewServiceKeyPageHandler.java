@@ -38,6 +38,6 @@ public class ViewServiceKeyPageHandler extends AbstractPageHandler {
        p.trhd("Service", serviceKey.getServiceName());
        p._tbody();
        p._tableDiv();
-       p.pre(serviceKey.getPublicKey());
+       p.pre(serviceKey.getCert());
     }    
 }

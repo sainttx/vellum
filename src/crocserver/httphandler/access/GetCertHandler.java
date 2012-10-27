@@ -24,7 +24,7 @@ import vellum.security.GeneratedRsaKeyPair;
  *
  * @author evans
  */
-public class EnrollHandler implements HttpHandler {
+public class GetCertHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
@@ -36,7 +36,7 @@ public class EnrollHandler implements HttpHandler {
     String serviceName;
     String publicKey;
     
-    public EnrollHandler(CrocStorage storage) {
+    public GetCertHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -56,25 +56,14 @@ public class EnrollHandler implements HttpHandler {
             serviceName = httpExchangeInfo.getPathString(3);
             logger.info("enroll", userName, hostName, serviceName);
             try {
-                String dname = KeyStores.formatDname(hostName, serviceName, userName, "local", "local", "local");
-                AdminUser adminUser = storage.getAdminUserStorage().get(userName);
-                String orgName = adminUser.getOrgName();
-                if (orgName != null) {
-                    Org org = storage.getOrgStorage().get(orgName);
-                    dname = KeyStores.formatDname(hostName, serviceName, 
-                            org.getName(), org.getRegion(), org.getCity(), org.getCountry());
+                ServiceKey serviceKey = storage.getServiceKeyStorage().find(userName, hostName, serviceName);
+                if (serviceKey == null) {
+                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+                    out.printf("ERROR: not found\n");                    
+                } else {
+                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    out.println(serviceKey.getCert());
                 }
-                logger.info("generate", dname);
-                GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
-                keyPair.generate(dname, new Date(), 999, 1024);
-                ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName, 
-                        KeyStores.buildCertPem(keyPair.getCert()));
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
-                storage.getServiceKeyStorage().insert(serviceKey);
-                out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
-                        getClass().getName(), userName, hostName, serviceName, httpExchangeInfo.getParameterMap()));
-                logger.info("OK", KeyStores.buildCertPem(keyPair.getCert()));
             } catch (Exception e) {
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
                 e.printStackTrace(out);

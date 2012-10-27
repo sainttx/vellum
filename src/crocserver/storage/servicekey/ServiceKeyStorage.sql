@@ -30,7 +30,7 @@ insert into service_key (
   username,
   host_,
   service,
-  public_key
+  cert
 ) values (?, ?, ?, ?)
 ;
 

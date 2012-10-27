@@ -12,12 +12,9 @@ import java.net.InetSocketAddress;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import javax.net.ssl.*;
 import sun.misc.BASE64Encoder;
 import sun.security.provider.X509Factory;
-import sun.security.x509.CertAndKeyGen;
 import sun.security.x509.X500Name;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -29,7 +26,7 @@ import vellum.logr.LogrFactory;
 public class KeyStores {
     static Logr logger = LogrFactory.getLogger(KeyStores.class);
     public static final String BEGIN_PRIVATE_KEY = X509Factory.BEGIN_CERT.replace("BEGIN CERT", "BEGIN PRIVATE KEY");
-    public static final String END_PRIVATE_KEY = X509Factory.BEGIN_CERT.replace("END CERT", "END PRIVATE KEY");
+    public static final String END_PRIVATE_KEY = X509Factory.END_CERT.replace("END CERT", "END PRIVATE KEY");
     public static final String LOCAL_DNAME = "CN=localhost, OU=local, O=local, L=local, S=local, C=local";
 
     public static SSLSocketFactory createSSLSocketFactory() throws Exception {
@@ -114,17 +111,21 @@ public class KeyStores {
         StringBuilder builder = new StringBuilder();
         BASE64Encoder encoder = new BASE64Encoder();
         builder.append(BEGIN_PRIVATE_KEY);
+        builder.append('\n');
         builder.append(encoder.encodeBuffer(privateKey.getEncoded()));
         builder.append(END_PRIVATE_KEY);
+        builder.append('\n');
         return builder.toString();
     }
     
     public static String buildCertPem(X509Certificate cert) throws Exception, CertificateException {
         StringBuilder builder = new StringBuilder();
         builder.append(X509Factory.BEGIN_CERT);
+        builder.append('\n');
         BASE64Encoder encoder = new BASE64Encoder();
         builder.append(encoder.encodeBuffer(cert.getEncoded()));
         builder.append(X509Factory.END_CERT);
+        builder.append('\n');
         return builder.toString();
     }
 

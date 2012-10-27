@@ -22,14 +22,14 @@ import crocserver.storage.CrocStorage;
  *
  * @author evans
  */
-public class GetPublicKeyHandler implements HttpHandler {
+public class GetTextHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
-    public GetPublicKeyHandler(CrocStorage storage) {
+    public GetTextHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
