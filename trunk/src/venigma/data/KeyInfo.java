@@ -14,8 +14,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import vellum.type.ComparableTuple;
 import vellum.util.Args;
-import venigma.server.storage.StorageException;
-import venigma.server.storage.StorageExceptionType;
+import venigma.server.storage.VStorageException;
+import venigma.server.storage.VStorageExceptionType;
 
 /**
  *
@@ -131,9 +131,9 @@ public class KeyInfo extends AbstractIdEntity {
         return cipher;
     }
         
-    public SecretKey getSecretKey() throws StorageException {
+    public SecretKey getSecretKey() throws VStorageException {
         if (secretKey == null) {
-            throw new StorageException(StorageExceptionType.KEY_NOT_DECRYPTED);
+            throw new VStorageException(VStorageExceptionType.KEY_NOT_DECRYPTED);
         }
         return secretKey;
     }

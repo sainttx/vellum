@@ -8,14 +8,14 @@ package venigma.server.storage;
  *
  * @author evan
  */
-public class StorageException extends Exception {
-    StorageExceptionType storageExceptionType;
+public class VStorageException extends Exception {
+    VStorageExceptionType storageExceptionType;
     
-    public StorageException(StorageExceptionType storageExceptionType) {
+    public VStorageException(VStorageExceptionType storageExceptionType) {
         this.storageExceptionType = storageExceptionType;
     }
 
-    public StorageExceptionType getStorageExceptionType() {
+    public VStorageExceptionType getStorageExceptionType() {
         return storageExceptionType;
     }
     

@@ -14,8 +14,8 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.query.QueryMap;
 import vellum.util.Base64;
-import venigma.server.storage.StorageException;
-import venigma.server.storage.StorageExceptionType;
+import venigma.server.storage.VStorageException;
+import venigma.server.storage.VStorageExceptionType;
 
 /**
  *
@@ -55,7 +55,7 @@ public class KeyInfoStorage {
         statement.setInt(2, keyInfo.getKeyRevisionNumber());
         ResultSet resultSet = statement.executeQuery();
         if (!resultSet.next()) {
-            throw new StorageException(StorageExceptionType.KEY_NOT_FOUND);
+            throw new VStorageException(VStorageExceptionType.KEY_NOT_FOUND);
         }
         return build(resultSet);
     }
@@ -70,7 +70,7 @@ public class KeyInfoStorage {
         statement.setString(6, Base64.encode(keyInfo.getEncryptedKey()));
         int insertCount = statement.executeUpdate();
         if (insertCount != 1) {
-            throw new StorageException(StorageExceptionType.KEY_NOT_INSERTED);
+            throw new VStorageException(VStorageExceptionType.KEY_NOT_INSERTED);
         }
     }
 
@@ -79,7 +79,7 @@ public class KeyInfoStorage {
         statement.setString(1, keyId.getKeyAlias());
         int updateCount = statement.executeUpdate();
         if (updateCount != 1) {
-            throw new StorageException(StorageExceptionType.KEY_NOT_DELETED);
+            throw new VStorageException(VStorageExceptionType.KEY_NOT_DELETED);
         }
     }
     

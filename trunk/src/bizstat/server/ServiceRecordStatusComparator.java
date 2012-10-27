@@ -3,7 +3,7 @@
  */
 package bizstat.server;
 
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import java.util.Comparator;
 
 /**

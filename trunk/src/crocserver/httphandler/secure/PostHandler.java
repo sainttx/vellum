@@ -5,7 +5,7 @@ package crocserver.httphandler.secure;
 
 import bizstat.entity.Host;
 import bizstat.entity.Service;
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

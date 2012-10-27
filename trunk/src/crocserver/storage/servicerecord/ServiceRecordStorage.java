@@ -7,7 +7,6 @@ package crocserver.storage.servicerecord;
 import bizstat.entity.Host;
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.Service;
-import bizstat.entity.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import crocserver.storage.CrocStorage;
 import java.sql.*;

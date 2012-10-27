@@ -4,6 +4,7 @@
  */
 package crocserver.storage.adminuser;
 
+import crocserver.storage.org.Org;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
 
@@ -15,9 +16,11 @@ public class AdminUser extends AbstractIdEntity {
     String username;
     String displayName;
     AdminRole role;
+    Org org;
+    String orgName;
     boolean enabled;
     String email;
-    Date created;
+    Date inserted;
     Date updated;
     String createdBy;
     String secondedBy;
@@ -49,6 +52,10 @@ public class AdminUser extends AbstractIdEntity {
         this.displayName = displayName;
     }
 
+    public String getOrgName() {
+        return orgName;
+    }
+    
     public boolean isEnabled() {
         return enabled;
     }
@@ -126,12 +133,12 @@ public class AdminUser extends AbstractIdEntity {
         this.secondedBy = secondedBy;
     }
 
-    public Date getCreated() {
-        return created;
+    public Date getInserted() {
+        return inserted;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setInserted(Date inserted) {
+        this.inserted = inserted;
     }
 
     public Date getUpdated() {

@@ -4,20 +4,33 @@
  */
 package vellum.security;
 
-import vellum.util.*;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.*;
-import vellum.exception.Exceptions;
+import sun.misc.BASE64Encoder;
+import sun.security.provider.X509Factory;
+import sun.security.x509.CertAndKeyGen;
+import sun.security.x509.X500Name;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 
 /**
  *
  * @author evan
  */
 public class KeyStores {
+    static Logr logger = LogrFactory.getLogger(KeyStores.class);
+    public static final String BEGIN_PRIVATE_KEY = X509Factory.BEGIN_CERT.replace("BEGIN CERT", "BEGIN PRIVATE KEY");
+    public static final String END_PRIVATE_KEY = X509Factory.BEGIN_CERT.replace("END CERT", "END PRIVATE KEY");
+    public static final String LOCAL_DNAME = "CN=localhost, OU=local, O=local, L=local, S=local, C=local";
 
     public static SSLSocketFactory createSSLSocketFactory() throws Exception {
         return createSSLContext().getSocketFactory();
@@ -96,4 +109,30 @@ public class KeyStores {
             }
         };
     }
+    
+    public static String buildPrivateKeyPem(PrivateKey privateKey) throws Exception, CertificateException {
+        StringBuilder builder = new StringBuilder();
+        BASE64Encoder encoder = new BASE64Encoder();
+        builder.append(BEGIN_PRIVATE_KEY);
+        builder.append(encoder.encodeBuffer(privateKey.getEncoded()));
+        builder.append(END_PRIVATE_KEY);
+        return builder.toString();
+    }
+    
+    public static String buildCertPem(X509Certificate cert) throws Exception, CertificateException {
+        StringBuilder builder = new StringBuilder();
+        builder.append(X509Factory.BEGIN_CERT);
+        BASE64Encoder encoder = new BASE64Encoder();
+        builder.append(encoder.encodeBuffer(cert.getEncoded()));
+        builder.append(X509Factory.END_CERT);
+        return builder.toString();
+    }
+
+    public static String formatDname(String cn, String ou, String o, String l, String s, String c) throws IOException {
+        X500Name name = new X500Name(cn, ou, o, l, s, c);
+        String dname = name.toString();
+        logger.info(dname);
+        return dname;
+    }
+        
 }

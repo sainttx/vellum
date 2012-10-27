@@ -6,7 +6,7 @@ package bizstat.http;
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.HostServiceStatus;
 import bizstat.entity.Service;
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import bizstat.server.BizstatServer;
 import crocserver.httphandler.common.AbstractPageHandler;

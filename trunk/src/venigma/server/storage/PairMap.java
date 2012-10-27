@@ -39,49 +39,49 @@ public class PairMap<T extends EntityPair> {
     
     public T get(IdPair idPair) {
         if (idPair == null) {
-            throw StorageExceptionType.ID_NULL.newRuntimeException();    
+            throw VStorageExceptionType.ID_NULL.newRuntimeException();    
         }
         return map.get(idPair);
     }
 
-    public T find(IdPair idPair) throws StorageException {
+    public T find(IdPair idPair) throws VStorageException {
         if (idPair == null) {
-            throw StorageExceptionType.ID_NULL.newRuntimeException();    
+            throw VStorageExceptionType.ID_NULL.newRuntimeException();    
         }
         if (!map.containsKey(idPair)) {
-            throw StorageExceptionType.PAIR_NOT_FOUND.newException();
+            throw VStorageExceptionType.PAIR_NOT_FOUND.newException();
         }
         return map.get(idPair);
     }
 
-    public void add(T entityPair) throws StorageException {
+    public void add(T entityPair) throws VStorageException {
         if (entityPair == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();    
+            throw VStorageExceptionType.ENTITY_NULL.newException();    
         }
         logger.info("add", entityPair);
         if (map.containsKey(entityPair.getIdPair())) {
-            throw StorageExceptionType.PAIR_ALREADY_EXISTS.newException();
+            throw VStorageExceptionType.PAIR_ALREADY_EXISTS.newException();
         }
         map.put(entityPair.getIdPair(), entityPair);
     }
     
-    public void update(T entityPair) throws StorageException {
+    public void update(T entityPair) throws VStorageException {
         if (entityPair == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();    
+            throw VStorageExceptionType.ENTITY_NULL.newException();    
         }
         logger.info("update", entityPair);
         if (!map.containsKey(entityPair.getIdPair())) {
-            throw StorageExceptionType.PAIR_NOT_FOUND.newException();
+            throw VStorageExceptionType.PAIR_NOT_FOUND.newException();
         }
     }
 
-    public void remove(T entityPair) throws StorageException {
+    public void remove(T entityPair) throws VStorageException {
         if (entityPair == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();    
+            throw VStorageExceptionType.ENTITY_NULL.newException();    
         }
         logger.info("remove", entityPair);
         if (!map.containsKey(entityPair.getIdPair())) {
-            throw StorageExceptionType.PAIR_NOT_FOUND.newException();
+            throw VStorageExceptionType.PAIR_NOT_FOUND.newException();
         }
     }    
 }

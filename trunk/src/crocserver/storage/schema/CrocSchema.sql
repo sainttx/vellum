@@ -1,6 +1,6 @@
 
 drop table schema_revision;
-drop table organisation; 
+drop table org; 
 drop table contact_group;
 drop table contact_group_member;
 drop table contact;
@@ -14,7 +14,7 @@ drop table config;
 
 create table schema_revision (
   revision_number int,
-  update_time timestamp default now()
+  inserted timestamp default now()
 );
 
 create table config (
@@ -23,10 +23,11 @@ create table config (
   value_ text
 );
 
-create table organisation (
-  organisation_id int auto_increment, 
-  organisation_name varchar(32),
-  organisation_url varchar(32)
+create table org (
+  org_id int auto_increment, 
+  org_name varchar(32),
+  org_url varchar(32),
+  inserted timestamp default now()
 );
 
 create table contact (
@@ -48,7 +49,7 @@ create table contact_group_member (
 
 create table admin_user (
   username varchar(16), 
-  organisation_id integer,
+  org_id integer,
   display_name varchar(64), 
   email varchar(64),
   role_ varchar(32),
@@ -61,16 +62,17 @@ create table admin_user (
   otp varchar(32),
   otp_expiry timestamp,
   last_login timestamp,
-  created timestamp,
   country varchar(2),
   language_ varchar(2),
-  locale varchar(32)
+  locale varchar(32),
+  inserted timestamp default now()
 );
 
 create table host_ (
   host_id int auto_increment, 
   host_name text,
-  public_key text
+  public_key text,
+  inserted timestamp default now()
 );
 
 create table service (
@@ -83,7 +85,8 @@ create table service_key (
   username varchar(32),
   host_ varchar(32),
   service varchar(32),
-  public_key varchar
+  public_key varchar,
+  inserted timestamp default now()
 );
 
 create table service_record (

@@ -70,7 +70,7 @@ public class RegisterHandler implements HttpHandler {
         if (email != null) {
             adminUser.setEmail(email);
         }
-        adminUser.setCreated(new Date());
+        adminUser.setInserted(new Date());
         adminUser.setRole(AdminRole.DEFAULT);
         storage.getAdminUserStorage().insert(adminUser);
         out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(

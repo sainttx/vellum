@@ -14,8 +14,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import venigma.server.storage.StorageException;
-import venigma.server.storage.StorageExceptionType;
+import venigma.server.storage.VStorageException;
+import venigma.server.storage.VStorageExceptionType;
 
 /**
  *
@@ -54,7 +54,7 @@ public class Ciphers {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         File file = new File(fileName);
         if (!file.exists()) {
-            throw new StorageException(StorageExceptionType.KEY_NOT_FOUND);
+            throw new VStorageException(VStorageExceptionType.KEY_NOT_FOUND);
         }
         FileInputStream stream = new FileInputStream(file);
         keyStore.load(stream, storePassword);

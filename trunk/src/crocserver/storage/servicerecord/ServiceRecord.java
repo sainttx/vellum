@@ -2,10 +2,14 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package bizstat.entity;
+package crocserver.storage.servicerecord;
 
+import bizstat.entity.Host;
+import bizstat.entity.HostServiceKey;
+import bizstat.entity.Service;
 import vellum.util.Args;
 import bizstat.enumtype.ServiceStatus;
+import java.util.Collection;
 import java.util.List;
 import vellum.datatype.Millis;
 import vellum.entity.LongIdEntity;
@@ -199,4 +203,9 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
     public String toString() {
         return Args.format(host, service, serviceStatus, Millis.formatTime(dispatchedMillis));
     }    
+    
+    public static String toString(Collection<ServiceRecord> collection) {
+        return String.format("%d %s", collection.size(), collection.iterator().next());
+    }
+    
 }

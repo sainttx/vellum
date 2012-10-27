@@ -8,10 +8,12 @@ package venigma.server.storage;
  *
  * @author evan
  */
-public enum StorageExceptionType {
+public enum VStorageExceptionType {
     CONNECTION_ERROR,
     ID_NULL,
     ENTITY_NULL,
+    ENTITY_NOT_FOUND,
+    UPDATE_COUNT,
     KEY_NULL,
     KEY_NOT_FOUND,
     KEY_NOT_INSERTED,
@@ -26,12 +28,12 @@ public enum StorageExceptionType {
     NO_DATABASE_STORE_PASSWORD,
     NO_DATABASE_NAME;
     
-    public StorageRuntimeException newRuntimeException() {
-        return new StorageRuntimeException(this);
+    public VStorageRuntimeException newRuntimeException() {
+        return new VStorageRuntimeException(this);
     }
     
-    public StorageException newException() {
-        return new StorageException(this);
+    public VStorageException newException() {
+        return new VStorageException(this);
     }
     
 }
