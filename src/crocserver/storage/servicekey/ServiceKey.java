@@ -18,7 +18,7 @@ public class ServiceKey extends AbstractIdEntity {
     String adminUserName;
     String publicKey;
     boolean enabled = true;
-    Date created = new Date();
+    Date inserted = new Date();
     Date updated = new Date();
     
     public ServiceKey() {
@@ -48,12 +48,12 @@ public class ServiceKey extends AbstractIdEntity {
         this.adminUserName = adminUserName;
     }
 
-    public Date getCreated() {
-        return created;
+    public Date getInserted() {
+        return inserted;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setInserted(Date inserted) {
+        this.inserted = inserted;
     }
 
     public boolean isEnabled() {

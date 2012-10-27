@@ -3,7 +3,7 @@
  */
 package crocserver.httphandler.access;
 
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import crocserver.httphandler.common.AbstractPageHandler;
 import crocserver.storage.adminuser.AdminUser;
@@ -55,7 +55,7 @@ public class AccessHomePageHandler extends AbstractPageHandler {
                     serviceKey.getAdminUserName(),
                     serviceKey.getHostName(),
                     serviceKey.getServiceName(),
-                    CalendarFormats.timestampFormat.format(serviceKey.getCreated()));
+                    CalendarFormats.timestampFormat.format(serviceKey.getInserted()));
         }
         htmlPrinter._table();
         htmlPrinter._div();
@@ -71,7 +71,7 @@ public class AccessHomePageHandler extends AbstractPageHandler {
                     adminUser.getUsername(),
                     adminUser.getDisplayName(),
                     adminUser.getEmail(),
-                    CalendarFormats.timestampFormat.format(adminUser.getCreated()));
+                    CalendarFormats.timestampFormat.format(adminUser.getInserted()));
         }
         htmlPrinter._table();
         htmlPrinter._div();

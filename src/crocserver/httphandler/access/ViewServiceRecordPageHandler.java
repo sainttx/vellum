@@ -3,7 +3,7 @@
  */
 package crocserver.httphandler.access;
 
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import crocserver.httphandler.common.AbstractPageHandler;
 import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;

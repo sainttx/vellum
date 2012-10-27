@@ -4,6 +4,7 @@
  */
 package bizstat.entity;
 
+import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.NotifyType;
 import bizstat.enumtype.StatusChangeType;
 import vellum.util.Args;
@@ -194,7 +195,7 @@ public class HostServiceStatus implements Runnable {
     
     private void parseMetrics() {
         Map<String, String> metrics = new HashMap();
-        for (String line : serviceRecord.outList) {
+        for (String line : serviceRecord.getOutList()) {
             if (line.startsWith("value ")) {
                 logger.info("parseMetrics", line);
                 String[] words = line.split(" ");

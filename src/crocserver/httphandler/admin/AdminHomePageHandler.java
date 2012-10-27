@@ -4,7 +4,7 @@
 package crocserver.httphandler.admin;
 
 import crocserver.httphandler.access.*;
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import crocserver.httphandler.common.AbstractPageHandler;
 import java.util.Collection;

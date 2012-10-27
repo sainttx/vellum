@@ -33,7 +33,7 @@ public class IdEntityMap<T extends IdEntity> {
 
     public boolean exists(Comparable id) {
         if (id == null) {
-            throw new StorageRuntimeException(StorageExceptionType.ID_NULL);
+            throw new VStorageRuntimeException(VStorageExceptionType.ID_NULL);
         }
         return map.containsKey(id);
     }
@@ -48,49 +48,49 @@ public class IdEntityMap<T extends IdEntity> {
     
     public T get(Comparable id) {
         if (id == null) {
-            throw StorageExceptionType.ID_NULL.newRuntimeException();
+            throw VStorageExceptionType.ID_NULL.newRuntimeException();
         }
         return map.get(id);
     }
 
-    public T find(Comparable id) throws StorageException {
+    public T find(Comparable id) throws VStorageException {
         if (id == null) {
-            throw StorageExceptionType.ID_NULL.newException();
+            throw VStorageExceptionType.ID_NULL.newException();
         }
         if (!map.containsKey(id)) {
-            throw StorageExceptionType.ID_NOT_FOUND.newException();
+            throw VStorageExceptionType.ID_NOT_FOUND.newException();
         }
         return map.get(id);
     }
 
-    public void add(T entity) throws StorageException {
+    public void add(T entity) throws VStorageException {
         logger.info("add", entity);
         if (entity == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();
+            throw VStorageExceptionType.ENTITY_NULL.newException();
         }
         if (map.containsKey(entity.getId())) {
-            throw StorageExceptionType.ID_ALREADY_EXISTS.newException();
+            throw VStorageExceptionType.ID_ALREADY_EXISTS.newException();
         }
         map.put(entity.getId(), entity);
     }
     
-    public void update(T entity) throws StorageException {
+    public void update(T entity) throws VStorageException {
         logger.info("update", entity);
         if (entity == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();
+            throw VStorageExceptionType.ENTITY_NULL.newException();
         }
         if (!map.containsKey(entity.getId())) {
-            throw StorageExceptionType.ID_NOT_FOUND.newException();
+            throw VStorageExceptionType.ID_NOT_FOUND.newException();
         }
     }
 
-    public void remove(T entity) throws StorageException {
+    public void remove(T entity) throws VStorageException {
         logger.info("remove", entity);
         if (entity == null) {
-            throw StorageExceptionType.ENTITY_NULL.newException();
+            throw VStorageExceptionType.ENTITY_NULL.newException();
         }
         if (!map.containsKey(entity.getId())) {
-            throw StorageExceptionType.ID_NOT_FOUND.newException();
+            throw VStorageExceptionType.ID_NOT_FOUND.newException();
         }
     }
 }

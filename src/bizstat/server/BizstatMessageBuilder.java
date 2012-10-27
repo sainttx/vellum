@@ -5,7 +5,7 @@ package bizstat.server;
 
 import vellum.util.DateFormats;
 import vellum.util.Lists;
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import java.util.Date;
 import java.util.LinkedList;

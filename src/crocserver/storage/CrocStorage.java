@@ -8,7 +8,7 @@ import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.adminuser.AdminUserStorage;
 import crocserver.storage.servicerecord.ServiceRecordStorage;
 import vellum.datatype.EntityCache;
-import bizstat.entity.ServiceRecord;
+import crocserver.storage.servicerecord.ServiceRecord;
 import vellum.storage.DataSourceConfig;
 import javax.sql.DataSource;
 import vellum.datatype.SimpleEntityCache;
@@ -16,6 +16,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.*;
 import crocserver.schema.SchemaPrinter;
+import crocserver.storage.org.OrgStorage;
 import crocserver.storage.servicekey.ServiceKeyStorage;
 
 /**
@@ -49,6 +50,10 @@ public class CrocStorage {
         return new AdminUserStorage(this);
     }
 
+    public OrgStorage getOrgStorage() {
+        return new OrgStorage(this);
+    }
+       
     public ServiceKeyStorage getServiceKeyStorage() {
         return new ServiceKeyStorage(this);
     }

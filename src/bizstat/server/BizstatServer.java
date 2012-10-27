@@ -4,6 +4,7 @@
  */
 package bizstat.server;
 
+import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.http.BizstatHttpServer;
 import bizstat.entity.*;
 import bizstat.enumtype.ServiceStatus;

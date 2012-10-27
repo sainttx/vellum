@@ -12,8 +12,13 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceKey;
+import java.util.Date;
 import vellum.format.ListFormats;
+import vellum.security.KeyStores;
+import vellum.security.KeyPairGenerator;
 
 /**
  *
@@ -50,7 +55,19 @@ public class EnrollHandler implements HttpHandler {
             hostName = httpExchangeInfo.getPathString(2);
             serviceName = httpExchangeInfo.getPathString(3);
             try {
-                ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName, publicKey);
+                String dname = KeyStores.formatDname(hostName, serviceName, userName, "local", "local", "local");
+                AdminUser adminUser = storage.getAdminUserStorage().find(userName);
+                String orgName = adminUser.getOrgName();
+                if (orgName != null) {
+                    Org org = storage.getOrgStorage().get(orgName);
+                    dname = KeyStores.formatDname(hostName, serviceName, 
+                            org.getName(), org.getRegion(), org.getCity(), org.getCountry());
+                }
+                KeyPairGenerator keyPair = new KeyPairGenerator();
+                keyPair.genKeyPair(dname, new Date(), 999, 1024);
+                ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName, 
+                        KeyStores.buildCertPem(keyPair.getCert()));
+                out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
                 storage.getServiceKeyStorage().insert(serviceKey);
                 out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
                         getClass().getName(), userName, hostName, serviceName, httpExchangeInfo.getParameterMap()));

@@ -16,8 +16,8 @@ import venigma.server.CipherProperties;
 import venigma.server.storage.DatabaseConnectionInfo;
 import venigma.server.storage.IdEntityMap;
 import venigma.server.storage.PairMap;
-import venigma.server.storage.StorageExceptionType;
-import venigma.server.storage.StorageRuntimeException;
+import venigma.server.storage.VStorageExceptionType;
+import venigma.server.storage.VStorageRuntimeException;
 
 /**
  *
@@ -59,7 +59,7 @@ public class CipherStorage {
             return DriverManager.getConnection(databaseConnectionInfo.getUrl(),
                     databaseConnectionInfo.getUsername(), properties.buildDatabasePassword());
         } catch (SQLException e) {
-            throw new StorageRuntimeException(StorageExceptionType.CONNECTION_ERROR, e);
+            throw new VStorageRuntimeException(VStorageExceptionType.CONNECTION_ERROR, e);
         }
     }    
 

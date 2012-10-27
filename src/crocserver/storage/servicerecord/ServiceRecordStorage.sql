@@ -37,5 +37,3 @@ insert into service_record (
 )
 values (?, ?, ?, ?, ?, ?, ?, ?, ?)
 ;
-
-

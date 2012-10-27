@@ -4,16 +4,22 @@
  */
 package vellum.security;
 
+import java.util.Date;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
+
 /**
  *
  * @author evan
  */
 public class VellumKeyPairToolTest {
-    VellumKeyPairTool tool = new VellumKeyPairTool();
+    Logr logger = LogrFactory.getLogger(getClass());    
+    KeyPairGenerator tool = new KeyPairGenerator();
     
     private void test() throws Exception {
-        tool.genKeyPair();
-        tool.printKeyPair(System.out);
+        tool.genKeyPair(KeyStores.LOCAL_DNAME, new Date(), 999, 1024);
+        logger.info(KeyStores.buildPrivateKeyPem(tool.getPrivateKey()));
+        logger.info(KeyStores.buildCertPem(tool.getCert()));
     }
     
     public static void main(String[] args) throws Exception {
