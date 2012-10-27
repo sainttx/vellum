@@ -12,22 +12,21 @@ import vellum.logr.LogrFactory;
  *
  * @author evan
  */
-public class VellumKeyPairToolTest {
+public class GeneratedRsaKeyPairTest {
     Logr logger = LogrFactory.getLogger(getClass());    
-    KeyPairGenerator tool = new KeyPairGenerator();
+    GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
     
     private void test() throws Exception {
-        tool.genKeyPair(KeyStores.LOCAL_DNAME, new Date(), 999, 1024);
-        logger.info(KeyStores.buildPrivateKeyPem(tool.getPrivateKey()));
-        logger.info(KeyStores.buildCertPem(tool.getCert()));
+        keyPair.generate(KeyStores.LOCAL_DNAME, new Date(), 999, 1024);
+        logger.info(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
+        logger.info(KeyStores.buildCertPem(keyPair.getCert()));
     }
     
     public static void main(String[] args) throws Exception {
         try {
-            new VellumKeyPairToolTest().test();
+            new GeneratedRsaKeyPairTest().test();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-    }
-    
+    }    
 }

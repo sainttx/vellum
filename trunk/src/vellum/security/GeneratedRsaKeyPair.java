@@ -18,17 +18,17 @@ import vellum.logr.LogrFactory;
  *
  * @author evan
  */
-public class KeyPairGenerator {    
+public class GeneratedRsaKeyPair {    
     String providerName = null;
     String keyAlgName = "RSA";
     String sigAlgName = "SHA1WithRSA";
     PrivateKey privateKey;
     X509Certificate cert;
 
-    public KeyPairGenerator() {        
+    public GeneratedRsaKeyPair() {        
     }
 
-    public void genKeyPair(String dname, Date startDate, int validityDays, int keySize) throws Exception {
+    public void generate(String dname, Date startDate, int validityDays, int keySize) throws Exception {
         CertAndKeyGen keyPair = new CertAndKeyGen(keyAlgName, sigAlgName, providerName);
         keyPair.generate(keySize);
         privateKey = keyPair.getPrivateKey();
