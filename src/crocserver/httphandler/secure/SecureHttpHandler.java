@@ -1,7 +1,7 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httpserver;
+package crocserver.httphandler.secure;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -29,7 +29,7 @@ public class SecureHttpHandler implements HttpHandler {
         if (path.startsWith("/post/")) {
             new PostHandler(storage).handle(httpExchange);
         } else {
-            new HomePageHandler(storage).handle(httpExchange);
+            new SecureHomePageHandler(storage).handle(httpExchange);
         }        
     }
 }

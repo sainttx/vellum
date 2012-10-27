@@ -1,10 +1,16 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httpserver;
+package crocserver.httphandler.admin;
 
+import crocserver.httphandler.access.GenKeyHandler;
+import crocserver.httphandler.access.AccessHomePageHandler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.httphandler.access.CertReqHandler;
+import crocserver.httphandler.access.GetPublicKeyHandler;
+import crocserver.httphandler.access.StoragePageHandler;
+import crocserver.httphandler.access.ViewServiceRecordPageHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -37,7 +43,7 @@ public class AdminHttpHandler implements HttpHandler {
         } else if (path.startsWith("/certReq/")) {
             new CertReqHandler(storage).handle(httpExchange);
         } else {
-            new HomePageHandler(storage).handle(httpExchange);
+            new AdminHomePageHandler(storage).handle(httpExchange);
         }        
     }
 }

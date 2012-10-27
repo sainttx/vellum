@@ -1,9 +1,10 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httpserver;
+package crocserver.httphandler.access;
 
 import bizstat.entity.ServiceRecord;
+import crocserver.httphandler.common.AbstractPageHandler;
 import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.CrocStorage;

@@ -33,14 +33,14 @@ public class ServiceRecordStorage {
     }
 
     private ServiceRecord build(ResultSet resultSet) throws SQLException {
-        ServiceRecord serviceRecord = new ServiceRecord(resultSet.getString("host_"),                
-                resultSet.getString("service"));
-        serviceRecord.setId(resultSet.getLong("service_record_id"));
-        serviceRecord.setDispatchedMillis(getTimestamp(resultSet, "dispatched_time", 0));
-        serviceRecord.setTimestampMillis(getTimestamp(resultSet, "time_", 0));
-        serviceRecord.setNotifiedMillis(getTimestamp(resultSet, "notified_time", 0));
-        serviceRecord.setServiceStatus(ServiceStatus.valueOf(resultSet.getString("status")));
-        serviceRecord.setOutText(resultSet.getString("out_"));
+        ServiceRecord serviceRecord = new ServiceRecord(resultSet.getString(ServiceRecordDatum.host_.name()),
+                resultSet.getString(ServiceRecordDatum.service.name()));
+        serviceRecord.setId(resultSet.getLong(ServiceRecordDatum.service_record_id.name()));
+        serviceRecord.setDispatchedMillis(getTimestamp(resultSet, ServiceRecordDatum.dispatched_time.name(), 0));
+        serviceRecord.setTimestampMillis(getTimestamp(resultSet, ServiceRecordDatum.time_.name(), 0));
+        serviceRecord.setNotifiedMillis(getTimestamp(resultSet, ServiceRecordDatum.notified_time.name(), 0));
+        serviceRecord.setServiceStatus(ServiceStatus.valueOf(resultSet.getString(ServiceRecordDatum.status.name())));
+        serviceRecord.setOutText(resultSet.getString(ServiceRecordDatum.out_.name()));
         return serviceRecord;
     }
     
@@ -57,7 +57,7 @@ public class ServiceRecordStorage {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("find (id)"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_id.name()));
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
@@ -73,7 +73,7 @@ public class ServiceRecordStorage {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("find (host, service)"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_host_service.name()));
             statement.setString(1, hostName);
             statement.setString(2, serviceName);
             ResultSet resultSet = statement.executeQuery();
@@ -90,7 +90,7 @@ public class ServiceRecordStorage {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("insert"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.insert.name()));
             statement.setString(1, serviceRecord.getHostName());
             statement.setString(2, serviceRecord.getServiceName());
             if (serviceRecord.getServiceStatus() == null) {
@@ -127,7 +127,7 @@ public class ServiceRecordStorage {
         boolean ok = false;
         try {
             List<ServiceRecord> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list by time"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.list_by_time.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(build(resultSet));
@@ -144,7 +144,7 @@ public class ServiceRecordStorage {
         boolean ok = false;
         try {
             List<ServiceRecord> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list by time"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.list_by_time.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(build(resultSet));

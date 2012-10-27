@@ -6,7 +6,9 @@ package crocserver.app;
 
 import bizstat.server.BizstatServer;
 import crocserver.gtalk.GtalkConnection;
-import crocserver.httpserver.SecureHttpHandler;
+import crocserver.httphandler.access.AccessHttpHandler;
+import crocserver.httphandler.insecure.InsecureHttpHandler;
+import crocserver.httphandler.secure.SecureHttpHandler;
 import crocserver.httpserver.HttpServerConfig;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +39,7 @@ import vellum.security.KeyStores;
  *
  * @author evan
  */
-public class CrocStarter {
+public class CrocApp {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
@@ -104,12 +106,12 @@ public class CrocStarter {
     public void start() throws Exception {
         if (httpServer != null) {
             httpServer.start();
-            httpServer.startContext("/", new SecureHttpHandler(storage));
+            httpServer.startContext("/", new InsecureHttpHandler(storage));
             logger.info("HTTP server started");
         }
         if (publicHttpsServer != null) {
             publicHttpsServer.start();
-            publicHttpsServer.startContext("/", new SecureHttpHandler(storage));
+            publicHttpsServer.startContext("/", new AccessHttpHandler(storage));
             logger.info("public HTTPS secure server started");
         }
         if (privateHttpsServer != null) {
@@ -179,7 +181,7 @@ public class CrocStarter {
 
     public static void main(String[] args) throws Exception {
         try {
-            CrocStarter starter = new CrocStarter();
+            CrocApp starter = new CrocApp();
             starter.init();
             starter.start();
         } catch (Exception e) {
