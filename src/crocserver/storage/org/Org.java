@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage.organisation;
+package crocserver.storage.org;
 
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
@@ -11,34 +11,75 @@ import vellum.entity.AbstractIdEntity;
  *
  * @author evan
  */
-public class Organisation extends AbstractIdEntity {
+public class Org extends AbstractIdEntity {
+    Long id;
     String name;
     String displayName;
+    String region;
+    String city;
+    String country;
     boolean enabled;
     String createdBy;
-    Date created;
+    Date inserted;
     Date updated;
     
-    public Organisation() {
+    public Org() {
     }
 
-    public Organisation(String name, String createdBy, boolean enabled) {
+    public Org(String name, String createdBy, boolean enabled) {
         this.name = name;
         this.createdBy = createdBy;
         this.enabled = enabled;
     }
       
     @Override
-    public Comparable getId() {
-        return name;
+    public Long getId() {
+        return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Date getInserted() {
+        return inserted;
+    }
+
+    public void setInserted(Date inserted) {
+        this.inserted = inserted;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+ 
     public Date getCreated() {
-        return created;
+        return inserted;
     }
 
     public void setCreated(Date created) {
-        this.created = created;
+        this.inserted = created;
     }
 
     public String getCreatedBy() {
