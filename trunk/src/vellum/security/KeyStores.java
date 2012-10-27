@@ -32,83 +32,53 @@ import vellum.logr.LogrFactory;
 /**
  *
  * snippets from OpenJDK7 KeyTool etc.
- * 
+ *
  * @author evan
  */
 public class KeyStores {
+
     static Logr logger = LogrFactory.getLogger(KeyStores.class);
-    public static final String BEGIN_PRIVATE_KEY = formatPem("BEGIN PRIVATE KEY");
-    public static final String END_PRIVATE_KEY = formatPem("END PRIVATE KEY");
+    public static final String BEGIN_PRIVATE_KEY = formatPem("BEGIN RSA PRIVATE KEY");
+    public static final String END_PRIVATE_KEY = formatPem("END RSA PRIVATE KEY");
     public static final String BEGIN_CERT = formatPem("BEGIN CERTIFICATE");
     public static final String END_CERT = formatPem("END CERTIFICATE");
     public static final String BEGIN_CERT_REQ = formatPem("BEGIN CERTIFICATE REQUEST");
     public static final String END_CERT_REQ = formatPem("END CERTIFICATE REQUEST");
     public static final String LOCAL_DNAME = "CN=localhost, OU=local, O=local, L=local, S=local, C=local";
-
+    
     private static String formatPem(String label) {
         return String.format("-----%s-----", label);
     }
-    
-    public static SSLSocketFactory createSSLSocketFactory() throws Exception {
-        return createSSLContext().getSocketFactory();
-    }
 
-    public static KeyManagerFactory loadKeyManagerFactory(KeyStore keyStore, char[] password) throws Exception {
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(keyStore, password);
-        return kmf;
-
-    }
-
-    public static TrustManagerFactory loadTrustManagerFactory() throws Exception {
-        char[] password = System.getProperty("javax.net.ssl.trustStorePassword").toCharArray();
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        KeyStore ts = loadKeyStore("JKS", System.getProperty("javax.net.ssl.trustStore"), password);
-        tmf.init(ts);
-        return tmf;
-    }
-
-    public static X509TrustManager loadTrustManager() throws Exception {
-        char[] password = System.getProperty("javax.net.ssl.trustStorePassword").toCharArray();
-        KeyStore ts = loadKeyStore("JKS", System.getProperty("javax.net.ssl.trustStore"), password);
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        tmf.init(ts);
-        for (TrustManager trustManager : tmf.getTrustManagers()) {
-            if (trustManager instanceof X509TrustManager) {
-                return (X509TrustManager) trustManager;
-            }
+    public static TrustManagerFactory loadTrustManagerFactory(KeyStore trustStore) {
+        try {
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            tmf.init(trustStore);
+            return tmf;
+        } catch (Exception e) {
+            throw Exceptions.newRuntimeException(e);
         }
-        throw new RuntimeException();
     }
 
-    public static KeyStore loadKeyStore(String type, String filePath, char[] password) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance(type);
-        FileInputStream inputStream = new FileInputStream(filePath);
-        keyStore.load(inputStream, password);
-        return keyStore;
+    public static KeyManagerFactory loadKeyManagerFactory(KeyStore keyStore, char[] password) {
+        try {
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(keyStore, password);
+            return kmf;
+        } catch (Exception e) {
+            throw Exceptions.newRuntimeException(e);
+        }
     }
 
-    public static SSLContext createSSLContext() throws Exception {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        char[] password = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
-        KeyStore ks = loadKeyStore("JKS", System.getProperty("javax.net.ssl.keyStore"), password);
-        KeyManagerFactory kmf = loadKeyManagerFactory(ks, password);
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        KeyStore ts = loadKeyStore("JKS", System.getProperty("javax.net.ssl.trustStore"), password);
-        tmf.init(ts);
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
-        return sslContext;
-    }
-
-    public static SSLContext createSSLContext(TrustManager trustManager) throws Exception {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        char[] password = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
-        KeyStore ks = loadKeyStore("JKS", System.getProperty("javax.net.ssl.keyStore"), password);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(ks, password);
-        TrustManager[] trustManagers = new TrustManager[]{trustManager};
-        sslContext.init(kmf.getKeyManagers(), trustManagers, new SecureRandom());
-        return sslContext;
+    public static KeyStore loadKeyStore(String type, String filePath, char[] password) {
+        try {
+            KeyStore keyStore = KeyStore.getInstance(type);
+            FileInputStream inputStream = new FileInputStream(filePath);
+            keyStore.load(inputStream, password);
+            return keyStore;
+        } catch (Exception e) {
+            throw Exceptions.newRuntimeException(e);
+        }
     }
 
     public static HttpsConfigurator createHttpsConfigurator(SSLContext sslContext, final boolean needClientAuth) throws Exception {
@@ -126,7 +96,7 @@ public class KeyStores {
             }
         };
     }
-    
+
     public static String buildPrivateKeyPem(PrivateKey privateKey) throws Exception, CertificateException {
         StringBuilder builder = new StringBuilder();
         BASE64Encoder encoder = new BASE64Encoder();
@@ -137,7 +107,7 @@ public class KeyStores {
         builder.append('\n');
         return builder.toString();
     }
-    
+
     public static String buildCertPem(X509Certificate cert) throws Exception, CertificateException {
         StringBuilder builder = new StringBuilder();
         builder.append(X509Factory.BEGIN_CERT);
@@ -154,12 +124,12 @@ public class KeyStores {
         builder.append(BEGIN_CERT_REQ);
         builder.append('\n');
         BASE64Encoder encoder = new BASE64Encoder();
-        builder.append(encoder.encodeBuffer(certReq .getEncoded()));
+        builder.append(encoder.encodeBuffer(certReq.getEncoded()));
         builder.append(END_CERT_REQ);
         builder.append('\n');
         return builder.toString();
     }
-    
+
     public static String formatDname(String cn, String ou, String o, String l, String s, String c) {
         try {
             X500Name name = new X500Name(cn, ou, o, l, s, c);
@@ -172,9 +142,9 @@ public class KeyStores {
     }
 
     public static X509Certificate findRootCert(KeyStore keyStore, String alias) throws Exception {
-        return findRootCert(keyStore.getCertificateChain(alias));        
+        return findRootCert(keyStore.getCertificateChain(alias));
     }
-       
+
     public static X509Certificate findRootCert(Certificate[] chain) throws Exception {
         for (Certificate cert : chain) {
             if (cert instanceof X509Certificate) {
@@ -187,7 +157,6 @@ public class KeyStores {
         return null;
     }
 
-    
     public static PKCS10 createCertReq(String csr) throws Exception {
         byte[] rawReq = new BASE64Decoder().decodeBuffer(csr);
         PKCS10 certReq = new PKCS10(rawReq);
@@ -209,8 +178,8 @@ public class KeyStores {
         request.encodeAndSign(x500Signer);
         return request;
     }
-    
-    public static X509Certificate signCert(PrivateKey privateKey, X509Certificate signerCert, 
+
+    public static X509Certificate signCert(PrivateKey privateKey, X509Certificate signerCert,
             PKCS10 certReq, Date startDate, int validityDays) throws Exception {
         String sigAlgName = "SHA256WithRSA";
         Date endDate = new Date(startDate.getTime() + TimeUnit.DAYS.toMillis(validityDays));
@@ -233,5 +202,4 @@ public class KeyStores {
         cert.sign(privateKey, sigAlgName);
         return cert;
     }
-    
 }
