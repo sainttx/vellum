@@ -1,5 +1,5 @@
 
-package crocserver.schema;
+package crocserver.storage.schema;
 
 import vellum.printer.StreamPrinter;
 import java.io.InputStream;

@@ -15,7 +15,7 @@ import vellum.datatype.SimpleEntityCache;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.*;
-import crocserver.schema.SchemaPrinter;
+import crocserver.storage.schema.SchemaPrinter;
 import crocserver.storage.org.OrgStorage;
 import crocserver.storage.servicekey.ServiceKeyStorage;
 

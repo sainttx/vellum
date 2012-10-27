@@ -13,7 +13,7 @@ public enum ServiceKeyDatum {
     username,
     host_,
     service,
-    public_key,
+    cert,
     enabled,
     created,
     updated,

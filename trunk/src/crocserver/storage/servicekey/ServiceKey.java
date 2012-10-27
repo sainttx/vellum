@@ -16,7 +16,7 @@ public class ServiceKey extends AbstractIdEntity {
     String hostName;
     String serviceName;
     String adminUserName;
-    String publicKey;
+    String cert;
     boolean enabled = true;
     Date inserted = new Date();
     Date updated = new Date();
@@ -28,7 +28,7 @@ public class ServiceKey extends AbstractIdEntity {
         this.adminUserName = adminUserName;
         this.hostName = hostName;
         this.serviceName = serviceName;
-        this.publicKey = publicKey;
+        this.cert = publicKey;
     }
     
     @Override
@@ -72,12 +72,12 @@ public class ServiceKey extends AbstractIdEntity {
         this.hostName = hostName;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public String getCert() {
+        return cert;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setCert(String cert) {
+        this.cert = cert;
     }
 
     public String getServiceName() {

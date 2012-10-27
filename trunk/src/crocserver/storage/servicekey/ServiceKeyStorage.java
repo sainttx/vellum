@@ -36,7 +36,7 @@ public class ServiceKeyStorage {
             statement.setString(1, serviceRecord.getAdminUserName());
             statement.setString(2, serviceRecord.getHostName());
             statement.setString(3, serviceRecord.getServiceName());
-            statement.setString(4, serviceRecord.getPublicKey());
+            statement.setString(4, serviceRecord.getCert());
             int insertCount = statement.executeUpdate();
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);
@@ -53,7 +53,7 @@ public class ServiceKeyStorage {
         seviceKey.setAdminUserName(resultSet.getString(ServiceKeyDatum.username.name()));
         seviceKey.setHostName(resultSet.getString(ServiceKeyDatum.host_.name()));
         seviceKey.setServiceName(resultSet.getString(ServiceKeyDatum.service.name()));
-        seviceKey.setPublicKey(resultSet.getString(ServiceKeyDatum.public_key.name()));
+        seviceKey.setCert(resultSet.getString(ServiceKeyDatum.cert.name()));
         return seviceKey;
     }
     

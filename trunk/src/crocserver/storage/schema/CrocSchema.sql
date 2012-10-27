@@ -85,7 +85,7 @@ create table service_key (
   username varchar(32),
   host_ varchar(32),
   service varchar(32),
-  public_key varchar,
+  cert varchar,
   inserted timestamp default now()
 );
 
