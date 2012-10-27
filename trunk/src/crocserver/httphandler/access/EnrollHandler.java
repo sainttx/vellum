@@ -16,7 +16,6 @@ import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceKey;
 import java.util.Date;
-import vellum.format.ListFormats;
 import vellum.security.KeyStores;
 import vellum.security.GeneratedRsaKeyPair;
 
@@ -31,6 +30,7 @@ public class EnrollHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
+    String dname;
     String userName;
     String hostName;
     String serviceName;
@@ -56,32 +56,41 @@ public class EnrollHandler implements HttpHandler {
             serviceName = httpExchangeInfo.getPathString(3);
             logger.info("enroll", userName, hostName, serviceName);
             try {
-                String dname = KeyStores.formatDname(hostName, serviceName, userName, "local", "local", "local");
-                AdminUser adminUser = storage.getAdminUserStorage().get(userName);
-                String orgName = adminUser.getOrgName();
-                if (orgName != null) {
-                    Org org = storage.getOrgStorage().get(orgName);
-                    dname = KeyStores.formatDname(hostName, serviceName, 
-                            org.getName(), org.getRegion(), org.getCity(), org.getCountry());
-                }
-                logger.info("generate", dname);
-                GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
-                keyPair.generate(dname, new Date(), 999, 1024);
-                ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName, 
-                        KeyStores.buildCertPem(keyPair.getCert()));
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
-                storage.getServiceKeyStorage().insert(serviceKey);
-                out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
-                        getClass().getName(), userName, hostName, serviceName, httpExchangeInfo.getParameterMap()));
-                logger.info("OK", KeyStores.buildCertPem(keyPair.getCert()));
+                generate();
             } catch (Exception e) {
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-                e.printStackTrace(out);
-                e.printStackTrace(System.err);
-                out.printf("ERROR %s\n", e.getMessage());
+                handle(e);
             }
         }
         httpExchange.close();
     }
+    
+    private void handle(Exception e) throws IOException {
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        e.printStackTrace(out);
+        e.printStackTrace(System.err);
+        out.printf("ERROR %s\n", e.getMessage());
+    }
+    
+    private void generate() throws Exception {
+        setDname();
+        logger.info("generate", dname);
+        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        keyPair.generate(dname, new Date(), 999, 1024);
+        ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName,
+                KeyStores.buildCertPem(keyPair.getCert()));
+        storage.getServiceKeyStorage().insert(serviceKey);
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
+    }    
+    
+    private void setDname() throws Exception {
+        dname = KeyStores.formatDname(hostName, serviceName, userName, "local", "local", "local");
+        AdminUser adminUser = storage.getAdminUserStorage().get(userName);
+        String orgName = adminUser.getOrgName();
+        if (orgName != null) {
+            Org org = storage.getOrgStorage().get(orgName);
+            dname = KeyStores.formatDname(hostName, serviceName,
+                    org.getName(), org.getRegion(), org.getCity(), org.getCountry());
+        }        
+    }       
 }
