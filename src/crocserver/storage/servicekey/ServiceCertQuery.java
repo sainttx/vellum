@@ -8,13 +8,13 @@ package crocserver.storage.servicekey;
  *
  * @author evan
  */
-public enum ServiceKeyQuery {
+public enum ServiceCertQuery {
     insert,
     find_id,
     delete_id,
-    exists_user_host_service,    
-    find_user_host_service,    
-    list_by_user,
+    exists_org_host_service,    
+    find_org_host_service,    
+    list_org,
     list,
     ;
     

@@ -13,7 +13,7 @@ import crocserver.storage.servicekey.*;
 public enum OrgMeta {
     org_id,
     org_name,
-    org_display_name,
+    display_name,
     org_url,
     enabled,
     inserted,

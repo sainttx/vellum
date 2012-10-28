@@ -16,7 +16,6 @@ public enum AdminUserMeta {
     enabled,    
     role_,
     last_login,
-    org_id,
     inserted,
     created,
     created_by,

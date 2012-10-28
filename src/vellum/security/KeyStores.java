@@ -132,7 +132,11 @@ public class KeyStores {
 
     public static String formatDname(String cn, String ou, String o, String l, String s, String c) {
         try {
-            X500Name name = new X500Name(cn, ou, o, l, s, c);
+            X500Name name = new X500Name(cn, ou, o, 
+                    coalesce(l, "unknown"), 
+                    coalesce(s, "unknown"), 
+                    coalesce(c, "unknown")
+            );
             String dname = name.toString();
             logger.info(dname);
             return dname;
@@ -141,6 +145,11 @@ public class KeyStores {
         }
     }
 
+    private static String coalesce(String value, String defaultValue) {
+        if (value == null) return defaultValue;
+        return value;
+    }
+    
     public static X509Certificate findRootCert(KeyStore keyStore, String alias) throws Exception {
         return findRootCert(keyStore.getCertificateChain(alias));
     }

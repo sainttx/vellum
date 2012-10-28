@@ -145,9 +145,9 @@ public class ServiceRecordStorage {
             } else {
                 statement.setTimestamp(++index, null);        
             }
-            statement.setInt(7, serviceRecord.getExitCode());
-            statement.setString(8, serviceRecord.getOutText());
-            statement.setString(9, serviceRecord.getErrText());
+            statement.setInt(++index, serviceRecord.getExitCode());
+            statement.setString(++index, serviceRecord.getOutText());
+            statement.setString(++index, serviceRecord.getErrText());
             int insertCount = statement.executeUpdate();
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);

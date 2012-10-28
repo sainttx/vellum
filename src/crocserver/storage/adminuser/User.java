@@ -32,8 +32,7 @@ public class User extends AbstractIdEntity<String> {
     public User() {
     }
 
-    public User(Org org, String userName) {
-        this.org = org;
+    public User(String userName) {
         this.userName = userName;
     }
     

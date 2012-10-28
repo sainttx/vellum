@@ -14,7 +14,7 @@ import vellum.logr.LogrFactory;
 import crocserver.storage.CrocStorage;
 import crocserver.storage.adminuser.User;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicekey.ServiceKey;
+import crocserver.storage.servicekey.ServiceCert;
 import java.util.Date;
 import vellum.format.ListFormats;
 import vellum.security.KeyStores;
@@ -31,10 +31,10 @@ public class GetCertHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
-    String userName;
+    String orgName;
     String hostName;
     String serviceName;
-    String publicKey;
+    String cert;
     
     public GetCertHandler(CrocStorage storage) {
         super();
@@ -51,12 +51,13 @@ public class GetCertHandler implements HttpHandler {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
-            userName = httpExchangeInfo.getPathString(1);
+            orgName = httpExchangeInfo.getPathString(1);
             hostName = httpExchangeInfo.getPathString(2);
             serviceName = httpExchangeInfo.getPathString(3);
-            logger.info("enroll", userName, hostName, serviceName);
+            logger.info("enroll", orgName, hostName, serviceName);
             try {
-                ServiceKey serviceKey = storage.getServiceKeyStorage().find(userName, hostName, serviceName);
+                Org org = storage.getOrgStorage().get(orgName);
+                ServiceCert serviceKey = storage.getServiceKeyStorage().find(org.getId(), hostName, serviceName);
                 if (serviceKey == null) {
                     httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
                     out.printf("ERROR: not found\n");                    

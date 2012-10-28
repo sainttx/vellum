@@ -15,7 +15,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
 import crocserver.storage.CrocStorage;
-import crocserver.storage.servicekey.ServiceKey;
+import crocserver.storage.servicekey.ServiceCert;
 import vellum.format.CalendarFormats;
 import vellum.logr.LogrLevel;
 
@@ -45,17 +45,16 @@ public class AccessHomePageHandler extends AbstractPageHandler {
         }
     }
 
-    private void printServiceKeys(String label, Collection<ServiceKey> serviceKeys) {
+    private void printServiceKeys(String label, Collection<ServiceCert> serviceKeys) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "username", "host", "service", "created");
-        for (ServiceKey serviceKey : serviceKeys) {
+        htmlPrinter.trh("id", "org", "host", "service");
+        for (ServiceCert serviceKey : serviceKeys) {
             htmlPrinter.trd(
                     String.format("<a href='/view/serviceKey/%s'>%s</a>", serviceKey.getId(), serviceKey.getId()),
-                    serviceKey.getAdminUserName(),
+                    serviceKey.getOrgId(),
                     serviceKey.getHostName(),
-                    serviceKey.getServiceName(),
-                    CalendarFormats.timestampFormat.format(serviceKey.getInserted()));
+                    serviceKey.getServiceName());
         }
         htmlPrinter._table();
         htmlPrinter._div();

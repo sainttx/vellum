@@ -22,6 +22,7 @@ import crocserver.storage.CrocStorage;
  * 
  */
 public class StoragePageHandler extends AbstractPageHandler {
+    public static int COLUMN_LIMIT = 8;
 
     ConnectionPool connectionPool;
     Connection connection;
@@ -40,8 +41,8 @@ public class StoragePageHandler extends AbstractPageHandler {
         try {
             connection = connectionPool.getConnection();
             queryDatabaseTime();
-            print(RowSets.getRowSet(connection, "select * from admin_user"));
-            print(RowSets.getRowSet(connection, "select * from service_key"));
+            print(RowSets.getRowSet(connection, "select * from user_"));
+            print(RowSets.getRowSet(connection, "select * from service_cert"));
             print(RowSets.getRowSet(connection, "select * from service_record"));
             printSchema();
             ok = true;
@@ -103,14 +104,14 @@ public class StoragePageHandler extends AbstractPageHandler {
         HtmlPrinter h = new HtmlPrinter(out);
         h.table("resultSet");
         h.thead();
-        for (int i = 0; i < columnNames.length; i++) {
+        for (int i = 0; i < columnNames.length && i < COLUMN_LIMIT; i++) {
             h.th(columnNames[i]);
         }
         h._thead();
         h.tbody();
         while (resultSet.next()) {      
             h.tr();
-            for (int i = 0; i < columnNames.length; i++) {
+            for (int i = 0; i < columnNames.length && i < COLUMN_LIMIT; i++) {
                 Object value = resultSet.getObject(columnNames[i]);
                 h.td(Types.getStyleClass(value.getClass()), value);
             }
@@ -119,21 +120,31 @@ public class StoragePageHandler extends AbstractPageHandler {
         h._tbody();
         h._table();
     }
-    
+
+    private Object trim(Object object) {
+        if (object instanceof String) {
+            String string = (String) object;
+            if (string.length() > 32) {
+                return string.substring(0, 32);
+            }
+        }
+        return object;
+    }
+        
     private void print(ResultSet resultSet) throws Exception {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         HtmlPrinter tablePrinter = new HtmlPrinter(out);
         tablePrinter.tableDiv("resultSet");
         tablePrinter.thead();
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+        for (int i = 1; i <= resultSetMetaData.getColumnCount() && i < COLUMN_LIMIT; i++) {
             tablePrinter.th(resultSetMetaData.getColumnName(i));
         }
         tablePrinter._thead();
         tablePrinter.tbody();
         while (resultSet.next()) {      
             tablePrinter.tr();
-            for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                tablePrinter.td(resultSetMetaData.getColumnClassName(i), resultSet.getObject(i));
+            for (int i = 1; i <= resultSetMetaData.getColumnCount() && i < COLUMN_LIMIT; i++) {
+                tablePrinter.td(resultSetMetaData.getColumnClassName(i), trim(resultSet.getObject(i)));
             }
             tablePrinter._tr();
         }
