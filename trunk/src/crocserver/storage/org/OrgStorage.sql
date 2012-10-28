@@ -1,5 +1,5 @@
 
--- exists
+-- exists_name
 select count(1) from org where org_name = ?
 ;
 
@@ -16,6 +16,6 @@ select * from org order by org_name
 ;
 
 -- insert
-insert into org (org_name, display_name, updated_by)
-values (?, ?, ?);
+insert into org (org_name, display_name, url, updated_by)
+values (?, ?, ?, ?);
 

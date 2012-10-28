@@ -25,6 +25,7 @@ from (
 ) msr
 inner join service_record sr on (
   sr.service_name = msr.service_name and sr.time_ = max_time
+)
 ;
 
 -- find_id

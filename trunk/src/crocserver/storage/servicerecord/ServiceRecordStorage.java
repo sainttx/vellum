@@ -118,7 +118,7 @@ public class ServiceRecordStorage {
                 return null;
             }
             ServiceRecord serviceRecord = build(resultSet);
-            if (!resultSet.next()) {
+            if (resultSet.next()) {
                 throw new StorageException(StorageExceptionType.MULTIPLE_RESULTS);
             }
             return serviceRecord;
@@ -127,7 +127,6 @@ public class ServiceRecordStorage {
         }
     }
     
-
     public List<ServiceRecord> getList() throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;

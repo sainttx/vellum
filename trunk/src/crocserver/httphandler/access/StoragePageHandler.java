@@ -41,6 +41,7 @@ public class StoragePageHandler extends AbstractPageHandler {
         try {
             connection = connectionPool.getConnection();
             queryDatabaseTime();
+            print(RowSets.getRowSet(connection, "select * from org"));
             print(RowSets.getRowSet(connection, "select * from user_"));
             print(RowSets.getRowSet(connection, "select * from service_cert"));
             print(RowSets.getRowSet(connection, "select * from service_record"));
@@ -61,7 +62,7 @@ public class StoragePageHandler extends AbstractPageHandler {
     }
     
     private int querySchemaRevisionNumber() throws Exception {
-        RowSet rowSet = RowSets.getRowSet(connection, "select * from schema_revision order by update_time desc");
+        RowSet rowSet = RowSets.getRowSet(connection, "select * from schema_revision order by updated desc");
         if (rowSet.next()) {
             return rowSet.getInt(1);
         }
@@ -70,7 +71,7 @@ public class StoragePageHandler extends AbstractPageHandler {
 
     private void printSchema() throws Exception {
         databaseMetaData = connection.getMetaData();
-        RowSet rowSet = RowSets.getRowSet(connection, "select * from schema_revision order by update_time desc");
+        RowSet rowSet = RowSets.getRowSet(connection, "select * from schema_revision order by updated desc");
         print(rowSet);
         rowSet.first();
         revisionNumber = rowSet.getInt(1);

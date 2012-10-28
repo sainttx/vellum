@@ -29,6 +29,17 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         this.storage = storage;
     }
 
+    private Org get(ResultSet resultSet) throws SQLException {
+        Org org = new Org();
+        org.setId(resultSet.getLong(OrgMeta.org_id.name()));
+        org.setName(resultSet.getString(OrgMeta.org_name.name()));
+        org.setDisplayName(resultSet.getString(OrgMeta.display_name.name()));
+        org.setUrl(resultSet.getString(OrgMeta.url.name()));
+        org.setUpdated(resultSet.getTimestamp(OrgMeta.updated.name()));
+        org.setUpdatedBy(resultSet.getString(OrgMeta.updated_by.name()));
+        return org;
+    }
+
     public long insert(Org org) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
@@ -38,6 +49,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             int index = 0;
             statement.setString(++index, org.getName());
             statement.setString(++index, org.getDisplayName());
+            statement.setString(++index, org.getUrl());
             statement.setString(++index, org.getUpdatedBy());
             int updateCount = statement.executeUpdate();
             ok = true;
@@ -50,19 +62,11 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             }
             long id = resultSet.getLong(1);
             org.setId(id);
+            ok = true;
             return id;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
-    }
-
-    private Org get(ResultSet resultSet) throws SQLException {
-        Org org = new Org();
-        org.setId(resultSet.getLong(OrgMeta.org_id.name()));
-        org.setName(resultSet.getString(OrgMeta.org_name.name()));
-        org.setDisplayName(resultSet.getString(OrgMeta.display_name.name()));
-        org.setInserted(resultSet.getTimestamp(OrgMeta.inserted.name()));
-        return org;
     }
 
     public boolean exists(String email) throws SQLException {
@@ -107,6 +111,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             if (!resultSet.next()) {
                 return null;
             }
+            ok = true;
             return get(resultSet);
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
@@ -119,12 +124,13 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(sqlMap.get(OrgQuery.find_id.name())));
+                    sqlMap.get(OrgQuery.find_id.name()));
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
                 return null;
             }
+            ok = true;
             return get(resultSet);
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
@@ -143,6 +149,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             if (updateCount != 1) {
                 throw new SQLException();
             }
+            ok = true;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
