@@ -65,7 +65,7 @@ public class CrocStorage {
     public <T> T getEntity(Class<T> type, String name) {
         T value = entityCache.get(type, name);
         if (value == null) {
-            throw new StorageException(StorageExceptionType.NOT_FOUND, name);
+            throw new StorageRuntimeException(StorageExceptionType.NOT_FOUND, name);
         }
         return value;
     }

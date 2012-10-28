@@ -48,7 +48,7 @@ public class BizstatNetworkDispatcher implements Runnable {
 
     private void checkServicePath(ServicePath servicePath) {
         boolean ok = true;
-        for (Service service : servicePath.getServiceList()) {
+        for (BizstatService service : servicePath.getServiceList()) {
             if (service.isEnabled() && service.getHost().isEnabled() && !server.isStopped()) {
                 Host host = service.getHost();
                 HostServiceKey key = new HostServiceKey(host, service);
@@ -84,7 +84,7 @@ public class BizstatNetworkDispatcher implements Runnable {
 
     private void checkHost(Host host) {
         logger.verbose("checkHost", host);
-        for (Service service : host.getServiceList()) {
+        for (BizstatService service : host.getServiceList()) {
             HostServiceKey key = new HostServiceKey(host, service);
             if (!statusKeySet.contains(key) && !server.isStopped()) {
                 try {
@@ -103,7 +103,7 @@ public class BizstatNetworkDispatcher implements Runnable {
         }
     }
 
-    private boolean checkHostService(Host host, Service service) {
+    private boolean checkHostService(Host host, BizstatService service) {
         if (service.isEnabled() && service.getScheduleTime() == null && !server.isStopped()) {
             HostServiceKey key = new HostServiceKey(host, service);
             HostServiceStatus status = server.getStatus(key);

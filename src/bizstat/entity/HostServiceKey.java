@@ -10,9 +10,9 @@ import vellum.type.ComparableTuple;
  */
 public class HostServiceKey extends ComparableTuple {
     Host host;
-    Service service;
+    BizstatService service;
 
-    public HostServiceKey(Host host, Service service) {
+    public HostServiceKey(Host host, BizstatService service) {
         super(new Comparable[] {host, service});
         this.host = host;
         this.service = service;
@@ -22,7 +22,7 @@ public class HostServiceKey extends ComparableTuple {
         return host;
     }
 
-    public Service getService() {
+    public BizstatService getService() {
         return service;
     }
 }

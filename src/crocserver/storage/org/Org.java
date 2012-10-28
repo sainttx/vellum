@@ -18,7 +18,7 @@ public class Org extends AbstractIdEntity {
     String region;
     String city;
     String country;
-    boolean enabled;
+    boolean enabled = true;
     String createdBy;
     Date inserted;
     Date updated;
@@ -26,10 +26,9 @@ public class Org extends AbstractIdEntity {
     public Org() {
     }
 
-    public Org(String name, String createdBy, boolean enabled) {
+    public Org(String name, String createdBy) {
         this.name = name;
         this.createdBy = createdBy;
-        this.enabled = enabled;
     }
       
     @Override
@@ -37,7 +36,7 @@ public class Org extends AbstractIdEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
     

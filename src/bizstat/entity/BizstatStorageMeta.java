@@ -13,7 +13,7 @@ public class BizstatStorageMeta {
     Class[] types = {
         Contact.class, 
         ContactGroup.class, 
-        Service.class, 
+        BizstatService.class, 
         ServicePath.class, 
         Host.class, 
         Network.class,

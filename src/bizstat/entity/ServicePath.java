@@ -26,7 +26,7 @@ public class ServicePath extends AbstractIdEntity implements ConfigurableEntity<
     boolean enabled = true;
 
     transient Network network;
-    transient List<Service> serviceList = new UniqueList();
+    transient List<BizstatService> serviceList = new UniqueList();
     transient List<ContactGroup> contactGroupList = new UniqueList();
     
     public ServicePath() {
@@ -41,7 +41,7 @@ public class ServicePath extends AbstractIdEntity implements ConfigurableEntity<
         this.name = name;
     }
 
-    public List<Service> getServiceList() {
+    public List<BizstatService> getServiceList() {
         return serviceList;
     }
 
@@ -70,7 +70,7 @@ public class ServicePath extends AbstractIdEntity implements ConfigurableEntity<
         network = server.getConfigStorage().find(Network.class, properties.getString("network"));
         network.getServicePathList().add(this);
         for (String serviceName : properties.splitCsv("services")) {
-            Service service = server.getConfigStorage().find(Service.class, serviceName);
+            BizstatService service = server.getConfigStorage().find(BizstatService.class, serviceName);
             logger.info("services add", name, serviceName);
             serviceList.add(service);
         }

@@ -23,13 +23,13 @@ public class MetricInfo extends AbstractIdEntity implements ConfigurableEntity<B
     String description;
     boolean enabled = true;
     MetricType metricType;
-    transient Service service;
+    transient BizstatService service;
     transient Map<StatusChangeType, Float> valueMap = new HashMap();
 
     public MetricInfo() {
     }
         
-    public MetricInfo(Service service, String name) {
+    public MetricInfo(BizstatService service, String name) {
         this.service = service;
         this.name = name;
     }
@@ -81,11 +81,11 @@ public class MetricInfo extends AbstractIdEntity implements ConfigurableEntity<B
         this.metricType = metricType;
     }
 
-    public Service getService() {
+    public BizstatService getService() {
         return service;
     }
 
-    public void setService(Service service) {
+    public void setService(BizstatService service) {
         this.service = service;
     }
     
@@ -100,7 +100,7 @@ public class MetricInfo extends AbstractIdEntity implements ConfigurableEntity<B
     @Override
     public void config(BizstatServer server, PropertiesMap properties) {
         String serviceName = properties.getString("service", name);
-        service = server.getConfigStorage().find(Service.class, serviceName);
+        service = server.getConfigStorage().find(BizstatService.class, serviceName);
         valueMap = StatusChangeType.newValueMap(properties.splitCsv("values"));
     }
 }

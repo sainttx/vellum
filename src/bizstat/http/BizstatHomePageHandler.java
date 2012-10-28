@@ -5,7 +5,7 @@ package bizstat.http;
 
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.HostServiceStatus;
-import bizstat.entity.Service;
+import bizstat.entity.BizstatService;
 import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import bizstat.server.BizstatServer;
@@ -72,7 +72,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
     private void printServices() {
         out.printf("<h3>services</h3>\n");
         out.printf("<table>\n");
-        for (Service service : context.getServiceList()) {
+        for (BizstatService service : context.getServiceList()) {
             out.printf("<tr><td><i>%s</i>\n", service.getName());
         }
         out.printf("</table>\n");

@@ -21,11 +21,11 @@ import vellum.logr.LogrFactory;
  */
 public class ServiceConfigurator {
     Logr logger = LogrFactory.getLogger(ServiceConfigurator.class);
-    Service service;
+    BizstatService service;
     BizstatServer server;
     PropertiesMap properties;
 
-    public ServiceConfigurator(BizstatServer server, PropertiesMap properties, Service service) {
+    public ServiceConfigurator(BizstatServer server, PropertiesMap properties, BizstatService service) {
         this.server = server;
         this.properties = properties;
         this.service = service;

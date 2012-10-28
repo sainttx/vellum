@@ -2,24 +2,23 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package bizstat.entity;
+package crocserver.storage.host;
 
+import bizstat.entity.*;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Args;
-import bizstat.server.BizstatServer;
 import crocserver.storage.org.Org;
+import crocserver.storage.service.Service;
 import vellum.type.UniqueList;
 import java.util.List;
-import vellum.config.PropertiesMap;
 import vellum.entity.AbstractIdEntity;
-import vellum.entity.ConfigurableEntity;
 
 /**
  *
  * @author evan
  */
-public class Host extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
+public class Host extends AbstractIdEntity {
 
     static Logr logger = LogrFactory.getLogger(Host.class);
     
@@ -31,7 +30,7 @@ public class Host extends AbstractIdEntity implements ConfigurableEntity<Bizstat
     Org org;
     
     transient Network network;    
-    transient List<BizstatService> serviceList = new UniqueList();
+    transient List<Service> serviceList = new UniqueList();
     transient List<ContactGroup> contactGroupList = new UniqueList();
 
     public Host() {
@@ -46,16 +45,6 @@ public class Host extends AbstractIdEntity implements ConfigurableEntity<Bizstat
         return name;
     }
     
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public String getName() {
-        return name;
-    }
-
     public Org getOrg() {
         return org;
     }
@@ -100,7 +89,7 @@ public class Host extends AbstractIdEntity implements ConfigurableEntity<Bizstat
         return network;
     }
 
-    public List<BizstatService> getServiceList() {
+    public List<Service> getServiceList() {
         return serviceList;
     }
 
@@ -111,22 +100,6 @@ public class Host extends AbstractIdEntity implements ConfigurableEntity<Bizstat
     public List<ContactGroup> getContactGroupList() {
         return contactGroupList;
     }
-    
-    @Override
-    public void config(BizstatServer server, PropertiesMap properties) {
-        ipNumber = properties.getString("ipNumber", null);
-        enabled = properties.getBoolean("enabled", true);
-        network = server.getConfigStorage().find(Network.class, properties.getString("network"));
-        network.getHostList().add(this);
-        for (String serviceName : properties.splitCsv("services")) {
-            BizstatService service = server.getConfigStorage().find(BizstatService.class, serviceName);
-            logger.info("services add", name, serviceName);
-            serviceList.add(service);
-        }
-       for (String contactGroupName : properties.splitCsv("contactGroups")) {
-            contactGroupList.add(server.getConfigStorage().find(ContactGroup.class, contactGroupName));
-        }
-     }
     
     @Override
     public String toString() {

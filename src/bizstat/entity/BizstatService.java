@@ -10,9 +10,11 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Args;
 import bizstat.server.BizstatServer;
+import crocserver.storage.org.Org;
+import crocserver.storage.service.Service;
+import crocserver.storage.service.Service;
 import java.util.*;
 import vellum.config.PropertiesMap;
-import vellum.entity.AbstractIdEntity;
 import vellum.entity.ConfigurableEntity;
 import vellum.type.UniqueList;
 
@@ -20,9 +22,11 @@ import vellum.type.UniqueList;
  *
  * @author evan
  */
-public class Service extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
-    Logr logger = LogrFactory.getLogger(Service.class);
+public class BizstatService extends Service implements ConfigurableEntity<BizstatServer> {
+    Logr logger = LogrFactory.getLogger(BizstatService.class);
     
+    long orgId;
+    Org org;
     String name;
     String label;
     String description;
@@ -39,10 +43,10 @@ public class Service extends AbstractIdEntity implements ConfigurableEntity<Bizs
     transient Host host;
     transient List<ContactGroup> contactGroupList = new UniqueList();
     
-    public Service() {
+    public BizstatService() {
     }
 
-    public Service(String name) {
+    public BizstatService(String name) {
         this.name = name;
     }
     
@@ -50,7 +54,33 @@ public class Service extends AbstractIdEntity implements ConfigurableEntity<Bizs
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    @Override
+    public String getName() {
+        return name;
+    }
+            
+    @Override
+    public Comparable getId() {
+        return name;
+    }
+
+    public Org getOrg() {
+        return org;
+    }
+
+    public void setOrg(Org org) {
+        this.org = org;
+    }
+
+    public long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(long orgId) {
+        this.orgId = orgId;
+    }
+        
     public Host getHost() {
         return host;
     }
@@ -59,10 +89,6 @@ public class Service extends AbstractIdEntity implements ConfigurableEntity<Bizs
         this.host = host;
     }
    
-    public String getName() {
-        return name;
-    }
-        
     public String getLabel() {
         return label;
     }
@@ -89,11 +115,6 @@ public class Service extends AbstractIdEntity implements ConfigurableEntity<Bizs
     
     public long getIntervalMillis() {
         return intervalMillis;
-    }
-    
-    @Override
-    public Comparable getId() {
-        return name;
     }
         
     public List<ContactGroup> getContactGroupList() {
@@ -132,6 +153,5 @@ public class Service extends AbstractIdEntity implements ConfigurableEntity<Bizs
     @Override
     public String toString() {
         return Args.format(name);
-    }
-    
+    }    
 }
