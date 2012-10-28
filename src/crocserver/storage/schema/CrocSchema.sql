@@ -139,6 +139,7 @@ create table service_cert (
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
+  updated_by varchar(32) not null,
   unique key uniq_service_cert (org_id, host_name, service_name)
 );
 

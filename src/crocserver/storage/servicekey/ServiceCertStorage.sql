@@ -4,8 +4,16 @@ insert into service_cert (
   org_id,
   host_name,
   service_name,
-  cert
-) values (?, ?, ?, ?)
+  cert,
+  updated_by
+) values (?, ?, ?, ?, ?)
+;
+
+-- update_cert
+update service_cert 
+set cert = ?, 
+  updated_by = ?
+where service_cert_id = ?
 ;
 
 -- exists_org_host_service

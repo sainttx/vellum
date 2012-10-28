@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.CrocStorage;
-import crocserver.storage.adminuser.User;
 import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceCert;
 import java.util.Date;
@@ -85,7 +84,7 @@ public class EnrollServiceHandler implements HttpHandler {
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));        
         ServiceCert serviceKey = new ServiceCert(org.getId(), hostName, serviceName,
                 KeyStores.buildCertPem(keyPair.getCert()));
-        storage.getServiceKeyStorage().insert(org, serviceKey);
+        storage.getServiceKeyStorage().insert(userName, org, serviceKey);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
     }    

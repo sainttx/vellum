@@ -10,6 +10,7 @@ package crocserver.storage.servicekey;
  */
 public enum ServiceCertQuery {
     insert,
+    update_cert,
     find_id,
     delete_id,
     exists_org_host_service,    

@@ -13,6 +13,7 @@ public enum StorageExceptionType {
     NOT_FOUND, 
     NOT_INSERTED,
     NOT_UPDATED,
+    UPDATE_COUNT,
     NOT_DELETED, 
     CONNECTION_ERROR;
     
