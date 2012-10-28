@@ -36,6 +36,8 @@ public class ServiceCertStorage {
         serviceCert.setHostName(resultSet.getString(ServiceCertMeta.host_name.name()));
         serviceCert.setServiceName(resultSet.getString(ServiceCertMeta.service_name.name()));
         serviceCert.setCert(resultSet.getString(ServiceCertMeta.cert.name()));
+        serviceCert.setUpdated(resultSet.getTimestamp(ServiceCertMeta.updated.name()));
+        serviceCert.setUpdatedBy(resultSet.getString(ServiceCertMeta.updated_by.name()));
         return serviceCert;
     }
     

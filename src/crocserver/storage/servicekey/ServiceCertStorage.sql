@@ -12,6 +12,7 @@ insert into service_cert (
 -- update_cert
 update service_cert 
 set cert = ?, 
+  updated = now(),
   updated_by = ?
 where service_cert_id = ?
 ;

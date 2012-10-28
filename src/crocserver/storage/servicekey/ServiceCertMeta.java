@@ -15,7 +15,9 @@ public enum ServiceCertMeta {
     service_name,
     cert,
     enabled,
-    inserted
+    inserted,
+    updated,
+    updated_by
     ;
     
 }
