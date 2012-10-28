@@ -24,6 +24,7 @@ import sun.security.pkcs.PKCS10;
 import sun.security.pkcs.PKCS10Attribute;
 import sun.security.pkcs.PKCS9Attribute;
 import sun.security.provider.X509Factory;
+import sun.security.util.DerOutputStream;
 import sun.security.x509.*;
 import vellum.exception.Exceptions;
 import vellum.logr.Logr;
@@ -167,6 +168,13 @@ public class KeyStores {
     }
 
     public static PKCS10 createCertReq(String csr) throws Exception {
+        logger.info(csr);
+        if (csr.startsWith(BEGIN_CERT_REQ)) {
+            csr = csr.substring(BEGIN_CERT_REQ.length());
+            int index = csr.indexOf(END_CERT_REQ);
+            csr = csr.substring(0, index).trim();        
+        }
+        logger.info(csr);
         byte[] rawReq = new BASE64Decoder().decodeBuffer(csr);
         PKCS10 certReq = new PKCS10(rawReq);
         return certReq;

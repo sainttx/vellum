@@ -32,6 +32,7 @@ public class EnrollServiceHandler implements HttpHandler {
     PrintStream out;
 
     String dname;
+    String userName;
     String orgName;
     String hostName;
     String serviceName;
@@ -50,13 +51,14 @@ public class EnrollServiceHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         out = new PrintStream(httpExchange.getResponseBody());
-        if (httpExchangeInfo.getPathArgs().length < 4) {
+        if (httpExchangeInfo.getPathArgs().length < 6) {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
-            orgName = httpExchangeInfo.getPathString(1);
-            hostName = httpExchangeInfo.getPathString(2);
-            serviceName = httpExchangeInfo.getPathString(3);
+            userName = httpExchangeInfo.getPathString(2);
+            orgName = httpExchangeInfo.getPathString(3);
+            hostName = httpExchangeInfo.getPathString(4);
+            serviceName = httpExchangeInfo.getPathString(5);
             try {
                 generate();
             } catch (Exception e) {

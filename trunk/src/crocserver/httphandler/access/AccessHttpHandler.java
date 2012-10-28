@@ -29,7 +29,7 @@ public class AccessHttpHandler implements HttpHandler {
         logger.info("path", path);
         if (path.startsWith("/enroll/user/")) {
             new EnrollUserHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("enroll/org/")) {
+        } else if (path.startsWith("/enroll/org/")) {
             new EnrollOrgHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/enroll/service/")) {
             new EnrollServiceHandler(storage).handle(httpExchange);
@@ -38,11 +38,11 @@ public class AccessHttpHandler implements HttpHandler {
         } else if (path.startsWith("/sign/serviceCert/")) {
             new SignServiceCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/adminUser/")) {
-            new AdminUserViewHandler(storage).handle(httpExchange);
+            new ViewAdminUserHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/service/")) {
-            new ServiceCertViewHandler(storage).handle(httpExchange);
+            new ViewServiceCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/serviceRecord/")) {
-            new ServiceRecordViewHandler(storage).handle(httpExchange);
+            new ViewServiceRecordHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/storage")) {
             new StoragePageHandler(storage).handle(httpExchange);
         } else {
