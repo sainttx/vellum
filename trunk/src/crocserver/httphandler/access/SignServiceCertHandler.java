@@ -12,11 +12,10 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.CrocStorage;
-import crocserver.storage.adminuser.User;
 import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceCert;
 import java.util.Date;
-import vellum.format.ListFormats;
+import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
 import vellum.security.GeneratedRsaKeyPair;
 
@@ -24,19 +23,22 @@ import vellum.security.GeneratedRsaKeyPair;
  *
  * @author evans
  */
-public class GetCertHandler implements HttpHandler {
+public class SignServiceCertHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
+    String dname;
     String orgName;
     String hostName;
     String serviceName;
     String cert;
+ 
+    Org org;
     
-    public GetCertHandler(CrocStorage storage) {
+    public SignServiceCertHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -54,24 +56,39 @@ public class GetCertHandler implements HttpHandler {
             orgName = httpExchangeInfo.getPathString(1);
             hostName = httpExchangeInfo.getPathString(2);
             serviceName = httpExchangeInfo.getPathString(3);
-            logger.info("enroll", orgName, hostName, serviceName);
             try {
-                Org org = storage.getOrgStorage().get(orgName);
-                ServiceCert serviceKey = storage.getServiceKeyStorage().find(org.getId(), hostName, serviceName);
-                if (serviceKey == null) {
-                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-                    out.printf("ERROR: not found\n");                    
-                } else {
-                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                    out.println(serviceKey.getCert());
-                }
+                generate();
             } catch (Exception e) {
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-                e.printStackTrace(out);
-                e.printStackTrace(System.err);
-                out.printf("ERROR %s\n", e.getMessage());
+                handle(e);
             }
         }
         httpExchange.close();
     }
+    
+    private void handle(Exception e) throws IOException {
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        e.printStackTrace(out);
+        e.printStackTrace(System.err);
+        out.printf("ERROR %s\n", e.getMessage());
+    }
+    
+    private void generate() throws Exception {
+        org = storage.getOrgStorage().get(orgName);
+        setDname();
+        logger.info("generate", dname);
+        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        keyPair.generate(dname, new Date(), 999);
+        String alias = "croc-server";
+        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));        
+        ServiceCert serviceKey = new ServiceCert(org.getId(), hostName, serviceName,
+                KeyStores.buildCertPem(keyPair.getCert()));
+        storage.getServiceKeyStorage().insert(org, serviceKey);
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
+    }    
+    
+    private void setDname() throws Exception {
+        dname = KeyStores.formatDname(serviceName, hostName, orgName, 
+                org.getRegion(), org.getCity(), org.getCountry());
+    }       
 }

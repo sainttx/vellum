@@ -3,20 +3,19 @@
  */
 package crocserver.httphandler.access;
 
-import crocserver.storage.servicerecord.ServiceRecord;
 import crocserver.httphandler.common.AbstractPageHandler;
-import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.servicekey.ServiceCert;
 
 /**
  *
  * @author evans
  */
-public class ViewServiceRecordPageHandler extends AbstractPageHandler {
+public class ServiceCertViewHandler extends AbstractPageHandler {
     CrocStorage storage;
 
-    public ViewServiceRecordPageHandler(CrocStorage storage) {
+    public ServiceCertViewHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -28,19 +27,17 @@ public class ViewServiceRecordPageHandler extends AbstractPageHandler {
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();
-       p.spanf("pageTitle", "ServiceRecord %d", id);
-       ServiceRecord serviceRecord = storage.getServiceRecordStorage().find(id);
+       p.spanf("pageTitle", "ServiceKey %s", id);
+       ServiceCert serviceKey = storage.getServiceKeyStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
        p._thead();
        p.tbody();
-       p.trhd("Id", serviceRecord.getId());
-       p.trhd("Time", Millis.formatTime(serviceRecord.getTimestamp()));
-       p.trhd("Host", serviceRecord.getHostName());
-       p.trhd("Service", serviceRecord.getServiceName());
-       p.trhd("Status", serviceRecord.getServiceStatus());
+       p.trhd("Org", serviceKey.getOrgId());
+       p.trhd("Host", serviceKey.getHostName());
+       p.trhd("Service", serviceKey.getServiceName());
        p._tbody();
        p._tableDiv();
-       p.pre(serviceRecord.getOutText());
+       p.pre(serviceKey.getCert());
     }    
 }

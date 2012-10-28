@@ -23,11 +23,11 @@ import vellum.logr.LogrLevel;
  *
  * @author evans
  */
-public class AccessHomePageHandler extends AbstractPageHandler {
+public class AccessHomeHandler extends AbstractPageHandler {
 
     CrocStorage storage;
 
-    public AccessHomePageHandler(CrocStorage storage) {
+    public AccessHomeHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }

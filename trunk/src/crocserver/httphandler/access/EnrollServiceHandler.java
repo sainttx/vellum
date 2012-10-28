@@ -24,7 +24,7 @@ import vellum.security.GeneratedRsaKeyPair;
  *
  * @author evans
  */
-public class EnrollHandler implements HttpHandler {
+public class EnrollServiceHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
@@ -39,7 +39,7 @@ public class EnrollHandler implements HttpHandler {
  
     Org org;
     
-    public EnrollHandler(CrocStorage storage) {
+    public EnrollServiceHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }

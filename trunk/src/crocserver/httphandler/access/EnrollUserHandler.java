@@ -24,7 +24,7 @@ import vellum.format.ListFormats;
  *
  * @author evans
  */
-public class RegisterHandler implements HttpHandler {
+public class EnrollUserHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
@@ -33,7 +33,7 @@ public class RegisterHandler implements HttpHandler {
 
     String userName;
     
-    public RegisterHandler(CrocStorage storage) {
+    public EnrollUserHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
