@@ -49,7 +49,7 @@ public class PostHandler implements HttpHandler {
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         serviceText = Streams.readString(httpExchange.getRequestBody());
         out = new PrintStream(httpExchange.getResponseBody());
-        if (httpExchangeInfo.getPathLength() == 5) {
+        if (httpExchangeInfo.getPathLength() >= 4) {
             orgName = httpExchangeInfo.getPathString(1);
             hostName = httpExchangeInfo.getPathString(2);
             serviceName = httpExchangeInfo.getPathString(3);

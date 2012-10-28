@@ -14,7 +14,7 @@ public enum OrgMeta {
     org_id,
     org_name,
     display_name,
-    org_url,
+    url,
     enabled,
     inserted,
     updated,

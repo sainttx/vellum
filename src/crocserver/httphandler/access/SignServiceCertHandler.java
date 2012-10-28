@@ -56,6 +56,7 @@ public class SignServiceCertHandler implements HttpHandler {
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         certReqPem = Streams.readString(httpExchange.getRequestBody());
         out = new PrintStream(httpExchange.getResponseBody());
+        logger.info(getClass().getSimpleName(), httpExchangeInfo.getPathArgs().length);
         if (httpExchangeInfo.getPathArgs().length == 6) {
             userName = httpExchangeInfo.getPathString(2);
             orgName = httpExchangeInfo.getPathString(3);
@@ -98,8 +99,9 @@ public class SignServiceCertHandler implements HttpHandler {
             logger.info("updateCert", serviceCert.getId());
             storage.getServiceCertStorage().updateCert(userName, serviceCert);
         }
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        out.println(signedCertPem);
     }
 
     private void setDname() throws Exception {

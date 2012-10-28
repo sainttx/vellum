@@ -17,7 +17,7 @@ drop table config;
 
 create table schema_revision (
   revision_number int,
-  inserted timestamp default now()
+  updated timestamp default now()
 );
 
 create table config (
@@ -43,7 +43,7 @@ create table org (
   org_id int auto_increment primary key, 
   org_name varchar(32) not null,
   display_name varchar(48),
-  org_url varchar(32),
+  url varchar(32),
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),

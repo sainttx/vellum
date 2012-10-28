@@ -38,11 +38,13 @@ public class AccessHttpHandler implements HttpHandler {
         } else if (path.startsWith("/sign/serviceCert/")) {
             new SignServiceCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/user/")) {
-            new ViewAdminUserHandler(storage).handle(httpExchange);
+            new ViewUserHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/serviceCert/")) {
             new ViewServiceCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/serviceRecord/")) {
             new ViewServiceRecordHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/org/")) {
+            new ViewOrgHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/storage")) {
             new StoragePageHandler(storage).handle(httpExchange);
         } else {

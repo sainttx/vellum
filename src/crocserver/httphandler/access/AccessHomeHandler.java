@@ -15,6 +15,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceCert;
 import vellum.format.CalendarFormats;
 import vellum.logr.LogrLevel;
@@ -37,12 +38,45 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter.div("menuBarDiv");
         htmlPrinter.a_("/", "Home");
         htmlPrinter._div();
+        printOrgs("orgs", storage.getOrgStorage().getList());
         printUsers("admin users", storage.getUserStorage().getList());
         printServiceCerts("service certs", storage.getServiceCertStorage().getList());
         printSeviceRecords("service records", storage.getServiceRecordStorage().getList());
         if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
             printLog("log", LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
         }
+    }
+
+    private void printOrgs(String label, Collection<Org> orgs) {
+        htmlPrinter.h(3, label);
+        htmlPrinter.tableDiv("resultSet");
+        htmlPrinter.trh("id", "org name", "display name", "url", "updated");
+        for (Org org : orgs) {
+            htmlPrinter.trd(
+                    String.format("<a href='/view/org/%d'>%d</a>", org.getId(), org.getId()),
+                    org.getName(),
+                    org.getDisplayName(),
+                    org.getUrl(),
+                    CalendarFormats.timestampFormat.format(org.getUpdated()));
+        }
+        htmlPrinter._table();
+        htmlPrinter._div();
+    }
+
+    private void printUsers(String label, Collection<User> users) {
+        htmlPrinter.h(3, label);
+        htmlPrinter.tableDiv("resultSet");
+        htmlPrinter.trh("id", "username", "display name", "email", "updated");
+        for (User user : users) {
+            htmlPrinter.trd(
+                    String.format("<a href='/view/user/%s'>%s</a>", user.getId(), user.getId()),
+                    user.getUserName(),
+                    user.getDisplayName(),
+                    user.getEmail(),
+                    CalendarFormats.timestampFormat.format(user.getUpdated()));
+        }
+        htmlPrinter._table();
+        htmlPrinter._div();
     }
 
     private void printServiceCerts(String label, Collection<ServiceCert> serviceCerts) {
@@ -63,33 +97,17 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter._div();
     }
     
-    private void printUsers(String label, Collection<User> users) {
-        htmlPrinter.h(3, label);
-        htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "username", "display name", "email", "updated");
-        for (User user : users) {
-            htmlPrinter.trd(
-                    String.format("<a href='/view/user/%s'>%s</a>", user.getId(), user.getId()),
-                    user.getUserName(),
-                    user.getDisplayName(),
-                    user.getEmail(),
-                    CalendarFormats.timestampFormat.format(user.getUpdated()));
-        }
-        htmlPrinter._table();
-        htmlPrinter._div();
-    }
-
     private void printSeviceRecords(String label, Collection<ServiceRecord> serviceRecords) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
         for (ServiceRecord serviceRecord : serviceRecords) {
             htmlPrinter.trd(
                     String.format("<a href='/view/serviceRecord/%d'>%d</a>", serviceRecord.getId(), serviceRecord.getId()),
-                    Millis.formatTime(serviceRecord.getTimestamp()),
+                    Millis.formatTimestamp(serviceRecord.getTimestamp()),
                     serviceRecord.getHostName(),
                     serviceRecord.getServiceName(),
-                    serviceRecord.getServiceStatus(),
-                    BizstatMessageBuilder.buildOutText(serviceRecord));
+                    serviceRecord.getServiceStatus()
+                    );
         }
         htmlPrinter._tableDiv();
     }

@@ -4,19 +4,18 @@
 package crocserver.httphandler.access;
 
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.adminuser.User;
-import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.org.Org;
 
 /**
  *
  * @author evans
  */
-public class ViewAdminUserHandler extends AbstractPageHandler {
+public class ViewOrgHandler extends AbstractPageHandler {
     CrocStorage storage;
 
-    public ViewAdminUserHandler(CrocStorage storage) {
+    public ViewOrgHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -24,21 +23,22 @@ public class ViewAdminUserHandler extends AbstractPageHandler {
     @Override
     protected void handle() throws Exception {
        HtmlPrinter p = new HtmlPrinter(out);
-       String id = pathArgs[2];
+       long id = Long.parseLong(pathArgs[2]);
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();
-       p.spanf("pageTitle", "AdminUser %s", id);
-       User adminUser = storage.getUserStorage().find(id);
+       p.spanf("pageTitle", "Org %s", id);
+       Org org = storage.getOrgStorage().get(id);
        p.tableDiv("resultSet");
        p.thead();
        p._thead();
        p.tbody();
-       p.trhd("Username", adminUser.getId());
-       p.trhd("Display name", adminUser.getDisplayName());
-       p.trhd("Address", adminUser.getEmail());
+       p.trhd("Org name", org.getId());
+       p.trhd("Display name", org.getDisplayName());
+       p.trhd("Url", org.getUrl());
+       p.trhd("Updated", org.getUpdated());
+       p.trhd("Updated by", org.getUpdatedBy());
        p._tbody();
        p._tableDiv();
-       p.pre(adminUser.getPublicKey());
     }    
 }
