@@ -3,8 +3,6 @@
  */
 package crocserver.httphandler.secure;
 
-import bizstat.entity.Host;
-import bizstat.entity.BizstatService;
 import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import com.sun.net.httpserver.HttpExchange;
@@ -19,6 +17,7 @@ import vellum.logr.LogrFactory;
 import vellum.storage.StorageException;
 import vellum.util.Streams;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.org.Org;
 
 /**
  *
@@ -46,13 +45,16 @@ public class PostHandler implements HttpHandler {
         String[] args = httpExchangeInfo.getPathArgs();
         out = new PrintStream(httpExchange.getResponseBody());
         try {
-            String hostName = httpExchangeInfo.getPathString(1, "none");
-            String serviceName = httpExchangeInfo.getPathString(2, "none");
-            String notifyName = httpExchangeInfo.getPathString(3, null);
+            String orgName = httpExchangeInfo.getPathString(1);
+            String hostName = httpExchangeInfo.getPathString(2);
+            String serviceName = httpExchangeInfo.getPathString(3);
+            String notifyName = httpExchangeInfo.getPathString(3);
             if (notifyName != null) {
                 check(hostName, serviceName, notifyName, text);
             }
-            store(hostName, serviceName, text);
+            ServiceRecord serviceRecord = new ServiceRecord(hostName, serviceName, ServiceStatus.UNKNOWN, text);
+            Org org = storage.getOrgStorage().get(orgName);
+            storage.getServiceRecordStorage().insert(org, serviceRecord);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             out.println("OK " + getClass().getSimpleName());
         } catch (Exception e) {
@@ -71,7 +73,5 @@ public class PostHandler implements HttpHandler {
 
     private void store(String hostName, String serviceName, String text) throws StorageException, SQLException {
         logger.info("store", hostName, serviceName, text);
-        ServiceRecord serviceRecord = new ServiceRecord(hostName, serviceName, ServiceStatus.UNKNOWN, System.currentTimeMillis(), text);
-        storage.getServiceRecordStorage().insert(serviceRecord);
     }
 }

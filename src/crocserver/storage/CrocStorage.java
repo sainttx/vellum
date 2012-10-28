@@ -46,7 +46,7 @@ public class CrocStorage {
         new SchemaPrinter().handle(connectionPool, System.out, "PUBLIC");
     }
 
-    public AdminUserStorage getAdminUserStorage() {
+    public AdminUserStorage getUserStorage() {
         return new AdminUserStorage(this);
     }
 
@@ -68,14 +68,6 @@ public class CrocStorage {
             throw new StorageRuntimeException(StorageExceptionType.NOT_FOUND, name);
         }
         return value;
-    }
-
-    public void insert(ServiceRecord serviceRecord) {
-        try {
-            getServiceRecordStorage().insert(serviceRecord);
-        } catch (Exception e) {
-            logger.warn(e, "setserviceRecord", serviceRecord);
-        }
     }
 
     public ConnectionPool getConnectionPool() {

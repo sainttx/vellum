@@ -10,6 +10,8 @@ import bizstat.entity.*;
 import bizstat.enumtype.ServiceStatus;
 import bizstat.http.BizstatTypeCache;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.org.Org;
+import java.sql.SQLException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import java.util.*;
@@ -49,8 +51,10 @@ public class BizstatServer implements Runnable {
     Contact adminContact;
     Set<Contact> adminContacts = new TreeSet();
     Server h2Server;
-
+    Org org = new Org("default", "auto");
+    
     public BizstatServer() {
+        org.setId(1);
     }
 
     public void init(ConfigMap configMap, PropertiesMap configProperties) throws Exception {
@@ -95,14 +99,14 @@ public class BizstatServer implements Runnable {
         }        
     }
     
-    void test() {
+    void test() throws SQLException {
         HostServiceKey key = new HostServiceKey(hostList.get(0), serviceList.get(0));
         HostServiceStatus status = getStatus(key);
         ServiceRecord serviceRecord = new ServiceRecord(key.getHost(), key.getService(), System.currentTimeMillis());
         serviceRecord.setServiceStatus(ServiceStatus.UNKNOWN);
         serviceRecord.setTimestampMillis(System.currentTimeMillis());
         serviceRecord.setExitCode(2);
-        dataStorage.insert(serviceRecord);
+        insert(serviceRecord);
     }
     
     public void sendAdminMessage(String message) {
@@ -209,6 +213,10 @@ public class BizstatServer implements Runnable {
 
     public List<BizstatService> getServiceList() {
         return serviceList;
+    }
+
+    public void insert(ServiceRecord serviceRecord) throws SQLException {
+        dataStorage.getServiceRecordStorage().insert(org, serviceRecord);
     }
 
         

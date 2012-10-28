@@ -99,7 +99,5 @@ public class ServiceKey extends AbstractIdEntity {
     @Override
     public String toString() {
         return getId().toString();
-    }
-
-    
+    }    
 }

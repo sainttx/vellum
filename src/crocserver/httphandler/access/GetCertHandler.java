@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.CrocStorage;
-import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.User;
 import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceKey;
 import java.util.Date;

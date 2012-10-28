@@ -41,7 +41,7 @@ public class BizstatNotifier implements Runnable {
         logger.info("notifyStatus", notifyStatusSet.last());
         for (HostServiceStatus status : notifyStatusSet) {
             status.setNotifiedMillis(server.notifiedMillis);
-            server.getDataStorage().insert(status.getServiceRecord());
+            server.insert(status.getServiceRecord());
             notifyContact(status);
         }
         for (BizstatContactNotifier contactNotifier : contactNotifierMap.values()) {

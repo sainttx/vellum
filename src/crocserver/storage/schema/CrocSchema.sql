@@ -1,5 +1,5 @@
 
-drop table admin_user; 
+--drop table admin_user; 
 
 drop table schema_revision;
 drop table history; 
@@ -22,8 +22,8 @@ create table schema_revision (
 
 create table config (
   config_id int auto_increment,
-  name_ text,
-  value_ text
+  name_ varchar(128),
+  value_ varchar(128)
 );
 
 create table history (
@@ -48,18 +48,18 @@ create table org (
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key uniq_name (org_name)
+  unique key uniq_org_name (org_name)
 );
 
 create table contact (
   org_id int not null,
   contact_id int auto_increment primary key, 
-  contact_name text,
+  contact_name varchar(128),
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key uniq_user_name (contact_name)
+  unique key uniq_contact_name (contact_name)
 );
 
 create table contact_group (
@@ -70,7 +70,7 @@ create table contact_group (
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key contact_group (org_id, contact_group_name)
+  unique key uniq_contact_group (org_id, contact_group_name)
 );
 
 create table contact_group_member (
@@ -82,7 +82,7 @@ create table contact_group_member (
   inserted timestamp default now(),
   updated timestamp default now(),
   updated_by varchar(32) not null,
-  unique key contact_group (contact_group_id, contact_id)
+  unique key unique_contact_group_member (contact_group_id, contact_id)
 );
 
 create table user_ (
@@ -143,7 +143,7 @@ create table service_key (
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key uniq_user_host_service (user_name, host_name, service_name)
+  unique key uniq_service_key (user_name, host_name, service_name)
 );
 
 create table service_record (
@@ -158,7 +158,7 @@ create table service_record (
   exit_code integer,
   out_ varchar,
   err_ varchar,
-  unique key uniq_host_service_time (host_name, service_name, time_)
+  unique key uniq_service_record (org_id, host_name, service_name, time_)
 );
 
 create table metric_record (
@@ -168,6 +168,7 @@ create table metric_record (
   host_name varchar(32),
   service_name varchar(32),
   value_ float,
-  time_ timestamp  
+  time_ timestamp,
+  unique key uniq_metric_record (org_id, host_name, service_name, metric_name, time_)
 );
 
