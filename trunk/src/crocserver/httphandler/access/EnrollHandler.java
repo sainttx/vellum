@@ -14,7 +14,7 @@ import vellum.logr.LogrFactory;
 import crocserver.storage.CrocStorage;
 import crocserver.storage.adminuser.User;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicekey.ServiceKey;
+import crocserver.storage.servicekey.ServiceCert;
 import java.util.Date;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
@@ -32,12 +32,11 @@ public class EnrollHandler implements HttpHandler {
     PrintStream out;
 
     String dname;
-    String userName;
+    String orgName;
     String hostName;
     String serviceName;
-    String publicKey;
+    String cert;
  
-    User user;
     Org org;
     
     public EnrollHandler(CrocStorage storage) {
@@ -55,10 +54,9 @@ public class EnrollHandler implements HttpHandler {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
-            userName = httpExchangeInfo.getPathString(1);
+            orgName = httpExchangeInfo.getPathString(1);
             hostName = httpExchangeInfo.getPathString(2);
             serviceName = httpExchangeInfo.getPathString(3);
-            logger.info("enroll", userName, hostName, serviceName);
             try {
                 generate();
             } catch (Exception e) {
@@ -76,15 +74,14 @@ public class EnrollHandler implements HttpHandler {
     }
     
     private void generate() throws Exception {
-        user = storage.getUserStorage().get(userName);
-        org = storage.getOrgStorage().get(user.getOrgId());
+        org = storage.getOrgStorage().get(orgName);
         setDname();
         logger.info("generate", dname);
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
         keyPair.generate(dname, new Date(), 999);
         String alias = "croc-server";
-        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
-        ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName,
+        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));        
+        ServiceCert serviceKey = new ServiceCert(org.getId(), hostName, serviceName,
                 KeyStores.buildCertPem(keyPair.getCert()));
         storage.getServiceKeyStorage().insert(org, serviceKey);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
@@ -92,8 +89,7 @@ public class EnrollHandler implements HttpHandler {
     }    
     
     private void setDname() throws Exception {
-        dname = KeyStores.formatDname(serviceName, hostName, userName, "local", "local", "local");
-        dname = KeyStores.formatDname(hostName, serviceName,
-                org.getName(), org.getRegion(), org.getCity(), org.getCountry());
+        dname = KeyStores.formatDname(serviceName, hostName, orgName, 
+                org.getRegion(), org.getCity(), org.getCountry());
     }       
 }

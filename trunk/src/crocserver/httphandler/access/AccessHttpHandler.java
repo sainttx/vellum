@@ -27,10 +27,14 @@ public class AccessHttpHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
-        if (path.startsWith("/register/")) {
+        if (path.startsWith("/registerUser/")) {
             new RegisterHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/enroll/")) {
+        } else if (path.startsWith("/enrollOrg/")) {
+            new CreateOrgHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/enrollService/")) {
             new EnrollHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/getServiceCert/")) {
+            new GetCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/storage")) {
             new StoragePageHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/adminUser/")) {
@@ -41,8 +45,6 @@ public class AccessHttpHandler implements HttpHandler {
             new ViewServiceRecordPageHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/genKey/")) {
             new GenKeyHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/getCert/")) {
-            new GetCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/certReq/")) {
             new CertReqHandler(storage).handle(httpExchange);
         } else {

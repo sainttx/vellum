@@ -16,6 +16,6 @@ select * from org order by org_name
 ;
 
 -- insert
-insert into org (org_name, display_name)
-values (?, ?);
+insert into org (org_name, display_name, updated_by)
+values (?, ?, ?);
 

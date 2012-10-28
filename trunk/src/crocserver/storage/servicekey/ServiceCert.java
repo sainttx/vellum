@@ -11,24 +11,26 @@ import vellum.entity.AbstractIdEntity;
  *
  * @author evan
  */
-public class ServiceKey extends AbstractIdEntity {
+public class ServiceCert extends AbstractIdEntity {
+    long orgId;
     Long id;
     String hostName;
     String serviceName;
-    String adminUserName;
     String cert;
     boolean enabled = true;
     Date inserted = new Date();
     Date updated = new Date();
     
-    public ServiceKey() {
+    transient String orgName;
+    
+    public ServiceCert() {
     }
 
-    public ServiceKey(String adminUserName, String hostName, String serviceName, String publicKey) {
-        this.adminUserName = adminUserName;
+    public ServiceCert(long orgId, String hostName, String serviceName, String cert) {
+        this.orgId = orgId;
         this.hostName = hostName;
         this.serviceName = serviceName;
-        this.cert = publicKey;
+        this.cert = cert;
     }
     
     @Override
@@ -39,23 +41,15 @@ public class ServiceKey extends AbstractIdEntity {
     public void setId(Long id) {
         this.id = id;
     }
-    
-    public String getAdminUserName() {
-        return adminUserName;
+
+    public long getOrgId() {
+        return orgId;
     }
 
-    public void setAdminUserName(String adminUserName) {
-        this.adminUserName = adminUserName;
+    public void setOrgId(long orgId) {
+        this.orgId = orgId;
     }
-
-    public Date getInserted() {
-        return inserted;
-    }
-
-    public void setInserted(Date inserted) {
-        this.inserted = inserted;
-    }
-
+        
     public boolean isEnabled() {
         return enabled;
     }

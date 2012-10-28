@@ -15,20 +15,21 @@ public class Org extends AbstractIdEntity {
     Long id;
     String name;
     String displayName;
+    String url;
     String region;
     String city;
     String country;
     boolean enabled = true;
-    String createdBy;
+    String updatedBy;
     Date inserted;
     Date updated;
     
     public Org() {
     }
 
-    public Org(String name, String createdBy) {
+    public Org(String name, String updatedBy) {
         this.name = name;
-        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
     }
       
     @Override
@@ -72,23 +73,14 @@ public class Org extends AbstractIdEntity {
         this.region = region;
     }
 
- 
-    public Date getCreated() {
-        return inserted;
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 
-    public void setCreated(Date created) {
-        this.inserted = created;
+    public String getUpdatedBy() {
+        return updatedBy;
     }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
+    
     public String getDisplayName() {
         return displayName;
     }
@@ -97,6 +89,14 @@ public class Org extends AbstractIdEntity {
         this.displayName = displayName;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+    
     public boolean isEnabled() {
         return enabled;
     }

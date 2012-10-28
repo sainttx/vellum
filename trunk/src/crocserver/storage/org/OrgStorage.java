@@ -35,17 +35,20 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(OrgQuery.insert.name()));
-            statement.setString(1, org.getName());
-            statement.setString(2, org.getDisplayName());
+            int index = 0;
+            statement.setString(++index, org.getName());
+            statement.setString(++index, org.getDisplayName());
+            statement.setString(++index, org.getUpdatedBy());
             int updateCount = statement.executeUpdate();
             ok = true;
             if (updateCount != 1) {
                 throw new SQLException();
             }
-            if (!statement.getGeneratedKeys().next()) {
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (!resultSet.next()) {
                 throw new SQLException();                
             }
-            long id = statement.getGeneratedKeys().getLong(1);
+            long id = resultSet.getLong(1);
             org.setId(id);
             return id;
         } finally {
@@ -54,11 +57,12 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     }
 
     private Org get(ResultSet resultSet) throws SQLException {
-        Org organisation = new Org();
-        organisation.setName(resultSet.getString(OrgMeta.org_name.name()));
-        organisation.setDisplayName(resultSet.getString(OrgMeta.org_display_name.name()));
-        organisation.setInserted(resultSet.getTimestamp(OrgMeta.inserted.name()));
-        return organisation;
+        Org org = new Org();
+        org.setId(resultSet.getLong(OrgMeta.org_id.name()));
+        org.setName(resultSet.getString(OrgMeta.org_name.name()));
+        org.setDisplayName(resultSet.getString(OrgMeta.display_name.name()));
+        org.setInserted(resultSet.getTimestamp(OrgMeta.inserted.name()));
+        return org;
     }
 
     public boolean exists(String email) throws SQLException {

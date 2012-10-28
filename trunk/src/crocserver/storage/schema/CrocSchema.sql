@@ -1,5 +1,5 @@
 
---drop table admin_user; 
+--drop table service_key; 
 
 drop table schema_revision;
 drop table history; 
@@ -9,7 +9,7 @@ drop table contact_group_member;
 drop table contact;
 drop table user_; 
 drop table service_record;
-drop table service_key;
+drop table service_cert;
 drop table metric_record;
 drop table host_;
 drop table service;
@@ -51,6 +51,29 @@ create table org (
   unique key uniq_org_name (org_name)
 );
 
+create table user_ (
+  user_name varchar(32) primary key, 
+  display_name varchar(64), 
+  email varchar(64),
+  role_ varchar(32),
+  cert varchar(8192),
+  password_hash varchar(64),
+  password_salt varchar(32),
+  known_phrase varchar(64),
+  challenge varchar(64),
+  answer varchar(64),
+  otp varchar(32),
+  otp_expiry timestamp,
+  last_login timestamp,
+  country varchar(2),
+  language_ varchar(2),
+  locale varchar(32),
+  enabled boolean default true,
+  inserted timestamp not null default now(),
+  updated timestamp not null default now(),
+  unique key uniq_user_name (user_name)
+);
+
 create table contact (
   org_id int not null,
   contact_id int auto_increment primary key, 
@@ -85,31 +108,6 @@ create table contact_group_member (
   unique key unique_contact_group_member (contact_group_id, contact_id)
 );
 
-create table user_ (
-  org_id int not null,
-  user_name varchar(32) primary key, 
-  display_name varchar(64), 
-  email varchar(64),
-  role_ varchar(32),
-  cert varchar(8192),
-  password_hash varchar(64),
-  password_salt varchar(32),
-  known_phrase varchar(64),
-  challenge varchar(64),
-  answer varchar(64),
-  otp varchar(32),
-  otp_expiry timestamp,
-  last_login timestamp,
-  country varchar(2),
-  language_ varchar(2),
-  locale varchar(32),
-  enabled boolean default true,
-  inserted timestamp not null default now(),
-  updated timestamp not null default now(),
-  updated_by varchar(32) not null,
-  unique key uniq_user_name (user_name)
-);
-
 create table host_ (
   org_id int not null,
   host_id int auto_increment primary key, 
@@ -133,17 +131,15 @@ create table service (
   unique key uniq_service (org_id, service_name)
 );
 
-create table service_key (
+create table service_cert (
   org_id int not null,
-  service_key_id int auto_increment primary key, 
-  user_name varchar(32) not null,
+  service_cert_id int auto_increment primary key, 
   host_name varchar(32),
   service_name varchar(32),
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
-  unique key uniq_service_key (user_name, host_name, service_name)
+  unique key uniq_service_cert (org_id, host_name, service_name)
 );
 
 create table service_record (

@@ -16,6 +16,6 @@ select * from user_ order by user_name
 ;
 
 -- insert
-insert into user_ (org_id, user_name, display_name, email, role_)
-values (?, ?, ?, ?, ?);
+insert into user_ (user_name, display_name, email, role_)
+values (?, ?, ?, ?);
 

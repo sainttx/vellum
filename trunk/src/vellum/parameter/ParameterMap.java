@@ -16,6 +16,13 @@ import java.util.List;
  */
 public class ParameterMap extends HashMap<String, String> {
     List<Entry<String, String>> entryList = new ArrayList();
-    
+
+    public String getString(String key, String defaultValue) {
+        String value = super.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        return value;
+    }
 }
 

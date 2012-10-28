@@ -5,7 +5,6 @@
 package crocserver.storage.adminuser;
 
 import crocserver.storage.CrocStorage;
-import crocserver.storage.org.Org;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,14 +27,13 @@ public class AdminUserStorage {
     public AdminUserStorage(CrocStorage storage) {
         this.storage = storage;
     }
-    public void insert(Org org, User adminUser) throws SQLException, StorageException {
+    public void insert(User adminUser) throws SQLException, StorageException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(AdminUserQuery.insert.name()));
             int index = 0;
-            statement.setLong(++index, org.getId());
             statement.setString(++index, adminUser.getUserName());
             statement.setString(++index, adminUser.getDisplayName());
             statement.setString(++index, adminUser.getEmail());
@@ -59,10 +57,8 @@ public class AdminUserStorage {
         user.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
         user.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
         user.setEmail(resultSet.getString(AdminUserMeta.email.name()));
-        user.setOrgId(resultSet.getLong(AdminUserMeta.org_id.name()));
         user.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
         user.setLastLogin(resultSet.getTimestamp(AdminUserMeta.last_login.name()));
-        user.setInserted(resultSet.getTimestamp(AdminUserMeta.inserted.name()));
         return user;
     }
 
