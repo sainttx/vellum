@@ -5,6 +5,7 @@
 package crocserver.storage.servicekey;
 
 import crocserver.storage.CrocStorage;
+import crocserver.storage.org.Org;
 import java.sql.*;
 import vellum.storage.StorageExceptionType;
 import java.util.ArrayList;
@@ -28,32 +29,13 @@ public class ServiceKeyStorage {
         this.storage = storage;
     }
 
-    public void insert(ServiceKey serviceRecord) throws StorageException, SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceKeyQuery.insert.name()));
-            statement.setString(1, serviceRecord.getAdminUserName());
-            statement.setString(2, serviceRecord.getHostName());
-            statement.setString(3, serviceRecord.getServiceName());
-            statement.setString(4, serviceRecord.getCert());
-            int insertCount = statement.executeUpdate();
-            if (insertCount != 1) {
-                throw new StorageException(StorageExceptionType.NOT_INSERTED);
-            }
-            ok = true;
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-
     private ServiceKey build(ResultSet resultSet) throws SQLException {
         ServiceKey seviceKey = new ServiceKey();
-        seviceKey.setId(resultSet.getLong(ServiceKeyDatum.service_key_id.name()));
-        seviceKey.setAdminUserName(resultSet.getString(ServiceKeyDatum.user_name.name()));
-        seviceKey.setHostName(resultSet.getString(ServiceKeyDatum.host_name.name()));
-        seviceKey.setServiceName(resultSet.getString(ServiceKeyDatum.service_name.name()));
-        seviceKey.setCert(resultSet.getString(ServiceKeyDatum.cert.name()));
+        seviceKey.setId(resultSet.getLong(ServiceKeyMeta.service_key_id.name()));
+        seviceKey.setAdminUserName(resultSet.getString(ServiceKeyMeta.user_name.name()));
+        seviceKey.setHostName(resultSet.getString(ServiceKeyMeta.host_name.name()));
+        seviceKey.setServiceName(resultSet.getString(ServiceKeyMeta.service_name.name()));
+        seviceKey.setCert(resultSet.getString(ServiceKeyMeta.cert.name()));
         return seviceKey;
     }
     
@@ -124,6 +106,27 @@ public class ServiceKeyStorage {
             }
             ok = true;
             return list;
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+
+    public void insert(Org org, ServiceKey serviceRecord) throws StorageException, SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceKeyQuery.insert.name()));
+            int index = 0;
+            statement.setLong(++index, org.getId());
+            statement.setString(++index, serviceRecord.getAdminUserName());
+            statement.setString(++index, serviceRecord.getHostName());
+            statement.setString(++index, serviceRecord.getServiceName());
+            statement.setString(++index, serviceRecord.getCert());
+            int insertCount = statement.executeUpdate();
+            if (insertCount != 1) {
+                throw new StorageException(StorageExceptionType.NOT_INSERTED);
+            }
+            ok = true;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }

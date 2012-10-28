@@ -25,8 +25,9 @@ delete from service_record where service_record_id = ?
 
 -- insert
 insert into service_record (
-  host_,
-  service,
+  org_id,
+  host_name,
+  service_name,
   status,
   time_,
   dispatched_time,
@@ -35,5 +36,5 @@ insert into service_record (
   out_,
   err_
 )
-values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ;

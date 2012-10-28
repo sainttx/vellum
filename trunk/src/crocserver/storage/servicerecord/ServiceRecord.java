@@ -31,7 +31,7 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
     long dispatchedMillis;
     long receivedMillis;
     long notifiedMillis;
-    long timestampMillis;
+    long timestampMillis = System.currentTimeMillis();
     transient ServiceStatus serviceStatus;
     transient Throwable exception;
     transient Host host;
@@ -57,10 +57,9 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
         this.dispatchedMillis = dispatchedMillis;
     }
     
-    public ServiceRecord(String hostName, String serviceName, ServiceStatus serviceStatus, long timestampMillis, String outText) {
+    public ServiceRecord(String hostName, String serviceName, ServiceStatus serviceStatus, String outText) {
         this(hostName, serviceName);
         this.serviceStatus = serviceStatus;
-        this.timestampMillis = timestampMillis;
         this.outText = outText;
     }
 

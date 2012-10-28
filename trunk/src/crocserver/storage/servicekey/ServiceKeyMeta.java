@@ -8,7 +8,7 @@ package crocserver.storage.servicekey;
  *
  * @author evan
  */
-public enum ServiceKeyDatum {
+public enum ServiceKeyMeta {
     service_key_id,
     user_name,
     host_name,

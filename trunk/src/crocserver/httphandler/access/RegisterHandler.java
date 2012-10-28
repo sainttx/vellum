@@ -7,7 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminRole;
-import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.User;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
@@ -67,19 +67,19 @@ public class RegisterHandler implements HttpHandler {
     private void insert() throws StorageException, SQLException {
         Org org = new Org(orgName, userName);
         storage.getOrgStorage().insert(org);
-        AdminUser adminUser = new AdminUser(org, userName);
+        User user = new User(org, userName);
         String displayName = httpExchangeInfo.getParameterMap().get("displayName");
         if (displayName != null) {
             displayName.replace('_', ' ');
-            adminUser.setDisplayName(displayName);
+            user.setDisplayName(displayName);
         }
         String email = httpExchangeInfo.getParameterMap().get("address");
         if (email != null) {
-            adminUser.setEmail(email);
+            user.setEmail(email);
         }
-        adminUser.setInserted(new Date());
-        adminUser.setRole(AdminRole.DEFAULT);
-        storage.getAdminUserStorage().insert(adminUser);
+        user.setInserted(new Date());
+        user.setRole(AdminRole.DEFAULT);
+        storage.getUserStorage().insert(org, user);
         out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
                 getClass().getName(), userName, displayName, email, httpExchangeInfo.getParameterMap()
                 ));

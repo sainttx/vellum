@@ -4,7 +4,7 @@
 package crocserver.httphandler.access;
 
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.User;
 import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.CrocStorage;
@@ -29,7 +29,7 @@ public class ViewAdminUserPageHandler extends AbstractPageHandler {
        p.a_("/", "Home");
        p._div();
        p.spanf("pageTitle", "AdminUser %s", id);
-       AdminUser adminUser = storage.getAdminUserStorage().find(id);
+       User adminUser = storage.getUserStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
        p._thead();

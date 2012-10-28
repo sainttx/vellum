@@ -8,10 +8,10 @@ package crocserver.storage.servicerecord;
  *
  * @author evan
  */
-public enum ServiceRecordDatum {
+public enum ServiceRecordMeta {
     service_record_id,
-    host_,
-    service,
+    host_name,
+    service_name,
     time_,
     notified_time,
     dispatched_time,

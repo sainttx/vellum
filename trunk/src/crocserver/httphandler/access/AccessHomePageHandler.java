@@ -6,7 +6,7 @@ package crocserver.httphandler.access;
 import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.User;
 import java.util.Collection;
 import java.util.Iterator;
 import vellum.datatype.Millis;
@@ -37,7 +37,7 @@ public class AccessHomePageHandler extends AbstractPageHandler {
         htmlPrinter.div("menuBarDiv");
         htmlPrinter.a_("/", "Home");
         htmlPrinter._div();
-        printAdminUsers("admin users", storage.getAdminUserStorage().getList());
+        printAdminUsers("admin users", storage.getUserStorage().getList());
         printServiceKeys("service keys", storage.getServiceKeyStorage().getList());
         printSeviceRecords("service records", storage.getServiceRecordStorage().getList());
         if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
@@ -61,11 +61,11 @@ public class AccessHomePageHandler extends AbstractPageHandler {
         htmlPrinter._div();
     }
     
-    private void printAdminUsers(String label, Collection<AdminUser> adminUsers) {
+    private void printAdminUsers(String label, Collection<User> adminUsers) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
         htmlPrinter.trh("id", "username", "display name", "email", "created");
-        for (AdminUser adminUser : adminUsers) {
+        for (User adminUser : adminUsers) {
             htmlPrinter.trd(
                     String.format("<a href='/view/adminUser/%s'>%s</a>", adminUser.getId(), adminUser.getId()),
                     adminUser.getUserName(),

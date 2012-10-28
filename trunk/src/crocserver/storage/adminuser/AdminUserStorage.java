@@ -5,6 +5,7 @@
 package crocserver.storage.adminuser;
 
 import crocserver.storage.CrocStorage;
+import crocserver.storage.org.Org;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,20 +28,21 @@ public class AdminUserStorage {
     public AdminUserStorage(CrocStorage storage) {
         this.storage = storage;
     }
-
-    public void insert(AdminUser adminUser) throws SQLException, StorageException {
+    public void insert(Org org, User adminUser) throws SQLException, StorageException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(AdminUserQuery.insert.name()));
-            statement.setString(1, adminUser.getUserName());
-            statement.setString(2, adminUser.getDisplayName());
-            statement.setString(3, adminUser.getEmail());
+            int index = 0;
+            statement.setLong(++index, org.getId());
+            statement.setString(++index, adminUser.getUserName());
+            statement.setString(++index, adminUser.getDisplayName());
+            statement.setString(++index, adminUser.getEmail());
             if (adminUser.getRole() != null) {
-                statement.setString(4, adminUser.getRole().name());
+                statement.setString(++index, adminUser.getRole().name());
             } else {
-                statement.setString(4, null);                
+                statement.setString(++index, null);                
             }
             int updateCount = statement.executeUpdate();
             ok = true;
@@ -52,15 +54,16 @@ public class AdminUserStorage {
         }
     }
 
-    private AdminUser get(ResultSet resultSet) throws SQLException {
-        AdminUser adminUser = new AdminUser();
-        adminUser.setEmail(resultSet.getString(AdminUserMeta.email.name()));
-        adminUser.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
-        adminUser.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
-        adminUser.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
-        adminUser.setLastLogin(resultSet.getTimestamp(AdminUserMeta.last_login.name()));
-        adminUser.setInserted(resultSet.getTimestamp(AdminUserMeta.inserted.name()));
-        return adminUser;
+    private User get(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
+        user.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
+        user.setEmail(resultSet.getString(AdminUserMeta.email.name()));
+        user.setOrgId(resultSet.getLong(AdminUserMeta.org_id.name()));
+        user.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
+        user.setLastLogin(resultSet.getTimestamp(AdminUserMeta.last_login.name()));
+        user.setInserted(resultSet.getTimestamp(AdminUserMeta.inserted.name()));
+        return user;
     }
 
     public boolean exists(String email) throws SQLException {
@@ -78,15 +81,15 @@ public class AdminUserStorage {
         }
     }
 
-    public AdminUser get(String username) throws SQLException, StorageException {
-        AdminUser adminUser = find(username);
+    public User get(String username) throws SQLException, StorageException {
+        User adminUser = find(username);
         if (adminUser == null) {
             throw new StorageException(StorageExceptionType.NOT_FOUND);
         }
         return adminUser;
     }
     
-    public AdminUser find(String username) throws SQLException {
+    public User find(String username) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
@@ -103,7 +106,7 @@ public class AdminUserStorage {
         }
     }
     
-    public AdminUser findByEmail(String email) throws SQLException {
+    public User findByEmail(String email) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
@@ -120,7 +123,7 @@ public class AdminUserStorage {
         }
     }
 
-    public void update(AdminUser AdminUser) throws SQLException {
+    public void update(User AdminUser) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
@@ -137,11 +140,11 @@ public class AdminUserStorage {
         }
     }
 
-    public List<AdminUser> getList() throws SQLException {
+    public List<User> getList() throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            List<AdminUser> list = new ArrayList();
+            List<User> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(AdminUserQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -149,19 +152,6 @@ public class AdminUserStorage {
             }
             ok = true;
             return list;
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-
-    public void insertAll(List<AdminUser> adminUserList) throws SQLException, StorageException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            for (AdminUser adminUser : adminUserList) {
-                insert(adminUser);
-            }
-            ok = true;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }

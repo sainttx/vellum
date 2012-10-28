@@ -27,10 +27,11 @@ select * from service_key order by user_name, host_name, service_name
 
 -- insert
 insert into service_key (
+  org_id,
   user_name,
   host_name,
   service_name,
   cert
-) values (?, ?, ?, ?)
+) values (?, ?, ?, ?, ?)
 ;
 

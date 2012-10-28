@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.CrocStorage;
-import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.User;
 import crocserver.storage.org.Org;
 import crocserver.storage.servicekey.ServiceKey;
 import java.util.Date;
@@ -36,6 +36,9 @@ public class EnrollHandler implements HttpHandler {
     String hostName;
     String serviceName;
     String publicKey;
+ 
+    User user;
+    Org org;
     
     public EnrollHandler(CrocStorage storage) {
         super();
@@ -73,6 +76,8 @@ public class EnrollHandler implements HttpHandler {
     }
     
     private void generate() throws Exception {
+        user = storage.getUserStorage().get(userName);
+        org = storage.getOrgStorage().get(user.getOrgId());
         setDname();
         logger.info("generate", dname);
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
@@ -81,15 +86,13 @@ public class EnrollHandler implements HttpHandler {
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
         ServiceKey serviceKey = new ServiceKey(userName, hostName, serviceName,
                 KeyStores.buildCertPem(keyPair.getCert()));
-        storage.getServiceKeyStorage().insert(serviceKey);
+        storage.getServiceKeyStorage().insert(org, serviceKey);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
     }    
     
     private void setDname() throws Exception {
         dname = KeyStores.formatDname(serviceName, hostName, userName, "local", "local", "local");
-        AdminUser adminUser = storage.getAdminUserStorage().get(userName);
-        Org org = storage.getOrgStorage().get(adminUser.getOrgId());
         dname = KeyStores.formatDname(hostName, serviceName,
                 org.getName(), org.getRegion(), org.getCity(), org.getCountry());
     }       

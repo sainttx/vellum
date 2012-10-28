@@ -4,9 +4,7 @@
  */
 package crocserver.storage.adminuser;
 
-import crocserver.storage.CrocStorage;
 import crocserver.storage.org.Org;
-import java.sql.SQLException;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
 
@@ -14,7 +12,7 @@ import vellum.entity.AbstractIdEntity;
  *
  * @author evan
  */
-public class AdminUser extends AbstractIdEntity<String> {
+public class User extends AbstractIdEntity<String> {
     String userName;
     String displayName;
     AdminRole role;
@@ -31,15 +29,15 @@ public class AdminUser extends AbstractIdEntity<String> {
     Date lastLogin;
     String publicKey;
     
-    public AdminUser() {
+    public User() {
     }
 
-    public AdminUser(Org org, String userName) {
+    public User(Org org, String userName) {
         this.org = org;
         this.userName = userName;
     }
     
-    public AdminUser(String userName, String displayName, AdminRole role, boolean enabled) {
+    public User(String userName, String displayName, AdminRole role, boolean enabled) {
         this.userName = userName;
         this.displayName = displayName;
         this.role = role;
@@ -51,23 +49,20 @@ public class AdminUser extends AbstractIdEntity<String> {
         return userName;
     }
 
-    public Org getOrg(CrocStorage storage) throws SQLException {
-        if (org == null && storage != null) {
-            org = storage.getOrgStorage().get(orgId);
-        }
+    public Org getOrg() {
         return org;
     }
-
+    
     public void setOrg(Org org) {
         this.org = org;
     }
 
-    public long getOrgId() {
-        return orgId;
-    }
-
     public void setOrgId(long orgId) {
         this.orgId = orgId;
+    }
+
+    public long getOrgId() {
+        return orgId;
     }
     
     public String getDisplayName() {

@@ -15,7 +15,7 @@ import vellum.config.ConfigEntry;
 import vellum.config.ConfigMap;
 import vellum.entity.*;
 import vellum.lifecycle.ConfigMapInitialisable;
-import vellum.storage.StorageException;
+import vellum.storage.StorageRuntimeException;
 
 /**
  *
@@ -67,11 +67,11 @@ public class BizstatConfigStorage implements Storage, ConfigMapInitialisable {
     @Override
     public <E> E find(Class<E> entityType, Comparable id) {
         if (id == null) {            
-            throw new StorageException(StorageExceptionType.NULL_ID);
+            throw new StorageRuntimeException(StorageExceptionType.NULL_ID);
         }
         E entity = (E) getMap(entityType).get(id);
         if (entity == null) {
-            throw new StorageException(StorageExceptionType.NOT_FOUND, id);
+            throw new StorageRuntimeException(StorageExceptionType.NOT_FOUND, id);
         }
         return entity;
     }
