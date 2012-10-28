@@ -42,12 +42,12 @@ public class EnrollOrgHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         out = new PrintStream(httpExchange.getResponseBody());
-        if (httpExchangeInfo.getPathLength() < 3) {
+        if (httpExchangeInfo.getPathLength() < 4) {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
-            userName = httpExchangeInfo.getPathString(1);
-            orgName = httpExchangeInfo.getPathString(2);
+            userName = httpExchangeInfo.getPathString(2);
+            orgName = httpExchangeInfo.getPathString(3);
             try {
                 insert();
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

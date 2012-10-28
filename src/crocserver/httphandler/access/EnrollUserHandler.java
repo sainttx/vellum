@@ -44,11 +44,11 @@ public class EnrollUserHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         out = new PrintStream(httpExchange.getResponseBody());
-        if (httpExchangeInfo.getPathLength() < 2) {
+        if (httpExchangeInfo.getPathLength() < 3) {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
-            userName = httpExchangeInfo.getPathString(1);
+            userName = httpExchangeInfo.getPathString(2);
             try {
                 insert();
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
