@@ -18,6 +18,7 @@ import java.io.BufferedInputStream;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import sun.security.pkcs.PKCS10;
+import sun.security.x509.X509CertImpl;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
 import vellum.util.Streams;
@@ -54,7 +55,6 @@ public class SignServiceCertHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         certReqPem = Streams.readString(httpExchange.getRequestBody());
-        logger.info("certReq", certReqPem);        
         out = new PrintStream(httpExchange.getResponseBody());
         if (httpExchangeInfo.getPathArgs().length == 6) {
             userName = httpExchangeInfo.getPathString(2);
@@ -83,19 +83,23 @@ public class SignServiceCertHandler implements HttpHandler {
     private void sign() throws Exception {
         org = storage.getOrgStorage().get(orgName);
         setDname();
-        logger.info("sign", dname);
+        logger.info("sign", dname, certReqPem.length());
         String alias = "croc-server";
-        logger.info("certReqPem", certReqPem);
         PKCS10 certReq = KeyStores.createCertReq(certReqPem);
         X509Certificate signedCert = KeyStores.signCert(
                 DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias), 
                 certReq, new Date(), 999);
         String signedCertPem = KeyStores.buildCertPem(signedCert);
-        ServiceCert serviceKey = new ServiceCert(org.getId(), hostName, serviceName,
-                signedCertPem);
-        storage.getServiceKeyStorage().insert(org, serviceKey);
+        ServiceCert serviceCert = storage.getServiceKeyStorage().find(org.getId(), hostName, serviceName);
+        if (serviceCert == null) {
+            serviceCert = new ServiceCert(org.getId(), hostName, serviceName, signedCertPem);            
+            storage.getServiceKeyStorage().insert(userName, org, serviceCert);
+        } else {
+            logger.info("updateCert", serviceCert.getId());
+            storage.getServiceKeyStorage().updateCert(userName, serviceCert);
+        }
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.println(signedCertPem);
+        logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
     }
 
     private void setDname() throws Exception {

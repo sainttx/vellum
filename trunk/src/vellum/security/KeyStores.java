@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -24,7 +23,6 @@ import sun.security.pkcs.PKCS10;
 import sun.security.pkcs.PKCS10Attribute;
 import sun.security.pkcs.PKCS9Attribute;
 import sun.security.provider.X509Factory;
-import sun.security.util.DerOutputStream;
 import sun.security.x509.*;
 import vellum.exception.Exceptions;
 import vellum.logr.Logr;
@@ -45,10 +43,13 @@ public class KeyStores {
     public static final String END_CERT = formatPem("END CERTIFICATE");
     public static final String BEGIN_CERT_REQ = formatPem("BEGIN CERTIFICATE REQUEST");
     public static final String END_CERT_REQ = formatPem("END CERTIFICATE REQUEST");
+    public static final String BEGIN_NEW_CERT_REQ = formatPem("BEGIN NEW CERTIFICATE REQUEST");
+    public static final String END_NEW_CERT_REQ = formatPem("END NEW CERTIFICATE REQUEST");
     public static final String LOCAL_DNAME = "CN=localhost, OU=local, O=local, L=local, S=local, C=local";
+    private static final String dashes = "-----";
     
     private static String formatPem(String label) {
-        return String.format("-----%s-----", label);
+        return dashes + label + dashes;
     }
 
     public static TrustManagerFactory loadTrustManagerFactory(KeyStore trustStore) {
@@ -167,17 +168,20 @@ public class KeyStores {
         return null;
     }
 
-    public static PKCS10 createCertReq(String csr) throws Exception {
-        logger.info(csr);
-        if (csr.startsWith(BEGIN_CERT_REQ)) {
-            csr = csr.substring(BEGIN_CERT_REQ.length());
-            int index = csr.indexOf(END_CERT_REQ);
-            csr = csr.substring(0, index).trim();        
+    public static byte[] decodePemDer(String pem) throws Exception {
+        int index = pem.lastIndexOf(dashes);
+        if (index > 0) {
+            pem = pem.substring(0, index);
+            index = pem.lastIndexOf(dashes);
+            pem = pem.substring(0, index);
+            index = pem.lastIndexOf(dashes);
+            pem = pem.substring(index + dashes.length());
         }
-        logger.info(csr);
-        byte[] rawReq = new BASE64Decoder().decodeBuffer(csr);
-        PKCS10 certReq = new PKCS10(rawReq);
-        return certReq;
+        return new BASE64Decoder().decodeBuffer(pem);
+    }
+
+    public static PKCS10 createCertReq(String csr) throws Exception {
+        return new PKCS10(decodePemDer(csr));
     }
 
     public static PKCS10 createCertReq(PrivateKey privateKey, X509Certificate cert) throws Exception {
@@ -218,5 +222,10 @@ public class KeyStores {
         X509CertImpl cert = new X509CertImpl(info);
         cert.sign(privateKey, sigAlgName);
         return cert;
+    }
+
+    public static String getIssuerDname(String signedCertPem) throws Exception {
+        X509Certificate cert = new X509CertImpl(decodePemDer(signedCertPem));
+        return cert.getIssuerDN().toString();
     }
 }

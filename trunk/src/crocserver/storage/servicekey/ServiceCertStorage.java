@@ -29,26 +29,6 @@ public class ServiceCertStorage {
         this.storage = storage;
     }
 
-    public void insert(Org org, ServiceCert serviceCert) throws StorageException, SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceCertQuery.insert.name()));
-            int index = 0;
-            statement.setLong(++index, org.getId());
-            statement.setString(++index, serviceCert.getHostName());
-            statement.setString(++index, serviceCert.getServiceName());
-            statement.setString(++index, serviceCert.getCert());
-            int insertCount = statement.executeUpdate();
-            if (insertCount != 1) {
-                throw new StorageException(StorageExceptionType.NOT_INSERTED);
-            }
-            ok = true;
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-        
     private ServiceCert build(ResultSet resultSet) throws SQLException {
         ServiceCert serviceCert = new ServiceCert();
         serviceCert.setId(resultSet.getLong(ServiceCertMeta.service_cert_id.name()));
@@ -59,6 +39,46 @@ public class ServiceCertStorage {
         return serviceCert;
     }
     
+    public void insert(String updatedBy, Org org, ServiceCert serviceCert) throws StorageException, SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceCertQuery.insert.name()));
+            int index = 0;
+            statement.setLong(++index, org.getId());
+            statement.setString(++index, serviceCert.getHostName());
+            statement.setString(++index, serviceCert.getServiceName());
+            statement.setString(++index, serviceCert.getCert());
+            statement.setString(++index, updatedBy);
+            int insertCount = statement.executeUpdate();
+            if (insertCount != 1) {
+                throw new StorageException(StorageExceptionType.NOT_INSERTED);
+            }
+            ok = true;
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+
+    public void updateCert(String userName, ServiceCert serviceCert) throws SQLException {
+        logger.verbose("updateCert", userName, serviceCert.getId());
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(ServiceCertQuery.update_cert.name()));
+            statement.setString(1, serviceCert.getCert());
+            statement.setString(2, userName);
+            statement.setLong(3, serviceCert.getId());
+            int updateCount = statement.executeUpdate();
+            if (updateCount != 1) {
+                throw new StorageException(StorageExceptionType.UPDATE_COUNT);
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }        
+    }
+        
     public ServiceCert find(long id) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;

@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.h2.tools.Server;
 import vellum.config.ConfigMap;
 import vellum.config.PropertiesMap;
+import vellum.exception.Exceptions;
 import vellum.storage.ConnectionPool;
 import vellum.storage.SimpleConnectionPool;
 
@@ -215,8 +216,12 @@ public class BizstatServer implements Runnable {
         return serviceList;
     }
 
-    public void insert(ServiceRecord serviceRecord) throws SQLException {
-        dataStorage.getServiceRecordStorage().insert(org, serviceRecord);
+    public void insert(ServiceRecord serviceRecord) {
+        try {
+            dataStorage.getServiceRecordStorage().insert(org, serviceRecord);
+        } catch (SQLException e) {
+            throw Exceptions.newRuntimeException(e);
+        }
     }
 
         
