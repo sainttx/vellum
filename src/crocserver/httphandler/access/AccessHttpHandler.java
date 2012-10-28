@@ -27,28 +27,26 @@ public class AccessHttpHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
-        if (path.startsWith("/registerUser/")) {
-            new RegisterHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/enrollOrg/")) {
-            new CreateOrgHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/enrollService/")) {
-            new EnrollHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/getServiceCert/")) {
-            new GetCertHandler(storage).handle(httpExchange);
+        if (path.startsWith("/enroll/user/")) {
+            new EnrollUserHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("enroll/org/")) {
+            new EnrollOrgHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/enroll/service/")) {
+            new EnrollServiceHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/get/serviceCert/")) {
+            new GetServiceCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/sign/serviceCert/")) {
+            new SignServiceCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/adminUser/")) {
+            new AdminUserViewHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/service/")) {
+            new ServiceCertViewHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/serviceRecord/")) {
+            new ServiceRecordViewHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/storage")) {
             new StoragePageHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/view/adminUser/")) {
-            new ViewAdminUserPageHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/view/serviceKey/")) {
-            new ViewServiceKeyPageHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/view/serviceRecord/")) {
-            new ViewServiceRecordPageHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/genKey/")) {
-            new GenKeyHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/certReq/")) {
-            new CertReqHandler(storage).handle(httpExchange);
         } else {
-            new AccessHomePageHandler(storage).handle(httpExchange);
+            new AccessHomeHandler(storage).handle(httpExchange);
         }
     }
 }

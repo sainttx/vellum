@@ -9,29 +9,34 @@ import crocserver.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
-import java.sql.SQLException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.storage.StorageException;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.adminuser.User;
 import crocserver.storage.org.Org;
+import crocserver.storage.servicekey.ServiceCert;
+import java.util.Date;
 import vellum.format.ListFormats;
+import vellum.security.KeyStores;
+import vellum.security.GeneratedRsaKeyPair;
 
 /**
  *
  * @author evans
  */
-public class CreateOrgHandler implements HttpHandler {
+public class GetServiceCertHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
-    String userName;
     String orgName;
+    String hostName;
+    String serviceName;
+    String cert;
     
-    public CreateOrgHandler(CrocStorage storage) {
+    public GetServiceCertHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -42,15 +47,24 @@ public class CreateOrgHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         out = new PrintStream(httpExchange.getResponseBody());
-        if (httpExchangeInfo.getPathLength() < 3) {
+        if (httpExchangeInfo.getPathArgs().length < 4) {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
-            userName = httpExchangeInfo.getPathString(1);
-            orgName = httpExchangeInfo.getPathString(2);
+            orgName = httpExchangeInfo.getPathString(1);
+            hostName = httpExchangeInfo.getPathString(2);
+            serviceName = httpExchangeInfo.getPathString(3);
+            logger.info("enroll", orgName, hostName, serviceName);
             try {
-                insert();
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                Org org = storage.getOrgStorage().get(orgName);
+                ServiceCert serviceKey = storage.getServiceKeyStorage().find(org.getId(), hostName, serviceName);
+                if (serviceKey == null) {
+                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+                    out.printf("ERROR: not found\n");                    
+                } else {
+                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    out.println(serviceKey.getCert());
+                }
             } catch (Exception e) {
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
                 e.printStackTrace(out);
@@ -60,18 +74,4 @@ public class CreateOrgHandler implements HttpHandler {
         }
         httpExchange.close();
     }
-
-    private void insert() throws StorageException, SQLException {
-        Org org = new Org(orgName, userName);
-        org.setDisplayName(httpExchangeInfo.getParameterMap().get("displayName"));
-        org.setUrl(httpExchangeInfo.getParameterMap().get("url"));
-        org.setRegion(httpExchangeInfo.getParameterMap().get("region"));
-        org.setCity(httpExchangeInfo.getParameterMap().get("city"));
-        org.setCountry(httpExchangeInfo.getParameterMap().get("country"));
-        storage.getOrgStorage().insert(org);
-        out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
-                getClass().getName(), userName, orgName, httpExchangeInfo.getParameterMap()
-                ));
-    }
-    
 }
