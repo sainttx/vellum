@@ -20,6 +20,7 @@ public class ServiceCert extends AbstractIdEntity {
     boolean enabled = true;
     Date inserted = new Date();
     Date updated = new Date();
+    String updatedBy;
     
     transient String orgName;
     
@@ -89,7 +90,15 @@ public class ServiceCert extends AbstractIdEntity {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
-   
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+       
     @Override
     public String toString() {
         return getId().toString();

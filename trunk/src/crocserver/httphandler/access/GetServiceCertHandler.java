@@ -59,7 +59,7 @@ public class GetServiceCertHandler implements HttpHandler {
             logger.info("enroll", orgName, hostName, serviceName);
             try {
                 Org org = storage.getOrgStorage().get(orgName);
-                ServiceCert serviceKey = storage.getServiceKeyStorage().find(org.getId(), hostName, serviceName);
+                ServiceCert serviceKey = storage.getServiceCertStorage().find(org.getId(), hostName, serviceName);
                 if (serviceKey == null) {
                     httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
                     out.printf("ERROR: not found\n");                    

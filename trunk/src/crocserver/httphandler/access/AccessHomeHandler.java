@@ -37,40 +37,43 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter.div("menuBarDiv");
         htmlPrinter.a_("/", "Home");
         htmlPrinter._div();
-        printAdminUsers("admin users", storage.getUserStorage().getList());
-        printServiceKeys("service keys", storage.getServiceKeyStorage().getList());
+        printUsers("admin users", storage.getUserStorage().getList());
+        printServiceCerts("service certs", storage.getServiceCertStorage().getList());
         printSeviceRecords("service records", storage.getServiceRecordStorage().getList());
         if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
             printLog("log", LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
         }
     }
 
-    private void printServiceKeys(String label, Collection<ServiceCert> serviceKeys) {
+    private void printServiceCerts(String label, Collection<ServiceCert> serviceCerts) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "org", "host", "service");
-        for (ServiceCert serviceKey : serviceKeys) {
+        htmlPrinter.trh("id", "org", "host", "service", "updated", "updated by");
+        for (ServiceCert serviceCert : serviceCerts) {
             htmlPrinter.trd(
-                    String.format("<a href='/view/serviceKey/%s'>%s</a>", serviceKey.getId(), serviceKey.getId()),
-                    serviceKey.getOrgId(),
-                    serviceKey.getHostName(),
-                    serviceKey.getServiceName());
+                    String.format("<a href='/view/serviceCert/%s'>%s</a>", serviceCert.getId(), serviceCert.getId()),
+                    serviceCert.getOrgId(),
+                    serviceCert.getHostName(),
+                    serviceCert.getServiceName(),
+                    CalendarFormats.timestampFormat.format(serviceCert.getUpdated()),
+                    serviceCert.getUpdatedBy()
+                    );
         }
         htmlPrinter._table();
         htmlPrinter._div();
     }
     
-    private void printAdminUsers(String label, Collection<User> adminUsers) {
+    private void printUsers(String label, Collection<User> users) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "username", "display name", "email", "created");
-        for (User adminUser : adminUsers) {
+        htmlPrinter.trh("id", "username", "display name", "email", "updated");
+        for (User user : users) {
             htmlPrinter.trd(
-                    String.format("<a href='/view/adminUser/%s'>%s</a>", adminUser.getId(), adminUser.getId()),
-                    adminUser.getUserName(),
-                    adminUser.getDisplayName(),
-                    adminUser.getEmail(),
-                    CalendarFormats.timestampFormat.format(adminUser.getInserted()));
+                    String.format("<a href='/view/user/%s'>%s</a>", user.getId(), user.getId()),
+                    user.getUserName(),
+                    user.getDisplayName(),
+                    user.getEmail(),
+                    CalendarFormats.timestampFormat.format(user.getUpdated()));
         }
         htmlPrinter._table();
         htmlPrinter._div();
@@ -79,12 +82,9 @@ public class AccessHomeHandler extends AbstractPageHandler {
     private void printSeviceRecords(String label, Collection<ServiceRecord> serviceRecords) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
-        int index = 0;
         for (ServiceRecord serviceRecord : serviceRecords) {
-            out.printf("<tr class=row%d><td><a href='/view/serviceRecord/%d'>%d</a><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
-                    ++index % 2,
-                    serviceRecord.getId(),
-                    serviceRecord.getId(),
+            htmlPrinter.trd(
+                    String.format("<a href='/view/serviceRecord/%d'>%d</a>", serviceRecord.getId(), serviceRecord.getId()),
                     Millis.formatTime(serviceRecord.getTimestamp()),
                     serviceRecord.getHostName(),
                     serviceRecord.getServiceName(),

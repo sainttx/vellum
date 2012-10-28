@@ -27,17 +27,19 @@ public class ViewServiceCertHandler extends AbstractPageHandler {
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();
-       p.spanf("pageTitle", "ServiceKey %s", id);
-       ServiceCert serviceKey = storage.getServiceKeyStorage().find(id);
+       p.spanf("pageTitle", "ServiceCert %s", id);
+       ServiceCert serviceCert = storage.getServiceCertStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
        p._thead();
        p.tbody();
-       p.trhd("Org", serviceKey.getOrgId());
-       p.trhd("Host", serviceKey.getHostName());
-       p.trhd("Service", serviceKey.getServiceName());
+       p.trhd("Org", serviceCert.getOrgId());
+       p.trhd("Host", serviceCert.getHostName());
+       p.trhd("Service", serviceCert.getServiceName());
+       p.trhd("Updated", serviceCert.getUpdated());
+       p.trhd("Updated by", serviceCert.getUpdatedBy());
        p._tbody();
        p._tableDiv();
-       p.pre(serviceKey.getCert());
+       p.pre(serviceCert.getCert());
     }    
 }

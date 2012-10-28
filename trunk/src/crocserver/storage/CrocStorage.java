@@ -5,7 +5,7 @@
 package crocserver.storage;
 
 import crocserver.storage.schema.CrocSchema;
-import crocserver.storage.adminuser.AdminUserStorage;
+import crocserver.storage.adminuser.UserStorage;
 import crocserver.storage.servicerecord.ServiceRecordStorage;
 import vellum.datatype.EntityCache;
 import crocserver.storage.servicerecord.ServiceRecord;
@@ -46,15 +46,15 @@ public class CrocStorage {
         new SchemaPrinter().handle(connectionPool, System.out, "PUBLIC");
     }
 
-    public AdminUserStorage getUserStorage() {
-        return new AdminUserStorage(this);
+    public UserStorage getUserStorage() {
+        return new UserStorage(this);
     }
 
     public OrgStorage getOrgStorage() {
         return new OrgStorage(this);
     }
        
-    public ServiceCertStorage getServiceKeyStorage() {
+    public ServiceCertStorage getServiceCertStorage() {
         return new ServiceCertStorage(this);
     }
     

@@ -19,12 +19,12 @@ import vellum.storage.StorageExceptionType;
  *
  * @author evan
  */
-public class AdminUserStorage {
+public class UserStorage {
 
-    static QueryMap sqlMap = new QueryMap(AdminUserStorage.class);
+    static QueryMap sqlMap = new QueryMap(UserStorage.class);
     CrocStorage storage;
 
-    public AdminUserStorage(CrocStorage storage) {
+    public UserStorage(CrocStorage storage) {
         this.storage = storage;
     }
     public void insert(User adminUser) throws SQLException, StorageException {
@@ -32,7 +32,7 @@ public class AdminUserStorage {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                sqlMap.get(AdminUserQuery.insert.name()));
+                sqlMap.get(UserQuery.insert.name()));
             int index = 0;
             statement.setString(++index, adminUser.getUserName());
             statement.setString(++index, adminUser.getDisplayName());
@@ -54,11 +54,12 @@ public class AdminUserStorage {
 
     private User get(ResultSet resultSet) throws SQLException {
         User user = new User();
-        user.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
-        user.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
-        user.setEmail(resultSet.getString(AdminUserMeta.email.name()));
-        user.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
-        user.setLastLogin(resultSet.getTimestamp(AdminUserMeta.last_login.name()));
+        user.setUserName(resultSet.getString(UserMeta.user_name.name()));
+        user.setDisplayName(resultSet.getString(UserMeta.display_name.name()));
+        user.setEmail(resultSet.getString(UserMeta.email.name()));
+        user.setRole(AdminRole.valueOf(resultSet.getString(UserMeta.role_.name())));
+        user.setLastLogin(resultSet.getTimestamp(UserMeta.last_login.name()));
+        user.setUpdated(resultSet.getTimestamp(UserMeta.updated.name()));
         return user;
     }
 
@@ -66,7 +67,7 @@ public class AdminUserStorage {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(AdminUserQuery.exists_username.name()));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.exists_username.name()));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             boolean exists = resultSet.next();
@@ -90,7 +91,7 @@ public class AdminUserStorage {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.find_username.name()));
+                    sqlMap.get(UserQuery.find_username.name()));
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
@@ -107,7 +108,7 @@ public class AdminUserStorage {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(sqlMap.get(AdminUserQuery.find_email.name())));
+                    sqlMap.get(sqlMap.get(UserQuery.find_email.name())));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
@@ -124,7 +125,7 @@ public class AdminUserStorage {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.update.name()));
+                    sqlMap.get(UserQuery.update.name()));
             statement.setString(1, AdminUser.getUserName());
             int updateCount = statement.executeUpdate();
             ok = true;
@@ -141,7 +142,7 @@ public class AdminUserStorage {
         boolean ok = false;
         try {
             List<User> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(AdminUserQuery.list.name()));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(get(resultSet));
