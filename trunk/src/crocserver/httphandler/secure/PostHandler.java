@@ -31,6 +31,12 @@ public class PostHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
+    String orgName;
+    String hostName;
+    String serviceName;
+    String notifyName;
+    String serviceText;
+    
     public PostHandler(CrocStorage storage) {
         super();
         this.storage = storage;
@@ -41,37 +47,39 @@ public class PostHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
-        String text = Streams.readString(httpExchange.getRequestBody());
-        String[] args = httpExchangeInfo.getPathArgs();
+        serviceText = Streams.readString(httpExchange.getRequestBody());
         out = new PrintStream(httpExchange.getResponseBody());
-        try {
-            String orgName = httpExchangeInfo.getPathString(1);
-            String hostName = httpExchangeInfo.getPathString(2);
-            String serviceName = httpExchangeInfo.getPathString(3);
-            String notifyName = httpExchangeInfo.getPathString(3);
-            if (notifyName != null) {
-                check(hostName, serviceName, notifyName, text);
+        if (httpExchangeInfo.getPathLength() == 5) {
+            orgName = httpExchangeInfo.getPathString(1);
+            hostName = httpExchangeInfo.getPathString(2);
+            serviceName = httpExchangeInfo.getPathString(3);
+            notifyName = httpExchangeInfo.getPathString(4);
+            try {
+                if (notifyName != null) {
+                    check();
+                }
+                ServiceRecord serviceRecord = new ServiceRecord(hostName, serviceName, ServiceStatus.UNKNOWN, serviceText);
+                Org org = storage.getOrgStorage().get(orgName);
+                storage.getServiceRecordStorage().insert(org, serviceRecord);
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                out.println("OK " + getClass().getSimpleName());
+            } catch (Exception e) {
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+                e.printStackTrace(out);
+                e.printStackTrace(System.err);
+                out.printf("ERROR %s\n", e.getMessage());
             }
-            ServiceRecord serviceRecord = new ServiceRecord(hostName, serviceName, ServiceStatus.UNKNOWN, text);
-            Org org = storage.getOrgStorage().get(orgName);
-            storage.getServiceRecordStorage().insert(org, serviceRecord);
-            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-            out.println("OK " + getClass().getSimpleName());
-        } catch (Exception e) {
+        } else {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-            e.printStackTrace(out);
-            e.printStackTrace(System.err);
-            out.printf("ERROR %s\n", e.getMessage());
+            out.printf("ERROR\n");
+
         }
         httpExchange.close();
     }
 
-    private void check(String hostName, String serviceName, String notifyName, String text) throws StorageException, SQLException {
-        storage.getServiceRecordStorage().find(hostName, serviceName);
-
-    }
-
-    private void store(String hostName, String serviceName, String text) throws StorageException, SQLException {
-        logger.info("store", hostName, serviceName, text);
+    private void check() throws SQLException {
+        Org org = storage.getOrgStorage().get(orgName);
+        ServiceRecord serviceRecord = storage.getServiceRecordStorage().findLatest(org.getId(), hostName, serviceName);
+        logger.info("last", serviceRecord);
     }
 }

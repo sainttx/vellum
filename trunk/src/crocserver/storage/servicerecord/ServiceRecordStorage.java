@@ -4,7 +4,6 @@
  */
 package crocserver.storage.servicerecord;
 
-import bizstat.entity.HostServiceKey;
 import bizstat.enumtype.ServiceStatus;
 import crocserver.storage.CrocStorage;
 import crocserver.storage.org.Org;
@@ -42,84 +41,7 @@ public class ServiceRecordStorage {
         serviceRecord.setOutText(resultSet.getString(ServiceRecordMeta.out_.name()));
         return serviceRecord;
     }
-    
-    private long getTimestamp(ResultSet resultSet, String columnName, long defaultValue) throws SQLException {
-        Timestamp timestamp = resultSet.getTimestamp(columnName);
-        if (timestamp == null) {
-            return defaultValue;
-        }
-        return timestamp.getTime();
-        
-    }
 
-    public ServiceRecord find(long id) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_id.name()));
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (!resultSet.next()) {
-                return null;
-            }
-            return build(resultSet);
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-    
-    public ServiceRecord find(String hostName, String serviceName) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_host_service.name()));
-            statement.setString(1, hostName);
-            statement.setString(2, serviceName);
-            ResultSet resultSet = statement.executeQuery();
-            if (!resultSet.next()) {
-                return null;
-            }
-            return build(resultSet);
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-    
-
-    public List<ServiceRecord> getList(HostServiceKey key) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            List<ServiceRecord> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.list_by_time.name()));
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                list.add(build(resultSet));
-            }
-            ok = true;
-            return list;
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }
-
-    public List<ServiceRecord> getList() throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
-        try {
-            List<ServiceRecord> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.list_by_time.name()));
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                list.add(build(resultSet));
-            }
-            ok = true;
-            return list;
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
-        }
-    }    
-    
     public void insert(Org org, ServiceRecord serviceRecord) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
@@ -157,5 +79,71 @@ public class ServiceRecordStorage {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
+    
+    private long getTimestamp(ResultSet resultSet, String columnName, long defaultValue) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp(columnName);
+        if (timestamp == null) {
+            return defaultValue;
+        }
+        return timestamp.getTime();
+        
+    }
+
+    public ServiceRecord find(long id) throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_id.name()));
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            return build(resultSet);
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+    
+    public ServiceRecord findLatest(long orgId, String hostName, String serviceName) throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_latest.name()));
+            statement.setLong(1, orgId);
+            statement.setString(2, hostName);
+            statement.setString(3, serviceName);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            ServiceRecord serviceRecord = build(resultSet);
+            if (!resultSet.next()) {
+                throw new StorageException(StorageExceptionType.MULTIPLE_RESULTS);
+            }
+            return serviceRecord;
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+    
+
+    public List<ServiceRecord> getList() throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            List<ServiceRecord> list = new ArrayList();
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.list.name()));
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                list.add(build(resultSet));
+            }
+            ok = true;
+            return list;
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }    
+    
     
 }
