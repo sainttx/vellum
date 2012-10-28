@@ -10,11 +10,11 @@ package crocserver.storage.servicerecord;
  */
 public enum ServiceRecordQuery {
     insert,
+    find_latest,
     find_id,
     delete_id,
-    exists_host_service,    
-    find_host_service,    
-    list_by_time,
+    exists,
+    list,
     ;
     
 }

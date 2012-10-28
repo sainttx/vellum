@@ -1,28 +1,4 @@
 
--- exists_host_service
-select count(1) from service_record 
-where host_name = ? and service_name = ?
-;
-
--- find_host_service
-select * from service_record 
-where host_name = ? and service_name = ?
-;
-
--- find_id
-select * from service_record 
-where service_record_id = ?
-;
-
--- list_by_time
-select * from service_record
-order by time_ desc
-;
-
--- delete_id
-delete from service_record where service_record_id = ?
-;
-
 -- insert
 insert into service_record (
   org_id,
@@ -38,3 +14,31 @@ insert into service_record (
 )
 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ;
+
+-- find_latest
+select sr.* 
+from (
+  select service_name, max(time_) as max_time
+  from service_record 
+  where org_id = ? and host_name = ? and service_name = ?
+  group by service_name
+) msr
+inner join service_record sr on (
+  sr.service_name = msr.service_name and sr.time_ = max_time
+;
+
+-- find_id
+select * from service_record 
+where service_record_id = ?
+;
+
+-- delete_id
+delete from service_record where service_record_id = ?
+;
+
+-- list
+select * from service_record
+order by time_ desc
+;
+
+
