@@ -9,7 +9,7 @@ package bizstat.enumtype;
  * @author evan
  */
 public enum NotifyType {
-    NONZERO,
+    NOT_OK,
     ERROR,
     PATTERN,
     STATUS_CHANGED,

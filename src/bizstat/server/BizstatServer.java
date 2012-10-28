@@ -176,7 +176,7 @@ public class BizstatServer implements Runnable {
 
     public synchronized void setserviceRecord(ServiceRecord serviceRecord) {
         HostServiceStatus status = getStatus(serviceRecord.getHostServiceKey());
-        status.setserviceRecord(serviceRecord);
+        status.setServiceRecord(serviceRecord);
         logger.info("setserviceRecord", serviceRecord);
     }
 

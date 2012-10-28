@@ -40,7 +40,7 @@ public class UserStorage {
             if (adminUser.getRole() != null) {
                 statement.setString(++index, adminUser.getRole().name());
             } else {
-                statement.setString(++index, null);                
+                statement.setString(++index, null);    
             }
             int updateCount = statement.executeUpdate();
             ok = true;

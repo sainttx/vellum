@@ -67,7 +67,7 @@ public class CipherRequestAuth {
                     if (adminUser.getRole() == AdminRole.SUPERVISOR) {
                         clientType = ClientType.ADMIN;
                     } else {
-                        clientType = ClientType.USER;                
+                        clientType = ClientType.USER;    
                     }
                 }
             }
