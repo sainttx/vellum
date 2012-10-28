@@ -55,7 +55,7 @@ public class BizstatNetworkDispatcher implements Runnable {
                 HostServiceStatus status = server.getStatus(key);
                 if (!statusKeySet.contains(key)) {
                     if (ok) {
-                        status.executeserviceRecord();
+                        status.executeServiceRecord();
                         if (!status.getServiceStatus().isOk()) {
                             ok = false;
                         }
@@ -109,7 +109,7 @@ public class BizstatNetworkDispatcher implements Runnable {
             HostServiceStatus status = server.getStatus(key);
             long dispatchedThresholdMillis = server.dispatcherMillis - service.getIntervalMillis();
             if (status.getDispatchedMillis() < dispatchedThresholdMillis) {
-                status.executeserviceRecord();
+                status.executeServiceRecord();
                 return true;
             } else {
                 logger.info("skip interval", host, service, dispatchedThresholdMillis, service.getIntervalMillis());

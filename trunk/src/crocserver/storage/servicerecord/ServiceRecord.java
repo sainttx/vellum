@@ -57,12 +57,24 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
         this.dispatchedMillis = dispatchedMillis;
     }
     
-    public ServiceRecord(String hostName, String serviceName, ServiceStatus serviceStatus, String outText) {
-        this(hostName, serviceName);
-        this.serviceStatus = serviceStatus;
+    public void parseOutText(String outText) {
         this.outText = outText;
+        String text = outText.trim();
+        int index = text.lastIndexOf("\n");
+        if (index > 0) {
+            text = text.substring(index + 1);
+        }
+        if (text.contains("CRITICAL")) {
+            serviceStatus = ServiceStatus.CRITICAL;
+        } else if (text.contains("OK")) {
+            serviceStatus = ServiceStatus.OK;
+        } else if (text.contains("WARNING")) {
+            serviceStatus = ServiceStatus.WARNING;
+        } else {
+            serviceStatus = ServiceStatus.UNKNOWN;            
+        }
     }
-
+    
     public String getHostName() {
         return hostName;
     }

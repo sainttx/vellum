@@ -3,21 +3,22 @@
  */
 package crocserver.httphandler.secure;
 
+import bizstat.enumtype.NotifyType;
 import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.httpserver.HttpExchangeInfo;
+import crocserver.notify.ServiceRecordProcessor;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
-import java.sql.SQLException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.storage.StorageException;
 import vellum.util.Streams;
 import crocserver.storage.CrocStorage;
 import crocserver.storage.org.Org;
+import vellum.datatype.Millis;
 
 /**
  *
@@ -30,12 +31,14 @@ public class PostHandler implements HttpHandler {
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
-
     String orgName;
     String hostName;
     String serviceName;
     String notifyName;
     String serviceText;
+    ServiceRecord currentRecord;
+    ServiceStatus serviceStatus = ServiceStatus.UNKNOWN;
+    NotifyType notifyType; 
     
     public PostHandler(CrocStorage storage) {
         super();
@@ -55,12 +58,18 @@ public class PostHandler implements HttpHandler {
             serviceName = httpExchangeInfo.getPathString(3);
             notifyName = httpExchangeInfo.getPathString(4);
             try {
-                if (notifyName != null) {
-                    check();
-                }
-                ServiceRecord serviceRecord = new ServiceRecord(hostName, serviceName, ServiceStatus.UNKNOWN, serviceText);
                 Org org = storage.getOrgStorage().get(orgName);
-                storage.getServiceRecordStorage().insert(org, serviceRecord);
+                currentRecord = new ServiceRecord(hostName, serviceName);
+                currentRecord.parseOutText(serviceText);
+                if (notifyName != null) {
+                    notifyType = NotifyType.valueOf(notifyName);
+                    ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(org.getId(), hostName, serviceName);
+                    logger.info("last", Millis.formatTimestamp(previousRecord.getTimestamp()));
+                    ServiceRecordProcessor processor = new ServiceRecordProcessor(notifyType, previousRecord, currentRecord);
+                    processor.process();                    
+                    logger.info("notify", processor.isNotify());
+                }
+                storage.getServiceRecordStorage().insert(org, currentRecord);
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                 out.println("OK " + getClass().getSimpleName());
             } catch (Exception e) {
@@ -75,11 +84,5 @@ public class PostHandler implements HttpHandler {
 
         }
         httpExchange.close();
-    }
-
-    private void check() throws SQLException {
-        Org org = storage.getOrgStorage().get(orgName);
-        ServiceRecord serviceRecord = storage.getServiceRecordStorage().findLatest(org.getId(), hostName, serviceName);
-        logger.info("last", serviceRecord);
     }
 }

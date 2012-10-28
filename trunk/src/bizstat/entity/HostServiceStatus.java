@@ -43,8 +43,8 @@ public class HostServiceStatus implements Runnable {
     ServiceStatus notifiedServiceStatus;
     StatusChangeType statusChangeType;
     ServiceRecord serviceRecord;
-    ServiceRecord notifiedserviceRecord;
-    ServiceRecord previousserviceRecord;
+    ServiceRecord notifiedServiceRecord;
+    ServiceRecord previousServiceRecord;
     List<ContactGroup> contactGroupList = new UniqueList();
     ScheduledFuture scheduledFuture;
     boolean outputChanged = false;
@@ -76,17 +76,17 @@ public class HostServiceStatus implements Runnable {
 
     @Override
     public void run() {
-        executeserviceRecord();
+        executeServiceRecord();
     }
 
-    public void executeserviceRecord() {
+    public void executeServiceRecord() {
         server.setserviceRecord(new HostServiceExecuter(server, host, service).execute());
     }
 
-    public void setNotifiedserviceRecord(ServiceRecord notifiedserviceRecord) {
-        this.notifiedserviceRecord = notifiedserviceRecord;
-        this.notifiedServiceStatus = notifiedserviceRecord.getServiceStatus();
-        this.notifiedMillis = notifiedserviceRecord.getNotifiedMillis();
+    public void setNotifiedServiceRecord(ServiceRecord notifiedServiceRecord) {
+        this.notifiedServiceRecord = notifiedServiceRecord;
+        this.notifiedServiceStatus = notifiedServiceRecord.getServiceStatus();
+        this.notifiedMillis = notifiedServiceRecord.getNotifiedMillis();
     }
 
     public ServiceStatus getNotifiedServiceStatus() {
@@ -102,7 +102,7 @@ public class HostServiceStatus implements Runnable {
     }
 
     public void setNotifiedMillis(long notifiedMillis) {
-        this.notifiedserviceRecord = serviceRecord;
+        this.notifiedServiceRecord = serviceRecord;
         this.notifiedServiceStatus = serviceStatus;
         this.notifiedMillis = notifiedMillis;
     }
@@ -169,12 +169,12 @@ public class HostServiceStatus implements Runnable {
         this.serviceStatus = serviceStatus;
     }
 
-    public void setserviceRecord(ServiceRecord serviceRecord) {
-        previousserviceRecord = this.serviceRecord;
+    public void setServiceRecord(ServiceRecord serviceRecord) {
+        previousServiceRecord = this.serviceRecord;
         receivedMillis = System.currentTimeMillis();
         if (service.getNotifyType() == NotifyType.OUTPUT_CHANGED) {
             outputChanged = false;
-            if (previousserviceRecord != null && !Strings.equals(previousserviceRecord.getOutList(), serviceRecord.getOutList())) {
+            if (previousServiceRecord != null && !Strings.equals(previousServiceRecord.getOutList(), serviceRecord.getOutList())) {
                 outputChanged = true;
                 serviceRecord.setServiceStatus(ServiceStatus.WARNING);
             } else {
@@ -232,7 +232,7 @@ public class HostServiceStatus implements Runnable {
                 if (service.getScheduleTime() != null) {
                     return true;
                 }
-            } else if (service.getNotifyType() == NotifyType.NONZERO) {
+            } else if (service.getNotifyType() == NotifyType.NOT_OK) {
                 if (serviceStatus != ServiceStatus.OK) {
                     if (notifiedMillis < server.getDispatcherMillis() - service.getNotifyMillis()) {
                         return true;

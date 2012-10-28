@@ -59,7 +59,6 @@ public class HostServiceExecuter {
         }
         serviceRecord.setTimestampMillis(System.currentTimeMillis());
         return serviceRecord;
-    }        
-
-    
+    }
 }
+
