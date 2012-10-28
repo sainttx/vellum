@@ -4,7 +4,9 @@
  */
 package crocserver.storage.adminuser;
 
+import crocserver.storage.CrocStorage;
 import crocserver.storage.org.Org;
+import java.sql.SQLException;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
 
@@ -12,13 +14,13 @@ import vellum.entity.AbstractIdEntity;
  *
  * @author evan
  */
-public class AdminUser extends AbstractIdEntity {
-    String username;
+public class AdminUser extends AbstractIdEntity<String> {
+    String userName;
     String displayName;
     AdminRole role;
+    long orgId;
     Org org;
-    String orgName;
-    boolean enabled;
+    boolean enabled = true;
     String email;
     Date inserted;
     Date updated;
@@ -32,16 +34,40 @@ public class AdminUser extends AbstractIdEntity {
     public AdminUser() {
     }
 
-    public AdminUser(String username, boolean enabled) {
-        this.username = username;
-        this.enabled = enabled;
+    public AdminUser(Org org, String userName) {
+        this.org = org;
+        this.userName = userName;
     }
     
-    public AdminUser(String username, String displayName, AdminRole role, boolean enabled) {
-        this.username = username;
+    public AdminUser(String userName, String displayName, AdminRole role, boolean enabled) {
+        this.userName = userName;
         this.displayName = displayName;
         this.role = role;
         this.enabled = enabled;
+    }
+
+    @Override
+    public String getId() {
+        return userName;
+    }
+
+    public Org getOrg(CrocStorage storage) throws SQLException {
+        if (org == null && storage != null) {
+            org = storage.getOrgStorage().get(orgId);
+        }
+        return org;
+    }
+
+    public void setOrg(Org org) {
+        this.org = org;
+    }
+
+    public long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(long orgId) {
+        this.orgId = orgId;
     }
     
     public String getDisplayName() {
@@ -52,10 +78,6 @@ public class AdminUser extends AbstractIdEntity {
         this.displayName = displayName;
     }
 
-    public String getOrgName() {
-        return orgName;
-    }
-    
     public boolean isEnabled() {
         return enabled;
     }
@@ -72,12 +94,12 @@ public class AdminUser extends AbstractIdEntity {
         this.role = role;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setEmail(String email) {
@@ -88,11 +110,6 @@ public class AdminUser extends AbstractIdEntity {
         return email;
     }
     
-    @Override
-    public Comparable getId() {
-        return username;
-    }
-
     public String getCreatedBy() {
         return createdBy;
     }

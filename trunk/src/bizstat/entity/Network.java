@@ -27,7 +27,7 @@ public class Network extends AbstractIdEntity implements ConfigurableEntity<Bizs
     boolean enabled = true;
     transient Host host;
     transient List<Host> hostList = new UniqueList();   
-    transient List<Service> serviceList = new UniqueList();   
+    transient List<BizstatService> serviceList = new UniqueList();   
     transient List<ServicePath> servicePathList = new UniqueList();
     transient List<ContactGroup> contactGroupList = new UniqueList();
     
@@ -81,7 +81,7 @@ public class Network extends AbstractIdEntity implements ConfigurableEntity<Bizs
         return hostList;
     }
 
-    public List<Service> getServiceList() {
+    public List<BizstatService> getServiceList() {
         return serviceList;
     }
     

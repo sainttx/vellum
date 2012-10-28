@@ -16,6 +16,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.StorageException;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.org.Org;
 import java.util.Date;
 import vellum.format.ListFormats;
 
@@ -30,6 +31,9 @@ public class RegisterHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
+    String orgName;
+    String userName;
+    
     public RegisterHandler(CrocStorage storage) {
         super();
         this.storage = storage;
@@ -41,10 +45,14 @@ public class RegisterHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         out = new PrintStream(httpExchange.getResponseBody());
-        String username = httpExchangeInfo.getPathString(1, null);
-        if (username != null) {
+        if (httpExchangeInfo.getPathLength() < 3) {
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+            out.printf("ERROR %s\n", httpExchangeInfo.getPath());
+        } else {
+            orgName = httpExchangeInfo.getPathString(1);
+            userName = httpExchangeInfo.getPathString(2);
             try {
-                insert(username);
+                insert();
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             } catch (Exception e) {
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
@@ -52,15 +60,14 @@ public class RegisterHandler implements HttpHandler {
                 e.printStackTrace(System.err);
                 out.printf("ERROR %s\n", e.getMessage());
             }
-        } else {
-            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-            out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         }
         httpExchange.close();
     }
 
-    private void insert(String username) throws StorageException, SQLException {
-        AdminUser adminUser = new AdminUser(username, true);
+    private void insert() throws StorageException, SQLException {
+        Org org = new Org(orgName, userName);
+        storage.getOrgStorage().insert(org);
+        AdminUser adminUser = new AdminUser(org, userName);
         String displayName = httpExchangeInfo.getParameterMap().get("displayName");
         if (displayName != null) {
             displayName.replace('_', ' ');
@@ -74,7 +81,7 @@ public class RegisterHandler implements HttpHandler {
         adminUser.setRole(AdminRole.DEFAULT);
         storage.getAdminUserStorage().insert(adminUser);
         out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
-                getClass().getName(), username, displayName, email, httpExchangeInfo.getParameterMap()
+                getClass().getName(), userName, displayName, email, httpExchangeInfo.getParameterMap()
                 ));
     }
     

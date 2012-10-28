@@ -10,13 +10,14 @@ package crocserver.storage.servicekey;
  */
 public enum ServiceKeyDatum {
     service_key_id,
-    username,
-    host_,
-    service,
+    user_name,
+    host_name,
+    service_name,
     cert,
     enabled,
-    created,
+    inserted,
     updated,
+    updated_by
     ;
     
 }

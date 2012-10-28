@@ -50,9 +50,9 @@ public class ServiceKeyStorage {
     private ServiceKey build(ResultSet resultSet) throws SQLException {
         ServiceKey seviceKey = new ServiceKey();
         seviceKey.setId(resultSet.getLong(ServiceKeyDatum.service_key_id.name()));
-        seviceKey.setAdminUserName(resultSet.getString(ServiceKeyDatum.username.name()));
-        seviceKey.setHostName(resultSet.getString(ServiceKeyDatum.host_.name()));
-        seviceKey.setServiceName(resultSet.getString(ServiceKeyDatum.service.name()));
+        seviceKey.setAdminUserName(resultSet.getString(ServiceKeyDatum.user_name.name()));
+        seviceKey.setHostName(resultSet.getString(ServiceKeyDatum.host_name.name()));
+        seviceKey.setServiceName(resultSet.getString(ServiceKeyDatum.service_name.name()));
         seviceKey.setCert(resultSet.getString(ServiceKeyDatum.cert.name()));
         return seviceKey;
     }
@@ -78,7 +78,7 @@ public class ServiceKeyStorage {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(ServiceKeyQuery.find_username_host_service.name()));
+                    sqlMap.get(ServiceKeyQuery.find_user_host_service.name()));
             statement.setString(1, userName);
             statement.setString(2, hostName);
             statement.setString(3, serviceName);
@@ -98,7 +98,7 @@ public class ServiceKeyStorage {
         try {
             List<ServiceKey> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(ServiceKeyQuery.list_by_username.name()));
+                    sqlMap.get(ServiceKeyQuery.list_by_user.name()));
             statement.setString(1, userName);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {

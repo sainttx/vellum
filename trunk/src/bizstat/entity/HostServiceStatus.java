@@ -38,7 +38,7 @@ public class HostServiceStatus implements Runnable {
     long notifiedMillis;
     long receivedMillis;
     Host host;
-    Service service;
+    BizstatService service;
     ServiceStatus serviceStatus;
     ServiceStatus notifiedServiceStatus;
     StatusChangeType statusChangeType;
@@ -61,7 +61,7 @@ public class HostServiceStatus implements Runnable {
         contactGroupList.addAll(service.getContactGroupList());
     }
 
-    public HostServiceStatus(BizstatServer server, Host host, Service service) {
+    public HostServiceStatus(BizstatServer server, Host host, BizstatService service) {
         this(server, new HostServiceKey(host, service));
     }
 
@@ -127,7 +127,7 @@ public class HostServiceStatus implements Runnable {
         return host;
     }
 
-    public Service getService() {
+    public BizstatService getService() {
         return service;
     }
 

@@ -6,7 +6,7 @@ package crocserver.storage.servicerecord;
 
 import bizstat.entity.Host;
 import bizstat.entity.HostServiceKey;
-import bizstat.entity.Service;
+import bizstat.entity.BizstatService;
 import vellum.util.Args;
 import bizstat.enumtype.ServiceStatus;
 import java.util.Collection;
@@ -35,13 +35,13 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
     transient ServiceStatus serviceStatus;
     transient Throwable exception;
     transient Host host;
-    transient Service service;
+    transient BizstatService service;
     transient List<String> outList;
     
     public ServiceRecord() {
     }
 
-    public ServiceRecord(Host host, Service service) {
+    public ServiceRecord(Host host, BizstatService service) {
         this(host.getName(), service.getName());
         this.host = host;
         this.service = service;
@@ -52,7 +52,7 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
         this.serviceName = serviceName;
     }
     
-    public ServiceRecord(Host host, Service service, long dispatchedMillis) {
+    public ServiceRecord(Host host, BizstatService service, long dispatchedMillis) {
         this(host, service);
         this.dispatchedMillis = dispatchedMillis;
     }
@@ -80,7 +80,7 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
         return host;
     }
     
-    public Service getService() {
+    public BizstatService getService() {
         return service;
     }
     

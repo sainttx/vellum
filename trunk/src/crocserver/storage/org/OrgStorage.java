@@ -5,6 +5,7 @@
 package crocserver.storage.org;
 
 import crocserver.storage.CrocStorage;
+import crocserver.storage.common.AbstractEntityStorage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +20,7 @@ import vellum.storage.StorageExceptionType;
  *
  * @author evan
  */
-public class OrgStorage {
+public class OrgStorage extends AbstractEntityStorage<Long, Org> {
 
     static QueryMap sqlMap = new QueryMap(OrgStorage.class);
     CrocStorage storage;
@@ -28,19 +29,25 @@ public class OrgStorage {
         this.storage = storage;
     }
 
-    public void insert(Org organisation) throws SQLException {
+    public long insert(Org org) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(OrgQuery.insert.name()));
-            statement.setString(1, organisation.getName());
-            statement.setString(2, organisation.getDisplayName());
+            statement.setString(1, org.getName());
+            statement.setString(2, org.getDisplayName());
             int updateCount = statement.executeUpdate();
             ok = true;
             if (updateCount != 1) {
                 throw new SQLException();
             }
+            if (!statement.getGeneratedKeys().next()) {
+                throw new SQLException();                
+            }
+            long id = statement.getGeneratedKeys().getLong(1);
+            org.setId(id);
+            return id;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
@@ -48,9 +55,9 @@ public class OrgStorage {
 
     private Org get(ResultSet resultSet) throws SQLException {
         Org organisation = new Org();
-        organisation.setName(resultSet.getString("name"));
-        organisation.setDisplayName(resultSet.getString("display_name"));
-        organisation.setInserted(resultSet.getTimestamp("inserted"));
+        organisation.setName(resultSet.getString(OrgMeta.org_name.name()));
+        organisation.setDisplayName(resultSet.getString(OrgMeta.org_display_name.name()));
+        organisation.setInserted(resultSet.getTimestamp(OrgMeta.inserted.name()));
         return organisation;
     }
 
@@ -76,7 +83,15 @@ public class OrgStorage {
         }
         return org;
     }
-    
+
+    public Org get(long id) throws SQLException {
+        Org org = find(id);
+        if (org == null) {
+            throw new StorageException(StorageExceptionType.NOT_FOUND);
+        }
+        return org;
+    }
+        
     public Org find(String name) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
@@ -94,6 +109,7 @@ public class OrgStorage {
         }
     }
     
+    @Override
     public Org find(Long id) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
@@ -133,7 +149,7 @@ public class OrgStorage {
         boolean ok = false;
         try {
             List<Org> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(OrgQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(get(resultSet));
@@ -144,4 +160,5 @@ public class OrgStorage {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
+
 }

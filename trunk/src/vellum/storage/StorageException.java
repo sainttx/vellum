@@ -4,13 +4,14 @@
  */
 package vellum.storage;
 
+import java.sql.SQLException;
 import vellum.util.Args;
 
 /**
  *
  * @author evan
  */
-public class StorageException extends RuntimeException {
+public class StorageException extends SQLException {
     StorageExceptionType exceptionType;
     
     public StorageException(StorageExceptionType exceptionType) {

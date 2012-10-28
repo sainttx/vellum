@@ -68,7 +68,7 @@ public class AccessHomePageHandler extends AbstractPageHandler {
         for (AdminUser adminUser : adminUsers) {
             htmlPrinter.trd(
                     String.format("<a href='/view/adminUser/%s'>%s</a>", adminUser.getId(), adminUser.getId()),
-                    adminUser.getUsername(),
+                    adminUser.getUserName(),
                     adminUser.getDisplayName(),
                     adminUser.getEmail(),
                     CalendarFormats.timestampFormat.format(adminUser.getInserted()));

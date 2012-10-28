@@ -34,7 +34,7 @@ public class AdminUserStorage {
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(AdminUserQuery.insert.name()));
-            statement.setString(1, adminUser.getUsername());
+            statement.setString(1, adminUser.getUserName());
             statement.setString(2, adminUser.getDisplayName());
             statement.setString(3, adminUser.getEmail());
             if (adminUser.getRole() != null) {
@@ -54,12 +54,12 @@ public class AdminUserStorage {
 
     private AdminUser get(ResultSet resultSet) throws SQLException {
         AdminUser adminUser = new AdminUser();
-        adminUser.setEmail(resultSet.getString("email"));
-        adminUser.setUsername(resultSet.getString("username"));
-        adminUser.setDisplayName(resultSet.getString("display_name"));
-        adminUser.setRole(AdminRole.valueOf(resultSet.getString("role_")));
-        adminUser.setLastLogin(resultSet.getTimestamp("last_login"));
-        adminUser.setInserted(resultSet.getTimestamp("inserted"));
+        adminUser.setEmail(resultSet.getString(AdminUserMeta.email.name()));
+        adminUser.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
+        adminUser.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
+        adminUser.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
+        adminUser.setLastLogin(resultSet.getTimestamp(AdminUserMeta.last_login.name()));
+        adminUser.setInserted(resultSet.getTimestamp(AdminUserMeta.inserted.name()));
         return adminUser;
     }
 
@@ -126,7 +126,7 @@ public class AdminUserStorage {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(AdminUserQuery.update.name()));
-            statement.setString(1, AdminUser.getUsername());
+            statement.setString(1, AdminUser.getUserName());
             int updateCount = statement.executeUpdate();
             ok = true;
             if (updateCount != 1) {
@@ -142,7 +142,7 @@ public class AdminUserStorage {
         boolean ok = false;
         try {
             List<AdminUser> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get("list"));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(AdminUserQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(get(resultSet));

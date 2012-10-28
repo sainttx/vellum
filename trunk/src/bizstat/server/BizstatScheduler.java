@@ -44,14 +44,14 @@ public class BizstatScheduler implements Runnable {
     }
     
     private void schedule(Host host) {
-        for (Service service : host.getServiceList()) {
+        for (BizstatService service : host.getServiceList()) {
             if (service.isEnabled() && service.getScheduleTime() != null) {
                 schedule(host, service);
             }
         }
     }
     
-    private void schedule(Host host, Service service) {
+    private void schedule(Host host, BizstatService service) {
         Calendar calendar = Calendar.getInstance();
         Calendars.setTime(calendar, service.getScheduleTime());
         long currentMillis = System.currentTimeMillis();

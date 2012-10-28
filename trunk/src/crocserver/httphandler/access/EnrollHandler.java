@@ -89,11 +89,8 @@ public class EnrollHandler implements HttpHandler {
     private void setDname() throws Exception {
         dname = KeyStores.formatDname(serviceName, hostName, userName, "local", "local", "local");
         AdminUser adminUser = storage.getAdminUserStorage().get(userName);
-        String orgName = adminUser.getOrgName();
-        if (orgName != null) {
-            Org org = storage.getOrgStorage().get(orgName);
-            dname = KeyStores.formatDname(hostName, serviceName,
-                    org.getName(), org.getRegion(), org.getCity(), org.getCountry());
-        }        
+        Org org = storage.getOrgStorage().get(adminUser.getOrgId());
+        dname = KeyStores.formatDname(hostName, serviceName,
+                org.getName(), org.getRegion(), org.getCity(), org.getCountry());
     }       
 }

@@ -25,7 +25,7 @@ public class HostServiceExecuter {
     HostServiceKey key;
     ServiceRecord serviceRecord;
     
-    public HostServiceExecuter(BizstatServer server, Host host, Service service) {
+    public HostServiceExecuter(BizstatServer server, Host host, BizstatService service) {
         this.server = server;
         this.config = server.getConfig();
         this.key = key;

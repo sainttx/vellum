@@ -45,6 +45,10 @@ public class HttpExchangeInfo {
         return args;
     }
 
+    public int getPathLength() {
+        return getPathArgs().length;
+    }
+    
     public ParameterMap getParameterMap() {
         if (parameterMap == null) {
             parseParameterMap();

@@ -40,7 +40,7 @@ public class BizstatServer implements Runnable {
     List<Network> networkList = new ArrayList();
     List<Host> hostList;
     List<ServicePath> servicePathList;
-    List<Service> serviceList;
+    List<BizstatService> serviceList;
     long startMillis = System.currentTimeMillis();
     long dispatcherMillis;
     long notifiedMillis;
@@ -82,7 +82,7 @@ public class BizstatServer implements Runnable {
         }
         hostList = configStorage.getExtentList(Host.class);
         servicePathList = configStorage.getExtentList(ServicePath.class);
-        serviceList = configStorage.getExtentList(Service.class);
+        serviceList = configStorage.getExtentList(BizstatService.class);
         logger.info("init", hostList.size());
         scheduledExecutorService = Executors.newScheduledThreadPool(config.threadPoolSize);
         test();
@@ -207,7 +207,7 @@ public class BizstatServer implements Runnable {
         return statusMap;
     }
 
-    public List<Service> getServiceList() {
+    public List<BizstatService> getServiceList() {
         return serviceList;
     }
 
