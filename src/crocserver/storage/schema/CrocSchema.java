@@ -4,7 +4,7 @@
  */
 package crocserver.storage.schema;
 
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import vellum.query.RowSets;
 import java.io.InputStream;
 import java.sql.*;
