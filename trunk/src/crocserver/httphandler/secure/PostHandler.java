@@ -17,7 +17,7 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Streams;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
 import vellum.datatype.Millis;
 

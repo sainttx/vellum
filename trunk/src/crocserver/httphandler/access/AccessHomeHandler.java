@@ -14,9 +14,9 @@ import vellum.html.HtmlPrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicekey.ServiceCert;
+import crocserver.storage.servicecert.ServiceCert;
 import vellum.format.CalendarFormats;
 import vellum.logr.LogrLevel;
 

@@ -10,7 +10,7 @@ import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import bizstat.server.BizstatServer;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import java.util.Collection;
 import java.util.Iterator;
 import vellum.util.DateFormats;

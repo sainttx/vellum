@@ -9,7 +9,7 @@ import bizstat.http.BizstatHttpServer;
 import bizstat.entity.*;
 import bizstat.enumtype.ServiceStatus;
 import bizstat.http.BizstatTypeCache;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
 import java.sql.SQLException;
 import vellum.logr.Logr;
