@@ -6,6 +6,7 @@ package crocserver.notify;
 
 import bizstat.enumtype.NotifyType;
 import bizstat.enumtype.ServiceStatus;
+import crocserver.app.CrocApp;
 import crocserver.storage.servicerecord.ServiceRecord;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -18,18 +19,20 @@ import vellum.util.Strings;
 public class ServiceRecordProcessor {
     Logr logger = LogrFactory.getLogger(getClass());
 
+    CrocApp app;
     NotifyType notifyType;
     ServiceRecord previousRecord; 
     ServiceRecord currentRecord;
     boolean notify = false;
     
-    public ServiceRecordProcessor(NotifyType notifyType, ServiceRecord previousRecord, ServiceRecord currentRecord) {
+    public ServiceRecordProcessor(CrocApp app) {
+        this.app = app;
+    }
+
+    public void process(NotifyType notifyType, ServiceRecord previousRecord, ServiceRecord currentRecord) {
         this.notifyType = notifyType;
         this.previousRecord = previousRecord;
         this.currentRecord = currentRecord;
-    }
-
-    public void process() {
         processNotifyType();
     }
 
@@ -42,7 +45,8 @@ public class ServiceRecordProcessor {
                 logger.info("output changed", previousRecord.getOutText().length(), currentRecord.getOutText().length());
             }    
         } else if (notifyType == NotifyType.NOT_OK) {
-            if (currentRecord.getServiceStatus() == ServiceStatus.WARNING || currentRecord.getServiceStatus() == ServiceStatus.CRITICAL) {
+            if (currentRecord.getServiceStatus() == ServiceStatus.WARNING || 
+                    currentRecord.getServiceStatus() == ServiceStatus.CRITICAL) {
                 notify = true;
             }
         } else if (notifyType == NotifyType.STATUS_CHANGED) {
@@ -51,10 +55,15 @@ public class ServiceRecordProcessor {
                     previousRecord.getServiceStatus() != currentRecord.getServiceStatus()) {
                 notify = true;
             }
-        }      
+        }
+        if (notify) {
+            currentRecord.setNotify(notify);
+            app.notifyAdmin(currentRecord);
+        }        
     }
 
     public boolean isNotify() {
         return notify;
-    }        
+    }  
+    
 }

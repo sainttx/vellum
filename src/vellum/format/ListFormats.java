@@ -74,7 +74,7 @@ public class ListFormats {
                 builder.append(string);
                 builder.append("}");
             } else {
-                builder.append(string);        
+                builder.append(string);
             }
         }
         return builder.toString();

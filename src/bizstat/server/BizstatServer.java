@@ -97,7 +97,7 @@ public class BizstatServer implements Runnable {
         if (config.getHttpServerConfig() != null && config.getHttpServerConfig().isEnabled()) {
             httpServer = new BizstatHttpServer(this, config.httpServerConfig);
             httpServer.start();
-        }        
+        }  
     }
     
     void test() throws SQLException {

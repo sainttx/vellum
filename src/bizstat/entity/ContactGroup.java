@@ -67,7 +67,7 @@ public class ContactGroup extends AbstractIdEntity implements ConfigurableEntity
             Contact contact = server.getConfigStorage().find(Contact.class, contactName);
             logger.info("contact", name, contactName);
             contactList.add(contact);
-        }        
+        }  
     }
     
 }

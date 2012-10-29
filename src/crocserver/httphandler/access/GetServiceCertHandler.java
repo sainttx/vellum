@@ -62,7 +62,7 @@ public class GetServiceCertHandler implements HttpHandler {
                 ServiceCert serviceKey = storage.getServiceCertStorage().find(org.getId(), hostName, serviceName);
                 if (serviceKey == null) {
                     httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-                    out.printf("ERROR: not found\n");        
+                    out.printf("ERROR: not found\n");
                 } else {
                     httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                     out.println(serviceKey.getCert());

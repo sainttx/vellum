@@ -31,6 +31,6 @@ public class AdminHttpHandler implements HttpHandler {
             new StoragePageHandler(storage).handle(httpExchange);
         } else {
             new AdminHomePageHandler(storage).handle(httpExchange);
-        }        
+        }  
     }
 }

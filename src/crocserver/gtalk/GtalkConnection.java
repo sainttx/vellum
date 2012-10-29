@@ -44,12 +44,11 @@ public class GtalkConnection implements MessageListener {
         } catch (Exception e) {
             logger.warn(e, null);
             e.printStackTrace(System.err);
-        }        
+        }  
     }
 
-    public void sendMessage(Contact contact, String message) throws Exception {
-        String im = contact.getIm();
-        logger.info("sendMessage", contact);
+    public void sendMessage(String im, String message) throws Exception {
+        logger.info("sendMessage", im);
         ChatManager chatManager = connection.getChatManager();
         Chat chat = chatManager.createChat(im, this);
         Message msg = new Message(im, Message.Type.chat);

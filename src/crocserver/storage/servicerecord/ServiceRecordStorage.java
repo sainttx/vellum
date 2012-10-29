@@ -38,6 +38,7 @@ public class ServiceRecordStorage {
         serviceRecord.setTimestampMillis(getTimestamp(resultSet, ServiceRecordMeta.time_.name(), 0));
         serviceRecord.setNotifiedMillis(getTimestamp(resultSet, ServiceRecordMeta.notified_time.name(), 0));
         serviceRecord.setServiceStatus(ServiceStatus.valueOf(resultSet.getString(ServiceRecordMeta.status.name())));
+        serviceRecord.setNotify(resultSet.getBoolean(ServiceRecordMeta.notify.name()));
         serviceRecord.setOutText(resultSet.getString(ServiceRecordMeta.out_.name()));
         return serviceRecord;
     }
@@ -54,18 +55,18 @@ public class ServiceRecordStorage {
             if (serviceRecord.getServiceStatus() == null) {
                 statement.setString(++index, null);
             } else {
-                statement.setString(++index, serviceRecord.getServiceStatus().name());        
+                statement.setString(++index, serviceRecord.getServiceStatus().name());
             }
             statement.setTimestamp(++index, new Timestamp(serviceRecord.getTimestamp()));
             if (serviceRecord.getDispatchedMillis() == 0) {
-                statement.setTimestamp(++index, null);        
+                statement.setTimestamp(++index, null);
             } else {
                 statement.setTimestamp(++index, new Timestamp(serviceRecord.getDispatchedMillis()));
             }
             if (serviceRecord.getNotifiedMillis() > 0) {
                 statement.setTimestamp(++index, new Timestamp(serviceRecord.getNotifiedMillis()));
             } else {
-                statement.setTimestamp(++index, null);        
+                statement.setTimestamp(++index, null);
             }
             statement.setInt(++index, serviceRecord.getExitCode());
             statement.setString(++index, serviceRecord.getOutText());

@@ -43,7 +43,7 @@ public class SchemaMigrator {
             e.printStackTrace(printer.getPrintStream());
         } finally {
             connectionPool.releaseConnection(connection, ok);
-        }        
+        }  
     }
     
     public boolean verifySchema() throws Exception {

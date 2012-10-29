@@ -200,7 +200,7 @@ public class Streams {
                 lineList.add(line);
                 if (lineList.size() > capacity) {
                     throw new SizeRuntimeException(lineList.size());
-                }                
+                }          
             } catch (Exception e) {
                 throw Exceptions.newRuntimeException(e);
             }

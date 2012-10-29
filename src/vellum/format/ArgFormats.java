@@ -90,7 +90,7 @@ public class ArgFormats {
                 builder.append(string);
                 builder.append("}");
             } else {
-                builder.append(string);        
+                builder.append(string);
             }
         }
         return builder.toString();

@@ -19,6 +19,7 @@ public enum ServiceRecordMeta {
     exit_code,
     out_,
     errText,
+    notify,
     ;
     
 }

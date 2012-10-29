@@ -65,7 +65,7 @@ public class BizstatStarter implements Runnable, DirWatcherListener {
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
-        }        
+        }  
     }
     
     @Override

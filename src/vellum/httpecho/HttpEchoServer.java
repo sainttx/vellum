@@ -77,7 +77,7 @@ public class HttpEchoServer {
                 throws ServletException, IOException {
             if (req.getContentLength() < Bytes.fromK(4)) {
                 echoLines(req, resp);
-            }            
+            }      
         }
     };
 

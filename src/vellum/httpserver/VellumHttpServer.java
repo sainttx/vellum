@@ -77,7 +77,7 @@ public class VellumHttpServer implements Startable {
             httpServer.stop(0); 
             executor.shutdown();
             return true;
-        }        
+        }  
         return false;
     }    
 }

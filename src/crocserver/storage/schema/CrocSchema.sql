@@ -155,6 +155,7 @@ create table service_record (
   exit_code integer,
   out_ varchar,
   err_ varchar,
+  boolean notify,
   unique key uniq_service_record (org_id, host_name, service_name, time_)
 );
 

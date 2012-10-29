@@ -178,7 +178,7 @@ public class HostServiceStatus implements Runnable {
                 outputChanged = true;
                 serviceRecord.setServiceStatus(ServiceStatus.WARNING);
             } else {
-                serviceRecord.setServiceStatus(ServiceStatus.OK);        
+                serviceRecord.setServiceStatus(ServiceStatus.OK);
             }
         }
         if (serviceRecord.getServiceStatus() == null) {

@@ -81,7 +81,7 @@ public class EnrollServiceHandler implements HttpHandler {
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
         keyPair.generate(dname, new Date(), 999);
         String alias = "croc-server";
-        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));        
+        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
         ServiceCert serviceKey = new ServiceCert(org.getId(), hostName, serviceName,
                 KeyStores.buildCertPem(keyPair.getCert()));
         storage.getServiceCertStorage().insert(userName, org, serviceKey);
@@ -92,5 +92,5 @@ public class EnrollServiceHandler implements HttpHandler {
     private void setDname() throws Exception {
         dname = KeyStores.formatDname(serviceName, hostName, orgName, 
                 org.getRegion(), org.getCity(), org.getCountry());
-    }       
+    } 
 }

@@ -17,5 +17,5 @@ public class EnigmaRequest {
 
     public String getMessage() {
         return message;
-    }        
+    }  
 }

@@ -63,5 +63,5 @@ public class DateFormats {
 
     public static Calendar parseCalendar(SafeDateFormat dateFormat, String string) {
         return Calendars.newCalendar(dateFormat.parse(string, null));
-    }        
+    }  
 }

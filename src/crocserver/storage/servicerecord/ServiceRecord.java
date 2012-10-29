@@ -32,6 +32,7 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
     long receivedMillis;
     long notifiedMillis;
     long timestampMillis = System.currentTimeMillis();
+    boolean notify;
     transient ServiceStatus serviceStatus;
     transient Throwable exception;
     transient Host host;
@@ -71,7 +72,7 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
         } else if (text.contains("WARNING")) {
             serviceStatus = ServiceStatus.WARNING;
         } else {
-            serviceStatus = ServiceStatus.UNKNOWN;            
+            serviceStatus = ServiceStatus.UNKNOWN;    
         }
     }
     
@@ -206,6 +207,14 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
         this.dispatchedMillis = dispatchedMillis;
     }
 
+    public boolean isNotify() {
+        return notify;
+    }
+
+    public void setNotify(boolean notify) {
+        this.notify = notify;
+    }
+    
     public boolean isKnown() {
         return serviceStatus != null && serviceStatus.isKnown();
     }

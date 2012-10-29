@@ -51,7 +51,7 @@ public class LogAppenderProxy extends AppenderSkeleton {
     protected void warn(String message) {
         if (debug) {
             System.err.println(message);
-        }        
+        }  
     }
 
     protected void reload() {
