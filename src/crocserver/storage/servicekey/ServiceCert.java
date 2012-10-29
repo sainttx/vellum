@@ -4,19 +4,22 @@
  */
 package crocserver.storage.servicekey;
 
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
+import vellum.security.KeyStores;
 
 /**
  *
  * @author evan
  */
-public class ServiceCert extends AbstractIdEntity {
+public final class ServiceCert extends AbstractIdEntity {
     long orgId;
     Long id;
     String hostName;
     String serviceName;
     String cert;
+    String dname;
     boolean enabled = true;
     Date inserted = new Date();
     Date updated = new Date();
@@ -27,11 +30,10 @@ public class ServiceCert extends AbstractIdEntity {
     public ServiceCert() {
     }
 
-    public ServiceCert(long orgId, String hostName, String serviceName, String cert) {
+    public ServiceCert(long orgId, String hostName, String serviceName) {
         this.orgId = orgId;
         this.hostName = hostName;
         this.serviceName = serviceName;
-        this.cert = cert;
     }
     
     @Override
@@ -75,6 +77,19 @@ public class ServiceCert extends AbstractIdEntity {
         this.cert = cert;
     }
 
+    public void setX509Cert(X509Certificate x509Cert) {
+        this.cert = KeyStores.buildCertPem(x509Cert);
+        this.dname = x509Cert.getSubjectDN().getName();
+    }
+    
+    public void setDname(String dname) {
+        this.dname = dname;
+    }
+
+    public String getDname() {
+        return dname;
+    }
+    
     public String getServiceName() {
         return serviceName;
     }

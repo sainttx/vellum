@@ -5,7 +5,11 @@
 package crocserver.app;
 
 import crocserver.storage.CrocStorage;
+import crocserver.storage.servicekey.ServiceCert;
 import java.security.cert.X509Certificate;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.X509TrustManager;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -40,7 +44,14 @@ public class CrocTrustManager implements X509TrustManager {
 
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) {
-        logger.info("checkClientTrusted " + certs[0].getSubjectDN());
+        String dname = certs[0].getSubjectDN().getName();
+        logger.info("checkClientTrusted " + dname);
+        try {
+            ServiceCert serviceCert = storage.getServiceCertStorage().findDname(dname);
+            logger.info("serviceCert", serviceCert.getDname());
+        } catch (SQLException e) {
+            logger.warn(e, dname);
+        }
     }
 
     @Override

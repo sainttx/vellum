@@ -93,10 +93,12 @@ public class SignServiceCertHandler implements HttpHandler {
         String signedCertPem = KeyStores.buildCertPem(signedCert);
         ServiceCert serviceCert = storage.getServiceCertStorage().find(org.getId(), hostName, serviceName);
         if (serviceCert == null) {
-            serviceCert = new ServiceCert(org.getId(), hostName, serviceName, signedCertPem);
+            serviceCert = new ServiceCert(org.getId(), hostName, serviceName);
+            serviceCert.setX509Cert(signedCert);
             storage.getServiceCertStorage().insert(userName, org, serviceCert);
         } else {
-            logger.info("updateCert", serviceCert.getId());
+            logger.info("updateCert", serviceCert.getId());    
+            serviceCert.setX509Cert(signedCert);
             storage.getServiceCertStorage().updateCert(userName, serviceCert);
         }
         logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));

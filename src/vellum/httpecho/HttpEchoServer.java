@@ -33,7 +33,7 @@ public class HttpEchoServer {
         } else if (args.length == 3) {
             initHttpsConnector(args[0], args[1], args[2]);
             Service service = tomcat.getService();
-            service.addConnector(httpsConnector);       
+            service.addConnector(httpsConnector);
             Connector defaultConnector = tomcat.getConnector();
             defaultConnector.setRedirectPort(httpsPort);
         } else {
