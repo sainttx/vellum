@@ -4,7 +4,7 @@
  */
 package crocserver.storage.adminuser;
 
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
