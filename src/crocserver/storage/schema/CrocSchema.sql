@@ -136,6 +136,7 @@ create table service_cert (
   service_cert_id int auto_increment primary key, 
   host_name varchar(32),
   service_name varchar(32),
+  dname varchar(255),
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
