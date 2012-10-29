@@ -8,7 +8,7 @@ package crocserver.storage.servicecert;
  *
  * @author evan
  */
-public enum ServiceCertQuery {
+public enum ClientCertQuery {
     insert,
     update_cert,
     find_dname,

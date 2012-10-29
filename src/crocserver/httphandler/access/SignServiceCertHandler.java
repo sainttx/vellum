@@ -13,12 +13,10 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.ServiceCert;
-import java.io.BufferedInputStream;
+import crocserver.storage.servicecert.ClientCert;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import sun.security.pkcs.PKCS10;
-import sun.security.x509.X509CertImpl;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
 import vellum.util.Streams;
@@ -39,7 +37,7 @@ public class SignServiceCertHandler implements HttpHandler {
     String userName;
     String orgName;
     String hostName;
-    String serviceName;
+    String clientName;
     String dname;
     String cert;
     Org org;
@@ -61,7 +59,7 @@ public class SignServiceCertHandler implements HttpHandler {
             userName = httpExchangeInfo.getPathString(2);
             orgName = httpExchangeInfo.getPathString(3);
             hostName = httpExchangeInfo.getPathString(4);
-            serviceName = httpExchangeInfo.getPathString(5);
+            clientName = httpExchangeInfo.getPathString(5);
             try {
                 sign();
             } catch (Exception e) {
@@ -91,15 +89,15 @@ public class SignServiceCertHandler implements HttpHandler {
                 DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias), 
                 certReq, new Date(), 999);
         String signedCertPem = KeyStores.buildCertPem(signedCert);
-        ServiceCert serviceCert = storage.getServiceCertStorage().find(org.getId(), hostName, serviceName);
-        if (serviceCert == null) {
-            serviceCert = new ServiceCert(org.getId(), hostName, serviceName);
-            serviceCert.setX509Cert(signedCert);
-            storage.getServiceCertStorage().insert(userName, org, serviceCert);
+        ClientCert clientCert = storage.getServiceCertStorage().find(org.getId(), hostName, clientName);
+        if (clientCert == null) {
+            clientCert = new ClientCert(org.getId(), hostName, clientName);
+            clientCert.setX509Cert(signedCert);
+            storage.getServiceCertStorage().insert(userName, org, clientCert);
         } else {
-            logger.info("updateCert", serviceCert.getId());    
-            serviceCert.setX509Cert(signedCert);
-            storage.getServiceCertStorage().updateCert(userName, serviceCert);
+            logger.info("updateCert", clientCert.getId());    
+            clientCert.setX509Cert(signedCert);
+            storage.getServiceCertStorage().updateCert(userName, clientCert);
         }
         logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
@@ -107,7 +105,7 @@ public class SignServiceCertHandler implements HttpHandler {
     }
 
     private void setDname() throws Exception {
-        dname = KeyStores.formatDname(serviceName, hostName, orgName,
+        dname = KeyStores.formatDname(clientName, hostName, orgName,
                 org.getRegion(), org.getCity(), org.getCountry());
     }
 }

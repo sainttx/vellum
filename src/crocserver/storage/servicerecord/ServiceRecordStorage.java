@@ -75,6 +75,11 @@ public class ServiceRecordStorage {
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);
             }
+            ResultSet keys = statement.getGeneratedKeys();
+            if (!keys.next()) {
+                throw new StorageException(StorageExceptionType.NO_KEY);                
+            }
+            serviceRecord.setId(keys.getLong(1));
             ok = true;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);

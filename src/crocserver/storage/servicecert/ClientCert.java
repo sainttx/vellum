@@ -13,11 +13,11 @@ import vellum.security.KeyStores;
  *
  * @author evan
  */
-public final class ServiceCert extends AbstractIdEntity {
+public final class ClientCert extends AbstractIdEntity {
     long orgId;
     Long id;
     String hostName;
-    String serviceName;
+    String clientName;
     String cert;
     String dname;
     boolean enabled = true;
@@ -27,13 +27,13 @@ public final class ServiceCert extends AbstractIdEntity {
     
     transient String orgName;
     
-    public ServiceCert() {
+    public ClientCert() {
     }
 
-    public ServiceCert(long orgId, String hostName, String serviceName) {
+    public ClientCert(long orgId, String hostName, String serviceName) {
         this.orgId = orgId;
         this.hostName = hostName;
-        this.serviceName = serviceName;
+        this.clientName = serviceName;
     }
     
     @Override
@@ -90,12 +90,12 @@ public final class ServiceCert extends AbstractIdEntity {
         return dname;
     }
     
-    public String getServiceName() {
-        return serviceName;
+    public String getClientName() {
+        return clientName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
     public Date getUpdated() {
