@@ -135,13 +135,13 @@ create table client_cert (
   org_id int not null,
   client_cert_id int auto_increment primary key, 
   host_name varchar(32),
-  cert_name varchar(32),
+  client_name varchar(32),
   dname varchar(255),
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key uniq_client_cert (org_id, host_name, cert_name)
+  unique key uniq_client_cert (org_id, host_name, client_name)
 );
 
 create table service_record (

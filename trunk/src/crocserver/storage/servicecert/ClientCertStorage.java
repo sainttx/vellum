@@ -31,29 +31,29 @@ public class ClientCertStorage {
     }
 
     private ClientCert build(ResultSet resultSet) throws SQLException {
-        ClientCert serviceCert = new ClientCert();
-        serviceCert.setId(resultSet.getLong(ClientCertMeta.client_cert_id.name()));
-        serviceCert.setOrgId(resultSet.getLong(ClientCertMeta.org_id.name()));
-        serviceCert.setHostName(resultSet.getString(ClientCertMeta.host_name.name()));
-        serviceCert.setClientName(resultSet.getString(ClientCertMeta.client_name.name()));
-        serviceCert.setDname(resultSet.getString(ClientCertMeta.dname.name()));
-        serviceCert.setCert(resultSet.getString(ClientCertMeta.cert.name()));
-        serviceCert.setUpdated(resultSet.getTimestamp(ClientCertMeta.updated.name()));
-        serviceCert.setUpdatedBy(resultSet.getString(ClientCertMeta.updated_by.name()));
-        return serviceCert;
+        ClientCert cert = new ClientCert();
+        cert.setId(resultSet.getLong(ClientCertMeta.client_cert_id.name()));
+        cert.setOrgId(resultSet.getLong(ClientCertMeta.org_id.name()));
+        cert.setHostName(resultSet.getString(ClientCertMeta.host_name.name()));
+        cert.setClientName(resultSet.getString(ClientCertMeta.client_name.name()));
+        cert.setDname(resultSet.getString(ClientCertMeta.dname.name()));
+        cert.setCert(resultSet.getString(ClientCertMeta.cert.name()));
+        cert.setUpdated(resultSet.getTimestamp(ClientCertMeta.updated.name()));
+        cert.setUpdatedBy(resultSet.getString(ClientCertMeta.updated_by.name()));
+        return cert;
     }
-    
-    public void insert(String updatedBy, Org org, ClientCert serviceCert) throws StorageException, SQLException {
+
+    public void insert(String updatedBy, Org org, ClientCert cert) throws StorageException, SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ClientCertQuery.insert.name()));
             int index = 0;
             statement.setLong(++index, org.getId());
-            statement.setString(++index, serviceCert.getHostName());
-            statement.setString(++index, serviceCert.getClientName());
-            statement.setString(++index, serviceCert.getDname());
-            statement.setString(++index, serviceCert.getCert());
+            statement.setString(++index, cert.getHostName());
+            statement.setString(++index, cert.getClientName());
+            statement.setString(++index, cert.getDname());
+            statement.setString(++index, cert.getCert());
             statement.setString(++index, updatedBy);
             int insertCount = statement.executeUpdate();
             if (insertCount != 1) {
@@ -65,25 +65,25 @@ public class ClientCertStorage {
         }
     }
 
-    public void updateCert(String userName, ClientCert serviceCert) throws SQLException {
-        logger.verbose("updateCert", userName, serviceCert.getId());
+    public void updateCert(String userName, ClientCert cert) throws SQLException {
+        logger.verbose("updateCert", userName, cert.getId());
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(ClientCertQuery.update_cert.name()));
             int index = 0;
-            statement.setString(++index, serviceCert.getDname());
-            statement.setString(++index, serviceCert.getCert());
+            statement.setString(++index, cert.getDname());
+            statement.setString(++index, cert.getCert());
             statement.setString(++index, userName);
-            statement.setLong(++index, serviceCert.getId());
+            statement.setLong(++index, cert.getId());
             int updateCount = statement.executeUpdate();
             if (updateCount != 1) {
                 throw new StorageException(StorageExceptionType.UPDATE_COUNT);
             }
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
-        }  
+        }
     }
 
     public ClientCert findDname(String dname) throws SQLException {
@@ -99,9 +99,9 @@ public class ClientCertStorage {
             return build(resultSet);
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
-        }        
+        }
     }
-        
+
     public ClientCert find(long id) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
@@ -117,13 +117,13 @@ public class ClientCertStorage {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
-    
+
     public ClientCert find(long orgId, String hostName, String clientName) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(ClientCertQuery.find_org_host_service.name()));
+                    sqlMap.get(ClientCertQuery.find_org_host_client.name()));
             statement.setLong(1, orgId);
             statement.setString(2, hostName);
             statement.setString(3, clientName);
@@ -136,7 +136,7 @@ public class ClientCertStorage {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
-    
+
     public List<ClientCert> getList() throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
@@ -173,5 +173,4 @@ public class ClientCertStorage {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
-
 }

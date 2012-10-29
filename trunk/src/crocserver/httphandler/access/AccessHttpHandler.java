@@ -36,14 +36,14 @@ public class AccessHttpHandler implements HttpHandler {
             new EnrollOrgHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/enroll/service/")) {
             new EnrollServiceHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/get/serviceCert/")) {
-            new GetServiceCertHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/sign/serviceCert/")) {
-            new SignServiceCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/get/cert/")) {
+            new GetCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/sign/cert/")) {
+            new SignCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/user/")) {
             new ViewUserHandler(storage).handle(httpExchange);
-        } else if (path.startsWith("/view/serviceCert/")) {
-            new ViewServiceCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/cert/")) {
+            new ViewCertHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/serviceRecord/")) {
             new ViewServiceRecordHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/org/")) {

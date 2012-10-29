@@ -24,7 +24,7 @@ import vellum.security.GeneratedRsaKeyPair;
  *
  * @author evans
  */
-public class GetServiceCertHandler implements HttpHandler {
+public class GetCertHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
@@ -37,7 +37,7 @@ public class GetServiceCertHandler implements HttpHandler {
     String serviceName;
     String cert;
     
-    public GetServiceCertHandler(CrocStorage storage) {
+    public GetCertHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -59,7 +59,7 @@ public class GetServiceCertHandler implements HttpHandler {
             logger.info("enroll", orgName, hostName, serviceName);
             try {
                 Org org = storage.getOrgStorage().get(orgName);
-                ClientCert serviceKey = storage.getServiceCertStorage().find(org.getId(), hostName, serviceName);
+                ClientCert serviceKey = storage.getClientCertStorage().find(org.getId(), hostName, serviceName);
                 if (serviceKey == null) {
                     httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
                     out.printf("ERROR: not found\n");

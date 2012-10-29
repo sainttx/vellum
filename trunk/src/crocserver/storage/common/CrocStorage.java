@@ -53,7 +53,7 @@ public class CrocStorage {
         return new OrgStorage(this);
     }
        
-    public ClientCertStorage getServiceCertStorage() {
+    public ClientCertStorage getClientCertStorage() {
         return new ClientCertStorage(this);
     }
     
