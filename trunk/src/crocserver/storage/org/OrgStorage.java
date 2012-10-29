@@ -4,7 +4,7 @@
  */
 package crocserver.storage.org;
 
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import crocserver.storage.common.AbstractEntityStorage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
