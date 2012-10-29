@@ -21,8 +21,9 @@ public class Contact extends AbstractIdEntity {
     String im;
     String sms;
     Date notifyTime;
-    boolean enabled = true;
     boolean admin = false;
+    boolean enabled = true;
+    boolean gtalk = true;
     transient ContactGroup contactGroup;
     
     public Contact() {
@@ -36,8 +37,8 @@ public class Contact extends AbstractIdEntity {
         this.name = name;
         this.fullName = props.getString("fullName");
         this.email = props.getString("email");
-        this.enabled = props.getBoolean("enabled");
         this.im = props.getString("im");
+        this.enabled = props.getBoolean("enabled");
     }
     
     public String getName() {
@@ -60,6 +61,10 @@ public class Contact extends AbstractIdEntity {
         return im;
     }
 
+    public boolean isGtalk() {
+        return gtalk;
+    }
+    
     public void setIm(String im) {
         this.im = im;
     }

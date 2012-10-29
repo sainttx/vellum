@@ -62,8 +62,9 @@ public class CrocApp {
         if (configProperties.getBoolean("startH2TcpServer")) {
             h2Server = Server.createTcpServer().start();
         }
-        if (configProperties.getString("adminContact") != null) {
-            adminContact = new Contact(configMap.get("Contact", configProperties.getString("adminContact")));
+        String adminContactName = configProperties.getString("adminContact");
+        if (adminContactName != null) {
+            adminContact = new Contact(configMap.get("Contact", adminContactName));
         }
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
@@ -190,6 +191,17 @@ public class CrocApp {
     public GtalkConnection getGtalkConnection() {
         return gtalkConnection;
     }
+
+    public void notifyAdmin(String message) {
+        logger.warn("notifyAdmin", message, adminContact);
+        if (gtalkConnection != null && adminContact != null && adminContact.isEnabled() && adminContact.isGtalk()) {
+            try {
+                gtalkConnection.sendMessage(adminContact.getIm(), message);
+            } catch (Exception e) {
+                logger.warn(e, "notifyAdmin", adminContact);
+            }
+        }
+    }
     
     public static void main(String[] args) throws Exception {
         try {
@@ -201,7 +213,4 @@ public class CrocApp {
         }
     }
 
-    public void notifyAdmin(ServiceRecord currentRecord) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
 }
