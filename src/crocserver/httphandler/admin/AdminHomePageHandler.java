@@ -17,7 +17,7 @@ import vellum.html.HtmlPrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import vellum.logr.LogrLevel;
 
 /**

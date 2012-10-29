@@ -12,7 +12,7 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 
 /**
  *

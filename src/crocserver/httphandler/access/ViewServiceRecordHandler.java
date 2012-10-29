@@ -7,7 +7,7 @@ import crocserver.storage.servicerecord.ServiceRecord;
 import crocserver.httphandler.common.AbstractPageHandler;
 import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 
 /**
  *

@@ -8,6 +8,7 @@ import bizstat.enumtype.NotifyType;
 import bizstat.enumtype.ServiceStatus;
 import crocserver.app.CrocApp;
 import crocserver.storage.servicerecord.ServiceRecord;
+import java.text.MessageFormat;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Strings;
@@ -58,7 +59,8 @@ public class ServiceRecordProcessor {
         }
         if (notify) {
             currentRecord.setNotify(notify);
-            app.notifyAdmin(currentRecord.getMessage());
+            app.notifyAdmin(MessageFormat.format("@{0} CHANGED {1}", 
+                    currentRecord.getHostName(), currentRecord.getServiceName()));
         }        
     }
 

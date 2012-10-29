@@ -9,7 +9,7 @@ import crocserver.httphandler.access.StoragePageHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 
 /**
  *

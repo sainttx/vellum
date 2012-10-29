@@ -15,7 +15,7 @@ import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
 import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 
 /**
  *

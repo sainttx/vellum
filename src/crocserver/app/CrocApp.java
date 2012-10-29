@@ -29,7 +29,7 @@ import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
 import vellum.util.Threads;
 import crocserver.storage.schema.CrocSchema;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import crocserver.storage.servicerecord.ServiceRecord;
 import java.security.Security;
 import vellum.httpserver.VellumHttpServer;

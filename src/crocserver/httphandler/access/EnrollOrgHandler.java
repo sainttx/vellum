@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.StorageException;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
 import vellum.format.ListFormats;
 
