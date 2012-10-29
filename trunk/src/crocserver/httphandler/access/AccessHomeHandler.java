@@ -16,7 +16,7 @@ import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.ServiceCert;
+import crocserver.storage.servicecert.ClientCert;
 import vellum.format.CalendarFormats;
 import vellum.logr.LogrLevel;
 
@@ -79,16 +79,16 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter._div();
     }
 
-    private void printServiceCerts(String label, Collection<ServiceCert> serviceCerts) {
+    private void printServiceCerts(String label, Collection<ClientCert> serviceCerts) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
         htmlPrinter.trh("id", "org", "host", "service", "updated", "updated by");
-        for (ServiceCert serviceCert : serviceCerts) {
+        for (ClientCert serviceCert : serviceCerts) {
             htmlPrinter.trd(
                     String.format("<a href='/view/serviceCert/%s'>%s</a>", serviceCert.getId(), serviceCert.getId()),
                     serviceCert.getOrgId(),
                     serviceCert.getHostName(),
-                    serviceCert.getServiceName(),
+                    serviceCert.getClientName(),
                     CalendarFormats.timestampFormat.format(serviceCert.getUpdated()),
                     serviceCert.getUpdatedBy()
                     );

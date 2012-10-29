@@ -5,7 +5,7 @@
 package crocserver.app;
 
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.servicecert.ServiceCert;
+import crocserver.storage.servicecert.ClientCert;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -47,8 +47,8 @@ public class CrocTrustManager implements X509TrustManager {
         String dname = certs[0].getSubjectDN().getName();
         logger.info("checkClientTrusted " + dname);
         try {
-            ServiceCert serviceCert = storage.getServiceCertStorage().findDname(dname);
-            logger.info("serviceCert", serviceCert.getDname(), serviceCert.getServiceName());
+            ClientCert serviceCert = storage.getServiceCertStorage().findDname(dname);
+            logger.info("serviceCert", serviceCert.getDname(), serviceCert.getClientName());
         } catch (SQLException e) {
             logger.warn(e, dname);
         }

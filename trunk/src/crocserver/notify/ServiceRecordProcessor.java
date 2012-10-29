@@ -59,8 +59,6 @@ public class ServiceRecordProcessor {
         }
         if (notify) {
             currentRecord.setNotify(notify);
-            app.notifyAdmin(MessageFormat.format("@{0} CHANGED {1}", 
-                    currentRecord.getHostName(), currentRecord.getServiceName()));
         }        
     }
 

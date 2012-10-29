@@ -11,6 +11,7 @@ public enum StorageExceptionType {
     DUPLICATE,
     NULL_ID,
     NOT_FOUND, 
+    NO_KEY,
     NOT_INSERTED,
     NOT_UPDATED,
     UPDATE_COUNT,

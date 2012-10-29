@@ -19,6 +19,7 @@ import vellum.logr.LogrFactory;
 import vellum.util.Streams;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
+import java.text.MessageFormat;
 import vellum.datatype.Millis;
 
 /**
@@ -40,8 +41,8 @@ public class PostHandler implements HttpHandler {
     String serviceText;
     ServiceRecord currentRecord;
     ServiceStatus serviceStatus = ServiceStatus.UNKNOWN;
-    NotifyType notifyType; 
-    
+    NotifyType notifyType;
+
     public PostHandler(CrocApp app) {
         super();
         this.app = app;
@@ -64,15 +65,19 @@ public class PostHandler implements HttpHandler {
                 Org org = storage.getOrgStorage().get(orgName);
                 currentRecord = new ServiceRecord(hostName, serviceName);
                 currentRecord.parseOutText(serviceText);
+                ServiceRecordProcessor processor = new ServiceRecordProcessor(app);
                 if (notifyName != null) {
                     notifyType = NotifyType.valueOf(notifyName);
                     ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(org.getId(), hostName, serviceName);
                     logger.info("last", Millis.formatTimestamp(previousRecord.getTimestamp()));
-                    ServiceRecordProcessor processor = new ServiceRecordProcessor(app);
                     processor.process(notifyType, previousRecord, currentRecord);
                     logger.info("notify", processor.isNotify());
                 }
                 storage.getServiceRecordStorage().insert(org, currentRecord);
+                if (processor.isNotify()) {
+                    app.notifyAdmin(MessageFormat.format("@{0} CHANGED {1} https://localhost:8443/view/serviceRecord/{2}", 
+                        currentRecord.getHostName(), currentRecord.getServiceName(), currentRecord.getId()));
+                }
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                 out.println("OK " + getClass().getSimpleName());
             } catch (Exception e) {
