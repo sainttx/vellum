@@ -3,22 +3,9 @@
  */
 package crocserver.httphandler.insecure;
 
-import crocserver.httphandler.access.*;
-import crocserver.storage.servicerecord.ServiceRecord;
-import bizstat.server.BizstatMessageBuilder;
+import crocserver.app.CrocApp;
 import crocserver.httphandler.common.AbstractPageHandler;
-import java.util.Collection;
-import java.util.Iterator;
-import vellum.util.DateFormats;
-import vellum.util.Strings;
-import java.util.List;
-import vellum.datatype.Millis;
 import vellum.html.HtmlPrinter;
-import vellum.logr.LogrFactory;
-import vellum.logr.LogrRecord;
-import vellum.format.ListFormats;
-import crocserver.storage.CrocStorage;
-import vellum.logr.LogrLevel;
 
 /**
  *
@@ -26,11 +13,11 @@ import vellum.logr.LogrLevel;
  */
 public class InsecureHomePageHandler extends AbstractPageHandler {
 
-    CrocStorage storage;
+    CrocApp app;
 
-    public InsecureHomePageHandler(CrocStorage storage) {
+    public InsecureHomePageHandler(CrocApp app) {
         super();
-        this.storage = storage;
+        this.app = app;
     }
 
     @Override

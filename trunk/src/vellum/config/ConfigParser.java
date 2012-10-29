@@ -52,7 +52,7 @@ public class ConfigParser {
             } else {
                 parseBlock();
             }
-        }        
+        }  
     }
 
     private void startBlock() {
@@ -78,7 +78,7 @@ public class ConfigParser {
         } else if (line.equals("}")) {
             endBlock();
         } else {
-            throw new ConfigParserException(lineCount, type, name, line);        
+            throw new ConfigParserException(lineCount, type, name, line);
         }
     }
     
@@ -107,5 +107,5 @@ public class ConfigParser {
         ConfigParser parser = new ConfigParser();
         parser.init(stream);
         return parser.getConfigMap();
-    }        
+    }  
 }

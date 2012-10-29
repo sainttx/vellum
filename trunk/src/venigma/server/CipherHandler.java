@@ -110,7 +110,7 @@ public class CipherHandler {
             
     protected void reply(CipherResponse response) throws IOException {
         logger.info("reply", response);
-        JsonSockets.write(socket, response);        
+        JsonSockets.write(socket, response);
     }
 
     protected CipherResponse decrypt() throws Exception {
@@ -177,7 +177,7 @@ public class CipherHandler {
         AdminUser user = request.getUser();
         if (context.storage.getAdminUserStorage().exists(user.getUsername())) {
             return new CipherResponse(CipherResponseType.ERROR_USER_ALREADY_EXISTS);
-        }        
+        }  
         context.storage.getAdminUserStorage().insert(user);
         return new CipherResponse(CipherResponseType.OK);
     }

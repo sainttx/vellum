@@ -48,7 +48,7 @@ public class BizstatGtalkConnection implements MessageListener {
         } catch (Exception e) {
             logger.warn(e, null);
             e.printStackTrace(System.err);
-        }        
+        }  
     }
 
     public void sendMessage(Contact contact, String message) throws Exception {

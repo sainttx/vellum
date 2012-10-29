@@ -30,5 +30,5 @@ public class DequerHandler implements LogrHandler {
 
     public TimestampedDequer<LogrRecord> getDequer() {
         return dequer;
-    }        
+    }  
 }

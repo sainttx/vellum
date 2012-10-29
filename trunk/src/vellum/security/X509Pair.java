@@ -26,5 +26,5 @@ public class X509Pair {
 
     public X509Certificate getCertificate() {
         return certificate;
-    }            
+    }      
 }

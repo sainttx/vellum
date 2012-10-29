@@ -78,7 +78,7 @@ public class ServiceCertStorage {
             }
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
-        }        
+        }  
     }
         
     public ServiceCert find(long id) throws SQLException {

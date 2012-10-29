@@ -35,7 +35,7 @@ public class CrocSchema {
         } else if (verifySchemaVersion()) {
         } else {
             createSchema();
-        }        
+        }  
     }
 
     private boolean verifySchemaVersion() throws Exception {

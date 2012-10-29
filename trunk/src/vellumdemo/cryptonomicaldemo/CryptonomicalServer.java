@@ -20,8 +20,8 @@ public class CryptonomicalServer extends Thread {
                 new CryptonomicalThread(serverSocket.accept(), asymmetricCipher).start();
             } catch (Exception e) {                
                 e.printStackTrace();
-            }            
+            }      
             break;
         }
-    }        
+    }  
 }

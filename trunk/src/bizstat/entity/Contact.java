@@ -4,18 +4,17 @@
  */
 package bizstat.entity;
 
-import vellum.util.Args;
-import bizstat.server.BizstatServer;
 import vellum.entity.AbstractIdEntity;
 import java.util.Date;
+import vellum.config.ConfigEntry;
 import vellum.config.PropertiesMap;
-import vellum.entity.ConfigurableEntity;
+import vellum.util.Args;
 
 /**
  *
  * @author evan
  */
-public class Contact extends AbstractIdEntity implements ConfigurableEntity<BizstatServer> {
+public class Contact extends AbstractIdEntity {
     String name; 
     String fullName;
     String email;
@@ -28,13 +27,23 @@ public class Contact extends AbstractIdEntity implements ConfigurableEntity<Bizs
     
     public Contact() {
     }
+
+    public Contact(ConfigEntry entry) {
+        this(entry.getName(), entry.getProperties());
+    }
     
-    @Override
+    public Contact(String name, PropertiesMap props) {
+        this.name = name;
+        this.fullName = props.getString("fullName");
+        this.email = props.getString("email");
+        this.enabled = props.getBoolean("enabled");
+        this.im = props.getString("im");
+    }
+    
     public String getName() {
         return name;
     }
 
-    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -96,19 +105,6 @@ public class Contact extends AbstractIdEntity implements ConfigurableEntity<Bizs
         return contactGroup;
     }
 
-    @Override
-    public void config(BizstatServer server, PropertiesMap properties) {
-        fullName = properties.getString("fullName", null);
-        sms = properties.getString("sms", null);
-        email = properties.getString("email", null);
-        im = properties.getString("gtalk", null);
-        enabled = properties.getBoolean("enabled", false);
-        admin = properties.getBoolean("admin", false);
-        if (admin) {
-            server.getAdminContacts().add(this);
-        }
-    }
-
     public PropertiesMap getPropertiesMap() {
         PropertiesMap map = new PropertiesMap();
         map.put("name", name);
@@ -121,7 +117,5 @@ public class Contact extends AbstractIdEntity implements ConfigurableEntity<Bizs
     @Override
     public String toString() {
         return Args.format(name, im, contactGroup);
-    }
-
-    
+    }    
 }

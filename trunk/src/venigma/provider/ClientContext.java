@@ -93,7 +93,7 @@ public class ClientContext {
     public Socket createSocket() throws IOException, IllegalArgumentException {
         if (!configured) {
             throw new IllegalArgumentException(ProviderResources.CONTEXT_NOT_INITIALISED);
-        }        
+        }  
         if (false) {
             return new Socket(serverSocketAddress.getAddress(), serverSocketAddress.getPort());
         } else {

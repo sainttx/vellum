@@ -55,5 +55,5 @@ public class Bytes {
             }
         }
         throw new ParseRuntimeException(string);
-    }        
+    }  
 }

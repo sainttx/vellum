@@ -126,7 +126,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
             if (opmode == Cipher.ENCRYPT_MODE) {
                 return encrypt(input);
             } else if (opmode == Cipher.DECRYPT_MODE) {
-                return decrypt(input);        
+                return decrypt(input);
             } else {
                 throw new RuntimeException(CipherResources.ERROR_MESSAGE_NO_MODE);
             }
@@ -157,7 +157,7 @@ public final class VCipherSpi extends javax.crypto.CipherSpi {
         if (response.responseType != CipherResponseType.OK) {
             throw new CipherResponseRuntimeException(response);
         }
-        return response.getBytes();        
+        return response.getBytes();
     }
     
     @Override

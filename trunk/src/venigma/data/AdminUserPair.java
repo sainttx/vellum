@@ -24,5 +24,5 @@ public class AdminUserPair extends AbstractPair {
 
     public char[] getPassword() {
         return password;
-    }        
+    }  
 }

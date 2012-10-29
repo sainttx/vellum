@@ -5,6 +5,7 @@ package crocserver.httphandler.secure;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.app.CrocApp;
 import crocserver.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,14 +20,16 @@ import crocserver.storage.CrocStorage;
  */
 public class SecureHomePageHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
+    CrocApp app;
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
-
-    public SecureHomePageHandler(CrocStorage storage) {
+    
+    public SecureHomePageHandler(CrocApp app) {
         super();
-        this.storage = storage;
+        this.app = app;
+        this.storage = app.getStorage();
     }
     
     @Override

@@ -92,7 +92,7 @@ public class Millis {
             } else if (string.endsWith("s")) {
                 return TimeUnit.SECONDS.toMillis(value);
             }
-        }        
+        }  
         throw new ParseRuntimeException(string);
     }    
 }

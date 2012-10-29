@@ -65,5 +65,5 @@ public class SymmetricCipher {
     
     public byte[] decrypt(byte[] bytes) throws Exception {
         return createDecryptCipher().doFinal(bytes);
-    }        
+    }  
 }

@@ -33,7 +33,7 @@ public class BizstatScheduler implements Runnable {
                 schedule(network);
             }
         }
-    }        
+    }  
     
     private void schedule(Network network) {
         for (Host host : network.getHostList()) {

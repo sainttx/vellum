@@ -4,7 +4,6 @@ package crocserver.app;
 
 import crocserver.httphandler.secure.SecureHttpHandler;
 import crocserver.httpserver.HttpServerConfig;
-import crocserver.storage.CrocStorage;
 import vellum.httpserver.VellumHttpServer;
 
 /**
@@ -13,15 +12,15 @@ import vellum.httpserver.VellumHttpServer;
  */
 public class CrocHttpServer {
     VellumHttpServer httpServer;
-    CrocStorage storage;
+    CrocApp app;
     
-    public CrocHttpServer(CrocStorage storage, HttpServerConfig config) {
-        this.storage = storage;
+    public CrocHttpServer(CrocApp app, HttpServerConfig config) {
+        this.app = app;;
         httpServer = new VellumHttpServer(config);
     }    
     
     public void start() throws Exception {
-        httpServer.start(new SecureHttpHandler(storage));
+        httpServer.start(new SecureHttpHandler(app));
     }
     
     public boolean stop() {

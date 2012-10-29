@@ -30,7 +30,7 @@ public class CrocStorage {
     ConnectionPool connectionPool;
     DataSource dataSource;
     EntityCache<String> entityCache;
-
+    
     public CrocStorage(DataSourceConfig dataSourceInfo) {
         this(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceInfo));
     }

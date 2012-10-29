@@ -5,6 +5,7 @@ package crocserver.httphandler.access;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.app.CrocApp;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -17,10 +18,12 @@ import crocserver.storage.CrocStorage;
 public class AccessHttpHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(AccessHttpHandler.class);
+    CrocApp app;
     CrocStorage storage;
 
-    public AccessHttpHandler(CrocStorage storage) {
-        this.storage = storage;
+    public AccessHttpHandler(CrocApp app) {
+        this.app = app;        
+        this.storage = app.getStorage();
     }
 
     @Override

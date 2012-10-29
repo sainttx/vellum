@@ -8,6 +8,7 @@ import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.app.CrocApp;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.notify.ServiceRecordProcessor;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import vellum.datatype.Millis;
 public class PostHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
+    CrocApp app;
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
@@ -40,9 +42,10 @@ public class PostHandler implements HttpHandler {
     ServiceStatus serviceStatus = ServiceStatus.UNKNOWN;
     NotifyType notifyType; 
     
-    public PostHandler(CrocStorage storage) {
+    public PostHandler(CrocApp app) {
         super();
-        this.storage = storage;
+        this.app = app;
+        this.storage = app.getStorage();
     }
 
     @Override
@@ -65,8 +68,8 @@ public class PostHandler implements HttpHandler {
                     notifyType = NotifyType.valueOf(notifyName);
                     ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(org.getId(), hostName, serviceName);
                     logger.info("last", Millis.formatTimestamp(previousRecord.getTimestamp()));
-                    ServiceRecordProcessor processor = new ServiceRecordProcessor(notifyType, previousRecord, currentRecord);
-                    processor.process();                    
+                    ServiceRecordProcessor processor = new ServiceRecordProcessor(app);
+                    processor.process(notifyType, previousRecord, currentRecord);
                     logger.info("notify", processor.isNotify());
                 }
                 storage.getServiceRecordStorage().insert(org, currentRecord);

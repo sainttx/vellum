@@ -30,6 +30,6 @@ public class HandlerServlet extends HttpServlet {
             handler.handle(httpExchange);
         } catch (Exception e) {
             throw new ServletException(e);
-        }        
+        }  
     }
 }

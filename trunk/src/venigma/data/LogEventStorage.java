@@ -38,7 +38,7 @@ public class LogEventStorage {
         ResultSet generatedKeys = statement.getGeneratedKeys();
         if (!generatedKeys.next()) {
             throw new SQLException();
-        }         
+        }   
         long id = generatedKeys.getLong(1);
         logEvent.setId(id);
         return id;

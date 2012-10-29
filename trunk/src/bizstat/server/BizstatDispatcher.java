@@ -33,8 +33,8 @@ public class BizstatDispatcher implements Runnable {
                 BizstatNetworkDispatcher networkDispatcher = new BizstatNetworkDispatcher(server, network);
                 networkDispatcherMap.put(network, networkDispatcher);
                 networkDispatcher.run();
-                Systems.sleep(server.config.sleepMillis/server.networkList.size());        
+                Systems.sleep(server.config.sleepMillis/server.networkList.size());
             }
         }
-    }        
+    }  
 }

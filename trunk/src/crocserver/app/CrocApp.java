@@ -4,7 +4,7 @@
  */
 package crocserver.app;
 
-import bizstat.server.BizstatServer;
+import bizstat.entity.Contact;
 import crocserver.gtalk.GtalkConnection;
 import crocserver.httphandler.access.AccessHttpHandler;
 import crocserver.httphandler.insecure.InsecureHttpHandler;
@@ -30,6 +30,7 @@ import vellum.util.Streams;
 import vellum.util.Threads;
 import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.CrocStorage;
+import crocserver.storage.servicerecord.ServiceRecord;
 import java.security.Security;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
@@ -45,7 +46,6 @@ public class CrocApp {
     CrocStorage storage;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
-    BizstatServer server;
     Thread serverThread;
     String confFileName;
     ConfigMap configMap;
@@ -55,11 +55,15 @@ public class CrocApp {
     VellumHttpsServer privateHttpsServer;
     CrocTrustManager trustManager;
     GtalkConnection gtalkConnection;
+    Contact adminContact; 
     
     public void init() throws Exception {
         initConfig();
         if (configProperties.getBoolean("startH2TcpServer")) {
             h2Server = Server.createTcpServer().start();
+        }
+        if (configProperties.getString("adminContact") != null) {
+            adminContact = new Contact(configMap.get("Contact", configProperties.getString("adminContact")));
         }
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
@@ -100,23 +104,23 @@ public class CrocApp {
         String gtalkConfigName = configProperties.getString("gtalk");
         if (gtalkConfigName != null) {
             gtalkConnection = new GtalkConnection(configMap.find("Gtalk", gtalkConfigName).getProperties());
-        }                
+        }          
     }
 
     public void start() throws Exception {
         if (httpServer != null) {
             httpServer.start();
-            httpServer.startContext("/", new InsecureHttpHandler(storage));
+            httpServer.startContext("/", new InsecureHttpHandler(this));
             logger.info("HTTP server started");
         }
         if (publicHttpsServer != null) {
             publicHttpsServer.start();
-            publicHttpsServer.startContext("/", new AccessHttpHandler(storage));
+            publicHttpsServer.startContext("/", new AccessHttpHandler(this));
             logger.info("public HTTPS secure server started");
         }
         if (privateHttpsServer != null) {
             privateHttpsServer.start();
-            privateHttpsServer.startContext("/", new SecureHttpHandler(storage));
+            privateHttpsServer.startContext("/", new SecureHttpHandler(this));
             logger.info("private HTTPS secure server started");
         }
         if (gtalkConnection != null) {
@@ -179,6 +183,14 @@ public class CrocApp {
         return string;
     }
 
+    public CrocStorage getStorage() {
+        return storage;
+    }
+
+    public GtalkConnection getGtalkConnection() {
+        return gtalkConnection;
+    }
+    
     public static void main(String[] args) throws Exception {
         try {
             CrocApp starter = new CrocApp();
@@ -187,5 +199,9 @@ public class CrocApp {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    public void notifyAdmin(ServiceRecord currentRecord) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
