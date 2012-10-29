@@ -58,7 +58,7 @@ public class ServiceRecordProcessor {
         }
         if (notify) {
             currentRecord.setNotify(notify);
-            app.notifyAdmin(currentRecord);
+            app.notifyAdmin(currentRecord.getMessage());
         }        
     }
 
