@@ -82,7 +82,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
     private void printCerts(String label, Collection<ClientCert> certs) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "org", "host", "service", "updated", "updated by");
+        htmlPrinter.trh("id", "org", "host", "client", "updated", "updated by");
         for (ClientCert cert : certs) {
             htmlPrinter.trd(
                     String.format("<a href='/view/cert/%s'>%s</a>", cert.getId(), cert.getId()),

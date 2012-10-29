@@ -36,7 +36,7 @@ public class ViewCertHandler extends AbstractPageHandler {
         p.tbody();
         p.trhd("Org", cert.getOrgId());
         p.trhd("Host", cert.getHostName());
-        p.trhd("Service", cert.getClientName());
+        p.trhd("Client", cert.getClientName());
         p.trhd("Updated", cert.getUpdated());
         p.trhd("Updated by", cert.getUpdatedBy());
         p._tbody();
