@@ -14,8 +14,8 @@ public enum ClientCertQuery {
     find_dname,
     find_id,
     delete_id,
-    exists_org_host_service,    
-    find_org_host_service,    
+    exists_org_host_client,
+    find_org_host_client,    
     list_org,
     list,
     ;

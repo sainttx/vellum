@@ -84,7 +84,7 @@ public class EnrollServiceHandler implements HttpHandler {
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
         ClientCert clientCert = new ClientCert(org.getId(), hostName, serviceName);
         clientCert.setX509Cert(keyPair.getCert());        
-        storage.getServiceCertStorage().insert(userName, org, clientCert);
+        storage.getClientCertStorage().insert(userName, org, clientCert);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         out.println(KeyStores.buildPrivateKeyPem(keyPair.getPrivateKey()));
     }    

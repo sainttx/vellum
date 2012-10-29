@@ -40,7 +40,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter._div();
         printOrgs("orgs", storage.getOrgStorage().getList());
         printUsers("admin users", storage.getUserStorage().getList());
-        printServiceCerts("service certs", storage.getServiceCertStorage().getList());
+        printCerts("certs", storage.getClientCertStorage().getList());
         printSeviceRecords("service records", storage.getServiceRecordStorage().getList());
         if (LogrFactory.getDefaultLevel().ordinal() < LogrLevel.INFO.ordinal()) {
             printLog("log", LogrFactory.getDequerProvider().getDequerHandler().getDequer().tailDescending(100));
@@ -79,24 +79,23 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter._div();
     }
 
-    private void printServiceCerts(String label, Collection<ClientCert> serviceCerts) {
+    private void printCerts(String label, Collection<ClientCert> certs) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
         htmlPrinter.trh("id", "org", "host", "service", "updated", "updated by");
-        for (ClientCert serviceCert : serviceCerts) {
+        for (ClientCert cert : certs) {
             htmlPrinter.trd(
-                    String.format("<a href='/view/serviceCert/%s'>%s</a>", serviceCert.getId(), serviceCert.getId()),
-                    serviceCert.getOrgId(),
-                    serviceCert.getHostName(),
-                    serviceCert.getClientName(),
-                    CalendarFormats.timestampFormat.format(serviceCert.getUpdated()),
-                    serviceCert.getUpdatedBy()
-                    );
+                    String.format("<a href='/view/cert/%s'>%s</a>", cert.getId(), cert.getId()),
+                    cert.getOrgId(),
+                    cert.getHostName(),
+                    cert.getClientName(),
+                    CalendarFormats.timestampFormat.format(cert.getUpdated()),
+                    cert.getUpdatedBy());
         }
         htmlPrinter._table();
         htmlPrinter._div();
     }
-    
+
     private void printSeviceRecords(String label, Collection<ServiceRecord> serviceRecords) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
@@ -106,8 +105,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
                     Millis.formatTimestamp(serviceRecord.getTimestamp()),
                     serviceRecord.getHostName(),
                     serviceRecord.getServiceName(),
-                    serviceRecord.getServiceStatus()
-                    );
+                    serviceRecord.getServiceStatus());
         }
         htmlPrinter._tableDiv();
     }

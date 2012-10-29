@@ -25,7 +25,7 @@ import vellum.util.Streams;
  *
  * @author evans
  */
-public class SignServiceCertHandler implements HttpHandler {
+public class SignCertHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
@@ -42,7 +42,7 @@ public class SignServiceCertHandler implements HttpHandler {
     String cert;
     Org org;
 
-    public SignServiceCertHandler(CrocStorage storage) {
+    public SignCertHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -89,15 +89,15 @@ public class SignServiceCertHandler implements HttpHandler {
                 DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias), 
                 certReq, new Date(), 999);
         String signedCertPem = KeyStores.buildCertPem(signedCert);
-        ClientCert clientCert = storage.getServiceCertStorage().find(org.getId(), hostName, clientName);
+        ClientCert clientCert = storage.getClientCertStorage().find(org.getId(), hostName, clientName);
         if (clientCert == null) {
             clientCert = new ClientCert(org.getId(), hostName, clientName);
             clientCert.setX509Cert(signedCert);
-            storage.getServiceCertStorage().insert(userName, org, clientCert);
+            storage.getClientCertStorage().insert(userName, org, clientCert);
         } else {
             logger.info("updateCert", clientCert.getId());    
             clientCert.setX509Cert(signedCert);
-            storage.getServiceCertStorage().updateCert(userName, clientCert);
+            storage.getClientCertStorage().updateCert(userName, clientCert);
         }
         logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
