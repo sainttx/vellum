@@ -43,6 +43,6 @@ public class ComparableTuple implements Comparable<ComparableTuple> {
     }
     
     public static ComparableTuple newInstance(Comparable ... values) {
-        return new ComparableTuple(values);       
+        return new ComparableTuple(values);
     }   
 }

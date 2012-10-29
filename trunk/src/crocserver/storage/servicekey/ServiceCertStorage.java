@@ -6,6 +6,7 @@ package crocserver.storage.servicekey;
 
 import crocserver.storage.CrocStorage;
 import crocserver.storage.org.Org;
+import java.security.Principal;
 import java.sql.*;
 import vellum.storage.StorageExceptionType;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ServiceCertStorage {
         serviceCert.setOrgId(resultSet.getLong(ServiceCertMeta.org_id.name()));
         serviceCert.setHostName(resultSet.getString(ServiceCertMeta.host_name.name()));
         serviceCert.setServiceName(resultSet.getString(ServiceCertMeta.service_name.name()));
+        serviceCert.setDname(resultSet.getString(ServiceCertMeta.dname.name()));
         serviceCert.setCert(resultSet.getString(ServiceCertMeta.cert.name()));
         serviceCert.setUpdated(resultSet.getTimestamp(ServiceCertMeta.updated.name()));
         serviceCert.setUpdatedBy(resultSet.getString(ServiceCertMeta.updated_by.name()));
@@ -50,6 +52,7 @@ public class ServiceCertStorage {
             statement.setLong(++index, org.getId());
             statement.setString(++index, serviceCert.getHostName());
             statement.setString(++index, serviceCert.getServiceName());
+            statement.setString(++index, serviceCert.getDname());
             statement.setString(++index, serviceCert.getCert());
             statement.setString(++index, updatedBy);
             int insertCount = statement.executeUpdate();
@@ -69,9 +72,11 @@ public class ServiceCertStorage {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(ServiceCertQuery.update_cert.name()));
-            statement.setString(1, serviceCert.getCert());
-            statement.setString(2, userName);
-            statement.setLong(3, serviceCert.getId());
+            int index = 0;
+            statement.setString(++index, serviceCert.getDname());
+            statement.setString(++index, serviceCert.getCert());
+            statement.setString(++index, userName);
+            statement.setLong(++index, serviceCert.getId());
             int updateCount = statement.executeUpdate();
             if (updateCount != 1) {
                 throw new StorageException(StorageExceptionType.UPDATE_COUNT);
@@ -79,6 +84,22 @@ public class ServiceCertStorage {
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }  
+    }
+
+    public ServiceCert findDname(String dname) throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceCertQuery.find_id.name()));
+            statement.setString(1, dname);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            return build(resultSet);
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }        
     }
         
     public ServiceCert find(long id) throws SQLException {
@@ -152,5 +173,5 @@ public class ServiceCertStorage {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
-    
+
 }

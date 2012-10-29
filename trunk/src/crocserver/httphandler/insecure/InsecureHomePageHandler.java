@@ -23,7 +23,7 @@ public class InsecureHomePageHandler extends AbstractPageHandler {
     @Override
     protected void handle() throws Exception {
        HtmlPrinter p = new HtmlPrinter(out);
-       p.h(3, "welcome");       
+       p.h(3, "welcome");
        p.a_(String.format("https://%s:%d/", httpExchange.getLocalAddress().getHostName(), 8444), "secure site");
            
     }    

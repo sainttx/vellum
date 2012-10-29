@@ -4,14 +4,17 @@ insert into service_cert (
   org_id,
   host_name,
   service_name,
+  dname,
   cert,
   updated_by
-) values (?, ?, ?, ?, ?)
+) values (?, ?, ?, ?, ?, ?)
 ;
 
 -- update_cert
 update service_cert 
-set cert = ?, 
+set 
+  dname = ?,
+  cert = ?, 
   updated = now(),
   updated_by = ?
 where service_cert_id = ?
@@ -29,6 +32,10 @@ where org_id = ? and host_name = ? and service_name = ?
 
 -- find_id
 select * from service_cert where service_cert_id = ?
+;
+
+-- find_dname
+select * from service_cert where dname = ?
 ;
 
 -- delete_id

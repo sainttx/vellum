@@ -13,6 +13,7 @@ public enum ServiceCertMeta {
     service_cert_id,
     host_name,
     service_name,
+    dname,
     cert,
     enabled,
     inserted,

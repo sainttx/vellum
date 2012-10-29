@@ -34,7 +34,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
     public BizstatHomePageHandler(BizstatServer context) {
         super();
         this.context = context;
-        this.storage = context.getDataStorage();       
+        this.storage = context.getDataStorage();
     }
 
     @Override

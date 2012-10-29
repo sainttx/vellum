@@ -110,15 +110,19 @@ public class KeyStores {
         return builder.toString();
     }
 
-    public static String buildCertPem(X509Certificate cert) throws Exception, CertificateException {
-        StringBuilder builder = new StringBuilder();
-        builder.append(X509Factory.BEGIN_CERT);
-        builder.append('\n');
-        BASE64Encoder encoder = new BASE64Encoder();
-        builder.append(encoder.encodeBuffer(cert.getEncoded()));
-        builder.append(X509Factory.END_CERT);
-        builder.append('\n');
-        return builder.toString();
+    public static String buildCertPem(X509Certificate cert) {
+        try {
+            StringBuilder builder = new StringBuilder();
+            builder.append(X509Factory.BEGIN_CERT);
+            builder.append('\n');
+            BASE64Encoder encoder = new BASE64Encoder();
+            builder.append(encoder.encodeBuffer(cert.getEncoded()));
+            builder.append(X509Factory.END_CERT);
+            builder.append('\n');
+            return builder.toString();
+        } catch (Exception e) {
+            throw Exceptions.newRuntimeException(e);
+        }
     }
 
     public static String buildCertReqPem(PKCS10 certReq) throws Exception, CertificateException {

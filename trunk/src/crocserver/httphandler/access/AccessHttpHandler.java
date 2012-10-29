@@ -22,7 +22,7 @@ public class AccessHttpHandler implements HttpHandler {
     CrocStorage storage;
 
     public AccessHttpHandler(CrocApp app) {
-        this.app = app;        
+        this.app = app;
         this.storage = app.getStorage();
     }
 
