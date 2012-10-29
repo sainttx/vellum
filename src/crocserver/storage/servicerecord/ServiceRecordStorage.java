@@ -5,7 +5,7 @@
 package crocserver.storage.servicerecord;
 
 import bizstat.enumtype.ServiceStatus;
-import crocserver.storage.CrocStorage;
+import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
 import java.sql.*;
 import vellum.storage.StorageExceptionType;
