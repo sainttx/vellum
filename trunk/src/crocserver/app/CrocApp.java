@@ -56,6 +56,7 @@ public class CrocApp {
     CrocTrustManager trustManager;
     GtalkConnection gtalkConnection;
     Contact adminContact; 
+    String serverKeyAlias = "croc-server";
     
     public void init() throws Exception {
         initConfig();
@@ -194,6 +195,10 @@ public class CrocApp {
         return gtalkConnection;
     }
 
+    public String getServerKeyAlias() {
+        return serverKeyAlias;
+    }
+    
     public void notifyAdmin(String message) {
         logger.warn("notifyAdmin", message, adminContact);
         if (gtalkConnection != null && adminContact != null && adminContact.isEnabled() && adminContact.isGtalk()) {

@@ -6,6 +6,8 @@ package crocserver.httphandler.secure;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
+import crocserver.httphandler.access.*;
+import crocserver.storage.common.CrocStorage;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -17,16 +19,38 @@ import vellum.logr.LogrFactory;
 public class SecureHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(SecureHttpHandler.class);
     CrocApp app;
+    CrocStorage storage;
             
     public SecureHttpHandler(CrocApp app) {
         this.app = app;
+        this.storage = app.getStorage();                
     }
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
-        if (path.startsWith("/post/")) {
+           if (path.startsWith("/enroll/user/")) {
+            new EnrollUserHandler(app).handle(httpExchange);
+        } else if (path.startsWith("/enroll/org/")) {
+            new EnrollOrgHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/enroll/service/")) {
+            new EnrollServiceHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/get/cert/")) {
+            new GetCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/sign/cert/")) {
+            new SignCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/user/")) {
+            new ViewUserHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/cert/")) {
+            new ViewCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/serviceRecord/")) {
+            new ViewServiceRecordHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/view/org/")) {
+            new ViewOrgHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/storage")) {
+            new StoragePageHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/post/")) {
             new PostHandler(app).handle(httpExchange);
         } else {
             new SecureHomeHandler(app).handle(httpExchange);

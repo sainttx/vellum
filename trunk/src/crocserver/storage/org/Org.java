@@ -16,8 +16,9 @@ public class Org extends AbstractIdEntity {
     String name;
     String displayName;
     String url;
+    String org;
     String region;
-    String city;
+    String locality;
     String country;
     boolean enabled = true;
     String updatedBy;
@@ -41,12 +42,12 @@ public class Org extends AbstractIdEntity {
         this.id = id;
     }
     
-    public String getCity() {
-        return city;
+    public String getLocality() {
+        return locality;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setLocality(String locality) {
+        this.locality = locality;
     }
 
     public String getCountry() {
@@ -125,6 +126,5 @@ public class Org extends AbstractIdEntity {
     public String toString() {
         return getId().toString();
     }
-
     
 }

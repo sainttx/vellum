@@ -68,6 +68,7 @@ create table user_ (
   country varchar(2),
   language_ varchar(2),
   locale varchar(32),
+  subject varchar(255),
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),

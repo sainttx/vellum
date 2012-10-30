@@ -1,4 +1,8 @@
 
+-- insert
+insert into user_ (user_name, display_name, email, subject, role_)
+values (?, ?, ?, ?, ?);
+
 -- exists_usrename
 select count(1) from user_ where user_name = ?
 ;
@@ -15,7 +19,4 @@ select * from user_ where email = ?
 select * from user_ order by user_name
 ;
 
--- insert
-insert into user_ (user_name, display_name, email, role_)
-values (?, ?, ?, ?);
 

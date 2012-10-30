@@ -27,18 +27,19 @@ public class UserStorage {
     public UserStorage(CrocStorage storage) {
         this.storage = storage;
     }
-    public void insert(User adminUser) throws SQLException, StorageException {
+    public void insert(User user) throws SQLException, StorageException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(UserQuery.insert.name()));
             int index = 0;
-            statement.setString(++index, adminUser.getUserName());
-            statement.setString(++index, adminUser.getDisplayName());
-            statement.setString(++index, adminUser.getEmail());
-            if (adminUser.getRole() != null) {
-                statement.setString(++index, adminUser.getRole().name());
+            statement.setString(++index, user.getUserName());
+            statement.setString(++index, user.getDisplayName());
+            statement.setString(++index, user.getEmail());
+            statement.setString(++index, user.getSubject());
+            if (user.getRole() != null) {
+                statement.setString(++index, user.getRole().name());
             } else {
                 statement.setString(++index, null);    
             }
@@ -57,6 +58,7 @@ public class UserStorage {
         user.setUserName(resultSet.getString(UserMeta.user_name.name()));
         user.setDisplayName(resultSet.getString(UserMeta.display_name.name()));
         user.setEmail(resultSet.getString(UserMeta.email.name()));
+        user.setSubject(resultSet.getString(UserMeta.subject.name()));
         user.setRole(AdminRole.valueOf(resultSet.getString(UserMeta.role_.name())));
         user.setLastLogin(resultSet.getTimestamp(UserMeta.last_login.name()));
         user.setUpdated(resultSet.getTimestamp(UserMeta.updated.name()));

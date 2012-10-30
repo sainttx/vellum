@@ -31,7 +31,7 @@ public class AccessHttpHandler implements HttpHandler {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
         if (path.startsWith("/enroll/user/")) {
-            new EnrollUserHandler(storage).handle(httpExchange);
+            new EnrollUserHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/org/")) {
             new EnrollOrgHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/enroll/service/")) {

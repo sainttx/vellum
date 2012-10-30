@@ -28,16 +28,16 @@ public class ViewUserHandler extends AbstractPageHandler {
        p.a_("/", "Home");
        p._div();
        p.spanf("pageTitle", "User %s", id);
-       User adminUser = storage.getUserStorage().find(id);
+       User user = storage.getUserStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
        p._thead();
        p.tbody();
-       p.trhd("Username", adminUser.getId());
-       p.trhd("Display name", adminUser.getDisplayName());
-       p.trhd("Address", adminUser.getEmail());
+       p.trhd("Username", user.getId());
+       p.trhd("Display name", user.getDisplayName());
+       p.trhd("Email", user.getEmail());
+       p.trhd("Cert subject", user.getSubject());
        p._tbody();
        p._tableDiv();
-       p.pre(adminUser.getPublicKey());
     }    
 }

@@ -138,7 +138,10 @@ public class KeyStores {
 
     public static String formatDname(String cn, String ou, String o, String l, String s, String c) {
         try {
-            X500Name name = new X500Name(cn, ou, o, 
+            X500Name name = new X500Name(
+                    coalesce(cn, "unknown"), 
+                    coalesce(ou, "unknown"), 
+                    coalesce(o, "unknown"), 
                     coalesce(l, "unknown"), 
                     coalesce(s, "unknown"), 
                     coalesce(c, "unknown")
@@ -228,8 +231,16 @@ public class KeyStores {
         return cert;
     }
 
-    public static String getIssuerDname(String signedCertPem) throws Exception {
-        X509Certificate cert = new X509CertImpl(decodePemDer(signedCertPem));
-        return cert.getIssuerDN().toString();
+    public static String getSubjectDname(String pem) throws Exception {
+        return parseCert(pem).getSubjectDN().toString();
     }
+    
+    public static String getIssuerDname(String pem) throws Exception {
+        return parseCert(pem).getIssuerDN().toString();
+    }
+
+    public static X509Certificate parseCert(String pem) throws Exception {
+        return new X509CertImpl(decodePemDer(pem));
+    }
+        
 }

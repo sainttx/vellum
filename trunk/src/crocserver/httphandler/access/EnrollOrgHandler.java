@@ -66,7 +66,7 @@ public class EnrollOrgHandler implements HttpHandler {
         org.setDisplayName(httpExchangeInfo.getParameterMap().get("displayName"));
         org.setUrl(httpExchangeInfo.getParameterMap().get("url"));
         org.setRegion(httpExchangeInfo.getParameterMap().get("region"));
-        org.setCity(httpExchangeInfo.getParameterMap().get("city"));
+        org.setLocality(httpExchangeInfo.getParameterMap().get("locality"));
         org.setCountry(httpExchangeInfo.getParameterMap().get("country"));
         storage.getOrgStorage().insert(org);
         out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
