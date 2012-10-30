@@ -1,5 +1,5 @@
 
-drop table service_cert; 
+--drop table service_cert; 
 
 drop table schema_revision;
 drop table history; 
