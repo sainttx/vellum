@@ -24,12 +24,12 @@ import vellum.logr.LogrLevel;
  *
  * @author evans
  */
-public class SecureHomeHandler1 extends AbstractPageHandler {
+public class SecureHomeHandler extends AbstractPageHandler {
 
     CrocApp app;
     CrocStorage storage;
     
-    public SecureHomeHandler1(CrocApp app) {
+    public SecureHomeHandler(CrocApp app) {
         super();
         this.app = app;
         this.storage = app.getStorage();
