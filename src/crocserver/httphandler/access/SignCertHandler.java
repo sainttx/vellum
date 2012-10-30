@@ -106,6 +106,6 @@ public class SignCertHandler implements HttpHandler {
 
     private void setDname() throws Exception {
         dname = KeyStores.formatDname(clientName, hostName, orgName,
-                org.getRegion(), org.getCity(), org.getCountry());
+                org.getRegion(), org.getLocality(), org.getCountry());
     }
 }

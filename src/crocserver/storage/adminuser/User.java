@@ -7,6 +7,7 @@ package crocserver.storage.adminuser;
 import crocserver.storage.org.Org;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
+import vellum.security.KeyStores;
 
 /**
  *
@@ -22,12 +23,15 @@ public class User extends AbstractIdEntity<String> {
     String email;
     Date inserted;
     Date updated;
+    String locality;
+    String region;
+    String country;
     String createdBy;
     String secondedBy;
     String passwordHash;
     String passwordSalt;
     Date lastLogin;
-    String publicKey;
+    String subject;
     
     public User() {
     }
@@ -48,6 +52,10 @@ public class User extends AbstractIdEntity<String> {
         return userName;
     }
 
+    public void formatSubject() {
+        subject = KeyStores.formatDname(email, displayName, userName, locality, region, country);
+    }
+    
     public Org getOrg() {
         return org;
     }
@@ -160,10 +168,38 @@ public class User extends AbstractIdEntity<String> {
         this.updated = updated;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public String getCountry() {
+        return country;
     }
-        
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+       
     @Override
     public String toString() {
         return getId().toString();

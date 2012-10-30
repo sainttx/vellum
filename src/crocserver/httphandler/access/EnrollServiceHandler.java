@@ -91,6 +91,6 @@ public class EnrollServiceHandler implements HttpHandler {
     
     private void setDname() throws Exception {
         dname = KeyStores.formatDname(serviceName, hostName, orgName, 
-                org.getRegion(), org.getCity(), org.getCountry());
+                org.getRegion(), org.getLocality(), org.getCountry());
     } 
 }

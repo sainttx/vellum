@@ -13,6 +13,7 @@ public enum UserMeta {
     user_name,
     display_name,
     email,
+    subject,
     enabled,    
     role_,
     last_login,
