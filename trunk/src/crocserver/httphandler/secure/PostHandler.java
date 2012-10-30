@@ -75,7 +75,7 @@ public class PostHandler implements HttpHandler {
                 }
                 storage.getServiceRecordStorage().insert(org, currentRecord);
                 if (processor.isNotify()) {
-                    app.notifyAdmin(MessageFormat.format("@{0} CHANGED {1} https://localhost:8443/view/serviceRecord/{2}", 
+                    app.notifyAdmin(MessageFormat.format("@{0} CHANGED {1} https://croc.linuxd.org:8443/view/serviceRecord/{2}", 
                         currentRecord.getHostName(), currentRecord.getServiceName(), currentRecord.getId()));
                 }
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

@@ -108,6 +108,18 @@ public class CrocApp {
         }          
     }
 
+    private void initConfig() throws Exception {
+        confFileName = getString("conf");
+        File confFile = new File(confFileName);
+        logger.info("conf", confFileName, confFile);
+        configMap = ConfigParser.newInstance(new FileInputStream(confFile));
+        configProperties = configMap.find("Config", "default").getProperties();
+        String logLevelName = configProperties.get("logLevel");
+        if (logLevelName != null) {
+            LogrFactory.setDefaultLevel(LogrLevel.valueOf(logLevelName));
+        }
+    }
+    
     public void start() throws Exception {
         if (httpServer != null) {
             httpServer.start();
@@ -163,16 +175,6 @@ public class CrocApp {
         }
         if (gtalkConnection != null) {
             gtalkConnection.close();
-        }
-    }
-
-    private void initConfig() throws Exception {
-        confFileName = getString("conf");
-        configMap = ConfigParser.newInstance(new FileInputStream(new File(confFileName)));
-        configProperties = configMap.find("Config", "default").getProperties();
-        String logLevelName = configProperties.get("logLevel");
-        if (logLevelName != null) {
-            LogrFactory.setDefaultLevel(LogrLevel.valueOf(logLevelName));
         }
     }
 
