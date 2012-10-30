@@ -29,7 +29,7 @@ public class SecureHttpHandler implements HttpHandler {
         if (path.startsWith("/post/")) {
             new PostHandler(app).handle(httpExchange);
         } else {
-            new SecureHomeHandler1(app).handle(httpExchange);
+            new SecureHomeHandler(app).handle(httpExchange);
         }  
     }
 }
