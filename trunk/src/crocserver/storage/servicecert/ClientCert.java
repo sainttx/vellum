@@ -24,6 +24,7 @@ public final class ClientCert extends AbstractIdEntity {
     Date inserted = new Date();
     Date updated = new Date();
     String updatedBy;
+    boolean stored = false;
     
     transient String orgName;
     
@@ -114,7 +115,15 @@ public final class ClientCert extends AbstractIdEntity {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
-       
+
+    public void setStored(boolean stored) {
+        this.stored = stored;
+    }
+
+    public boolean isStored() {
+        return stored;
+    }
+        
     @Override
     public String toString() {
         return getId().toString();
