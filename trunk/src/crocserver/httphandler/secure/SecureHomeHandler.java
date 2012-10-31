@@ -6,7 +6,7 @@ package crocserver.httphandler.secure;
 import crocserver.storage.servicerecord.ServiceRecord;
 import crocserver.app.CrocApp;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.adminuser.User;
+import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.common.CrocStorage;
 import java.util.Collection;
 import java.util.Iterator;
@@ -65,11 +65,11 @@ public class SecureHomeHandler extends AbstractPageHandler {
         htmlPrinter._div();
     }
 
-    private void printUsers(String label, Collection<User> users) {
+    private void printUsers(String label, Collection<AdminUser> users) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
         htmlPrinter.trh("id", "username", "display name", "email", "updated");
-        for (User user : users) {
+        for (AdminUser user : users) {
             htmlPrinter.trd(
                     String.format("<a href='/view/user/%s'>%s</a>", user.getId(), user.getId()),
                     user.getUserName(),

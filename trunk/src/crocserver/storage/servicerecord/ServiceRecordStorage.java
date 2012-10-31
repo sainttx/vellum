@@ -77,7 +77,7 @@ public class ServiceRecordStorage {
             }
             ResultSet keys = statement.getGeneratedKeys();
             if (!keys.next()) {
-                throw new StorageException(StorageExceptionType.NO_KEY);                
+                throw new StorageException(StorageExceptionType.NO_KEY);        
             }
             serviceRecord.setId(keys.getLong(1));
             ok = true;

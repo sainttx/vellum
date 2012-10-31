@@ -27,7 +27,21 @@ public class UserStorage {
     public UserStorage(CrocStorage storage) {
         this.storage = storage;
     }
-    public void insert(User user) throws SQLException, StorageException {
+
+    private AdminUser get(ResultSet resultSet) throws SQLException {
+        AdminUser user = new AdminUser();
+        user.setUserName(resultSet.getString(UserMeta.user_name.name()));
+        user.setDisplayName(resultSet.getString(UserMeta.display_name.name()));
+        user.setEmail(resultSet.getString(UserMeta.email.name()));
+        user.setSubject(resultSet.getString(UserMeta.subject.name()));
+        user.setRole(AdminRole.valueOf(resultSet.getString(UserMeta.role_.name())));
+        user.setLastLogin(resultSet.getTimestamp(UserMeta.last_login.name()));
+        user.setUpdated(resultSet.getTimestamp(UserMeta.updated.name()));
+        user.setStored(true);
+        return user;
+    }
+
+    public void insert(AdminUser user) throws SQLException, StorageException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
@@ -53,42 +67,47 @@ public class UserStorage {
         }
     }
 
-    private User get(ResultSet resultSet) throws SQLException {
-        User user = new User();
-        user.setUserName(resultSet.getString(UserMeta.user_name.name()));
-        user.setDisplayName(resultSet.getString(UserMeta.display_name.name()));
-        user.setEmail(resultSet.getString(UserMeta.email.name()));
-        user.setSubject(resultSet.getString(UserMeta.subject.name()));
-        user.setRole(AdminRole.valueOf(resultSet.getString(UserMeta.role_.name())));
-        user.setLastLogin(resultSet.getTimestamp(UserMeta.last_login.name()));
-        user.setUpdated(resultSet.getTimestamp(UserMeta.updated.name()));
-        return user;
-    }
-
-    public boolean exists(String email) throws SQLException {
+    public boolean exists(String userName) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.exists_username.name()));
-            statement.setString(1, email);
+            statement.setString(1, userName);
             ResultSet resultSet = statement.executeQuery();
-            boolean exists = resultSet.next();
+            resultSet.next();
+            int count = resultSet.getInt(1);
             ok = true;
-            return exists;
+            return count == 1;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);
         }
     }
 
-    public User get(String username) throws SQLException, StorageException {
-        User adminUser = find(username);
+    public boolean existsEmail(String email) throws SQLException {
+        Connection connection = storage.getConnectionPool().getConnection();
+        boolean ok = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.exists_email.name()));
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
+            ok = true;
+            return count == 1;
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection, ok);
+        }
+    }
+    
+    public AdminUser get(String username) throws SQLException, StorageException {
+        AdminUser adminUser = find(username);
         if (adminUser == null) {
-            throw new StorageException(StorageExceptionType.NOT_FOUND);
+            throw new StorageException(StorageExceptionType.NOT_FOUND, username);
         }
         return adminUser;
     }
     
-    public User find(String username) throws SQLException {
+    public AdminUser find(String username) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
@@ -105,7 +124,7 @@ public class UserStorage {
         }
     }
     
-    public User findByEmail(String email) throws SQLException {
+    public AdminUser findByEmail(String email) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
@@ -122,13 +141,15 @@ public class UserStorage {
         }
     }
 
-    public void update(User AdminUser) throws SQLException {
+    public void update(AdminUser user) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update.name()));
-            statement.setString(1, AdminUser.getUserName());
+                    sqlMap.get(UserQuery.update_display_name_subject.name()));
+            statement.setString(1, user.getDisplayName());
+            statement.setString(2, user.getSubject());
+            statement.setString(3, user.getUserName());
             int updateCount = statement.executeUpdate();
             ok = true;
             if (updateCount != 1) {
@@ -139,11 +160,11 @@ public class UserStorage {
         }
     }
 
-    public List<User> getList() throws SQLException {
+    public List<AdminUser> getList() throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
-            List<User> list = new ArrayList();
+            List<AdminUser> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {

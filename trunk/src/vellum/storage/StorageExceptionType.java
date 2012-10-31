@@ -8,6 +8,7 @@ package vellum.storage;
  * @author evans
  */
 public enum StorageExceptionType {
+    ALREADY_EXISTS,
     DUPLICATE,
     NULL_ID,
     NOT_FOUND, 

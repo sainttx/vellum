@@ -29,7 +29,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter.div("menuBarDiv");
         htmlPrinter.a_("/", "Home");
         htmlPrinter._div();
-        printCerts("certs", storage.getClientCertStorage().getList());        
+        printCerts("certs", storage.getClientCertStorage().getList());
     }
     
     private void printCerts(String label, Collection<ClientCert> certs) {
