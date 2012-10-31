@@ -40,6 +40,7 @@ public class ClientCertStorage {
         cert.setCert(resultSet.getString(ClientCertMeta.cert.name()));
         cert.setUpdated(resultSet.getTimestamp(ClientCertMeta.updated.name()));
         cert.setUpdatedBy(resultSet.getString(ClientCertMeta.updated_by.name()));
+        cert.setStored(true);
         return cert;
     }
 
@@ -59,6 +60,10 @@ public class ClientCertStorage {
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);
             }
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            generatedKeys.next();
+            cert.setId(generatedKeys.getLong((1)));
+            cert.setStored(true);
             ok = true;
         } finally {
             storage.getConnectionPool().releaseConnection(connection, ok);

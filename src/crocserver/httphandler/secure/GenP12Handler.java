@@ -76,6 +76,7 @@ public class GenP12Handler implements HttpHandler {
     }
     
     Org org;
+    ClientCert clientCert;
     
     private void handle() throws Exception {
         org = storage.getOrgStorage().get(orgName);
@@ -91,11 +92,18 @@ public class GenP12Handler implements HttpHandler {
         String alias = app.getServerKeyAlias();
         X509Certificate serverCert = DefaultKeyStores.getCert(alias);
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);
-        ClientCert clientCert = new ClientCert(userName, org.getId(), hostName, clientName);
+        clientCert = storage.getClientCertStorage().findDname(dname);
+        if (clientCert == null) {
+            clientCert = new ClientCert(userName, org.getId(), hostName, clientName);
+        }
         clientCert.setX509Cert(keyPair.getCert());
-        storage.getClientCertStorage().insert(userName, org, clientCert);
+        if (clientCert.isStored()) {
+            storage.getClientCertStorage().updateCert(userName, clientCert);            
+        } else {
+            storage.getClientCertStorage().insert(userName, org, clientCert);
+        }
         PKCS12KeyStore p12 = new PKCS12KeyStore();
-        X509Certificate[] chain = new X509Certificate[] {serverCert, keyPair.getCert()};
+        X509Certificate[] chain = new X509Certificate[] {keyPair.getCert(), serverCert};
         char[] password = httpExchangeInfo.getParameterMap().getString("password", clientName).toCharArray();
         p12.engineSetKeyEntry(clientName, keyPair.getPrivateKey(), password, chain);
         logger.verbose(KeyStores.buildPem(p12, clientName, password));
