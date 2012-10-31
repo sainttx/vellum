@@ -3,8 +3,20 @@
 insert into user_ (user_name, display_name, email, subject, role_)
 values (?, ?, ?, ?, ?);
 
--- exists_usrename
+-- update_display_name_subject
+update user_ 
+set 
+  display_name = ?, 
+  subject = ?
+where user_name = ?
+;
+
+-- exists_username
 select count(1) from user_ where user_name = ?
+;
+
+-- exists_email
+select count(1) from user_ where email = ?
 ;
 
 -- find_username

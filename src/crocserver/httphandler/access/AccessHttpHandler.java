@@ -3,6 +3,7 @@
  */
 package crocserver.httphandler.access;
 
+import crocserver.httphandler.secure.GenP12Handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
@@ -28,18 +29,26 @@ public class AccessHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+        if (!handlePath(httpExchange)) {
+            new AccessHomeHandler(storage).handle(httpExchange);
+        }
+    }
+
+    public boolean handlePath(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
         if (path.startsWith("/enroll/user/")) {
             new EnrollUserHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/org/")) {
-            new EnrollOrgHandler(storage).handle(httpExchange);
+            new EnrollOrgHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/service/")) {
             new EnrollServiceHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/get/cert/")) {
             new GetCertHandler(storage).handle(httpExchange);
+        } else if (path.startsWith("/gen/p12/")) {
+            new GenP12Handler(app).handle(httpExchange);
         } else if (path.startsWith("/sign/cert/")) {
-            new SignCertHandler(storage).handle(httpExchange);
+            new SignCertHandler(app).handle(httpExchange);
         } else if (path.startsWith("/view/user/")) {
             new ViewUserHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/view/cert/")) {
@@ -51,7 +60,9 @@ public class AccessHttpHandler implements HttpHandler {
         } else if (path.startsWith("/storage")) {
             new StoragePageHandler(storage).handle(httpExchange);
         } else {
-            new AccessHomeHandler(storage).handle(httpExchange);
+            return false;
         }
+        return true;
     }
+    
 }

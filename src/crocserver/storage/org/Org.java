@@ -24,12 +24,13 @@ public class Org extends AbstractIdEntity {
     String updatedBy;
     Date inserted;
     Date updated;
-    
+    boolean stored = false;
+            
     public Org() {
     }
 
-    public Org(String name, String updatedBy) {
-        this.name = name;
+    public Org(String orgName, String updatedBy) {
+        this.name = orgName;
         this.updatedBy = updatedBy;
     }
       
@@ -121,7 +122,15 @@ public class Org extends AbstractIdEntity {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
-       
+
+    public void setStored(boolean stored) {
+        this.stored = stored;
+    }
+    
+    public boolean isStored() {
+        return stored;
+    }
+           
     @Override
     public String toString() {
         return getId().toString();

@@ -37,6 +37,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         org.setUrl(resultSet.getString(OrgMeta.url.name()));
         org.setUpdated(resultSet.getTimestamp(OrgMeta.updated.name()));
         org.setUpdatedBy(resultSet.getString(OrgMeta.updated_by.name()));
+        org.setStored(true);
         return org;
     }
 
@@ -48,8 +49,8 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
                 sqlMap.get(OrgQuery.insert.name()));
             int index = 0;
             statement.setString(++index, org.getName());
-            statement.setString(++index, org.getDisplayName());
             statement.setString(++index, org.getUrl());
+            statement.setString(++index, org.getDisplayName());
             statement.setString(++index, org.getUpdatedBy());
             int updateCount = statement.executeUpdate();
             ok = true;
@@ -62,6 +63,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             }
             long id = resultSet.getLong(1);
             org.setId(id);
+            org.setStored(true);
             ok = true;
             return id;
         } finally {
@@ -137,13 +139,15 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         }
     }
 
-    public void update(Org Organisation) throws SQLException {
+    public void update(Org org) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(OrgQuery.update.name()));
-            statement.setString(1, Organisation.getName());
+                    sqlMap.get(OrgQuery.update_url_display_name_where_org_name.name()));
+            statement.setString(1, org.getUrl());
+            statement.setString(2, org.getDisplayName());
+            statement.setString(3, org.getName());
             int updateCount = statement.executeUpdate();
             ok = true;
             if (updateCount != 1) {

@@ -6,11 +6,10 @@ package vellum.security;
 
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
+import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import java.io.FileInputStream;
 import java.net.InetSocketAddress;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.Signature;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -99,7 +98,18 @@ public class KeyStores {
         };
     }
 
-    public static String buildPrivateKeyPem(PrivateKey privateKey) throws Exception, CertificateException {
+    public static String buildPem(PKCS12KeyStore p12, String keyAlias, char[] password) throws Exception {
+        PrivateKey key = (PrivateKey) p12.engineGetKey(keyAlias, password);
+        StringBuilder builder = new StringBuilder();
+        builder.append(buildKeyPem(key));
+        Certificate[] chain = p12.engineGetCertificateChain(keyAlias);
+        for (Certificate cert : chain) {
+            builder.append(buildCertPem(cert));
+        }
+        return builder.toString();
+    }
+    
+    public static String buildKeyPem(Key privateKey) throws Exception, CertificateException {
         StringBuilder builder = new StringBuilder();
         BASE64Encoder encoder = new BASE64Encoder();
         builder.append(BEGIN_PRIVATE_KEY);
@@ -110,7 +120,7 @@ public class KeyStores {
         return builder.toString();
     }
 
-    public static String buildCertPem(X509Certificate cert) {
+    public static String buildCertPem(Certificate cert) {
         try {
             StringBuilder builder = new StringBuilder();
             builder.append(X509Factory.BEGIN_CERT);

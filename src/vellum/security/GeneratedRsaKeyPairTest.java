@@ -24,7 +24,7 @@ public class GeneratedRsaKeyPairTest {
         clientKeyPair.generate(clientDname, new Date(), 999);
         logger.info(KeyStores.buildCertReqPem(clientKeyPair.getCertReq()));
         clientKeyPair.sign(rootKeyPair.getPrivateKey(), rootKeyPair.getCert());
-        logger.info(KeyStores.buildPrivateKeyPem(clientKeyPair.getPrivateKey()));
+        logger.info(KeyStores.buildKeyPem(clientKeyPair.getPrivateKey()));
         logger.info(KeyStores.buildCertPem(clientKeyPair.getCert()));
     }
     

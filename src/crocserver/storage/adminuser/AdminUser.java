@@ -13,7 +13,7 @@ import vellum.security.KeyStores;
  *
  * @author evan
  */
-public class User extends AbstractIdEntity<String> {
+public class AdminUser extends AbstractIdEntity<String> {
     String userName;
     String displayName;
     AdminRole role;
@@ -32,15 +32,16 @@ public class User extends AbstractIdEntity<String> {
     String passwordSalt;
     Date lastLogin;
     String subject;
+    boolean stored = false; 
     
-    public User() {
+    public AdminUser() {
     }
 
-    public User(String userName) {
+    public AdminUser(String userName) {
         this.userName = userName;
     }
     
-    public User(String userName, String displayName, AdminRole role, boolean enabled) {
+    public AdminUser(String userName, String displayName, AdminRole role, boolean enabled) {
         this.userName = userName;
         this.displayName = displayName;
         this.role = role;
@@ -199,7 +200,15 @@ public class User extends AbstractIdEntity<String> {
     public void setSubject(String subject) {
         this.subject = subject;
     }
-       
+
+    public boolean isStored() {
+        return stored;
+    }
+
+    public void setStored(boolean stored) {
+        this.stored = stored;
+    }
+   
     @Override
     public String toString() {
         return getId().toString();

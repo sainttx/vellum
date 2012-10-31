@@ -5,17 +5,18 @@ package crocserver.httphandler.access;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.app.CrocApp;
 import crocserver.httpserver.HttpExchangeInfo;
+import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
-import java.sql.SQLException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.StorageException;
-import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import vellum.format.ListFormats;
+import vellum.datatype.Patterns;
+import vellum.storage.StorageExceptionType;
 
 /**
  *
@@ -23,7 +24,7 @@ import vellum.format.ListFormats;
  */
 public class EnrollOrgHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
-    CrocStorage storage;
+    CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
@@ -31,9 +32,9 @@ public class EnrollOrgHandler implements HttpHandler {
     String userName;
     String orgName;
     
-    public EnrollOrgHandler(CrocStorage storage) {
+    public EnrollOrgHandler(CrocApp app) {
         super();
-        this.storage = storage;
+        this.app = app;
     }
     
     @Override
@@ -49,8 +50,7 @@ public class EnrollOrgHandler implements HttpHandler {
             userName = httpExchangeInfo.getPathString(2);
             orgName = httpExchangeInfo.getPathString(3);
             try {
-                insert();
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                handle();
             } catch (Exception e) {
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
                 e.printStackTrace(out);
@@ -61,17 +61,36 @@ public class EnrollOrgHandler implements HttpHandler {
         httpExchange.close();
     }
 
-    private void insert() throws StorageException, SQLException {
-        Org org = new Org(orgName, userName);
+    Org org;
+    
+    private void handle() throws Exception {
+        AdminUser user = app.getStorage().getUserStorage().get(userName);
+        logger.info("user", user);
+        String url = httpExchangeInfo.getParameterMap().get("url");
+        if (url == null) {
+            url = orgName;
+        }
+        if (!Patterns.matchesUrl(url)) {
+            throw new Exception("url " + url);
+        }
+        org = app.getStorage().getOrgStorage().find(orgName);
+        if (org == null) {
+            org = new Org(orgName, userName);
+        } else if (!org.getUpdatedBy().equals(userName)) {
+            throw new StorageException(StorageExceptionType.ALREADY_EXISTS, orgName);
+        }
         org.setDisplayName(httpExchangeInfo.getParameterMap().get("displayName"));
-        org.setUrl(httpExchangeInfo.getParameterMap().get("url"));
+        org.setUrl(url);
         org.setRegion(httpExchangeInfo.getParameterMap().get("region"));
         org.setLocality(httpExchangeInfo.getParameterMap().get("locality"));
         org.setCountry(httpExchangeInfo.getParameterMap().get("country"));
-        storage.getOrgStorage().insert(org);
-        out.printf("OK %s\n", ListFormats.displayFormatter.formatArgs(
-                getClass().getName(), userName, orgName, httpExchangeInfo.getParameterMap()
-                ));
+        if (org.isStored()) {
+            app.getStorage().getOrgStorage().update(org);
+        } else {
+            app.getStorage().getOrgStorage().insert(org);
+        }
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        out.printf("OK %s %d\n", org.getName(), org.getId());
     }
     
 }

@@ -1,10 +1,11 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httphandler.access;
+package crocserver.httphandler.secure;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import crocserver.app.CrocApp;
 import crocserver.httpserver.HttpExchangeInfo;
 import java.io.IOException;
@@ -17,90 +18,89 @@ import crocserver.storage.org.Org;
 import crocserver.storage.servicecert.ClientCert;
 import java.security.cert.X509Certificate;
 import java.util.Date;
-import sun.security.pkcs.PKCS10;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
-import vellum.util.Streams;
+import vellum.security.GeneratedRsaKeyPair;
 
 /**
  *
  * @author evans
  */
-public class SignCertHandler implements HttpHandler {
-
+public class GenP12Handler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
-    String certReqPem;
+
     String userName;
     String orgName;
     String hostName;
     String clientName;
-
-    public SignCertHandler(CrocApp app) {
+ 
+    public GenP12Handler(CrocApp app) {
         super();
         this.app = app;
         this.storage = app.getStorage();
     }
-
+    
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
-        certReqPem = Streams.readString(httpExchange.getRequestBody());
         out = new PrintStream(httpExchange.getResponseBody());
-        logger.info(getClass().getSimpleName(), httpExchangeInfo.getPathArgs().length);
-        if (httpExchangeInfo.getPathArgs().length == 6) {
+        if (httpExchangeInfo.getPathArgs().length < 6) {
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+            out.printf("ERROR %s\n", httpExchangeInfo.getPath());
+        } else {
             userName = httpExchangeInfo.getPathString(2);
             orgName = httpExchangeInfo.getPathString(3);
             hostName = httpExchangeInfo.getPathString(4);
             clientName = httpExchangeInfo.getPathString(5);
             try {
-                sign();
+                handle();
             } catch (Exception e) {
                 handle(e);
             }
-        } else {
-            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-            out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         }
         httpExchange.close();
     }
-
+    
     private void handle(Exception e) throws IOException {
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         e.printStackTrace(out);
         e.printStackTrace(System.err);
         out.printf("ERROR %s\n", e.getMessage());
     }
-
-    private void sign() throws Exception {
-        Org org = storage.getOrgStorage().get(orgName);
-        String dname = KeyStores.formatDname(clientName, hostName, orgName,
-                org.getRegion(), org.getLocality(), org.getCountry());
-        logger.info("sign", dname, certReqPem.length());
-        String alias = app.getServerKeyAlias();
-        PKCS10 certReq = KeyStores.createCertReq(certReqPem);
-        X509Certificate signedCert = KeyStores.signCert(
-                DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias),
-                certReq, new Date(), 999);
-        String signedCertPem = KeyStores.buildCertPem(signedCert);
-        ClientCert clientCert = storage.getClientCertStorage().find(org.getId(), hostName, clientName);
-        if (clientCert == null) {
-            clientCert = new ClientCert(userName, org.getId(), hostName, clientName);
-            clientCert.setX509Cert(signedCert);
-            storage.getClientCertStorage().insert(userName, org, clientCert);
-        } else {
-            logger.info("updateCert", clientCert.getId());
-            clientCert.setX509Cert(signedCert);
-            storage.getClientCertStorage().updateCert(userName, clientCert);
+    
+    Org org;
+    
+    private void handle() throws Exception {
+        org = storage.getOrgStorage().get(orgName);
+        if (org == null) {
+            org = new Org(orgName, userName);
+            storage.getOrgStorage().insert(org);
         }
-        logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
+        String dname = KeyStores.formatDname(clientName, hostName, orgName, 
+                org.getRegion(), org.getLocality(), org.getCountry());
+        logger.info("generate", dname);
+        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        keyPair.generate(dname, new Date(), 999);
+        String alias = app.getServerKeyAlias();
+        X509Certificate serverCert = DefaultKeyStores.getCert(alias);
+        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);
+        ClientCert clientCert = new ClientCert(userName, org.getId(), hostName, clientName);
+        clientCert.setX509Cert(keyPair.getCert());
+        storage.getClientCertStorage().insert(userName, org, clientCert);
+        PKCS12KeyStore p12 = new PKCS12KeyStore();
+        X509Certificate[] chain = new X509Certificate[] {serverCert, keyPair.getCert()};
+        char[] password = httpExchangeInfo.getParameterMap().getString("password", clientName).toCharArray();
+        p12.engineSetKeyEntry(clientName, keyPair.getPrivateKey(), password, chain);
+        logger.verbose(KeyStores.buildPem(p12, clientName, password));
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.println(signedCertPem);
-    }
+        out.println(KeyStores.buildPem(p12, clientName, password));
+    }    
+    
 }

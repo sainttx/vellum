@@ -1,7 +1,7 @@
 /*
  * (c) Copyright 2010, iPay (Pty) Ltd
  */
-package crocserver.httphandler.access;
+package crocserver.httphandler.secure;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -12,11 +12,10 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.org.Org;
 import crocserver.storage.servicecert.ClientCert;
 import java.util.Date;
-import vellum.format.ListFormats;
+import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
 import vellum.security.GeneratedRsaKeyPair;
 
@@ -24,20 +23,23 @@ import vellum.security.GeneratedRsaKeyPair;
  *
  * @author evans
  */
-public class GetCertHandler implements HttpHandler {
+public class EnableServiceHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
+    String dname;
     String userName;
     String orgName;
     String hostName;
     String serviceName;
     String cert;
+ 
+    Org org;
     
-    public GetCertHandler(CrocStorage storage) {
+    public EnableServiceHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -56,24 +58,39 @@ public class GetCertHandler implements HttpHandler {
             orgName = httpExchangeInfo.getPathString(3);
             hostName = httpExchangeInfo.getPathString(4);
             serviceName = httpExchangeInfo.getPathString(5);
-            logger.info("enroll", orgName, hostName, serviceName);
             try {
-                Org org = storage.getOrgStorage().get(orgName);
-                ClientCert serviceKey = storage.getClientCertStorage().find(org.getId(), hostName, serviceName);
-                if (serviceKey == null) {
-                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-                    out.printf("ERROR: not found\n");
-                } else {
-                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                    out.println(serviceKey.getCert());
-                }
+                generate();
             } catch (Exception e) {
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-                e.printStackTrace(out);
-                e.printStackTrace(System.err);
-                out.printf("ERROR %s\n", e.getMessage());
+                handle(e);
             }
         }
         httpExchange.close();
     }
+    
+    private void handle(Exception e) throws IOException {
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        e.printStackTrace(out);
+        e.printStackTrace(System.err);
+        out.printf("ERROR %s\n", e.getMessage());
+    }
+    
+    private void generate() throws Exception {
+        org = storage.getOrgStorage().get(orgName);
+        setDname();
+        logger.info("generate", dname);
+        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        keyPair.generate(dname, new Date(), 999);
+        String alias = "croc-server";
+        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
+        ClientCert clientCert = new ClientCert(userName, org.getId(), hostName, serviceName);
+        clientCert.setX509Cert(keyPair.getCert());
+        storage.getClientCertStorage().insert(userName, org, clientCert);
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        out.println(KeyStores.buildKeyPem(keyPair.getPrivateKey()));
+    }    
+    
+    private void setDname() throws Exception {
+        dname = KeyStores.formatDname(serviceName, hostName, orgName, 
+                org.getRegion(), org.getLocality(), org.getCountry());
+    } 
 }
