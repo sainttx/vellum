@@ -59,7 +59,7 @@ public class EnableServiceHandler implements HttpHandler {
             hostName = httpExchangeInfo.getPathString(4);
             serviceName = httpExchangeInfo.getPathString(5);
             try {
-                generate();
+                handle();
             } catch (Exception e) {
                 handle(e);
             }
@@ -74,23 +74,11 @@ public class EnableServiceHandler implements HttpHandler {
         out.printf("ERROR %s\n", e.getMessage());
     }
     
-    private void generate() throws Exception {
+    private void handle() throws Exception {
         org = storage.getOrgStorage().get(orgName);
-        setDname();
-        logger.info("generate", dname);
-        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
-        keyPair.generate(dname, new Date(), 999);
-        String alias = "croc-server";
-        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
-        ClientCert clientCert = new ClientCert(userName, org.getId(), hostName, serviceName);
-        clientCert.setX509Cert(keyPair.getCert());
-        storage.getClientCertStorage().insert(userName, org, clientCert);
+        ClientCert clientCert = storage.getClientCertStorage().get(org.getId(), hostName, serviceName);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.println(KeyStores.buildKeyPem(keyPair.getPrivateKey()));
+        out.println(clientCert.getCert());
     }    
     
-    private void setDname() throws Exception {
-        dname = KeyStores.formatDname(serviceName, hostName, orgName, 
-                org.getRegion(), org.getLocality(), org.getCountry());
-    } 
 }

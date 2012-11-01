@@ -84,6 +84,7 @@ public class EnrollOrgHandler implements HttpHandler {
         org.setRegion(httpExchangeInfo.getParameterMap().get("region"));
         org.setLocality(httpExchangeInfo.getParameterMap().get("locality"));
         org.setCountry(httpExchangeInfo.getParameterMap().get("country"));
+        org.setUpdatedBy(userName);
         if (org.isStored()) {
             app.getStorage().getOrgStorage().update(org);
         } else {

@@ -3,6 +3,7 @@
  */
 package crocserver.httphandler.access;
 
+import crocserver.app.CrocApp;
 import crocserver.httphandler.common.AbstractPageHandler;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.servicecert.ClientCert;
@@ -17,19 +18,21 @@ import vellum.format.CalendarFormats;
  */
 public class AccessHomeHandler extends AbstractPageHandler {
 
-    CrocStorage storage;
+    CrocApp app;
 
-    public AccessHomeHandler(CrocStorage storage) {
+    public AccessHomeHandler(CrocApp app) {
         super();
-        this.storage = storage;
+        this.app = app;
     }
 
     @Override
     public void handle() throws IOException, SQLException {
         htmlPrinter.div("menuBarDiv");
         htmlPrinter.a_("/", "Home");
+        htmlPrinter.spanf("style", "|");
+        htmlPrinter.a_(app.getGoogleLoginUrl(), "Login with Google");
         htmlPrinter._div();
-        printCerts("certs", storage.getClientCertStorage().getList());
+        printCerts("certs", app.getStorage().getClientCertStorage().getList());
     }
     
     private void printCerts(String label, Collection<ClientCert> certs) {

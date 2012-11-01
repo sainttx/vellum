@@ -82,9 +82,9 @@ public class EnrollServiceHandler implements HttpHandler {
         keyPair.generate(dname, new Date(), 999);
         String alias = "croc-server";
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
-        ClientCert clientCert = new ClientCert(userName, org.getId(), hostName, serviceName);
+        ClientCert clientCert = new ClientCert(org.getId(), hostName, serviceName, userName);
         clientCert.setX509Cert(keyPair.getCert());
-        storage.getClientCertStorage().insert(userName, org, clientCert);
+        storage.getClientCertStorage().insert(clientCert);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         out.println(KeyStores.buildKeyPem(keyPair.getPrivateKey()));
     }    
