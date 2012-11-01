@@ -30,14 +30,16 @@ public class AccessHttpHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         if (!handlePath(httpExchange)) {
-            new AccessHomeHandler(storage).handle(httpExchange);
+            new AccessHomeHandler(app).handle(httpExchange);
         }
     }
 
     public boolean handlePath(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
-        if (path.startsWith("/enroll/user/")) {
+        if (path.startsWith("/oauth")) {
+            new OAuthCallbackHandler(app).handle(httpExchange);
+        } else if (path.startsWith("/enroll/user/")) {
             new EnrollUserHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/org/")) {
             new EnrollOrgHandler(app).handle(httpExchange);

@@ -81,9 +81,8 @@ public class EnrollUserHandler implements HttpHandler {
         if (!Patterns.matchesEmail(email)) {
             throw new Exception("email " + email);
         }
-        if (app.getStorage().getUserStorage().exists(userName)) {
-            user = app.getStorage().getUserStorage().find(userName);
-        } else {
+        user = app.getStorage().getUserStorage().find(userName);
+        if (user == null) {
             user = new AdminUser(userName);
             user.setDisplayName(httpExchangeInfo.getParameterMap().get("displayName"));
             user.setEmail(email);
@@ -92,6 +91,7 @@ public class EnrollUserHandler implements HttpHandler {
             user.setRegion(httpExchangeInfo.getParameterMap().get("region"));
             user.setCountry(httpExchangeInfo.getParameterMap().get("country"));
             user.setRole(AdminRole.DEFAULT);
+            user.setEnabled(true);
         }
         logger.info("sign", user.getSubject(), certReqPem.length());
         String alias = app.getServerKeyAlias();
@@ -107,7 +107,7 @@ public class EnrollUserHandler implements HttpHandler {
         } else {
             storage.getUserStorage().insert(user);
         }
-        app.getGtalkConnection().sendMessage(user.getEmail(), signedCert.getSubjectDN().toString());
+        app.sendGtalkMessage(user.getEmail(), signedCert.getSubjectDN().toString());
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         out.print(signedCertPem);
     }

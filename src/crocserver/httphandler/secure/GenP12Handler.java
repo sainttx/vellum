@@ -49,10 +49,9 @@ public class GenP12Handler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         out = new PrintStream(httpExchange.getResponseBody());
         if (httpExchangeInfo.getPathArgs().length < 6) {
-            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+            httpExchangeInfo.setResponse("text/plain", true);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
             userName = httpExchangeInfo.getPathString(2);
@@ -66,13 +65,6 @@ public class GenP12Handler implements HttpHandler {
             }
         }
         httpExchange.close();
-    }
-    
-    private void handle(Exception e) throws IOException {
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-        e.printStackTrace(out);
-        e.printStackTrace(System.err);
-        out.printf("ERROR %s\n", e.getMessage());
     }
     
     Org org;
@@ -94,21 +86,36 @@ public class GenP12Handler implements HttpHandler {
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);
         clientCert = storage.getClientCertStorage().findDname(dname);
         if (clientCert == null) {
-            clientCert = new ClientCert(userName, org.getId(), hostName, clientName);
+            clientCert = new ClientCert(org.getId(), hostName, clientName, userName);
+        } else {
+            clientCert.setUpdatedBy(userName);            
         }
         clientCert.setX509Cert(keyPair.getCert());
         if (clientCert.isStored()) {
-            storage.getClientCertStorage().updateCert(userName, clientCert);            
+            storage.getClientCertStorage().updateCert(clientCert);            
         } else {
-            storage.getClientCertStorage().insert(userName, org, clientCert);
+            storage.getClientCertStorage().insert(clientCert);
         }
         PKCS12KeyStore p12 = new PKCS12KeyStore();
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCert(), serverCert};
         char[] password = httpExchangeInfo.getParameterMap().getString("password", clientName).toCharArray();
         p12.engineSetKeyEntry(clientName, keyPair.getPrivateKey(), password, chain);
-        logger.verbose(KeyStores.buildPem(p12, clientName, password));
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.println(KeyStores.buildPem(p12, clientName, password));
+        if (httpExchangeInfo.getQuery().toLowerCase().contains("pem")) {
+            httpExchangeInfo.setResponse("text/plain", true);
+            out.println(KeyStores.buildPem(p12, clientName, password));
+            logger.info("pem");
+        } else {
+            httpExchangeInfo.setResponse("application/x-pkcs12", true);
+            p12.engineStore(out, "1234".toCharArray());
+            logger.info("pkcs12");
+        }
     }    
     
+    private void handle(Exception e) throws IOException {
+        logger.warn(e, "p12");
+        httpExchangeInfo.setResponse("text/plain", true);
+        e.printStackTrace(out);
+        e.printStackTrace(System.err);
+        out.printf("ERROR %s\n", e.getMessage());
+    }    
 }
