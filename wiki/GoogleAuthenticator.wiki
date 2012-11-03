@@ -1,8 +1,6 @@
 
 Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/wiki/Google_Authenticator.
 
-http://i1-handheld.softpedia-static.com/images/software/screens/Google-Authenticator-Android_1.jpg
-
 Should one should install this app on one's phone and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
 On https://www.google.com/settings/security.
 
@@ -113,3 +111,5 @@ The problem is the client's mobile clock might be out by a minute or two, so we 
 }}}
 
 The question arises how to handle the event of a user loosing their phone. So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret.  
+
+http://i1-handheld.softpedia-static.com/images/software/screens/Google-Authenticator-Android_1.jpg
