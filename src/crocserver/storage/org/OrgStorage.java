@@ -89,7 +89,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     public Org get(String name) throws SQLException {
         Org org = find(name);
         if (org == null) {
-            throw new StorageException(StorageExceptionType.NOT_FOUND);
+            throw new StorageException(StorageExceptionType.NOT_FOUND, name);
         }
         return org;
     }
@@ -97,7 +97,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     public Org get(long id) throws SQLException {
         Org org = find(id);
         if (org == null) {
-            throw new StorageException(StorageExceptionType.NOT_FOUND);
+            throw new StorageException(StorageExceptionType.NOT_FOUND, id);
         }
         return org;
     }
@@ -144,10 +144,12 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(OrgQuery.update_url_display_name_where_org_name.name()));
-            statement.setString(1, org.getUrl());
-            statement.setString(2, org.getDisplayName());
-            statement.setString(3, org.getName());
+                    sqlMap.get(OrgQuery.update.name()));
+            int index = 0;
+            statement.setString(++index, org.getUrl());
+            statement.setString(++index, org.getDisplayName());
+            statement.setString(++index, org.getUpdatedBy());
+            statement.setLong(++index, org.getId());
             int updateCount = statement.executeUpdate();
             ok = true;
             if (updateCount != 1) {

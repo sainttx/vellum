@@ -29,6 +29,11 @@ public class LogrRecord implements Timestamped {
         this.throwable = throwable;
     }
 
+    public LogrRecord(Throwable throwable, LogrLevel level) {
+        this.level = level;
+        this.throwable = throwable;
+    }
+    
     public void setContext(LogrContext context) {
         this.context = context;
     }

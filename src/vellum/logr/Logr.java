@@ -27,6 +27,8 @@ public interface Logr {
     
     public void error(String message, Object ... args);
 
+    public void warn(Throwable throwable);
+    
     public void warn(Throwable throwable, String message, Object ... args);
     
     public void error(Throwable throwable, String message, Object ... args);

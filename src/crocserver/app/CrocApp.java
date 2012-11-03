@@ -105,7 +105,10 @@ public class CrocApp {
         }
         String gtalkConfigName = configProperties.getString("gtalk");
         if (gtalkConfigName != null) {
-            gtalkConnection = new GtalkConnection(configMap.find("Gtalk", gtalkConfigName).getProperties());
+            PropertiesMap gtalkProps = configMap.find("Gtalk", gtalkConfigName).getProperties();
+            if (gtalkProps.getBoolean("enabled", false)) {
+                gtalkConnection = new GtalkConnection(gtalkProps);
+            }
         }          
     }
 
@@ -199,17 +202,33 @@ public class CrocApp {
         return serverKeyAlias;
     }
     
-    public void notifyAdmin(String message) {
+    public void sendAdminGtalkMessage(String message) {
         logger.warn("notifyAdmin", message, adminContact);
         if (gtalkConnection != null && adminContact != null && adminContact.isEnabled() && adminContact.isGtalk()) {
             try {
                 gtalkConnection.sendMessage(adminContact.getIm(), message);
             } catch (Exception e) {
-                logger.warn(e, "notifyAdmin", adminContact);
+                logger.warn(e, "sendAdminGtalkMessage", adminContact);
             }
         }
     }
+
+    public void sendGtalkMessage(String im, String message) throws Exception {
+        if (gtalkConnection != null && im != null && message != null) {
+            try {
+                gtalkConnection.sendMessage(adminContact.getIm(), message);
+            } catch (Exception e) {
+                logger.warn(e, "sendGtalkMessage", adminContact);
+            }            
+        }        
+    }
     
+    String googleLoginUrl = "/oauth";
+
+    public String getGoogleLoginUrl() {
+        return googleLoginUrl;
+    }
+            
     public static void main(String[] args) throws Exception {
         try {
             CrocApp starter = new CrocApp();

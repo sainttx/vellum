@@ -6,6 +6,8 @@ package crocserver.httpserver;
 
 import com.sun.net.httpserver.HttpExchange;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.List;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -37,7 +39,7 @@ public class HttpExchangeInfo {
     public String getPath() {
         return httpExchange.getRequestURI().getPath();
     }
-    
+
     public String[] getPathArgs() {
         if (args == null) {
             args = httpExchange.getRequestURI().getPath().substring(1).split("/");
@@ -48,7 +50,7 @@ public class HttpExchangeInfo {
     public int getPathLength() {
         return getPathArgs().length;
     }
-    
+
     public ParameterMap getParameterMap() {
         if (parameterMap == null) {
             parseParameterMap();
@@ -78,7 +80,7 @@ public class HttpExchangeInfo {
     public String getParameter(String key) {
         return parameterMap.get(key);
     }
-    
+
     private void put(String string) {
         Entry<String, String> entry = Parameters.parseEntry(string);
         if (entry != null) {
@@ -132,7 +134,7 @@ public class HttpExchangeInfo {
     public String getPathString(int index) {
         return getPathString(index, null);
     }
-    
+
     public String getPathString(int index, String defaultValue) {
         String[] args = getPathArgs();
         if (args.length > index) {
@@ -140,5 +142,17 @@ public class HttpExchangeInfo {
         }
         return defaultValue;
     }
-    
+
+    public void setResponse(String contentType, boolean ok) throws IOException {
+        httpExchange.getResponseHeaders().set("Content-type", contentType);
+        if (ok) {
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        } else {
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        }
+    }
+
+    public String getQuery() {
+        return httpExchange.getRequestURI().getQuery();
+    }
 }

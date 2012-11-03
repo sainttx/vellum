@@ -6,6 +6,7 @@ package vellum.storage;
 
 import java.sql.SQLException;
 import vellum.util.Args;
+import vellum.util.Lists;
 
 /**
  *
@@ -19,8 +20,8 @@ public class StorageException extends SQLException {
         this.exceptionType = exceptionType;
     }
     
-    public StorageException(StorageExceptionType exceptionType, Comparable id) {
-        super(Args.format(exceptionType, id));
+    public StorageException(StorageExceptionType exceptionType, Comparable ... ids) {
+        super(Args.format(exceptionType, Lists.format(ids)));
         this.exceptionType = exceptionType;
     }
 
