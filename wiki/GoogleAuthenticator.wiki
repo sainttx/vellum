@@ -4,7 +4,8 @@ Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/w
 Should one should install this app on one's phone and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
 On https://www.google.com/settings/security.
 
-This Google Authenticator app is client-side implementation of IETF RFC6238 standard (see http://tools.ietf.org/html/rfc6238).
+This Google Authenticator app is client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
+In particular it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
 
 Each account you configure on on your phone has a stored secret key. The app itself shows time-based code for each account.
 This code is actually the epoch time in 30 second intervals, hashed with the secret key using HMAC-SHA1 
@@ -109,4 +110,4 @@ The problem is the client's mobile clock might be out by a minute or two, so we 
     }
 }}}
 
-that's all folks !
+The question arises how to handle the event of a user loosing their phone. So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret.  
