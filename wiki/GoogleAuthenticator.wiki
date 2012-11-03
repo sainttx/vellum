@@ -1,5 +1,5 @@
 
-Probably you've heard of the Google Authenticator (see http://en.wikipedia.org/wiki/Google_Authenticator)?
+Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/wiki/Google_Authenticator.
 
 Should one should install this app on one's phone and change one's google account to require the 2 factor authentification? Absolutely! Do it now! :)
 
