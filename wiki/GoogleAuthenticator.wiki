@@ -1,7 +1,7 @@
 
 Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/wiki/Google_Authenticator.
 
-<image src='http://i1-handheld.softpedia-static.com/images/software/screens/Google-Authenticator-Android_1.jpg'>
+http://i1-handheld.softpedia-static.com/images/software/screens/Google-Authenticator-Android_1.jpg
 
 Should one should install this app on one's phone and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
 On https://www.google.com/settings/security.
