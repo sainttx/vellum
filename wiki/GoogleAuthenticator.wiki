@@ -98,7 +98,7 @@ We can then calculate the authentication code, for this exact time, using the us
     }
 }}}
 
-The problem is the client's mobile clock might be out by a minute or two, so we need to check codes for a few time indexes before and after this.
+The problem is the mobile's clock might be out by a minute or two (or indeed our workstation which we are using a test server), so we need to check codes for a few time indexes before and after the actual time. Hopefully it goes without saying that servers always have the correct time thanks to NTP ;)
 
 {{{
     public static boolean verifyCode(String secret, int code, long timeIndex, int variance) throws Exception {
@@ -112,5 +112,4 @@ The problem is the client's mobile clock might be out by a minute or two, so we 
     }
 }}}
 
-The question arises how to handle the event of a user loosing their phone. So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret.  
-
+The question arises how to handle the event of a user loosing their phone? So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret :)
