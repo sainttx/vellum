@@ -65,6 +65,8 @@ Alternarively, one can use a Google URL as follows, to generate a QR barcode, fo
 
 https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth://totp/evanx@evanx-laptop%3Fsecret%3DOVEK7TIJ3A3DM3M6
 
+(You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
+
 Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
 
 When users login, they then enter the current code, which changes every 30 seconds on their phone.
