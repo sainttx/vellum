@@ -23,8 +23,8 @@ public class ViewCertHandler extends AbstractPageHandler {
 
     @Override
     protected void handle() throws Exception {
-        HtmlPrinter p = new HtmlPrinter(out);
         Long id = Long.parseLong(pathArgs[2]);
+        HtmlPrinter p = new HtmlPrinter(out);
         p.div("menuBarDiv");
         p.a_("/", "Home");
         p._div();

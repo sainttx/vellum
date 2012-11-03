@@ -30,7 +30,8 @@ import vellum.util.Streams;
 import vellum.util.Threads;
 import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.servicerecord.ServiceRecord;
+import java.io.*;
+import java.net.URLEncoder;
 import java.security.Security;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
@@ -56,9 +57,11 @@ public class CrocApp {
     CrocTrustManager trustManager;
     GtalkConnection gtalkConnection;
     Contact adminContact; 
-    String serverKeyAlias = "croc-server";
+    String serverKeyAlias = System.getProperty("serverKeyAlias");
+    GoogleApi googleApi;        
+    String address; 
     
-    public void init() throws Exception {
+    public void init() throws Exception {        
         initConfig();
         if (configProperties.getBoolean("startH2TcpServer")) {
             h2Server = Server.createTcpServer().start();
@@ -110,8 +113,16 @@ public class CrocApp {
                 gtalkConnection = new GtalkConnection(gtalkProps);
             }
         }          
+        address = configProperties.getString("address");
+        googleApi = new GoogleApi();
+        googleApi.initLoginUrl(address + "/oauth");
+        logger.info("googleApi", googleApi);
     }
 
+    public GoogleApi getGoogleApi() {
+        return googleApi;
+    }
+    
     private void initConfig() throws Exception {
         confFileName = getString("conf");
         File confFile = new File(confFileName);
@@ -223,12 +234,6 @@ public class CrocApp {
         }        
     }
     
-    String googleLoginUrl = "/oauth";
-
-    public String getGoogleLoginUrl() {
-        return googleLoginUrl;
-    }
-            
     public static void main(String[] args) throws Exception {
         try {
             CrocApp starter = new CrocApp();

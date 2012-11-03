@@ -7,6 +7,7 @@ package crocserver.httpserver;
 import com.sun.net.httpserver.HttpExchange;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.util.List;
 import vellum.logr.Logr;
@@ -36,6 +37,10 @@ public class HttpExchangeInfo {
         this.httpExchange = httpExchange;
     }
 
+    public String getQuery() {
+        return httpExchange.getRequestURI().getQuery();
+    }
+    
     public String getPath() {
         return httpExchange.getRequestURI().getPath();
     }
@@ -151,8 +156,20 @@ public class HttpExchangeInfo {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         }
     }
-
-    public String getQuery() {
-        return httpExchange.getRequestURI().getQuery();
+    
+    public void handleException(Exception e) throws IOException {
+        PrintStream out = new PrintStream(httpExchange.getResponseBody());
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        e.printStackTrace(out);
+        e.printStackTrace(System.err);
+        out.printf("ERROR %s\n", e.getMessage());
     }
+
+    public void handleError(String message) throws IOException {
+        PrintStream out = new PrintStream(httpExchange.getResponseBody());
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        out.printf("ERROR %s\n", message);
+    }
+    
+    
 }

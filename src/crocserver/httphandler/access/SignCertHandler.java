@@ -62,20 +62,13 @@ public class SignCertHandler implements HttpHandler {
             try {
                 sign();
             } catch (Exception e) {
-                handle(e);
+                httpExchangeInfo.handleException(e);
             }
         } else {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         }
         httpExchange.close();
-    }
-
-    private void handle(Exception e) throws IOException {
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-        e.printStackTrace(out);
-        e.printStackTrace(System.err);
-        out.printf("ERROR %s\n", e.getMessage());
     }
 
     private void sign() throws Exception {

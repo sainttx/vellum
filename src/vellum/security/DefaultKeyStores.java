@@ -52,6 +52,12 @@ public class DefaultKeyStores {
         return sslContext;
     }
 
+    public static SSLContext createSSLContext(KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) throws Exception {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
+        return sslContext;
+    }
+    
     public static SSLContext createSSLContext(TrustManager trustManager) throws Exception {
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager[] trustManagers = new TrustManager[]{trustManager};
