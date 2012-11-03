@@ -6,8 +6,8 @@ One should this app to one's phone and change one's google account to require th
 This Google Authenticator app is client-side implementation of IETF RFC6238 standard (see http://tools.ietf.org/html/rfc6238).
 
 Each account you configure on on your phone has a stored secret key. The app itself shows time-based code for each account.
-This code is actually the epoch time in 30 second intervals, hashed with the secret key using HMAC-SHA1 (see
-http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
+This code is actually the epoch time in 30 second intervals, hashed with the secret key using HMAC-SHA1 
+(see http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
 
 So how do we employ the Google Authenticator app for 2-factor authentication for logins to our own site.
 
