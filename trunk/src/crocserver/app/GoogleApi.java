@@ -23,27 +23,25 @@ public class GoogleApi {
     String clientId = System.getProperty("google.clientId");
     String clientSecret = System.getProperty("google.clientSecret");
     String loginUrl = "https://accounts.google.com/o/oauth2/auth";    
-    String oauthUrl; 
-    String code; 
-    String accessToken;
+    String redirectUri; 
     
     public GoogleApi() {
     }
     
-    public void initLoginUrl(String oauthUrl) throws UnsupportedEncodingException {        
-        this.oauthUrl = oauthUrl;
+    public void init(String redirectUri) throws UnsupportedEncodingException {        
+        this.redirectUri = redirectUri;
         StringBuilder builder = new StringBuilder();
         builder.append(loginUrl);
         builder.append("?state=none");
         builder.append("&response_type=code");
         builder.append("&client_id=").append(clientId);
-        builder.append("&redirect_uri=").append(URLEncoder.encode(oauthUrl, "UTF-8"));
+        builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
         builder.append("&scope=").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.email", "UTF-8"));
         builder.append("+").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.profile", "UTF-8"));
         loginUrl = builder.toString();
     }
 
-    public void sendTokenRequest() throws Exception {
+    public GoogleUserInfo sendTokenRequest(String code) throws Exception {
         URL url = new URL("https://accounts.google.com/o/oauth2/token");
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setSSLSocketFactory(DefaultKeyStores.createSSLSocketFactory());
@@ -53,20 +51,33 @@ public class GoogleApi {
         StringBuilder builder = new StringBuilder();
         builder.append("grant_type=authorization_code");
         builder.append("&client_id=").append(clientId);
-        builder.append("&redirect_uri=").append(URLEncoder.encode(oauthUrl, "UTF-8"));
+        builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
         builder.append("&client_secret=").append(clientSecret);
         builder.append("&code=").append(URLEncoder.encode(code, "UTF-8"));
         logger.info("request", url, builder.toString());
             connection.getOutputStream().write(builder.toString().getBytes());
         String responseText = Streams.readString(connection.getInputStream());
-        accessToken = JsonStrings.get(responseText, "access_token");
+        String accessToken = JsonStrings.get(responseText, "access_token");
         logger.info("response", responseText);
         logger.info("accessToken", accessToken);
-        sendUserRequest();
+        return sendUserRequest(accessToken);
     }
     
-    public void sendUserRequest() throws Exception {
+    public GoogleUserInfo sendUserRequest(String accessToken) throws Exception {
         URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + URLEncoder.encode(accessToken, "UTF-8"));
+        logger.info("request", url.toString());
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        String responseText = Streams.readString(connection.getInputStream());
+        GoogleUserInfo userInfo = new GoogleUserInfo();
+        userInfo.setEmail(JsonStrings.get(responseText, "email"));
+        userInfo.setDisplayName(JsonStrings.get(responseText, "name"));
+        logger.info("response", userInfo, responseText);        
+        return userInfo;
+    }
+    
+    public void sendPlusRequest(String userId) throws Exception {
+        URL url = new URL("https://www.googleapis.com/plus/v1/people/" + userId);
+        logger.info("request", url.toString());
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         String responseText = Streams.readString(connection.getInputStream());
         logger.info("response", responseText);        
@@ -74,14 +85,6 @@ public class GoogleApi {
     
     public String getLoginUrl() {
         return loginUrl;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getCode() {
-        return code;
     }
    
     @Override

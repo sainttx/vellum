@@ -115,7 +115,7 @@ public class CrocApp {
         }          
         address = configProperties.getString("address");
         googleApi = new GoogleApi();
-        googleApi.initLoginUrl(address + "/oauth");
+        googleApi.init(address + "/oauth");
         logger.info("googleApi", googleApi);
     }
 
