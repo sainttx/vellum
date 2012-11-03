@@ -11,23 +11,20 @@ import vellum.logr.LogrFactory;
 
 /**
  *
+ *
  * @author evan
  */
-public class Auth {
-    Logr logger = LogrFactory.getLogger(getClass());
-    static Auth tester = new Auth();
-    
+public class GenerateTotpSecret {
+    static Logr logger = LogrFactory.getLogger(GenerateTotpSecret.class);
+
     void test() {
         byte[] buffer = new byte[10];
         new Random().nextBytes(buffer);
         String secret = new String(new Base32().encode(buffer));
         logger.info(secret);
-        
     }
-    
+
     public static void main(String[] args) {
-        tester.test();
+        new GenerateTotpSecret().test();
     }
-    
-    
 }
