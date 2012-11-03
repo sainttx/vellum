@@ -15,8 +15,8 @@ update client_cert
 set 
   dname = ?,
   cert = ?, 
-  updated = now(),
-  updated_by = ?
+  updated_by = ?,
+  updated = now()
 where client_cert_id = ?
 ;
 

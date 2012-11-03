@@ -4,12 +4,14 @@ insert into org (org_name, url, display_name, updated_by)
 values (?, ?, ?, ?)
 ;
 
--- update_url_display_name_where_org_name
+-- update
 update org 
 set 
   url = ?, 
-  display_name = ?
-where org_name = ?
+  display_name = ?,
+  updated_by = ?,
+  updated = now()
+where org_id = ?
 ;
 
 -- exists_name

@@ -79,6 +79,13 @@ public class LogrAdapter implements Logr {
     }
 
     @Override
+    public void warn(Throwable throwable) {
+        if (isLevel(LogrLevel.WARN)) {
+            handler.handle(context, new LogrRecord(throwable, LogrLevel.WARN));
+        }
+    }
+    
+    @Override
     public void warn(Throwable throwable, String message, Object... args) {
         if (isLevel(LogrLevel.WARN)) {
             handler.handle(context, new LogrRecord(throwable, LogrLevel.WARN, message, args));
@@ -91,4 +98,5 @@ public class LogrAdapter implements Logr {
             handler.handle(context, new LogrRecord(throwable, LogrLevel.ERROR, message, args));
         }
     }
+
 }

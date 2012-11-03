@@ -7,7 +7,8 @@ values (?, ?, ?, ?, ?);
 update user_ 
 set 
   display_name = ?, 
-  subject = ?
+  subject = ?,
+  updated = now()
 where user_name = ?
 ;
 

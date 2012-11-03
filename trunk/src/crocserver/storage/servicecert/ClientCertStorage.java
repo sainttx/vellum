@@ -5,8 +5,6 @@
 package crocserver.storage.servicecert;
 
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.org.Org;
-import java.security.Principal;
 import java.sql.*;
 import vellum.storage.StorageExceptionType;
 import java.util.ArrayList;
@@ -44,18 +42,18 @@ public class ClientCertStorage {
         return cert;
     }
 
-    public void insert(String updatedBy, Org org, ClientCert cert) throws StorageException, SQLException {
+    public void insert(ClientCert cert) throws StorageException, SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ClientCertQuery.insert.name()));
             int index = 0;
-            statement.setLong(++index, org.getId());
+            statement.setLong(++index, cert.getOrgId());
             statement.setString(++index, cert.getHostName());
             statement.setString(++index, cert.getClientName());
             statement.setString(++index, cert.getDname());
             statement.setString(++index, cert.getCert());
-            statement.setString(++index, updatedBy);
+            statement.setString(++index, cert.getUpdatedBy());
             int insertCount = statement.executeUpdate();
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);
@@ -70,8 +68,8 @@ public class ClientCertStorage {
         }
     }
 
-    public void updateCert(String userName, ClientCert cert) throws SQLException {
-        logger.verbose("updateCert", userName, cert.getId());
+    public void updateCert(ClientCert cert) throws SQLException {
+        logger.verbose("updateCert", cert.getId());
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
@@ -80,7 +78,7 @@ public class ClientCertStorage {
             int index = 0;
             statement.setString(++index, cert.getDname());
             statement.setString(++index, cert.getCert());
-            statement.setString(++index, userName);
+            statement.setString(++index, cert.getUpdatedBy());
             statement.setLong(++index, cert.getId());
             int updateCount = statement.executeUpdate();
             if (updateCount != 1) {
@@ -123,6 +121,14 @@ public class ClientCertStorage {
         }
     }
 
+    public ClientCert get(long orgId, String hostName, String clientName) throws SQLException {
+        ClientCert clientCert = find(orgId, hostName, clientName);
+        if (clientCert == null) {
+            throw new StorageException(StorageExceptionType.NOT_FOUND, orgId, hostName, clientName);
+        }
+        return clientCert;
+    }
+    
     public ClientCert find(long orgId, String hostName, String clientName) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;

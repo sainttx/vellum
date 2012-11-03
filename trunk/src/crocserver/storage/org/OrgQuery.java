@@ -10,7 +10,7 @@ package crocserver.storage.org;
  */
 public enum OrgQuery {
     insert,
-    update_url_display_name_where_org_name,
+    update,
     exists,
     delete,
     find_id,

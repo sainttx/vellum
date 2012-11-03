@@ -31,11 +31,11 @@ public final class ClientCert extends AbstractIdEntity {
     public ClientCert() {
     }
 
-    public ClientCert(String updatedBy, long orgId, String hostName, String clientName) {
-        this.updatedBy = updatedBy;
+    public ClientCert(long orgId, String hostName, String clientName, String updatedBy) {
         this.orgId = orgId;
         this.hostName = hostName;
         this.clientName = clientName;
+        this.updatedBy = updatedBy;
     }
     
     @Override
