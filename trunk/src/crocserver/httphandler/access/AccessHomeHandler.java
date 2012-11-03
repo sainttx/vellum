@@ -5,7 +5,6 @@ package crocserver.httphandler.access;
 
 import crocserver.app.CrocApp;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.common.CrocStorage;
 import crocserver.storage.servicecert.ClientCert;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -30,7 +29,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
         htmlPrinter.div("menuBarDiv");
         htmlPrinter.a_("/", "Home");
         htmlPrinter.spanf("style", "|");
-        htmlPrinter.a_(app.getGoogleLoginUrl(), "Login with Google");
+        htmlPrinter.a_(app.getGoogleApi().getLoginUrl(), "Login with Google");
         htmlPrinter._div();
         printCerts("certs", app.getStorage().getClientCertStorage().getList());
     }

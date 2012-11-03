@@ -8,6 +8,7 @@ import vellum.enumtype.DelimiterType;
 import vellum.exception.Exceptions;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -21,6 +22,7 @@ import java.util.*;
  */
 public class Strings {
 
+    public static final String UTF8 = "UTF-8";
     public static final String ENCODING = "UTF-8";
 
     /**
@@ -470,4 +472,13 @@ public class Strings {
         return ch == ' ' || ch == '\n' || ch == '\t';
     }
 
+    public static String encodeUrl(String string) {
+        try {
+            return URLEncoder.encode(string, Strings.ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw Exceptions.newRuntimeException(e);
+        }
+    }
+    
+    
 }

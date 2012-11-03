@@ -3,6 +3,8 @@
  */
 package vellum.html;
 
+import java.io.OutputStream;
+import vellum.printer.PrintStreamAdapter;
 import vellum.printer.Printer;
 import vellum.util.Strings;
 import vellum.util.Types;
@@ -16,6 +18,10 @@ public class HtmlPrinter {
     int index = 0;
     int columnCount = 0;
     Printer out;
+
+    public HtmlPrinter(OutputStream stream) {
+        this.out = new PrintStreamAdapter(stream);
+    }
     
     public HtmlPrinter(Printer out) {
         this.out = out;
