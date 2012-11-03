@@ -1,0 +1,7 @@
+=== The Enigma Prequels ===
+
+See [EnigmaPrequels The Enigma Prequels], which are somewhat dated and will updated and <tt>rehashed</tt> here. 
+
+An upcoming article in this series will be "Password Salt" not least because this dated "Password Hash" article is dangerously deficient of salt!
+
+[GoogleAuthenticator The Google Authenticator]
