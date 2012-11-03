@@ -2,7 +2,7 @@
 Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/wiki/Google_Authenticator.
 
 Should one should install this app on one's phone and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
-To https://www.google.com/settings/security.
+On https://www.google.com/settings/security.
 
 This Google Authenticator app is client-side implementation of IETF RFC6238 standard (see http://tools.ietf.org/html/rfc6238).
 
