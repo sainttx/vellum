@@ -75,7 +75,7 @@ On the server, to authenticate this, first we get the current time index i.e. th
 
 {{{
     public static long getTimeIndex() {
-        return (System.currentTimeMillis() / 1000) / 30;
+        return System.currentTimeMillis()/1000/30;
     }
 }}}
 
