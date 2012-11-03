@@ -115,3 +115,5 @@ The problem is the mobile's clock might be out by a minute or two (or indeed our
 }}}
 
 The question arises how to handle the event of a user loosing their phone? So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret :)
+
+http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp
