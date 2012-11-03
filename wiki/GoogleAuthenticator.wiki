@@ -28,11 +28,17 @@ public class GenerateSecret {
         new GenerateSecret().test();
     }
 }
+}}}
 
+where the secret is a 10 byte random number, which is encoded using Base32 (see (see http://en.wikipedia.org/wiki/Base32).
+
+This produces a 16 character string consisting of characters A-Z and 2-7
+
+{{{
 secret OVEK7TIJ3A3DM3M6
 }}}
 
-where it is encoded using Base32.
+<i>(For entering codes into mobiles, a mixed alpha and numeric secret is not uber-convenient, so i would prefer alpha only, but take that with a pinch of salt, excuse the pun. Perhaps an additional numeric code could be the salt, heh heh).</i>
 
 The user creates a new account on their Google Authenticator app, entering this secret.
 
@@ -50,8 +56,10 @@ Alternarively, one can use a Google URL as follows, to generate a QR barcode, fo
         return String.format(format, user, host, secret);
     }
 }
+}}}
 
-QR URL https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth://totp/evanx@evanx-laptop%3Fsecret%3DOVEK7TIJ3A3DM3M6
+{{{    
+ https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth://totp/evanx@evanx-laptop%3Fsecret%3DOVEK7TIJ3A3DM3M6
 }}}
 
 Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
