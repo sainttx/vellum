@@ -1,0 +1,104 @@
+
+Probably you've heard of the Google Authenticator (see http://en.wikipedia.org/wiki/Google_Authenticator).
+
+One should this app to one's phone and change one's google account to require the 2 factor authentification!
+
+This Google Authenticator app is client-side implementation of IETF RFC6238 standard (see http://tools.ietf.org/html/rfc6238).
+
+Each account you configure on on your phone has a stored secret key. The app itself shows time-based code for each account.
+This code is actually the epoch time in 30 second intervals, hashed with the secret key using HMAC-SHA1 (see
+http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
+
+So how do we employ the Google Authenticator app for 2-factor authentication for logins to our own site.
+
+For each user, we generate a random secret to enable 2-factor authentication.
+
+{{{
+public class GenerateSecret {
+    Logr logger = LogrFactory.getLogger(getClass());
+
+    void test() {
+        byte[] buffer = new byte[10];
+        new Random().nextBytes(buffer);
+        String secret = new String(new Base32().encode(buffer));
+        logger.info("secret " + secret);
+    }
+
+    public static void main(String[] args) {
+        new GenerateSecret().test();
+    }
+}
+
+secret OVEK7TIJ3A3DM3M6
+}}}
+
+where it is encoded using Base32.
+
+The user creates a new account on their Google Authenticator app, entering this secret.
+
+Alternarively, one can use a Google URL as follows, to generate a QR barcode, for the user to scan, using their Google Authenticator app.
+
+{{{    
+    String secret = "OVEK7TIJ3A3DM3M6";
+
+    void generateBarcodeUrl() throws Exception {
+        logger.info("QR URL " + getQRBarcodeURL("evanx", "evanx-laptop", secret));
+    }
+
+    public static String getQRBarcodeURL(String user, String host, String secret) {
+        String format = "https://www.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s";
+        return String.format(format, user, host, secret);
+    }
+}
+
+QR URL https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth://totp/evanx@evanx-laptop%3Fsecret%3DOVEK7TIJ3A3DM3M6
+}}}
+
+Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
+
+On our own site then, when users login, they then enter the code, which changes every 30 seconds on their phone.
+
+On the server side, to authenticate this, first we get the current time index i.e. the number of 30s intervals since the epoch.
+
+{{{
+    public static long getTimeIndex() {
+        return (System.currentTimeMillis() / 1000) / 30;
+    }
+}}}
+
+We can then calculate the authentication code, for this exact time, using the user's secret.
+
+{{{
+    private static long getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
+        SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.putLong(timeIndex);
+        byte[] timeBytes = buffer.array();
+        Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(signKey);
+        byte[] hash = mac.doFinal(timeBytes);
+        int offset = hash[19] & 0xf;
+        long truncatedHash = hash[offset] & 0x7f;
+        for (int i = 1; i < 4; i++) {
+            truncatedHash <<= 8;
+            truncatedHash |= hash[offset + i] & 0xff;
+        }
+        return (truncatedHash %= 1000000);
+    }
+}}}
+
+The problem is the client's mobile clock might be out by a minute or two, so we need to check codes for a few time indexes before and after this.
+
+{{{
+    public static boolean verifyCode(String secret, int code, long timeIndex, int variance) throws NoSuchAlgorithmException, InvalidKeyException {
+        byte[] secretBytes = new Base32().decode(secret);
+        for (int i = -variance; i <= variance; i++) {
+            if (getCode(secretBytes, timeIndex + i) == code) {
+                return true;
+            }
+        }
+        return false;
+    }
+}}}
+
+that's all folks !
