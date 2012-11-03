@@ -1,19 +1,19 @@
 
 Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/wiki/Google_Authenticator.
 
-http://i1-handheld.softpedia-static.com/images/software/screens/Google-Authenticator-Android_1.jpg
+http://jroller.com/evanx/resource/chrome-gauth-topt.PNG
 
-Should one should install this app on one's phone and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
+Should one should install this app on one's phone, or use the Chrome extension, and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
 On https://www.google.com/settings/security.
 
 This Google Authenticator app is client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
 In particular it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
 
-Each account you configure on on your phone has a stored secret key. The app itself shows time-based code for each account.
-This code is actually the epoch time in 30 second intervals, hashed with the secret key using HMAC-SHA1 
+Each account you configure on your Google Authenticator has a stored secret key. The app itself shows the time-based code for each account.
+This code is actually the epoch time in 30 second intervals, hashed with the secret key using the HMAC-SHA1 algorithm. 
 (see http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
 
-So how do we employ the Google Authenticator app for 2-factor authentication for logins to our own site.
+So how do we employ the Google Authenticator app for 2-factor authentication for logins to our own sites?
 
 For each user, we generate a random secret to enable 2-factor authentication.
 
@@ -52,7 +52,7 @@ Alternarively, one can use a Google URL as follows, to generate a QR barcode, fo
     String secret = "OVEK7TIJ3A3DM3M6";
 
     void generateBarcodeUrl() throws Exception {
-        logger.info("QR URL " + getQRBarcodeURL("evanx", "evanx-laptop", secret));
+        logger.info("QR URL " + getQRBarcodeURL("evanx", "beethoven", secret));
     }
 
     public static String getQRBarcodeURL(String user, String host, String secret) {
@@ -114,6 +114,12 @@ The problem is the mobile's clock might be out by a minute or two (or indeed our
     }
 }}}
 
+We can add the Google Authenticator Chrome extension to test and compare.
+
+http://jroller.com/evanx/resource/chrome-gauth-add.PNG
+
 The question arises how to handle the event of a user loosing their phone? So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret :)
 
 [http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp See code on http://code.google.com/p/vellum]
+
+http://i1-handheld.softpedia-static.com/images/software/screens/Google-Authenticator-Android_1.jpg
