@@ -417,14 +417,6 @@ public class Strings {
         return string.split("\\s");
     }
 
-    public static String decodeUrl(String string) {
-        try {
-            return URLDecoder.decode(string, ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            throw Exceptions.newRuntimeException(e);
-        }
-    }
-
     public static void appendln(StringBuilder builder, Object object) {
         builder.append(object);
         builder.append("\n");
@@ -479,6 +471,13 @@ public class Strings {
             throw Exceptions.newRuntimeException(e);
         }
     }
-    
+
+    public static String decodeUrl(String string) {
+        try {
+            return URLDecoder.decode(string, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw Exceptions.newRuntimeException(e);
+        }
+    }
     
 }

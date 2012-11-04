@@ -3,10 +3,10 @@
  */
 package crocserver.httphandler.access;
 
-import crocserver.httphandler.secure.GenP12Handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
+import crocserver.httphandler.secure.GenP12Handler;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -39,6 +39,8 @@ public class AccessHttpHandler implements HttpHandler {
         logger.info("path", path);
         if (path.startsWith("/oauth")) {
             new OAuthCallbackHandler(app).handle(httpExchange);
+        } else if (path.startsWith("/echo")) {
+            new EchoHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/user/")) {
             new EnrollUserHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/org/")) {

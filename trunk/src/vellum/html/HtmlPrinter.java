@@ -6,6 +6,7 @@ package vellum.html;
 import java.io.OutputStream;
 import vellum.printer.PrintStreamAdapter;
 import vellum.printer.Printer;
+import vellum.printer.PrinterDelegator;
 import vellum.util.Strings;
 import vellum.util.Types;
 
@@ -13,18 +14,17 @@ import vellum.util.Types;
  *
  * @author evans
  */
-public class HtmlPrinter {
+public class HtmlPrinter extends PrinterDelegator {
 
     int index = 0;
     int columnCount = 0;
-    Printer out;
 
     public HtmlPrinter(OutputStream stream) {
-        this.out = new PrintStreamAdapter(stream);
+        super(new PrintStreamAdapter(stream));
     }
     
     public HtmlPrinter(Printer out) {
-        this.out = out;
+        super(out);
     }
     
     public void h(int i, String text) {
@@ -58,6 +58,10 @@ public class HtmlPrinter {
 
     public void img(String src) {
         out.printf("<img src='%s'/>\n",src);
+    }    
+
+    public void aimg(String href, String src) {
+        out.printf("<a href='%s'><img src='%s'/></a>\n", href, src);
     }    
     
     public void a(String style, String href) {
@@ -177,10 +181,26 @@ public class HtmlPrinter {
     public void pre(String string) {
         if (string != null) {
             out.printf("<pre>");
-            out.printf(Strings.escapeHtml(string));
+            out.printf(string);
             out.printf("</pre>\n");
         }
     }
-    
 
+    public void form() {
+        out.printf("<form>\n");
+    }
+
+    public void _form() {
+        out.printf("</form>\n");
+    }
+
+    public void input(String name, String type, Object value) {
+        out.printf("<input name='%s' type='%s' value='%s'/>\n", name, type, value);
+    }
+    
+    public void textarea(String name, int rows, int columns, String text) {
+        if (text == null) text = "";
+        out.printf("<textarea name='%s' rows='%d' cols='%d'>%s</textarea>\n", name, rows, columns, text);
+    }
+    
 }

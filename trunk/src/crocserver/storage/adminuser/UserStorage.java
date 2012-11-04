@@ -34,6 +34,8 @@ public class UserStorage {
         user.setDisplayName(resultSet.getString(UserMeta.display_name.name()));
         user.setEmail(resultSet.getString(UserMeta.email.name()));
         user.setSubject(resultSet.getString(UserMeta.subject.name()));
+        user.setCert(resultSet.getString(UserMeta.cert.name()));
+        user.setSecret(resultSet.getString(UserMeta.secret.name()));
         user.setRole(AdminRole.valueOf(resultSet.getString(UserMeta.role_.name())));
         user.setLastLogin(resultSet.getTimestamp(UserMeta.last_login.name()));
         user.setUpdated(resultSet.getTimestamp(UserMeta.updated.name()));
@@ -52,6 +54,7 @@ public class UserStorage {
             statement.setString(++index, user.getDisplayName());
             statement.setString(++index, user.getEmail());
             statement.setString(++index, user.getSubject());
+            statement.setString(++index, user.getSecret());
             if (user.getRole() != null) {
                 statement.setString(++index, user.getRole().name());
             } else {

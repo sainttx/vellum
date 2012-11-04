@@ -1,13 +1,13 @@
 
 -- insert
-insert into user_ (user_name, display_name, email, subject, role_)
-values (?, ?, ?, ?, ?);
+insert into user_ (user_name, display_name, email, subject, secret, role_)
+values (?, ?, ?, ?, ?, ?);
 
 -- update_display_name_subject
 update user_ 
 set 
   display_name = ?, 
-  subject = ?,
+  subject = ?,  
   updated = now()
 where user_name = ?
 ;

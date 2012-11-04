@@ -37,9 +37,9 @@ public class SecureHomeHandler extends AbstractPageHandler {
 
     @Override
     protected void handle() throws Exception {
-        htmlPrinter.div("menuBarDiv");
-        htmlPrinter.a_("/", "Home");
-        htmlPrinter._div();
+        h.div("menuBarDiv");
+        h.a_("/", "Home");
+        h._div();
         printOrgs("orgs", storage.getOrgStorage().getList());
         printUsers("admin users", storage.getUserStorage().getList());
         printCerts("certs", storage.getClientCertStorage().getList());
@@ -50,43 +50,43 @@ public class SecureHomeHandler extends AbstractPageHandler {
     }
 
     private void printOrgs(String label, Collection<Org> orgs) {
-        htmlPrinter.h(3, label);
-        htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "org name", "display name", "url", "updated");
+        h.h(3, label);
+        h.tableDiv("resultSet");
+        h.trh("id", "org name", "display name", "url", "updated");
         for (Org org : orgs) {
-            htmlPrinter.trd(
+            h.trd(
                     String.format("<a href='/view/org/%d'>%d</a>", org.getId(), org.getId()),
                     org.getName(),
                     org.getDisplayName(),
                     org.getUrl(),
                     CalendarFormats.timestampFormat.format(org.getUpdated()));
         }
-        htmlPrinter._table();
-        htmlPrinter._div();
+        h._table();
+        h._div();
     }
 
     private void printUsers(String label, Collection<AdminUser> users) {
-        htmlPrinter.h(3, label);
-        htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "username", "display name", "email", "updated");
+        h.h(3, label);
+        h.tableDiv("resultSet");
+        h.trh("id", "username", "display name", "email", "updated");
         for (AdminUser user : users) {
-            htmlPrinter.trd(
+            h.trd(
                     String.format("<a href='/view/user/%s'>%s</a>", user.getId(), user.getId()),
                     user.getUserName(),
                     user.getDisplayName(),
                     user.getEmail(),
                     CalendarFormats.timestampFormat.format(user.getUpdated()));
         }
-        htmlPrinter._table();
-        htmlPrinter._div();
+        h._table();
+        h._div();
     }
 
     private void printCerts(String label, Collection<ClientService> certs) {
-        htmlPrinter.h(3, label);
-        htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "org", "host", "client", "updated", "updated by");
+        h.h(3, label);
+        h.tableDiv("resultSet");
+        h.trh("id", "org", "host", "client", "updated", "updated by");
         for (ClientService cert : certs) {
-            htmlPrinter.trd(
+            h.trd(
                     String.format("<a href='/view/cert/%s'>%s</a>", cert.getId(), cert.getId()),
                     cert.getOrgId(),
                     cert.getHostName(),
@@ -94,22 +94,22 @@ public class SecureHomeHandler extends AbstractPageHandler {
                     CalendarFormats.timestampFormat.format(cert.getUpdated()),
                     cert.getUpdatedBy());
         }
-        htmlPrinter._table();
-        htmlPrinter._div();
+        h._table();
+        h._div();
     }
 
     private void printSeviceRecords(String label, Collection<ServiceRecord> serviceRecords) {
-        htmlPrinter.h(3, label);
-        htmlPrinter.tableDiv("resultSet");
+        h.h(3, label);
+        h.tableDiv("resultSet");
         for (ServiceRecord serviceRecord : serviceRecords) {
-            htmlPrinter.trd(
+            h.trd(
                     String.format("<a href='/view/serviceRecord/%d'>%d</a>", serviceRecord.getId(), serviceRecord.getId()),
                     Millis.formatTimestamp(serviceRecord.getTimestamp()),
                     serviceRecord.getHostName(),
                     serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus());
         }
-        htmlPrinter._tableDiv();
+        h._tableDiv();
     }
 
     private void printLog(String label, Collection<LogrRecord> records) {

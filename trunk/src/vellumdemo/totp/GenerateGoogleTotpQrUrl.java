@@ -6,6 +6,7 @@ package vellumdemo.totp;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.Strings;
 
 /**
  * from
@@ -21,9 +22,9 @@ public class GenerateGoogleTotpQrUrl {
     String host = "beethoven";
     
     public static String getQRBarcodeURL(String user, String host, String secret) {
-        String format = "https://www.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&"
-                + "chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s";
-        return String.format(format, user, host, secret);
+        String chl = "otpauth%3A%2F%2Ftotp%2F" + user + '@' + host + "%3Fsecret%3D" + secret;
+        System.out.println(Strings.decodeUrl(chl));
+        return "http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=" + chl;
     }
     
     void test() throws Exception {

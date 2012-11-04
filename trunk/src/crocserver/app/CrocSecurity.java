@@ -25,9 +25,14 @@ public class CrocSecurity {
         return new String(new Base32().encode(bytes));
     }
 
+    public static String getQRBarcodeURL0(String userName, String serverName, String secret) {
+        return "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevans%3Fsecret%3DAAAAAAAAAAAAAAAAA";
+    }
+    
     public static String getQRBarcodeURL(String userName, String serverName, String secret) {
-        return "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl="
-                + Strings.encodeUrl(String.format("otpauth://totp/")) + String.format("%s@%s%%3Fsecret%%3D%s", userName, serverName, secret);
+        return "http://chart.apis.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl="
+                + "otpauth%3A%2F%2Ftotp%2F" + 
+                userName + '@' + serverName +  "%3Fsecret%3D" + secret;
     }
     
     

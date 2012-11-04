@@ -20,6 +20,10 @@ import java.util.Set;
  */
 public class EchoHandler implements HttpHandler {
 
+    public EchoHandler() {
+    }
+
+    
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         StringBuilder response = new StringBuilder();
