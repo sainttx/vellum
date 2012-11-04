@@ -1,4 +1,6 @@
 
+==== Introduction ==== 
+
 Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/wiki/Google_Authenticator.
 
 http://jroller.com/evanx/resource/chrome-gauth-topt.png
@@ -6,16 +8,18 @@ http://jroller.com/evanx/resource/chrome-gauth-topt.png
 Should one should install this app on one's phone, or use the Chrome extension, and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
 On https://www.google.com/settings/security.
 
-This Google Authenticator app is client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
-In particular it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
+This Google Authenticator app is the client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
+In particular, it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
 
-Each account you configure on your Google Authenticator has a stored secret key. The app itself shows the time-based code for each account.
-This code is actually the epoch time in 30 second intervals, hashed with the secret key using the HMAC-SHA1 algorithm. 
+Each account you configure on your Google Authenticator has a stored secret. The app itself shows the time-based code for each account.
+This code is actually the epoch time in 30 second intervals, hashed with the secret using the HMAC-SHA1 algorithm. 
 (see http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
 
 http://jroller.com/evanx/resource/google-auth-android.png
 
-So how do we employ the Google Authenticator app for 2-factor authentication for logins to our own sites?
+So how do we support Google Authenticator for 2-factor authentication for logins to our own sites?
+
+==== Generate random secret, Base32 encoded ====
 
 For each user, we generate a random secret to enable 2-factor authentication.
 
@@ -48,7 +52,9 @@ secret OVEK7TIJ3A3DM3M6
 
 The user creates a new account on their Google Authenticator app, entering this secret.
 
-Alternarively, one can use a Google URL as follows, to generate a QR barcode, for the user to scan, using their Google Authenticator app.
+==== QR code ==== 
+
+Alternatively, one can use a Google URL as follows, to generate a QR barcode, for the user to scan, using their Google Authenticator app.
 
 {{{    
     String secret = "OVEK7TIJ3A3DM3M6";
@@ -70,6 +76,8 @@ https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth://totp/ev
 (You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
 
 Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
+
+==== Authentication ==== 
 
 When users login, they then enter the current code, which changes every 30 seconds on their phone.
 
@@ -121,5 +129,7 @@ We can add the Google Authenticator Chrome extension to test and compare.
 http://jroller.com/evanx/resource/chrome-gauth-add.png
 
 The question arises how to handle the event of a user loosing their phone? So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret :)
+
+==== Conclusion ==== 
 
 [http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp See code on http://code.google.com/p/vellum]
