@@ -27,7 +27,7 @@ public class ViewUserHandler extends AbstractPageHandler {
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();
-       p.spanf("pageTitle", "User %s", id);
+       p.span("pageTitle", String.format("User %s", id));
        AdminUser user = storage.getUserStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();

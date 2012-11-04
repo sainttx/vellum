@@ -71,6 +71,8 @@ public class GoogleApi {
         GoogleUserInfo userInfo = new GoogleUserInfo();
         userInfo.setEmail(JsonStrings.get(responseText, "email"));
         userInfo.setDisplayName(JsonStrings.get(responseText, "name"));
+        userInfo.setGivenName(JsonStrings.get(responseText, "given_name"));
+        userInfo.setFamilyName(JsonStrings.get(responseText, "family_name"));
         logger.info("response", userInfo, responseText);        
         return userInfo;
     }

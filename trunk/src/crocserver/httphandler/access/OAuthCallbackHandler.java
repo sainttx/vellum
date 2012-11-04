@@ -6,8 +6,11 @@ package crocserver.httphandler.access;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
+import crocserver.app.CrocSecurity;
 import crocserver.app.GoogleUserInfo;
 import crocserver.httpserver.HttpExchangeInfo;
+import crocserver.storage.adminuser.AdminRole;
+import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
 import vellum.html.HtmlPrinter;
@@ -52,14 +55,7 @@ public class OAuthCallbackHandler implements HttpHandler {
             if (error != null) {
                 httpExchangeInfo.handleError(error);
             } else if (code != null) {
-                GoogleUserInfo userInfo = app.getGoogleApi().sendTokenRequest(code);
-                httpExchangeInfo.setResponse("text/html", true);
-                HtmlPrinter p = new HtmlPrinter(httpExchange.getResponseBody());
-                p.div("menuBarDiv");
-                p.a_("/", "Home");
-                p._div();
-                p.h(2, "Welcome, " + userInfo.getDisplayName());
-                p.spanf("", "Your email address: %s", userInfo.getEmail());
+                handle();
             } else {
                 httpExchangeInfo.handleError("internal error");                
             }
@@ -68,4 +64,43 @@ public class OAuthCallbackHandler implements HttpHandler {
         }
         httpExchange.close();
     }
+    
+    GoogleUserInfo userInfo;    
+    
+    private void handle() throws Exception {
+        userInfo = app.getGoogleApi().sendTokenRequest(code);
+        AdminUser user = app.getStorage().getUserStorage().findEmail(userInfo.getEmail());
+        if (user == null) {
+            user = new AdminUser(userInfo.getEmail());
+            user.setDisplayName(userInfo.getDisplayName());
+            user.setFirstName(userInfo.getGivenName());
+            user.setLastName(userInfo.getFamilyName());
+            user.setEmail(userInfo.getEmail());
+            user.setRole(AdminRole.DEFAULT);
+            user.setEnabled(true);
+            user.setSecret(CrocSecurity.generateSecret());
+        }
+        if (user.isStored()) {
+            app.getStorage().getUserStorage().update(user);
+        } else {
+            app.getStorage().getUserStorage().insert(user);
+        }
+        httpExchangeInfo.setResponse("text/html", true);
+        HtmlPrinter p = new HtmlPrinter(httpExchange.getResponseBody());
+        p.div("menuBarDiv");
+        p.a_("/", "Home");
+        p._div();
+        p.h(2, "Welcome, " + userInfo.getDisplayName());
+        p.span("", String.format("Your email address: %s", userInfo.getEmail()));
+        p.div("");
+        if (false) {
+            String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
+            logger.info("qrUrl", qrUrl);
+            p.img(qrUrl);
+            p.pre(qrUrl);
+        }
+        String signCertUrl = String.format("%s/sign/userCert/%s", app.getServerUrl(), user.getEmail());
+        p.pre(String.format("curl %s", signCertUrl));
+        p._div();
+    }    
 }

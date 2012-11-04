@@ -5,6 +5,7 @@
 package crocserver.storage.adminuser;
 
 import crocserver.storage.org.Org;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
 import vellum.security.KeyStores;
@@ -16,6 +17,8 @@ import vellum.security.KeyStores;
 public class AdminUser extends AbstractIdEntity<String> {
     String userName;
     String displayName;
+    String firstName;
+    String lastName;
     AdminRole role;
     long orgId;
     Org org;
@@ -23,6 +26,8 @@ public class AdminUser extends AbstractIdEntity<String> {
     String email;
     Date inserted;
     Date updated;
+    String secret;
+    String cert;
     String locality;
     String region;
     String country;
@@ -81,6 +86,22 @@ public class AdminUser extends AbstractIdEntity<String> {
         this.displayName = displayName;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+   
     public boolean isEnabled() {
         return enabled;
     }
@@ -193,12 +214,33 @@ public class AdminUser extends AbstractIdEntity<String> {
         this.region = region;
     }
 
+    public void setX509Cert(X509Certificate x509Cert) {
+        this.cert = KeyStores.buildCertPem(x509Cert);
+        this.subject = x509Cert.getSubjectDN().getName();
+    }
+    
     public String getSubject() {
         return subject;
     }
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getCert() {
+        return cert;
+    }
+
+    public void setCert(String cert) {
+        this.cert = cert;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public boolean isStored() {

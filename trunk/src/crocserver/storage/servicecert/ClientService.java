@@ -13,13 +13,13 @@ import vellum.security.KeyStores;
  *
  * @author evan
  */
-public final class ClientCert extends AbstractIdEntity {
+public final class ClientService extends AbstractIdEntity {
     long orgId;
     Long id;
     String hostName;
-    String clientName;
+    String serviceName;
     String cert;
-    String dname;
+    String subject;
     boolean enabled = true;
     Date inserted = new Date();
     Date updated = new Date();
@@ -28,13 +28,13 @@ public final class ClientCert extends AbstractIdEntity {
     
     transient String orgName;
     
-    public ClientCert() {
+    public ClientService() {
     }
 
-    public ClientCert(long orgId, String hostName, String clientName, String updatedBy) {
+    public ClientService(long orgId, String hostName, String serviceName, String updatedBy) {
         this.orgId = orgId;
         this.hostName = hostName;
-        this.clientName = clientName;
+        this.serviceName = serviceName;
         this.updatedBy = updatedBy;
     }
     
@@ -81,23 +81,23 @@ public final class ClientCert extends AbstractIdEntity {
 
     public void setX509Cert(X509Certificate x509Cert) {
         this.cert = KeyStores.buildCertPem(x509Cert);
-        this.dname = x509Cert.getSubjectDN().getName();
+        this.subject = x509Cert.getSubjectDN().getName();
     }
     
-    public void setDname(String dname) {
-        this.dname = dname;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
-    public String getDname() {
-        return dname;
+    public String getSubject() {
+        return subject;
     }
     
-    public String getClientName() {
-        return clientName;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public Date getUpdated() {

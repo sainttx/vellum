@@ -17,7 +17,9 @@ public class GoogleUserInfo {
     
     String email;
     String displayName;
-
+    String givenName;
+    String familyName;
+    
     public GoogleUserInfo() {
     }
     
@@ -25,7 +27,23 @@ public class GoogleUserInfo {
         this.email = email;
         this.displayName = displayName;
     }
-   
+
+    public String getFamilyName() {
+        return familyName;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+        
     public String getDisplayName() {
         return displayName;
     }

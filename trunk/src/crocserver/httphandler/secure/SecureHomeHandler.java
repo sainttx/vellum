@@ -16,7 +16,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
 import vellum.format.ListFormats;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.ClientCert;
+import crocserver.storage.servicecert.ClientService;
 import vellum.format.CalendarFormats;
 import vellum.logr.LogrLevel;
 
@@ -81,16 +81,16 @@ public class SecureHomeHandler extends AbstractPageHandler {
         htmlPrinter._div();
     }
 
-    private void printCerts(String label, Collection<ClientCert> certs) {
+    private void printCerts(String label, Collection<ClientService> certs) {
         htmlPrinter.h(3, label);
         htmlPrinter.tableDiv("resultSet");
         htmlPrinter.trh("id", "org", "host", "client", "updated", "updated by");
-        for (ClientCert cert : certs) {
+        for (ClientService cert : certs) {
             htmlPrinter.trd(
                     String.format("<a href='/view/cert/%s'>%s</a>", cert.getId(), cert.getId()),
                     cert.getOrgId(),
                     cert.getHostName(),
-                    cert.getClientName(),
+                    cert.getServiceName(),
                     CalendarFormats.timestampFormat.format(cert.getUpdated()),
                     cert.getUpdatedBy());
         }

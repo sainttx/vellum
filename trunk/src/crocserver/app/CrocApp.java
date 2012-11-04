@@ -59,7 +59,8 @@ public class CrocApp {
     Contact adminContact; 
     String serverKeyAlias = System.getProperty("serverKeyAlias");
     GoogleApi googleApi;        
-    String address; 
+    String serverUrl; 
+    String serverName = "croc.linuxd.org"; 
     
     public void init() throws Exception {        
         initConfig();
@@ -113,12 +114,20 @@ public class CrocApp {
                 gtalkConnection = new GtalkConnection(gtalkProps);
             }
         }          
-        address = configProperties.getString("address");
+        serverUrl = configProperties.getString("address");
         googleApi = new GoogleApi();
-        googleApi.init(address + "/oauth");
+        googleApi.init(serverUrl + "/oauth");
         logger.info("googleApi", googleApi);
     }
 
+    public String getServerName() {
+        return serverName;
+    }
+    
+    public String getServerUrl() {
+        return serverUrl;
+    }
+   
     public GoogleApi getGoogleApi() {
         return googleApi;
     }

@@ -16,7 +16,7 @@ import vellum.logr.LogrFactory;
 import vellum.storage.*;
 import crocserver.storage.schema.SchemaPrinter;
 import crocserver.storage.org.OrgStorage;
-import crocserver.storage.servicecert.ClientCertStorage;
+import crocserver.storage.servicecert.ServiceStorage;
 
 /**
  *
@@ -53,8 +53,8 @@ public class CrocStorage {
         return new OrgStorage(this);
     }
        
-    public ClientCertStorage getClientCertStorage() {
-        return new ClientCertStorage(this);
+    public ServiceStorage getClientCertStorage() {
+        return new ServiceStorage(this);
     }
     
     public ServiceRecordStorage getServiceRecordStorage() {
