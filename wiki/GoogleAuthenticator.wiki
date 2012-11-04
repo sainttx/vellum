@@ -13,6 +13,8 @@ http://jroller.com/evanx/resource/google-accounts-security.png
 This Google Authenticator app is the client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
 In particular, it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
 
+http://jroller.com/evanx/resource/google-auth-android.png
+
 Each account you configure on your Google Authenticator has a stored secret. The app itself shows the time-based code for each account.
 This code is actually the epoch time in 30 second intervals, hashed with the secret using the HMAC-SHA1 algorithm. 
 (see http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
@@ -84,8 +86,6 @@ http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth%3A
 http://jroller.com/evanx/resource/google-charts-qr-totp.png
 
 Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
-
-http://jroller.com/evanx/resource/google-auth-android.png
 
 ==== Authentication ==== 
 
