@@ -12,17 +12,13 @@ import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
-import java.sql.SQLException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.storage.StorageException;
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.servicecert.ClientCert;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import sun.security.pkcs.PKCS10;
 import vellum.datatype.Patterns;
-import vellum.format.ListFormats;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
 import vellum.util.Streams;
@@ -71,6 +67,7 @@ public class EnrollUserHandler implements HttpHandler {
         }
         httpExchange.close();
     }
+
     AdminUser user;
 
     private void handle() throws Exception {

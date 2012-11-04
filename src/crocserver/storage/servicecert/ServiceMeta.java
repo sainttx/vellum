@@ -8,12 +8,12 @@ package crocserver.storage.servicecert;
  *
  * @author evan
  */
-public enum ClientCertMeta {
+public enum ServiceMeta {
     org_id,
     client_cert_id,
     host_name,
-    client_name,
-    dname,
+    account_name,
+    subject,
     cert,
     enabled,
     inserted,

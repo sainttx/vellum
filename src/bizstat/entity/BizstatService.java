@@ -11,8 +11,8 @@ import vellum.logr.LogrFactory;
 import vellum.util.Args;
 import bizstat.server.BizstatServer;
 import crocserver.storage.org.Org;
-import crocserver.storage.service.Service;
-import crocserver.storage.service.Service;
+import crocserver.storage.service.ServiceType;
+import crocserver.storage.service.ServiceType;
 import java.util.*;
 import vellum.config.PropertiesMap;
 import vellum.entity.ConfigurableEntity;
@@ -22,7 +22,7 @@ import vellum.type.UniqueList;
  *
  * @author evan
  */
-public class BizstatService extends Service implements ConfigurableEntity<BizstatServer> {
+public class BizstatService extends ServiceType implements ConfigurableEntity<BizstatServer> {
     Logr logger = LogrFactory.getLogger(BizstatService.class);
     
     long orgId;

@@ -124,12 +124,12 @@ public class UserStorage {
         }
     }
     
-    public AdminUser findByEmail(String email) throws SQLException {
+    public AdminUser findEmail(String email) throws SQLException {
         Connection connection = storage.getConnectionPool().getConnection();
         boolean ok = false;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(sqlMap.get(UserQuery.find_email.name())));
+                    sqlMap.get(UserQuery.find_email.name()));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {

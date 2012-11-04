@@ -8,14 +8,14 @@ package crocserver.storage.servicecert;
  *
  * @author evan
  */
-public enum ClientCertQuery {
+public enum ServiceQuery {
     insert,
     update_cert,
-    find_dname,
+    find_subject,
     find_id,
     delete_id,
-    exists_org_host_client,
-    find_org_host_client,    
+    exists_org_host_account,
+    find_org_host_account,    
     list_org,
     list,
     ;

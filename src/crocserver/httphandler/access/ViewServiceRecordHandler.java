@@ -28,7 +28,7 @@ public class ViewServiceRecordHandler extends AbstractPageHandler {
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();
-       p.spanf("pageTitle", "ServiceRecord %d", id);
+       p.span("pageTitle", String.format("ServiceRecord %d", id));
        ServiceRecord serviceRecord = storage.getServiceRecordStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();

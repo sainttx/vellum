@@ -9,7 +9,8 @@ drop table contact_group_member;
 drop table contact;
 drop table user_; 
 drop table service_record;
-drop table client_cert;
+drop table service;
+drop table service_type;
 drop table metric_record;
 drop table host_;
 drop table service;
@@ -121,7 +122,7 @@ create table host_ (
   unique key uniq_host (org_id, host_name)
 );
 
-create table service (
+create table service_type (
   org_id int not null,
   service_id int auto_increment primary key, 
   service_name varchar(32) not null,
@@ -129,20 +130,20 @@ create table service (
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key uniq_service (org_id, service_name)
+  unique key uniq_service_type (org_id, service_name)
 );
 
-create table client_cert (
+create table service (
   org_id int not null,
-  client_cert_id int auto_increment primary key, 
+  service_id int auto_increment primary key, 
   host_name varchar(32),
-  client_name varchar(32),
-  dname varchar(255),
+  service_name varchar(32),
+  subject varchar(255),
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key uniq_client_cert (org_id, host_name, client_name)
+  unique key uniq_service (org_id, host_name, service_name)
 );
 
 create table service_record (

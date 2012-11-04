@@ -13,7 +13,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.ClientCert;
+import crocserver.storage.servicecert.ClientService;
 import java.util.Date;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
@@ -76,7 +76,7 @@ public class EnableServiceHandler implements HttpHandler {
     
     private void handle() throws Exception {
         org = storage.getOrgStorage().get(orgName);
-        ClientCert clientCert = storage.getClientCertStorage().get(org.getId(), hostName, serviceName);
+        ClientService clientCert = storage.getClientCertStorage().get(org.getId(), hostName, serviceName);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         out.println(clientCert.getCert());
     }    

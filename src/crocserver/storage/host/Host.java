@@ -9,7 +9,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Args;
 import crocserver.storage.org.Org;
-import crocserver.storage.service.Service;
+import crocserver.storage.service.ServiceType;
 import vellum.type.UniqueList;
 import java.util.List;
 import vellum.entity.AbstractIdEntity;
@@ -30,7 +30,7 @@ public class Host extends AbstractIdEntity {
     Org org;
     
     transient Network network;    
-    transient List<Service> serviceList = new UniqueList();
+    transient List<ServiceType> serviceList = new UniqueList();
     transient List<ContactGroup> contactGroupList = new UniqueList();
 
     public Host() {
@@ -89,7 +89,7 @@ public class Host extends AbstractIdEntity {
         return network;
     }
 
-    public List<Service> getServiceList() {
+    public List<ServiceType> getServiceList() {
         return serviceList;
     }
 

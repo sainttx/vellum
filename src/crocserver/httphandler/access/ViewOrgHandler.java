@@ -27,7 +27,7 @@ public class ViewOrgHandler extends AbstractPageHandler {
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();
-       p.spanf("pageTitle", "Org %s", id);
+       p.span("pageTitle", String.format("Org %s", id));
        Org org = storage.getOrgStorage().get(id);
        p.tableDiv("resultSet");
        p.thead();

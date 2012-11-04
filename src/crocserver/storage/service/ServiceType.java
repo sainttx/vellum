@@ -16,7 +16,7 @@ import vellum.entity.AbstractIdEntity;
  *
  * @author evan
  */
-public class Service extends AbstractIdEntity {
+public class ServiceType extends AbstractIdEntity {
     
     long orgId;
     Org org;
@@ -36,10 +36,10 @@ public class Service extends AbstractIdEntity {
     transient Map<StatusChangeType, Integer> repeatCountMap = new HashMap();
     transient Map<StatusChangeType, Long> notifyIntervalMap = new HashMap();
     
-    public Service() {
+    public ServiceType() {
     }
 
-    public Service(String name) {
+    public ServiceType(String name) {
         this.name = name;
     }
     

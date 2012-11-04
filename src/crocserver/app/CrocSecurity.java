@@ -4,6 +4,11 @@
  */
 package crocserver.app;
 
+import java.net.URLEncoder;
+import java.util.Random;
+import org.apache.commons.codec.binary.Base32;
+import vellum.util.Strings;
+
 /**
  *
  * @author evan
@@ -14,5 +19,17 @@ public class CrocSecurity {
         return String.format("CN=%s, OU=%s, O=%s, L=%s, S=%s, C=%s", cn, ou, o, l, s, c);
     }
 
+    public static String generateSecret() {
+        byte[] bytes = new byte[10];
+        new Random().nextBytes(bytes);
+        return new String(new Base32().encode(bytes));
+    }
+
+    public static String getQRBarcodeURL(String userName, String serverName, String secret) {
+        return "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl="
+                + Strings.encodeUrl(String.format("otpauth://totp/")) + String.format("%s@%s%%3Fsecret%%3D%s", userName, serverName, secret);
+    }
+    
+    
     
 }

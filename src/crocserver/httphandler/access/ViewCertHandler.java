@@ -6,7 +6,7 @@ package crocserver.httphandler.access;
 import crocserver.httphandler.common.AbstractPageHandler;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.servicecert.ClientCert;
+import crocserver.storage.servicecert.ClientService;
 
 /**
  *
@@ -28,15 +28,15 @@ public class ViewCertHandler extends AbstractPageHandler {
         p.div("menuBarDiv");
         p.a_("/", "Home");
         p._div();
-        p.spanf("pageTitle", "ClientCert %s", id);
-        ClientCert cert = storage.getClientCertStorage().find(id);
+        p.span("pageTitle", String.format("ClientCert %s", id));
+        ClientService cert = storage.getClientCertStorage().find(id);
         p.tableDiv("resultSet");
         p.thead();
         p._thead();
         p.tbody();
         p.trhd("Org", cert.getOrgId());
         p.trhd("Host", cert.getHostName());
-        p.trhd("Client", cert.getClientName());
+        p.trhd("Client", cert.getServiceName());
         p.trhd("Updated", cert.getUpdated());
         p.trhd("Updated by", cert.getUpdatedBy());
         p._tbody();

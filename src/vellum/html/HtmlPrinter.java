@@ -36,12 +36,16 @@ public class HtmlPrinter {
         out.printf("<div class='%s'>\n", style);
     }    
 
+    public void pf(String format, Object ... args) {
+        out.printf("<p>%s</p>\n", String.format(format, args));
+    }    
+    
     public void _div() {
         out.printf("</div>\n");
     }    
 
-    public void spanf(String style, String format, Object ... args) {
-        out.printf("<span class='%s'>%s</span>\n", style, String.format(format, args));
+    public void span(String style, String string) {
+        out.printf("<span class='%s'>%s</span>\n", style, string);
     }    
     
     public void a_(String href, String text) {
@@ -52,6 +56,10 @@ public class HtmlPrinter {
         out.printf("<a href='%s'>\n", href);
     }    
 
+    public void img(String src) {
+        out.printf("<img src='%s'/>\n",src);
+    }    
+    
     public void a(String style, String href) {
         out.printf("<a class='%s' href='%s'>\n", style, href);
     }    
