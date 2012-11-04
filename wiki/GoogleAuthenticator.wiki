@@ -83,7 +83,7 @@ http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth%3A
 
 (You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
 
-http://jroller.com/evanx/resource/google-charts-qr-totp.png
+http://jroller.com/evanx/resource/google-qr.png
 
 Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
 
