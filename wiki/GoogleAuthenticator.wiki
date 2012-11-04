@@ -58,20 +58,26 @@ Alternatively, one can use a Google URL as follows, to generate a QR barcode, fo
 
 {{{    
     String secret = "OVEK7TIJ3A3DM3M6";
-
-    void generateBarcodeUrl() throws Exception {
-        logger.info("QR URL " + getQRBarcodeURL("evanx", "beethoven", secret));
+    String user = "evanx";
+    String host = "beethoven";
+    
+    public static String getQRBarcodeURL(String user, String host, String secret) {
+        String chl = "otpauth%3A%2F%2Ftotp%2F" + user + '@' + host + "%3Fsecret%3D" + secret;
+        System.out.println(Strings.decodeUrl(chl));
+        return "http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=" + chl;
     }
 
-    public static String getQRBarcodeURL(String user, String host, String secret) {
-        String format = "https://www.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&" +
-            "chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s";
-        return String.format(format, user, host, secret);
+    void test() throws Exception {
+        System.out.println(getQRBarcodeURL(user, host, secret));
     }
 }
 }}}
 
-https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth://totp/evanx@evanx-laptop%3Fsecret%3DOVEK7TIJ3A3DM3M6
+{{{
+otpauth://totp/evanx@beethoven?secret=OVEK7TIJ3A3DM3M6
+}}}
+
+http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevanx@beethoven%3Fsecret%3DOVEK7TIJ3A3DM3M6
 
 (You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
 
