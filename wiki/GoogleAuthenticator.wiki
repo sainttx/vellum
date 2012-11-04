@@ -8,6 +8,8 @@ http://jroller.com/evanx/resource/chrome-gauth-topt.png
 Should one should install this app on one's phone, or use the Chrome extension, and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
 On https://www.google.com/settings/security.
 
+http://jroller.com/evanx/resource/google-accounts-security.png
+
 This Google Authenticator app is the client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
 In particular, it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
 
@@ -78,6 +80,8 @@ otpauth://totp/evanx@beethoven?secret=OVEK7TIJ3A3DM3M6
 http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevanx@beethoven%3Fsecret%3DOVEK7TIJ3A3DM3M6
 
 (You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
+
+http://jroller.com/evanx/resource/google-charts-qr-totp.png
 
 Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
 
