@@ -64,7 +64,7 @@ public class GoogleApi {
     }
     
     public GoogleUserInfo sendUserRequest(String accessToken) throws Exception {
-        URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + URLEncoder.encode(accessToken, "UTF-8"));
+        URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken);
         logger.info("request", url.toString());
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         String responseText = Streams.readString(connection.getInputStream());

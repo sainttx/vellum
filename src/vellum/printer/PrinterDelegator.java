@@ -6,29 +6,17 @@
 
 package vellum.printer;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
-
 /**
  *
  * @author evanx
  */
-public class PrintStreamAdapter implements StreamPrinter {
-    PrintStream out;
+public class PrinterDelegator implements Printer {
+    protected Printer out;
 
-    public PrintStreamAdapter(PrintStream printStream) {
-        this.out = printStream;
+    public PrinterDelegator(Printer out) {
+        this.out = out;
     }
     
-    public PrintStreamAdapter(OutputStream outputStream) {
-        out = new PrintStream(outputStream);
-    }
-
-    @Override
-    public PrintStream getPrintStream() {
-        return out;
-    }
-
     @Override
     public void println() {
         out.println();
@@ -39,24 +27,28 @@ public class PrintStreamAdapter implements StreamPrinter {
         out.println(object);
     }
 
+    @Override
     public void print(Object object) {
         out.print(object);
     }
 
+    @Override
     public void printf(String format, Object... args) {
         out.print(String.format(format, args));
     }
 
+    @Override
     public void printlnf(String format, Object... args) {
         out.println(String.format(format, args));
     }
 
+    @Override
     public void flush() {
         out.flush();
     }
 
+    @Override
     public void close() {
-        out.flush();
         out.close();
     }
 

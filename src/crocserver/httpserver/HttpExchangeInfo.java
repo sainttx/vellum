@@ -166,8 +166,8 @@ public class HttpExchangeInfo {
     }
 
     public void handleError(String message) throws IOException {
-        PrintStream out = new PrintStream(httpExchange.getResponseBody());
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        PrintStream out = new PrintStream(httpExchange.getResponseBody());
         out.printf("ERROR %s\n", message);
     }
     

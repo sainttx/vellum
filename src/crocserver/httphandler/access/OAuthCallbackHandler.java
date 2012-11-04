@@ -17,6 +17,7 @@ import vellum.html.HtmlPrinter;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Streams;
+import vellum.util.Strings;
 
 /**
  *
@@ -85,22 +86,28 @@ public class OAuthCallbackHandler implements HttpHandler {
         } else {
             app.getStorage().getUserStorage().insert(user);
         }
+        String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
+        logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
+        String signCertUrl = String.format("%s/sign/userCert/%s", app.getServerUrl(), user.getEmail());
         httpExchangeInfo.setResponse("text/html", true);
         HtmlPrinter p = new HtmlPrinter(httpExchange.getResponseBody());
         p.div("menuBarDiv");
         p.a_("/", "Home");
         p._div();
         p.h(2, "Welcome, " + userInfo.getDisplayName());
-        p.span("", String.format("Your email address: %s", userInfo.getEmail()));
-        p.div("");
-        if (false) {
-            String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
-            logger.info("qrUrl", qrUrl);
-            p.img(qrUrl);
-            p.pre(qrUrl);
-        }
-        String signCertUrl = String.format("%s/sign/userCert/%s", app.getServerUrl(), user.getEmail());
-        p.pre(String.format("curl %s", signCertUrl));
+        p.span("", String.format("The following provided email address will be used as your username: <tt>%s</tt>", userInfo.getEmail()));
+        p.println("<p>");
+        p.span("", String.format("Your secret for TOPT is: <tt>%s</tt>", user.getSecret()));
+        p.println("<br>");
+        p.span("", String.format("You can enter the above, or scan the following, into your Google Authenticator."));
+        p.println("<p>");
+        p.aimg(qrUrl, qrUrl);
+        p.println("<p>");
+        p.span("", String.format("Please paste your CSR for your private key:"));
+        p.println("<p>");
+        p.form();
+        p.textarea("csr", 10, 80, null);
+        p._form();
         p._div();
     }    
 }

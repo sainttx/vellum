@@ -33,7 +33,7 @@ public abstract class AbstractPageHandler implements HttpHandler {
     protected String path;
     protected String[] pathArgs;
     protected Printer out;
-    protected HtmlPrinter htmlPrinter;
+    protected HtmlPrinter h;
     protected boolean showMenu = false;
     protected ByteArrayOutputStream baos = null;
 
@@ -60,7 +60,7 @@ public abstract class AbstractPageHandler implements HttpHandler {
         } else {
             out = new PrintStreamAdapter(httpExchange.getResponseBody());
         }
-        htmlPrinter = new HtmlPrinter(out);
+        h = new HtmlPrinter(out);
         try {
             printPageHeader();
             if (showMenu) {

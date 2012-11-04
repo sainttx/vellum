@@ -26,20 +26,27 @@ public class AccessHomeHandler extends AbstractPageHandler {
 
     @Override
     public void handle() throws IOException, SQLException {
-        htmlPrinter.div("menuBarDiv");
-        htmlPrinter.a_("/", "Home");
-        htmlPrinter.span("style", "|");
-        htmlPrinter.a_(app.getGoogleApi().getLoginUrl(), "Login with Google");
-        htmlPrinter._div();
+        h.div("menuBarDiv");
+        h.a_("/", "Home");
+        h.span("style", "|");
+        h.a_(app.getGoogleApi().getLoginUrl(), "Login with Google");
+        h._div();
+        if (false) {
+            String qrUrl = "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=otpauth:%3A%2F%2Ftotp%2Fevans%3Fsecret%3DAAAAAAAAAAAAAAAAA";
+            logger.info("qrUrl", qrUrl);
+            h.img(qrUrl);
+            h.pre(qrUrl);
+        }
+        
         printCerts("certs", app.getStorage().getClientCertStorage().getList());
     }
     
     private void printCerts(String label, Collection<ClientService> certs) {
-        htmlPrinter.h(3, label);
-        htmlPrinter.tableDiv("resultSet");
-        htmlPrinter.trh("id", "org", "host", "client", "updated", "updated by");
+        h.h(3, label);
+        h.tableDiv("resultSet");
+        h.trh("id", "org", "host", "client", "updated", "updated by");
         for (ClientService cert : certs) {
-            htmlPrinter.trd(
+            h.trd(
                     String.format("<a href='/view/cert/%s'>%s</a>", cert.getId(), cert.getId()),
                     cert.getOrgId(),
                     cert.getHostName(),
@@ -47,7 +54,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
                     CalendarFormats.timestampFormat.format(cert.getUpdated()),
                     cert.getUpdatedBy());
         }
-        htmlPrinter._table();
-        htmlPrinter._div();
+        h._table();
+        h._div();
     }      
 }
