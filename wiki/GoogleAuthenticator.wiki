@@ -8,7 +8,7 @@ http://jroller.com/evanx/resource/chrome-gauth-topt.png
 Should one should install this app on one's phone, or use the Chrome extension, and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
 On https://www.google.com/settings/security.
 
-http://jroller.com/evanx/resource/google-accounts-security.png
+http://jroller.com/evanx/resource/google-accounts-security-window.png
 
 This Google Authenticator app is the client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
 In particular, it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
