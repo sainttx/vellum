@@ -15,8 +15,6 @@ Each account you configure on your Google Authenticator has a stored secret. The
 This code is actually the epoch time in 30 second intervals, hashed with the secret using the HMAC-SHA1 algorithm. 
 (see http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
 
-http://jroller.com/evanx/resource/google-auth-android.png
-
 So how do we support Google Authenticator for 2-factor authentication for logins to our own sites?
 
 ==== Generate random secret, Base32 encoded ====
@@ -82,6 +80,8 @@ http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth%3A
 (You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
 
 Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
+
+http://jroller.com/evanx/resource/google-auth-android.png
 
 ==== Authentication ==== 
 
