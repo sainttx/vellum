@@ -1,6 +1,5 @@
 
-The Google Authenticator mobile app, Chrome extension, et al, implement the IETF RFC6238 time-based one-time-password standard,
-which hashes the time since the epoch with a secret using the HMAC-SHA1 algorithm. 
+The Google Authenticator mobile app, Chrome extension, et al, implement the IETF RFC6238 time-based one-time-password standard, which hashes the time since the epoch with a secret using the HMAC-SHA1 algorithm. 
 
 Besides enabling multi-factor authentication for our own Google account, how would we employ Google Authenticator for our own websites?!
 
@@ -8,7 +7,7 @@ Besides enabling multi-factor authentication for our own Google account, how wou
 
 <h4>Prequels</h4>
 
-A few years ago i wrote a series of Java crypto articles on this blog, which have been collated on https://code.google.com/p/vellum/ in wiki format, but otherwise not updated. Herewith starts a new rehashed crypto series that will tear down that previous series. 
+A few years ago i wrote a series of Java crypto articles on this blog, which have been collated on https://code.google.com/p/vellum in wiki format, but otherwise not updated. Herewith starts a new rehashed crypto series that will tear down that previous series. 
 
 <p>   
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
@@ -21,19 +20,15 @@ Probably you've heard of the Google Authenticator? See http://en.wikipedia.org/w
 
 <img src="http://jroller.com/evanx/resource/chrome-gauth-topt.png"/>
 
-Should one should install this app on one's phone, or use the Chrome extension, and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :)
-On https://www.google.com/settings/security.
+Should one should install this app on one's phone, or use the Chrome extension, and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :) On https://www.google.com/settings/security.
 
 <img src="http://jroller.com/evanx/resource/google-accounts-security-window.png"/>
 
-This Google Authenticator app is the client-side implementation of TOTP i.e. a time-based one-time password algorithm. 
-In particular, it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
+This Google Authenticator app is the client-side implementation of TOTP i.e. a time-based one-time password algorithm. In particular, it is an implementation of the IETF RFC6238 TOTP standard (see http://tools.ietf.org/html/rfc6238).
 
 <img src="http://jroller.com/evanx/resource/google-auth-android.png"/>
 
-Each account you configure on your Google Authenticator has a stored secret. The app itself shows the time-based code for each account.
-This code is actually the epoch time in 30 second intervals, hashed with the secret using the HMAC-SHA1 algorithm. 
-(see http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
+Each account you configure on your Google Authenticator has a stored secret. The app itself shows the time-based code for each account. This code is actually the epoch time in 30 second intervals, hashed with the secret using the HMAC-SHA1 algorithm (see http://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
 
 So how do we support Google Authenticator for 2-factor authentication for logins to our own sites?
 
@@ -43,18 +38,18 @@ For each user, we generate a random secret to enable 2-factor authentication.
 
 <pre>
 public class GenerateSecret {
-    Logr logger = LogrFactory.getLogger(getClass());
+  Logr logger = LogrFactory.getLogger(getClass());
 
-    void test() {
-        byte[] buffer = new byte[10];
-        new Random().nextBytes(buffer);
-        String secret = new String(new Base32().encode(buffer));
-        logger.info("secret " + secret);
-    }
+  void test() {
+    byte[] buffer = new byte[10];
+    new Random().nextBytes(buffer);
+    String secret = new String(new Base32().encode(buffer));
+    logger.info("secret " + secret);
+  }
 
-    public static void main(String[] args) {
-        new GenerateSecret().test();
-    }
+  public static void main(String[] args) {
+    new GenerateSecret().test();
+  }
 }
 </pre>
 
@@ -75,33 +70,37 @@ The user creates a new account on their Google Authenticator app, entering this 
 Alternatively, one can use a Google URL as follows, to generate a QR barcode, for the user to scan, using their Google Authenticator app.
 
 <pre>
-    String secret = "OVEK7TIJ3A3DM3M6";
-    String user = "evanx";
-    String host = "beethoven";
-    
-    public static String getQRBarcodeURL(String user, String host, String secret) {
-        String chl = "otpauth%3A%2F%2Ftotp%2F" + user + '@' + host + "%3Fsecret%3D" + secret;
-        System.out.println(Strings.decodeUrl(chl));
-        return "http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=" + chl;
-    }
+  String secret = "OVEK7TIJ3A3DM3M6";
+  String user = "evanx";
+  String host = "beethoven";
+  
+  public static String getQRBarcodeURL(String user, String host, String secret) {
+    String chl = "otpauth%3A%2F%2Ftotp%2F" + user + '@' + host + 
+      "%3Fsecret%3D" + secret;
+    System.out.println(Strings.decodeUrl(chl));
+    return "http://chart.apis.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=" + chl;
+  }
 
-    void test() throws Exception {
-        System.out.println(getQRBarcodeURL(user, host, secret));
-    }
-}
+  void test() throws Exception {
+    System.out.println(getQRBarcodeURL(user, host, secret));
+  }
 </pre>
+
+The QR code will encode the following URL.
 
 <pre>
 otpauth://totp/evanx@beethoven?secret=OVEK7TIJ3A3DM3M6
 </pre>
 
-<img src="http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevanx@beethoven%3Fsecret%3DOVEK7TIJ3A3DM3M6"/>
+We can use a Google Chart API service to render the QR code onto our computer screen. Then we can scan it into our phone's Google Authenticator app, otherwise we have to type it in with our fat fingers, which is never easy.
 
-(You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
+http://chart.apis.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevanx@beethoven%3Fsecret%3DOVEK7TIJ3A3DM3M6
+
+You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it. Of course it works! So cool... :)
 
 <img src="http://jroller.com/evanx/resource/google-qr.png"/>
 
-Having scanned this into your Google Authenticator app, it will display the time-varying code for this account, together with your other accounts.
+Having scanned this into our Google Authenticator app, it will display the time-varying code for this account, together with our other accounts. Woohoo!
 
 <h4>Authentication</h4> 
 
@@ -110,44 +109,46 @@ When users login, they then enter the current code, which changes every 30 secon
 On the server, to authenticate this, first we get the current time index i.e. the number of 30s intervals since the epoch.
 
 <pre>
-    public static long getTimeIndex() {
-        return System.currentTimeMillis()/1000/30;
-    }
+  public static long getTimeIndex() {
+    return System.currentTimeMillis()/1000/30;
+  }
 </pre>
 
 We can then calculate the authentication code, for this exact time, using the user's secret.
 
 <pre>
-    private static long getCode(byte[] secret, long timeIndex) throws NoSuchAlgorithmException, InvalidKeyException {
-        SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        buffer.putLong(timeIndex);
-        byte[] timeBytes = buffer.array();
-        Mac mac = Mac.getInstance("HmacSHA1");
-        mac.init(signKey);
-        byte[] hash = mac.doFinal(timeBytes);
-        int offset = hash[19] & 0xf;
-        long truncatedHash = hash[offset] & 0x7f;
-        for (int i = 1; i < 4; i++) {
-            truncatedHash <<= 8;
-            truncatedHash |= hash[offset + i] & 0xff;
-        }
-        return (truncatedHash %= 1000000);
+  private static long getCode(byte[] secret, long timeIndex) 
+          throws NoSuchAlgorithmException, InvalidKeyException {
+    SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
+    ByteBuffer buffer = ByteBuffer.allocate(8);
+    buffer.putLong(timeIndex);
+    byte[] timeBytes = buffer.array();
+    Mac mac = Mac.getInstance("HmacSHA1");
+    mac.init(signKey);
+    byte[] hash = mac.doFinal(timeBytes);
+    int offset = hash[19] & 0xf;
+    long truncatedHash = hash[offset] & 0x7f;
+    for (int i = 1; i < 4; i++) {
+        truncatedHash <<= 8;
+        truncatedHash |= hash[offset + i] & 0xff;
     }
+    return (truncatedHash %= 1000000);
+  }
 </pre>
 
 The problem is the mobile's clock might be out by a minute or two (or indeed our workstation which we are using a test server), so we need to check codes for a few time indexes before and after the actual time. Hopefully it goes without saying that servers always have the correct time thanks to NTP ;)
 
 <pre>
-    public static boolean verifyCode(String secret, int code, long timeIndex, int variance) throws Exception {
-        byte[] secretBytes = new Base32().decode(secret);
-        for (int i = -variance; i <= variance; i++) {
-            if (getCode(secretBytes, timeIndex + i) == code) {
-                return true;
-            }
+  public static boolean verifyCode(String secret, int code, long timeIndex, 
+      int variance) throws Exception {
+    byte[] secretBytes = new Base32().decode(secret);
+    for (int i = -variance; i <= variance; i++) {
+        if (getCode(secretBytes, timeIndex + i) == code) {
+            return true;
         }
-        return false;
     }
+    return false;
+  }
 </pre>
 
 We can add the Google Authenticator Chrome extension to test and compare.
@@ -166,5 +167,5 @@ One just hashes the time since the epoch with a secret using the HMAC-SHA1 algor
  
 <h3>Resources</h3>
 
-https://code.google.com/p/vellum/ - where i will collate these articles and their code - in this case, the <a href="http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp"><tt>totp</tt> directory.
+https://code.google.com/p/vellum/ - where i will collate these articles and their code - in this case, the <a href="http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp"><tt>totp</tt></a> directory.
 
