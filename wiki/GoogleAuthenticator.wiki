@@ -74,13 +74,17 @@ Alternatively, one can use a Google URL as follows, to generate a QR barcode, fo
     }
 }}}
 
+The QR code will encode the following URL.
+
 {{{
 otpauth://totp/evanx@beethoven?secret=OVEK7TIJ3A3DM3M6
 }}}
 
+We can use a Google Chart API service to render the QR code onto our computer screen. Then we can scan it into our phone's Google Authenticator app, otherwise we have to type it in with our fat fingers, which is never easy.
+
 http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevanx@beethoven%3Fsecret%3DOVEK7TIJ3A3DM3M6
 
-(You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it!)
+You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it. Of course it works! So cool... :)
 
 http://jroller.com/evanx/resource/google-qr.png
 
