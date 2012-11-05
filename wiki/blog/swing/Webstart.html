@@ -66,23 +66,23 @@ and the <tt>jarsigner</tt> command we do to prep the jar prior to trying to web 
 Now we write a JNLP file for our web page, as follows.
 
 <pre>
-<?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="<b>http://jroller.com/resources/e/evanx/</b>">
-  <information>
-    <title><b>AptFramework Demo</b></title>
-    <vendor><b>aptframework.dev.java.net</b></vendor>
-    <icon href="default"/>
-    <offline-allowed/>
-  </information>  
-  <security>
-     <<b>all-permissions</b>/>
-  </security>
-  <resources>
-    <j2se version="1.5+" />
-    <jar href="<b>aptframework.jar</b>"/>
-  </resources>
-  <application-desc main-class="<b>aptcomponent.common.ZViewContext</b>"/>
-</jnlp>    
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jnlp codebase="&lt;b&gt;http://jroller.com/resources/e/evanx/&lt;/b&gt;"&gt;
+  &lt;information&gt;
+    &lt;title&gt;&lt;b&gt;AptFramework Demo&lt;/b&gt;&lt;/title&gt;
+    &lt;vendor&gt;&lt;b&gt;aptframework.dev.java.net&lt;/b&gt;&lt;/vendor&gt;
+    &lt;icon href="default"/&gt;
+    &lt;offline-allowed/&gt;
+  &lt;/information&gt;  
+  &lt;security&gt;
+     &lt;&lt;b&gt;all-permissions&lt;/b&gt;/&gt;
+  &lt;/security&gt;
+  &lt;resources&gt;
+    &lt;j2se version="1.5+" /&gt;
+    &lt;jar href="&lt;b&gt;aptframework.jar&lt;/b&gt;"/&gt;
+  &lt;/resources&gt;
+  &lt;application-desc main-class="&lt;b&gt;aptcomponent.common.ZViewContext&lt;/b&gt;"/&gt;
+&lt;/jnlp&gt;    
 </pre>
 
 For going online, all that changes is the <tt>codebase</tt>, which is now an <tt>http</tt> URL, rather than a local file.
@@ -106,30 +106,32 @@ jarsigner -certs -verbose -verify /projects/aptframework/lib/derby.jar
 
 As Kirill shows, we can create a JNLP file for dependent jars which are signed by Sun et al, as follows.
 
-<pre><?xml version="1.0" encoding="UTF-8"?>
-<jnlp codebase="<b>http://aptframework.dev.java.net</b>" href="<b>javadb.jnlp</b>">
-  <information>
-    <title><b>JavaDB jar</b></title>
-    <vendor><b>Signed by Sun Microsystems, Inc</b></vendor>
-    <offline-allowed/>
-  </information>  
-  <resources>
-      <jar href="<b>derby.jar</b>"/>
-  </resources>
-  <component-desc/>
-</jnlp>    
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jnlp codebase="&lt;b&gt;http://aptframework.dev.java.net&lt;/b&gt;" href="&lt;b&gt;javadb.jnlp&lt;/b&gt;"&gt;
+  &lt;information&gt;
+    &lt;title&gt;&lt;b&gt;JavaDB jar&lt;/b&gt;&lt;/title&gt;
+    &lt;vendor&gt;&lt;b&gt;Signed by Sun Microsystems, Inc&lt;/b&gt;&lt;/vendor&gt;
+    &lt;offline-allowed/&gt;
+  &lt;/information&gt;  
+  &lt;resources&gt;
+      &lt;jar href="&lt;b&gt;derby.jar&lt;/b&gt;"/&gt;
+  &lt;/resources&gt;
+  &lt;component-desc/&gt;
+&lt;/jnlp&gt;    
 </pre>
 
 where in this case, i'm gonna check-in dependent jars under the <tt>www</tt> subdirectory of my java.net project, in which case the <tt>codebase</tt> is my java.net project homepage.
 
 And then in the <tt>resources</tt> section of our JNLP, we list dependent jars, including those wrapped in their own JNLP file, as follows.
 
-<pre>  <resources>
-    <j2se version="1.5+" />
-    <jar href="aptframework.jar</b>"/>
-    <jar href="aptfoundation.jar</b>"/>
-    <b><extension href="javadb.jnlp"/></b>
-  </resources>    
+<pre>
+  &lt;resources&gt;
+    &lt;j2se version="1.5+" /&gt;
+    &lt;jar href="aptframework.jar&lt;/b&gt;"/&gt;
+    &lt;jar href="aptfoundation.jar&lt;/b&gt;"/&gt;
+    &lt;b&gt;&lt;extension href="javadb.jnlp"/&gt;&lt;/b&gt;
+  &lt;/resources&gt;    
 </pre>
 
 Now i've just gotta update my demo to actually use JavaDB, eg. for an in-memory database :)

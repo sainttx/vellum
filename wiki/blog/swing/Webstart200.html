@@ -1,0 +1,98 @@
+
+So today i tried <tt>pack200</tt> - and it compresses my jar from 440k to, urm, 110k! OK, so, um, clearly all WebStart jars should be made this way. Some great resources i found in the process were <a href='http://deployment.dev.java.net'>deployment.dev.java.net</a> which has the important links related to WebStart, and <a href='http://developers.sun.com/learning/javaoneonline/2006/desktop/TS-1319.pdf'>"Deployment Tips and Tricks using WebStart and Java Plugin" (JavaOne2006 PDF slides)</a>, which shows you how to lazily load your app via the web, eg. maybe your WebStart app is just a login splash-screen teaser thingymajig that loads your real app in the background, to create the perception of loading a very large app, very quickly. <i>"Mmmm... crumbled-up cookie things."</i>
+
+Previously in <a href='https://aptframework.dev.java.net/article/jnlp.html'>"JooJ up your project page with a WebStart demo"</a> we looked at using Netbeans' JNLP tool to create our first JNLP file. This article is the PG13 SNVL version of that, minus the sxx, nudity, and violence - darn it to hell, what a frikkin pity! At least we 
+got the bad language going on, woohoo!
+
+<h4>Creating the JNLP</h4>
+
+Once we get through the XML with all those angle brackets, we notice that a JNLP file is actually a trivially minimal thing that just specifies our main class, dependent jars, required JRE version, and um, URL thingy.
+<pre>
+&lt;jnlp codebase="http://aptframework.dev.java.net/codebase/"&gt;
+  &lt;information&gt;
+    &lt;title&gt;QuiteBusy&lt;/title&gt;
+    &lt;vendor&gt;aptframework.dev.java.net&lt;/vendor&gt;
+    &lt;icon href="default"/&gt;
+    &lt;offline-allowed/&gt;
+    &lt;shortcut online="true"/&gt;
+  &lt;/information&gt;
+  &lt;security&gt;
+    &lt;all-permissions/&gt;
+  &lt;/security&gt;
+  &lt;resources&gt;
+    &lt;j2se version="1.5+"/&gt;
+    &lt;jar href="aptfoundation610.jar"/&gt;
+    &lt;jar href="cglib.jar"/&gt;
+    &lt;extension href="javadb.jnlp"/&gt; 
+  &lt;/resources&gt;
+  &lt;application-desc main-class="quitebusydemo.common.QMessageBusDemo"&gt;
+       &lt;argument&gt;logger.level=FINEST&lt;/argument&gt;
+  &lt;/application-desc&gt;
+&lt;/jnlp&gt;
+</pre>
+We specify the <tt>codebase</tt> to be where we upload our jars eg. <tt>jroller.com.</tt> The <tt>all-permissions</tt> means we can be naughty, eg. use reflection. Hopefully in future there'll be a <tt>some-permissions</tt> option. For testing offline, we would specify the <tt>codebase</tt> as a local directory where we gonna put we jars.
+<pre>
+&lt;jnlp codebase="file:///C:/my/jars"&gt;
+   ...
+&lt;/jnlp&gt;
+</pre>
+
+<h4>Wrapping Jars signed by others</h4>
+
+You can test if a jar is signed as follows, using <tt>jarsigner</tt>, which is included in the JDK of course (along with <tt>keytool</tt>, <tt>pack200</tt> and <tt>javaws).</tt>
+<pre>
+jarsigner -certs -verbose -verify activation.jar    
+</pre>
+If any of your resources are jars signed by others, you gotta wrap those in a JNLP as follows, and put this in the <tt>resources</tt> section of the JNLP as an <tt>extension</tt>, as shown above.
+<pre>
+&lt;jnlp codebase="http://aptframework.dev.java.net/codebase/" href="javadb.jnlp"&gt;
+  &lt;information&gt;
+    &lt;title&gt;JavaDB jar&lt;/title&gt;
+    &lt;vendor&gt;Signed by Sun Microsystems, Inc&lt;/vendor&gt;
+    &lt;offline-allowed/&gt;
+  &lt;/information&gt;  
+  &lt;resources&gt;
+      &lt;jar href="derby.jar"/&gt;
+  &lt;/resources&gt;
+  &lt;component-desc/&gt;
+&lt;/jnlp&gt;
+</pre>
+
+<h4>Creating a keystore</h4>
+
+We create a keystore (file), and a key therein, using <tt>keytool</tt> (in the JDK). 
+<pre>
+cd /my/jars
+keytool -genkey -keystore myKeystore -alias myself 
+keytool -selfcert -alias myself -keystore myKeystore 
+keytool -list -keystore myKeystore 
+ls myKeystore
+</pre>
+
+<h4>Signing the jars</h4>
+
+We copy our minty jar and sign it as follows. 
+<pre>
+cd /my/jars
+cp /my/nbprojects/myproject/dist/my.jar .
+jarsigner -keystore myKeystore my.jar myself
+pack200 my.jar.pack.gz my.jar
+javaws my_local.jnlp
+</pre>
+<tt>pack200</tt> creates <tt>my.jar.pack.gz</tt>, where we need to have both the original jar, as well as the compressed <tt>gz</tt> one, in our codebase. The heffalump one is a fallback, e.g. for older <tt>javaws</tt> clients that don't do the <tt>pack200</tt> thing. I keep two JNLP files, one local one (with my local <tt>jars</tt> directory as the <tt>codebase)</tt> e.g. <tt>my_local.jnlp</tt>, and then the uploadable one eg. <tt>my.jnlp</tt>, with the online codebase, eg. on <tt>jroller.com.</tt> 
+In the above script, i test using the local one, before uploading and testing the online one. 
+
+<h4>The HTML Link</h4>
+
+Now we can insert the JNLP link into our HTML web page as follows.
+<pre>
+&lt;a href="http://aptframework.dev.java.net/jnlp/messagebus.jnlp"&gt;
+   &lt;img border="0" alt="Launch" 
+      src="http://javadesktop.org/javanet_images/webstart.small.gif"/&gt;
+&lt;/a&gt;(QuiteBusy, 150k/500k, unsandboxed, Java5)
+</pre>
+
+Which looks like...
+<a href="http://jroller.com/resources/e/evanx/messagebus610.jnlp"><img alt="webstart.small.gif" src="http://weblogs.java.net/blog/evanx/archive/webstart.small.gif" border="0" alt="Launch"/></a> <span style="font-family: 'new courier', courier;">(QuiteBusy, 110k/440k, unsandboxed, Java5)</span>
+
+We need to put the <tt>alt</tt> "Launch" text in the <tt>img</tt> element, because some people configure their browsers to load images from the "originating" site only, in which case the <tt>webstart.small.gif</tt> won't show, and they'll see nothing to click on. You'll want check the server webserver logs (if you can), to make sure it is the <tt>pack200</tt>'ed <tt>my.jar.pack.gz</tt> that is getting downloaded :)
