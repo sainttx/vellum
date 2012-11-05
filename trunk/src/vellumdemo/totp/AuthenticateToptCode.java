@@ -14,6 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base32;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.Strings;
 
 /**
  * from
@@ -25,18 +26,20 @@ public class AuthenticateToptCode {
 
     static Logr logger = LogrFactory.getLogger(AuthenticateToptCode.class);
     String secret = "OVEK7TIJ3A3DM3M6";
+    String user = "evanx";
+    String host = "beethoven";
+
+    int testCode = 111070;
+    long testTime = 45064605;
 
     public static String getQRBarcodeURL(String user, String host, String secret) {
-        String format = "https://www.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&"
-                + "chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s";
-        return String.format(format, user, host, secret);
+        String chl = "otpauth%3A%2F%2Ftotp%2F" + user + '@' + host + "%3Fsecret%3D" + secret;
+        System.out.println(Strings.decodeUrl(chl));
+        return "http://chart.apis.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=" + chl;
     }
-    
- int testCode = 111070;
- long testTime = 45064605;
- 
+     
     void test() throws Exception {
-        logger.info(getQRBarcodeURL("evanx", "evanx-laptop", secret));
+        logger.info(getQRBarcodeURL(user, host, secret));
         logger.info("time", getTimeIndex());
         logger.info("code", getCode(secret, getTimeIndex()));
         logger.info("code", getCodeList(secret, getTimeIndex(), 6));
