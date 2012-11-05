@@ -29,8 +29,8 @@ public class AuthenticateToptCode {
     String user = "evanx";
     String host = "beethoven";
 
+    long testTimeIndex = 45064605;
     int testCode = 111070;
-    long testTime = 45064605;
 
     public static String getQRBarcodeURL(String user, String host, String secret) {
         String chl = "otpauth%3A%2F%2Ftotp%2F" + user + '@' + host + "%3Fsecret%3D" + secret;
@@ -43,7 +43,7 @@ public class AuthenticateToptCode {
         logger.info("time", getTimeIndex());
         logger.info("code", getCode(secret, getTimeIndex()));
         logger.info("code", getCodeList(secret, getTimeIndex(), 6));
-        logger.info("verify", verifyCode(secret, testCode, testTime, 6));
+        logger.info("verify", verifyCode(secret, testCode, testTimeIndex, 6));
     }
 
     public static boolean verifyCode(String secret, int code, long timeIndex, int variance) 
