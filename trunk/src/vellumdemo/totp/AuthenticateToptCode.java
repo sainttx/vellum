@@ -59,7 +59,7 @@ public class AuthenticateToptCode {
     }
 
     public static long getTimeIndex() {
-        return (System.currentTimeMillis() / 1000) / 30;
+        return System.currentTimeMillis()/1000/30;
     }
 
     private static List<Long> getCodeList(String secret, long timeIndex, int variance) 
