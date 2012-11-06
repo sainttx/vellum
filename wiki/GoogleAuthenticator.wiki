@@ -145,4 +145,4 @@ The question arises how to handle the event of a user loosing their phone? So I 
 
 ==== Conclusion ==== 
 
-See code on http://code.google.com/p/vellum in the [http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp vellumdemo.topt package].
+See code on http://code.google.com/p/vellum in the `[http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp vellumdemo.topt]` package.
