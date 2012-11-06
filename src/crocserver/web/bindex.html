@@ -43,12 +43,12 @@
                     </a>
                     <a class="brand" href="#">Croc</a>
                     <div class="nav-collapse collapse">
-                        <!--p class="navbar-text pull-right invisible">
-                           Logged in as <a href="#" class="navbar-link">Username</a>
-                        </p-->
-                        <ul class="nav pull-right">
-                            <li><a id="login-google"><span class="btn">Login with Google</span></a></li>
-                        </ul>
+                        <div id="croc-username" class="navbar-text pull-right">
+                            <a href="#" id="croc-username-text" class="navbar-link">username</a>
+                        </div>
+                        <div id="croc-login" class="nav pull-right">
+                            <a id="croc-login-btn"><span class="btn">Login with Google</span></a>
+                        </div>
                         <ul class="nav">
                             <li class="croc-nav-anchor croc-home-anchor active"><a href="#">Home</a></li>
                             <li><a class="croc-nav-anchor croc-about-anchor" href="#">About</a></li>
@@ -122,26 +122,30 @@
     <script src="./bootstrap/js/bootstrap-typeahead.js"></script>
 
     <script type="text/javascript">  
-        var acToken;
+        var accessToken;
         var tokenType;
         var expiresIn;
         var user;
 
         function click_login_google() {
             var loginUrl = '${loginUrl}';
-            alert(loginUrl);
             var win = window.open(loginUrl, "Login with Google", 'width=800, height=600'); 
             var pollTimer =  window.setInterval(function() { 
                 if (win.document.URL.indexOf('${redirectUri}') != -1) {
                     window.clearInterval(pollTimer);
-                    var params = {}, queryString = location.hash.substring(1),
-                      regex = /([^&=]+)=([^&]*)/g, m;
+                    var url = win.document.URL;
                     win.close();
-                    while (m = regex.exec(queryString)) {
-                       params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+                    var index = url.indexOf('#');
+                    if (index > 0) {
+                        var queryString = url.substring(index + 1);
+                        var regex = /([^&=]+)=([^&]*)/g;
+                        while (true) {
+                            var m = regex.exec(queryString)
+                            if (m == null) break; 
+                            if (m[1] == 'access_token') accessToken = m[2];
+                        }
+                        validateToken(accessToken);
                     }
-                    alert(params);
-                    validateToken(acToken);
                 }
             }, 100);
         }
@@ -150,7 +154,8 @@
             $.ajax({
                 url: 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + token,
                 data: null,
-                success: function(responseText){  
+                success: function(response){  
+                    console.log(response);
                     getUserInfo();
                 },  
                 dataType: "jsonp"  
@@ -159,19 +164,21 @@
 
         function getUserInfo() {
             $.ajax({
-                url: 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + acToken,
+                url: 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + accessToken,
                 data: null,
-                success: function(resp) {
-                    user = resp;
-                    console.log(user);
-                    $('#uName').append(user.name);
-                    $('#imgHolder').attr('src', user.picture);
+                success: function(user) {
+                    console.log(user);                    
+                    $('#croc-login-btn').hide();
+                    $('#croc-username').show();
+                    $('#croc-username-text').text(user.email);
+                    //$('#imgHolder').attr('src', user.picture);
                 },
                 dataType: "jsonp"
             });
         }
 
         $(document).ready(function() {
+            $("#croc-username").hide();
             $(".croc-info").hide();
             $("#croc-info-landing").show();
             $(".croc-home-anchor").click(function() {
@@ -191,7 +198,7 @@
                 $("#croc-info-about").removeClass("hidden")
                 $("#croc-info-about").show();
             });
-            $("#login-google").click(function() {
+            $("#croc-login-btn").click(function() {
                 click_login_google();
             });
         });
