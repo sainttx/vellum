@@ -12,6 +12,7 @@ import java.util.List;
 import vellum.query.QueryMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.storage.ConnectionEntry;
 import vellum.storage.StorageException;
 
 /**
@@ -43,8 +44,7 @@ public class ServiceStorage {
     }
 
     public void insert(ClientService cert) throws StorageException, SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceQuery.insert.name()));
             int index = 0;
@@ -62,16 +62,14 @@ public class ServiceStorage {
             generatedKeys.next();
             cert.setId(generatedKeys.getLong((1)));
             cert.setStored(true);
-            ok = true;
+            connection.setOk(true);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public void updateCert(ClientService cert) throws SQLException {
-        logger.verbose("updateCert", cert.getId());
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(ServiceQuery.update_cert.name()));
@@ -85,13 +83,12 @@ public class ServiceStorage {
                 throw new StorageException(StorageExceptionType.UPDATE_COUNT);
             }
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public ClientService findSubject(String subject) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceQuery.find_subject.name()));
             statement.setString(1, subject);
@@ -101,13 +98,12 @@ public class ServiceStorage {
             }
             return build(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public ClientService find(long id) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceQuery.find_id.name()));
             statement.setLong(1, id);
@@ -117,7 +113,7 @@ public class ServiceStorage {
             }
             return build(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
@@ -130,8 +126,7 @@ public class ServiceStorage {
     }
     
     public ClientService find(long orgId, String hostName, String accountName) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(ServiceQuery.find_org_host_account.name()));
@@ -144,13 +139,12 @@ public class ServiceStorage {
             }
             return build(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public List<ClientService> getList() throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             List<ClientService> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(
@@ -159,16 +153,15 @@ public class ServiceStorage {
             while (resultSet.next()) {
                 list.add(build(resultSet));
             }
-            ok = true;
+            connection.setOk(true);
             return list;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public List<ClientService> getList(long orgId) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             List<ClientService> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(
@@ -178,10 +171,10 @@ public class ServiceStorage {
             while (resultSet.next()) {
                 list.add(build(resultSet));
             }
-            ok = true;
+            connection.setOk(true);
             return list;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 }

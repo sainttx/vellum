@@ -4,7 +4,6 @@
  */
 package vellum.storage;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -12,7 +11,7 @@ import java.sql.SQLException;
  * @author evan
  */
 public interface ConnectionPool {
-    public Connection getConnection() throws SQLException;
-    public void releaseConnection(Connection connection, boolean ok) throws SQLException;
+    public ConnectionEntry takeEntry() throws SQLException;
+    public void releaseConnection(ConnectionEntry connectionEntry) throws SQLException;
     
 }

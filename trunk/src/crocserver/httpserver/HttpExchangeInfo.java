@@ -86,6 +86,14 @@ public class HttpExchangeInfo {
         return parameterMap.get(key);
     }
 
+    public Integer getInteger(String key) {
+        String string = parameterMap.get(key);
+        if (string != null) {
+            return Integer.parseInt(key);
+        } 
+        return null;
+    }
+    
     private void put(String string) {
         Entry<String, String> entry = Parameters.parseEntry(string);
         if (entry != null) {
@@ -166,6 +174,7 @@ public class HttpExchangeInfo {
     }
 
     public void handleError(String message) throws IOException {
+        logger.warn(message, parameterMap);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         PrintStream out = new PrintStream(httpExchange.getResponseBody());
         out.printf("ERROR %s\n", message);

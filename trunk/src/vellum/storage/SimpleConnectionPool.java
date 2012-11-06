@@ -17,47 +17,69 @@ import java.util.Queue;
 public class SimpleConnectionPool implements ConnectionPool {
 
     DataSourceConfig dataSourceInfo;
-    Queue<Connection> connectionQueue = new LinkedList();
+    Queue<ConnectionEntry> availableQueue = new LinkedList();
+    Queue<ConnectionEntry> takenQueue = new LinkedList();
     int poolSize = 0;
-    int taken = 0;
+    int takenCount = 0;
+    int releasedCount = 0;
+    int validTimeoutSeconds = 2;    
 
     public SimpleConnectionPool(DataSourceConfig dataSourceInfo) {
         if (dataSourceInfo.getPoolSize() != null) {
             this.poolSize = dataSourceInfo.getPoolSize();
-        } 
+        }
         this.dataSourceInfo = dataSourceInfo;
     }
 
     @Override
-    public synchronized Connection getConnection() {
-        Connection connection = connectionQueue.poll();
-        if (connection == null) {
+    public synchronized ConnectionEntry takeEntry() throws SQLException {
+        ConnectionEntry connectionEntry = availableQueue.poll();
+        if (connectionEntry != null) {
+            Connection connection = connectionEntry.getConnection();
+            if (connection != null) {
+                try {
+                    if (connection.isClosed()) {
+                        close(connectionEntry);
+                    } else if (!connection.isValid(validTimeoutSeconds)) {
+                        close(connectionEntry);
+                    }
+                } catch (SQLException e) {
+                    close(connectionEntry);
+                    throw new StorageRuntimeException(StorageExceptionType.CONNECTION_ERROR, e);
+                }
+            }
+        }
+        if (connectionEntry == null) {
             try {
-                connection = DriverManager.getConnection(
+                Connection connection = DriverManager.getConnection(
                         dataSourceInfo.getUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword());
+                connectionEntry = new ConnectionEntry(connection);
             } catch (SQLException e) {
                 throw new StorageRuntimeException(StorageExceptionType.CONNECTION_ERROR, e);
             }
         }
-        taken++;
-        return connection;
+        takenCount++;
+        connectionEntry.taken();
+        return connectionEntry;
     }
 
     @Override
-    public synchronized void releaseConnection(Connection connection, boolean ok) {
-        taken--;
-        if (ok && connectionQueue.size() < poolSize) {
-            if (connectionQueue.offer(connection)) {
+    public synchronized void releaseConnection(ConnectionEntry connectionEntry) {
+        releasedCount++;
+        connectionEntry.returned();
+        takenQueue.remove(connectionEntry);
+        if (connectionEntry.isOk() && availableQueue.size() < poolSize) {
+            if (availableQueue.offer(connectionEntry)) {
                 return;
             }
         }
-        close(connection);
+        close(connectionEntry);
     }
 
-    static void close(Connection connection) {
+    static void close(ConnectionEntry connectionEntry) {
         try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
+            if (!connectionEntry.isClosed()) {
+                connectionEntry.getConnection().close();
             }
         } catch (SQLException e) {
             throw new StorageRuntimeException(StorageExceptionType.CONNECTION_ERROR, e);

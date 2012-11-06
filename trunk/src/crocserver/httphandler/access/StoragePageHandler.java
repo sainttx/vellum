@@ -3,7 +3,6 @@ package crocserver.httphandler.access;
 
 import crocserver.httphandler.common.AbstractPageHandler;
 import vellum.util.Types;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -16,6 +15,8 @@ import vellum.query.RowSets;
 import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
 import crocserver.storage.common.CrocStorage;
+import java.sql.Connection;
+import vellum.storage.ConnectionEntry;
 
 /**
  *
@@ -25,6 +26,7 @@ public class StoragePageHandler extends AbstractPageHandler {
     public static int COLUMN_LIMIT = 8;
 
     ConnectionPool connectionPool;
+    ConnectionEntry connectionEntry;
     Connection connection;
     DatabaseMetaData databaseMetaData;
     int revisionNumber;
@@ -36,19 +38,18 @@ public class StoragePageHandler extends AbstractPageHandler {
     
     @Override
     protected void handle() throws Exception {
-        connection = connectionPool.getConnection();
-        boolean ok = false;
+        connectionEntry = connectionPool.takeEntry();
+        connection = connectionEntry.getConnection();
         try {
-            connection = connectionPool.getConnection();
             queryDatabaseTime();
             print(RowSets.getRowSet(connection, "select * from user_"));
             print(RowSets.getRowSet(connection, "select * from org"));
             print(RowSets.getRowSet(connection, "select * from client_cert"));
             print(RowSets.getRowSet(connection, "select * from service_record"));
             printSchema();
-            ok = true;
+            connectionEntry.setOk(true);
         } finally {
-            connectionPool.releaseConnection(connection, ok);
+            connectionPool.releaseConnection(connectionEntry);
         }
     }
 
@@ -151,6 +152,5 @@ public class StoragePageHandler extends AbstractPageHandler {
         }
         tablePrinter._tbody();
         tablePrinter._tableDiv();
-    }
-    
+    }    
 }

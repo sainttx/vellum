@@ -5,15 +5,17 @@
 package crocserver.storage.adminuser;
 
 import crocserver.storage.common.CrocStorage;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
 import vellum.query.QueryMap;
+import vellum.query.RowSets;
+import vellum.storage.ConnectionEntry;
 import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
+import vellum.util.Lists;
 
 /**
  *
@@ -21,6 +23,7 @@ import vellum.storage.StorageExceptionType;
  */
 public class UserStorage {
 
+    static Logr logger = LogrFactory.getLogger(UserStorage.class);
     static QueryMap sqlMap = new QueryMap(UserStorage.class);
     CrocStorage storage;
 
@@ -28,9 +31,34 @@ public class UserStorage {
         this.storage = storage;
     }
 
+    public void validate() throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(UserQuery.validate.name()));
+            ResultSet resultSet = statement.executeQuery();
+            List<String> columnNameList = RowSets.getColumnNameList(resultSet.getMetaData());
+            for (Enum columnNameEnum : UserMeta.values()) {
+                String columnName = columnNameEnum.name().toUpperCase();
+                logger.info("validate", columnName);                
+                if (!columnNameList.contains(columnName)) {
+                    throw new SQLException(columnName);
+                }                
+                columnNameList.remove(columnName);
+            }
+            if (!columnNameList.isEmpty()) {
+                throw new SQLException(Lists.format(columnNameList));
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
     private AdminUser get(ResultSet resultSet) throws SQLException {
         AdminUser user = new AdminUser();
         user.setUserName(resultSet.getString(UserMeta.user_name.name()));
+        user.setFirstName(resultSet.getString(UserMeta.first_name.name()));
+        user.setLastName(resultSet.getString(UserMeta.last_name.name()));
         user.setDisplayName(resultSet.getString(UserMeta.display_name.name()));
         user.setEmail(resultSet.getString(UserMeta.email.name()));
         user.setSubject(resultSet.getString(UserMeta.subject.name()));
@@ -44,13 +72,14 @@ public class UserStorage {
     }
 
     public void insert(AdminUser user) throws SQLException, StorageException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(UserQuery.insert.name()));
             int index = 0;
             statement.setString(++index, user.getUserName());
+            statement.setString(++index, user.getFirstName());
+            statement.setString(++index, user.getLastName());
             statement.setString(++index, user.getDisplayName());
             statement.setString(++index, user.getEmail());
             statement.setString(++index, user.getSubject());
@@ -61,44 +90,42 @@ public class UserStorage {
                 statement.setString(++index, null);    
             }
             int updateCount = statement.executeUpdate();
-            ok = true;
+            connection.setOk(true);
             if (updateCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_FOUND);
             }
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public boolean exists(String userName) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.exists_username.name()));
             statement.setString(1, userName);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             int count = resultSet.getInt(1);
-            ok = true;
+            connection.setOk(true);
             return count == 1;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public boolean existsEmail(String email) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.exists_email.name()));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             int count = resultSet.getInt(1);
-            ok = true;
+            connection.setOk(true);
             return count == 1;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
     
@@ -111,8 +138,7 @@ public class UserStorage {
     }
     
     public AdminUser find(String username) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(UserQuery.find_username.name()));
@@ -123,13 +149,12 @@ public class UserStorage {
             }
             return get(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
     
     public AdminUser findEmail(String email) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(UserQuery.find_email.name()));
@@ -140,13 +165,12 @@ public class UserStorage {
             }
             return get(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public void update(AdminUser user) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(UserQuery.update_display_name_subject.name()));
@@ -154,18 +178,17 @@ public class UserStorage {
             statement.setString(2, user.getSubject());
             statement.setString(3, user.getUserName());
             int updateCount = statement.executeUpdate();
-            ok = true;
+            connection.setOk(true);
             if (updateCount != 1) {
                 throw new SQLException();
             }
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public List<AdminUser> getList() throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             List<AdminUser> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.list.name()));
@@ -173,10 +196,10 @@ public class UserStorage {
             while (resultSet.next()) {
                 list.add(get(resultSet));
             }
-            ok = true;
+            connection.setOk(true);
             return list;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 }

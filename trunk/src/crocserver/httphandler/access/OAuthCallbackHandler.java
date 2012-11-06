@@ -36,20 +36,23 @@ public class OAuthCallbackHandler implements HttpHandler {
         this.app = app;
     }
     String state;
+    String accessToken;
     String code;
     String error;
-
+    Integer expiry;
+    
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        logger.info("handle", getClass().getSimpleName());
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        logger.info("handle", httpExchangeInfo.getParameterMap());
-        if (false) {
-            String post = Streams.readString(httpExchange.getRequestBody());
-            logger.info("post", post);
+        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), httpExchangeInfo.getParameterMap());
+        if (httpExchangeInfo.getPath().length() == 0) {
+            httpExchange.close();
+            return;
         }
         state = httpExchangeInfo.getParameter("state");
+        accessToken = httpExchangeInfo.getParameter("access_token");
+        expiry = httpExchangeInfo.getInteger("expires_in");
         code = httpExchangeInfo.getParameter("code");
         error = httpExchangeInfo.getParameter("error");
         try {
@@ -58,7 +61,7 @@ public class OAuthCallbackHandler implements HttpHandler {
             } else if (code != null) {
                 handle();
             } else {
-                httpExchangeInfo.handleError("internal error");                
+                httpExchangeInfo.handleError("internal error");
             }
         } catch (Exception e) {
             httpExchangeInfo.handleException(e);

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import javax.sql.RowSet;
 import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
+import vellum.storage.ConnectionEntry;
 
 /**
  *
@@ -32,22 +33,21 @@ public class SchemaMigrator {
     }
     
     public void migration() throws Exception {
-        boolean ok = false;
+        ConnectionEntry connectionEntry = connectionPool.takeEntry();
+        connection = connectionEntry.getConnection();
         try {
-            connection = connectionPool.getConnection();
             if (MIN_VERSION_NUMBER == 0 || !verifySchema()) {
                 createSchema();
             }
-            ok = true;
+            connectionEntry.setOk(true);
         } catch (Exception e) {
             e.printStackTrace(printer.getPrintStream());
         } finally {
-            connectionPool.releaseConnection(connection, ok);
+            connectionPool.releaseConnection(connectionEntry);
         }  
     }
     
     public boolean verifySchema() throws Exception {
-        connection = connectionPool.getConnection();
         databaseMetaData = connection.getMetaData();
         RowSet rowSet = RowSets.getRowSet(connection, "select * from meta_revision order by update_time desc");
         rowSet.first();

@@ -13,6 +13,7 @@ import vellum.html.HtmlPrinter;
 import vellum.printer.PrintStreamAdapter;
 import vellum.storage.ConnectionPool;
 import vellum.query.RowSets;
+import vellum.storage.ConnectionEntry;
 
 /**
  *
@@ -38,10 +39,11 @@ public class SchemaPrinter {
         printer.println("<link rel='stylesheet' href='monitor.css'/>");
         printer.println("</head>");
         printer.println("<body>");
-        connection = connectionPool.getConnection();
+        ConnectionEntry connectionEntry = connectionPool.takeEntry();
+        Connection connection = connectionEntry.getConnection();
         boolean ok = false;
         try {
-            RowSet rowSet = RowSets.getRowSet(connection, "select * from meta_revision order by update_time desc");
+            RowSet rowSet = RowSets.getRowSet(connection, "select * from schema_revision order by updated desc");
             print(rowSet);
             rowSet.first();
             int revisionNumber = rowSet.getInt(1);
@@ -60,11 +62,11 @@ public class SchemaPrinter {
                     printCatalog(catalog);
                 }
             }
-            ok = true;
+            connectionEntry.setOk(true);
         } catch (Exception e) {
             e.printStackTrace(printer.getPrintStream());
         } finally {
-            connectionPool.releaseConnection(connection, ok);
+            connectionPool.releaseConnection(connectionEntry);
         }
     }
 
