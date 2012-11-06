@@ -141,8 +141,8 @@ We can add the Google Authenticator Chrome extension to test and compare.
 
 http://jroller.com/evanx/resource/chrome-gauth-add.png
 
-The question arises how to handle the event of a user loosing their phone? So I guess in addition to "Lost Password," one wants "Lost phone" button to enable users to reset their TOTP secret :)
+The question arises how to handle the event of a user loosing their phone? So I guess in addition to "Lost Password," one wants a "Lost phone" button to enable users to reset their TOTP secret :)
 
 ==== Conclusion ==== 
 
-[http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp See code on http://code.google.com/p/vellum]
+See code on http://code.google.com/p/vellum] in the [http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp <tt>topt</tt> package].
