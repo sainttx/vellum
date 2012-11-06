@@ -22,7 +22,7 @@ public class GoogleApi {
     Logr logger = LogrFactory.getLogger(getClass());
     String clientId = System.getProperty("google.clientId");
     String clientSecret = System.getProperty("google.clientSecret");
-    String loginUrl = "https://accounts.google.com/o/oauth2/auth";    
+    String loginUrl;
     String redirectUri; 
     
     public GoogleApi() {
@@ -31,9 +31,9 @@ public class GoogleApi {
     public void init(String redirectUri) throws UnsupportedEncodingException {        
         this.redirectUri = redirectUri;
         StringBuilder builder = new StringBuilder();
-        builder.append(loginUrl);
+        builder.append("https://accounts.google.com/o/oauth2/auth");
         builder.append("?state=none");
-        builder.append("&response_type=code");
+        builder.append("&response_type=token");
         builder.append("&client_id=").append(clientId);
         builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
         builder.append("&scope=").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.email", "UTF-8"));
@@ -84,7 +84,15 @@ public class GoogleApi {
         String responseText = Streams.readString(connection.getInputStream());
         logger.info("response", responseText);        
     }
-    
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+        
     public String getLoginUrl() {
         return loginUrl;
     }

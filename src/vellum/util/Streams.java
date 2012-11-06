@@ -113,23 +113,29 @@ public class Streams {
         return stream;
     }
 
-    public static String readString(InputStream stream) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder builder = new StringBuilder();
-        while (true) {
-            try {
-                String line = reader.readLine();
-                if (line == null) {
-                    return builder.toString();
+    public static byte[] readBytes(InputStream stream) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            while (true) {
+                int b = stream.read();
+                if (b < 0) {
+                    return outputStream.toByteArray();
                 }
-                builder.append(line);
-                builder.append("\n");
-            } catch (Exception e) {
-                throw Exceptions.newRuntimeException(e);
+                outputStream.write(b);
             }
+        } catch (Exception e) {
+            throw Exceptions.newRuntimeException(e);
         }
     }
 
+    public static StringBuilder readStringBuilder(InputStream stream) {
+        return new StringBuilder(readString(stream));
+    }
+
+    public static String readString(InputStream stream) {
+        return new String(readBytes(stream));
+    }
+    
     public static InputStream exec(String command) throws IOException {
         logger.info(command);
         Process process = Runtime.getRuntime().exec(command);

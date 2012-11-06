@@ -25,13 +25,13 @@ import crocserver.storage.servicecert.ServiceStorage;
 public class CrocStorage {
 
     Logr logger = LogrFactory.getLogger(CrocStorage.class);
-    DataSourceConfig dataSourceInfo;
     ConnectionPool connectionPool;
     DataSource dataSource;
     EntityCache<String> entityCache;
     
     public CrocStorage(DataSourceConfig dataSourceInfo) {
         this(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceInfo));
+
     }
             
     public CrocStorage(EntityCache typeCache, ConnectionPool connectionPool) {
@@ -39,10 +39,10 @@ public class CrocStorage {
         this.connectionPool = connectionPool;
     }
     
-    public void init() throws Exception {
-        Class.forName(dataSourceInfo.getDriver());
+    public void init() throws Exception {        
         new CrocSchema(this).verifySchema();
         new SchemaPrinter().handle(connectionPool, System.out, "PUBLIC");
+        getUserStorage().validate();
     }
 
     public UserStorage getUserStorage() {

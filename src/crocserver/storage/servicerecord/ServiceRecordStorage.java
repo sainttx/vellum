@@ -14,6 +14,7 @@ import java.util.List;
 import vellum.query.QueryMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.storage.ConnectionEntry;
 import vellum.storage.StorageException;
 
 /**
@@ -44,8 +45,7 @@ public class ServiceRecordStorage {
     }
 
     public void insert(Org org, ServiceRecord serviceRecord) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.insert.name()));
             int index = 0;
@@ -80,9 +80,9 @@ public class ServiceRecordStorage {
                 throw new StorageException(StorageExceptionType.NO_KEY);        
             }
             serviceRecord.setId(keys.getLong(1));
-            ok = true;
+            connection.setOk(true);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
     
@@ -96,8 +96,7 @@ public class ServiceRecordStorage {
     }
 
     public ServiceRecord find(long id) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_id.name()));
             statement.setLong(1, id);
@@ -107,13 +106,12 @@ public class ServiceRecordStorage {
             }
             return build(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
     
     public ServiceRecord findLatest(long orgId, String hostName, String serviceName) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_latest.name()));
             statement.setLong(1, orgId);
@@ -129,13 +127,12 @@ public class ServiceRecordStorage {
             }
             return serviceRecord;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
     
     public List<ServiceRecord> getList() throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             List<ServiceRecord> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.list.name()));
@@ -143,10 +140,10 @@ public class ServiceRecordStorage {
             while (resultSet.next()) {
                 list.add(build(resultSet));
             }
-            ok = true;
+            connection.setOk(true);
             return list;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }    
     

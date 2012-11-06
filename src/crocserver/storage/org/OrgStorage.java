@@ -6,13 +6,13 @@ package crocserver.storage.org;
 
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.common.AbstractEntityStorage;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import vellum.query.QueryMap;
+import vellum.storage.ConnectionEntry;
 import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
 
@@ -42,8 +42,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     }
 
     public long insert(Org org) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(OrgQuery.insert.name()));
@@ -53,7 +52,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             statement.setString(++index, org.getDisplayName());
             statement.setString(++index, org.getUpdatedBy());
             int updateCount = statement.executeUpdate();
-            ok = true;
+            connection.setOk(true);
             if (updateCount != 1) {
                 throw new SQLException();
             }
@@ -64,25 +63,24 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             long id = resultSet.getLong(1);
             org.setId(id);
             org.setStored(true);
-            ok = true;
+            connection.setOk(true);
             return id;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public boolean exists(String email) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(OrgQuery.exists.name()));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             boolean exists = resultSet.next();
-            ok = true;
+            connection.setOk(true);
             return exists;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
@@ -103,8 +101,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     }
         
     public Org find(String name) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(OrgQuery.find_name.name()));
@@ -113,17 +110,16 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             if (!resultSet.next()) {
                 return null;
             }
-            ok = true;
+            connection.setOk(true);
             return get(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
     
     @Override
     public Org find(Long id) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(OrgQuery.find_id.name()));
@@ -132,16 +128,15 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             if (!resultSet.next()) {
                 return null;
             }
-            ok = true;
+            connection.setOk(true);
             return get(resultSet);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public void update(Org org) throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(OrgQuery.update.name()));
@@ -151,19 +146,18 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             statement.setString(++index, org.getUpdatedBy());
             statement.setLong(++index, org.getId());
             int updateCount = statement.executeUpdate();
-            ok = true;
+            connection.setOk(true);
             if (updateCount != 1) {
                 throw new SQLException();
             }
-            ok = true;
+            connection.setOk(true);
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 
     public List<Org> getList() throws SQLException {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             List<Org> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(OrgQuery.list.name()));
@@ -171,10 +165,10 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             while (resultSet.next()) {
                 list.add(get(resultSet));
             }
-            ok = true;
+            connection.setOk(true);
             return list;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connection);
         }
     }
 

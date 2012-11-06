@@ -74,6 +74,7 @@ public class CrocApp {
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
         storage = new CrocStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
+        storage.init();
         trustManager = new CrocTrustManager(storage);
         trustManager.init();
         new CrocSchema(storage).verifySchema();
@@ -251,6 +252,12 @@ public class CrocApp {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    String homePage = "/bindex.html";
+    
+    public String getHomePage() {
+        return homePage;
     }
 
 }

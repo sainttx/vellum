@@ -21,16 +21,18 @@ public class AccessHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(AccessHttpHandler.class);
     CrocApp app;
     CrocStorage storage;
-
+    WebHandler webHandler;
+    
     public AccessHttpHandler(CrocApp app) {
         this.app = app;
-        this.storage = app.getStorage();
+        storage = app.getStorage();
+        webHandler = new WebHandler(app);
     }
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         if (!handlePath(httpExchange)) {
-            new AccessHomeHandler(app).handle(httpExchange);
+            webHandler.handle(httpExchange);
         }
     }
 

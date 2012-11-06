@@ -11,6 +11,7 @@ import java.sql.*;
 import javax.sql.RowSet;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.storage.ConnectionEntry;
 
 /**
  *
@@ -39,8 +40,8 @@ public class CrocSchema {
     }
 
     private boolean verifySchemaVersion() throws Exception {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connectionEntry = storage.getConnectionPool().takeEntry();
+        Connection connection = connectionEntry.getConnection();
         try {
             databaseMetaData = connection.getMetaData();
             logger.info("databaseProductName " + databaseMetaData.getDatabaseProductName());
@@ -56,18 +57,18 @@ public class CrocSchema {
                 catalog = resultSet.getString(1);
                 logger.info(catalog);
             }
-            ok = true;
+            connectionEntry.setOk(true);
             return versionNumber >= MIN_VERSION_NUMBER;
         } catch (Exception e) {
             throw e;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connectionEntry);
         }
     }
 
     private void createSchema() throws Exception {
-        Connection connection = storage.getConnectionPool().getConnection();
-        boolean ok = false;
+        ConnectionEntry connectionEntry = storage.getConnectionPool().takeEntry();
+        Connection connection = connectionEntry.getConnection();
         try {
             String sqlScriptName = getClass().getSimpleName() + ".sql";
             InputStream stream = getClass().getResourceAsStream(sqlScriptName);
@@ -91,9 +92,8 @@ public class CrocSchema {
             PreparedStatement preparedStatement = connection.prepareStatement(insertSchemaVersion);
             preparedStatement.setInt(1, CURRENT_VERSION_NUMBER);
             preparedStatement.execute();
-            ok = true;
         } finally {
-            storage.getConnectionPool().releaseConnection(connection, ok);
+            storage.getConnectionPool().releaseConnection(connectionEntry);
         }
     }
 }

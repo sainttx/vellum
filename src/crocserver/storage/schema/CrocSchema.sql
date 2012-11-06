@@ -9,11 +9,10 @@ drop table contact_group_member;
 drop table contact;
 drop table user_; 
 drop table service_record;
-drop table service;
 drop table service_type;
+drop table service;
 drop table metric_record;
 drop table host_;
-drop table service;
 drop table config;
 
 create table schema_revision (
@@ -54,6 +53,8 @@ create table org (
 
 create table user_ (
   user_name varchar(32) primary key, 
+  first_name varchar(32), 
+  last_name varchar(32), 
   display_name varchar(64), 
   email varchar(64),
   role_ varchar(32),
