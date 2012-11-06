@@ -32,6 +32,10 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<%s>%s</%s>", element, text, element);
     }
 
+    public void div_id(String id) {
+        out.printf("<div id='%s'>\n", id);
+    }    
+    
     public void div(String style) {
         out.printf("<div class='%s'>\n", style);
     }    
@@ -202,5 +206,5 @@ public class HtmlPrinter extends PrinterDelegator {
         if (text == null) text = "";
         out.printf("<textarea name='%s' rows='%d' cols='%d'>%s</textarea>\n", name, rows, columns, text);
     }
-    
+
 }
