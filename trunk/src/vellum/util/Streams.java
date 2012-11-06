@@ -285,5 +285,13 @@ public class Streams {
         }
         return fileName;
     }
+
+    public static void transmit(InputStream inputStream, OutputStream outputStream) throws IOException {
+        while (true) {
+            int b = inputStream.read();
+            if (b < 0) return;
+            outputStream.write(b);            
+        }        
+    }
     
 }

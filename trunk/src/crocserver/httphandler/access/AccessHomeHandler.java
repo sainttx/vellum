@@ -26,6 +26,12 @@ public class AccessHomeHandler extends AbstractPageHandler {
 
     @Override
     public void handle() throws IOException, SQLException {
+        h.div("header");
+        h.span("brand", "croc");
+        h._div();
+        h.div_id("watermark");
+        h._div();
+        h.img("http://upload.wikimedia.org/wikipedia/commons/5/55/Gnome-security-medium.svg");
         h.div("menuBarDiv");
         h.a_("/", "Home");
         h.span("style", "|");
@@ -36,8 +42,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
             logger.info("qrUrl", qrUrl);
             h.img(qrUrl);
             h.pre(qrUrl);
-        }
-        
+        }        
         printCerts("certs", app.getStorage().getClientCertStorage().getList());
     }
     
