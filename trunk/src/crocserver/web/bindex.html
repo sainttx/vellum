@@ -141,14 +141,12 @@
             detectedRedirectUriString = null;
             var pollTimer =  window.setInterval(function() { 
                 count++;
-                console.log(win);
                 if (count < 20) {
                 } else if (count%20 == 0) {
                     console.log("click_login_google timer " + win.title);
-                    console.log(win.location);
                 } else if (count > 200) {                    
                     window.clearInterval(pollTimer);
-                    console.log("cancel " + detectedRedirectUriString);
+                    console.log("cancel");
                 } else if (win.document && win.document.URL) {
                     var detectedRedirectUriString = win.document.URL;
                     if (detectedRedirectUriString.indexOf('${redirectUri}') != -1) {
