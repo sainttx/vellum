@@ -34,6 +34,7 @@ public class GoogleApi {
         builder.append("https://accounts.google.com/o/oauth2/auth");
         builder.append("?state=none");
         builder.append("&response_type=token");
+        builder.append("&approval_prompt=force");
         builder.append("&client_id=").append(clientId);
         builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
         builder.append("&scope=").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.email", "UTF-8"));

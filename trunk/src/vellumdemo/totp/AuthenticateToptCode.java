@@ -39,11 +39,10 @@ public class AuthenticateToptCode {
     }
      
     void test() throws Exception {
-        logger.info(getQRBarcodeURL(user, host, secret));
-        logger.info("time", getTimeIndex());
-        logger.info("code", getCode(secret, getTimeIndex()));
-        logger.info("code", getCodeList(secret, getTimeIndex(), 6));
-        logger.info("verify", verifyCode(secret, testCode, testTimeIndex, 6));
+        System.out.println("time: " + getTimeIndex());
+        System.out.println("code: " +  getCode(secret, getTimeIndex()));
+        System.out.println("codes: " + getCodeList(secret, getTimeIndex(), 6));
+        System.out.println("verify: " + verifyCode(secret, testCode, testTimeIndex, 6));
     }
 
     public static boolean verifyCode(String secret, int code, long timeIndex, int variance) 
