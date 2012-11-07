@@ -125,13 +125,15 @@ We can then calculate the authentication code, for this time interval, using the
 }}}
 
 where...
-<ul>
-    <li>The time index is put into an 8-byte array.
-    <li>We use <tt>HmacSHA1</tt> to hash this array into 20 bytes.
-    <li>The first nibble (4 bits) of the last byte is taken as an offset (from 0 to 15) into the 20-byte array. 
-    <li>Four bytes from the offset are then extracted, with the highest-order bit zero'ed. So at this stage, i guess we have an unsigned zero-based 31-bit number with a maximum value of 2^31 minus 1 i.e. <tt>Integer.MAX_VALUE</tt> i.e. 2,147,483,647. 
-    <li>We take the lower 6 decimal digits as our one-time password. Voila!
-</ul>
+- The time index is put into an 8-byte array.
+- We use <tt>HmacSHA1</tt> to hash this array into 20 bytes.
+- The first nibble (4 bits) of the last byte is taken as an offset (from 0 to 15) into the 20-byte array. 
+- Four bytes from the offset are then extracted, with the highest-order bit zero'ed. 
+
+So at this stage, i guess we have an unsigned zero-based 31-bit number with a maximum value of 2^31 minus 1 i.e. <tt>Integer.MAX_VALUE</tt> i.e. 2,147,483,647. 
+
+- We take the lower 6 decimal digits as our one-time password. Voila!
+
 Now the only problem is that the mobile's clock might be out by a minute or two (or indeed our workstation which we are using a test server). So we need to check codes for a few time indexes before and after the supposed time. Problem solved! <i>Hopefully it goes without saying that servers always have the correct time thanks to NTP, although you'd be surprised... ;)</i>
 
 {{{
