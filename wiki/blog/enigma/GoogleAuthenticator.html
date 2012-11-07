@@ -1,7 +1,7 @@
 
 The Google Authenticator mobile apps implement an IETF time-based one-time-password standard. This hashes the time, with a shared secret using the HMAC-SHA1 algorithm, to generate a one-time password.
 
-But besides enabling multi-factor authentication for our own Google account, how would we employ Google Authenticator clients for our own websites?!
+But besides enabling multi-factor authentication for our personal Google account, how would we employ Google Authenticator clients for our own websites?!
 
 <!--break-->
 
@@ -16,47 +16,41 @@ A few years ago i emitted a series of Java crypto articles on this blog, which h
 </div>
 </a>
     
-Probably you've heard of the Google Authenticator? As in http://en.wikipedia.org/wiki/Google_Authenticator.
+Probably you've heard of this <a href="http://en.wikipedia.org/wiki/Google_Authenticator">Google Authenticator</a> thingy?
 
 <img src="http://jroller.com/evanx/resource/chrome-gauth-topt.png"/>
 
-But should one really install this app on one's phone, and add the Chrome extension to one's desktop browser, and change one's google account to require the 2-factor authentification? Absolutely! Do it now! :) On https://www.google.com/settings/security.
+So let's blindly install this app on our phone, add the Chrome extension to our desktop browser, and change our Google account to require the 2-factor authentification on https://www.google.com/settings/security.
 
 <img src="http://jroller.com/evanx/resource/google-accounts-security-window.png"/>
 
-So the <a href="http://code.google.com/p/google-authenticator">Google Authenticator</a> is a client-side implementation of the <a href="http://tools.ietf.org/html/rfc6238">IETF RFC6238</a> standardized <a href="http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm">"time-based one-time password algorithm" (TOTP)</a>.
+<h4>What is this Google Authenticator?</h4>
 
-Each account you configure on your Google Authenticator has a stored secret, shared with your web account. The app displays the time-based code for each account, which changes every 30 seconds. This code is indeed the number of 30 second intervals since the UNIX time epoch, hashed with that shared secret using <a href="http://en.wikipedia.org/wiki/Hash-based_message_authentication_code">the HMAC-SHA1 algorithm</a>.
+The <a href="http://code.google.com/p/google-authenticator">Google Authenticator</a> is a client-side implementation of a <a href="http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm">"time-based one-time password algorithm" (TOTP)</a>, in particular <a href="http://tools.ietf.org/html/rfc6238">IETF RFC6238</a>.
+
+Each account we configure on our Google Authenticator has a stored secret, shared with some web account. The app displays the time-based code for each secret, which changes every 30 seconds. This code is computed from the number of 30 second intervals since the UNIX time epoch, hashed with that shared secret using the <a href="http://en.wikipedia.org/wiki/Hash-based_message_authentication_code">HMAC-SHA1 algorithm</a>. <i>Sooo simple! :)</i>
 
 <img src="http://jroller.com/evanx/resource/google-auth-android.png"/>
 
-See on http://code.google.com/p/google-authenticator that it also supports the counter-based <a href="http://en.wikipedia.org/wiki/HOTP">HMAC-Based One-time Password (HOTP) algorithm</a> specified in <a href="https://tools.ietf.org/html/rfc4226">RFC 4226</a>, which we ignore here and leave for another article perhaps.
+We see on http://code.google.com/p/google-authenticator that it also supports the counter-based <a href="http://en.wikipedia.org/wiki/HOTP">HMAC-Based One-time Password (HOTP) algorithm</a> specified in <a href="https://tools.ietf.org/html/rfc4226">RFC 4226</a>, which we ignore here and leave for another article perhaps.
 
-So the question arises, how could we support Google Authenticator clients for multi-factor authentication of logins on our own websites that we build?
+So the question arises, can we support Google Authenticator clients for multi-factor authentication on websites that we build? Let's explore what this would entail...
 
-<h4>Generate random secret in Base32</h4>
+<h4>Random secret in Base32</h4>
 
-For each user account, we must generate a random secret for the Google Authenticator client.
+For each user account, we generate a random secret for the Google Authenticator client.
 
 <pre>
-public class GenerateSecret {
-    Logr logger = LogrFactory.getLogger(getClass());
-
     void test() {
         byte[] buffer = new byte[10];
         new Random().nextBytes(buffer);
         String secret = new String(new Base32().encode(buffer));
-        logger.info("secret " + secret);
+        System.out.println("secret " + secret);
     }
-
-    public static void main(String[] args) {
-        new GenerateSecret().test();
-    }
-}
 </pre>
 where the secret is a 10 byte random number, which is encoded using <a href="http://en.wikipedia.org/wiki/Base32">Base32</a> (<a href="http://tools.ietf.org/html/rfc3548">RFC3548</a>).
 
-This produces a 16 character string consisting of the characters A-Z and 2-7.
+This produces a string that is 16 characters long, in particular the characters A-Z and 2-7.
 <pre>
 secret OVEK7TIJ3A3DM3M6
 </pre>
@@ -65,7 +59,7 @@ The user creates a new account on their Google Authenticator app, entering this 
 
 <img src="http://jroller.com/evanx/resource/chrome-gauth-add.png"/>
 
-For entering codes into mobiles, we find that mixed alpha and numeric secret is not uber-convenient, so one would prefer alpha only. For convenience, one might reorder that secret e.g. OVEKTIJADMM73336, albeit thereby loosing some of its randomness. But take any of my suggestions with a pinch of salt. Heh heh, a crypto pun!
+For entering codes into mobiles, we find that mixing alpha and numeric is not uber-convenient, and so one might reorder that secret e.g. OVEKTIJADMM73336, albeit thereby loosing some of its randomness. But take any of my suggestions with a pinch of salt. Heh heh, a crypto pun!
 
 <h4>QR code</h4> 
 
@@ -132,7 +126,7 @@ So when users login to our site, they enter the current 6-digit OTP code display
 
 So far, soooo easy :)
 
-We can then calculate the authentication code, for this exact time, using the user's secret.
+We can then calculate the authentication code, for this time interval, using the user's secret.
 
 <pre>
   private static long getCode(byte[] secret, long timeIndex) 
@@ -154,9 +148,15 @@ We can then calculate the authentication code, for this exact time, using the us
   }
 </pre>
 
-where the time index is put into an 8-byte array, and <tt>HmacSHA1</tt>-hashed to give us 20 bytes. The first nibble (4-bits) of the last byte is taken as an offset (in the range 0 to 15) into the 20-byte array. Four bytes from the offset are then extracted, with the highest-order bit zero'ed. So we have an unsigned zero-based number with a maximum value is 2^31 minus 1 i.e. <tt>Integer_MAX_VALUE</tt> i.e. 2,147,483,647. Finally we take the lower 6 decimal digits as our one-time password code.
-
-Now the problem is the mobile's clock might be out by a minute or two (or indeed our workstation which we are using a test server), so we need to check codes for a few time indexes before and after the supposed time. (Hopefully it goes without saying that servers always have the correct time thanks to NTP ;)
+where...
+<ul>
+    <li>The time index is put into an 8-byte array.
+    <li>We use <tt>HmacSHA1</tt> to hash this array into 20 bytes.
+    <li>The first nibble (4 bits) of the last byte is taken as an offset (from 0 to 15) into the 20-byte array. 
+    <li>Four bytes from the offset are then extracted, with the highest-order bit zero'ed. So at this stage, i guess we have an unsigned zero-based 31-bit number with a maximum value of 2^31 minus 1 i.e. <tt>Integer.MAX_VALUE</tt> i.e. 2,147,483,647. 
+    <li>We take the lower 6 decimal digits as our one-time password. Voila!
+</ul>
+Now the only problem is that the mobile's clock might be out by a minute or two (or indeed our workstation which we are using a test server). So we need to check codes for a few time indexes before and after the supposed time. Problem solved! <i>Hopefully it goes without saying that servers always have the correct time thanks to NTP, although you'd be surprised... ;)</i>
 
 <pre>
   public static boolean verifyCode(String secret, int code, long timeIndex, 
@@ -189,30 +189,31 @@ codes: [192262, 720538, 629431, 92289, 937348, 766710, 74053, 425245, 738189, 46
 verify: true
 </pre>
 
-We can add the GAuth Chrome extension to our browser to test and compare :)
+We can add the GAuth Chrome extension to our browser to compare, and of course the mobile app :)
 
 <img src="http://jroller.com/evanx/resource/gauth.png"/>
 
-Finally, the question arises how to handle the event of a user loosing their phone (and TOPT secret)? So I guess in addition to the "Forgot Password" one wants a "Lost phone" button ;) That is, to enable users to reset their TOTP secret.
+Finally, the question arises how to handle the event of a user loosing their phone (and TOTP secret)? So I guess in addition to the "Forgot Password" one wants a "Lost phone" button ;) That is, to enable users to reset their TOTP secret.
 
 <h4>Conclusion</h4> 
 
-The Google Authenticator mobile apps, and Chrome extension, et al, implement the IETF RFC6238 time-based one-time-password standard. This hashes the time since the epoch with a shared secret, using the HMAC-SHA1 algorithm, i.e. a SHA1 hash-based message authentication code.
+The Google Authenticator mobile apps, and Chrome extension, et al, implement the IETF RFC6238 time-based one-time-password standard. This hashes the time since the epoch with a shared secret, using the HMAC-SHA1 algorithm, i.e. a SHA1-hash-based message authentication code.
 
-Besides enabling multi-factor authentication for our personal Google account, we can easily employ Google Authenticator for multi-factor authentication on our websites!
+Besides enabling multi-factor authentication for our personal Google account, we can easily employ Google Authenticator for multi-factor authentication on our websites.
 
-We just hash the number of 30s time intervals since the epoch, with a secret using the HMAC-SHA1 algorithm. The only slight complication, is that in case the client's clock is a bit out of whack, we must allow some leniency for that. 
+We hash the number of 30s time intervals since the epoch with a secret using the HMAC-SHA1 algorithm. A slight complication is that someone's clock might be a bit out of whack, we allow some leniency for that. 
 
 <h4>Coming up</h4>
 
-In an upcoming article we'll build a sample site using a <a href="http://twitter.github.com/bootstrap/getting-started.html#examples">Twitter Bootstrap</a> template, adding "Login with Google" via their <a href="https://developers.google.com/accounts/docs/OAuth2">OAuth 2.0 API</a>, and last but not least, password hashing, with salt!
-and of course T-OTP with Google Authenticator.
+We should probably consider counter-based <a href="http://en.wikipedia.org/wiki/HOTP">HOTP</a>, since we might be missing a trick there?!
 
-Also we should probably consider counter-based <a href="http://en.wikipedia.org/wiki/HOTP">HOPT</a>, since we might be missing a trick there.
+In an upcoming article, we'll build a sample site using a <a href="http://twitter.github.com/bootstrap/getting-started.html#examples">Twitter Bootstrap</a> template, enabling "Login with Google" via that <a href="https://developers.google.com/accounts/docs/OAuth2">OAuth 2.0 API</a>, in addition to the usual <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/Passwords.java">hashed and salted password</a>, and of course this T-OTP with Google Authenticator. For a sneak preview, see the so-called <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/#crocserver%2Fhttphandler%2Faccess"><tt>crocserver</tt></a> under construction.
+
+And then coming "soon" in 2013, we'll build a crypto server called <a href="http://code.google.com/p/vellum/source/browse/trunk/src/venigma/#venigma%2Fserver"><tt>venigma</tt></a> :)
 
 <h4>Resources</h4>
 
-https://code.google.com/p/vellum/ - where i will collate these articles and their code - see the <a href="http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp"><tt>vellumdemo.totp</tt></a> directory.
+https://code.google.com/p/vellum/ - where i will collate these articles and their code - see the <a href="http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp"><tt>vellumdemo.totp</tt></a> package.
 
 <h4>Link list</h4>
 
@@ -220,7 +221,9 @@ http://en.wikipedia.org/wiki/Hash-based_message_authentication_code.
 http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm
 http://en.wikipedia.org/wiki/HOTP
 http://tools.ietf.org/html/rfc6238
-https://tools.ietf.org/html/rfc4226
+http://tools.ietf.org/html/rfc4226
 http://code.google.com/p/google-authenticator
 
+And since it's this classic video that makes me want to add "thus enabled" to everything - even though Brent says "Android thus disabled" - ironically! :)
 
+http://www.youtube.com/watch?v=XKXz2qDTiBU
