@@ -43,16 +43,17 @@
                     </a>
                     <a class="brand" href="#">Croc</a>
                     <div class="nav-collapse collapse">
-                        <div id="croc-username" class="navbar-text pull-right">
-                            <a href="#" id="croc-username-text" class="navbar-link">username</a>
+                        <div id="croc-username" class="navbar-text pull-right hide">
+                            <img id="croc-user-picture" width="27" height="27"/>
+                            <a href="#" id="croc-username-text" class="navbar-link"></a>
                         </div>
                         <div id="croc-login" class="nav pull-right">
                             <a id="croc-login-btn"><span class="btn">Login with Google</span></a>
                         </div>
                         <ul class="nav">
-                            <li class="croc-nav-anchor croc-home-anchor active"><a href="#">Home</a></li>
-                            <li><a class="croc-nav-anchor croc-about-anchor" href="#">About</a></li>
-                            <li><a class="croc-nav-anchor croc-contact-anchor" href="#">Contact</a></li>
+                            <li class="croc-nav-anchor croc-home-anchor active"><a class="croc-home" href="#">Home</a></li>
+                            <li class="croc-nav-anchor croc-about-anchor"><a class="croc-about" href="#">About</a></li>
+                            <li class="croc-nav-anchor croc-about-anchor"><a class="croc-contact" href="#">Contact</a></li>
                         </ul>
                         <!--form class="navbar-form pull-right">
                           <input class="span2" type="text" placeholder="Email">
@@ -70,7 +71,7 @@
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
                             <li class="nav-header">Site</li>
-                            <li class="croc-home-anchor croc-nav-anchor active"><a href="#">Home</a></li>
+                            <li class="croc-home-anchor croc-nav-anchor active"><a class="croc-home" href="#">Home</a></li>
                             <li class="nav-header">Admin</li>
                             <li><a href="#">Dashboard</a></li>
                             <li><a href="#"></a></li>
@@ -81,19 +82,21 @@
                     <div class="hero-unit croc-info" id="croc-info-landing">
                         <h1>Croc</h1>
                         <p>
-                        <p>Croc is the "cron output collector"</p>
-                        <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+                        <p>Croc is the "cron output collector"</p>                        
+                        <p><a id="croc-learn-btn" class="btn btn-primary btn-large croc-about">Learn more &raquo;</a></p>
                     </div>
-                    <div class="hero-unit croc-info" id="croc-info-contact">
+                    <div class="hero-unit croc-info hide" id="croc-info-contact">
                         <h1>Contact</h1>
                         <p>
                         <p>evan.summers at gmail.com</p>
+                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home">Home &raquo;</a></p>
                     </div>
-                    <div class="hero-unit croc-info" id="croc-info-about">
+                    <div class="hero-unit croc-info hide" id="croc-info-about">
                         <h1>About</h1>
                         <p>
                         <p>Croc is the "cron output collector"</p>
-                        <p>Developed by evan.summers at gmail.com</p>
+                        <p>Developed by evan.summers at gmail.com, sysadmin at <a href="https://bizswitch.net">BizSwitch.net</a></p>
+                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home">Home &raquo;</a></p>
                     </div>
                 </div><!--/span-->
             </div><!--/row-->
@@ -126,28 +129,49 @@
         var tokenType;
         var expiresIn;
         var user;
-
+        var count; 
+        var detectedRedirectUriString;
+        
         function click_login_google() {
+            accessToken = null;
             var loginUrl = '${loginUrl}';
-            var win = window.open(loginUrl, "Login with Google", 'width=800, height=600'); 
+            var win = window.open(loginUrl, "Login with Google", 'width=800, height=600');
+            window.
+            count = 0; 
+            detectedRedirectUriString = null;
             var pollTimer =  window.setInterval(function() { 
-                if (win.document.URL.indexOf('${redirectUri}') != -1) {
+                count++;
+                console.log(win);
+                if (count < 20) {
+                } else if (count%20 == 0) {
+                    console.log("click_login_google timer " + win.title);
+                    console.log(win.location);
+                } else if (count > 200) {                    
                     window.clearInterval(pollTimer);
-                    var url = win.document.URL;
-                    win.close();
-                    var index = url.indexOf('#');
-                    if (index > 0) {
-                        var queryString = url.substring(index + 1);
-                        var regex = /([^&=]+)=([^&]*)/g;
-                        while (true) {
-                            var m = regex.exec(queryString)
-                            if (m == null) break; 
-                            if (m[1] == 'access_token') accessToken = m[2];
-                        }
-                        validateToken(accessToken);
+                    console.log("cancel " + detectedRedirectUriString);
+                } else if (win.document && win.document.URL) {
+                    var detectedRedirectUriString = win.document.URL;
+                    if (detectedRedirectUriString.indexOf('${redirectUri}') != -1) {
+                        console.log("detected " + detectedRedirectUriString);
+                        window.clearInterval(pollTimer);
+                        var index = detectedRedirectUriString.indexOf('#');
+                        if (index > 0) {
+                            detectedRedirectUriString = detectedRedirectUriString.substring(index + 1);
+                            console.log("detectedRedirectUriString " + detectedRedirectUriString);
+                            var regex = /([^&=]+)=([^&]*)/g;
+                            while (true) {
+                                var m = regex.exec(detectedRedirectUriString)
+                                if (m == null) break; 
+                                if (m[1] == 'access_token') accessToken = m[2];
+                            }
+                            if (accessToken != null) {
+                                validateToken(accessToken);                            
+                            }
+                        }                    
                     }
+                    win.close();                    
                 }
-            }, 100);
+            }, 200);
         }
 
         function validateToken(token) {
@@ -167,8 +191,26 @@
                 url: 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + accessToken,
                 data: null,
                 success: function(user) {
+                    console.log(user);
+                    if (user.email != null) {
+                        $('#croc-login-btn').hide();
+                        $('#croc-username').show();
+                        $('#croc-username-text').text(user.email);
+                        $('#croc-user-picture').attr('src', user.picture);
+                    }
+                },
+                dataType: "jsonp"
+            });
+        }
+
+        function getPlusUserInfo() {
+            $.ajax({
+                url: 'https://https://www.googleapis.com/plus/v1/people/?access_token=' + accessToken,
+                data: null,
+                success: function(user) {
                     console.log(user);                    
                     $('#croc-login-btn').hide();
+                    $('#croc-username').removeClass('invisible');
                     $('#croc-username').show();
                     $('#croc-username-text').text(user.email);
                     //$('#imgHolder').attr('src', user.picture);
@@ -177,30 +219,49 @@
             });
         }
 
-        $(document).ready(function() {
-            $("#croc-username").hide();
+        function croc_about() {
+            $(".croc-info").hide();
+            $(".croc-nav-anchor").removeClass("active");
+            $("#croc-info-about").removeClass("hidden");
+            $("#croc-info-about").show();        
+        }
+        
+        function croc_home() {
+            $(".croc-nav-anchor").removeClass("active");
             $(".croc-info").hide();
             $("#croc-info-landing").show();
-            $(".croc-home-anchor").click(function() {
-                $(".croc-nav-anchor").removeClass("active");
-                $(".croc-info").hide();
-                $("#croc-info-landing").show();
-            });
-            $(".croc-contact-anchor").click(function() {
-                $(".croc-info").hide();
-                $(".croc-nav-anchor").removeClass("active");
-                $("#croc-info-contact").removeClass("hidden")
-                $("#croc-info-contact").show();
-            });
-            $(".croc-about-anchor").click(function() {
-                $(".croc-info").hide();
-                $(".croc-nav-anchor").removeClass("active");
-                $("#croc-info-about").removeClass("hidden")
-                $("#croc-info-about").show();
-            });
-            $("#croc-login-btn").click(function() {
-                click_login_google();
-            });
+        }        
+
+        function croc_contact() {
+            $(".croc-info").hide();
+            $(".croc-nav-anchor").removeClass("active");
+            $("#croc-info-contact").show();
+        }
+        
+        function autoRedirect() {
+            var location = window.location;
+            if (window.location.protocol == "http:") {
+                $('#croc-login-btn').hide();     
+            }
+            if (window.location.protocol != "https:") {
+                var host = location.host;
+                var index = location.host.indexOf(':');
+                if (index > 0) {
+                    host = location.host.substring(0, index) + ':8443';
+                }
+                location = "https://" + host + location.pathname + location.search + location.hash;
+                console.log(location);
+                window.location = location;
+            }        
+        }
+            
+        $(document).ready(function() {
+            $("#croc-username").hide();
+            $(".croc-home").click(croc_home);
+            $(".croc-about").click(croc_about);
+            $(".croc-contact").click(croc_contact);
+            $("#croc-login-btn").click(click_login_google);
+            autoRedirect();
         });
     </script>
 </html>

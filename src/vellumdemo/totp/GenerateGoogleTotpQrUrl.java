@@ -20,17 +20,26 @@ public class GenerateGoogleTotpQrUrl {
     String secret = "OVEK7TIJ3A3DM3M6";
     String user = "evanx";
     String host = "beethoven";
-    
-    public static String getQRBarcodeURL(String user, String host, String secret) {
-        String chl = "otpauth%3A%2F%2Ftotp%2F" + user + '@' + host + "%3Fsecret%3D" + secret;
-        System.out.println(Strings.decodeUrl(chl));
-        return "http://chart.apis.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=" + chl;
-    }
-    
+
     void test() throws Exception {
+        System.out.println(getQRBarcodeOtpAuthURL(user, host, secret));
+        System.out.println(Strings.decodeUrl(getQRBarcodeURLQuery(user, host, secret)));
         System.out.println(getQRBarcodeURL(user, host, secret));
     }
+    
+    public static String getQRBarcodeURL(String user, String host, String secret) {
+        return "http://chart.apis.google.com/chart?" + getQRBarcodeURLQuery(user, host, secret);
+    }
 
+    public static String getQRBarcodeURLQuery(String user, String host, String secret) {
+        return "chs=200x200&chld=M%7C0&cht=qr&chl=" + 
+                Strings.encodeUrl(getQRBarcodeOtpAuthURL(user, host, secret));
+    }
+   
+    public static String getQRBarcodeOtpAuthURL(String user, String host, String secret) {
+        return String.format("otpauth://totp/%s@%s&secret=%s", user, host, secret);
+    }
+    
     public static void main(String[] args) {
         try {
             new GenerateGoogleTotpQrUrl().test();
