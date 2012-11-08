@@ -51,6 +51,8 @@ public class AccessHttpHandler implements HttpHandler {
             new EnrollServiceHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/get/cert/")) {
             new GetCertHandler(storage).handle(httpExchange);
+        } else if (path.equals("/get/googleUserInfo")) {
+            new GetGoogleUserInfoHandler(app).handle(httpExchange);
         } else if (path.startsWith("/gen/p12/")) {
             new GenP12Handler(app).handle(httpExchange);
         } else if (path.startsWith("/sign/cert/")) {

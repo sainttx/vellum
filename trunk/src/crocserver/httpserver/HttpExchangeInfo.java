@@ -26,6 +26,7 @@ public class HttpExchangeInfo {
 
     Logr logger = LogrFactory.getLogger(getClass());
     HttpExchange httpExchange;
+    PrintStream out;
     ParameterMap parameterMap;
     String urlQuery;
     String[] args;
@@ -178,6 +179,13 @@ public class HttpExchangeInfo {
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         PrintStream out = new PrintStream(httpExchange.getResponseBody());
         out.printf("ERROR %s\n", message);
+    }
+
+    public PrintStream getPrintStream() {
+        if (out == null) {
+            out = new PrintStream(httpExchange.getResponseBody());
+        }
+        return out;
     }
     
     
