@@ -47,7 +47,6 @@ public class LoginHandler implements HttpHandler {
             return;
         }
         if (httpExchangeInfo.getPathLength() == 1) {
-            //userId = httpExchangeInfo.getPathString(1);
             accessToken = httpExchangeInfo.getInputString();
             logger.info("input", userId, accessToken);
             try {
