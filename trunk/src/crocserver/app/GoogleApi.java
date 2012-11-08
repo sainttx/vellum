@@ -65,25 +65,33 @@ public class GoogleApi {
     }
 
     public GoogleUserInfo getUserInfo(String accessToken) throws Exception {
-        String json = getJsonUserInfo(accessToken);
+        String json = getUserInfoJson(accessToken);
         GoogleUserInfo userInfo = new GoogleUserInfo();
         userInfo.parseJson(json);
         return userInfo;
     }
 
-    public String getJsonUserInfo(String accessToken) throws Exception {
+    public String getUserInfoJson(String accessToken) throws Exception {
         URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken);
         logger.info("request", url.toString());
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        return Streams.readString(connection.getInputStream());
+        String res = Streams.readString(connection.getInputStream());
+        logger.info("response", connection.getResponseCode(), res);
+        return res;
     }
-        
-    public void sendPlusRequest(String userId) throws Exception {
-        URL url = new URL("https://www.googleapis.com/plus/v1/people/" + userId);
+
+    public GooglePlusUserInfo getPlusPerson(String accessToken, String userId) throws Exception {
+        String json = getPlusPersonJson(accessToken, userId);
+        GooglePlusUserInfo userInfo = new GooglePlusUserInfo();
+        userInfo.parseJson(json);
+        return userInfo;
+    }
+    
+    public String getPlusPersonJson(String accessToken, String userId) throws Exception {
+        URL url = new URL("https://www.googleapis.com/plus/v1/people/" + userId + "?access_token=" + accessToken);
         logger.info("request", url.toString());
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        String responseText = Streams.readString(connection.getInputStream());
-        logger.info("response", responseText);        
+        return Streams.readString(connection.getInputStream());
     }
 
     public String getClientId() {
