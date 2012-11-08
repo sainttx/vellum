@@ -115,7 +115,7 @@ public class CrocApp {
                 gtalkConnection = new GtalkConnection(gtalkProps);
             }
         }          
-        serverUrl = configProperties.getString("address");
+        serverUrl = configProperties.getString("serverUrl");
         googleApi = new GoogleApi();
         googleApi.init(serverUrl + "/oauth");
         logger.info("googleApi", googleApi);

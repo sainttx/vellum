@@ -1,5 +1,5 @@
 
-    var clientId = '680048185176.apps.googleusercontent.com';
+    var clientId = '${clientId}';
     var apiKey = 'AIzaSyDfxO8P5pyXjeuciH4-opSoNT4rN5xvKUk';
     var scopes = [
         "https://www.googleapis.com/auth/plus.me", 
