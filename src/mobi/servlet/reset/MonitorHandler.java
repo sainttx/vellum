@@ -3,9 +3,7 @@ package mobi.servlet.reset;
 
 import vellum.printer.PrintStreamAdapter;
 import vellum.printer.StreamPrinter;
-import vellum.printer.TablePrinter;
 import vellum.util.RowSets;
-import vellum.util.Types;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -18,7 +16,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.RowSet;
-import mobi.server.Servlets;
+import mobi.session.Servlets;
+import vellum.html.HtmlPrinter;
 
 /**
  *
@@ -107,45 +106,46 @@ public class MonitorHandler {
     }
 
     private void print(ResultSet resultSet, String[] columnNames) throws Exception {
-        TablePrinter tablePrinter = new TablePrinter(printer);
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        HtmlPrinter tablePrinter = new HtmlPrinter(printer);
         tablePrinter.table();
         tablePrinter.thead();
         for (int i = 0; i < columnNames.length; i++) {
             tablePrinter.th(columnNames[i]);
         }
-        tablePrinter.theadClose();
+        tablePrinter._thead();
         tablePrinter.tbody();
         while (resultSet.next()) {      
             tablePrinter.tr();
             for (int i = 0; i < columnNames.length; i++) {
                 Object value = resultSet.getObject(columnNames[i]);
-                tablePrinter.td(value);
+                tablePrinter.td(resultSetMetaData.getColumnClassName(i), value);
             }
-            tablePrinter.trClose();
+            tablePrinter._tr();
         }
-        tablePrinter.tbodyClose();
-        tablePrinter.tableClose();
+        tablePrinter._tbody();
+        tablePrinter._table();
     }
     
     private void print(ResultSet resultSet) throws Exception {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        TablePrinter tablePrinter = new TablePrinter(printer);
+        HtmlPrinter tablePrinter = new HtmlPrinter(printer);
         tablePrinter.table();
         tablePrinter.thead();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             tablePrinter.th(resultSetMetaData.getColumnName(i));
         }
-        tablePrinter.theadClose();
+        tablePrinter._thead();
         tablePrinter.tbody();
         while (resultSet.next()) {      
             tablePrinter.tr();
             for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                tablePrinter.td(Types.getStyleClass(resultSetMetaData.getColumnClassName(i)), resultSet.getObject(i));
+                tablePrinter.td(resultSetMetaData.getColumnClassName(i), resultSet.getObject(i));
             }
-            tablePrinter.trClose();
+            tablePrinter._tr();
         }
-        tablePrinter.tbodyClose();
-        tablePrinter.tableClose();
+        tablePrinter._tbody();
+        tablePrinter._table();
     }
     
     private void createSchema() throws Exception {        

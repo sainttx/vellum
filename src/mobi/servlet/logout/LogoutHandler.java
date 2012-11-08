@@ -1,16 +1,14 @@
 package mobi.servlet.logout;
 
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import mobi.entity.Person;
+import mobi.exception.MobiException;
+import mobi.session.Servlets;
 import mobi.storage.PersonConnection;
-import mobi.server.Console;
-import mobi.server.Servlets;
-import mobi.resource.MobiException;
 
 /**
  *
@@ -40,7 +38,7 @@ public class LogoutHandler {
     
     protected void handle() throws Exception {
         String email = Servlets.getSessionEmail(req);
-        Console.info("logout", email);
+        Servlets.info("logout", email);
         if (email == null) {
             responseMap.put("message", "Not logged in");
             return;

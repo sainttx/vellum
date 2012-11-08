@@ -1,15 +1,14 @@
 package mobi.servlet.login;
 
 import vellum.util.Passwords;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import mobi.entity.Person;
+import mobi.session.Servlets;
 import mobi.storage.PersonConnection;
-import mobi.server.Servlets;
 
 /**
  *
@@ -36,7 +35,7 @@ public class LoginHandler {
                 responseMap.put("message", "Incorrect password");
             } else {
                 responseMap.put("name", person.getPersonName());
-                Servlets.createSession(req, res, person);
+                Servlets.createSession(req, res, person.getEmail());
             }
         } catch (Exception e) {
             Servlets.warn(e);
