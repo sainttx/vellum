@@ -1,6 +1,6 @@
 
     var clientId = '${clientId}';
-    var apiKey = 'AIzaSyDfxO8P5pyXjeuciH4-opSoNT4rN5xvKUk';
+    var apiKey = '${apiKey}';
     var scopes = [
         "https://www.googleapis.com/auth/plus.me", 
         "https://www.googleapis.com/auth/userinfo.email", 
