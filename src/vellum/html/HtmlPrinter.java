@@ -81,6 +81,11 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<table class='%s'>\n", style);
         index = 0;
     }
+
+    public void table() {
+        out.printf("<table>\n");
+        index = 0;
+    }
     
     public void table(String style) {
         out.printf("<table class='%s'>\n", style);
