@@ -193,21 +193,21 @@ We can add the GAuth Chrome extension to our browser to compare, and of course t
 
 <img src="http://jroller.com/evanx/resource/gauth.png"/>
 
-Finally, the question arises how to handle the event of a user loosing their phone (and TOTP secret)? So I guess in addition to a "Forgot Password" facility, one needs a "Lost phone" button ;) That is, we need to enable users to reset their TOTP secret, without that becoming the weak link. We'll address this another time.
+Finally, the question arises how to handle the event of a user losing their phone (and TOTP secret)? So I guess in addition to a "Forgot Password" facility, one needs a "Lost phone" button ;) That is, we need to enable users to reset their TOTP secret, without that becoming the weak link. We'll address this another day ;)
 
 <h4>Conclusion</h4> 
 
-The Google Authenticator mobile apps, and Chrome extension, et al, implement the IETF RFC6238 time-based one-time-password standard. This hashes the time since the epoch with a shared secret, using the HMAC-SHA1 algorithm, i.e. a SHA1-hash-based message authentication code.
+The Google Authenticator mobile apps implement the IETF RFC6238 time-based one-time-password standard. This hashes the time since the epoch with a shared secret using the HMAC-SHA1 algorithm.
 
-Besides enabling multi-factor authentication for our personal Google account, we can easily employ Google Authenticator for multi-factor authentication on our websites.
+Besides enabling multi-factor authentication for our personal Google account, we can easily employ Google Authenticator for multi-factor authentication on our websites. We hash the number of 30s time intervals since the epoch with a secret using the HMAC-SHA1 algorithm. 
 
-We hash the number of 30s time intervals since the epoch with a secret using the HMAC-SHA1 algorithm. A slight complication is that the clocks might be a bit out of sync, so we allow some leniency for that. 
+A slight complication is that the clocks might be a bit out of sync, so we allow some leniency for that. 
 
 <h4>Coming up</h4>
 
 We should investigate the counter-based <a href="http://en.wikipedia.org/wiki/HOTP">HOTP</a>, since we might be missing a trick there?!
 
-In an upcoming article, we'll build a sample site using a <a href="http://twitter.github.com/bootstrap/getting-started.html#examples">Twitter Bootstrap</a> template, enabling "Login with Google" via that <a href="https://developers.google.com/accounts/docs/OAuth2">OAuth 2.0 API</a>, in addition to the usual <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/Passwords.java">hashed and salted password</a>, and of course this TOTP with Google Authenticator, with some sort of safe reset mechanism. For a sneak preview, see the so-called <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/#crocserver%2Fhttphandler%2Faccess"><tt>crocserver</tt></a> package under construction.
+In an upcoming article, we'll build a sample site using a <a href="http://twitter.github.com/bootstrap/getting-started.html#examples">Twitter Bootstrap</a> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/web/bindex.html">template</a>, <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/web/bindex.js">enabling</a> a "Login with Google" via that <a href="https://developers.google.com/accounts/docs/OAuth2">OAuth 2.0 API</a>, in addition to the usual <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/Passwords.java">hashed and salted password</a>, and of course this TOTP with Google Authenticator, with some sort of safe reset mechanism. For a <a href="https://croc.linuxd.org">sneak preview</a>, see the so-called <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/#crocserver%2Fhttphandler%2Faccess"><tt>crocserver</tt></a> package under construction, including some <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/web/bindex.html">html</a> and <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/web/bindex.js">javascript</a>.
 
 And then coming "soon" in 2013, we'll build out a crypto server called <a href="http://code.google.com/p/vellum/source/browse/trunk/src/venigma/#venigma%2Fserver"><tt>venigma</tt></a> :)
 
