@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
 import crocserver.httphandler.secure.GenP12Handler;
+import crocserver.httphandler.secure.SecureHomeHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -43,6 +44,8 @@ public class AccessHttpHandler implements HttpHandler {
             new OAuthCallbackHandler(app).handle(httpExchange);
         } else if (path.startsWith("/echo")) {
             new EchoHandler(app).handle(httpExchange);
+        } else if (path.startsWith("/admin")) {
+            new SecureHomeHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/user/")) {
             new EnrollUserHandler(app).handle(httpExchange);
         } else if (path.startsWith("/enroll/org/")) {
@@ -51,8 +54,8 @@ public class AccessHttpHandler implements HttpHandler {
             new EnrollServiceHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/get/cert/")) {
             new GetCertHandler(storage).handle(httpExchange);
-        } else if (path.equals("/get/googleUserInfo")) {
-            new GetGoogleUserInfoHandler(app).handle(httpExchange);
+        } else if (path.equals("/login")) {
+            new LoginHandler(app).handle(httpExchange);
         } else if (path.startsWith("/gen/p12/")) {
             new GenP12Handler(app).handle(httpExchange);
         } else if (path.startsWith("/sign/cert/")) {

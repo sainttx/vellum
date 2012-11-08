@@ -16,6 +16,7 @@ import vellum.parameter.Entry;
 import vellum.parameter.ParameterMap;
 import vellum.parameter.Parameters;
 import vellum.util.Beans;
+import vellum.util.Streams;
 import vellum.util.Strings;
 
 /**
@@ -181,11 +182,22 @@ public class HttpExchangeInfo {
         out.printf("ERROR %s\n", message);
     }
 
+    public void handleError() throws IOException {
+        logger.warn("error", getPath(), parameterMap);
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+        PrintStream out = new PrintStream(httpExchange.getResponseBody());
+        out.printf("ERROR %s\n", getPath());
+    }
+    
     public PrintStream getPrintStream() {
         if (out == null) {
             out = new PrintStream(httpExchange.getResponseBody());
         }
         return out;
+    }
+
+    public String getInputString() {
+        return Streams.readString(httpExchange.getRequestBody());
     }
     
     
