@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package json;
+package vellum.util;
 
 import crocserver.app.JsonStrings;
 import org.junit.Test;
