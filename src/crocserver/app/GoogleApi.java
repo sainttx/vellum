@@ -4,15 +4,16 @@
  */
 package crocserver.app;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import javax.net.ssl.HttpsURLConnection;
+import vellum.config.PropertiesMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.security.DefaultKeyStores;
 import vellum.util.Args;
 import vellum.util.Streams;
+import vellum.util.Strings;
 
 /**
  *
@@ -20,26 +21,30 @@ import vellum.util.Streams;
  */
 public class GoogleApi {
     Logr logger = LogrFactory.getLogger(getClass());
-    String clientId = System.getProperty("google.clientId");
+    String clientId;
     String clientSecret = System.getProperty("google.clientSecret");
+    String serverUrl;
     String loginUrl;
     String redirectUrl; 
+    String apiKey;
     
-    public GoogleApi() {
+    public GoogleApi(String serverUrl, String redirectUrl, PropertiesMap props) {
+        this.serverUrl = serverUrl;
+        this.redirectUrl = redirectUrl;
+        clientId = props.get("clientId");
     }
     
-    public void init(String redirectUrl) throws UnsupportedEncodingException {        
-        this.redirectUrl = redirectUrl;
+    public String buildLoginUrl() {
         StringBuilder builder = new StringBuilder();
         builder.append("https://accounts.google.com/o/oauth2/auth");
         builder.append("?state=none");
         builder.append("&response_type=token");
         builder.append("&approval_prompt=force");
         builder.append("&client_id=").append(clientId);
-        builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUrl, "UTF-8"));
-        builder.append("&scope=").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.email", "UTF-8"));
-        builder.append("+").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.profile", "UTF-8"));
-        loginUrl = builder.toString();
+        builder.append("&redirect_uri=").append(Strings.encodeUrl(redirectUrl));
+        builder.append("&scope=").append(Strings.encodeUrl("https://www.googleapis.com/auth/userinfo.email"));
+        builder.append("+").append(Strings.encodeUrl("https://www.googleapis.com/auth/userinfo.profile"));
+        return builder.toString();
     }
 
     public GoogleUserInfo sendTokenRequest(String code) throws Exception {
