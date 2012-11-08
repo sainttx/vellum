@@ -1,7 +1,10 @@
 
     var clientId = '680048185176.apps.googleusercontent.com';
     var apiKey = 'AIzaSyDfxO8P5pyXjeuciH4-opSoNT4rN5xvKUk';
-    var scopes = ["https://www.googleapis.com/auth/plus.me", "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"];
+    var scopes = [
+        "https://www.googleapis.com/auth/plus.me", 
+        "https://www.googleapis.com/auth/userinfo.email", 
+        "https://www.googleapis.com/auth/userinfo.profile"];
     
     function croc_about() {
         $(".croc-nav-anchor").removeClass("active");
