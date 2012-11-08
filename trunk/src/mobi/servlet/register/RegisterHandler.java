@@ -1,6 +1,5 @@
 package mobi.servlet.register;
 
-import vellum.util.Passwords;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.HashMap;
@@ -9,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import mobi.entity.Account;
 import mobi.entity.Person;
+import mobi.session.Servlets;
 import mobi.storage.AccountConnection;
 import mobi.storage.PersonConnection;
-import mobi.server.Servlets;
 
 /**
  *
@@ -51,7 +50,7 @@ public class RegisterHandler {
                 person.setAccountId(account.getAccountId());
                 personConnection.insertPerson(person);
                 responseMap.put("name", bean.getName());
-                Servlets.createSession(req, res, person);
+                Servlets.createSession(req, res, person.getEmail());
                 Servlets.getMailer().startWelcomeEmail(bean.getEmail(), bean.getName());
             }
         } catch (Exception e) {
