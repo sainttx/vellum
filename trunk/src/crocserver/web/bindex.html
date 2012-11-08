@@ -45,9 +45,9 @@
                     <div class="nav-collapse collapse">
                         <div id="croc-username" class="navbar-text pull-right hide">
                             <img id="croc-user-picture" width="27" height="27"/>
-                            <a href="#" id="croc-username-text" class="navbar-link"></a>
+                            <a href="#" id="croc-username-text" class="navbar-link">Username</a>
                         </div>
-                        <div id="croc-login" class="nav pull-right">
+                        <div id="croc-login" class="nav pull-right hide">
                             <a id="croc-login-btn"><span class="btn">Login with Google</span></a>
                         </div>
                         <ul class="nav">
@@ -111,6 +111,8 @@
     </body>
 
     <script src="./bootstrap/js/jquery.js"></script>
+    <script src="bindex.js"></script>
+    <script src="https://apis.google.com/js/client.js?onload=clientLoaded"/>    
     <script src="./bootstrap/js/bootstrap-transition.js"></script>
     <script src="./bootstrap/js/bootstrap-alert.js"></script>
     <script src="./bootstrap/js/bootstrap-modal.js"></script>
@@ -123,155 +125,7 @@
     <script src="./bootstrap/js/bootstrap-collapse.js"></script>
     <script src="./bootstrap/js/bootstrap-carousel.js"></script>
     <script src="./bootstrap/js/bootstrap-typeahead.js"></script>
-
-    <script type="text/javascript">  
-        var accessToken;
-        var tokenType;
-        var expiresIn;
-        var user;
-        var count; 
-        var detectedRedirectUrlString;
         
-        function click_login_google() {
-            accessToken = null;
-            var loginUrl = '${loginUrl}';
-            var win = window.open(loginUrl, "Login with Google", 'width=800, height=600');
-            window.
-            count = 0; 
-            detectedRedirectUrlString = null;
-            var pollTimer =  window.setInterval(function() { 
-                count++;
-                if (count < 20) {
-                } else if (count%20 == 0) {
-                    console.log("click_login_google timer " + win.title);
-                } else if (count > 200) {                    
-                    window.clearInterval(pollTimer);
-                    console.log("cancel");
-                } else if (win.document && win.document.URL) {
-                    var detectedRedirectUrlString = win.document.URL;
-                    if (detectedRedirectUrlString.indexOf('${redirectUrl}') != -1) {
-                        console.log("detected " + detectedRedirectUrlString);
-                        window.clearInterval(pollTimer);
-                        var index = detectedRedirectUrlString.indexOf('#');
-                        if (index > 0) {
-                            detectedRedirectUrlString = detectedRedirectUrlString.substring(index + 1);
-                            console.log("detectedRedirectUrlString " + detectedRedirectUrlString);
-                            var regex = /([^&=]+)=([^&]*)/g;
-                            while (true) {
-                                var m = regex.exec(detectedRedirectUrlString)
-                                if (m == null) break; 
-                                if (m[1] == 'access_token') accessToken = m[2];
-                            }
-                            if (accessToken != null) {
-                                sendToken(accessToken);                            
-                            }
-                        }                    
-                    }
-                    win.close();                    
-                }
-            }, 200);
-        }
-
-        function sendToken(token) {
-            $.ajax({
-                url: '${serverUrl}/get/googleUserInfo?access_token=' + token,
-                data: null,
-                success: function(response){  
-                    console.log(response);
-                    //getUserInfo();
-                },  
-                dataType: "jsonp"  
-            });
-        }
-
-        function validateToken(token) {
-            $.ajax({
-                url: 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + token,
-                data: null,
-                success: function(response){  
-                    console.log(response);
-                    getUserInfo();
-                },  
-                dataType: "jsonp"  
-            });
-        }
-
-        function getUserInfo() {
-            $.ajax({
-                url: 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + accessToken,
-                data: null,
-                success: function(user) {
-                    console.log(user);
-                    if (user.email != null) {
-                        $('#croc-login-btn').hide();
-                        $('#croc-username').show();
-                        $('#croc-username-text').text(user.email);
-                        $('#croc-user-picture').attr('src', user.picture);
-                    }
-                },
-                dataType: "jsonp"
-            });
-        }
-
-        function getPlusUserInfo() {
-            $.ajax({
-                url: 'https://https://www.googleapis.com/plus/v1/people/?access_token=' + accessToken,
-                data: null,
-                success: function(user) {
-                    console.log(user);                    
-                    $('#croc-login-btn').hide();
-                    $('#croc-username').removeClass('invisible');
-                    $('#croc-username').show();
-                    $('#croc-username-text').text(user.email);
-                    //$('#imgHolder').attr('src', user.picture);
-                },
-                dataType: "jsonp"
-            });
-        }
-
-        function croc_about() {
-            $(".croc-info").hide();
-            $(".croc-nav-anchor").removeClass("active");
-            $("#croc-info-about").removeClass("hidden");
-            $("#croc-info-about").show();        
-        }
         
-        function croc_home() {
-            $(".croc-nav-anchor").removeClass("active");
-            $(".croc-info").hide();
-            $("#croc-info-landing").show();
-        }        
-
-        function croc_contact() {
-            $(".croc-info").hide();
-            $(".croc-nav-anchor").removeClass("active");
-            $("#croc-info-contact").show();
-        }
-        
-        function autoRedirect() {
-            var location = window.location;
-            if (window.location.protocol == "http:") {
-                $('#croc-login-btn').hide();     
-            }
-            if (window.location.protocol != "https:") {
-                var host = location.host;
-                var index = location.host.indexOf(':');
-                if (index > 0) {
-                    host = location.host.substring(0, index) + ':8443';
-                }
-                location = "https://" + host + location.pathname + location.search + location.hash;
-                console.log(location);
-                window.location = location;
-            }        
-        }
-            
-        $(document).ready(function() {
-            $("#croc-username").hide();
-            $(".croc-home").click(croc_home);
-            $(".croc-about").click(croc_about);
-            $(".croc-contact").click(croc_contact);
-            $("#croc-login-btn").click(click_login_google);
-            autoRedirect();
-        });
-    </script>
 </html>
+    

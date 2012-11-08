@@ -13,7 +13,6 @@ import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
-import vellum.html.HtmlPrinter;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Strings;
@@ -22,7 +21,7 @@ import vellum.util.Strings;
  *
  * @author evans
  */
-public class GetGoogleUserInfoHandler implements HttpHandler {
+public class LoginHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
@@ -30,11 +29,12 @@ public class GetGoogleUserInfoHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
-    public GetGoogleUserInfoHandler(CrocApp app) {
+    public LoginHandler(CrocApp app) {
         super();
         this.app = app;
     }
     
+    String userId;
     String accessToken;
     
     @Override
@@ -46,16 +46,21 @@ public class GetGoogleUserInfoHandler implements HttpHandler {
             httpExchange.close();
             return;
         }
-        accessToken = httpExchangeInfo.getParameter("access_token");
-        try {
-            if (accessToken != null) {
-                handle();
-            } else {
-                httpExchangeInfo.handleError("require access_token");
+        if (httpExchangeInfo.getPathLength() == 1) {
+            //userId = httpExchangeInfo.getPathString(1);
+            accessToken = httpExchangeInfo.getInputString();
+            logger.info("input", userId, accessToken);
+            try {
+                if (accessToken != null) {
+                    handle();
+                } else {
+                    httpExchangeInfo.handleError("require access_token");
+                }
+            } catch (Exception e) {
+                httpExchangeInfo.handleException(e);
             }
-                   
-        } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+        } else {
+            httpExchangeInfo.handleError();
         }
         httpExchange.close();
     }
@@ -64,6 +69,7 @@ public class GetGoogleUserInfoHandler implements HttpHandler {
     
     private void handle() throws Exception {
         userInfo = app.getGoogleApi().getUserInfo(accessToken);
+        logger.info("userInfo", userInfo);
         AdminUser user = app.getStorage().getUserStorage().findEmail(userInfo.getEmail());
         if (user == null) {
             user = new AdminUser(userInfo.getEmail());

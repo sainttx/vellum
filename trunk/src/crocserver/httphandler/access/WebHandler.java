@@ -50,7 +50,9 @@ public class WebHandler implements HttpHandler {
             path = app.getHomePage();
         }
         String resourceName = "/crocserver/web" + path;
-        logger.info("resource", resourceName);
+        if (!path.startsWith("/bootstrap")) {
+            logger.info("resource", resourceName);
+        }
         try {
             byte[] bytes = cache.get(path);
             if (bytes == null) {
