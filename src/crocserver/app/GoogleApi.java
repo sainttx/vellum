@@ -23,20 +23,20 @@ public class GoogleApi {
     String clientId = System.getProperty("google.clientId");
     String clientSecret = System.getProperty("google.clientSecret");
     String loginUrl;
-    String redirectUri; 
+    String redirectUrl; 
     
     public GoogleApi() {
     }
     
-    public void init(String redirectUri) throws UnsupportedEncodingException {        
-        this.redirectUri = redirectUri;
+    public void init(String redirectUrl) throws UnsupportedEncodingException {        
+        this.redirectUrl = redirectUrl;
         StringBuilder builder = new StringBuilder();
         builder.append("https://accounts.google.com/o/oauth2/auth");
         builder.append("?state=none");
         builder.append("&response_type=token");
         builder.append("&approval_prompt=force");
         builder.append("&client_id=").append(clientId);
-        builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
+        builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUrl, "UTF-8"));
         builder.append("&scope=").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.email", "UTF-8"));
         builder.append("+").append(URLEncoder.encode("https://www.googleapis.com/auth/userinfo.profile", "UTF-8"));
         loginUrl = builder.toString();
@@ -52,7 +52,7 @@ public class GoogleApi {
         StringBuilder builder = new StringBuilder();
         builder.append("grant_type=authorization_code");
         builder.append("&client_id=").append(clientId);
-        builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"));
+        builder.append("&redirect_uri=").append(URLEncoder.encode(redirectUrl, "UTF-8"));
         builder.append("&client_secret=").append(clientSecret);
         builder.append("&code=").append(URLEncoder.encode(code, "UTF-8"));
         logger.info("request", url, builder.toString());
@@ -61,23 +61,23 @@ public class GoogleApi {
         String accessToken = JsonStrings.get(responseText, "access_token");
         logger.info("response", responseText);
         logger.info("accessToken", accessToken);
-        return sendUserRequest(accessToken);
+        return getUserInfo(accessToken);
     }
-    
-    public GoogleUserInfo sendUserRequest(String accessToken) throws Exception {
+
+    public GoogleUserInfo getUserInfo(String accessToken) throws Exception {
+        String json = getJsonUserInfo(accessToken);
+        GoogleUserInfo userInfo = new GoogleUserInfo();
+        userInfo.parseJson(json);
+        return userInfo;
+    }
+
+    public String getJsonUserInfo(String accessToken) throws Exception {
         URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken);
         logger.info("request", url.toString());
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        String responseText = Streams.readString(connection.getInputStream());
-        GoogleUserInfo userInfo = new GoogleUserInfo();
-        userInfo.setEmail(JsonStrings.get(responseText, "email"));
-        userInfo.setDisplayName(JsonStrings.get(responseText, "name"));
-        userInfo.setGivenName(JsonStrings.get(responseText, "given_name"));
-        userInfo.setFamilyName(JsonStrings.get(responseText, "family_name"));
-        logger.info("response", userInfo, responseText);        
-        return userInfo;
+        return Streams.readString(connection.getInputStream());
     }
-    
+        
     public void sendPlusRequest(String userId) throws Exception {
         URL url = new URL("https://www.googleapis.com/plus/v1/people/" + userId);
         logger.info("request", url.toString());
@@ -90,8 +90,8 @@ public class GoogleApi {
         return clientId;
     }
 
-    public String getRedirectUri() {
-        return redirectUri;
+    public String getRedirectUrl() {
+        return redirectUrl;
     }
         
     public String getLoginUrl() {

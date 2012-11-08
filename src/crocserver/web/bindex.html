@@ -130,7 +130,7 @@
         var expiresIn;
         var user;
         var count; 
-        var detectedRedirectUriString;
+        var detectedRedirectUrlString;
         
         function click_login_google() {
             accessToken = null;
@@ -138,7 +138,7 @@
             var win = window.open(loginUrl, "Login with Google", 'width=800, height=600');
             window.
             count = 0; 
-            detectedRedirectUriString = null;
+            detectedRedirectUrlString = null;
             var pollTimer =  window.setInterval(function() { 
                 count++;
                 if (count < 20) {
@@ -148,28 +148,40 @@
                     window.clearInterval(pollTimer);
                     console.log("cancel");
                 } else if (win.document && win.document.URL) {
-                    var detectedRedirectUriString = win.document.URL;
-                    if (detectedRedirectUriString.indexOf('${redirectUri}') != -1) {
-                        console.log("detected " + detectedRedirectUriString);
+                    var detectedRedirectUrlString = win.document.URL;
+                    if (detectedRedirectUrlString.indexOf('${redirectUrl}') != -1) {
+                        console.log("detected " + detectedRedirectUrlString);
                         window.clearInterval(pollTimer);
-                        var index = detectedRedirectUriString.indexOf('#');
+                        var index = detectedRedirectUrlString.indexOf('#');
                         if (index > 0) {
-                            detectedRedirectUriString = detectedRedirectUriString.substring(index + 1);
-                            console.log("detectedRedirectUriString " + detectedRedirectUriString);
+                            detectedRedirectUrlString = detectedRedirectUrlString.substring(index + 1);
+                            console.log("detectedRedirectUrlString " + detectedRedirectUrlString);
                             var regex = /([^&=]+)=([^&]*)/g;
                             while (true) {
-                                var m = regex.exec(detectedRedirectUriString)
+                                var m = regex.exec(detectedRedirectUrlString)
                                 if (m == null) break; 
                                 if (m[1] == 'access_token') accessToken = m[2];
                             }
                             if (accessToken != null) {
-                                validateToken(accessToken);                            
+                                sendToken(accessToken);                            
                             }
                         }                    
                     }
                     win.close();                    
                 }
             }, 200);
+        }
+
+        function sendToken(token) {
+            $.ajax({
+                url: '${serverUrl}/get/googleUserInfo?access_token=' + token,
+                data: null,
+                success: function(response){  
+                    console.log(response);
+                    //getUserInfo();
+                },  
+                dataType: "jsonp"  
+            });
         }
 
         function validateToken(token) {

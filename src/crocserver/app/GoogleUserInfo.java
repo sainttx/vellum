@@ -14,7 +14,7 @@ import vellum.util.Args;
  */
 public class GoogleUserInfo {
     static Logr logger = LogrFactory.getLogger(GoogleUserInfo.class);
-    
+    String json;
     String email;
     String displayName;
     String givenName;
@@ -22,12 +22,24 @@ public class GoogleUserInfo {
     
     public GoogleUserInfo() {
     }
+
+    public GoogleUserInfo(String json) {
+        this.json = json;
+    }
     
     public GoogleUserInfo(String email, String displayName) {
         this.email = email;
         this.displayName = displayName;
     }
 
+    public void parseJson(String json) {
+        this.json = json;
+        setEmail(JsonStrings.get(json, "email"));
+        setDisplayName(JsonStrings.get(json, "name"));
+        setGivenName(JsonStrings.get(json, "given_name"));
+        setFamilyName(JsonStrings.get(json, "family_name"));
+        
+    }
     public String getFamilyName() {
         return familyName;
     }
@@ -60,6 +72,15 @@ public class GoogleUserInfo {
         this.email = email;
     }
 
+    public void setJson(String json) {
+        this.json = json;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    
     @Override
     public String toString() {
         return Args.format(email, displayName);

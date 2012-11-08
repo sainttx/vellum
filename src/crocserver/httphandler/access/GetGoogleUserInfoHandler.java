@@ -22,7 +22,7 @@ import vellum.util.Strings;
  *
  * @author evans
  */
-public class OAuthCallbackHandler implements HttpHandler {
+public class GetGoogleUserInfoHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
@@ -30,15 +30,12 @@ public class OAuthCallbackHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
-    public OAuthCallbackHandler(CrocApp app) {
+    public GetGoogleUserInfoHandler(CrocApp app) {
         super();
         this.app = app;
     }
-    String state;
+    
     String accessToken;
-    String code;
-    String error;
-    Integer expiry;
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -49,19 +46,14 @@ public class OAuthCallbackHandler implements HttpHandler {
             httpExchange.close();
             return;
         }
-        state = httpExchangeInfo.getParameter("state");
         accessToken = httpExchangeInfo.getParameter("access_token");
-        expiry = httpExchangeInfo.getInteger("expires_in");
-        code = httpExchangeInfo.getParameter("code");
-        error = httpExchangeInfo.getParameter("error");
         try {
-            if (error != null) {
-                httpExchangeInfo.handleError(error);
-            } else if (code != null) {
+            if (accessToken != null) {
                 handle();
             } else {
-                httpExchangeInfo.handleError("internal error");
+                httpExchangeInfo.handleError("require access_token");
             }
+                   
         } catch (Exception e) {
             httpExchangeInfo.handleException(e);
         }
@@ -71,7 +63,7 @@ public class OAuthCallbackHandler implements HttpHandler {
     GoogleUserInfo userInfo;    
     
     private void handle() throws Exception {
-        userInfo = app.getGoogleApi().sendTokenRequest(code);
+        userInfo = app.getGoogleApi().getUserInfo(accessToken);
         AdminUser user = app.getStorage().getUserStorage().findEmail(userInfo.getEmail());
         if (user == null) {
             user = new AdminUser(userInfo.getEmail());
@@ -90,26 +82,9 @@ public class OAuthCallbackHandler implements HttpHandler {
         }
         String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
-        String signCertUrl = String.format("%s/sign/userCert/%s", app.getServerUrl(), user.getEmail());
-        httpExchangeInfo.setResponse("text/html", true);
-        HtmlPrinter p = new HtmlPrinter(httpExchange.getResponseBody());
-        p.div("menuBarDiv");
-        p.a_("/", "Home");
-        p._div();
-        p.h(2, "Welcome, " + userInfo.getDisplayName());
-        p.span("", String.format("The following provided email address will be used as your username: <tt>%s</tt>", userInfo.getEmail()));
-        p.println("<p>");
-        p.span("", String.format("Your secret for TOPT is: <tt>%s</tt>", user.getSecret()));
-        p.println("<br>");
-        p.span("", String.format("You can enter the above, or scan the following, into your Google Authenticator."));
-        p.println("<p>");
-        p.aimg(qrUrl, qrUrl);
-        p.println("<p>");
-        p.span("", String.format("Please paste your CSR for your private key:"));
-        p.println("<p>");
-        p.form();
-        p.textarea("csr", 10, 80, null);
-        p._form();
-        p._div();
+        httpExchangeInfo.setResponse("text/json", true);
+        out = httpExchangeInfo.getPrintStream();
+        out.println(userInfo.getJson());
+        logger.info(userInfo.getJson());
     }    
 }

@@ -76,7 +76,8 @@ public class WebHandler implements HttpHandler {
     private void replace(StringBuilder html) {
         replace(html, "${loginUrl}", app.getGoogleApi().getLoginUrl());
         replace(html, "${clientId}", app.getGoogleApi().getClientId());
-        replace(html, "${redirectUri}", app.getGoogleApi().getRedirectUri());
+        replace(html, "${redirectUrl}", app.getGoogleApi().getRedirectUrl());
+        replace(html, "${serverUrl}", app.getServerUrl());
     }
     
     private void replace(StringBuilder html, String pattern, String string) {
