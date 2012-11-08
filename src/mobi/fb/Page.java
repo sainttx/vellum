@@ -25,7 +25,7 @@ public class Page {
         builder = new HtmlBuilder(Streams.readString(getClass(), htmlFileName));
     }
                    
-    protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void handle(HttpServletRequest req, HttpServletResponse res) throws IOException {
         this.req = req;
         this.res = res;
         res.setContentType("text/html");

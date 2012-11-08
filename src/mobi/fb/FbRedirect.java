@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FbRedirect {
 
-    public void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void handle(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("text/plain");
         Writer w = res.getWriter();
         for (String name : req.getParameterMap().keySet()) {

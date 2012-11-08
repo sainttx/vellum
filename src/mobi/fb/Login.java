@@ -21,7 +21,7 @@ public class Login {
     HttpServletRequest req;
     HttpServletResponse res;
 
-    protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void handle(HttpServletRequest req, HttpServletResponse res) throws IOException {
         this.req = req;
         this.res = res;
         res.setContentType("text/html");
