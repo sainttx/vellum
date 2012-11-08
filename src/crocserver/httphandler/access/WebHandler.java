@@ -57,7 +57,7 @@ public class WebHandler implements HttpHandler {
             byte[] bytes = cache.get(path);
             if (bytes == null) {
                 InputStream resourceStream = getClass().getResourceAsStream(resourceName);
-                if (path.endsWith("/bindex.html")) {
+                if (path.equals("/bindex.js")) {
                     StringBuilder html = Streams.readStringBuilder(resourceStream);
                     replace(html);
                     bytes = html.toString().getBytes();
