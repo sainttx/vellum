@@ -32,13 +32,13 @@ public class MobiServlet extends HttpServlet {
                 logr.info(headerName + "=" + req.getHeader(headerName));
             }
             if (req.getRequestURI().indexOf("fbredirect.html") > 0) {
-                new FbRedirect().service(req, res);
+                new FbRedirect().handle(req, res);
             } else if (req.getRequestURI().indexOf("login.html") > 0) {
-                new Login().service(req, res);
+                new Login().handle(req, res);
             } else if (req.getRequestURI().indexOf("fbredirect.html") > 0) {
-                new FbLogin().service(req, res);
+                new FbLogin().handle(req, res);
             } else {
-                new Page("login.html").service(req, res);
+                new Page("login.html").handle(req, res);
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
