@@ -25,15 +25,15 @@ import javax.mail.util.ByteArrayDataSource;
  */
 public class Mailer {
 
-    String logoFileName = "image.jpg";
-    String logoResourceName = "logo.jpg";
-    String organisation = "bizswitch.net";
-    String from = "bizstat@bizswitch.net";
-    String username = "";
-    String password = "";
+    String logoFileName;
+    String logoResourceName;
+    String organisation;
+    String from;
+    String username;
+    String password;
     String host = "localhost";
     int port = 25;
-    String localhost = "biz3";
+    String localhost;
     
     public void sendEmail(String recipient, String subject, String htmlContent) throws Exception {
         Properties props = new Properties();

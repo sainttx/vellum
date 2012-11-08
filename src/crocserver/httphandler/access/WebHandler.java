@@ -49,10 +49,10 @@ public class WebHandler implements HttpHandler {
             httpExchange.getResponseHeaders().set("Content-type", "text/html");
             path = app.getHomePage();
         }
-        String resourceName = "/crocserver/web" + path;
         if (!path.startsWith("/bootstrap")) {
-            logger.info("resource", resourceName);
+            logger.info("path", path);
         }
+        String resourceName = "/crocserver/web" + path;
         try {
             byte[] bytes = cache.get(path);
             if (bytes == null) {
@@ -66,11 +66,12 @@ public class WebHandler implements HttpHandler {
                 }
                 cache.put(path, bytes);
             }
+            logger.info("path", bytes.length);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             httpExchange.getResponseBody().write(bytes);                
         } catch (Exception e) {
-            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             logger.warn(e);
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         }
         httpExchange.close();
     }
@@ -85,7 +86,11 @@ public class WebHandler implements HttpHandler {
     private void replace(StringBuilder html, String pattern, String string) {
         int index = html.indexOf(pattern);
         if (index >= 0) {
-            html.replace(index, index + pattern.length(), string);
+            if (string != null) {
+                html.replace(index, index + pattern.length(), string);
+            } else {
+                logger.warn("replace", pattern);
+            }
         }
     }
     

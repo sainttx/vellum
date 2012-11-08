@@ -62,6 +62,12 @@ public class Calendars {
         return calendar;
     }
 
+    public static Calendar newCalendar(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(time));
+        return calendar;
+    }
+    
     public static Calendar newCalendar() {
         Calendar calendar = Calendar.getInstance();
         return calendar;

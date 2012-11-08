@@ -20,20 +20,25 @@ import vellum.util.Strings;
  * @author evan
  */
 public class GoogleApi {
+
     Logr logger = LogrFactory.getLogger(getClass());
     String clientId;
     String clientSecret = System.getProperty("google.clientSecret");
     String serverUrl;
     String loginUrl;
-    String redirectUrl; 
+    String redirectUrl;
     String apiKey;
-    
+
     public GoogleApi(String serverUrl, String redirectUrl, PropertiesMap props) {
         this.serverUrl = serverUrl;
         this.redirectUrl = redirectUrl;
         clientId = props.get("clientId");
     }
-    
+
+    public void init() throws Exception {
+        loginUrl = buildLoginUrl();
+    }
+
     public String buildLoginUrl() {
         StringBuilder builder = new StringBuilder();
         builder.append("https://accounts.google.com/o/oauth2/auth");
@@ -61,7 +66,7 @@ public class GoogleApi {
         builder.append("&client_secret=").append(clientSecret);
         builder.append("&code=").append(URLEncoder.encode(code, "UTF-8"));
         logger.info("request", url, builder.toString());
-            connection.getOutputStream().write(builder.toString().getBytes());
+        connection.getOutputStream().write(builder.toString().getBytes());
         String responseText = Streams.readString(connection.getInputStream());
         String accessToken = JsonStrings.get(responseText, "access_token");
         logger.info("response", responseText);
@@ -91,7 +96,7 @@ public class GoogleApi {
         userInfo.parseJson(json);
         return userInfo;
     }
-    
+
     public String getPlusPersonJson(String accessToken, String userId) throws Exception {
         URL url = new URL("https://www.googleapis.com/plus/v1/people/" + userId + "?access_token=" + accessToken);
         logger.info("request", url.toString());
@@ -106,13 +111,13 @@ public class GoogleApi {
     public String getRedirectUrl() {
         return redirectUrl;
     }
-        
+
     public String getLoginUrl() {
         return loginUrl;
     }
-   
+
     @Override
     public String toString() {
         return Args.format(clientId);
-    }   
+    }
 }
