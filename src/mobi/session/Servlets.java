@@ -10,8 +10,10 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import mobi.context.MobiContext;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -22,7 +24,11 @@ import vellum.logr.LogrFactory;
 public class Servlets {
 
     static Logr logger = LogrFactory.getLogger(Servlets.class);
+    static MobiContext context = new MobiContext();
     static Mailer mailer = new Mailer();
+
+    public static void contextInitialized(ServletContextEvent sce) {
+    }
 
     public static Mailer getMailer() {
         return mailer;
@@ -77,4 +83,5 @@ public class Servlets {
     public static BigDecimal parseCurrency(String amountString) {
         return new BigDecimal(100);
     }
+
 }
