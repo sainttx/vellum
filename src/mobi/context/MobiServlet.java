@@ -1,6 +1,6 @@
 /*
  */
-package mobi.servlet;
+package mobi.context;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -9,6 +9,10 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import mobi.fb.FbLogin;
+import mobi.fb.FbRedirect;
+import mobi.fb.Login;
+import mobi.fb.Page;
 
 /**
  *
