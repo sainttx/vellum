@@ -178,7 +178,7 @@ The Google Authenticator mobile apps, and Chrome extension, et al, implement the
 
 Besides enabling multi-factor authentication for our personal Google account, we can easily employ Google Authenticator for multi-factor authentication on our websites.
 
-We hash the number of 30s time intervals since the epoch with a secret using the HMAC-SHA1 algorithm. A slight complication is that someone's clock might be a bit out of whack, we allow some leniency for that. 
+We hash the number of 30s time intervals since the epoch with a secret using the HMAC-SHA1 algorithm. A slight complication is that someone's clock might be a bit out of whack, so we allow some leniency for that. 
 
 <h4>Coming up</h4>
 
