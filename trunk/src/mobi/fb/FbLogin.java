@@ -1,6 +1,6 @@
 /*
  */
-package mobi.servlet;
+package mobi.fb;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -14,17 +14,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author evan
  */
-public class Page {
-
+public class FbLogin {
     Logr logr = LogrFactory.getLogger(getClass());
+    HtmlBuilder builder = new HtmlBuilder(Streams.readString(getClass(), "fblogin.html"));
     HttpServletRequest req;
     HttpServletResponse res;
-    HtmlBuilder builder;
 
-    public Page(String htmlFileName) {
-        builder = new HtmlBuilder(Streams.readString(getClass(), htmlFileName));
-    }
-                   
     protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
         this.req = req;
         this.res = res;
@@ -33,4 +28,5 @@ public class Page {
         w.write(builder.toString());
         w.close();
     }
+    
 }

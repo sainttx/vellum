@@ -1,6 +1,6 @@
 /*
  */
-package mobi.servlet;
+package mobi.fb;
 
 /**
  *

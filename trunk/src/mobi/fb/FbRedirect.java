@@ -1,6 +1,6 @@
 /*
  */
-package mobi.servlet;
+package mobi.fb;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FbRedirect {
 
-    protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("text/plain");
         Writer w = res.getWriter();
         for (String name : req.getParameterMap().keySet()) {
