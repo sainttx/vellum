@@ -33,8 +33,6 @@
 
     function autoRedirect() {
         var location = window.location;
-        if (window.location.protocol == "http:") {
-        }
         if (window.location.protocol != "https:") {
             var host = location.host;
             var index = location.host.indexOf(':');
@@ -71,11 +69,11 @@
 
     function processAuthResult(authResult) {
         if (authResult && !authResult.error) {
-            $('#croc-login').addClass('hide');
+            $('#croc-login').addClass('invisible');
             login(authResult.access_token);
         } else {
             console.log("login required");
-            $('#croc-login').removeClass('hide');
+            $('#croc-login').removeClass('invisible');
             $('#croc-login-btn').click(clickAuth);
         }
     }
