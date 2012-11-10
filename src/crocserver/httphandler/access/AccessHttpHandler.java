@@ -56,6 +56,8 @@ public class AccessHttpHandler implements HttpHandler {
             new GetCertHandler(storage).handle(httpExchange);
         } else if (path.equals("/login")) {
             new LoginHandler(app).handle(httpExchange);
+        } else if (path.equals("/logout")) {
+            new LogoutHandler(app).handle(httpExchange);
         } else if (path.startsWith("/gen/p12/")) {
             new GenP12Handler(app).handle(httpExchange);
         } else if (path.startsWith("/sign/cert/")) {

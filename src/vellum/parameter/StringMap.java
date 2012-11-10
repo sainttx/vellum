@@ -9,20 +9,37 @@ package vellum.parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author evanx
  */
-public class ParameterMap extends HashMap<String, String> {
+public class StringMap extends HashMap<String, String> {
     List<Entry<String, String>> entryList = new ArrayList();
 
+    public StringMap() {
+    }
+
+    public StringMap(Map m) {
+        super(m);
+    }
+    
     public String getString(String key, String defaultValue) {
         String value = super.get(key);
         if (value == null) {
             return defaultValue;
         }
         return value;
+    }
+    
+    public long getLong(String key, long defaultValue) {
+        String string = super.get(key);
+        if (string == null) {
+            return defaultValue;
+        }
+        return Long.parseLong(string);
+        
     }
 }
 

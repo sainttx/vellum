@@ -10,11 +10,9 @@ import crocserver.app.CrocApp;
 import crocserver.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Lists;
+import vellum.parameter.StringMap;
 
 /**
  *
@@ -38,21 +36,28 @@ public class EchoHandler implements HttpHandler {
         logger.info("handle", getClass().getSimpleName());
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        Map cookieMap = new HashMap();
-        String cookieKey = "testCookieKey";
-        cookieMap.put(cookieKey, "testValue");
-        httpExchangeInfo.putCookie(cookieMap);
-        httpExchangeInfo.sendResponse("text/plain", true);
-        out = new PrintStream(httpExchange.getResponseBody());
-        out.println(httpExchange.getRequestURI().toString());
-        out.printf("cookie %s: %s\n", cookieKey, httpExchangeInfo.getCookie(cookieKey));
-        Headers reqHeaders = httpExchange.getRequestHeaders();
-        for (String key : reqHeaders.keySet()) {           
-            out.printf("request header %s: %d: %s\n", key, reqHeaders.get(key).size(), reqHeaders.get(key).get(0));
-        }
-        Headers resHeaders = httpExchange.getResponseHeaders();
-        for (String key : resHeaders.keySet()) {            
-            out.printf("response header %s: %s\n", key, resHeaders.get(key));
+        try {
+            out = new PrintStream(httpExchange.getResponseBody());
+            StringMap cookieMap = new StringMap();
+            String cookieKey = "testCookieKey";
+            cookieMap.put(cookieKey, "testValue");
+            cookieMap.put("testCookieKey1", "testValue1");
+            cookieMap.put("testCookieKey2", "testValue2");
+            httpExchangeInfo.setCookie(cookieMap, HttpExchangeInfo.COOKIE_MLLIS);
+            httpExchangeInfo.sendResponse("text/plain", true);
+            out.println(httpExchange.getRequestURI().toString());
+            out.printf("cookie %s: %s\n", cookieKey, httpExchangeInfo.getCookie(cookieKey));
+            Headers reqHeaders = httpExchange.getRequestHeaders();
+            for (String key : reqHeaders.keySet()) {
+                out.printf("request header %s: %d: %s\n", key, reqHeaders.get(key).size(), reqHeaders.get(key).get(0));
+            }
+            Headers resHeaders = httpExchange.getResponseHeaders();
+            for (String key : resHeaders.keySet()) {
+                out.printf("response header %s: %s\n", key, resHeaders.get(key));
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            httpExchangeInfo.handleException(e);
         }
         httpExchange.close();
     }

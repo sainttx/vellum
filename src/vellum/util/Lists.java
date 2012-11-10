@@ -198,5 +198,13 @@ public class Lists {
         }
         return list;
     }
+
+    public static <T> List<String> toStringList(T[] array) {
+        List<String> list = new ArrayList();
+        for (T element : array) {
+            list.add(element.toString());
+        }
+        return list;
+    }
     
 }

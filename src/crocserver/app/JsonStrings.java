@@ -6,6 +6,7 @@ package crocserver.app;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.parameter.StringMap;
 
 /**
  *
@@ -28,4 +29,15 @@ public class JsonStrings {
         return null;
     }
     
+    public static String buildJson(StringMap map) {
+        StringBuilder builder = new StringBuilder();
+        for (String key : map.keySet()) {
+            if (builder.length() > 0) {
+                builder.append(",");
+            }
+            builder.append(String.format("\n\"%s\" : \"%s\"", key, map.get(key)));
+        }
+        return "{" + builder.toString() + "\n}";
+    }
+
 }
