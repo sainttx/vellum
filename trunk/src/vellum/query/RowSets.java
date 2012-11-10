@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011, iPay (Pty) Ltd
+ * Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2011, iPay (Pty) Ltd
  */
 package vellum.query;
 

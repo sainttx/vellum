@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, (c) Copyright 2010 iPay (Pty) Ltd
+ * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012 Evan Summers, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2010 iPay (Pty) Ltd
  */
 package crocserver.httphandler.secure;
 
@@ -51,7 +51,7 @@ public class GenP12Handler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         out = new PrintStream(httpExchange.getResponseBody());
         if (httpExchangeInfo.getPathArgs().length < 6) {
-            httpExchangeInfo.setResponse("text/plain", true);
+            httpExchangeInfo.sendResponse("text/plain", true);
             out.printf("ERROR %s\n", httpExchangeInfo.getPath());
         } else {
             userName = httpExchangeInfo.getPathString(2);
@@ -88,11 +88,11 @@ public class GenP12Handler implements HttpHandler {
         if (clientCert == null) {
             clientCert = new ClientService(org.getId(), hostName, clientName, userName);
         } else {
-            clientCert.setUpdatedBy(userName);            
+            clientCert.setUpdatedBy(userName);    
         }
         clientCert.setX509Cert(keyPair.getCert());
         if (clientCert.isStored()) {
-            storage.getClientCertStorage().updateCert(clientCert);            
+            storage.getClientCertStorage().updateCert(clientCert);    
         } else {
             storage.getClientCertStorage().insert(clientCert);
         }
@@ -101,11 +101,11 @@ public class GenP12Handler implements HttpHandler {
         char[] password = httpExchangeInfo.getParameterMap().getString("password", clientName).toCharArray();
         p12.engineSetKeyEntry(clientName, keyPair.getPrivateKey(), password, chain);
         if (httpExchangeInfo.getQuery().toLowerCase().contains("pem")) {
-            httpExchangeInfo.setResponse("text/plain", true);
+            httpExchangeInfo.sendResponse("text/plain", true);
             out.println(KeyStores.buildPem(p12, clientName, password));
             logger.info("pem");
         } else {
-            httpExchangeInfo.setResponse("application/x-pkcs12", true);
+            httpExchangeInfo.sendResponse("application/x-pkcs12", true);
             p12.engineStore(out, "1234".toCharArray());
             logger.info("pkcs12");
         }
@@ -113,7 +113,7 @@ public class GenP12Handler implements HttpHandler {
     
     private void handle(Exception e) throws IOException {
         logger.warn(e, "p12");
-        httpExchangeInfo.setResponse("text/plain", true);
+        httpExchangeInfo.sendResponse("text/plain", true);
         e.printStackTrace(out);
         e.printStackTrace(System.err);
         out.printf("ERROR %s\n", e.getMessage());

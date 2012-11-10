@@ -104,11 +104,23 @@ public class HttpExchangeInfo {
         }
     }
 
+    public String[] parseFirstRequestHeader(String key) throws IOException {
+        String text = httpExchange.getRequestHeaders().getFirst(key);
+        if (text != null) {
+            int index = text.indexOf(';');
+            if (index >= 0) {
+                text = text.substring(0, index);
+            }
+            return text.split(",");
+        }
+        return null;
+    }
+        
     public void parseHeaders() {
         headersParsed = true;
         for (String key : httpExchange.getRequestHeaders().keySet()) {
             List<String> values = httpExchange.getRequestHeaders().get(key);
-            logger.verbose("parseHeaders", key, values);
+            logger.info("parseHeaders", key, values);
             if (key.equals("Accept-encoding")) {
                 if (values.contains("gzip")) {
                     acceptGzip = true;
@@ -158,7 +170,15 @@ public class HttpExchangeInfo {
         return defaultValue;
     }
 
-    public void setResponse(String contentType, boolean ok) throws IOException {
+    public void setResponseHeader(String key, String value) throws IOException {
+        httpExchange.getResponseHeaders().set(key, value);
+    }
+
+    public List<String> getRequestHeader(String key) throws IOException {
+        return httpExchange.getRequestHeaders().get(key);
+    }
+
+    public void sendResponse(String contentType, boolean ok) throws IOException {
         httpExchange.getResponseHeaders().set("Content-type", contentType);
         if (ok) {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

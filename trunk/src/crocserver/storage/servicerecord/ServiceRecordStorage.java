@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012, Evan Summers
  * 
  */
 package crocserver.storage.servicerecord;
@@ -77,7 +77,7 @@ public class ServiceRecordStorage {
             }
             ResultSet keys = statement.getGeneratedKeys();
             if (!keys.next()) {
-                throw new StorageException(StorageExceptionType.NO_KEY);        
+                throw new StorageException(StorageExceptionType.NO_KEY);
             }
             serviceRecord.setId(keys.getLong(1));
             connection.setOk(true);

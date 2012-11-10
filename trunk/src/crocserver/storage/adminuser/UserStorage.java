@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012, Evan Summers
  * 
  */
 package crocserver.storage.adminuser;
@@ -40,7 +40,7 @@ public class UserStorage {
             List<String> columnNameList = RowSets.getColumnNameList(resultSet.getMetaData());
             for (Enum columnNameEnum : UserMeta.values()) {
                 String columnName = columnNameEnum.name().toUpperCase();
-                logger.info("validate", columnName);                
+                logger.info("validate", columnName);        
                 if (!columnNameList.contains(columnName)) {
                     throw new SQLException(columnName);
                 }                

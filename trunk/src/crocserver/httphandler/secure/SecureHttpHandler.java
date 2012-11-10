@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, (c) Copyright 2010 iPay (Pty) Ltd
+ * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012 Evan Summers, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2010 iPay (Pty) Ltd
  */
 package crocserver.httphandler.secure;
 
@@ -24,7 +24,7 @@ public class SecureHttpHandler implements HttpHandler {
     
     public SecureHttpHandler(CrocApp app) {
         this.app = app;
-        this.storage = app.getStorage();        
+        this.storage = app.getStorage();
         childHandler = new AccessHttpHandler(app);
     }
     
@@ -57,7 +57,7 @@ public class SecureHttpHandler implements HttpHandler {
         } else if (path.startsWith("/post/")) {
             new PostHandler(app).handle(httpExchange);
         } else {
-            return false;            
+            return false;    
         }
         return true;
     }

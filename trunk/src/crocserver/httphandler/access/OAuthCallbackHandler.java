@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, (c) Copyright 2010 iPay (Pty) Ltd
+ * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012 Evan Summers, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2010 iPay (Pty) Ltd
  */
 package crocserver.httphandler.access;
 
@@ -91,7 +91,7 @@ public class OAuthCallbackHandler implements HttpHandler {
         String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
         String signCertUrl = String.format("%s/sign/userCert/%s", app.getServerUrl(), user.getEmail());
-        httpExchangeInfo.setResponse("text/html", true);
+        httpExchangeInfo.sendResponse("text/html", true);
         HtmlPrinter p = new HtmlPrinter(httpExchange.getResponseBody());
         p.div("menuBarDiv");
         p.a_("/", "Home");
