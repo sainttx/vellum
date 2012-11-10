@@ -38,22 +38,22 @@
             <div class="navbar-inner">
                 <div class="container-fluid">
                     <a class="brand" href="#">Croc</a>
-                        <ul class="nav">
-                            <li class="croc-nav-anchor croc-home-anchor active"><a class="croc-home" href="#">Home</a></li>
-                            <li class="croc-nav-anchor croc-about-anchor"><a class="croc-about" href="#">About</a></li>
-                            <li class="croc-nav-anchor croc-about-anchor"><a class="croc-contact" href="#">Contact</a></li>
-                        </ul>
+                    <ul class="nav">
+                        <li class="croc-nav-anchor croc-home-anchor active"><a class="croc-home" href="#">Home</a></li>
+                        <li class="croc-nav-anchor croc-about-anchor"><a class="croc-about" href="#">About</a></li>
+                        <li class="croc-nav-anchor croc-about-anchor"><a class="croc-contact" href="#">Contact</a></li>
+                    </ul>
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
                     <div class="nav-collapse pull-right collapse">
-                        <div class="navbar-text pull-right croc-logout-viewable hide">
+                        <div class="navbar-text pull-right croc-logout-viewable hide" id="croc-logout-div">
                             <img id="croc-user-picture hide" width="27" height="27"/>
-                            <a href="#" id="croc-username-text" class="navbar-link croc-logout-clickable">Username</a>
-                            <a class="btn croc-logout-clickable hide" id="croc-logout-btn">Logout</a>
+                            <a id="croc-username-text" class="navbar-link croc-logout-clickable">Username</a>
+                            <a class="btn croc-logout-clickable" id="croc-logout-btn">Logout</a>
                         </div>
-                        <div class="navbar-text pull-right croc-login-viewable hide">
+                        <div class="navbar-text pull-right croc-login-viewable hide" id="croc-login-div">
                             <a class="croc-login-clickable hide"><img src="img/google-g-32.png"/></a>
                             <a class="btn croc-login-clickable hide" id="croc-login-btn">Login</a>
                         </div>
@@ -125,7 +125,6 @@
     <script src="./bootstrap/js/bootstrap-collapse.js"></script>
     <script src="./bootstrap/js/bootstrap-carousel.js"></script>
     <script src="./bootstrap/js/bootstrap-typeahead.js"></script>
-        
-        
+
+
 </html>
-    

@@ -70,9 +70,13 @@ function clickAuth(event) {
 function processAuthResult(authResult) {
     if (authResult && !authResult.error) {
         $('.croc-login-clickable').hide();
+        $('.croc-login-viewable').hide();
+        $('.croc-logout-clickable').hide();
+        $('.croc-logout-viewable').hide();
         login(authResult.access_token);
     } else {
         console.log("login required");
+        $('.croc-login-viewable').show();
         $('.croc-login-clickable').show();
         $('.croc-login-clickable').click(clickAuth);
     }
@@ -103,12 +107,16 @@ function login(accessToken) {
 }
 
 function loginResponse(res) {
-    $('.croc-login-viewable').hide();
-    $('#croc-username-text').text(res.email);
-    $('#croc-user-picture').attr('src', res.picture);            
-    $('.croc-logout-viewable').show();
-    $('.croc-logout-clickable').show();
-    $('.croc-logout-clickable').click(clickLogout);
+    console.log("login response received")
+    if (res.email != null) {
+        $('.croc-login-viewable').hide();
+        $('.croc-login-clickable').hide();
+        $('#croc-username-text').text(res.email);
+        $('#croc-user-picture').attr('src', res.picture);            
+        $('.croc-logout-viewable').show();
+        $('.croc-logout-clickable').show();
+        $('.croc-logout-clickable').click(clickLogout);
+    }
 }
 
 function clickLogout(event) {
@@ -121,12 +129,14 @@ function clickLogout(event) {
 
 function logoutResponse(res) {
     console.log("logout response received")
-    $('.croc-login-clickable').show();;
-    $('.croc-login-viewable').show();
-    $('.croc-logout-viewable').hide();
-    $('.croc-logout-clickable').hide();
-    $('.croc-login-clickable').click(clickAuth);
-    $('#croc-username-text').text(null);
-    $('#croc-user-picture').attr('src', null);
+    if (res.email != null) {
+        $('.croc-login-clickable').show();
+        $('.croc-login-viewable').show();
+        $('.croc-login-clickable').click(clickAuth);
+        $('.croc-logout-viewable').hide();
+        $('.croc-logout-clickable').hide();
+        $('#croc-username-text').text(null);
+        $('#croc-user-picture').attr('src', null);
+    }
 }
 
