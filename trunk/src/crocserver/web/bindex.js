@@ -103,10 +103,10 @@ function login(accessToken) {
 }
 
 function loginResponse(res) {
-    $('#croc-login').hide();
+    $('.croc-login-viewable').hide();
     $('#croc-username-text').text(res.email);
     $('#croc-user-picture').attr('src', res.picture);            
-    $('#croc-username').show();
+    $('.croc-logout-viewable').show();
     $('.croc-logout-clickable').show();
     $('.croc-logout-clickable').click(clickLogout);
 }
@@ -121,11 +121,12 @@ function clickLogout(event) {
 
 function logoutResponse(res) {
     console.log("logout response received")
-    $('#croc-username').hide();
+    $('.croc-login-clickable').show();;
+    $('.croc-login-viewable').show();
+    $('.croc-logout-viewable').hide();
     $('.croc-logout-clickable').hide();
+    $('.croc-login-clickable').click(clickAuth);
     $('#croc-username-text').text(null);
     $('#croc-user-picture').attr('src', null);
-    $('.croc-login-clickable').click(clickAuth);
-    $('#croc-login').show();
 }
 
