@@ -166,11 +166,25 @@ public class Lists {
         return array != null && array.length > 0 && array[0] != null && array[0].length() > 0;
     }
 
-    public static String getLast(String[] pathParts) {
-        if (pathParts.length > 0) {
-            return pathParts[pathParts.length - 1];
+    public static String getFirst(String[] array) {
+        if (array != null && array.length > 0) {
+            return array[0];
         }
-        throw new IllegalArgumentException();
+        return null;
+    }
+
+    public static <T> T getFirst(List<T> list) {
+        if (list != null && list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
+    
+    public static String getLast(String[] array) {
+        if (array != null && array.length > 0) {
+            return array[array.length - 1];
+        }
+        return null;
     }
 
     public static Object[] toArray(String[] array) {
