@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.Entry;
-import vellum.parameter.ParameterMap;
+import vellum.parameter.StringMap;
 import vellum.parameter.Parameters;
 import vellum.util.Beans;
 import vellum.util.Streams;
@@ -27,17 +27,19 @@ import vellum.util.Strings;
  * @author evan
  */
 public class HttpExchangeInfo {
-
+    
+    public static final long COOKIE_MLLIS = Millis.fromHours(24);
+    
     Logr logger = LogrFactory.getLogger(getClass());
     HttpExchange httpExchange;
     PrintStream out;
-    ParameterMap parameterMap;
+    StringMap parameterMap;
     String urlQuery;
     String[] args;
     boolean headersParsed = false;
     boolean acceptGzip = false;
     boolean agentWget = false;
-    Map<String, String> cookieMap;
+    StringMap cookieMap;
     
     public HttpExchangeInfo(HttpExchange httpExchange) {
         this.httpExchange = httpExchange;
@@ -62,7 +64,7 @@ public class HttpExchangeInfo {
         return getPathArgs().length;
     }
 
-    public ParameterMap getParameterMap() {
+    public StringMap getParameterMap() {
         if (parameterMap == null) {
             parseParameterMap();
         }
@@ -70,7 +72,7 @@ public class HttpExchangeInfo {
     }
 
     private void parseParameterMap() {
-        parameterMap = new ParameterMap();
+        parameterMap = new StringMap();
         urlQuery = httpExchange.getRequestURI().getQuery();
         if (urlQuery == null) {
             return;
@@ -107,23 +109,35 @@ public class HttpExchangeInfo {
             parameterMap.put(entry.getKey(), value);
         }
     }
-    
-    public void putCookie(Map map) {
-        StringBuilder cookieBuilder = new StringBuilder();
-        for (Object key : map.keySet()) {
-            if (cookieBuilder.length() > 0) {
-                cookieBuilder.append(';');
-            }
-            cookieBuilder.append(key);
-            cookieBuilder.append('=');
-            cookieBuilder.append(map.get(key));
+
+    public void clearCookie(Collection<String> keys) {
+        for (String key : keys) {
+            httpExchange.getResponseHeaders().add("Set-cookie", 
+                    String.format("%s=; Expires=Thu, 01 Jan 1970 00:00:00 GMT", key));
+            
         }
-        String cookieString = cookieBuilder.toString();
-        logger.info("putCookie", cookieString);
-        httpExchange.getResponseHeaders().set("Set-cookie", cookieString);
     }
 
-    public Map<String, String> getCookieMap() {
+    
+    public void setCookie(StringMap map, long ageMillis) {
+        String path = map.get("path");
+        String version = map.get("version");
+        for (String key : map.keySet()) {
+            String value = map.get(key);
+            StringBuilder builder = new StringBuilder();
+            builder.append(String.format("%s=%s; Max-age=%d", key, value, ageMillis/1000));
+            if (path != null) {
+                builder.append("; Path=").append(path);
+            }
+            if (version != null) {
+                builder.append("; Version=").append(version);                
+            }
+            httpExchange.getResponseHeaders().add("Set-cookie", builder.toString());
+        }
+    }
+
+    
+    public StringMap getCookieMap() {
         if (cookieMap == null) {
             parseCookieMap(parseFirstRequestHeader("Cookie"));
         }
@@ -135,15 +149,17 @@ public class HttpExchangeInfo {
     }
 
     private void parseCookieMap(List<String> cookies) {
-        cookieMap = new HashMap();        
-        for (String cookie : cookies) {
-            int index = cookie.indexOf("=");
-            if (index > 0) {
-                String key = cookie.substring(0, index);
-                String value = cookie.substring(index + 1);
-                cookieMap.put(key, value);
+        cookieMap = new StringMap();
+        if (cookies != null) {
+            for (String cookie : cookies) {
+                int index = cookie.indexOf("=");
+                if (index > 0) {
+                    String key = cookie.substring(0, index);
+                    String value = cookie.substring(index + 1);
+                    cookieMap.put(key, value);
+                }
             }
-        }        
+        }
     }
         
     public List<String> parseFirstRequestHeader(String key) {
@@ -262,6 +278,5 @@ public class HttpExchangeInfo {
     public String getInputString() {
         return Streams.readString(httpExchange.getRequestBody());
     }
-    
     
 }

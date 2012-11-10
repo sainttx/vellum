@@ -7,6 +7,7 @@ package crocserver.httphandler.access;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
+import crocserver.app.CrocCookie;
 import crocserver.app.CrocSecurity;
 import crocserver.app.GoogleUserInfo;
 import crocserver.httpserver.HttpExchangeInfo;
@@ -14,7 +15,6 @@ import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
-import vellum.datatype.Maps;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Strings;
@@ -89,7 +89,8 @@ public class LoginHandler implements HttpHandler {
         }
         String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
-        httpExchangeInfo.putCookie(Maps.newMap("email", user.getEmail()));
+        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName());
+        httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE);
         httpExchangeInfo.sendResponse("text/json", true);
         out = httpExchangeInfo.getPrintStream();
         out.println(userInfo.getJson());
