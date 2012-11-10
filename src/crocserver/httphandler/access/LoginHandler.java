@@ -1,5 +1,6 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, (c) Copyright 2010 iPay (Pty) Ltd
+ * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012 Evan Summers, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2010 iPay (Pty) Ltd
+ * 
  */
 package crocserver.httphandler.access;
 
@@ -87,7 +88,7 @@ public class LoginHandler implements HttpHandler {
         }
         String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
-        httpExchangeInfo.setResponse("text/json", true);
+        httpExchangeInfo.sendResponse("text/json", true);
         out = httpExchangeInfo.getPrintStream();
         out.println(userInfo.getJson());
         logger.info(userInfo.getJson());

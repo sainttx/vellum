@@ -58,7 +58,7 @@ public class CrocApp {
     GtalkConnection gtalkConnection;
     Contact adminContact; 
     String serverKeyAlias = System.getProperty("serverKeyAlias");
-    GoogleApi googleApi;        
+    GoogleApi googleApi;
     String serverUrl; 
     String serverName = "croc.linuxd.org"; 
     

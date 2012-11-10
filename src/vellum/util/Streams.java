@@ -1,7 +1,7 @@
 /*
  * Apache Software License 2.0
  * Supported by BizSwitch.net
- * (c) Copyright 2011, iPay (Pty) Ltd, Evan Summers
+ * Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2011, iPay (Pty) Ltd, Evan Summers
  */
 package vellum.util;
 
@@ -296,7 +296,7 @@ public class Streams {
         while (true) {
             int b = inputStream.read();
             if (b < 0) return;
-            outputStream.write(b);            
+            outputStream.write(b);    
         }        
     }
     

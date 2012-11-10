@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, (c) Copyright 2010 iPay (Pty) Ltd
+ * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012 Evan Summers, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2010 iPay (Pty) Ltd
  */
 package crocserver.httphandler.access;
 
@@ -68,7 +68,7 @@ public class WebHandler implements HttpHandler {
             }
             logger.info("path", bytes.length);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-            httpExchange.getResponseBody().write(bytes);                
+            httpExchange.getResponseBody().write(bytes);        
         } catch (Exception e) {
             logger.warn(e);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
