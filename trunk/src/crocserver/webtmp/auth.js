@@ -16,7 +16,7 @@ function click_login_google() {
         if (count < 10) {
         } else if (count%20 == 0) {
             console.log("click_login_google timer");
-        } else if (count > 200) {                    
+        } else if (count > 200) {    
             window.clearInterval(pollTimer);
             console.log("cancel");
         } else if (win.document && win.document.URL) {

@@ -18,7 +18,7 @@ public class CryptonomicalServer extends Thread {
         while (isRunning) {
             try {
                 new CryptonomicalThread(serverSocket.accept(), asymmetricCipher).start();
-            } catch (Exception e) {                
+            } catch (Exception e) {
                 e.printStackTrace();
             }      
             break;
