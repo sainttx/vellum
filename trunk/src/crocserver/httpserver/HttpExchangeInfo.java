@@ -9,7 +9,10 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.Entry;
@@ -34,7 +37,8 @@ public class HttpExchangeInfo {
     boolean headersParsed = false;
     boolean acceptGzip = false;
     boolean agentWget = false;
-
+    Map<String, String> cookieMap;
+    
     public HttpExchangeInfo(HttpExchange httpExchange) {
         this.httpExchange = httpExchange;
     }
@@ -103,15 +107,54 @@ public class HttpExchangeInfo {
             parameterMap.put(entry.getKey(), value);
         }
     }
+    
+    public void putCookie(Map map) {
+        StringBuilder cookieBuilder = new StringBuilder();
+        for (Object key : map.keySet()) {
+            if (cookieBuilder.length() > 0) {
+                cookieBuilder.append(';');
+            }
+            cookieBuilder.append(key);
+            cookieBuilder.append('=');
+            cookieBuilder.append(map.get(key));
+        }
+        String cookieString = cookieBuilder.toString();
+        logger.info("putCookie", cookieString);
+        httpExchange.getResponseHeaders().set("Set-cookie", cookieString);
+    }
 
-    public String[] parseFirstRequestHeader(String key) throws IOException {
+    public Map<String, String> getCookieMap() {
+        if (cookieMap == null) {
+            parseCookieMap(parseFirstRequestHeader("Cookie"));
+        }
+        return cookieMap;
+    }
+        
+    public String getCookie(String key) {
+        return getCookieMap().get(key);
+    }
+
+    private void parseCookieMap(List<String> cookies) {
+        cookieMap = new HashMap();        
+        for (String cookie : cookies) {
+            int index = cookie.indexOf("=");
+            if (index > 0) {
+                String key = cookie.substring(0, index);
+                String value = cookie.substring(index + 1);
+                cookieMap.put(key, value);
+            }
+        }        
+    }
+        
+    public List<String> parseFirstRequestHeader(String key) {
+        logger.info("parseFirstRequestHeader", key);
         String text = httpExchange.getRequestHeaders().getFirst(key);
         if (text != null) {
-            int index = text.indexOf(';');
-            if (index >= 0) {
-                text = text.substring(0, index);
+            List<String> list = new ArrayList();
+            for (String string : text.split(";")) {
+                list.add(string.trim());
             }
-            return text.split(",");
+            return list;
         }
         return null;
     }

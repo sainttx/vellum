@@ -6,6 +6,7 @@ package vellum.datatype;
 import java.util.*;
 import java.util.Map.Entry;
 
+
 /**
  *
  * @author evans
@@ -79,6 +80,25 @@ public class Maps {
         }
         return keyList;
     }
+
+    public static <K, V> Map<K, V> newMap(K key, V value) {
+        Map map = new HashMap();
+        map.put(key, value);
+        return map;
+    }
+    
+    public static <K, V> Map.Entry<K, V> newEntry(K key, V value) {
+        return new MapEntry(key, value);
+    }
+    
+    public static <K, V> Map<K, V> newMap(MapEntry ... entries) {
+        Map map = new HashMap();
+        for (MapEntry entry : entries) {            
+            map.put(entry.getKey(), entry.getValue());
+        }
+        return map;
+    }
+    
 }
 
 class EntryAscendingComparator<K, V extends Comparable> implements Comparator<Entry<K, V>> {

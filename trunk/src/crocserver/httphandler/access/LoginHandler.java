@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2012 Evan Summers, Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2010 iPay (Pty) Ltd
+ * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
  * 
  */
 package crocserver.httphandler.access;
@@ -14,6 +14,7 @@ import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
+import vellum.datatype.Maps;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Strings;
@@ -88,6 +89,7 @@ public class LoginHandler implements HttpHandler {
         }
         String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
+        httpExchangeInfo.putCookie(Maps.newMap("email", user.getEmail()));
         httpExchangeInfo.sendResponse("text/json", true);
         out = httpExchangeInfo.getPrintStream();
         out.println(userInfo.getJson());
