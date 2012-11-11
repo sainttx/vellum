@@ -9,7 +9,9 @@ import crocserver.gtalk.GtalkConnection;
 import crocserver.httphandler.access.AccessHttpHandler;
 import crocserver.httphandler.insecure.InsecureHttpHandler;
 import crocserver.httphandler.secure.SecureHttpHandler;
+import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.httpserver.HttpServerConfig;
+import crocserver.storage.adminuser.AdminUser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,9 +32,8 @@ import vellum.util.Streams;
 import vellum.util.Threads;
 import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.common.CrocStorage;
-import java.io.*;
-import java.net.URLEncoder;
 import java.security.Security;
+import vellum.exception.EnumException;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.security.DefaultKeyStores;
@@ -257,6 +258,15 @@ public class CrocApp {
     
     public String getHomePage() {
         return homePage;
+    }
+
+    public AdminUser getUser(HttpExchangeInfo httpExchangeInfo) throws Exception {
+        CrocCookie cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
+        if (cookie.isAuth()) {
+            AdminUser user = storage.getUserStorage().get(cookie.getEmail());
+            return user;
+        }
+        throw new EnumException(CrocExceptionType.NO_AUTH);
     }
 
 }

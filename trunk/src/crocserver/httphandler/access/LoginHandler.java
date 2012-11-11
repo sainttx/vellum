@@ -10,13 +10,14 @@ import crocserver.app.CrocApp;
 import crocserver.app.CrocCookie;
 import crocserver.app.CrocSecurity;
 import crocserver.app.GoogleUserInfo;
+import crocserver.app.JsonStrings;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
-import java.io.PrintStream;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.parameter.StringMap;
 import vellum.util.Strings;
 
 /**
@@ -29,7 +30,6 @@ public class LoginHandler implements HttpHandler {
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
-    PrintStream out;
 
     public LoginHandler(CrocApp app) {
         super();
@@ -92,8 +92,13 @@ public class LoginHandler implements HttpHandler {
         CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName());
         httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE);
         httpExchangeInfo.sendResponse("text/json", true);
-        out = httpExchangeInfo.getPrintStream();
-        out.println(userInfo.getJson());
-        logger.info(userInfo.getJson());
+        StringMap responseMap = new StringMap();
+        responseMap.put("email", userInfo.getEmail());
+        responseMap.put("name", userInfo.getDisplayName());
+        responseMap.put("picture", userInfo.getPicture());
+        responseMap.put("qr", qrUrl);
+        String json = JsonStrings.buildJson(responseMap);
+        httpExchangeInfo.getPrintStream().println(json);
+        logger.info(json);
     }    
 }

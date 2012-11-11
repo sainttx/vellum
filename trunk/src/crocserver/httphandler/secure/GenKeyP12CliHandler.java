@@ -3,6 +3,7 @@
  */
 package crocserver.httphandler.secure;
 
+import crocserver.httphandler.access.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
@@ -26,7 +27,7 @@ import vellum.security.GeneratedRsaKeyPair;
  *
  * @author evans
  */
-public class GenP12Handler implements HttpHandler {
+public class GenKeyP12CliHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     CrocStorage storage;
@@ -39,7 +40,7 @@ public class GenP12Handler implements HttpHandler {
     String hostName;
     String clientName;
  
-    public GenP12Handler(CrocApp app) {
+    public GenKeyP12CliHandler(CrocApp app) {
         super();
         this.app = app;
         this.storage = app.getStorage();

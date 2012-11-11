@@ -3,6 +3,7 @@
  */
 package crocserver.httphandler.secure;
 
+import crocserver.httphandler.access.GenKeyP12Handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
@@ -41,7 +42,7 @@ public class SecureHttpHandler implements HttpHandler {
         if (path.startsWith("/enable/service/")) {
             new EnableServiceHandler(storage).handle(httpExchange);
         } else if (path.startsWith("/gen/p12/")) {
-            new GenP12Handler(app).handle(httpExchange);
+            new GenKeyP12Handler(app).handle(httpExchange);
         } else if (path.startsWith("/sign/cert/")) {
             new SignCertHandler(app).handle(httpExchange);
         } else if (path.startsWith("/view/user/")) {

@@ -27,7 +27,6 @@ public class LogoutHandler implements HttpHandler {
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
-    PrintStream out;
 
     public LogoutHandler(CrocApp app) {
         super();
@@ -50,10 +49,10 @@ public class LogoutHandler implements HttpHandler {
     private void handle() throws Exception {
         CrocCookie cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
         logger.info("cookie", cookie);
-        httpExchangeInfo.clearCookie(Lists.toStringList(CrocCookieMeta.values()));
+        //httpExchangeInfo.clearCookie(Lists.toStringList(CrocCookieMeta.values()));
         httpExchangeInfo.sendResponse("text/json", true);
         String json = JsonStrings.buildJson(cookie.toMap());
         logger.info("json", json);
-        out.print(json);
+        httpExchangeInfo.getPrintStream().print(json);
     }    
 }
