@@ -19,6 +19,7 @@ public class GoogleUserInfo {
     String displayName;
     String givenName;
     String familyName;
+    String picture;
     
     public GoogleUserInfo() {
     }
@@ -37,9 +38,18 @@ public class GoogleUserInfo {
         setEmail(JsonStrings.get(json, "email"));
         setDisplayName(JsonStrings.get(json, "name"));
         setGivenName(JsonStrings.get(json, "given_name"));
-        setFamilyName(JsonStrings.get(json, "family_name"));
-        
+        setFamilyName(JsonStrings.get(json, "family_name"));        
+        setPicture(JsonStrings.get(json, "picture"));
     }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+        
     public String getFamilyName() {
         return familyName;
     }

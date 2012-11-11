@@ -53,8 +53,17 @@ public class CrocCookie {
         return map;
     }
 
+    public long getAuthMillis() {
+        return authMillis;
+    }
+
+    public boolean isAuth() {
+        return false;
+    }
+    
     @Override
     public String toString() {
         return toMap().toString();
-    }       
+    }
+
 }

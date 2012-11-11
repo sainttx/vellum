@@ -17,6 +17,17 @@
                 padding: 9px 0;
             }
         </style>        
+        <script type="text/javascript">
+            if (window.location.protocol != "https:") {
+                var host = location.host;
+                var index = location.host.indexOf(':');
+                if (index > 0) {
+                    host = location.host.substring(0, index) + ':8443';
+                }
+                window.location = "https://" + host + location.pathname + location.search + location.hash;
+                console.log(window.location);
+            }
+        </script>
         <link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -37,26 +48,44 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
-                    <a class="brand" href="#">Croc</a>
                     <ul class="nav">
-                        <li class="croc-nav-anchor croc-home-anchor active"><a class="croc-home" href="#">Home</a></li>
-                        <li class="croc-nav-anchor croc-about-anchor"><a class="croc-about" href="#">About</a></li>
-                        <li class="croc-nav-anchor croc-about-anchor"><a class="croc-contact" href="#">Contact</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown">Croc <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li class="croc-nav-anchor"><a href="#" class="croc-home-clickable" href="#">Home</a></li>
+                                <li class="croc-nav-anchor"><a href="#" class="croc-about-clickable">About</a></li>
+                                <li class="croc-nav-anchor"><a href="#" class="croc-contact-clickable">Contact</a></li>
+                            </ul>
+                        <li class="dropdown croc-loggedin-viewable hide">
+                        </li>
+                        <li class="croc-nav-anchor croc-info-landing-extra"><a href="#" class="croc-home-clickable">Home</a></li>
+                        <li class="croc-nav-anchor croc-info-landing-extra"><a href="#" class="croc-about-clickable">About</a></li>
+                        <li class="croc-nav-anchor croc-info-landing-extra"><a href="#" class="croc-contact-clickable">Contact</a></li>
+                        <li class="dropdown croc-loggedin-viewable hide">
+                            <a class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="croc-logout-clickable">Logout</a></li>
+                                <li><a href="#">Settings</a></li>
+                                <li class="nav-header">Security</li>
+                                <li><a id="croc-account-genKey" href="#">Generate key</a></li>
+                                <li><a id="croc-account-signCert" href="#">Sign cert</a></li>
+                                <li><a id="croc-account-resetOtp" href="#">Reset OTP secret</a></li>
+                            </ul>
+                        </li>
                     </ul>
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
                     <div class="nav-collapse pull-right collapse">
-                        <div class="navbar-text pull-right croc-logout-viewable hide" id="croc-logout-div">
-                            <img id="croc-user-picture hide" width="27" height="27"/>
+                        <div class="navbar-text pull-right croc-loggedin-viewable hide" id="croc-loggedin-div">
                             <a id="croc-username-text" class="navbar-link croc-logout-clickable">Username</a>
-                            <a class="btn croc-logout-clickable" id="croc-logout-btn">Logout</a>
+                            <!--a class="btn croc-logout-clickable" id="croc-loggedin-btn">Logout</a-->
                         </div>
-                        <div class="navbar-text pull-right croc-login-viewable hide" id="croc-login-div">
+                        <!--div class="navbar-text pull-right croc-login-viewable hide" id="croc-login-div">
                             <a class="croc-login-clickable hide"><img src="img/google-g-32.png"/></a>
                             <a class="btn croc-login-clickable hide" id="croc-login-btn">Login</a>
-                        </div>
+                        </div-->
                     </div>
                 </div>
             </div>
@@ -76,28 +105,70 @@
                     </div>
                 </div-->
                 <div class="span12">
-                    <div class="hero-unit croc-info" id="croc-info-landing">
+                    <div class="hero-unit croc-info croc-info-landing-viewable" id="croc-info-landing">
                         <h1>Croc</h1>
                         <p>
                         <p>Croc is the "cron output collector"</p>                        
                         <p>
                             <a id="croc-learn-btn" class="btn btn-primary btn-large croc-login-clickable hide">Login with Google &raquo;</a>
-                            <a id="croc-learn-btn" class="btn btn-primary btn-large croc-about">Learn more &raquo;</a>
+                            <a id="croc-learn-btn" class="btn btn-primary btn-large croc-about-clickable">Learn more &raquo;</a>
                         </p>
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-info-contact">
                         <h1>Contact</h1>
                         <p>
                         <p>evan.summers at gmail.com</p>
-                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home">Home &raquo;</a></p>
+                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home-clickable">Home &raquo;</a></p>
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-info-about">
-                        <h1>About</h1>
+                        <h1>About Croc</h1>
                         <p>
                         <p>Croc is the "cron output collector"</p>
                         <p>Developed by evan.summers at gmail.com, sysadmin at <a href="https://bizswitch.net">BizSwitch.net</a></p>
-                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home">Home &raquo;</a></p>
+                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home-clickable">Home &raquo;</a></p>
                     </div>
+                    <div class="hero-unit croc-info hide" id="croc-loggedin">
+                        <h1 id="croc-loggedin-title"></h1>
+                        <form method="post" action="/sign" id="croc-loggedin-csr-form">
+                            <form>
+                                <fieldset>
+                                    <legend>Certificate Signing Request</legend>
+                                    <span class="help-block">Paste your Certificate Signing Request (CSR) into the box below.</span>
+                                    <textarea rows="6" cols="90" style="width: 100%" id="croc-loggedin-csr-textarea" name="csr" placeholder="Paste your Certificate Signing Request into this box."></textarea>
+                                    <button type="submit" class="btn">Submit</button>
+                                </fieldset>
+                            </form>
+                        </form>                        
+                        <p id="croc-loggedin-qr-container">
+                            <img id="croc-loggedin-qr-img"/>
+                        </p>
+                    </div>
+                    <div id="croc-resetotp-modal" class="modal hide fade">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h3>Reset OTP</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you wish to reset your OTP (one-time-password) secret?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn" onclick="cancelResetOtp()">Cancel</a>
+                            <a href="#" class="btn btn-primary" onclick="okResetOtp()">Ok</a>
+                        </div>
+                    </div>                    
+                    <div id="croc-genkey-modal" class="modal hide fade">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h3>Generate key</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you wish to generate a new key (and browser cert) for SSL?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn" onclick="cancelGenKey()">Cancel</a>
+                            <a href="#" class="btn btn-primary" onclick="okGenKey()">Ok</a>
+                        </div>
+                    </div>                    
                 </div><!--/span-->
             </div><!--/row-->
 
@@ -111,8 +182,8 @@
     </body>
 
     <script src="./bootstrap/js/jquery.js"></script>
-    <script src="bindex.js"></script>
-    <script src="https://apis.google.com/js/client.js?onload=clientLoaded"/>    
+    <script src="bindex.js?onload=startDocument"></script>
+    <script src="https://apis.google.com/js/client.js?onload=startClient"/>    
     <script src="./bootstrap/js/bootstrap-transition.js"></script>
     <script src="./bootstrap/js/bootstrap-alert.js"></script>
     <script src="./bootstrap/js/bootstrap-modal.js"></script>
@@ -125,6 +196,11 @@
     <script src="./bootstrap/js/bootstrap-collapse.js"></script>
     <script src="./bootstrap/js/bootstrap-carousel.js"></script>
     <script src="./bootstrap/js/bootstrap-typeahead.js"></script>
-
+    
+    <script type="text/javascript">
+        $(document).ready(function() {    
+            initDocument();
+        });
+    </script>
 
 </html>

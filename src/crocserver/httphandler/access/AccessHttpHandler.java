@@ -6,7 +6,6 @@ package crocserver.httphandler.access;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
-import crocserver.httphandler.secure.GenP12Handler;
 import crocserver.httphandler.secure.SecureHomeHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
@@ -58,8 +57,8 @@ public class AccessHttpHandler implements HttpHandler {
             new LoginHandler(app).handle(httpExchange);
         } else if (path.equals("/logout")) {
             new LogoutHandler(app).handle(httpExchange);
-        } else if (path.startsWith("/gen/p12/")) {
-            new GenP12Handler(app).handle(httpExchange);
+        } else if (path.equals("/genKey")) {
+            new GenKeyP12Handler(app).handle(httpExchange);
         } else if (path.startsWith("/sign/cert/")) {
             new SignCertHandler(app).handle(httpExchange);
         } else if (path.startsWith("/view/user/")) {

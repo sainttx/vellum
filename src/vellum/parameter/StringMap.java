@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import vellum.exception.EnumRuntimeException;
 
 /**
  *
@@ -23,6 +24,14 @@ public class StringMap extends HashMap<String, String> {
 
     public StringMap(Map m) {
         super(m);
+    }
+
+    public String getString(String key) {
+        String value = super.get(key);
+        if (value == null) {
+            throw new EnumRuntimeException(StringMapExceptionType.NOT_FOUND);
+        }
+        return value;
     }
     
     public String getString(String key, String defaultValue) {
