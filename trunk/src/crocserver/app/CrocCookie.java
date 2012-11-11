@@ -16,7 +16,7 @@ public class CrocCookie {
     
     String email;
     String displayName;
-    long authMillis;
+    long loginMillis;
 
     public CrocCookie() {
     }
@@ -28,13 +28,13 @@ public class CrocCookie {
     public CrocCookie(StringMap map) {
         email = map.get(CrocCookieMeta.email.name());
         displayName = map.get(CrocCookieMeta.displayName.name());
-        authMillis = map.getLong(CrocCookieMeta.authMillis.name(), 0);
+        loginMillis = map.getLong(CrocCookieMeta.loginMillis.name(), 0);
     }
     
-    public CrocCookie(String email, String displayName) {
+    public CrocCookie(String email, String displayName, long loginMillis) {
         this.email = email;
         this.displayName = displayName;
-        this.authMillis = System.currentTimeMillis();        
+        this.loginMillis = loginMillis;
     }
 
     public String getEmail() {
@@ -49,18 +49,14 @@ public class CrocCookie {
         StringMap map = new StringMap();
         map.put(CrocCookieMeta.email.name(), email);
         map.put(CrocCookieMeta.displayName.name(), displayName);
-        map.put(CrocCookieMeta.authMillis.name(), Long.toString(authMillis));
+        map.put(CrocCookieMeta.loginMillis.name(), Long.toString(loginMillis));
         return map;
     }
 
-    public long getAuthMillis() {
-        return authMillis;
+    public long getLoginMillis() {
+        return loginMillis;
     }
 
-    public boolean isAuth() {
-        return false;
-    }
-    
     @Override
     public String toString() {
         return toMap().toString();

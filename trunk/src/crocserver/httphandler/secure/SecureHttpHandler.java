@@ -31,35 +31,36 @@ public class SecureHttpHandler implements HttpHandler {
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        if (!handlePath(httpExchange) && !childHandler.handlePath(httpExchange)) {
-            new SecureHomeHandler(app).handle(httpExchange);
-        }  
+        HttpHandler handler = getHandler(httpExchange);
+        if (handler != null) {
+            handler.handle(httpExchange);
+        } else {
+            childHandler.handle(httpExchange);
+        }
     }
     
-    public boolean handlePath(HttpExchange httpExchange) throws IOException {
+    public HttpHandler getHandler(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
         if (path.startsWith("/enable/service/")) {
-            new EnableServiceHandler(storage).handle(httpExchange);
+            return new EnableServiceHandler(storage);
         } else if (path.startsWith("/gen/p12/")) {
-            new GenKeyP12Handler(app).handle(httpExchange);
+            return new GenKeyP12Handler(app);
         } else if (path.startsWith("/sign/cert/")) {
-            new SignCertHandler(app).handle(httpExchange);
+            return new SignCertHandler(app);
         } else if (path.startsWith("/view/user/")) {
-            new ViewUserHandler(storage).handle(httpExchange);
+            return new ViewUserHandler(storage);
         } else if (path.startsWith("/view/cert/")) {
-            new ViewCertHandler(storage).handle(httpExchange);
+            return new ViewCertHandler(storage);
         } else if (path.startsWith("/view/serviceRecord/")) {
-            new ViewServiceRecordHandler(storage).handle(httpExchange);
+            return new ViewServiceRecordHandler(storage);
         } else if (path.startsWith("/view/org/")) {
-            new ViewOrgHandler(storage).handle(httpExchange);
+            return new ViewOrgHandler(storage);
         } else if (path.startsWith("/storage")) {
-            new StoragePageHandler(storage).handle(httpExchange);
+            return new StoragePageHandler(storage);
         } else if (path.startsWith("/post/")) {
-            new PostHandler(app).handle(httpExchange);
-        } else {
-            return false;    
+            return new PostHandler(app);
         }
-        return true;
+        return null;
     }
 }

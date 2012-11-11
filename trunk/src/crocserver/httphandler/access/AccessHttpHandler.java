@@ -31,50 +31,49 @@ public class AccessHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        if (!handlePath(httpExchange)) {
-            webHandler.handle(httpExchange);
+        HttpHandler handler = getHandler(httpExchange);
+        if (handler == null) {
+            handler = webHandler;
         }
+        handler.handle(httpExchange);
     }
 
-    public boolean handlePath(HttpExchange httpExchange) throws IOException {
+    public HttpHandler getHandler(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
         if (path.startsWith("/oauth")) {
-            new OAuthCallbackHandler(app).handle(httpExchange);
+            return new OAuthCallbackHandler(app);
         } else if (path.startsWith("/echo")) {
-            new EchoHandler(app).handle(httpExchange);
+            return new EchoHandler(app);
         } else if (path.startsWith("/admin")) {
-            new SecureHomeHandler(app).handle(httpExchange);
+            return new SecureHomeHandler(app);
         } else if (path.startsWith("/enroll/user/")) {
-            new EnrollUserHandler(app).handle(httpExchange);
+            return new EnrollUserHandler(app);
         } else if (path.startsWith("/enroll/org/")) {
-            new EnrollOrgHandler(app).handle(httpExchange);
+            return new EnrollOrgHandler(app);
         } else if (path.startsWith("/enroll/service/")) {
-            new EnrollServiceHandler(storage).handle(httpExchange);
+            return new EnrollServiceHandler(storage);
         } else if (path.startsWith("/get/cert/")) {
-            new GetCertHandler(storage).handle(httpExchange);
+            return new GetCertHandler(storage);
         } else if (path.equals("/login")) {
-            new LoginHandler(app).handle(httpExchange);
+            return new LoginHandler(app);
         } else if (path.equals("/logout")) {
-            new LogoutHandler(app).handle(httpExchange);
+            return new LogoutHandler(app);
         } else if (path.equals("/genKey")) {
-            new GenKeyP12Handler(app).handle(httpExchange);
+            return new GenKeyP12Handler(app);
         } else if (path.startsWith("/sign/cert/")) {
-            new SignCertHandler(app).handle(httpExchange);
+            return new SignCertHandler(app);
         } else if (path.startsWith("/view/user/")) {
-            new ViewUserHandler(storage).handle(httpExchange);
+            return new ViewUserHandler(storage);
         } else if (path.startsWith("/view/cert/")) {
-            new ViewCertHandler(storage).handle(httpExchange);
+            return new ViewCertHandler(storage);
         } else if (path.startsWith("/view/serviceRecord/")) {
-            new ViewServiceRecordHandler(storage).handle(httpExchange);
+            return new ViewServiceRecordHandler(storage);
         } else if (path.startsWith("/view/org/")) {
-            new ViewOrgHandler(storage).handle(httpExchange);
+            return new ViewOrgHandler(storage);
         } else if (path.startsWith("/storage")) {
-            new StoragePageHandler(storage).handle(httpExchange);
-        } else {
-            return false;
+            return new StoragePageHandler(storage);
         }
-        return true;
-    }
-    
+        return null;
+    }        
 }

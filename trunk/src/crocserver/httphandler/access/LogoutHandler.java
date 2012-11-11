@@ -11,8 +11,9 @@ import crocserver.app.CrocCookie;
 import crocserver.app.CrocCookieMeta;
 import crocserver.app.JsonStrings;
 import crocserver.httpserver.HttpExchangeInfo;
+import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.util.Date;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Lists;
@@ -49,7 +50,10 @@ public class LogoutHandler implements HttpHandler {
     private void handle() throws Exception {
         CrocCookie cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
         logger.info("cookie", cookie);
-        //httpExchangeInfo.clearCookie(Lists.toStringList(CrocCookieMeta.values()));
+        AdminUser user = app.getStorage().getUserStorage().get(cookie.getEmail());
+        user.setLogoutTime(new Date());
+        app.getStorage().getUserStorage().updateLogout(user);
+        httpExchangeInfo.clearCookie(Lists.toStringList(CrocCookieMeta.values()));
         httpExchangeInfo.sendResponse("text/json", true);
         String json = JsonStrings.buildJson(cookie.toMap());
         logger.info("json", json);

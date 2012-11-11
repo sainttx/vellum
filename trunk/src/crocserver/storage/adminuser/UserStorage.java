@@ -65,7 +65,8 @@ public class UserStorage {
         user.setCert(resultSet.getString(UserMeta.cert.name()));
         user.setSecret(resultSet.getString(UserMeta.secret.name()));
         user.setRole(AdminRole.valueOf(resultSet.getString(UserMeta.role_.name())));
-        user.setLastLogin(resultSet.getTimestamp(UserMeta.last_login.name()));
+        user.setLoginTime(resultSet.getTimestamp(UserMeta.login.name()));
+        user.setLogoutTime(resultSet.getTimestamp(UserMeta.logout.name()));
         user.setUpdated(resultSet.getTimestamp(UserMeta.updated.name()));
         user.setStored(true);
         return user;
@@ -89,6 +90,7 @@ public class UserStorage {
             } else {
                 statement.setString(++index, null);    
             }
+            statement.setTimestamp(++index, new Timestamp(user.getLoginTime().getTime()));
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
             if (updateCount != 1) {
@@ -187,6 +189,75 @@ public class UserStorage {
         }
     }
 
+    public void updateSecret(AdminUser user) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(UserQuery.update_display_name_subject.name()));
+            statement.setString(1, user.getSecret());
+            statement.setString(2, user.getUserName());
+            int updateCount = statement.executeUpdate();
+            connection.setOk(true);
+            if (updateCount != 1) {
+                throw new SQLException();
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+
+    public void updateCert(AdminUser user) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(UserQuery.update_display_name_subject.name()));
+            statement.setString(1, user.getSubject());
+            statement.setString(2, user.getCert());
+            statement.setString(3, user.getUserName());
+            int updateCount = statement.executeUpdate();
+            connection.setOk(true);
+            if (updateCount != 1) {
+                throw new SQLException();
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
+    public void updateLogin(AdminUser user) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(UserQuery.update_login.name()));
+            statement.setTimestamp(1, new Timestamp(user.getLoginTime().getTime()));
+            statement.setString(2, user.getUserName());
+            int updateCount = statement.executeUpdate();
+            connection.setOk(true);
+            if (updateCount != 1) {
+                throw new SQLException();
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
+    public void updateLogout(AdminUser user) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(UserQuery.update_logout.name()));
+            statement.setTimestamp(1, new Timestamp(user.getLogoutTime().getTime()));
+            statement.setString(2, user.getUserName());
+            int updateCount = statement.executeUpdate();
+            connection.setOk(true);
+            if (updateCount != 1) {
+                throw new SQLException();
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
     public List<AdminUser> getList() throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {

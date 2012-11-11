@@ -4,14 +4,47 @@
 select * from user_;
 
 -- insert
-insert into user_ (user_name, first_name, last_name, display_name, email, subject, secret, role_)
-values (?, ?, ?, ?, ?, ?, ?, ?);
+insert into user_ (user_name, first_name, last_name, display_name, email, subject, secret, role_, login)
+values (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- update_display_name_subject
 update user_ 
 set 
   display_name = ?, 
   subject = ?,  
+  updated = now()
+where user_name = ?
+;
+
+-- update_login
+update user_ 
+set 
+  login = ?,
+  updated = now()
+where user_name = ?
+;
+
+-- update_logout
+update user_ 
+set 
+  logout = ?,
+  updated = now()
+where user_name = ?
+;
+
+-- update_secret
+update user_ 
+set 
+  secret = ?,
+  updated = now()
+where user_name = ?
+;
+
+-- update_cert
+update user_ 
+set 
+  subject = ?,
+  cert = ?,
   updated = now()
 where user_name = ?
 ;
