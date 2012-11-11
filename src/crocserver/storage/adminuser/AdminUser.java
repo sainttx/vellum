@@ -22,6 +22,7 @@ public class AdminUser extends AbstractIdEntity<String> {
     AdminRole role;
     long orgId;
     Org org;
+    long authMillis;
     boolean enabled = true;
     String email;
     Date inserted;
@@ -35,7 +36,8 @@ public class AdminUser extends AbstractIdEntity<String> {
     String secondedBy;
     String passwordHash;
     String passwordSalt;
-    Date lastLogin;
+    Date loginTime;
+    Date logoutTime;
     String subject;
     boolean stored = false; 
     
@@ -142,14 +144,22 @@ public class AdminUser extends AbstractIdEntity<String> {
         this.createdBy = createdBy;
     }
 
-    public Date getLastLogin() {
-        return lastLogin;
+    public Date getLoginTime() {
+        return loginTime;
     }
 
-    public void setLastLogin(Date lastLogin) {
-        this.lastLogin = lastLogin;
+    public void setLoginTime(Date loginTime) {
+        this.loginTime = loginTime;
     }
 
+    public Date getLogoutTime() {
+        return logoutTime;
+    }
+
+    public void setLogoutTime(Date logoutTime) {
+        this.logoutTime = logoutTime;
+    }
+   
     public String getPasswordHash() {
         return passwordHash;
     }
@@ -250,7 +260,15 @@ public class AdminUser extends AbstractIdEntity<String> {
     public void setStored(boolean stored) {
         this.stored = stored;
     }
-   
+
+    public void setAuthMillis(long authMillis) {
+        this.authMillis = authMillis;
+    }
+
+    public long getAuthMillis() {
+        return authMillis;
+    }
+
     @Override
     public String toString() {
         return getId().toString();

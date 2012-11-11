@@ -25,8 +25,9 @@ public enum UserMeta {
     language_, 
     enabled,    
     role_,
-    last_login,
     locale,
+    login,
+    logout,
     inserted,
     updated,
 }

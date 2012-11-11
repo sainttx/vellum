@@ -36,6 +36,7 @@ import java.security.Security;
 import vellum.exception.EnumException;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
+import vellum.parameter.StringMap;
 import vellum.security.DefaultKeyStores;
 
 /**
@@ -261,12 +262,19 @@ public class CrocApp {
     }
 
     public AdminUser getUser(HttpExchangeInfo httpExchangeInfo) throws Exception {
-        CrocCookie cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
-        if (cookie.isAuth()) {
+        StringMap cookieMap = httpExchangeInfo.getCookieMap();
+        String email = cookieMap.get("email");
+        if (email == null) {
+            throw new EnumException(CrocExceptionType.NO_COOKIE);
+        } else if (email.isEmpty()) {
+            throw new EnumException(CrocExceptionType.EXPIRED_COOKIE);
+        } else {
+            CrocCookie cookie = new CrocCookie(cookieMap);
             AdminUser user = storage.getUserStorage().get(cookie.getEmail());
+            if (user.getLoginTime().getTime() != cookie.getLoginMillis()) {
+                throw new EnumException(CrocExceptionType.STALE_COOKIE);
+            }
             return user;
         }
-        throw new EnumException(CrocExceptionType.NO_AUTH);
     }
-
 }

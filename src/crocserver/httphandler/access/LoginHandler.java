@@ -15,6 +15,7 @@ import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
+import java.util.Date;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
@@ -82,6 +83,7 @@ public class LoginHandler implements HttpHandler {
             user.setEnabled(true);
             user.setSecret(CrocSecurity.generateSecret());
         }
+        user.setLoginTime(new Date());
         if (user.isStored()) {
             app.getStorage().getUserStorage().update(user);
         } else {
@@ -89,7 +91,7 @@ public class LoginHandler implements HttpHandler {
         }
         String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
-        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName());
+        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime());
         httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE);
         httpExchangeInfo.sendResponse("text/json", true);
         StringMap responseMap = new StringMap();

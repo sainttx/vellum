@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import javax.net.ssl.HttpsURLConnection;
 import vellum.config.PropertiesMap;
+import vellum.exception.EnumException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.security.DefaultKeyStores;
@@ -76,9 +77,13 @@ public class GoogleApi {
 
     public GoogleUserInfo getUserInfo(String accessToken) throws Exception {
         String json = getUserInfoJson(accessToken);
-        GoogleUserInfo userInfo = new GoogleUserInfo();
-        userInfo.parseJson(json);
-        return userInfo;
+        if (JsonStrings.get(json, "email") != null) {
+            GoogleUserInfo userInfo = new GoogleUserInfo();
+            userInfo.parseJson(json);
+            return userInfo;
+        }
+        logger.warn("getUserInfo", json);
+        throw new EnumException(CrocExceptionType.NO_AUTH);
     }
 
     public String getUserInfoJson(String accessToken) throws Exception {
@@ -92,9 +97,13 @@ public class GoogleApi {
 
     public GooglePlusUserInfo getPlusPerson(String accessToken, String userId) throws Exception {
         String json = getPlusPersonJson(accessToken, userId);
-        GooglePlusUserInfo userInfo = new GooglePlusUserInfo();
-        userInfo.parseJson(json);
-        return userInfo;
+        if (JsonStrings.get(json, "email") != null) {
+            GooglePlusUserInfo userInfo = new GooglePlusUserInfo();
+            userInfo.parseJson(json);
+            return userInfo;
+        }
+        logger.warn("getPlusPerson", json);
+        throw new EnumException(CrocExceptionType.NO_AUTH);
     }
 
     public String getPlusPersonJson(String accessToken, String userId) throws Exception {
