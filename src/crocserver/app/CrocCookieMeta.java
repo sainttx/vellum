@@ -11,5 +11,6 @@ package crocserver.app;
 public enum CrocCookieMeta {
     email,
     displayName,
-    loginMillis;
+    loginMillis,
+    authCode;
 }

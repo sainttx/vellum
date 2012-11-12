@@ -5,6 +5,7 @@
 package crocserver.app;
 
 import java.util.Map;
+import vellum.exception.EnumException;
 import vellum.parameter.StringMap;
 
 /**
@@ -17,7 +18,8 @@ public class CrocCookie {
     String email;
     String displayName;
     long loginMillis;
-
+    String authCode; 
+            
     public CrocCookie() {
     }
 
@@ -29,6 +31,7 @@ public class CrocCookie {
         email = map.get(CrocCookieMeta.email.name());
         displayName = map.get(CrocCookieMeta.displayName.name());
         loginMillis = map.getLong(CrocCookieMeta.loginMillis.name(), 0);
+        authCode = map.get(CrocCookieMeta.authCode.name());
     }
     
     public CrocCookie(String email, String displayName, long loginMillis) {
@@ -50,9 +53,21 @@ public class CrocCookie {
         map.put(CrocCookieMeta.email.name(), email);
         map.put(CrocCookieMeta.displayName.name(), displayName);
         map.put(CrocCookieMeta.loginMillis.name(), Long.toString(loginMillis));
+        map.put(CrocCookieMeta.authCode.name(), authCode);
         return map;
     }
 
+    public void createAuthCode(byte[] secret) throws Exception {
+        authCode = CrocSecurity.createCode(secret, email, loginMillis);
+    }
+
+    public void validateAuthCode(byte[] secret) throws Exception {
+        String code = CrocSecurity.createCode(secret, email, loginMillis);
+        if (!authCode.equals(code)) {
+            throw new EnumException(CrocExceptionType.INVALID_COOKIE);
+        }
+    }
+    
     public long getLoginMillis() {
         return loginMillis;
     }
@@ -61,5 +76,4 @@ public class CrocCookie {
     public String toString() {
         return toMap().toString();
     }
-
 }
