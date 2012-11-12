@@ -80,12 +80,7 @@
                     <div class="nav-collapse pull-right collapse">
                         <div class="navbar-text pull-right croc-loggedin-viewable hide" id="croc-loggedin-div">
                             <a id="croc-username-text" class="navbar-link croc-logout-clickable">Username</a>
-                            <!--a class="btn croc-logout-clickable" id="croc-loggedin-btn">Logout</a-->
                         </div>
-                        <!--div class="navbar-text pull-right croc-login-viewable hide" id="croc-login-div">
-                            <a class="croc-login-clickable hide"><img src="img/google-g-32.png"/></a>
-                            <a class="btn croc-login-clickable hide" id="croc-login-btn">Login</a>
-                        </div-->
                     </div>
                 </div>
             </div>
@@ -93,17 +88,6 @@
 
         <div class="container-fluid">
             <div class="row-fluid">
-                <!--div class="span3">
-                    <div class="well sidebar-nav">
-                        <ul class="nav nav-list">
-                            <li class="nav-header">Site</li>
-                            <li class="croc-home-anchor croc-nav-anchor active"><a class="croc-home" href="#">Home</a></li>
-                            <li class="nav-header">Admin</li>
-                            <li><a href="#">Dashboard</a></li>
-                            <li><a href="#"></a></li>
-                        </ul>
-                    </div>
-                </div-->
                 <div class="span12">
                     <div class="hero-unit croc-info croc-info-landing-viewable" id="croc-info-landing">
                         <h1>Croc</h1>
@@ -132,10 +116,8 @@
                         <form method="post" action="/sign" id="croc-loggedin-csr-form">
                             <form>
                                 <fieldset>
-                                    <legend>Certificate Signing Request</legend>
-                                    <span class="help-block">Paste your Certificate Signing Request (CSR) into the box below.</span>
+                                    <button type="submit" class="btn">Submit CSR</button>
                                     <textarea rows="6" cols="90" style="width: 100%" id="croc-loggedin-csr-textarea" name="csr" placeholder="Paste your Certificate Signing Request into this box."></textarea>
-                                    <button type="submit" class="btn">Submit</button>
                                 </fieldset>
                             </form>
                         </form>                        

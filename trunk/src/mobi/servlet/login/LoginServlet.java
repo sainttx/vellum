@@ -15,7 +15,7 @@ public class LoginServlet extends HttpServlet
     throws ServletException, IOException
     {
         try {
-            new LoginHandler().handle(req, resp);
+            new LoginServletHandler().handle(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
         }

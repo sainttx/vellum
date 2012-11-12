@@ -13,7 +13,7 @@ import mobi.storage.PersonConnection;
 /**
  *
  */
-public class LoginHandler {
+public class LoginServletHandler {
 
     HttpServletRequest req;
     HttpServletResponse res;
