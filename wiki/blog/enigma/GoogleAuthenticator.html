@@ -7,7 +7,7 @@ But besides enabling multi-factor authentication for our personal Google account
 
 <h4>Prequels</h4>
 
-A few years ago i emitted a series of Java crypto articles on this blog, which have been collated on https://code.google.com/p/vellum in wiki format, but otherwise not updated or patched up e.g. the old "Password Hash" article there neglects to add salt! Anyways, herewith starts a new crypto series to rehash the past, and decipher the future.
+A few years ago i emitted a series of Java crypto articles on this blog, which have been collated on https://code.google.com/p/vellum in wiki format, but otherwise not updated or patched up e.g. the old "Password Hash" article there neglects to add salt! Anyways, herewith starts a new crypto series to rehash the past, and decipher a possible future.
 
 <p>   
 <a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
@@ -20,7 +20,7 @@ Probably you've heard of this <a href="http://en.wikipedia.org/wiki/Google_Authe
 
 <img src="http://jroller.com/evanx/resource/chrome-gauth-topt.png"/>
 
-So let's blindly install this app on our phone, add the Chrome extension to our desktop browser, and change our Google account to require the 2-factor authentication on https://www.google.com/settings/security.
+So let's install this app on our phone, perhaps add the Chrome extension to our desktop browser, and change our Google account to require 2-step authentication on https://www.google.com/settings/security.
 
 <img src="http://jroller.com/evanx/resource/google-accounts-security-window.png"/>
 
@@ -59,7 +59,7 @@ The user creates a new account on their Google Authenticator app, entering this 
 
 <img src="http://jroller.com/evanx/resource/chrome-gauth-add.png"/>
 
-For entering codes into mobiles, we find that mixing alpha and numeric is not uber-convenient, and so one might reorder that secret e.g. OVEKTIJADMM73336, albeit thereby loosing some of its randomness. But take any of my suggestions with a pinch of salt. Heh heh, a crypto pun!
+For entering codes into mobiles, we find that mixing alpha and numeric is not uber-convenient, and so one might reorder that secret e.g. OVEKTIJADMM73336, albeit thereby losing some of its randomness. But take any of my suggestions with a pinch of salt. Heh heh, a crypto pun!
 
 <h4>QR code</h4> 
 
@@ -193,6 +193,24 @@ We can add the GAuth Chrome extension to our browser to compare, and of course t
 
 <img src="http://jroller.com/evanx/resource/gauth.png"/>
 
+<h4>Multi-factor authentication</h4>
+
+According to http://en.wikipedia.org/wiki/Multi-factor_authentication,
+<blockquote>
+    Existing authentication methodologies involve three basic "factors":
+    <ul>
+        <li>Something the user knows (e.g., password, PIN);
+        <li>Something the user has (e.g., ATM card, smart card); and
+        <li>Something the user is (e.g., biometric characteristic, such as a fingerprint).
+    </ul>
+</blockquote>
+and
+<blockquote>
+    Authentication methods that depend on more than one factor are more difficult to compromise than single-factor methods.
+</blockquote>
+
+Clearly the only way to generate the correct OTP code is by having the secret key, so then if the user has entered the correct password (as the thing they "know"), as well as the correct OTP (proving that they "have" the secret), then two-factor authentication is "thus enabled" :)
+
 Finally, the question arises how to handle the event of a user losing their phone (and TOTP secret)? So I guess in addition to a "Forgot Password" facility, one needs a "Lost phone" button ;) That is, we need to enable users to reset their TOTP secret, without that becoming the weak link. We'll address this another day ;)
 
 <h4>Conclusion</h4> 
@@ -217,13 +235,10 @@ See https://code.google.com/p/vellum/ where i will collate these articles and th
 
 <h4>Link list</h4>
 
+http://en.wikipedia.org/wiki/Multi-factor_authentication
 http://en.wikipedia.org/wiki/Hash-based_message_authentication_code.
 http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm
 http://en.wikipedia.org/wiki/HOTP
 http://tools.ietf.org/html/rfc6238
 http://tools.ietf.org/html/rfc4226
 http://code.google.com/p/google-authenticator
-
-And since it's this classic video that makes me want to add "thus enabled" to everything - even though Brent says "Android thus disabled" - ironically! :)
-
-http://www.youtube.com/watch?v=XKXz2qDTiBU
