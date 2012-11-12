@@ -88,7 +88,7 @@ public class OAuthCallbackHandler implements HttpHandler {
         } else {
             app.getStorage().getUserStorage().insert(user);
         }
-        String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
+        String qrUrl = CrocSecurity.getQrCodeUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
         String signCertUrl = String.format("%s/sign/userCert/%s", app.getServerUrl(), user.getEmail());
         httpExchangeInfo.sendResponse("text/html", true);

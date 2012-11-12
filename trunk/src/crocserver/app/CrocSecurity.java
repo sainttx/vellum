@@ -49,8 +49,12 @@ public class CrocSecurity {
         buffer.putLong(value);
         return buffer.array();
     }
-        
-    public static String getQRBarcodeURL(String userName, String serverName, String secret) {
+
+    public static String getTotpUrl(String userName, String serverName, String secret) {
+        return String.format("otpauth://totp/%s@%s?secret=%s", userName, serverName, secret);
+    }           
+    
+    public static String getQrCodeUrl(String userName, String serverName, String secret) {
         return "https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=" + 
                 "otpauth%3A%2F%2Ftotp%2F" + userName + '@' + serverName +  
                 "%3Fsecret%3D" + secret;

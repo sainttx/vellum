@@ -113,23 +113,27 @@
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-loggedin">
                         <h1 id="croc-loggedin-title"></h1>
+                        <p>You should either submit a CSR, or for your convenience we can generate a key for you.</p>
                         <form method="post" action="/sign" id="croc-loggedin-csr-form">
                             <form>
                                 <fieldset>
-                                    <button type="submit" class="btn">Submit CSR</button>
                                     <textarea rows="6" cols="90" style="width: 100%" id="croc-loggedin-csr-textarea" name="csr" placeholder="Paste your Certificate Signing Request into this box."></textarea>
+                                    <button type="submit" class="btn">Submit CSR</button>
                                 </fieldset>
                             </form>
                         </form>                        
                         <form method="post" action="/genKey" id="croc-loggedin-genkey-form">
                             <form>
                                 <fieldset>
-                                    <button type="submit" class="btn">Generate P12 key</button>
                                     <input id="croc-loggedin-genkey-password-input" name="password" placeholder="Enter a key password"/>
+                                    <button type="submit" class="btn">Generate P12 key</button>
                                 </fieldset>
                             </form>
                         </form>                        
+                        <p>(Be assured that we store your public certificate only on the server.)</p>
                         <p id="croc-loggedin-qr-container">
+                            Your T-OPT secret is <tt><span id="croc-totp-text"/></tt>. Please enter this into your T-OTP client.
+                            Alternatively, scan this QR code into your Google Authenticator app. It contains the URL <tt><span id="croc-totp-url"/></tt>
                             <img id="croc-loggedin-qr-img"/>
                         </p>
                     </div>

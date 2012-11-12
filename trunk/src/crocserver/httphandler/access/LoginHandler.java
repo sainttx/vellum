@@ -89,7 +89,8 @@ public class LoginHandler implements HttpHandler {
         } else {
             app.getStorage().getUserStorage().insert(user);
         }
-        String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
+        String totpUrl = CrocSecurity.getTotpUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
+        String qrUrl = CrocSecurity.getQrCodeUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
         CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime());
         cookie.createAuthCode(user.getSecret().getBytes());
@@ -100,6 +101,8 @@ public class LoginHandler implements HttpHandler {
         responseMap.put("name", userInfo.getDisplayName());
         responseMap.put("picture", userInfo.getPicture());
         responseMap.put("qr", qrUrl);
+        responseMap.put("totpSecret", user.getSecret());
+        responseMap.put("totpUrl", totpUrl);
         String json = JsonStrings.buildJson(responseMap);
         httpExchangeInfo.getPrintStream().println(json);
         logger.info(json);

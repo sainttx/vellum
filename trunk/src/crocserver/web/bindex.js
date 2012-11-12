@@ -68,13 +68,14 @@ function checkAuth() {
     }, processAuthResult);
 }
 
-function clickAuth(event) {
-    gapi.auth.authorize({
-        client_id: clientId, 
-        scope: scopes, 
-        immediate: false
-    }, processAuthResult);
-    return false;
+function processAuthResult(authResult) {
+    if (authResult && !authResult.error) {
+        showBusyAuth();
+        login(authResult.access_token);
+    } else {
+        showReadyAuth();
+        console.log("login required");
+    }
 }
 
 function showBusyAuth() {
@@ -84,20 +85,57 @@ function showBusyAuth() {
     $('.croc-loggedin-viewable').hide();          
 }
 
-function showReadyAuth() {
-    $('.croc-login-clickable').hide();
-    $('.croc-login-viewable').hide();    
-    $('.croc-login-clickable').click(clickAuth);
+function login(accessToken) {
+    console.log(accessToken);
+    $.post(
+        '/login',
+        accessToken,
+        processLogin
+        );                
 }
 
-function processAuthResult(authResult) {
-    if (authResult && !authResult.error) {
-        showBusyAuth();
-        login(authResult.access_token);
-    } else {
-        showReadyAuth();
-        console.log("login required");
+function processLogin(res) {
+    console.log("login response received")
+    if (res.email != null) {
+        $('#croc-username-text').text(res.email);
+        $('#croc-user-picture').attr('src', res.picture);            
+        $('.croc-logout-clickable').click(clickLogout);
+        $('#croc-loggedin-qr-img').attr('src', res.qr);
+        $('#croc-loggedin-title').text("Welcome, " + res.name);
+        $('#croc-totp-text').text(res.toptSecret);
+        $('#croc-totp-url').text(res.toptUrl);
+        $('#croc-account-genKey').click(clickGenKey);
+        $('#croc-account-signCert').click(clickSignCert);
+        $('#croc-account-resetOtp').click(clickResetOtp);
+        showLoggedIn();
+    } else {        
     }
+}
+
+function showLoggedIn() {
+    $(".croc-info-landing-extra").hide();
+    $('.croc-landing-viewable').hide();
+    $('.croc-login-viewable').hide();
+    $('.croc-login-clickable').hide();
+    $('.croc-loggedin-viewable').show();
+    $('.croc-logout-clickable').show();
+    $('.croc-info').hide();
+    $('#croc-loggedin').show();    
+}
+
+function clickAuth(event) {
+    gapi.auth.authorize({
+        client_id: clientId, 
+        scope: scopes, 
+        immediate: false
+    }, processAuthResult);
+    return false;
+}
+
+function showReadyAuth() {
+    $('.croc-login-clickable').show();
+    $('.croc-login-viewable').show();    
+    $('.croc-login-clickable').click(clickAuth);
 }
 
 function getPlus() {
@@ -115,28 +153,8 @@ function setPlus(me) {
     $('#croc-username').show();
 }
     
-function login(accessToken) {
-    console.log(accessToken);
-    $.post(
-        '/login',
-        accessToken,
-        processLogin
-        );                
-}
-
 function showLanding() {
     showLoggedOut();
-}
-
-function showLoggedIn() {
-    $(".croc-info-landing-extra").hide();
-    $('.croc-landing-viewable').hide();
-    $('.croc-login-viewable').hide();
-    $('.croc-login-clickable').hide();
-    $('.croc-loggedin-viewable').show();
-    $('.croc-logout-clickable').show();
-    $('.croc-info').hide();
-    $('#croc-loggedin').show();    
 }
 
 function showLoggedOut() {
@@ -149,21 +167,6 @@ function showLoggedOut() {
     $('.croc-login-clickable').click(clickAuth);
     $('.croc-loggedin-viewable').hide();
     $('.croc-logout-clickable').hide();    
-}
-
-function processLogin(res) {
-    console.log("login response received")
-    if (res.email != null) {
-        $('#croc-username-text').text(res.email);
-        $('#croc-user-picture').attr('src', res.picture);            
-        $('.croc-logout-clickable').click(clickLogout);
-        $('#croc-loggedin-qr-img').attr('src', res.qr);
-        $('#croc-loggedin-title').text("Welcome, " + res.name);
-        $('#croc-account-genKey').click(clickGenKey);
-        $('#croc-account-signCert').click(clickSignCert);
-        $('#croc-account-resetOtp').click(clickResetOtp);
-        showLoggedIn();
-    }
 }
 
 function clickLogout(event) {
