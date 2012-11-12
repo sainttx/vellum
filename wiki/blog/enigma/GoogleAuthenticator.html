@@ -43,7 +43,7 @@ For each user account, we generate a random secret for the Google Authenticator 
 <pre>
     void test() {
         byte[] buffer = new byte[10];
-        new Random().nextBytes(buffer);
+        new SecureRandom().nextBytes(buffer);
         String secret = new String(new Base32().encode(buffer));
         System.out.println("secret " + secret);
     }
@@ -76,7 +76,7 @@ Alternatively, one can generate a QR barcode e.g. using the Google Chart API ser
     }
     
     public static String getQRBarcodeURL(String user, String host, String secret) {
-        return "http://chart.apis.google.com/chart?" + getQRBarcodeURLQuery(user, host, secret);
+        return "https://chart.apis.google.com/chart?" + getQRBarcodeURLQuery(user, host, secret);
     }
 
     public static String getQRBarcodeURLQuery(String user, String host, String secret) {
