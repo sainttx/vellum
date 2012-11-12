@@ -52,7 +52,7 @@ Alternatively, one can generate a QR barcode e.g. using the Google Chart API ser
     }
     
     public static String getQRBarcodeURL(String user, String host, String secret) {
-        return "https://chart.apis.google.com/chart?" + getQRBarcodeURLQuery(user, host, secret);
+        return "http://chart.googleapis.com/chart?" + getQRBarcodeURLQuery(user, host, secret);
     }
 
     public static String getQRBarcodeURLQuery(String user, String host, String secret) {
@@ -70,7 +70,7 @@ otpauth://totp/evanx@beethoven?secret=OVEK7TIJ3A3DM3M6
 }}}
 The QR code can be rendered using the following Google Chart request.
 {{{
-https://chart.apis.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=
+http://chart.googleapis.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=
 otpauth%3A%2F%2Ftotp%2Fevanx%40beethoven%26secret%3DOVEK7TIJ3A3DM3M6
 }}}
 Just for clarity, the following shows the decoded URL query.
@@ -80,7 +80,7 @@ chs=200x200&chld=M|0&cht=qr&chl=otpauth://totp/evanx@beethoven&secret=OVEK7TIJ3A
 
 So we use this Google Chart service to render the QR code onto our computer screen so we can scan it into our phone's Google Authenticator app. <i>Otherwise we have to be poking those tiny buttons with our fat fingers again.</i>
 
-https://chart.apis.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevanx@beethoven%3Fsecret%3DOVEK7TIJ3A3DM3M6
+http://chart.googleapis.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fevanx@beethoven%3Fsecret%3DOVEK7TIJ3A3DM3M6
 
 You can right-click on the above link, and scan the barcode into your Google Authenticator, to test it. <i>Wow, it works! So cool... :)</i> You might get prompted to install a barcode scanner first, which is so easy ;)
 
