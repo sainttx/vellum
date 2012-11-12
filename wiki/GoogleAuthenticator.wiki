@@ -175,11 +175,9 @@ We can add the GAuth Chrome extension to our browser to compare, and of course t
 According to http://en.wikipedia.org/wiki/Multi-factor_authentication,
 <blockquote>
     Existing authentication methodologies involve three basic "factors":
-    <ul>
-        <li>Something the user knows (e.g., password, PIN);
-        <li>Something the user has (e.g., ATM card, smart card); and
-        <li>Something the user is (e.g., biometric characteristic, such as a fingerprint).
-    </ul>
+    - Something the user knows (e.g., password, PIN);
+    - Something the user has (e.g., ATM card, smart card); and
+    - Something the user is (e.g., biometric characteristic, such as a fingerprint).
 </blockquote>
 and
 <blockquote>
