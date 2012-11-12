@@ -4,10 +4,8 @@
  */
 package crocserver.app;
 
-import java.net.URLEncoder;
 import java.util.Random;
 import org.apache.commons.codec.binary.Base32;
-import vellum.util.Strings;
 
 /**
  *
@@ -26,7 +24,7 @@ public class CrocSecurity {
     }
 
     public static String getQRBarcodeURL(String userName, String serverName, String secret) {
-        return "http://chart.apis.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=" + 
+        return "https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=" + 
                 "otpauth%3A%2F%2Ftotp%2F" + userName + '@' + serverName +  
                 "%3Fsecret%3D" + secret;
     }           
