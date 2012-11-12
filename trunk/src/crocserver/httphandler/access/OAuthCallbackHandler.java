@@ -81,7 +81,7 @@ public class OAuthCallbackHandler implements HttpHandler {
             user.setEmail(userInfo.getEmail());
             user.setRole(AdminRole.DEFAULT);
             user.setEnabled(true);
-            user.setSecret(CrocSecurity.generateSecret());
+            user.setSecret(CrocSecurity.createSecret());
         }
         if (user.isStored()) {
             app.getStorage().getUserStorage().update(user);

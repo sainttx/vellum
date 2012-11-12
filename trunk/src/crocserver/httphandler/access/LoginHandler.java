@@ -81,7 +81,7 @@ public class LoginHandler implements HttpHandler {
             user.setEmail(userInfo.getEmail());
             user.setRole(AdminRole.DEFAULT);
             user.setEnabled(true);
-            user.setSecret(CrocSecurity.generateSecret());
+            user.setSecret(CrocSecurity.createSecret());
         }
         user.setLoginTime(new Date());
         if (user.isStored()) {
@@ -92,6 +92,7 @@ public class LoginHandler implements HttpHandler {
         String qrUrl = CrocSecurity.getQRBarcodeURL(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
         CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime());
+        cookie.createAuthCode(user.getSecret().getBytes());
         httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE);
         httpExchangeInfo.sendResponse("text/json", true);
         StringMap responseMap = new StringMap();
