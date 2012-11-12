@@ -28,7 +28,7 @@ public class GenerateGoogleTotpQrUrl {
     }
     
     public static String getQRBarcodeURL(String user, String host, String secret) {
-        return "http://chart.apis.google.com/chart?" + getQRBarcodeURLQuery(user, host, secret);
+        return "http://chart.googleapis.com/chart?" + getQRBarcodeURLQuery(user, host, secret);
     }
 
     public static String getQRBarcodeURLQuery(String user, String host, String secret) {
