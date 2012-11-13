@@ -28,7 +28,7 @@ But before we carry on, as a general caution, be aware of what <i>millis</i> we 
 
 Besides that, there is a difference between the time of an event, and the time of day of an event, as seen on someone's clock. The time of an event, measured as the number of millis since the Epoch, is absolute, but the time of day of that event as seen on some clock e.g. as <tt>10:32am</tt>, is relative to the !TimeZone for which that clock is configured. 
 
-Consider that there is a clock on every server, and every client hitting some server from different parts of the world. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones, and so their clocks reflect a different time of day.
+Consider that there is a different clock on every server, and every client hitting some server from different parts of the world. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones, and so their clocks reflect a different time of day.
 
 <h4>Absolute time</h4>
 
