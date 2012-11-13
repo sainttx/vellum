@@ -150,9 +150,9 @@ Config default {
 
 In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis.java</tt> convenience class which is presented here.
 
-We introduce some parsing for intervals in a convenient format e.g. <tt>60s,</tt> especially for nice readable configuration settings.
+We introduce some parsing for intervals in a format especially convenient for configuration settings e.g. <tt>60s</tt>.
 
-Time without time zone is like measurement without units. However in this article we deal with time intervals and absolute time since the Epoch, in order to steer clear of time zones altogether (and <tt>Date</tt> and <tt>Calendar</tt>) for now.
+Time without time zone is like measurement without units, which is potentially disastrous. However in this article we deal with time intervals and absolute time since the Epoch, in order to steer clear of time zones altogether (and <tt>Date</tt> and <tt>Calendar</tt>), for now.
 
 <h4>Coming up</h4>
 
