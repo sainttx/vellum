@@ -2,7 +2,7 @@
 
 DRAFT
 
-Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Dough Lea is thus :)
+Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
 
 Having said that, for the purposes of some [Timestamped Timestamped] thingies, for handling <tt>millis</tt> since the Epoch, we find it convenient to introduce a <tt>Millis</tt> util class.
 
