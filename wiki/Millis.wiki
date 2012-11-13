@@ -34,7 +34,7 @@ Consider that there is a clock on every server, and every client hitting some se
 
 Time without its time zone is like measurement without units. Remember what happened to that Arianne rocket when the units got mixed up? That's right, it exploded.
 
-In any event, in this article, we are thinking purely in the absolute terms of milliseconds since the Epoch, and not looking at any clocks, and so time zones are out of the picture.
+So to avoid trouble, in this article we will think absolutely, in terms of milliseconds since the Epoch, and not looking at any clocks, so that time zones are out of the picture.
 
 In a follow-up article, we absolutely must delve into <tt>Date</tt>, <tt>!TimeZone</tt> and <tt>Calendar</tt>.
 
