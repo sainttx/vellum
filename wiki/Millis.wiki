@@ -139,7 +139,7 @@ Config default {
 
 <h4>Safe date format</h4>
 
-Incidently, since someone once told us that <tt>SimpleDateFormat</tt> is not thread-safe, we introduce a <tt>synchronized</tt> wrapper for it.
+Incidently, since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, we introduce a <tt>synchronized</tt> wrapper for it.
 
 {{{
 public class SafeDateFormat {
@@ -241,6 +241,58 @@ public class DateFormats {
     }
 }
 }}}
+
+<h4>Calendars</h4>
+
+Which brings us to  <a href="https://vellum.googlecode.com/svn-history/r554/trunk/src/vellum/util/Calendars.java"><tt>Calendars</tt></a> util class.
+
+{{{
+public class Calendars {
+
+    public static Calendar newCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
+    public static Date nextDay(Date date) {
+        Calendar calendar = newCalendar(date);
+        calendar.add(Calendar.DATE, 1);
+        return calendar.getTime();
+    }
+
+    public static Calendar newCalendar(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(time));
+        return calendar;
+    }
+
+    public static int getHourOfDay(Date date) {
+        return newCalendar(date).get(HOUR_OF_DAY);
+    }
+
+    public static int getMinute(Date date) {
+        return newCalendar(date).get(MINUTE);
+    }
+
+    public static void setTime(Calendar calendar, int hour, int minute, int second) {
+        calendar.set(HOUR_OF_DAY, hour);
+        calendar.set(MINUTE, minute);
+        calendar.set(SECOND, second);
+        calendar.set(MILLISECOND, 0);        
+    }
+
+    public static int getCurrentYear() {
+        Calendar calendar = new GregorianCalendar();
+        return calendar.get(Calendar.YEAR);
+    }
+    ...
+}
+}}}
+
+where we haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a> - which we'll leave a proper discussion for another day :)
+
+And then of course there's <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>, which we should probably be using rather than anything else?!
 
 <h4>Resources</h4>
 
