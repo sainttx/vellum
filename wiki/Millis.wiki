@@ -301,4 +301,4 @@ And then of course there's <a href="http://threeten.sourceforge.net/apidocs-2012
 
 <h4>Resources</h4>
 
-https://code.google.com/p/vellum/ - where i will collate these articles and their code - in particular see the <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/Millis.java"><tt>Millis.java</tt> class</a>.
+https://code.google.com/p/vellum/ - where i will collate these articles and their code - in particular see the <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/Millis.java"><tt>Millis.java</tt></a> class.
