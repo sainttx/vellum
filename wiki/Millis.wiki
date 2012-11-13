@@ -249,7 +249,7 @@ where the parsing considers the length of the string to decide which format to e
 
 <h4>Calendars</h4>
 
-Which brings us to  <a href="https://vellum.googlecode.com/svn-history/r554/trunk/src/vellum/util/Calendars.java"><tt>Calendars</tt></a> util class.
+Which brings us to our <a href="https://vellum.googlecode.com/svn-history/r554/trunk/src/vellum/util/Calendars.java"><tt>Calendars</tt></a> util class.
 
 {{{
 public class Calendars {
