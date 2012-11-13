@@ -38,6 +38,46 @@ So to avoid trouble, in this article we will think absolutely, in terms of milli
 
 In a follow-up article, we absolutely must delve into <tt>Date</tt>, <tt>!TimeZone</tt> and <tt>Calendar</tt>.
 
+<h4>Time conversion</h4>
+
+Of course we often want to convert to and from millis.
+
+{{{ 
+    public static long toSeconds(long millis) {
+        return millis/1000;
+    }
+
+    public static long toMinutes(long millis) {
+        return millis/1000/60;
+    }
+
+    public static long toHours(long millis) {
+        return millis/1000/60/60;
+    }
+
+    public static long toDays(long millis) {
+        return millis/1000/60/60/24;
+    }
+    
+    public static long fromSeconds(long seconds) {
+        return seconds*1000;
+    }
+
+    public static long fromMinutes(long minutes) {
+        return minutes*60*1000;
+    }
+
+    public static long fromHours(long hours) {
+        return hours*60*60*1000;
+    }
+    
+    public static long fromDays(long days) {
+        return days*24*60*60*1000;
+    }
+}}}
+
+As i was saying, not exactly rocket science - but when rocket scientists get these wrong, their rockets tend to explode.
+
 <h4>Format</h4>
 
 We roll in a <tt>format()</tt> method. 
