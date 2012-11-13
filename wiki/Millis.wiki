@@ -78,7 +78,7 @@ public class MillisTest {
 20:43:50
 }}}
 
-We see below that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time on the day of the Epoch, is putting your clock on the block. Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not midnight at all. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969, baby.
+We see below that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time on the day of the Epoch, is putting your clock on the block. Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 baby!
 
 <h4>Parse</h4>
 
@@ -87,7 +87,8 @@ For the parsing of intervals.
     public static long parse(String string) {
         int index = string.indexOf(" ");
         if (index > 0) {
-            return TimeUnit.valueOf(string.substring(index + 1)).toMillis(Long.parseLong(string.substring(0, index)));
+            return TimeUnit.valueOf(string.substring(index + 1)).toMillis(
+                Long.parseLong(string.substring(0, index)));
         } else if (string.length() >= 2 &&
                 Character.isLowerCase(string.charAt(string.length() - 1)) && 
                 Character.isDigit(string.charAt(string.length() - 2))) {            
@@ -127,8 +128,8 @@ where this is especially convenient for configuration settings of time intervals
 or if we configure our appllication using JSON,
 {{{
 { 
-  ...
   "interval" : "12h";
+  ...
 }
 }}}
 
@@ -152,15 +153,13 @@ Config default {
 
 In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis.java</tt> convenience class which is presented here.
 
-There is not to say we don't love !TimeUnit, because we absolutely do! 
-
-We use a trivial !SimpleDateFormat wrapper, although we should definitely try Apache's !FastDateFormat rather.
-
 We introduce some parsing for intervals in a convenient format e.g. <tt>4s, 2h, 1d,</tt> especially for nice readable configuration settings.
+
+Time without time zone is like measurement without units. However in this article we deal with time intervals and absolute time since the Epoch, in order to steer clear of time zones altogether (and <tt>Date</tt> and <tt>Calendar</tt>) for now.
 
 <h4>Coming up</h4>
 
-We haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Date.html"><tt>Date</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html"><tt>Calendar</tt></a>. 
+We should of course delve into <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Date.html"><tt>Date</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html"><tt>Calendar</tt></a>. 
 
 <h4>Further reading</h4>
 
