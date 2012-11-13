@@ -71,7 +71,7 @@ Of course we often want to convert to and from millis.
     }
 }}}
 
-We handle formatting to handle zero values.
+We roll in a <tt>format()</tt> method to handle zero values.
 
 {{{       
     public static String formatTime(long millis) {
@@ -85,7 +85,7 @@ We handle formatting to handle zero values.
     }
 }}}
 
-where in the case of the time of day, this only works for the default time zone! In a follow-up article we'll delve into <tt>!TimeZone</tt> vis-a-vis <tt>Calendar</tt> and its impact on <tt>Date</tt> and our <tt>Millis</tt> util.
+However this only works for the default time zone! In a follow-up article we'll delve into <tt>!TimeZone</tt> vis-a-vis <tt>Calendar</tt> and its impact on <tt>Date</tt> and our <tt>Millis</tt> util.
 
 And in parsing,
 
@@ -113,7 +113,7 @@ And in parsing,
 }
 }}}
 
-where actually this was introduced for the configuration of time intervals e.g.
+where this is convenient for configuration settings of time intervals e.g.
 
 {{{
   <parameter name="interval" value="60s"/>
@@ -135,7 +135,7 @@ or via a database table (my personal favourite),
 }}}
 
 
-or even a home-grown file-based configuration utility, which we don't necessarily recommend but will nevertheless introduce in another article :)
+or even a home-grown file-based configuration utility, which we don't necessarily recommend but will nonetheless introduce in another article :)
 
 {{{
 Config default {
@@ -146,7 +146,7 @@ Config default {
 
 <h4>Safe date format</h4>
 
-Incidently, since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we introduced a <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>!?
+Since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we introduced a <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>!?
 
 {{{
 public class SafeDateFormat {
