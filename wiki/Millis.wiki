@@ -17,23 +17,12 @@ public class Millis {
     public static boolean isElapsed(long startMillis, long millis) {
         return (System.currentTimeMillis() - startMillis) > millis;
     }
-
-    public static boolean isElapsed(Date startTime, long millis) {
-        return elapsedMillis(startTime) > millis;
-    }
-
-    public static long elapsedMillis(Date startTime) {
-        if (startTime == null) return System.currentTimeMillis();
-        return System.currentTimeMillis() - startTime.getTime();
-    }
-
-    public static long getIntervalMillis(Date from, Date to) {
-        return Math.abs(to.getTime() - from.getTime());
-    }
     ...
 }}}
 
 Very lazy stuff. 
+
+Our <tt>Millis</tt> util primarily deals with time <i>intervals</i>, but sometimes also with moments in time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>.
 
 Before we carry on, as a general caution, be aware of what <i>millis</i> you are playing around with. Is it a time interval between two events, or the time of an event? 
 
@@ -41,63 +30,55 @@ Also there is a difference between the time of an event, and the time of day of 
 
 Time without time zone is like measurement without units. It's not rocket science, but it's bound to end in disaster, especially in rocket science!
 
-<h4>Time conversion</h4>
+Having said that, we are ignoring time zone in this article, and thinking in absolute terms, rather than looking wall clocks.
 
-Of course we often want to convert to and from millis.
+<h4>Format</h4>
 
-{{{ 
-    public static long toSeconds(long millis) {
-        return millis/1000;
-    }
-
-    public static long toMinutes(long millis) {
-        return millis/1000/60;
-    }
-
-    public static long toHours(long millis) {
-        return millis/1000/60/60;
-    }
-
-    public static long toDays(long millis) {
-        return millis/1000/60/60/24;
-    }
-    
-    public static long fromSeconds(long seconds) {
-        return seconds*1000;
-    }
-
-    public static long fromMinutes(long minutes) {
-        return minutes*60*1000;
-    }
-
-    public static long fromHours(long hours) {
-        return hours*60*60*1000;
-    }
-    
-    public static long fromDays(long days) {
-        return days*24*60*60*1000;
-    }
-}}}
-
-As i was saying, not exactly rocket science - but when rocket scientists get these wrong, their rockets tend to explode.
-
-We roll in a <tt>format()</tt> method to handle zero values, otherwise we see zero timestamps formatted like <tt>"00:02:00"</tt> which actually indicates our default time zone e.g. GMT+02. Recall that at the moment of time of that UNIX Epoch back in the early 70s, it was only actually 00:00 up in Greenwich. So for most all of us, the time of day of the Epoch was not even zero, which is a bit disappointing, no?
+We roll in a <tt>format()</tt> method. 
 
 {{{       
-    public static String formatTimeSeconds(long millis) {
-        if (millis == 0) return "00:00:00";
-        return DefaultDateFormats.timeSecondsFormat.format(new Date(millis));
-    }
-
-    public static String formatTimeMillis(long millis) {
+    public static String formatIntervalMillis(long millis) {
         if (millis == 0) return "00:00:00,000";
-        return DefaultDateFormats.timeMillisFormat.format(new Date(millis));
+        long hour = millis/Millis.fromHours(1);
+        long minute = (millis % Millis.fromHours(1))/Millis.fromMinutes(1);
+        long second = (millis % Millis.fromMinutes(1))/Millis.fromSeconds(1);
+        long millisecond = millis % Millis.fromSeconds(1);
+        return String.format("%02d:%02d:%02d,%03d", hour, minute, second, millisecond);        
     }
 }}}
 
-Beware that this only works for intervals - or for the time, but only then in the same time zone where this time was measured e.g. via <tt>System.currentTimeMillis()</tt>. 
+Let's test. 
 
-In a follow-up article we absolutely must delve into <tt>!TimeZone</tt> and <tt>Calendar</tt> and its impact and implications vis-a-vis the <tt>Date</tt> and <tt>Millis</tt> util.
+{{{
+public class MillisTest {
+
+    @Test
+    public void testIntervalMillis() {
+        Assert.assertEquals(Millis.formatIntervalMillis(1001), "00:00:01,001");
+        Assert.assertEquals(Millis.formatIntervalMillis(60888), "00:01:00,888");
+        Assert.assertEquals(Millis.formatIntervalMillis(3600999), "01:00:00,999");
+    }    
+
+    @Test
+    public void breakingBad() {
+        System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date(0)));
+        System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date(System.currentTimeMillis())));
+        System.out.println(Millis.formatIntervalSeconds(System.currentTimeMillis() % Millis.fromDays(1)));
+    }    
+}
+}}}
+
+We see below that using <tt>SimpleDateFormat</tt>, and pretending that a time interval is a time on the day of the Epoch, is a non-starter. Recall that at the moment of time of that UNIX Epoch back in the early 70s, it was only actually 00:00 up in Greenwich. So for most all of us, the time of day of the Epoch was not even zero, which is a bit disappointing, i'm sure.
+
+{{{
+02:00:00
+22:43:50
+20:43:50
+}}}
+
+In a follow-up article, we absolutely must delve into <tt>Date</tt>, <tt>!TimeZone</tt> and <tt>Calendar</tt>.
+
+<h4>Parse</h4>
 
 For the parsing of intervals.
 {{{
@@ -153,63 +134,6 @@ Config default {
 }
 }}}
 
-<h4>Safe date format</h4>
-
-When someone once told me that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we incorporated a trivial <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>, hey?
-
-{{{
-public class SafeDateFormat {
-
-   SimpleDateFormat dateFormat;
-   String pattern;
-
-   public SafeDateFormat(String pattern) {
-      this.pattern = pattern;
-      dateFormat = new SimpleDateFormat(pattern);
-   }
-
-   public String getPattern() {
-      return pattern;
-   }
-
-   public synchronized String format(Date date) {
-      if (date == null) {
-         return "";
-      }
-      return dateFormat.format(date);
-   }
-
-   public synchronized Date parse(String string){
-       return parse(string, null);
-       
-   }
-   
-   public synchronized Date parse(String string, Date defaultValue){
-      if (string == null || string.isEmpty()) {
-         return defaultValue;
-      }
-      if (string.length() > pattern.length()) {
-          string = string.substring(0, pattern.length());
-      }
-        try {
-            return dateFormat.parse(string);
-        } catch (ParseException e) {
-            throw new ParseRuntimeException(string, e);
-        }
-   }
-}
-}}}
-where this <tt>parse()</tt> truncates the timestamp string to the length of the pattern we are trying to parse.
-
-We use the following default date and timestamp formats, just like our database.
-{{{
-public class DefaultDateFormats {
-    public static final SafeDateFormat dateFormat = new SafeDateFormat("yyyy-MM-dd");
-    public static final SafeDateFormat timestampFormat = new SafeDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-    public static final SafeDateFormat timeFormat = new SafeDateFormat("HH:mm:ss,SSS");
-}
-}}}
-
 <h4>Conclusion</h4>
 
 In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis.java</tt> convenience class which is presented here.
@@ -220,11 +144,13 @@ We use a trivial !SimpleDateFormat wrapper, although we should definitely try Ap
 
 We introduce some parsing for intervals in a convenient format e.g. <tt>4s, 2h, 1d,</tt> especially for nice readable configuration settings.
 
+<h4>Coming up</h4>
+
+We haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Date.html"><tt>Date</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html"><tt>Calendar</tt></a>. 
+
 <h4>Further reading</h4>
 
-We haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a> here - but we must! 
-
-And then of course there's <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>, which we should probably be using rather than anything else, hey?
+Check out <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>.
 
 <h4>Resources</h4>
 
