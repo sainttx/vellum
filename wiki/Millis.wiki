@@ -79,7 +79,7 @@ Of course we often want to convert to and from millis.
     }
 }}}
 
-As i was saying, it's exactly rocket science - but when rocket scientists get these wrong, their rockets tend to explode.
+As i was saying, not exactly rocket science - but when rocket scientists get these wrong, their rockets tend to explode.
 
 We roll in a <tt>format()</tt> method to handle zero values, otherwise we see zero timestamps formatted like <tt>"00:02:00"</tt> which actually indicates our default time zone e.g. GMT+02. Recall that at the moment of time of that UNIX Epoch back in the early 70s, it was only actually 00:00 up in Greenwich. So for most all of us, the time of day of the Epoch was not even zero, which is a bit disappointing, no?
 
