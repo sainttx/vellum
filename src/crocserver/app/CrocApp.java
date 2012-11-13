@@ -277,4 +277,10 @@ public class CrocApp {
             return user;
         }
     }
+
+    public GoogleUserInfo getGoogleUserInfo(HttpExchangeInfo httpExchangeInfo) throws Exception {
+        StringMap cookieMap = httpExchangeInfo.getCookieMap();
+        String accessToken = cookieMap.get("accessToken");
+        return googleApi.getUserInfo(accessToken);        
+    }
 }
