@@ -114,7 +114,7 @@ I'm so pleased that there are 60 seconds in a minute, and 3600 seconds in an hou
         System.out.println(Millis.formatIntervalSeconds(System.currentTimeMillis() % Millis.fromDays(1)));
     }    
 }
-}}{
+}}}
 We see that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time of day, on the day of the Epoch, is putting your clock on the block. Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
 {{{
 02:00:00
