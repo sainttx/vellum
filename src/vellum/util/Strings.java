@@ -46,7 +46,7 @@ public class Strings {
         List list = new ArrayList();
         for (Object arg : args) {
             if (arg instanceof Date) {
-                arg = DateFormats.timestampFormat.format((Date) arg);
+                arg = DefaultDateFormats.timeMillisFormat.format((Date) arg);
             }
             list.add(arg);
         }

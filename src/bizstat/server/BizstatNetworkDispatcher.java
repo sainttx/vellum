@@ -32,7 +32,7 @@ public class BizstatNetworkDispatcher implements Runnable {
 
     @Override
     public void run() {
-        logger.info("run", network, Millis.formatTime(server.dispatcherMillis));
+        logger.info("run", network, Millis.formatIntervalSeconds(server.dispatcherMillis));
         checkServicePaths(network.getServicePathList());
         checkHosts(network.getHostList());
     }

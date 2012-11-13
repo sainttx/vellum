@@ -10,7 +10,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import bizstat.entity.*;
 import java.util.*;
-import vellum.util.DateFormats;
+import vellum.util.DefaultDateFormats;
 
 /**
  *
@@ -61,7 +61,7 @@ public class BizstatScheduler implements Runnable {
         if (initialDelay < 0) initialDelay += Millis.fromDays(1);
         long period = service.getIntervalMillis();
         logger.info("schedule", host, service, 
-                DateFormats.timeFormat.format(service.getScheduleTime()), 
+                DefaultDateFormats.timeSecondsFormat.format(service.getScheduleTime()), 
                 calendar.getTime(), initialDelay, period);
         server.getStatus(new HostServiceKey(host, service)).schedule(initialDelay, period);
     }

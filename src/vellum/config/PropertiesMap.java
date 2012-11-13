@@ -12,7 +12,7 @@ import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Bytes;
-import vellum.util.DateFormats;
+import vellum.util.DefaultDateFormats;
 
 
 /**
@@ -113,7 +113,7 @@ public class PropertiesMap extends HashMap<String, String> {
     }
 
     public Date getTime(String name, Date defaultTime) {
-        return DateFormats.timeFormat.parse(get(name), defaultTime);
+        return DefaultDateFormats.timeSecondsFormat.parse(get(name), defaultTime);
     }
 
     public long getByteSize(String name, Long defaultSize) {

@@ -104,7 +104,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
         for (ServiceRecord serviceRecord : serviceRecords) {
             h.trd(
                     String.format("<a href='/view/serviceRecord/%d'>%d</a>", serviceRecord.getId(), serviceRecord.getId()),
-                    Millis.formatTimestamp(serviceRecord.getTimestamp()),
+                    Millis.formatIntervalMillis(serviceRecord.getTimestamp()),
                     serviceRecord.getHostName(),
                     serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus());
@@ -125,7 +125,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
         p.tbody();
         while (iterator.hasNext()) {
             LogrRecord record = iterator.next();
-            p.trd(Millis.formatTime(record.getTimestamp()),
+            p.trd(Millis.formatIntervalSeconds(record.getTimestamp()),
                     record.getContext().getName(),
                     record.getLevel(), record.getMessage(),
                     ListFormats.displayFormatter.formatArray(record.getArgs()));

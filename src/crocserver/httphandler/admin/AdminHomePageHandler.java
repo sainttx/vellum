@@ -9,7 +9,7 @@ import bizstat.server.BizstatMessageBuilder;
 import crocserver.httphandler.common.AbstractPageHandler;
 import java.util.Collection;
 import java.util.Iterator;
-import vellum.util.DateFormats;
+import vellum.util.DefaultDateFormats;
 import vellum.util.Strings;
 import java.util.List;
 import vellum.datatype.Millis;
@@ -55,7 +55,7 @@ public class AdminHomePageHandler extends AbstractPageHandler {
                     ++index % 2,
                     serviceRecord.getId(),
                     serviceRecord.getId(),
-                    Millis.formatTime(serviceRecord.getTimestamp()),
+                    Millis.formatIntervalSeconds(serviceRecord.getTimestamp()),
                     serviceRecord.getHostName(),
                     serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus(),
@@ -86,7 +86,7 @@ public class AdminHomePageHandler extends AbstractPageHandler {
                 detailBuilder.append("</pre>");
             }
             out.printf("<td>%s<td>%s<td><b>%s</b><td>%s\n",
-                    DateFormats.formatTime(message.getTimestamp()),
+                    DefaultDateFormats.formatTime(message.getTimestamp()),
                     message.getLevel(),
                     message.getContext().getName(),
                     detailBuilder.toString());
@@ -107,7 +107,7 @@ public class AdminHomePageHandler extends AbstractPageHandler {
        p.tbody();
        while (iterator.hasNext()) {
            LogrRecord record = iterator.next();
-           p.trd(Millis.formatTime(record.getTimestamp()), 
+           p.trd(Millis.formatIntervalSeconds(record.getTimestamp()), 
                    record.getContext().getName(),
                    record.getLevel(), record.getMessage(),
                    ListFormats.displayFormatter.formatArray(record.getArgs()));

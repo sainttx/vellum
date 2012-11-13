@@ -7,17 +7,12 @@ package vellum.datatype;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import vellum.exception.ParseRuntimeException;
-import vellum.util.DateFormats;
 
 /**
  *
  * @author evan
  */
 public class Millis {
-    
-    public static long getIntervalMillis(Date from, Date to) {
-        return Math.abs(to.getTime() - from.getTime());
-    }
     
     public static long toSeconds(long millis) {
         return millis / 1000;
@@ -51,31 +46,33 @@ public class Millis {
         return days*24*60*60*1000;
     }
         
-    public static long elapsedMillis(Date startTime) {
-        long currentMillis = System.currentTimeMillis();
-        if (startTime == null) return currentMillis;
-        return currentMillis - startTime.getTime();
-    }
-
-    public static boolean isElapsed(Date startTime, long millis) {
-        return elapsedMillis(startTime) > millis;
-    }
-
     public static boolean isElapsed(long startMillis, long millis) {
         return (System.currentTimeMillis() - startMillis) > millis;
     }
 
-    public static String formatTime(long millis) {
+    public static boolean isElapsed(Date startDate, long millis) {
+        if (startDate == null) return true;
+        return isElapsed(startDate.getTime(), millis);
+    }
+    
+    public static String formatIntervalSeconds(long millis) {
         if (millis == 0) return "00:00:00";
-        return DateFormats.timeFormat.format(new Date(millis));
+        long hour = millis/Millis.fromHours(1);
+        long minute = (millis % Millis.fromHours(1))/Millis.fromMinutes(1);
+        long second = (millis % Millis.fromMinutes(1))/Millis.fromSeconds(1);
+        return String.format("%02d:%02d:%02d", hour, minute, second);
     }
 
-    public static String formatTimestamp(long millis) {
+    public static String formatIntervalMillis(long millis) {
         if (millis == 0) return "00:00:00,000";
-        return DateFormats.timestampFormat.format(new Date(millis));
+        long hour = millis/Millis.fromHours(1);
+        long minute = (millis % Millis.fromHours(1))/Millis.fromMinutes(1);
+        long second = (millis % Millis.fromMinutes(1))/Millis.fromSeconds(1);
+        long millisecond = millis % Millis.fromSeconds(1);
+        return String.format("%02d:%02d:%02d,%03d", hour, minute, second, millisecond);        
     }
-
-    public static Long parse(String string) {
+    
+    public static long parse(String string) {
         int index = string.indexOf(" ");
         if (index > 0) {
             return TimeUnit.valueOf(string.substring(index + 1)).toMillis(Long.parseLong(string.substring(0, index)));
@@ -94,5 +91,5 @@ public class Millis {
             }
         }  
         throw new ParseRuntimeException(string);
-    }    
+    }
 }

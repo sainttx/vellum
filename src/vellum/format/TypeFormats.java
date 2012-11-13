@@ -6,7 +6,7 @@ package vellum.format;
 
 import java.util.Collection;
 import java.util.Date;
-import vellum.util.DateFormats;
+import vellum.util.DefaultDateFormats;
 import vellum.util.Lists;
 import vellum.util.Strings;
 /**
@@ -38,7 +38,7 @@ public class TypeFormats {
         } else if (arg instanceof Class) {
             return ((Class) arg).getSimpleName();
         } else if (arg instanceof Date) {
-            return DateFormats.timestampFormat.format((Date) arg);
+            return DefaultDateFormats.timeMillisFormat.format((Date) arg);
         } else if (Strings.isEmpty(arg.toString())) {
             return "empty";
         } else if (arg instanceof byte[]) {
