@@ -149,7 +149,7 @@ For the parsing of intervals.
     }    
 }
 }}}
-The test case below is quite illustrative.
+The test case below illustrates the functionality of this method.
 {{{
     @Test
     public void testParse() {
@@ -160,7 +160,6 @@ The test case below is quite illustrative.
         Assert.assertEquals(Millis.parse("24h"), Millis.parse("1d"));
     }
 }}}
-
 where this is especially convenient for configuration settings of time intervals e.g.
 
 {{{
