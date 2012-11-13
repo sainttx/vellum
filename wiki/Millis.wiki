@@ -78,7 +78,7 @@ public class MillisTest {
 20:43:50
 }}}
 
-We see below that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time on the day of the Epoch, is a ball-breaker. Recall that at the moment of time pn Earth of that UNIX Epoch back in 1970, it was actually 00:00 only up in Greenwich. So for most of us, the time of the Epoch was not even zero. Gutting.
+We see below that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time on the day of the Epoch, is a ball-breaker. Recall that at the moment of time on Earth of that UNIX Epoch back in 1970, it was actually 00:00 only up in Greenwich. So for most of us, the time of the Epoch was not even zero. Gutting.
 
 <h4>Parse</h4>
 
