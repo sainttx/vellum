@@ -85,10 +85,9 @@ We roll in a <tt>format()</tt> method to handle zero values.
     }
 }}}
 
-However this only works for the default time zone! In a follow-up article we'll delve into <tt>!TimeZone</tt> vis-a-vis <tt>Calendar</tt> and its impact on <tt>Date</tt> and our <tt>Millis</tt> util.
+However this only works for the default time zone! In a follow-up article we'll delve into <tt>!TimeZone</tt> vis-a-vis <tt>Calendar</tt> and its impact and implications on <tt>Date</tt> and our <tt>Millis</tt> util.
 
 And in parsing,
-
 {{{
     public static Long parseInterval(String string) {
         int index = string.indexOf(" ");
@@ -112,7 +111,6 @@ And in parsing,
     }    
 }
 }}}
-
 where this is convenient for configuration settings of time intervals e.g.
 
 {{{
@@ -120,7 +118,6 @@ where this is convenient for configuration settings of time intervals e.g.
 }}}
 
 or if we configure our appllication using JSON,
-
 {{{
 { 
   ...
@@ -146,7 +143,7 @@ Config default {
 
 <h4>Safe date format</h4>
 
-Since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we introduced a <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>!?
+Since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we introduced a trivial <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>, hey?
 
 {{{
 public class SafeDateFormat {
@@ -192,7 +189,7 @@ public class SafeDateFormat {
 }}}
 where <tt>parse()</tt> truncates the timestamp string to the length of the pattern we are trying to parse.
 
-We are accustomed to PostgreSQL's default date and timestamp formats, which are as follows (at least for our locale).
+We use the following default date and timestamp formats.
 {{{
 public class DefaultDateFormats {
     public static final SafeDateFormat dateFormat = new SafeDateFormat("yyyy-MM-dd");
@@ -203,15 +200,17 @@ public class DefaultDateFormats {
 
 <h4>Conclusion</h4>
 
-In code related to this [Timestamped Timestamped] series, we introduce a <tt>Millis.java</tt> convenience class, which is not to say we don't love !TimeUnit, because we absolutely do! Similarly we introduced a trivial !SimpleDateFormat wrapper, although some googling reveals Apache's !FastDateFormat, which looks great. 
+In code for this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis.java</tt> convenience class, which is not to say we don't love !TimeUnit, because we absolutely do! 
 
-For the pur
+We use a trivial !SimpleDateFormat wrapper, although we should definitely try Apache's !FastDateFormat rather, hey?
+
+We introduce some parsing for intervals in a convenient format e.g. <tt>4s, 2h, 1d,</tt> especially for nice readable configuration settings.
 
 <h4>Further reading</h4>
 
 We haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a> - which we'll leave a proper discussion for another day :)
 
-And then of course there's <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>, which we should probably be using rather than anything else?!
+And then of course there's <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>, which we should probably be using rather than anything else, hey?
 
 <h4>Resources</h4>
 
