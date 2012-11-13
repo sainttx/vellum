@@ -4,7 +4,7 @@ DRAFT
 
 Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
 
-Having said that, for the purposes of some [Timestamped Timestamped] thingies, for handling <tt>millis</tt> since the Epoch, we find it convenient to introduce a <tt>Millis</tt> util class.
+Having said that, for the purposes of some [Timestamped Timestamped] thingies, for handling <tt>millis</tt> since the Epoch, we find ourselves introducing a <tt>Millis</tt> util class.
 
 {{{
 public class Millis {
@@ -81,7 +81,7 @@ And formatting.
     }
 }}}
 
-Parsing we get a bit more funky.
+In parsing, we get a bit more funky.
 
 {{{
     public static Long parse(String string) {
@@ -136,6 +136,110 @@ Config default {
   interval: 60s
 }}}
 
+<h4>Safe date format</h4>
+
+Incidently, since someone once told us that <tt>SimpleDateFormat</tt> is not thread-safe, we introduce a <tt>synchronized</tt> wrapper for it.
+
+{{{
+public class SafeDateFormat {
+
+   SimpleDateFormat dateFormat;
+   String pattern;
+
+   public SafeDateFormat(String pattern) {
+      this.pattern = pattern;
+      dateFormat = new SimpleDateFormat(pattern);
+   }
+
+   public String getPattern() {
+      return pattern;
+   }
+
+   public synchronized String format(Date date) {
+      if (date == null) {
+         return "";
+      }
+      return dateFormat.format(date);
+   }
+
+   public synchronized Date parse(String string){
+       return parse(string, null);
+       
+   }
+   
+   public synchronized Date parse(String string, Date defaultValue){
+      if (string == null || string.isEmpty()) {
+         return defaultValue;
+      }
+      if (string.length() > pattern.length()) {
+          string = string.substring(0, pattern.length());
+      }
+        try {
+            return dateFormat.parse(string);
+        } catch (ParseException e) {
+            throw new ParseRuntimeException(string, e);
+        }
+   }
+}
+}}}
+
+<h4>Default date formats</h4>
+
+Just for completeness, here below find the default date and time formats we like to use.
+
+{{{
+public class DateFormats {
+
+    public static final String millisTimestampPattern = "yyyy-MM-dd HH:mm:ss,SSS";
+    public static final String millisTimePattern = "HH:mm:ss,SSS";
+    public static final SafeDateFormat dateFormat = new SafeDateFormat("yyyy-MM-dd");
+    public static final SafeDateFormat shortDateFormat = new SafeDateFormat("yyMMdd");
+    public static final SafeDateFormat millisTimestampFormat = new SafeDateFormat(millisTimestampPattern);
+    public static final SafeDateFormat millisTimeFormat = new SafeDateFormat(millisTimePattern);
+    public static final SafeDateFormat timestampFormat = millisTimestampFormat;
+    public static final SafeDateFormat timeFormat = new SafeDateFormat("HH:mm:ss");
+    public static final SafeDateFormat shortTimeFormat = new SafeDateFormat("HH:mm");
+
+    public static String formatTime(long millis) {
+        if (millis == 0) return "";
+        return millisTimeFormat.format(new Date(millis));
+    }
+    
+    public static Date parse(SafeDateFormat dateFormat, String string) {
+        return dateFormat.parse(string, null);
+    }
+
+    public static Date parseTimestampMillis(String string) {
+        SafeDateFormat format = DateFormats.millisTimestampFormat;
+        if (string.length() > format.getPattern().length()) {
+            string = string.substring(0, format.getPattern().length());
+        }
+        return parse(format, string);
+    }
+
+    public static Date parseTimestamp(String string) {
+        SafeDateFormat format = DateFormats.timestampFormat;
+        if (string.length() > format.getPattern().length()) {
+            string = string.substring(0, format.getPattern().length());
+        }
+        return parse(format, string);
+    }
+
+    public static Date parseDate(String string) {
+        if (string.length() > DateFormats.timestampFormat.getPattern().length()) {
+            string = string.substring(0, DateFormats.timestampFormat.getPattern().length());
+        }
+        if (string.length() == DateFormats.timestampFormat.getPattern().length()) {
+            int index = string.indexOf(".");
+            if (index == string.length() - 4) {
+                string = string.substring(0, index) + "," + string.substring(index + 1);
+            }
+            return parse(DateFormats.timestampFormat, string);
+        }
+        return parse(DateFormats.dateFormat, string);
+    }
+}
+}}}
 
 <h4>Resources</h4>
 
