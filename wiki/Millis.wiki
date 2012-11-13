@@ -1,7 +1,5 @@
 
-November 2012
-
-DRAFT
+November 2012 - DRAFT
 
 Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
 
@@ -21,6 +19,8 @@ public class Millis {
 }}}
 
 Very lazy stuff. 
+
+<h4>Time and time again</h4>
 
 This <tt>Millis</tt> util primarily deals with time <i>intervals</i>, but sometimes also with moments in time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>.
 
