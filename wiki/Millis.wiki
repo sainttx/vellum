@@ -5,11 +5,15 @@ DRAFT
 
 Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
 
-Having said that, for the purposes of some [Timestamped Timestamped] thingies, for handling <tt>millis</tt> since the Epoch, we find ourselves introducing a <tt>Millis</tt> util class.
+Having said that, for the purposes of some [Timestamped Timestamped] thingies with <tt>millis</tt> since the Epoch, we find ourselves introducing a <tt>Millis</tt> util class.
 
 {{{
 public class Millis {
     
+    public static long elapsedMillis(long startMillis) {
+        return System.currentTimeMillis() - startMillis;
+    }
+
     public static boolean isElapsed(long startMillis, long millis) {
         return (System.currentTimeMillis() - startMillis) > millis;
     }
@@ -17,20 +21,19 @@ public class Millis {
     public static boolean isElapsed(Date startTime, long millis) {
         return elapsedMillis(startTime) > millis;
     }
-   
+
     public static long elapsedMillis(Date startTime) {
-        long currentMillis = System.currentTimeMillis();
-        if (startTime == null) return currentMillis;
-        return currentMillis - startTime.getTime();
+        if (startTime == null) return System.currentTimeMillis();
+        return System.currentTimeMillis() - startTime.getTime();
     }
 
-    public static long getAbsIntervalMillis(Date from, Date to) {
+    public static long getIntervalMillis(Date from, Date to) {
         return Math.abs(to.getTime() - from.getTime());
     }
     ...
 }}}
 
-Elementary stuff for lazy programmers :)
+Very lazy stuff :)
 
 Of course we often want to convert to and from millis.
 
@@ -82,7 +85,7 @@ We handle formatting to handle zero values.
     }
 }}}
 
-where in the case of time of day, this only works for the default time zone!
+where in the case of the time of day, this only works for the default time zone! In a follow-up article we'll delve into <tt>!TimeZone</tt> vis-a-vis <tt>Calendar</tt> and its impact on <tt>Date</tt> and our <tt>Millis</tt> util.
 
 And in parsing,
 
@@ -110,19 +113,13 @@ And in parsing,
 }
 }}}
 
-where this supports some convenient configuration of time intervals e.g.
+where actually this was introduced for the configuration of time intervals e.g.
 
 {{{
   <parameter name="interval" value="60s"/>
 }}}
 
-Or
-
-{{{
-  insert into config (name, value) values ('interval', '1d'); 
-}}}
-
-Or 
+or if we configure our appllication using JSON,
 
 {{{
 { 
@@ -131,7 +128,14 @@ Or
 }
 }}}
 
-Or even a home-grown file-based configuration utility, which we don't necessarily recommend but will nevertheless introduce next month in another article :)
+or via a database table (my personal favourite),
+
+{{{
+  insert into config (name, value) values ('interval', '1d'); 
+}}}
+
+
+or even a home-grown file-based configuration utility, which we don't necessarily recommend but will nevertheless introduce in another article :)
 
 {{{
 Config default {
@@ -142,7 +146,7 @@ Config default {
 
 <h4>Safe date format</h4>
 
-Incidently, since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, we introduce a <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should probably be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>!?
+Incidently, since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we introduced a <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>!?
 
 {{{
 public class SafeDateFormat {
@@ -186,116 +190,26 @@ public class SafeDateFormat {
    }
 }
 }}}
+where <tt>parse()</tt> truncates the timestamp string to the length of the pattern we are trying to parse.
 
-<h4>Default date formats</h4>
-
-Just for completeness, here below find the default date and time formats we like to use.
-
+We are accustomed to PostgreSQL's default date and timestamp formats, which are as follows (at least for our locale).
 {{{
-public class DateFormats {
-
-    public static final String millisTimestampPattern = "yyyy-MM-dd HH:mm:ss,SSS";
-    public static final String millisTimePattern = "HH:mm:ss,SSS";
+public class DefaultDateFormats {
     public static final SafeDateFormat dateFormat = new SafeDateFormat("yyyy-MM-dd");
-    public static final SafeDateFormat shortDateFormat = new SafeDateFormat("yyMMdd");
-    public static final SafeDateFormat millisTimestampFormat = new SafeDateFormat(millisTimestampPattern);
-    public static final SafeDateFormat millisTimeFormat = new SafeDateFormat(millisTimePattern);
-    public static final SafeDateFormat timestampFormat = millisTimestampFormat;
-    public static final SafeDateFormat timeFormat = new SafeDateFormat("HH:mm:ss");
-    public static final SafeDateFormat shortTimeFormat = new SafeDateFormat("HH:mm");
-
-    public static String formatTime(long millis) {
-        if (millis == 0) return "";
-        return millisTimeFormat.format(new Date(millis));
-    }
-    
-    public static Date parse(SafeDateFormat dateFormat, String string) {
-        return dateFormat.parse(string, null);
-    }
-
-    public static Date parseTimestampMillis(String string) {
-        SafeDateFormat format = DateFormats.millisTimestampFormat;
-        if (string.length() > format.getPattern().length()) {
-            string = string.substring(0, format.getPattern().length());
-        }
-        return parse(format, string);
-    }
-
-    public static Date parseTimestamp(String string) {
-        SafeDateFormat format = DateFormats.timestampFormat;
-        if (string.length() > format.getPattern().length()) {
-            string = string.substring(0, format.getPattern().length());
-        }
-        return parse(format, string);
-    }
-
-    public static Date parseDate(String string) {
-        if (string.length() > DateFormats.timestampFormat.getPattern().length()) {
-            string = string.substring(0, DateFormats.timestampFormat.getPattern().length());
-        }
-        if (string.length() == DateFormats.timestampFormat.getPattern().length()) {
-            int index = string.indexOf(".");
-            if (index == string.length() - 4) {
-                string = string.substring(0, index) + "," + string.substring(index + 1);
-            }
-            return parse(DateFormats.timestampFormat, string);
-        }
-        return parse(DateFormats.dateFormat, string);
-    }
+    public static final SafeDateFormat timestampFormat = new SafeDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+    public static final SafeDateFormat timeFormat = new SafeDateFormat("HH:mm:ss,SSS");
 }
 }}}
 
-where the parsing considers the length of the string to decide which format to employ.
+<h4>Conclusion</h4>
 
-<h4>Calendars</h4>
+In code related to this [Timestamped Timestamped] series, we introduce a <tt>Millis.java</tt> convenience class, which is not to say we don't love !TimeUnit, because we absolutely do! Similarly we introduced a trivial !SimpleDateFormat wrapper, although some googling reveals Apache's !FastDateFormat, which looks great. 
 
-Which brings us to our <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/Calendars.java"><tt>Calendars</tt></a> util class.
+For the pur
 
-{{{
-public class Calendars {
+<h4>Further reading</h4>
 
-    public static Calendar newCalendar(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
-    }
-
-    public static Date nextDay(Date date) {
-        Calendar calendar = newCalendar(date);
-        calendar.add(Calendar.DATE, 1);
-        return calendar.getTime();
-    }
-
-    public static Calendar newCalendar(long time) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date(time));
-        return calendar;
-    }
-
-    public static int getHourOfDay(Date date) {
-        return newCalendar(date).get(HOUR_OF_DAY);
-    }
-
-    public static int getMinute(Date date) {
-        return newCalendar(date).get(MINUTE);
-    }
-
-    public static void setTime(Calendar calendar, int hour, int minute, int second) {
-        calendar.set(HOUR_OF_DAY, hour);
-        calendar.set(MINUTE, minute);
-        calendar.set(SECOND, second);
-        calendar.set(MILLISECOND, 0);        
-    }
-
-    public static int getCurrentYear() {
-        Calendar calendar = new GregorianCalendar();
-        return calendar.get(Calendar.YEAR);
-    }
-    ...
-}
-}}}
-
-where we haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a> - which we'll leave a proper discussion for another day :)
+We haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a> - which we'll leave a proper discussion for another day :)
 
 And then of course there's <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>, which we should probably be using rather than anything else?!
 
