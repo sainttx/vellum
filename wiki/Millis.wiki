@@ -32,9 +32,9 @@ Consider that there is a different clock on every server, and every client hitti
 
 <h4>Absolute time</h4>
 
-Time without its time zone is like measurement without units. Remember what happened to that Arianne rocket when the units got mixed up?
+Time without its time zone is like measurement without units. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with those there numbers. 
 
-So to avoid trouble, in this article we will think absolutely, in terms of milliseconds since the Epoch, and not looking at any clocks, so that time zones are out of the picture.
+In this article, we will think absolutely, in terms of milliseconds since the Epoch, and not be looking at any clocks, so that time zones are out of the picture.
 
 In a follow-up article, we absolutely must delve into <tt>Date</tt>, <tt>!TimeZone</tt> and <tt>Calendar</tt>.
 
