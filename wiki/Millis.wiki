@@ -68,7 +68,7 @@ Of course we often want to convert to and from millis.
     }
 }}}
 
-And formatting.
+We handle formatting to handle zero values.
 
 {{{       
     public static String formatTime(long millis) {
@@ -82,10 +82,12 @@ And formatting.
     }
 }}}
 
-In parsing, we get a bit more funky.
+where in the case of time of day, this only works for the default time zone!
+
+And in parsing,
 
 {{{
-    public static Long parse(String string) {
+    public static Long parseInterval(String string) {
         int index = string.indexOf(" ");
         if (index > 0) {
             return TimeUnit.valueOf(string.substring(index + 1)).toMillis(Long.parseLong(string.substring(0, index)));
@@ -108,7 +110,7 @@ In parsing, we get a bit more funky.
 }
 }}}
 
-where this supports some convenient options for configuration of time intervals e.g.
+where this supports some convenient configuration of time intervals e.g.
 
 {{{
   <parameter name="interval" value="60s"/>
@@ -117,7 +119,7 @@ where this supports some convenient options for configuration of time intervals 
 Or
 
 {{{
-  insert into config (name, value) values ('interval', '60s'); 
+  insert into config (name, value) values ('interval', '1d'); 
 }}}
 
 Or 
@@ -125,7 +127,7 @@ Or
 {{{
 { 
   ...
-  "interval" : "60s";
+  "interval" : "12h";
 }
 }}}
 
