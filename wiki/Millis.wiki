@@ -128,12 +128,13 @@ Or
 }
 }}}
 
-Or even a home-grown file-based configuration util which we'll introduce next time :)
+Or even a home-grown file-based configuration util which we don't necessarily recommend but will nevertheless introduce next time :)
 
 {{{
 Config default {
   ...
   interval: 60s
+}
 }}}
 
 <h4>Safe date format</h4>
