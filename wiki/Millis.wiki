@@ -142,7 +142,7 @@ Config default {
 
 <h4>Safe date format</h4>
 
-Incidently, since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, we introduce a <tt>synchronized</tt> wrapper for it.
+Incidently, since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, we introduce a <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should probably be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>!?
 
 {{{
 public class SafeDateFormat {
@@ -249,7 +249,7 @@ where the parsing considers the length of the string to decide which format to e
 
 <h4>Calendars</h4>
 
-Which brings us to our <a href="https://vellum.googlecode.com/svn-history/r554/trunk/src/vellum/util/Calendars.java"><tt>Calendars</tt></a> util class.
+Which brings us to our <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/Calendars.java"><tt>Calendars</tt></a> util class.
 
 {{{
 public class Calendars {
