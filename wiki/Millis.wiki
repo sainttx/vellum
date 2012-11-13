@@ -35,13 +35,11 @@ public class Millis {
 
 Very lazy stuff. 
 
-As a generate caution, we must be aware of what <i>millis</i> we are dealing with. Is it a time interval between two events, or the time of an event? 
+Before we carry on, as a general caution, be aware of what <i>millis</i> you are playing around with. Is it a time interval between two events, or the time of an event? 
 
-Also there is a difference between the time of an event, and the time of day, as seen on someone's clock. The time of an event, measured as the number of millis since the Epoch, is absolute, but the time of that event on the clock is relative to the !TimeZone where said clock resides. That's why i love this stuff, man! 
+Also there is a difference between the time of an event, and the time of day of an event, as seen on someone's clock. The time of an event, measured as the number of millis since the Epoch, is absolute, but the time of that event on the clock is relative to the !TimeZone in which that clock resides. A clock might reside on the server, or on a client, which are oftimes in different time zones. 
 
 Time without time zone is like measurement without units. It's not rocket science, but it's bound to end in disaster, especially in rocket science!
-
-But let's put relativistic thoughts aside for now, and blunder on. 
 
 <h4>Time conversion</h4>
 
@@ -81,25 +79,25 @@ Of course we often want to convert to and from millis.
     }
 }}}
 
-Not exactly rocket science - but when rocket scientists get these wrong, rockets tend to explode.
+Not exactly rocket science - but when rocket scientists get these wrong, their rockets tend to explode.
 
-We roll in a <tt>format()</tt> method to handle zero values, otherwise we see zero timestamps formatted like <tt>"00:02:00"<tt> which actually indicates our default time zone e.g. GMT+2. Recall that at the exact time of that UNIX Epoch back in the 70s, it was only actually 00:00 up in Greenwich. So for most of us the time of day of the Epoch was not zero, which is a bit disappointing, no?
+We roll in a <tt>format()</tt> method to handle zero values, otherwise we see zero timestamps formatted like <tt>"00:02:00"<tt> which actually indicates our default time zone e.g. GMT+02. Recall that at the moment of time of that UNIX Epoch back in the early 70s, it was only actually 00:00 up in Greenwich. So for most all of us, the time of day of the Epoch was not even zero, which is a bit disappointing, no?
 
 {{{       
-    public static String formatTime(long millis) {
+    public static String formatTimeSeconds(long millis) {
         if (millis == 0) return "00:00:00";
-        return DateFormats.timeFormat.format(new Date(millis));
+        return DefaultDateFormats.timeSecondsFormat.format(new Date(millis));
     }
 
-    public static String formatTimestamp(long millis) {
+    public static String formatTimeMillis(long millis) {
         if (millis == 0) return "00:00:00,000";
-        return DateFormats.timestampFormat.format(new Date(millis));
+        return DefaultDateFormats.timeMillisFormat.format(new Date(millis));
     }
 }}}
 
 Beware that this only works for intervals - or for the time, but only then in the same time zone where this time was measured e.g. via <tt>System.currentTimeMillis()</tt>. 
 
-In a follow-up article we'll delve into <tt>!TimeZone</tt> and <tt>Calendar</tt> and its impact and implications vis-a-vis <tt>Date</tt> and our <tt>Millis</tt> util.
+In a follow-up article we absolutely must delve into <tt>!TimeZone</tt> and <tt>Calendar</tt> and its impact and implications vis-a-vis the <tt>Date</tt> and <tt>Millis</tt> util.
 
 For the parsing of intervals.
 {{{
