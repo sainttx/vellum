@@ -5,8 +5,6 @@
  */
 package vellum.util;
 
-import vellum.exception.Exceptions;
-import java.text.ParseException;
 import static java.util.Calendar.*;
 import java.util.Calendar;
 import java.util.Date;
@@ -77,6 +75,10 @@ public class Calendars {
         return new Date();
     }
 
+    public static Calendar parseCalendar(SafeDateFormat dateFormat, String string) {
+        return Calendars.newCalendar(dateFormat.parse(string, null));
+    }
+    
     public static int getHourOfDay(Date date) {
         return newCalendar(date).get(HOUR_OF_DAY);
     }

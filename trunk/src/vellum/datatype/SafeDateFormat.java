@@ -39,7 +39,7 @@ public class SafeDateFormat {
        
    }
    
-   public synchronized Date parse(String string, Date defaultValue){
+   public synchronized Date parse(String string, Date defaultValue) {
       if (string == null || string.isEmpty()) {
          return defaultValue;
       }

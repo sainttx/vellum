@@ -69,7 +69,7 @@ public class PostHandler implements HttpHandler {
                 if (notifyName != null) {
                     notifyType = NotifyType.valueOf(notifyName);
                     ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(org.getId(), hostName, serviceName);
-                    logger.info("last", Millis.formatTimestamp(previousRecord.getTimestamp()));
+                    logger.info("last", Millis.formatIntervalMillis(previousRecord.getTimestamp()));
                     processor.process(notifyType, previousRecord, currentRecord);
                     logger.info("notify", processor.isNotify());
                 }

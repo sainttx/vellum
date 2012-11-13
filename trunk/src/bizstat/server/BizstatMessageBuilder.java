@@ -3,7 +3,7 @@
  */
 package bizstat.server;
 
-import vellum.util.DateFormats;
+import vellum.util.DefaultDateFormats;
 import vellum.util.Lists;
 import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.ServiceStatus;
@@ -85,7 +85,7 @@ public class BizstatMessageBuilder {
 
     public static String buildHtmlMessage(ServiceRecord serviceRecord) {
         StringBuilder builder = new StringBuilder();
-        builder.append(DateFormats.timeFormat.format(new Date(serviceRecord.getTimestamp())));
+        builder.append(DefaultDateFormats.timeSecondsFormat.format(new Date(serviceRecord.getTimestamp())));
         builder.append(" ");
         builder.append("<i>");
         builder.append(serviceRecord.getHost().getName());
@@ -101,7 +101,7 @@ public class BizstatMessageBuilder {
 
     public static String buildTextMessage(ServiceRecord serviceRecord) {
         StringBuilder builder = new StringBuilder();
-        builder.append(DateFormats.timeFormat.format(new Date(serviceRecord.getTimestamp())));
+        builder.append(DefaultDateFormats.timeSecondsFormat.format(new Date(serviceRecord.getTimestamp())));
         builder.append(" ");
         builder.append(serviceRecord.getHost().getName());
         builder.append(" ");
