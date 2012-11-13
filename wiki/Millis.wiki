@@ -80,7 +80,7 @@ As i was saying, not exactly rocket science - but when rocket scientists get the
 
 <h4>Format</h4>
 
-We roll in a <tt>format()</tt> method. 
+We roll in a format method. 
 
 {{{       
     public static String formatIntervalMillis(long millis) {
@@ -104,7 +104,9 @@ public class MillisTest {
         Assert.assertEquals(Millis.formatIntervalMillis(60888), "00:01:00,888");
         Assert.assertEquals(Millis.formatIntervalMillis(3600999), "01:00:00,999");
     }    
-
+}}}
+I'm so pleased that there are 60 seconds in a minute, and 3600 seconds in an hour!
+{{{
     @Test
     public void breakingBad() {
         System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date(0)));
@@ -112,15 +114,14 @@ public class MillisTest {
         System.out.println(Millis.formatIntervalSeconds(System.currentTimeMillis() % Millis.fromDays(1)));
     }    
 }
-}}}
-
+}}{
+We see that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time of day, on the day of the Epoch, is putting your clock on the block. Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
 {{{
 02:00:00
 22:43:50
 20:43:50
 }}}
 
-We see that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time of day, on the day of the Epoch, is putting your clock on the block. Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
 
 <h4>Parse</h4>
 
