@@ -84,7 +84,7 @@ We see below that using <tt>!SimpleDateFormat</tt>, and pretending that a time i
 
 For the parsing of intervals.
 {{{
-    public static Long parseInterval(String string) {
+    public static long parse(String string) {
         int index = string.indexOf(" ");
         if (index > 0) {
             return TimeUnit.valueOf(string.substring(index + 1)).toMillis(Long.parseLong(string.substring(0, index)));
@@ -135,6 +135,18 @@ Config default {
   interval: 60s
 }
 }}}
+
+We test it. 
+{{{
+    @Test
+    public void testParse() {
+        Assert.assertEquals(Millis.parse("1m"), 60000);
+        Assert.assertEquals(Millis.parse("60m"), 3600000L);
+        Assert.assertEquals(Millis.parse("60m"), Millis.parse("1h"));
+        Assert.assertEquals(Millis.parse("24h"), Millis.parse("1d"));
+    }
+}}}
+
 
 <h4>Conclusion</h4>
 
