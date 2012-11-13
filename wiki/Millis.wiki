@@ -5,7 +5,7 @@ DRAFT
 
 Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
 
-Having said that, for the purposes of some [Timestamped Timestamped] thingies with <tt>millis</tt> since the Epoch, we find ourselves introducing a <tt>Millis</tt> util class.
+That aside, for the purposes of some [Timestamped Timestamped] thingies with <tt>millis</tt> since the Epoch, we find ourselves cobbling together a <tt>Millis</tt> util class.
 
 {{{
 public class Millis {
@@ -33,7 +33,17 @@ public class Millis {
     ...
 }}}
 
-Very lazy stuff :)
+Very lazy stuff. 
+
+As a generate caution, we must be aware of what <i>millis</i> we are dealing with. Is it a time interval between two events, or the time of an event? 
+
+Also there is a difference between the time of an event, and the time of day, as seen on someone's clock. The time of an event, measured as the number of millis since the Epoch, is absolute, but the time of that event on the clock is relative to the !TimeZone where said clock resides. That's why i love this stuff, man! 
+
+Time without time zone is like measurement without units. It's not rocket science, but it's bound to end in disaster, especially in rocket science!
+
+But let's put relativistic thoughts aside for now, and blunder on. 
+
+<h4>Time conversion</h4>
 
 Of course we often want to convert to and from millis.
 
@@ -71,7 +81,9 @@ Of course we often want to convert to and from millis.
     }
 }}}
 
-We roll in a <tt>format()</tt> method to handle zero values.
+Not exactly rocket science - but when rocket scientists get these wrong, rockets tend to explode.
+
+We roll in a <tt>format()</tt> method to handle zero values, otherwise we see zero timestamps formatted like <tt>"00:02:00"<tt> which actually indicates our default time zone e.g. GMT+2. Recall that at the exact time of that UNIX Epoch back in the 70s, it was only actually 00:00 up in Greenwich. So for most of us the time of day of the Epoch was not zero, which is a bit disappointing, no?
 
 {{{       
     public static String formatTime(long millis) {
@@ -85,9 +97,11 @@ We roll in a <tt>format()</tt> method to handle zero values.
     }
 }}}
 
-However this only works for the default time zone! In a follow-up article we'll delve into <tt>!TimeZone</tt> vis-a-vis <tt>Calendar</tt> and its impact and implications on <tt>Date</tt> and our <tt>Millis</tt> util.
+Beware that this only works for intervals - or for the time, but only then in the same time zone where this time was measured e.g. via <tt>System.currentTimeMillis()</tt>. 
 
-And in parsing,
+In a follow-up article we'll delve into <tt>!TimeZone</tt> and <tt>Calendar</tt> and its impact and implications vis-a-vis <tt>Date</tt> and our <tt>Millis</tt> util.
+
+For the parsing of intervals.
 {{{
     public static Long parseInterval(String string) {
         int index = string.indexOf(" ");
@@ -111,7 +125,7 @@ And in parsing,
     }    
 }
 }}}
-where this is convenient for configuration settings of time intervals e.g.
+where this is especially convenient for configuration settings of time intervals e.g.
 
 {{{
   <parameter name="interval" value="60s"/>
@@ -143,7 +157,7 @@ Config default {
 
 <h4>Safe date format</h4>
 
-Since someone once told us that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we introduced a trivial <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>, hey?
+When someone once told me that <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"><tt>!SimpleDateFormat</tt></a> is not thread-safe, at some stage we incorporated a trivial <tt>synchronized</tt> <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/SafeDateFormat.java">wrapper</a> for it - athough we should be using Apache Commons <a href="http://commons.apache.org/lang/api-2.5/org/apache/commons/lang/time/FastDateFormat.html"><tt>FastDateFormat</tt></a>, hey?
 
 {{{
 public class SafeDateFormat {
@@ -187,9 +201,9 @@ public class SafeDateFormat {
    }
 }
 }}}
-where <tt>parse()</tt> truncates the timestamp string to the length of the pattern we are trying to parse.
+where this <tt>parse()</tt> truncates the timestamp string to the length of the pattern we are trying to parse.
 
-We use the following default date and timestamp formats.
+We use the following default date and timestamp formats, just like our database.
 {{{
 public class DefaultDateFormats {
     public static final SafeDateFormat dateFormat = new SafeDateFormat("yyyy-MM-dd");
@@ -200,18 +214,20 @@ public class DefaultDateFormats {
 
 <h4>Conclusion</h4>
 
-In code for this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis.java</tt> convenience class, which is not to say we don't love !TimeUnit, because we absolutely do! 
+In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis.java</tt> convenience class which is presented here.
 
-We use a trivial !SimpleDateFormat wrapper, although we should definitely try Apache's !FastDateFormat rather, hey?
+There is not to say we don't love !TimeUnit, because we absolutely do! 
+
+We use a trivial !SimpleDateFormat wrapper, although we should definitely try Apache's !FastDateFormat rather.
 
 We introduce some parsing for intervals in a convenient format e.g. <tt>4s, 2h, 1d,</tt> especially for nice readable configuration settings.
 
 <h4>Further reading</h4>
 
-We haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a> - which we'll leave a proper discussion for another day :)
+We haven't even started on <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a> here - but we must! 
 
 And then of course there's <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>, which we should probably be using rather than anything else, hey?
 
 <h4>Resources</h4>
 
-https://code.google.com/p/vellum/ - where i will collate these articles and their code - in particular see the <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/Millis.java"><tt>Millis.java</tt></a> class.
+https://code.google.com/p/vellum/ - where i collate these articles and their code - e.g. see the <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/Millis.java"><tt>Millis.java</tt></a> class.
