@@ -92,9 +92,9 @@ public class LoginHandler implements HttpHandler {
         String totpUrl = CrocSecurity.getTotpUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         String qrUrl = CrocSecurity.getQrCodeUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
-        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime());
+        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime(), accessToken);
         cookie.createAuthCode(user.getSecret().getBytes());
-        httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE);
+        httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE_MILLIS);
         httpExchangeInfo.sendResponse("text/json", true);
         StringMap responseMap = new StringMap();
         responseMap.put("email", userInfo.getEmail());

@@ -12,5 +12,6 @@ public enum CrocCookieMeta {
     email,
     displayName,
     loginMillis,
+    accessToken,
     authCode;
 }

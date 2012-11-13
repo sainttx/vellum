@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import crocserver.app.CrocApp;
+import crocserver.app.GoogleUserInfo;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class GenKeyP12Handler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
+        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getParameterMap(), httpExchangeInfo.getCookieMap());
         try {
             handle();
         } catch (Exception e) {
@@ -48,6 +50,8 @@ public class GenKeyP12Handler implements HttpHandler {
     }
     
     private void handle() throws Exception {
+        GoogleUserInfo userInfo = app.getGoogleUserInfo(httpExchangeInfo);
+        logger.info("userInfo", userInfo);
         char[] password = httpExchangeInfo.getParameterMap().getString("password").toCharArray();
         AdminUser user = app.getUser(httpExchangeInfo);
         user.formatSubject();

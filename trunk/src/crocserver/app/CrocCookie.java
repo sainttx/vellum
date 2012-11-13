@@ -5,6 +5,7 @@
 package crocserver.app;
 
 import java.util.Map;
+import vellum.datatype.Millis;
 import vellum.exception.EnumException;
 import vellum.parameter.StringMap;
 
@@ -13,10 +14,11 @@ import vellum.parameter.StringMap;
  * @author evan
  */
 public class CrocCookie {
-    public static final long MAX_AGE = 60*60*24;
+    public static final long MAX_AGE_MILLIS = Millis.fromMinutes(1);
     
     String email;
     String displayName;
+    String accessToken;
     long loginMillis;
     String authCode; 
             
@@ -30,14 +32,16 @@ public class CrocCookie {
     public CrocCookie(StringMap map) {
         email = map.get(CrocCookieMeta.email.name());
         displayName = map.get(CrocCookieMeta.displayName.name());
+        accessToken = map.get(CrocCookieMeta.accessToken.name());
         loginMillis = map.getLong(CrocCookieMeta.loginMillis.name(), 0);
         authCode = map.get(CrocCookieMeta.authCode.name());
     }
     
-    public CrocCookie(String email, String displayName, long loginMillis) {
+    public CrocCookie(String email, String displayName, long loginMillis, String accessToken) {
         this.email = email;
         this.displayName = displayName;
         this.loginMillis = loginMillis;
+        this.accessToken = accessToken;
     }
 
     public String getEmail() {
@@ -54,6 +58,7 @@ public class CrocCookie {
         map.put(CrocCookieMeta.displayName.name(), displayName);
         map.put(CrocCookieMeta.loginMillis.name(), Long.toString(loginMillis));
         map.put(CrocCookieMeta.authCode.name(), authCode);
+        map.put(CrocCookieMeta.accessToken.name(), accessToken);
         return map;
     }
 

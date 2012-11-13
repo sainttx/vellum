@@ -102,8 +102,8 @@ function processLogin(res) {
         $('.croc-logout-clickable').click(clickLogout);
         $('#croc-loggedin-qr-img').attr('src', res.qr);
         $('#croc-loggedin-title').text("Welcome, " + res.name);
-        $('#croc-totp-text').text(res.toptSecret);
-        $('#croc-totp-url').text(res.toptUrl);
+        $('#croc-totp-text').text(res.totpSecret);
+        $('#croc-totp-url').text(res.totpUrl);
         $('#croc-account-genKey').click(clickGenKey);
         $('#croc-account-signCert').click(clickSignCert);
         $('#croc-account-resetOtp').click(clickResetOtp);
