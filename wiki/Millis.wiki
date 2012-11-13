@@ -127,7 +127,9 @@ where this is especially convenient for configuration settings of time intervals
 
 or if we configure our appllication using JSON,
 {{{
-{ "interval" : "12h"; ... }
+  { ...
+    "interval" : "12h"; 
+  }
 }}}
 
 or via a database table (my personal favourite),
