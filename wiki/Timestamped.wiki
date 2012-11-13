@@ -5,6 +5,10 @@ We herewith begin a saga about monitoring with this series entitled "Timestamped
 
 We will be analysing logs in this unwinding series. Ultimately we gonna hook up a remote Log4j appender to digest our logs to gather stats, and make some judgement calls as to the rapidly changing status of our app.  
 
-[CounterMap Counter Map]
+[CounterMap Counter Map] (June 2012)
 
-[TimestampedDequer Timestamped Deque]
+[TimestampedDequer Timestamped Dequer] (July 2012)
+
+[DequeShredder Deque Shredder] (August 2012)
+
+[Millis Millis] (DRAFT, November 2012)
