@@ -131,7 +131,7 @@ Or
 }
 }}}
 
-Or even a home-grown file-based configuration util which we don't necessarily recommend but will nevertheless introduce next time :)
+Or even a home-grown file-based configuration utility, which we don't necessarily recommend but will nevertheless introduce next month in another article :)
 
 {{{
 Config default {
@@ -244,7 +244,6 @@ public class DateFormats {
     }
 }
 }}}
-
 
 where the parsing considers the length of the string to decide which format to employ.
 
