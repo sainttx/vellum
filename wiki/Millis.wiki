@@ -30,7 +30,7 @@ Besides that, there is a difference between the time of an event, and the time o
 
 There is a clock on the server, but another on each client, which are oftimes in different time zones. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones.
 
-Time without time zone is like measurement without units. Remember what happened to that Arianne rocket when units got mixed up? That's right, it exploded.
+Time without time zone is like measurement without units. Remember what happened to that Arianne rocket when the units got mixed up? That's right, it exploded.
 
 In any event, in this article, we are thinking purely in absolute terms, and not looking at any clocks, and so time zones are out of the picture.
 
@@ -78,7 +78,7 @@ public class MillisTest {
 20:43:50
 }}}
 
-We see below that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time on the day of the Epoch, is putting your clock on the block. Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 baby!
+We see that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time on the day of the Epoch, is putting your clock on the block. Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 baby!
 
 <h4>Parse</h4>
 
