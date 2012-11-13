@@ -106,6 +106,18 @@ For the parsing of intervals.
     }    
 }
 }}}
+
+{{{
+    @Test
+    public void testParse() {
+        Assert.assertEquals(Millis.parse("1 SECONDS"), 1000);
+        Assert.assertEquals(Millis.parse("1m"), 60000);
+        Assert.assertEquals(Millis.parse("60m"), 3600000L);
+        Assert.assertEquals(Millis.parse("60m"), Millis.parse("1h"));
+        Assert.assertEquals(Millis.parse("24h"), Millis.parse("1d"));
+    }
+}}}
+
 where this is especially convenient for configuration settings of time intervals e.g.
 
 {{{
@@ -135,18 +147,6 @@ Config default {
   interval: 60s
 }
 }}}
-
-We test it. 
-{{{
-    @Test
-    public void testParse() {
-        Assert.assertEquals(Millis.parse("1m"), 60000);
-        Assert.assertEquals(Millis.parse("60m"), 3600000L);
-        Assert.assertEquals(Millis.parse("60m"), Millis.parse("1h"));
-        Assert.assertEquals(Millis.parse("24h"), Millis.parse("1d"));
-    }
-}}}
-
 
 <h4>Conclusion</h4>
 
