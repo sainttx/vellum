@@ -22,33 +22,26 @@ Some lazy stuff.
 
 <h4>Time and time again</h4>
 
-This <tt>Millis</tt> util class primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to !<tt>MillisIntervals</tt>, to be clearer.
+The <tt>Millis</tt> util class presented here primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to !<tt>MillisIntervals</tt>, to be clearer.
 
-We should be clear which <i>millis</i> we're talking about. That is, the time interval between two events, or the time of an event i.e. the "epochal time" given by <tt>System.currentTimeMillis()</tt>.
+Most of the time we know which <i>millis</i> we're talking about. That is, either the time interval between two events, or the time of an event i.e. the "epochal time" given by <tt>System.currentTimeMillis()</tt>.
 
-Besides that, there is the difference between the epochal time of an event, and the time of an event as recorded on our clock and calendar. 
+Besides that, there is the difference between the epochal time of an event, and the time of an event as recorded on our clock and calendar. The epochal time is absolute, but the "clock time" is relative to the !TimeZone for which that clock is configured. 
 
-The epochal time is absolute, but the "clock time" is relative to the !TimeZone for which that clock is configured. 
-
-Consider that every server has its own clock, and every client hitting any given server, often from different parts of the world. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones, and so their clocks reflect a different time of day.
+Consider that every server has its own clock, as does every client hitting any given server, often from different parts of the world. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones, and so their clocks reflect a different time of day.
 
 We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis,
 <blockquote>
-   <tt>public static long currentTimeMillis()</tt>
-  Returns the current time in milliseconds.<br>
-  ...</br>
   See the description of the class Date for a discussion of slight discrepancies that may arise between "computer time" and coordinated universal time (UTC).
 </blockquote>
 
-Well that certainly clears things up! ;) 
+We will certainly do that, but not today! 
 
 <h4>Epochal time</h4>
 
-Time without its time zone is sort of like measurement without units, in the sense that it will cause problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualifications.
+Time without its time zone is sort of like measurement without units, in the sense that it will cause problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualifications. Of course measurement units determine scale, whereas time zones determine an offset (amongst other things like daylight savings), and time has units as well. 
 
-Of course measurement units determine scale, whereas time zone determines an offset (amongst other things like daylight savings), and time has units as well. So we are taking milliseconds as our default time unit, for intervals.
-
-And we will think absolutely, in terms of milliseconds since the Epoch. So in this article at least, we will not be looking at any clocks, so that time zones are out of the picture, for now.
+Our default time unit for intervals is assumed to be milliseconds, and time itself we express as milliseconds since the Epoch. In this article at least, we will not be looking at any clocks, so that time zones are out of the picture, for now.
 
 In a follow-up article, we absolutely must delve into <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, <tt>!TimeZone</tt>, <tt>Calendar</tt> and that much maligned <tt>Date</tt>.
 
@@ -214,9 +207,7 @@ In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Mill
 
 This class is a utility for time intervals, rather than "time" per se. 
 
-We introduce some parsing for intervals in a format especially convenient for configuration settings e.g. <tt>60s</tt>.
-
-Working with time without time zone is like measurement without units, i.e. potentially disastrous. That notwithstanding, in this article we deal with time intervals and the absolute time since the Epoch, in order to steer clear of time zones altogether (and <tt>Date</tt> and <tt>Calendar</tt>), for now.
+Working with time without time zone is like measurement without units, i.e. potentially disastrous. That notwithstanding, in this article we deal with time intervals and the absolute time since the Epoch, both measured in milliseconds, in order to steer clear of time zones altogether (and <tt>Date</tt> and <tt>Calendar</tt>), for now.
 
 <h4>Coming up</h4>
 
