@@ -24,7 +24,7 @@ Very lazy stuff.
 
 This <tt>Millis</tt> util primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to <tt>M!illisIntervals</tt>.
 
-So we must be clear about <i>millis</i> we might be talking about - time interval between two events, or the time of an event.
+So we must be clear which <i>millis</i> we are talking about - time interval between two events, or the time of an event.
 
 Besides that, there is a difference between the time of an event, and the time of day of an event, as seen on someone's clock. The time of an event, measured as the number of millis since the Epoch, is absolute, but the time of day of that event as seen on some clock e.g. as <tt>10:32am</tt>, is relative to the !TimeZone for which that clock is configured. 
 
@@ -206,7 +206,9 @@ We should of course delve into <a href="http://docs.oracle.com/javase/7/docs/api
 
 <h4>Further reading</h4>
 
-Check out <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>.
+http://en.wikipedia.org/wiki/Coordinated_Universal_Time
+
+<a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>
 
 <h4>Resources</h4>
 
