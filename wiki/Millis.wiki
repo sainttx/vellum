@@ -20,7 +20,7 @@ public class Millis {
 
 Very lazy stuff. 
 
-We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis(), 
+We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis, 
 <blockquote>
    <tt>public static long currentTimeMillis()</tt>
   Returns the current time in milliseconds.
