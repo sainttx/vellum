@@ -44,7 +44,7 @@ Consider that there is a different clock on every server, and every client hitti
 
 <h4>Absolute time</h4>
 
-Time without its time zone is sort of like measurement without units. Except that measurement units determine scale, and time zone determines offset (amongst other things like daylight savings). Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with those there numbers with qualifications.
+Time without its time zone is sort of like measurement without units. Except that measurement units determine scale, and time zone determines offset (amongst other things like daylight savings). Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualifications.
 
 So we are taking milliseconds as our default time unit, for intervals.
 
