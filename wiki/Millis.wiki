@@ -141,7 +141,7 @@ But now let's do the wrong thing.
 }}}
 We see that using <tt>!SimpleDateFormat</tt>, and pretending that a time interval is a time of day, on the day of the Epoch, is putting your clock on the block. 
 
-Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
+    Recall that at the moment of time on Earth that the UNIX Epoch happened way back in 1970, it was actually 00:00:00 only up there in Greenwich. So for most of us, the time of the Epoch was not even at midnight. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
 {{{
 02:00:00
 22:43:50
@@ -213,6 +213,8 @@ Config default {
 <h4>Conclusion</h4>
 
 In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis</tt> convenience class which is presented here.
+
+This class is a utility for time intervals, rather than "time" per se. 
 
 We introduce some parsing for intervals in a format especially convenient for configuration settings e.g. <tt>60s</tt>.
 
