@@ -48,7 +48,9 @@ Time without its time zone is sort of like measurement without units. Except tha
 
 So we are taking milliseconds as our default time unit, for intervals.
 
-And we will think absolutely, in terms of milliseconds since the Epoch, and not be looking at any clocks, so that time zones are out of the picture, for now.
+And we will think absolutely, in terms of milliseconds since the Epoch.
+
+And in this article at least, we will not be looking at any clocks, so that time zones are out of the picture, for now.
 
 In a follow-up article, we absolutely must delve into <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, <tt>!TimeZone</tt>, <tt>Calendar</tt> and that much maligned <tt>Date</tt>.
 
