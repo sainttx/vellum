@@ -135,7 +135,7 @@ But now let's do the wrong thing.
     public void breakingBad() {
         System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date(0)));
         System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date(System.currentTimeMillis())));
-        System.out.println(Millis.formatIntervalSeconds(System.currentTimeMillis() % Millis.fromDays(1)));
+        System.out.println(Millis.format(System.currentTimeMillis() % Millis.fromDays(1)));
     }    
 }
 }}}
@@ -145,7 +145,7 @@ We see that using <tt>!SimpleDateFormat</tt>, and pretending that a time interva
 {{{
 02:00:00
 22:43:50
-20:43:50
+20:43:50,437
 }}}
 
 <h4>Parse</h4>
