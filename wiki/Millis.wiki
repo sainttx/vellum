@@ -20,21 +20,33 @@ public class Millis {
 
 Very lazy stuff. 
 
+We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis(), 
+<blockquote>
+   <tt>public static long currentTimeMillis()</tt>
+  Returns the current time in milliseconds.
+  ...
+  See the description of the class Date for a discussion of slight discrepancies that may arise between "computer time" and coordinated universal time (UTC).
+</blockquote>
+
+Well that certainly clears things up! ;) 
+
 <h4>Time and time again</h4>
 
 This <tt>Millis</tt> util primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to <tt>M!illisIntervals</tt>.
 
-So we must be clear which <i>millis</i> we are talking about - time interval between two events, or the time of an event.
+So we must be clear which <i>millis</i> we are talking about - time interval between two events, or the time of an event, i.e. what we refer to as the "absolute time" or the "Epochal time" or <tt>System.currentTimeMillis()</tt> or just <tt>currentTimeMillis</tt> for short.
 
-Besides that, there is a difference between the time of an event, and the time of day of an event, as seen on someone's clock. The time of an event, measured as the number of millis since the Epoch, is absolute, but the time of day of that event as seen on some clock e.g. as <tt>10:32am</tt>, is relative to the !TimeZone for which that clock is configured. 
+Besides that, there is the difference between the Epochal time of an event as obtained by <tt>System.currentTimeMillis()</tt>, and the time of an event, as seen on our clock and calendar. The time of an event, measured as the number of milliseconds since the Epoch, is absolute, but the time of day of that event as seen on some clock e.g. as <tt>10:32am</tt>, is relative to the !TimeZone for which that clock is configured. 
 
-Consider that there is a different clock on every server, and every client hitting some server from different parts of the world. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones, and so their clocks reflect a different time of day.
+Consider that there is a different clock on every server, and every client hitting any given server from different parts of the world. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones, and so their clocks reflect a different time of day.
 
 <h4>Absolute time</h4>
 
-Time without its time zone is sorta like measurement without units. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with those there numbers. 
+Time without its time zone is sort of like measurement without units. Except that measurement units determine scale, and time zone determines the origin. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with those there numbers with qualifications.
 
-In this article, we will think absolutely, in terms of milliseconds since the Epoch, and not be looking at any clocks, so that time zones are out of the picture, for now.
+So we are taking milliseconds as our default time unit, for intervals.
+
+And we will think absolutely, in terms of milliseconds since the Epoch, and not be looking at any clocks, so that time zones are out of the picture, for now.
 
 In a follow-up article, we absolutely must delve into <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, <tt>!TimeZone</tt>, <tt>Calendar</tt> and that much maligned <tt>Date</tt>.
 
