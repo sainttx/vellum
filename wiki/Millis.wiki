@@ -94,7 +94,7 @@ Of course we often want to convert to and from millis.
 
 As i was saying, not exactly rocket science - but when rocket scientists get these wrong, their rockets tend to explode.
 
-Actually the above type of interval conversions are comprehensively and beautifully handled by <tt>TimeUnit</tt>, as the following rewrite illustrates.
+Actually the above type of interval conversions are comprehensively and beautifully handled by <tt>!TimeUnit</tt>, as the following rewrite illustrates.
 
 {{{
     public static long fromDays(long days) {
