@@ -221,7 +221,7 @@ public class ServiceRecord extends LongIdEntity implements Timestamped {
 
     @Override
     public String toString() {
-        return Args.format(host, service, serviceStatus, Millis.formatIntervalSeconds(dispatchedMillis));
+        return Args.format(host, service, serviceStatus, Millis.formatAsSeconds(dispatchedMillis));
     }    
     
     public static String toString(Collection<ServiceRecord> collection) {

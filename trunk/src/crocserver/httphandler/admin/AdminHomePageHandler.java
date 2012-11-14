@@ -55,7 +55,7 @@ public class AdminHomePageHandler extends AbstractPageHandler {
                     ++index % 2,
                     serviceRecord.getId(),
                     serviceRecord.getId(),
-                    Millis.formatIntervalSeconds(serviceRecord.getTimestamp()),
+                    Millis.formatAsSeconds(serviceRecord.getTimestamp()),
                     serviceRecord.getHostName(),
                     serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus(),
@@ -107,7 +107,7 @@ public class AdminHomePageHandler extends AbstractPageHandler {
        p.tbody();
        while (iterator.hasNext()) {
            LogrRecord record = iterator.next();
-           p.trd(Millis.formatIntervalSeconds(record.getTimestamp()), 
+           p.trd(Millis.formatAsSeconds(record.getTimestamp()), 
                    record.getContext().getName(),
                    record.getLevel(), record.getMessage(),
                    ListFormats.displayFormatter.formatArray(record.getArgs()));
