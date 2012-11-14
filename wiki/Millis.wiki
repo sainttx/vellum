@@ -20,7 +20,7 @@ public class Millis {
 
 Very lazy stuff. 
 
-We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis, 
+We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis,
 <blockquote>
    <tt>public static long currentTimeMillis()</tt>
   Returns the current time in milliseconds.<br>
@@ -32,7 +32,7 @@ Well that certainly clears things up! ;)
 
 <h4>Time and time again</h4>
 
-This <tt>Millis</tt> util primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to <tt>M!illisIntervals</tt>.
+This <tt>Millis</tt> util class primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to !<tt>MillisIntervals</tt>, to be clearer.
 
 So we must be clear which <i>millis</i> we are talking about - time interval between two events, or the time of an event, i.e. what we refer to as the "absolute time" or the "Epochal time" or <tt>System.currentTimeMillis()</tt> or just <tt>currentTimeMillis</tt> for short.
 
