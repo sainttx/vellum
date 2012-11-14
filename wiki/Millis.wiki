@@ -23,8 +23,8 @@ Very lazy stuff.
 We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis, 
 <blockquote>
    <tt>public static long currentTimeMillis()</tt>
-  Returns the current time in milliseconds.
-  ...
+  Returns the current time in milliseconds.<br>
+  ...</br>
   See the description of the class Date for a discussion of slight discrepancies that may arise between "computer time" and coordinated universal time (UTC).
 </blockquote>
 
