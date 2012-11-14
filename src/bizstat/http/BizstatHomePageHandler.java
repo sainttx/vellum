@@ -59,7 +59,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
         for (ServiceRecord serviceRecord : serviceRecords) {
             out.printf("<tr class=row%d><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
                     ++index % 2,
-                    Millis.formatIntervalSeconds(serviceRecord.getTimestamp()),
+                    Millis.formatAsSeconds(serviceRecord.getTimestamp()),
                     serviceRecord.getHost(),
                     serviceRecord.getService(),
                     serviceRecord.getServiceStatus(),
@@ -139,7 +139,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
        p.tbody();
        while (iterator.hasNext()) {
            LogrRecord record = iterator.next();
-           p.trd(Millis.formatIntervalSeconds(record.getTimestamp()), 
+           p.trd(Millis.formatAsSeconds(record.getTimestamp()), 
                    record.getContext().getName(),
                    record.getLevel(), record.getMessage(),
                    ListFormats.displayFormatter.formatArray(record.getArgs()));

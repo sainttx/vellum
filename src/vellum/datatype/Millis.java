@@ -15,19 +15,19 @@ import vellum.exception.ParseRuntimeException;
 public class Millis {
     
     public static long toSeconds(long millis) {
-        return millis / 1000;
+        return millis/1000;
     }
 
     public static long toMinutes(long millis) {
-        return millis / 1000 / 60;
+        return millis/1000/60;
     }
 
     public static long toHours(long millis) {
-        return millis / 1000 / 60 / 60;
+        return millis/1000/60/60;
     }
 
     public static long toDays(long millis) {
-        return millis / 1000 / 60 / 60 / 24;
+        return millis/1000/60/60/24;
     }
     
     public static long fromSeconds(long seconds) {
@@ -43,9 +43,9 @@ public class Millis {
     }
     
     public static long fromDays(long days) {
-        return days*24*60*60*1000;
+        return TimeUnit.DAYS.toMillis(days);
     }
-        
+
     public static boolean isElapsed(long startMillis, long millis) {
         return (System.currentTimeMillis() - startMillis) > millis;
     }
@@ -55,7 +55,7 @@ public class Millis {
         return isElapsed(startDate.getTime(), millis);
     }
     
-    public static String formatIntervalSeconds(long millis) {
+    public static String formatAsSeconds(long millis) {
         if (millis == 0) return "00:00:00";
         long hour = millis/Millis.fromHours(1);
         long minute = (millis % Millis.fromHours(1))/Millis.fromMinutes(1);
@@ -63,7 +63,7 @@ public class Millis {
         return String.format("%02d:%02d:%02d", hour, minute, second);
     }
 
-    public static String formatIntervalMillis(long millis) {
+    public static String format(long millis) {
         if (millis == 0) return "00:00:00,000";
         long hour = millis/Millis.fromHours(1);
         long minute = (millis % Millis.fromHours(1))/Millis.fromMinutes(1);
