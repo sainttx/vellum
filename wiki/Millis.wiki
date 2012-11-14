@@ -36,7 +36,7 @@ This <tt>Millis</tt> util class primarily deals with time <i>intervals</i>, but 
 
 So we must be clear which <i>millis</i> we are talking about - be it time interval between two events, or the time of an event, i.e. what we refer to as the "absolute time" or the "Epochal time" or <tt>System.currentTimeMillis()</tt> or just <tt>currentTimeMillis</tt> for short.
 
-Besides that, there is the difference between the Epochal time of an event as obtained by <tt>System.currentTimeMillis()</tt>, and the time of an event as reported by our clock and calendar. The time of an event, measured as the number of milliseconds since the Epoch, is absolute, but the time of day of that event as seen on some clock e.g. as <tt>10:32am</tt>, is relative to the !TimeZone for which that clock is configured. 
+Besides that, there is the difference between the Epochal time of an event as obtained by <tt>System.currentTimeMillis()</tt>, and the time of an event as recorded on our clock and calendar. The time of an event, measured as the number of milliseconds since the Epoch, is absolute, but the time of day of that event as seen on some clock e.g. as <tt>10:32am</tt>, is relative to the !TimeZone for which that clock is configured. 
 
 Consider that there is a different clock on every server, and every client hitting any given server from different parts of the world. Even on the same physical server, different UNIX accounts, not to mention virtual machines, can be configured with different time zones, and so their clocks reflect a different time of day.
 
