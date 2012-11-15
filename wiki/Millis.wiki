@@ -142,7 +142,7 @@ Recall that at the moment of time on Earth that the UNIX Epoch happened way back
 
 <h4>Parse</h4>
 
-For the parsing of intervals.
+And in parsing...
 {{{
     public static long parse(String string) {
         int index = string.indexOf(" ");
