@@ -192,7 +192,7 @@ or via a database table,
 {{{
   insert into config (name, value) values ('interval', '45s'); 
 }}}
-or even a home-grown file-based configuration utility, which we usually don't recommend but will nonetheless introduce in another article :)
+or even a home-grown file-based configuration utility, which we usually don't recommend but will nonetheless introduce in another article, but only because we've used it for a stand alone monitoring app, which we'll feature at some stage.
 {{{
 Config default {
   ...
