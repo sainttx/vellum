@@ -1,12 +1,10 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2011, iPay (Pty) Ltd, Evan Summers
- * Apache Software License 2.0
- * Supported by BizSwitch.net
+ * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
+ * Supported by iPay (Pty) Ltd, BizSwitch.net
  */
 package vellum.parameter;
 
 import vellum.exception.Exceptions;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +116,7 @@ public class Parameters {
 
     public static void addString(List<String> list, String name, String[] args) {
         for (String arg : args) {
-            if (arg.startsWith(name) && arg.length() > name.length() + 2 && arg.charAt(name.length()) == '=') {
+            if (arg.startsWith(name) && arg.length() >= name.length() + 1 && arg.charAt(name.length()) == '=') {
                 String value = arg.substring(name.length() + 1);
                 list.add(value);
             }
@@ -127,27 +125,11 @@ public class Parameters {
 
     public static boolean isProperty(String name, String[] args) {
         for (String arg : args) {
-            if (arg.startsWith(name) && arg.length() > name.length() + 2 && arg.charAt(name.length()) == '=') {
+            if (arg.startsWith(name) && arg.length() >= name.length() + 1 && arg.charAt(name.length()) == '=') {
                 return true;
             }
         }
         return false;
-    }
-
-    public static String getHostName() {
-        String hostName = System.getProperty("hostName");
-        if (hostName == null) {
-            try {
-                hostName = InetAddress.getLocalHost().getHostName();
-            } catch (Exception e) {
-                return e.getMessage();
-            }
-        }
-        int index = hostName.indexOf(".");
-        if (index > 0) {
-            hostName = hostName.substring(0, index);
-        }
-        return hostName;
     }
 
 }

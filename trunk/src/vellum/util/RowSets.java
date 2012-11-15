@@ -1,7 +1,7 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2011, iPay (Pty) Ltd, Evan Summers
+ * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
  * Apache Software License 2.0
- * Supported by BizSwitch.net
+ * Supported by iPay (Pty) Ltd, BizSwitch.net
  */
 package vellum.util;
 

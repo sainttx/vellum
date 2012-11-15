@@ -1,6 +1,6 @@
 /*
  * Apache Software License 2.0
- * Supported by BizSwitch.net   
+ * Supported by iPay (Pty) Ltd, BizSwitch.net   
  */
 package vellum.exception;
 
