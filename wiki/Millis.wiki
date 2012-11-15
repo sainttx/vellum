@@ -22,7 +22,7 @@ Some lazy stuff.
 
 <h4>Time and time again</h4>
 
-The <tt>Millis</tt> util class presented here primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to !<tt>MillisIntervals</tt>, to be clearer.
+The <tt>Millis</tt> util class presented here primarily deals with time <i>intervals</i>, but sometimes also time since the Epoch, measured in milliseconds, courtesy of <tt>System.currentTimeMillis()</tt>. Actually i'm inclined to rename this class to <tt>!MillisIntervals</tt>, to be clearer.
 
 Most of the time we know which <i>millis</i> we're talking about. That is, either the time interval between two events, or the time of an event i.e. the "epochal time" given by <tt>System.currentTimeMillis()</tt>.
 
