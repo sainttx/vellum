@@ -173,28 +173,26 @@ The test case below illustrates the functionality of this method.
     public void testParse() {
         Assert.assertEquals(Millis.parse("1 SECONDS"), 1000);
         Assert.assertEquals(Millis.parse("1m"), 60000);
-        Assert.assertEquals(Millis.parse("60m"), 3600000L);
+        Assert.assertEquals(Millis.parse("60m"), 3600000);
         Assert.assertEquals(Millis.parse("60m"), Millis.parse("1h"));
         Assert.assertEquals(Millis.parse("24h"), Millis.parse("1d"));
     }
 }}}
 where this is especially convenient for configuration settings of time intervals e.g.
 {{{
-  <parameter name="interval" value="60s"/>
+  <parameter name="interval" value="45s"/>
 }}}
-
-or if we configure our appllication using JSON,
+or if we configure our application using JSON,
 {{{
   { ...
     "interval" : "12h"; 
   }
 }}}
-or via a database table (my personal favourite),
+or via a database table,
 {{{
-  insert into config (name, value) values ('interval', '1d'); 
+  insert into config (name, value) values ('interval', '45s'); 
 }}}
-
-or even a home-grown file-based configuration utility, which we don't necessarily recommend but will nonetheless introduce in another article :)
+or even a home-grown file-based configuration utility, which we usually don't recommend but will nonetheless introduce in another article :)
 {{{
 Config default {
   ...
@@ -206,9 +204,9 @@ Config default {
 
 In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis</tt> convenience class which is presented here.
 
-This class is a utility for time intervals, rather than "time" per se. 
+This class is a utility for time intervals, rather than "time" per se.
 
-Working with time without time zone is like measurement without units, i.e. potentially disastrous. That notwithstanding, in this article we deal with time intervals and the absolute time since the Epoch, both measured in milliseconds, in order to steer clear of time zones altogether (and <tt>Date</tt> and <tt>Calendar</tt>), for now.
+Working with time without time zone is like measurement without units, i.e. potentially disastrous. That notwithstanding, in this article we deal with time intervals and the absolute time since the Epoch, both measured in milliseconds, in order to steer clear of time zones (and <tt>Date</tt> and <tt>Calendar</tt>), for now.
 
 <h4>Coming up</h4>
 
