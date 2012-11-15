@@ -90,6 +90,14 @@ public class HttpExchangeInfo {
         }
     }
 
+    private void put(String string) {
+        Entry<String, String> entry = Parameters.parseEntry(string);
+        if (entry != null) {
+            String value = Strings.decodeUrl(entry.getValue());
+            parameterMap.put(entry.getKey(), value);
+        }
+    }
+    
     public String getParameter(String key) {
         return parameterMap.get(key);
     }
@@ -102,14 +110,6 @@ public class HttpExchangeInfo {
         return null;
     }
     
-    private void put(String string) {
-        Entry<String, String> entry = Parameters.parseEntry(string);
-        if (entry != null) {
-            String value = Strings.decodeUrl(entry.getValue());
-            parameterMap.put(entry.getKey(), value);
-        }
-    }
-
     public void clearCookie(Collection<String> keys) {
         for (String key : keys) {
             httpExchange.getResponseHeaders().add("Set-cookie", 

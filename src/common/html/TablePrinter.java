@@ -1,7 +1,7 @@
 /*
  * Copyright 2011, iPay (Pty) Ltd, Evan Summers
  * Apache Software License 2.0
- * Supported by BizSwitch.net
+ * Supported by iPay (Pty) Ltd, BizSwitch.net
  */
 package common.html;
 

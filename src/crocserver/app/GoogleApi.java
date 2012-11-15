@@ -76,6 +76,7 @@ public class GoogleApi {
     }
 
     public GoogleUserInfo getUserInfo(String accessToken) throws Exception {
+        logger.info("getUserInfo", accessToken);
         String json = getUserInfoJson(accessToken);
         if (JsonStrings.get(json, "email") != null) {
             GoogleUserInfo userInfo = new GoogleUserInfo();
