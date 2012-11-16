@@ -135,9 +135,9 @@ where my default time zone seems to be 2 hours ahead of Greenwich.
 
 Recall that at the moment of time on Earth that the UNIX Epoch happened way back around <tt>1970-01-01</tt>, actually the time was <tt>00:00:00</tt> only up there in Greenwich. So for most of us, our clocks where not <tt>00:00:00</tt> at the time of the Epoch. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
 
-<h4>Parse</h4>
+<h4>In parsing</h4>
 
-And in parsing.
+We implement some parsing.
 {{{
     public static long parse(String string) {
         int index = string.indexOf(" ");
