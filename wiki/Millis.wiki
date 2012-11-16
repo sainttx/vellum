@@ -31,7 +31,7 @@ We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTi
 
 We will certainly do that, but not today! 
 
-<h4>Milliseconds everywhere</tt>
+<h4>Millis forever</h4>
 
 We often represent time intervals as a <tt>long</tt> value without an explicit time unit, which is then assumed to be milliseconds.  
 
