@@ -22,7 +22,7 @@ This util class primarily deals with time <i>intervals</i>.
 
 We use milliseconds for either the time interval between two events, or the time of an event since the UNIX Epoch i.e. as given by <tt>System.currentTimeMillis()</tt>.
 
-While the "epochal time" is absolute, the time of an event as recorded on our clock and calendar is relative to the !TimeZone for which that clock is configured. And the problem is there are so many clocks in the world, and very few of them have the same time! ;)
+While the "epochal time" is absolute, the time of an event as recorded on our clock and calendar is relative to the !TimeZone for which that clock is configured. And the problem is there are so many clocks in the world, and so few of them have the same time! ;)
 
 We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis,
 <blockquote>
@@ -31,13 +31,15 @@ We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTi
 
 We will certainly do that, but not today! 
 
-<h4>Epochal time</h4>
+<h4>Milliseconds everywhere</tt>
 
-Time without its time zone is sort of like measurement without units, in the sense that it will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualifications. Nevertheless we often represent "time" as a <tt>long</tt> value without an explicit time unit, or a <tt>Date</tt> without a time zone.
+We often represent time intervals as a <tt>long</tt> value without an explicit time unit, which is then assumed to be milliseconds.  
 
-Having said that, in this article at least, we will avoid looking at any clocks, to put time zones out of scope. Our default time unit for intervals is assumed to be milliseconds, and time itself we express as milliseconds since the Epoch. 
+Also we express the time as milliseconds since the Epoch. In this article, we avoid looking at any clocks, to put time zones out of scope. 
 
-In a follow-up article, we absolutely must delve into <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, <tt>!TimeZone</tt>, <tt>Calendar</tt> and that much maligned <tt>Date</tt>. The purpose of this article is perhaps just to set the scene for that.
+Time without its time zone, like measurement without units, will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualification. Hence Doug Lea's introduction of <tt>!TimeUnit</tt> in his much-loved <tt>java.util.concurrent</tt> package, providing clarity and convenience for that API. 
+
+In a follow-up article, we absolutely must gloss over <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, <tt>!TimeZone</tt>, <tt>Calendar</tt> and that unrepentant <tt>Date</tt> class.
 
 <h4>Time conversion</h4>
 
@@ -185,13 +187,14 @@ or via a database table,
 {{{
   insert into config (name, value) values ('interval', '45s'); 
 }}}
-or even a home-grown file-based configuration utility, which we usually don't recommend but will nonetheless introduce in another article, but only because we've used it for a stand alone monitoring app, which we'll feature at some stage.
+or even a home-grown file-based configuration utility, which we usually don't recommend but will nonetheless introduce in another article.
 {{{
 Config default {
   ...
   interval: 60s
 }
 }}}
+Incidently, this configuration is used for a stand-alone monitoring app, which we'll feature later. We'll supercede that with a cloud app, which will favour database configuration, methinks.
 
 <h4>Conclusion</h4>
 
