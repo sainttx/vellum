@@ -18,11 +18,11 @@ public class Millis {
     ...
 }}}
 
-This util class primarily deals with time <i>intervals</i>, i.e. 
+This util class primarily deals with time <i>intervals</i>.
 
-We have two types of measurement in milliseconds, namely either the time interval between two events, or the time of an event since the UNIX Epoch i.e. as given by <tt>System.currentTimeMillis()</tt>.
+We use milliseconds for either the time interval between two events, or the time of an event since the UNIX Epoch i.e. as given by <tt>System.currentTimeMillis()</tt>.
 
-Besides that, there is the difference between the time of an event since the Epoch, and the time of an event as recorded on our clock and calendar. The "epochal time" is absolute, but the "clock time" is relative to the !TimeZone for which that clock is configured. The problem is there are so many clocks in the world, and very few of them have the same time! 
+While the "epochal time" is absolute, the time of an event as recorded on our clock and calendar is relative to the !TimeZone for which that clock is configured. And the problem is there are so many clocks in the world, and very few of them have the same time! ;)
 
 We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis,
 <blockquote>
@@ -33,7 +33,7 @@ We will certainly do that, but not today!
 
 <h4>Epochal time</h4>
 
-Time without its time zone is sort of like measurement without units, in the sense that it will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualifications. Nevertheless we often represent "time" as a <tt>long</tt> value without an explicit time unit, or a <tt>Date</tt> without a time zone. We best use <tt>!TimeUnit</tt> and <tt>Calendar</tt>.
+Time without its time zone is sort of like measurement without units, in the sense that it will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualifications. Nevertheless we often represent "time" as a <tt>long</tt> value without an explicit time unit, or a <tt>Date</tt> without a time zone.
 
 Having said that, in this article at least, we will avoid looking at any clocks, to put time zones out of scope. Our default time unit for intervals is assumed to be milliseconds, and time itself we express as milliseconds since the Epoch. 
 
