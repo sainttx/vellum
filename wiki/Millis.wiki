@@ -37,7 +37,7 @@ We often represent time intervals as a <tt>long</tt> value without an explicit t
 
 Also we express the time as milliseconds since the Epoch. In this article, we avoid looking at any clocks, to put time zones out of scope. 
 
-Time without its time zone, like measurement without units, will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualification. Hence Doug Lea's introduction of <tt>!TimeUnit</tt> in his much-loved <tt>java.util.concurrent</tt> package, providing clarity and convenience for that API. 
+Time without its time zone, like measurement without units, will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualification. Hence Doug Lea's introduction of <tt>!TimeUnit</tt> in his much-loved <tt>java.util.concurrent</tt> package, is sooo good, providing safety <i>and</i> convenience. 
 
 In a follow-up article, we absolutely must gloss over <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, <tt>!TimeZone</tt>, <tt>Calendar</tt> and that unrepentant <tt>Date</tt> class.
 
