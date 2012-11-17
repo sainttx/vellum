@@ -32,6 +32,7 @@ public class CertStorage {
 
     private Cert build(ResultSet resultSet) throws SQLException {
         Cert cert = new Cert();
+        cert.setId(resultSet.getLong(CertMeta.cert_id.name()));
         cert.setSubject(resultSet.getString(CertMeta.subject.name()));
         cert.setCert(resultSet.getString(CertMeta.cert.name()));
         cert.setUpdated(resultSet.getTimestamp(CertMeta.updated.name()));

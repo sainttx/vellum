@@ -23,7 +23,7 @@ public class ViewUserHandler extends AbstractPageHandler {
     @Override
     protected void handle() throws Exception {
        HtmlPrinter p = new HtmlPrinter(out);
-       String id = pathArgs[2];
+       String id = pathArgs[1];
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();
