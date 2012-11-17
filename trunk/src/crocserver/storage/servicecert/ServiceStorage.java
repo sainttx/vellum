@@ -29,8 +29,8 @@ public class ServiceStorage {
         this.storage = storage;
     }
 
-    private ClientService build(ResultSet resultSet) throws SQLException {
-        ClientService cert = new ClientService();
+    private Service build(ResultSet resultSet) throws SQLException {
+        Service cert = new Service();
         cert.setId(resultSet.getLong(ServiceMeta.client_cert_id.name()));
         cert.setOrgId(resultSet.getLong(ServiceMeta.org_id.name()));
         cert.setHostName(resultSet.getString(ServiceMeta.host_name.name()));
@@ -43,7 +43,7 @@ public class ServiceStorage {
         return cert;
     }
 
-    public void insert(ClientService cert) throws StorageException, SQLException {
+    public void insert(Service cert) throws StorageException, SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceQuery.insert.name()));
@@ -68,7 +68,7 @@ public class ServiceStorage {
         }
     }
 
-    public void updateCert(ClientService cert) throws SQLException {
+    public void updateCert(Service cert) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -87,7 +87,7 @@ public class ServiceStorage {
         }
     }
 
-    public ClientService findSubject(String subject) throws SQLException {
+    public Service findSubject(String subject) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceQuery.find_subject.name()));
@@ -102,7 +102,7 @@ public class ServiceStorage {
         }
     }
 
-    public ClientService find(long id) throws SQLException {
+    public Service find(long id) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceQuery.find_id.name()));
@@ -117,15 +117,15 @@ public class ServiceStorage {
         }
     }
 
-    public ClientService get(long orgId, String hostName, String clientName) throws SQLException {
-        ClientService clientCert = find(orgId, hostName, clientName);
+    public Service get(long orgId, String hostName, String clientName) throws SQLException {
+        Service clientCert = find(orgId, hostName, clientName);
         if (clientCert == null) {
             throw new StorageException(StorageExceptionType.NOT_FOUND, orgId, hostName, clientName);
         }
         return clientCert;
     }
     
-    public ClientService find(long orgId, String hostName, String accountName) throws SQLException {
+    public Service find(long orgId, String hostName, String accountName) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -143,10 +143,10 @@ public class ServiceStorage {
         }
     }
 
-    public List<ClientService> getList() throws SQLException {
+    public List<Service> getList() throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            List<ClientService> list = new ArrayList();
+            List<Service> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(ServiceQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
@@ -160,10 +160,10 @@ public class ServiceStorage {
         }
     }
 
-    public List<ClientService> getList(long orgId) throws SQLException {
+    public List<Service> getList(long orgId) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            List<ClientService> list = new ArrayList();
+            List<Service> list = new ArrayList();
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(ServiceQuery.list_org.name()));
             statement.setLong(1, orgId);

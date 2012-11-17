@@ -4,10 +4,11 @@
  */
 package crocserver.app;
 
+import crocserver.storage.clientcert.Cert;
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.servicecert.ClientService;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
+import java.util.HashSet;
 import javax.net.ssl.X509TrustManager;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -20,11 +21,13 @@ import vellum.security.DefaultKeyStores;
 public class CrocTrustManager implements X509TrustManager {
 
     Logr logger = LogrFactory.getLogger(CrocTrustManager.class);
-    CrocStorage storage;
+    CrocApp app;
     X509TrustManager trustManager;
+    HashSet<String> whiteList = new HashSet();
+    HashSet<String> blackList = new HashSet();
 
-    public CrocTrustManager(CrocStorage storage) {
-        this.storage = storage;
+    public CrocTrustManager(CrocApp app) {
+        this.app = app;
     }
 
     public void init() throws Exception {
@@ -44,9 +47,22 @@ public class CrocTrustManager implements X509TrustManager {
     public void checkClientTrusted(X509Certificate[] certs, String authType) {
         String dname = certs[0].getSubjectDN().getName();
         logger.info("checkClientTrusted " + dname);
+        if (blackList.contains(dname)) {
+            throw new RuntimeException(dname);
+        }
+        if (whiteList.contains(dname)) {
+            return;
+        }
+        logger.info("server", app.getServerCert().getSubjectDN().getName());
+        if (dname.equals(app.getServerCert().getSubjectDN().getName())) {
+            return;
+        }
         try {
-            ClientService cert = storage.getClientCertStorage().findSubject(dname);
-            logger.info("serviceCert", cert.getSubject(), cert.getServiceName());
+            Cert cert = app.getStorage().getCertStorage().find(dname);
+            if (cert == null) {
+                throw new RuntimeException(dname);                
+            }
+            logger.info("cert", cert.getSubject());
             if (!cert.isEnabled()) {
                 throw new RuntimeException(dname);
             }

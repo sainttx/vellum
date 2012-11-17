@@ -74,11 +74,16 @@ public class HttpExchangeInfo {
     private void parseParameterMap() {
         parameterMap = new StringMap();
         urlQuery = httpExchange.getRequestURI().getQuery();
+        if (httpExchange.getRequestMethod().equals("POST")) {
+            urlQuery = Streams.readString(httpExchange.getRequestBody());
+        }
+        logger.info("parseParameterMap", urlQuery, httpExchange.getRequestMethod());
         if (urlQuery == null) {
             return;
         }
         int index = 0;
         while (true) {
+            logger.info("parseParameterMap", index, urlQuery);
             int endIndex = urlQuery.indexOf("&", index);
             if (endIndex > 0) {
                 put(urlQuery.substring(index, endIndex));
@@ -91,7 +96,9 @@ public class HttpExchangeInfo {
     }
 
     private void put(String string) {
+        logger.info("put", string);
         Entry<String, String> entry = Parameters.parseEntry(string);
+        logger.info("put entry", entry);
         if (entry != null) {
             String value = Strings.decodeUrl(entry.getValue());
             parameterMap.put(entry.getKey(), value);
@@ -237,6 +244,13 @@ public class HttpExchangeInfo {
         return httpExchange.getRequestHeaders().get(key);
     }
 
+    public void sendResponseFile(String contentType, String fileName) throws IOException {
+        httpExchange.getResponseHeaders().add("Content-Disposition",
+                "attachment; filename=" + fileName);
+        httpExchange.getResponseHeaders().set("Content-type", contentType);
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+    }
+    
     public void sendResponse(String contentType, boolean ok) throws IOException {
         httpExchange.getResponseHeaders().set("Content-type", contentType);
         if (ok) {

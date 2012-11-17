@@ -6,6 +6,7 @@ package crocserver.storage.common;
 
 import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.adminuser.UserStorage;
+import crocserver.storage.clientcert.CertStorage;
 import crocserver.storage.servicerecord.ServiceRecordStorage;
 import vellum.datatype.EntityCache;
 import vellum.storage.DataSourceConfig;
@@ -53,7 +54,11 @@ public class CrocStorage {
         return new OrgStorage(this);
     }
        
-    public ServiceStorage getClientCertStorage() {
+    public CertStorage getCertStorage() {
+        return new CertStorage(this);
+    }
+
+    public ServiceStorage getServiceStorage() {
         return new ServiceStorage(this);
     }
     

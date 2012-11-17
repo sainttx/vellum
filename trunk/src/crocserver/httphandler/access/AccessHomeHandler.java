@@ -5,7 +5,7 @@ package crocserver.httphandler.access;
 
 import crocserver.app.CrocApp;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.servicecert.ClientService;
+import crocserver.storage.servicecert.Service;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -43,14 +43,14 @@ public class AccessHomeHandler extends AbstractPageHandler {
             h.img(qrUrl);
             h.pre(qrUrl);
         }        
-        printCerts("certs", app.getStorage().getClientCertStorage().getList());
+        printCerts("certs", app.getStorage().getServiceStorage().getList());
     }
     
-    private void printCerts(String label, Collection<ClientService> certs) {
+    private void printCerts(String label, Collection<Service> certs) {
         h.h(3, label);
         h.tableDiv("resultSet");
         h.trh("id", "org", "host", "client", "updated", "updated by");
-        for (ClientService cert : certs) {
+        for (Service cert : certs) {
             h.trd(
                     String.format("<a href='/view/cert/%s'>%s</a>", cert.getId(), cert.getId()),
                     cert.getOrgId(),

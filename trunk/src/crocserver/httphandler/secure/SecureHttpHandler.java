@@ -42,19 +42,20 @@ public class SecureHttpHandler implements HttpHandler {
     public HttpHandler getHandler(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
-        if (path.startsWith("/enable/service/")) {
-            return new EnableServiceHandler(storage);
-        } else if (path.startsWith("/gen/p12/")) {
+        if (path.startsWith("/enableService/")) {
+        } else if (path.equals("/shutdown")) {
+            return new ShutdownHandler(app);
+        } else if (path.startsWith("/genP12/")) {
             return new GenKeyP12Handler(app);
-        } else if (path.startsWith("/sign/cert/")) {
+        } else if (path.startsWith("/signCert/")) {
             return new SignCertHandler(app);
-        } else if (path.startsWith("/view/user/")) {
+        } else if (path.startsWith("/viewUser/")) {
             return new ViewUserHandler(storage);
-        } else if (path.startsWith("/view/cert/")) {
+        } else if (path.startsWith("/viewCert/")) {
             return new ViewCertHandler(storage);
-        } else if (path.startsWith("/view/serviceRecord/")) {
+        } else if (path.startsWith("/viewServiceRecord/")) {
             return new ViewServiceRecordHandler(storage);
-        } else if (path.startsWith("/view/org/")) {
+        } else if (path.startsWith("/viewOrg/")) {
             return new ViewOrgHandler(storage);
         } else if (path.startsWith("/storage")) {
             return new StoragePageHandler(storage);

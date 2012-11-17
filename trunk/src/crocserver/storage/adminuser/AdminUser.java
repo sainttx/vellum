@@ -224,7 +224,7 @@ public class AdminUser extends AbstractIdEntity<String> {
         this.region = region;
     }
 
-    public void setX509Cert(X509Certificate x509Cert) {
+    public void setCert(X509Certificate x509Cert) {
         this.cert = KeyStores.buildCertPem(x509Cert);
         this.subject = x509Cert.getSubjectDN().getName();
     }

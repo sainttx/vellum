@@ -125,7 +125,7 @@ public class UserStorage {
             resultSet.next();
             int count = resultSet.getInt(1);
             connection.setOk(true);
-            return count == 1;
+            return count > 0;
         } finally {
             storage.getConnectionPool().releaseConnection(connection);
         }
@@ -175,10 +175,10 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_display_name_subject.name()));
-            statement.setString(1, user.getDisplayName());
-            statement.setString(2, user.getSubject());
-            statement.setString(3, user.getUserName());
+                    sqlMap.get(UserQuery.update_display_name.name()));
+            int index = 0;
+            statement.setString(++index, user.getDisplayName());
+            statement.setString(++index, user.getUserName());
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
             if (updateCount != 1) {
@@ -193,7 +193,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_display_name_subject.name()));
+                    sqlMap.get(UserQuery.update_secret.name()));
             statement.setString(1, user.getSecret());
             statement.setString(2, user.getUserName());
             int updateCount = statement.executeUpdate();
@@ -210,7 +210,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_display_name_subject.name()));
+                    sqlMap.get(UserQuery.update_cert.name()));
             statement.setString(1, user.getSubject());
             statement.setString(2, user.getCert());
             statement.setString(3, user.getUserName());
