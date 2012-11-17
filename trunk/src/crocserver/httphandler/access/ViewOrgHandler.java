@@ -23,7 +23,7 @@ public class ViewOrgHandler extends AbstractPageHandler {
     @Override
     protected void handle() throws Exception {
        HtmlPrinter p = new HtmlPrinter(out);
-       long id = Long.parseLong(pathArgs[2]);
+       long id = Long.parseLong(pathArgs[1]);
        p.div("menuBarDiv");
        p.a_("/", "Home");
        p._div();

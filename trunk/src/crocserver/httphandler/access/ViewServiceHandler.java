@@ -23,7 +23,7 @@ public class ViewServiceHandler extends AbstractPageHandler {
 
     @Override
     protected void handle() throws Exception {
-        Long id = Long.parseLong(pathArgs[2]);
+        Long id = Long.parseLong(pathArgs[1]);
         HtmlPrinter p = new HtmlPrinter(out);
         p.div("menuBarDiv");
         p.a_("/", "Home");

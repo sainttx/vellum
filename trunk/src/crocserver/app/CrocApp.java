@@ -68,6 +68,7 @@ public class CrocApp {
 
     public void init() throws Exception {
         initConfig();
+        sendShutdown();
         if (configProperties.getBoolean("startH2TcpServer")) {
             h2Server = Server.createTcpServer().start();
         }
@@ -150,7 +151,6 @@ public class CrocApp {
     }
 
     public void start() throws Exception {
-        sendShutdown();
         if (httpServer != null) {
             httpServer.start();
             httpServer.startContext("/", new InsecureHttpHandler(this));
