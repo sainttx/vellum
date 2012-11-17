@@ -1,27 +1,38 @@
 
 --drop table service_cert; 
 
-drop table schema_revision;
-drop table history; 
-drop table org; 
+drop table cert;
+drop table config;
 drop table contact_group;
 drop table contact_group_member;
 drop table contact;
-drop table user_; 
+drop table history; 
+drop table host_;
+drop table metric_record;
+drop table org; 
 drop table service_record;
 drop table service_type;
 drop table service;
-drop table metric_record;
-drop table host_;
-drop table config;
+drop table schema_revision;
+drop table user_; 
 
 create table schema_revision (
   revision_number int,
   updated timestamp default now()
 );
 
+create table cert (
+  config_id int auto_increment primary key,
+  subject varchar(255) not null,
+  cert varchar(8192),
+  inserted timestamp not null default now(),
+  updated timestamp not null default now(),
+  updated_by varchar(32) not null,
+  unique key uniq_cert (subject)
+);
+
 create table config (
-  config_id int auto_increment,
+  config_id int auto_increment primary key,
   name_ varchar(128),
   value_ varchar(128)
 );
@@ -172,4 +183,3 @@ create table metric_record (
   time_ timestamp,
   unique key uniq_metric_record (org_id, host_name, service_name, metric_name, time_)
 );
-
