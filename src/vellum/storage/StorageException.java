@@ -20,8 +20,8 @@ public class StorageException extends SQLException {
         this.exceptionType = exceptionType;
     }
     
-    public StorageException(StorageExceptionType exceptionType, Comparable ... ids) {
-        super(Args.format(exceptionType, Lists.format(ids)));
+    public StorageException(StorageExceptionType exceptionType, Object ... args) {
+        super(Args.format(exceptionType, Lists.format(args)));
         this.exceptionType = exceptionType;
     }
 

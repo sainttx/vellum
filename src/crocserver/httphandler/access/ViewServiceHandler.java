@@ -4,19 +4,19 @@
 package crocserver.httphandler.access;
 
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.clientcert.Cert;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.common.CrocStorage;
+import crocserver.storage.servicecert.Service;
 
 /**
  *
  * @author evans
  */
-public class ViewCertHandler extends AbstractPageHandler {
+public class ViewServiceHandler extends AbstractPageHandler {
 
     CrocStorage storage;
 
-    public ViewCertHandler(CrocStorage storage) {
+    public ViewServiceHandler(CrocStorage storage) {
         super();
         this.storage = storage;
     }
@@ -28,17 +28,19 @@ public class ViewCertHandler extends AbstractPageHandler {
         p.div("menuBarDiv");
         p.a_("/", "Home");
         p._div();
-        p.span("pageTitle", String.format("Cert %s", id));
-        Cert cert = storage.getCertStorage().find(id);
+        p.span("pageTitle", String.format("Service %s", id));
+        Service service = storage.getServiceStorage().find(id);
         p.tableDiv("resultSet");
         p.thead();
         p._thead();
         p.tbody();
-        p.trhd("Subject", cert.getSubject());
-        p.trhd("Updated", cert.getUpdated());
-        p.trhd("Updated by", cert.getUpdatedBy());
+        p.trhd("Org", service.getOrgId());
+        p.trhd("Host", service.getHostName());
+        p.trhd("Client", service.getServiceName());
+        p.trhd("Updated", service.getUpdated());
+        p.trhd("Updated by", service.getUpdatedBy());
         p._tbody();
         p._tableDiv();
-        p.pre(cert.getCert());
+        p.pre(service.getCert());
     }
 }

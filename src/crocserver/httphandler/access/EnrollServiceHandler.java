@@ -13,7 +13,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.ClientService;
+import crocserver.storage.servicecert.Service;
 import java.util.Date;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
@@ -82,9 +82,9 @@ public class EnrollServiceHandler implements HttpHandler {
         keyPair.generate(dname, new Date(), 999);
         String alias = "croc-server";
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
-        ClientService clientCert = new ClientService(org.getId(), hostName, serviceName, userName);
+        Service clientCert = new Service(org.getId(), hostName, serviceName, userName);
         clientCert.setX509Cert(keyPair.getCert());
-        storage.getClientCertStorage().insert(clientCert);
+        storage.getServiceStorage().insert(clientCert);
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         out.println(KeyStores.buildKeyPem(keyPair.getPrivateKey()));
     }    

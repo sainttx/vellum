@@ -89,7 +89,7 @@ function login(accessToken) {
     console.log(accessToken);
     $.post(
         '/login',
-        accessToken,
+        'accessToken=' + accessToken,
         processLogin
         );                
 }

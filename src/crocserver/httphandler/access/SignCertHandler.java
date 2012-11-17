@@ -14,7 +14,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.ClientService;
+import crocserver.storage.servicecert.Service;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import sun.security.pkcs.PKCS10;
@@ -82,15 +82,15 @@ public class SignCertHandler implements HttpHandler {
                 DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias),
                 certReq, new Date(), 999);
         String signedCertPem = KeyStores.buildCertPem(signedCert);
-        ClientService clientCert = storage.getClientCertStorage().find(org.getId(), hostName, clientName);
+        Service clientCert = storage.getServiceStorage().find(org.getId(), hostName, clientName);
         if (clientCert == null) {
-            clientCert = new ClientService(org.getId(), hostName, clientName, userName);
+            clientCert = new Service(org.getId(), hostName, clientName, userName);
             clientCert.setX509Cert(signedCert);
-            storage.getClientCertStorage().insert(clientCert);
+            storage.getServiceStorage().insert(clientCert);
         } else {
             logger.info("updateCert", clientCert.getId());
             clientCert.setX509Cert(signedCert);
-            storage.getClientCertStorage().updateCert(clientCert);
+            storage.getServiceStorage().updateCert(clientCert);
         }
         logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

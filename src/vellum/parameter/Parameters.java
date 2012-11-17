@@ -22,7 +22,7 @@ public class Parameters {
 
     public static Entry<String, String> parseEntry(String string) {
         int index = string.indexOf("=");
-        if (index > 1 && index + 1 < string.length()) {
+        if (index > 0 && index < string.length()) {
             return new Entry(string.substring(0, index), string.substring(index + 1));
         }
         return null;

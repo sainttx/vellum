@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package crocserver.storage.common;
+package vellum.entity;
 
 import java.sql.SQLException;
 

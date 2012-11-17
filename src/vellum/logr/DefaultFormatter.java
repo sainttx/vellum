@@ -20,7 +20,7 @@ public class DefaultFormatter implements LogrFormatter {
         builder.append(context.toString());
         builder.append(" ");
         builder.append(record.getMessage());
-        if (record.getArgs().length > 0) {
+        if (record.getArgs() != null && record.getArgs().length > 0) {
             builder.append(": ");
             builder.append(format(record.getArgs()));
         }

@@ -11,11 +11,12 @@ package crocserver.storage.adminuser;
 public enum UserQuery {
     validate,
     insert,
-    update_display_name_subject,
     update_login,
     update_logout,
     update_secret,
     update_cert,
+    update_display_name,
+    update_display_name_subject_cert,
     exists_username,
     exists_email,
     delete_username,

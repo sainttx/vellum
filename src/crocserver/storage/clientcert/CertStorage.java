@@ -80,11 +80,11 @@ public class CertStorage {
         }
     }
 
-    public Cert find(String subject) throws SQLException {
+    public Cert find(long id) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.find.name()));
-            statement.setString(1, subject);
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.find_id.name()));
+            statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
                 return null;
@@ -95,10 +95,25 @@ public class CertStorage {
         }
     }
 
+    public Cert find(String subject) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.find_subject.name()));
+            statement.setString(1, subject);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            return build(resultSet);
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
     public boolean existsEnabled(String subject) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.find.name()));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.enabled.name()));
             statement.setString(1, subject);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();

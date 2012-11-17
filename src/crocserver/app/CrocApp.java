@@ -33,6 +33,7 @@ import vellum.util.Threads;
 import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.common.CrocStorage;
 import java.security.Security;
+import java.security.cert.X509Certificate;
 import vellum.exception.EnumException;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
@@ -58,13 +59,14 @@ public class CrocApp {
     VellumHttpsServer privateHttpsServer;
     CrocTrustManager trustManager;
     GtalkConnection gtalkConnection;
-    Contact adminContact; 
+    Contact adminContact;
     String serverKeyAlias = System.getProperty("serverKeyAlias");
+    X509Certificate serverCert;
     GoogleApi googleApi;
-    String serverUrl; 
-    String serverName = "croc.linuxd.org"; 
-    
-    public void init() throws Exception {        
+    String serverUrl;
+    String serverName = "croc.linuxd.org";
+
+    public void init() throws Exception {
         initConfig();
         if (configProperties.getBoolean("startH2TcpServer")) {
             h2Server = Server.createTcpServer().start();
@@ -77,7 +79,7 @@ public class CrocApp {
                 configProperties.getString("dataSource")).getProperties());
         storage = new CrocStorage(new SimpleEntityCache(), new SimpleConnectionPool(dataSourceConfig));
         storage.init();
-        trustManager = new CrocTrustManager(storage);
+        trustManager = new CrocTrustManager(this);
         trustManager.init();
         new CrocSchema(storage).verifySchema();
         String httpServerConfigName = configProperties.getString("httpServer");
@@ -116,7 +118,7 @@ public class CrocApp {
             if (gtalkProps.getBoolean("enabled", false)) {
                 gtalkConnection = new GtalkConnection(gtalkProps);
             }
-        }          
+        }
         serverUrl = configProperties.getString("serverUrl");
         googleApi = new GoogleApi(serverUrl, serverUrl + "/oauth", configMap.get("GoogleApi", "default").getProperties());
         logger.info("googleApi", googleApi);
@@ -125,16 +127,17 @@ public class CrocApp {
     public String getServerName() {
         return serverName;
     }
-    
+
     public String getServerUrl() {
         return serverUrl;
     }
-   
+
     public GoogleApi getGoogleApi() {
         return googleApi;
     }
-    
+
     private void initConfig() throws Exception {
+        serverCert = DefaultKeyStores.getCert(serverKeyAlias);
         confFileName = getString("conf");
         File confFile = new File(confFileName);
         logger.info("conf", confFileName, confFile);
@@ -145,8 +148,9 @@ public class CrocApp {
             LogrFactory.setDefaultLevel(LogrLevel.valueOf(logLevelName));
         }
     }
-    
+
     public void start() throws Exception {
+        sendShutdown();
         if (httpServer != null) {
             httpServer.start();
             httpServer.startContext("/", new InsecureHttpHandler(this));
@@ -172,6 +176,20 @@ public class CrocApp {
             } finally {
                 stop();
             }
+        }
+    }
+
+    public void sendShutdown() {
+        String shutdownUrl = configProperties.getString("shutdownUrl");
+        logger.info("sendShutdown", shutdownUrl);
+        try {
+            URL url = new URL(shutdownUrl);
+            URLConnection connection = url.openConnection();
+            String response = Streams.readString(connection.getInputStream());
+            connection.getInputStream().close();
+            logger.info(response);
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
         }
     }
 
@@ -223,7 +241,11 @@ public class CrocApp {
     public String getServerKeyAlias() {
         return serverKeyAlias;
     }
-    
+
+    public X509Certificate getServerCert() {
+        return serverCert;
+    }
+
     public void sendAdminGtalkMessage(String message) {
         logger.warn("notifyAdmin", message, adminContact);
         if (gtalkConnection != null && adminContact != null && adminContact.isEnabled() && adminContact.isGtalk()) {
@@ -241,10 +263,10 @@ public class CrocApp {
                 gtalkConnection.sendMessage(adminContact.getIm(), message);
             } catch (Exception e) {
                 logger.warn(e, "sendGtalkMessage", adminContact);
-            }            
-        }        
+            }
+        }
     }
-    
+
     public static void main(String[] args) throws Exception {
         try {
             CrocApp starter = new CrocApp();
@@ -254,9 +276,8 @@ public class CrocApp {
             e.printStackTrace(System.err);
         }
     }
-
     String homePage = "/bindex.html";
-    
+
     public String getHomePage() {
         return homePage;
     }
@@ -272,6 +293,7 @@ public class CrocApp {
             CrocCookie cookie = new CrocCookie(cookieMap);
             AdminUser user = storage.getUserStorage().get(cookie.getEmail());
             if (user.getLoginTime().getTime() != cookie.getLoginMillis()) {
+                logger.warn("getUser cookie millis", user.getLoginTime().getTime(), cookie.getLoginMillis());
                 throw new EnumException(CrocExceptionType.STALE_COOKIE);
             }
             return user;
@@ -281,6 +303,6 @@ public class CrocApp {
     public GoogleUserInfo getGoogleUserInfo(HttpExchangeInfo httpExchangeInfo) throws Exception {
         StringMap cookieMap = httpExchangeInfo.getCookieMap();
         String accessToken = cookieMap.get("accessToken");
-        return googleApi.getUserInfo(accessToken);        
+        return googleApi.getUserInfo(accessToken);
     }
 }

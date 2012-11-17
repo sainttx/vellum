@@ -7,11 +7,20 @@ select * from user_;
 insert into user_ (user_name, first_name, last_name, display_name, email, subject, secret, role_, login)
 values (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
--- update_display_name_subject
+-- update_display_name_subject_cert
 update user_ 
 set 
   display_name = ?, 
   subject = ?,  
+  cert = ?,
+  updated = now()
+where user_name = ?
+;
+
+-- update_display_name
+update user_ 
+set 
+  display_name = ?, 
   updated = now()
 where user_name = ?
 ;

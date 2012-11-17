@@ -4,20 +4,30 @@
  */
 package crocserver.app;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base32;
+import sun.security.x509.X500Name;
 
 /**
  *
  * @author evan
  */
 public class CrocSecurity {
- 
+
     public String createDname(String cn, String ou, String o, String l, String s, String c) {
         return String.format("CN=%s, OU=%s, O=%s, L=%s, S=%s, C=%s", cn, ou, o, l, s, c);
+    }
+
+    public String getCommonName(String subject) {
+        try {
+            return new X500Name(subject).getCommonName();
+        } catch (IOException e) {
+            throw new RuntimeException(e);                    
+        }
     }
 
     public static String createSecret() {
@@ -32,7 +42,7 @@ public class CrocSecurity {
         mac.init(signKey);
         return mac;
     }
-    
+
     public static String createCode(byte[] secret, String string, long value) throws Exception {
         Mac mac = createHmac(secret);
         mac.update(string.getBytes());
@@ -52,11 +62,11 @@ public class CrocSecurity {
 
     public static String getTotpUrl(String userName, String serverName, String secret) {
         return String.format("otpauth://totp/%s@%s?secret=%s", userName, serverName, secret);
-    }           
-    
+    }
+
     public static String getQrCodeUrl(String userName, String serverName, String secret) {
-        return "https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=" + 
-                "otpauth%3A%2F%2Ftotp%2F" + userName + '@' + serverName +  
-                "%3Fsecret%3D" + secret;
-    }           
+        return "https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl="
+                + "otpauth%3A%2F%2Ftotp%2F" + userName + '@' + serverName
+                + "%3Fsecret%3D" + secret;
+    }
 }

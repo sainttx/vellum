@@ -16,4 +16,5 @@ public enum CrocExceptionType {
     NO_AUTH,
     AUTH_FAILED,
     AUTH_EXPIRED,
+    PASSWORD_TOO_SHORT,
 }

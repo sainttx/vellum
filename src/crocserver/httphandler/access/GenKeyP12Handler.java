@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import crocserver.app.CrocApp;
+import crocserver.app.CrocExceptionType;
 import crocserver.app.GoogleUserInfo;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminUser;
@@ -16,6 +17,7 @@ import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import vellum.exception.EnumException;
 import vellum.security.DefaultKeyStores;
 import vellum.security.GeneratedRsaKeyPair;
 
@@ -52,21 +54,32 @@ public class GenKeyP12Handler implements HttpHandler {
     private void handle() throws Exception {
         GoogleUserInfo userInfo = app.getGoogleUserInfo(httpExchangeInfo);
         logger.info("userInfo", userInfo);
-        char[] password = httpExchangeInfo.getParameterMap().getString("password").toCharArray();
         AdminUser user = app.getUser(httpExchangeInfo);
+        char[] password = httpExchangeInfo.getParameterMap().getString("password").toCharArray();
+        if (password.length < 8) {
+            if (false) {
+                throw new EnumException(CrocExceptionType.PASSWORD_TOO_SHORT);
+            }
+            password = user.getEmail().toCharArray();
+        }
+        if (true) {
+            password = "1234".toCharArray();            
+        }
         user.formatSubject();
         logger.info("generate", user.getSubject());
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
         keyPair.generate(user.getSubject(), new Date(), 999);
         String alias = app.getServerKeyAlias();
-        X509Certificate serverCert = DefaultKeyStores.getCert(alias);
+        X509Certificate serverCert = app.getServerCert();
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);
-        storage.getUserStorage().update(user);
+        user.setCert(keyPair.getCert());
+        storage.getUserStorage().updateCert(user);
+        storage.getCertStorage().save(keyPair.getCert(), userInfo.getEmail());
         PKCS12KeyStore p12 = new PKCS12KeyStore();
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCert(), serverCert};
         p12.engineSetKeyEntry(user.getUserName(), keyPair.getPrivateKey(), password, chain);
-        httpExchangeInfo.sendResponse("application/x-pkcs12", true);
-        p12.engineStore(httpExchangeInfo.getPrintStream(), "1234".toCharArray());
+        httpExchangeInfo.sendResponseFile("application/x-pkcs12", "croc-client.p12");
+        p12.engineStore(httpExchangeInfo.getPrintStream(), password);
         logger.info("pkcs12");
     }    
 }

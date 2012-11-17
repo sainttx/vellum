@@ -5,7 +5,7 @@
 package crocserver.storage.org;
 
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.common.AbstractEntityStorage;
+import vellum.entity.AbstractEntityStorage;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

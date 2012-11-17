@@ -50,7 +50,7 @@ public class LoginHandler implements HttpHandler {
             return;
         }
         if (httpExchangeInfo.getPathLength() == 1) {
-            accessToken = httpExchangeInfo.getInputString();
+            accessToken = httpExchangeInfo.getParameter("accessToken");
             logger.info("input", userId, accessToken);
             try {
                 if (accessToken != null) {

@@ -47,13 +47,13 @@ public class AccessHttpHandler implements HttpHandler {
             return new EchoHandler(app);
         } else if (path.startsWith("/admin")) {
             return new SecureHomeHandler(app);
-        } else if (path.startsWith("/enroll/user/")) {
+        } else if (path.startsWith("/enrollUser/")) {
             return new EnrollUserHandler(app);
-        } else if (path.startsWith("/enroll/org/")) {
+        } else if (path.startsWith("/enrollOrg/")) {
             return new EnrollOrgHandler(app);
-        } else if (path.startsWith("/enroll/service/")) {
+        } else if (path.startsWith("/enrollService/")) {
             return new EnrollServiceHandler(storage);
-        } else if (path.startsWith("/get/cert/")) {
+        } else if (path.startsWith("/getCert/")) {
             return new GetCertHandler(storage);
         } else if (path.equals("/login")) {
             return new LoginHandler(app);
@@ -61,15 +61,17 @@ public class AccessHttpHandler implements HttpHandler {
             return new LogoutHandler(app);
         } else if (path.equals("/genKey")) {
             return new GenKeyP12Handler(app);
-        } else if (path.startsWith("/sign/cert/")) {
+        } else if (path.startsWith("/signCert/")) {
             return new SignCertHandler(app);
-        } else if (path.startsWith("/view/user/")) {
+        } else if (path.startsWith("/viewUser/")) {
             return new ViewUserHandler(storage);
-        } else if (path.startsWith("/view/cert/")) {
+        } else if (path.startsWith("/viewCert/")) {
             return new ViewCertHandler(storage);
-        } else if (path.startsWith("/view/serviceRecord/")) {
+        } else if (path.startsWith("/viewService/")) {
+            return new ViewServiceHandler(storage);
+        } else if (path.startsWith("/viewServiceRecord/")) {
             return new ViewServiceRecordHandler(storage);
-        } else if (path.startsWith("/view/org/")) {
+        } else if (path.startsWith("/viewOrg/")) {
             return new ViewOrgHandler(storage);
         } else if (path.startsWith("/storage")) {
             return new StoragePageHandler(storage);

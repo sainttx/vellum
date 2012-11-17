@@ -16,7 +16,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.ClientService;
+import crocserver.storage.servicecert.Service;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.security.DefaultKeyStores;
@@ -69,7 +69,7 @@ public class GenKeyP12CliHandler implements HttpHandler {
     }
     
     Org org;
-    ClientService clientCert;
+    Service clientCert;
     
     private void handle() throws Exception {
         org = storage.getOrgStorage().get(orgName);
@@ -85,17 +85,17 @@ public class GenKeyP12CliHandler implements HttpHandler {
         String alias = app.getServerKeyAlias();
         X509Certificate serverCert = DefaultKeyStores.getCert(alias);
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);
-        clientCert = storage.getClientCertStorage().findSubject(dname);
+        clientCert = storage.getServiceStorage().findSubject(dname);
         if (clientCert == null) {
-            clientCert = new ClientService(org.getId(), hostName, clientName, userName);
+            clientCert = new Service(org.getId(), hostName, clientName, userName);
         } else {
             clientCert.setUpdatedBy(userName);    
         }
         clientCert.setX509Cert(keyPair.getCert());
         if (clientCert.isStored()) {
-            storage.getClientCertStorage().updateCert(clientCert);    
+            storage.getServiceStorage().updateCert(clientCert);    
         } else {
-            storage.getClientCertStorage().insert(clientCert);
+            storage.getServiceStorage().insert(clientCert);
         }
         PKCS12KeyStore p12 = new PKCS12KeyStore();
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCert(), serverCert};
