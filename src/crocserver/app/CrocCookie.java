@@ -66,6 +66,10 @@ public class CrocCookie {
         authCode = CrocSecurity.createCode(secret, email, loginMillis);
     }
 
+    public String getAuthCode() {
+        return authCode;
+    }
+    
     public void validateAuthCode(byte[] secret) throws Exception {
         String code = CrocSecurity.createCode(secret, email, loginMillis);
         if (!authCode.equals(code)) {

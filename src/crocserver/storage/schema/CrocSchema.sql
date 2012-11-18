@@ -22,7 +22,7 @@ create table schema_revision (
 );
 
 create table cert (
-  config_id int auto_increment primary key,
+  cert_id int auto_increment primary key,
   subject varchar(255) not null,
   cert varchar(8192),
   inserted timestamp not null default now(),
