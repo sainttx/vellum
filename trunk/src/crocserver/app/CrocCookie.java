@@ -14,7 +14,7 @@ import vellum.parameter.StringMap;
  * @author evan
  */
 public class CrocCookie {
-    public static final long MAX_AGE_MILLIS = Millis.fromMinutes(1);
+    public static final long MAX_AGE_MILLIS = Millis.fromHours(16);
     
     String email;
     String displayName;
