@@ -47,8 +47,8 @@ function clickLogoutPersona() {
 }
 
 function initPersona() {
-    $('#croc-login-persona-clickable').click(clickLoginPersona);
-    $('#croc-logout-persona-clickable').click(clickLogoutPersona);
+    $('.croc-login-clickable').click(clickLoginPersona);
+    $('.croc-logout-clickable').click(clickLogoutPersona);
     navigator.id.watch({
         loggedInUser: currentUser,
         onlogin: function(assertion) {
@@ -67,7 +67,6 @@ function initPersona() {
                 },
                 error: function(xhr, status, err) {
                     console.log("error");
-                    alert("Login failure: " + err);
                 }
             });
         },
@@ -84,7 +83,6 @@ function initPersona() {
                 },
                 error: function(xhr, status, err) {
                     console.log("error");
-                    alert("Logout failure: " + err);
                 }
             });
         }
