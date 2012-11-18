@@ -45,7 +45,7 @@ function clickLogoutPersona() {
     console.log("logout persona");
     navigator.id.logout();
 }
-    
+
 function initPersona() {
     $('#croc-login-persona-clickable').click(clickLoginPersona);
     $('#croc-logout-persona-clickable').click(clickLogoutPersona);
@@ -66,6 +66,7 @@ function initPersona() {
                     processLoginPersona(res);
                 },
                 error: function(xhr, status, err) {
+                    console.log("error");
                     alert("Login failure: " + err);
                 }
             });
@@ -73,15 +74,16 @@ function initPersona() {
         onlogout: function() {
             console.log("onlogout");
             // Also, make sure loggedInUser will get set to null on the next page load.
+            currentUser = null;
             $.ajax({ 
                 type: 'POST',                
                 url: '/logoutPersona',
                 success: function(res, status, xhr) {
                     console.log("success");
-                    currentUser = null;
                     processLogout(res);
                 },
                 error: function(xhr, status, err) {
+                    console.log("error");
                     alert("Logout failure: " + err);
                 }
             });
