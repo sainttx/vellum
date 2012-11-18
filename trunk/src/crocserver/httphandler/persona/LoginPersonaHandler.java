@@ -2,20 +2,20 @@
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
  * 
  */
-package crocserver.httphandler.access;
+package crocserver.httphandler.persona;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
 import crocserver.app.CrocCookie;
 import crocserver.app.CrocSecurity;
-import crocserver.app.GoogleUserInfo;
 import crocserver.app.JsonStrings;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.util.Date;
+import vellum.datatype.Emails;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
@@ -25,60 +25,51 @@ import vellum.util.Strings;
  *
  * @author evans
  */
-public class LoginHandler implements HttpHandler {
+public class LoginPersonaHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 
-    public LoginHandler(CrocApp app) {
+    public LoginPersonaHandler(CrocApp app) {
         super();
         this.app = app;
     }
     
     String userId;
-    String accessToken;
+    String assertion;
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), httpExchangeInfo.getParameterMap());
-        if (httpExchangeInfo.getPath().length() == 0) {
-            httpExchange.close();
-            return;
-        }
-        if (httpExchangeInfo.getPathLength() == 1) {
-            accessToken = httpExchangeInfo.getParameter("accessToken");
-            logger.info("input", userId, accessToken);
+            assertion = httpExchangeInfo.getParameter("assertion");
+            logger.info("input", userId, assertion);
             try {
-                if (accessToken != null) {
+                if (assertion != null) {
                     handle();
                 } else {
-                    httpExchangeInfo.handleError("require access_token");
+                    httpExchangeInfo.handleError("require assertion");
                 }
             } catch (Exception e) {
                 httpExchangeInfo.handleException(e);
             }
-        } else {
-            httpExchangeInfo.handleError();
-        }
         httpExchange.close();
     }
     
-    GoogleUserInfo userInfo;    
+    PersonaUserInfo userInfo;    
     
     private void handle() throws Exception {
-        userInfo = app.getGoogleApi().getUserInfo(accessToken);
+        userInfo = new PersonaApi(app.getServerUrl()).getUserInfo(assertion);
         logger.info("userInfo", userInfo);
         AdminUser user = app.getStorage().getUserStorage().findEmail(userInfo.getEmail());
         if (user == null) {
             user = new AdminUser(userInfo.getEmail());
-            user.setDisplayName(userInfo.getDisplayName());
-            user.setFirstName(userInfo.getGivenName());
-            user.setLastName(userInfo.getFamilyName());
             user.setEmail(userInfo.getEmail());
+            user.setFirstName(Emails.getUsername(userInfo.getEmail()));
+            user.setDisplayName(Emails.getUsername(userInfo.getEmail()));
             user.setRole(AdminRole.DEFAULT);
             user.setEnabled(true);
             user.setSecret(CrocSecurity.createSecret());
@@ -92,20 +83,19 @@ public class LoginHandler implements HttpHandler {
         String totpUrl = CrocSecurity.getTotpUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         String qrUrl = CrocSecurity.getQrCodeUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
-        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime(), accessToken);
+        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime(), assertion);
         cookie.createAuthCode(user.getSecret().getBytes());
         httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE_MILLIS);
         httpExchangeInfo.sendResponse("text/json", true);
         StringMap responseMap = new StringMap();
-        responseMap.put("email", userInfo.getEmail());
-        responseMap.put("name", userInfo.getDisplayName());
-        responseMap.put("picture", userInfo.getPicture());
+        responseMap.put("email", user.getEmail());
+        responseMap.put("displayName", user.getDisplayName());
         responseMap.put("qr", qrUrl);
         responseMap.put("totpSecret", user.getSecret());
         responseMap.put("totpUrl", totpUrl);
         responseMap.put("authCode", cookie.getAuthCode());
         String json = JsonStrings.buildJson(responseMap);
-        httpExchangeInfo.getPrintStream().println(json);
         logger.info(json);
+        httpExchangeInfo.getPrintStream().println(json);
     }    
 }

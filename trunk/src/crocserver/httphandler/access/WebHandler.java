@@ -66,7 +66,7 @@ public class WebHandler implements HttpHandler {
                 }
                 cache.put(path, bytes);
             }
-            logger.info("path", bytes.length);
+            logger.info("path", path, bytes.length);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             httpExchange.getResponseBody().write(bytes);        
         } catch (Exception e) {

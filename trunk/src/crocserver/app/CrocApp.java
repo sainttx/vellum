@@ -276,7 +276,7 @@ public class CrocApp {
             e.printStackTrace(System.err);
         }
     }
-    String homePage = "/bindex.html";
+    String homePage = "/pindex.html";
 
     public String getHomePage() {
         return homePage;
