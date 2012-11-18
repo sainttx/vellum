@@ -40,12 +40,16 @@ public class LogoutPersonaHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
-        cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
-        if (cookie.getEmail() == null) {
-            httpExchangeInfo.handleError();
-        }
         try {
-            handle();
+            cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
+            if (cookie.getEmail() == null) {
+                logger.warn("cookie", cookie);
+                if (false) {
+                    httpExchangeInfo.handleError();
+                }
+            } else {
+                handle();
+            }
         } catch (Exception e) {
             httpExchangeInfo.handleException(e);
         }

@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import crocserver.app.CrocApp;
+import crocserver.app.CrocCookie;
 import crocserver.app.CrocExceptionType;
 import crocserver.app.GoogleUserInfo;
 import crocserver.httpserver.HttpExchangeInfo;
@@ -31,7 +32,7 @@ public class GenKeyP12Handler implements HttpHandler {
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
- 
+    
     public GenKeyP12Handler(CrocApp app) {
         super();
         this.app = app;
@@ -52,8 +53,10 @@ public class GenKeyP12Handler implements HttpHandler {
     }
     
     private void handle() throws Exception {
-        GoogleUserInfo userInfo = app.getGoogleUserInfo(httpExchangeInfo);
-        logger.info("userInfo", userInfo);
+        if (false) {
+            GoogleUserInfo userInfo = app.getGoogleUserInfo(httpExchangeInfo);
+            logger.info("userInfo", userInfo);
+        }
         AdminUser user = app.getUser(httpExchangeInfo);
         char[] password = httpExchangeInfo.getParameterMap().getString("password").toCharArray();
         if (password.length < 8) {
@@ -74,7 +77,7 @@ public class GenKeyP12Handler implements HttpHandler {
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);
         user.setCert(keyPair.getCert());
         storage.getUserStorage().updateCert(user);
-        storage.getCertStorage().save(keyPair.getCert(), userInfo.getEmail());
+        storage.getCertStorage().save(keyPair.getCert(), user.getEmail());
         PKCS12KeyStore p12 = new PKCS12KeyStore();
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCert(), serverCert};
         p12.engineSetKeyEntry(user.getUserName(), keyPair.getPrivateKey(), password, chain);

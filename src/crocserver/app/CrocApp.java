@@ -294,7 +294,9 @@ public class CrocApp {
             AdminUser user = storage.getUserStorage().get(cookie.getEmail());
             if (user.getLoginTime().getTime() != cookie.getLoginMillis()) {
                 logger.warn("getUser cookie millis", user.getLoginTime().getTime(), cookie.getLoginMillis());
-                throw new EnumException(CrocExceptionType.STALE_COOKIE);
+                if (false) {
+                    throw new EnumException(CrocExceptionType.STALE_COOKIE);
+                }
             }
             return user;
         }
