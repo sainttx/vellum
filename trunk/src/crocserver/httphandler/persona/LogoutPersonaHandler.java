@@ -28,6 +28,7 @@ public class LogoutPersonaHandler implements HttpHandler {
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
+    CrocCookie cookie;
 
     public LogoutPersonaHandler(CrocApp app) {
         super();
@@ -38,7 +39,11 @@ public class LogoutPersonaHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), httpExchangeInfo.getParameterMap());
+        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
+        cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
+        if (cookie.getEmail() == null) {
+            httpExchangeInfo.handleError();
+        }
         try {
             handle();
         } catch (Exception e) {
@@ -46,9 +51,8 @@ public class LogoutPersonaHandler implements HttpHandler {
         }
         httpExchange.close();
     }
-        
+
     private void handle() throws Exception {
-        CrocCookie cookie = new CrocCookie(httpExchangeInfo.getCookieMap());
         logger.info("cookie", cookie);
         AdminUser user = app.getStorage().getUserStorage().get(cookie.getEmail());
         user.setLogoutTime(new Date());

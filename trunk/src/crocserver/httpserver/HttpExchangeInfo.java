@@ -82,7 +82,7 @@ public class HttpExchangeInfo {
             return;
         }
         int index = 0;
-        while (true) {
+        while (index < urlQuery.length()) {
             logger.info("parseParameterMap", index, urlQuery);
             int endIndex = urlQuery.indexOf("&", index);
             if (endIndex > 0) {
