@@ -157,6 +157,14 @@ function processLoginPersona(res) {
     }
 }
 
+function showLoggedInEmail(email) {
+    $('#croc-user-picture').hide();
+    $('#croc-username-text').text(email);
+    $('#croc-loggedin-title').text("Welcome, " + email);
+    showLoggedIn();
+    enableLoggedIn();
+}
+
 function processLogin(res) {
     console.log("login response received")
     if (res.email != null) {
