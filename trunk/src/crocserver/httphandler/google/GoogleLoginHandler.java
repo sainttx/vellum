@@ -1,44 +1,44 @@
 /*
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
+ * 
  */
-package crocserver.httphandler.access;
+package crocserver.httphandler.google;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
+import crocserver.app.CrocCookie;
 import crocserver.app.CrocSecurity;
 import crocserver.app.GoogleUserInfo;
+import crocserver.app.JsonStrings;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
-import java.io.PrintStream;
-import vellum.html.HtmlPrinter;
+import java.util.Date;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.parameter.StringMap;
 import vellum.util.Strings;
 
 /**
  *
  * @author evans
  */
-public class OAuthCallbackHandler implements HttpHandler {
+public class GoogleLoginHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
-    PrintStream out;
 
-    public OAuthCallbackHandler(CrocApp app) {
+    public GoogleLoginHandler(CrocApp app) {
         super();
         this.app = app;
     }
-    String state;
+    
+    String userId;
     String accessToken;
-    String code;
-    String error;
-    Integer expiry;
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -49,21 +49,20 @@ public class OAuthCallbackHandler implements HttpHandler {
             httpExchange.close();
             return;
         }
-        state = httpExchangeInfo.getParameter("state");
-        accessToken = httpExchangeInfo.getParameter("access_token");
-        expiry = httpExchangeInfo.getInteger("expires_in");
-        code = httpExchangeInfo.getParameter("code");
-        error = httpExchangeInfo.getParameter("error");
-        try {
-            if (error != null) {
-                httpExchangeInfo.handleError(error);
-            } else if (code != null) {
-                handle();
-            } else {
-                httpExchangeInfo.handleError("internal error");
+        if (httpExchangeInfo.getPathLength() == 1) {
+            accessToken = httpExchangeInfo.getParameter("accessToken");
+            logger.info("input", userId, accessToken);
+            try {
+                if (accessToken != null) {
+                    handle();
+                } else {
+                    httpExchangeInfo.handleError("require access_token");
+                }
+            } catch (Exception e) {
+                httpExchangeInfo.handleException(e);
             }
-        } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+        } else {
+            httpExchangeInfo.handleError();
         }
         httpExchange.close();
     }
@@ -71,7 +70,8 @@ public class OAuthCallbackHandler implements HttpHandler {
     GoogleUserInfo userInfo;    
     
     private void handle() throws Exception {
-        userInfo = app.getGoogleApi().sendTokenRequest(code);
+        userInfo = app.getGoogleApi().getUserInfo(accessToken);
+        logger.info("userInfo", userInfo);
         AdminUser user = app.getStorage().getUserStorage().findEmail(userInfo.getEmail());
         if (user == null) {
             user = new AdminUser(userInfo.getEmail());
@@ -83,33 +83,29 @@ public class OAuthCallbackHandler implements HttpHandler {
             user.setEnabled(true);
             user.setSecret(CrocSecurity.createSecret());
         }
+        user.setLoginTime(new Date());
         if (user.isStored()) {
             app.getStorage().getUserStorage().update(user);
         } else {
             app.getStorage().getUserStorage().insert(user);
         }
+        String totpUrl = CrocSecurity.getTotpUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         String qrUrl = CrocSecurity.getQrCodeUrl(user.getFirstName().toLowerCase(), app.getServerName(), user.getSecret());
         logger.info("qrUrl", qrUrl, Strings.decodeUrl(qrUrl));
-        String signCertUrl = String.format("%s/sign/userCert/%s", app.getServerUrl(), user.getEmail());
-        httpExchangeInfo.sendResponse("text/html", true);
-        HtmlPrinter p = new HtmlPrinter(httpExchange.getResponseBody());
-        p.div("menuBarDiv");
-        p.a_("/", "Home");
-        p._div();
-        p.h(2, "Welcome, " + userInfo.getDisplayName());
-        p.span("", String.format("The following provided email address will be used as your username: <tt>%s</tt>", userInfo.getEmail()));
-        p.println("<p>");
-        p.span("", String.format("Your secret for TOPT is: <tt>%s</tt>", user.getSecret()));
-        p.println("<br>");
-        p.span("", String.format("You can enter the above, or scan the following, into your Google Authenticator."));
-        p.println("<p>");
-        p.aimg(qrUrl, qrUrl);
-        p.println("<p>");
-        p.span("", String.format("Please paste your CSR for your private key:"));
-        p.println("<p>");
-        p.form();
-        p.textarea("csr", 10, 80, null);
-        p._form();
-        p._div();
+        CrocCookie cookie = new CrocCookie(user.getEmail(), user.getDisplayName(), user.getLoginTime().getTime(), accessToken);
+        cookie.createAuthCode(user.getSecret().getBytes());
+        httpExchangeInfo.setCookie(cookie.toMap(), CrocCookie.MAX_AGE_MILLIS);
+        httpExchangeInfo.sendResponse("text/json", true);
+        StringMap responseMap = new StringMap();
+        responseMap.put("email", userInfo.getEmail());
+        responseMap.put("name", userInfo.getDisplayName());
+        responseMap.put("picture", userInfo.getPicture());
+        responseMap.put("qr", qrUrl);
+        responseMap.put("totpSecret", user.getSecret());
+        responseMap.put("totpUrl", totpUrl);
+        responseMap.put("authCode", cookie.getAuthCode());
+        String json = JsonStrings.buildJson(responseMap);
+        httpExchangeInfo.getPrintStream().println(json);
+        logger.info(json);
     }    
 }

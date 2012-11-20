@@ -22,7 +22,7 @@ import vellum.util.Lists;
  *
  * @author evans
  */
-public class LogoutPersonaHandler implements HttpHandler {
+public class PersonaLogoutHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
@@ -30,7 +30,7 @@ public class LogoutPersonaHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     CrocCookie cookie;
 
-    public LogoutPersonaHandler(CrocApp app) {
+    public PersonaLogoutHandler(CrocApp app) {
         super();
         this.app = app;
     }

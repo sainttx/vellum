@@ -7,6 +7,7 @@ package crocserver.app;
 import bizstat.entity.Contact;
 import crocserver.gtalk.GtalkConnection;
 import crocserver.httphandler.access.AccessHttpHandler;
+import crocserver.httphandler.access.WebHandler;
 import crocserver.httphandler.insecure.InsecureHttpHandler;
 import crocserver.httphandler.secure.SecureHttpHandler;
 import crocserver.httpserver.HttpExchangeInfo;
@@ -34,11 +35,13 @@ import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.common.CrocStorage;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import vellum.exception.EnumException;
 import vellum.httpserver.VellumHttpServer;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.parameter.StringMap;
 import vellum.security.DefaultKeyStores;
+import vellum.security.GeneratedRsaKeyPair;
 
 /**
  *
@@ -64,7 +67,10 @@ public class CrocApp {
     X509Certificate serverCert;
     GoogleApi googleApi;
     String serverUrl;
+    String secureUrl;
     String serverName = "croc.linuxd.org";
+    String homePage = "/pindex.html";
+    WebHandler webHandler = new WebHandler(this);
 
     public void init() throws Exception {
         initConfig();
@@ -120,11 +126,17 @@ public class CrocApp {
                 gtalkConnection = new GtalkConnection(gtalkProps);
             }
         }
+        secureUrl = configProperties.getString("secureUrl");
         serverUrl = configProperties.getString("serverUrl");
         googleApi = new GoogleApi(serverUrl, serverUrl + "/oauth", configMap.get("GoogleApi", "default").getProperties());
         logger.info("googleApi", googleApi);
+        webHandler.init();
     }
 
+    public WebHandler getWebHandler() {
+        return webHandler;
+    }
+    
     public String getServerName() {
         return serverName;
     }
@@ -133,6 +145,10 @@ public class CrocApp {
         return serverUrl;
     }
 
+    public String getSecureUrl() {
+        return secureUrl;
+    }
+    
     public GoogleApi getGoogleApi() {
         return googleApi;
     }
@@ -242,6 +258,13 @@ public class CrocApp {
         return serverKeyAlias;
     }
 
+    public GeneratedRsaKeyPair generateSignedKeyPair(String subject) throws Exception {
+        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        keyPair.generate(subject, new Date(), 999);
+        keyPair.sign(DefaultKeyStores.getPrivateKey(serverKeyAlias), serverCert);
+        return keyPair;
+    }
+            
     public X509Certificate getServerCert() {
         return serverCert;
     }
@@ -276,7 +299,6 @@ public class CrocApp {
             e.printStackTrace(System.err);
         }
     }
-    String homePage = "/pindex.html";
 
     public String getHomePage() {
         return homePage;

@@ -19,15 +19,15 @@ public class ConfigParser {
     BufferedReader reader;
     ConfigEntry configEntry;
     ConfigMap configMap = new ConfigMap();
-    String line; 
+    String line;
     String type;
     String name;
     boolean blockStarted = false;
     int lineCount = 0;
-    
+
     public ConfigParser() {
     }
-    
+
     public void init(InputStream inputStream) throws Exception {
         this.inputStream = inputStream;
         reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -52,7 +52,7 @@ public class ConfigParser {
             } else {
                 parseBlock();
             }
-        }  
+        }
     }
 
     private void startBlock() {
@@ -63,15 +63,15 @@ public class ConfigParser {
             type = headerParser.getType();
             name = headerParser.getName();
             configEntry = new ConfigEntry(type, name);
-            if (configMap.containsKey(configEntry.getKey())) {            
+            if (configMap.containsKey(configEntry.getKey())) {
                 throw new ConfigParserException(ConfigExceptionType.DUPLICATE, lineCount, type, name, line);
             }
             blockStarted = true;
         } else {
-            throw new ConfigParserException(lineCount, type, name, line);    
+            throw new ConfigParserException(lineCount, type, name, line);
         }
     }
-        
+
     private void parseBlock() {
         if (Character.isLetter(line.charAt(0))) {
             parseLine();
@@ -81,18 +81,19 @@ public class ConfigParser {
             throw new ConfigParserException(lineCount, type, name, line);
         }
     }
-    
+
     private void parseLine() {
         logger.trace("parseLine", line);
         ConfigLineParser lineParser = new ConfigLineParser();
         if (lineParser.parse(line)) {
             configEntry.getProperties().put(lineParser.getKey(), lineParser.getValue());
+            System.out.printf("insert into config (group_, name_, value) values ('%s', %s', '%s');\n", name, lineParser.getKey(), lineParser.getValue());
             logger.trace("parseLine lineParser", lineParser);
         } else {
             throw new ConfigParserException(lineCount, type, name, line);
         }
     }
-    
+
     private void endBlock() {
         logger.trace("put", configEntry.getKey());
         configMap.put(configEntry);
@@ -107,5 +108,5 @@ public class ConfigParser {
         ConfigParser parser = new ConfigParser();
         parser.init(stream);
         return parser.getConfigMap();
-    }  
+    }
 }

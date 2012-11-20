@@ -10,6 +10,7 @@ package crocserver.storage.clientcert;
  */
 public enum CertMeta {
     cert_id,
+    name_,
     subject,
     cert,
     enabled,

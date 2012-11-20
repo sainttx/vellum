@@ -14,6 +14,7 @@ import java.util.Map;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Streams;
+import vellum.util.Strings;
 
 /**
  *
@@ -24,12 +25,35 @@ public class WebHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(WebHandler.class);
     CrocApp app;
     Map<String, byte[]> cache = new HashMap();
+    final String resourceNamePrefix = "/crocserver/web";
     
     public WebHandler(CrocApp app) {
-        super();
         this.app = app;
     }
 
+    public void init() throws IOException {
+        load("/pindex.html");
+        load("/pindex.js");
+        load("/bindex.html");
+        load("/bindex.js");
+    }
+    
+    public void load(String path) throws IOException {
+        InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
+        StringBuilder text = Streams.readStringBuilder(resourceStream);
+        replace(text);
+        byte[] bytes = text.toString().getBytes();
+        cache.put(path, bytes);
+    }
+
+    private void replace(StringBuilder text) {
+        Strings.replace(text, "${loginUrl}", app.getGoogleApi().getLoginUrl());
+        Strings.replace(text, "${clientId}", app.getGoogleApi().getClientId());
+        Strings.replace(text, "${redirectUrl}", app.getGoogleApi().getRedirectUrl());
+        Strings.replace(text, "${serverUrl}", app.getServerUrl());
+        Strings.replace(text, "${secureUrl}", app.getSecureUrl());
+    }
+    
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
@@ -52,18 +76,11 @@ public class WebHandler implements HttpHandler {
         if (!path.startsWith("/bootstrap")) {
             logger.info("path", path);
         }
-        String resourceName = "/crocserver/web" + path;
         try {
             byte[] bytes = cache.get(path);
             if (bytes == null) {
-                InputStream resourceStream = getClass().getResourceAsStream(resourceName);
-                if (path.equals("/bindex.js")) {
-                    StringBuilder html = Streams.readStringBuilder(resourceStream);
-                    replace(html);
-                    bytes = html.toString().getBytes();
-                } else {
-                    bytes = Streams.readBytes(resourceStream);
-                }
+                InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
+                bytes = Streams.readBytes(resourceStream);
                 cache.put(path, bytes);
             }
             logger.info("path", path, bytes.length);
@@ -75,23 +92,4 @@ public class WebHandler implements HttpHandler {
         }
         httpExchange.close();
     }
-
-    private void replace(StringBuilder html) {
-        replace(html, "${loginUrl}", app.getGoogleApi().getLoginUrl());
-        replace(html, "${clientId}", app.getGoogleApi().getClientId());
-        replace(html, "${redirectUrl}", app.getGoogleApi().getRedirectUrl());
-        replace(html, "${serverUrl}", app.getServerUrl());
-    }
-    
-    private void replace(StringBuilder html, String pattern, String string) {
-        int index = html.indexOf(pattern);
-        if (index >= 0) {
-            if (string != null) {
-                html.replace(index, index + pattern.length(), string);
-            } else {
-                logger.warn("replace", pattern);
-            }
-        }
-    }
-    
 }

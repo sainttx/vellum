@@ -3,11 +3,14 @@
  */
 package crocserver.httphandler.access;
 
+import crocserver.httphandler.google.OAuthCallbackHandler;
+import crocserver.httphandler.google.GoogleLoginHandler;
+import crocserver.httphandler.google.GoogleLogoutHandler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
-import crocserver.httphandler.persona.LoginPersonaHandler;
-import crocserver.httphandler.persona.LogoutPersonaHandler;
+import crocserver.httphandler.persona.PersonaLoginHandler;
+import crocserver.httphandler.persona.PersonaLogoutHandler;
 import crocserver.httphandler.secure.SecureHomeHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
@@ -23,19 +26,17 @@ public class AccessHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(AccessHttpHandler.class);
     CrocApp app;
     CrocStorage storage;
-    WebHandler webHandler;
     
     public AccessHttpHandler(CrocApp app) {
         this.app = app;
         storage = app.getStorage();
-        webHandler = new WebHandler(app);
     }
-
+    
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         HttpHandler handler = getHandler(httpExchange);
         if (handler == null) {
-            handler = webHandler;
+            handler = app.getWebHandler();
         }
         handler.handle(httpExchange);
     }
@@ -58,13 +59,13 @@ public class AccessHttpHandler implements HttpHandler {
         } else if (path.startsWith("/getCert/")) {
             return new GetCertHandler(storage);
         } else if (path.equals("/login")) {
-            return new LoginHandler(app);
+            return new GoogleLoginHandler(app);
         } else if (path.equals("/logout")) {
-            return new LogoutHandler(app);
+            return new GoogleLogoutHandler(app);
         } else if (path.equals("/loginPersona")) {
-            return new LoginPersonaHandler(app);
+            return new PersonaLoginHandler(app);
         } else if (path.equals("/logoutPersona")) {
-            return new LogoutPersonaHandler(app);
+            return new PersonaLogoutHandler(app);
         } else if (path.equals("/genKey")) {
             return new GenKeyP12Handler(app);
         } else if (path.startsWith("/signCert/")) {

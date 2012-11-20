@@ -33,6 +33,7 @@ public class CertStorage {
     private Cert build(ResultSet resultSet) throws SQLException {
         Cert cert = new Cert();
         cert.setId(resultSet.getLong(CertMeta.cert_id.name()));
+        cert.setName(resultSet.getString(CertMeta.name_.name()));
         cert.setSubject(resultSet.getString(CertMeta.subject.name()));
         cert.setCert(resultSet.getString(CertMeta.cert.name()));
         cert.setUpdated(resultSet.getTimestamp(CertMeta.updated.name()));
@@ -46,6 +47,7 @@ public class CertStorage {
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.insert.name()));
             int index = 0;
+            statement.setString(++index, cert.getName());
             statement.setString(++index, cert.getSubject());
             statement.setString(++index, cert.getCert());
             statement.setString(++index, cert.getUpdatedBy());
@@ -71,7 +73,7 @@ public class CertStorage {
             int index = 0;
             statement.setString(++index, cert.getCert());
             statement.setString(++index, cert.getUpdatedBy());
-            statement.setString(++index, cert.getSubject());
+            statement.setString(++index, cert.getName());
             int updateCount = statement.executeUpdate();
             if (updateCount != 1) {
                 throw new StorageException(StorageExceptionType.UPDATE_COUNT);
@@ -96,10 +98,27 @@ public class CertStorage {
         }
     }
 
-    public Cert find(String subject) throws SQLException {
+    public Cert findName(String name) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.find_subject.name()));
+            String sqlQuery = sqlMap.get(CertQuery.find_name.name());
+            PreparedStatement statement = connection.prepareStatement(sqlQuery);
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            return build(resultSet);
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
+    public Cert findSubject(String subject) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            String sqlQuery = sqlMap.get(CertQuery.find_subject.name());
+            PreparedStatement statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, subject);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
@@ -144,7 +163,7 @@ public class CertStorage {
     }
 
     public void save(X509Certificate x509Cert, String updatedBy) throws SQLException {
-        Cert clientCert = find(x509Cert.getSubjectDN().getName());
+        Cert clientCert = findSubject(x509Cert.getSubjectDN().getName());
         if (clientCert == null) {
             clientCert = new Cert();
         }

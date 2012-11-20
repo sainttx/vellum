@@ -47,6 +47,8 @@ function clickLogoutPersona() {
 }
 
 function initPersona() {
+    $(".croc-login-viewable").show();
+    $(".croc-login-clickable").show();
     $('.croc-login-clickable').click(clickLoginPersona);
     $('.croc-logout-clickable').click(clickLogoutPersona);
     navigator.id.watch({

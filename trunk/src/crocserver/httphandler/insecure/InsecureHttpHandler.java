@@ -18,11 +18,11 @@ public class InsecureHttpHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(InsecureHttpHandler.class);
     CrocApp app;
-
+   
     public InsecureHttpHandler(CrocApp app) {
         this.app = app;
     }
-
+        
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         new InsecureHomePageHandler(app).handle(httpExchange);
