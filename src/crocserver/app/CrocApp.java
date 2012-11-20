@@ -9,6 +9,7 @@ import crocserver.gtalk.GtalkConnection;
 import crocserver.httphandler.access.AccessHttpHandler;
 import crocserver.httphandler.access.WebHandler;
 import crocserver.httphandler.insecure.InsecureHttpHandler;
+import crocserver.httphandler.persona.PersonaApi;
 import crocserver.httphandler.secure.SecureHttpHandler;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.httpserver.HttpServerConfig;
@@ -136,7 +137,7 @@ public class CrocApp {
     public WebHandler getWebHandler() {
         return webHandler;
     }
-    
+
     public String getServerName() {
         return serverName;
     }
@@ -148,7 +149,7 @@ public class CrocApp {
     public String getSecureUrl() {
         return secureUrl;
     }
-    
+
     public GoogleApi getGoogleApi() {
         return googleApi;
     }
@@ -264,7 +265,7 @@ public class CrocApp {
         keyPair.sign(DefaultKeyStores.getPrivateKey(serverKeyAlias), serverCert);
         return keyPair;
     }
-            
+
     public X509Certificate getServerCert() {
         return serverCert;
     }
@@ -304,7 +305,7 @@ public class CrocApp {
         return homePage;
     }
 
-    public AdminUser getUser(HttpExchangeInfo httpExchangeInfo) throws Exception {
+    public AdminUser getUser(HttpExchangeInfo httpExchangeInfo, boolean auth) throws Exception {
         StringMap cookieMap = httpExchangeInfo.getCookieMap();
         String email = cookieMap.get("email");
         if (email == null) {
@@ -316,9 +317,10 @@ public class CrocApp {
             AdminUser user = storage.getUserStorage().get(cookie.getEmail());
             if (user.getLoginTime().getTime() != cookie.getLoginMillis()) {
                 logger.warn("getUser cookie millis", user.getLoginTime().getTime(), cookie.getLoginMillis());
-                if (false) {
-                    throw new EnumException(CrocExceptionType.STALE_COOKIE);
-                }
+                throw new EnumException(CrocExceptionType.STALE_COOKIE);
+            }
+            if (auth) {
+                new PersonaApi(serverUrl).getUserInfo(cookie.getAuthCode());
             }
             return user;
         }
