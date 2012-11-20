@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
  * 
  */
-package crocserver.httphandler.access;
+package crocserver.httphandler.google;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -22,14 +22,14 @@ import vellum.util.Lists;
  *
  * @author evans
  */
-public class LogoutHandler implements HttpHandler {
+public class GoogleLogoutHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 
-    public LogoutHandler(CrocApp app) {
+    public GoogleLogoutHandler(CrocApp app) {
         super();
         this.app = app;
     }

@@ -59,6 +59,7 @@ public class VellumHttpServer implements Startable {
         httpServer.createContext("/", httpHandler);
     }
     
+    @Override
     public void start() throws Exception {
         waitPort(config.getPort(), 4000, 500);
         InetSocketAddress socketAddress = new InetSocketAddress(config.getPort());
@@ -72,6 +73,7 @@ public class VellumHttpServer implements Startable {
         httpServer.createContext(contextName, httpHandler);
     }
 
+    @Override
     public boolean stop() {
         if (httpServer != null) {
             httpServer.stop(0); 

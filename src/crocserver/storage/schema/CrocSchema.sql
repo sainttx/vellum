@@ -23,12 +23,13 @@ create table schema_revision (
 
 create table cert (
   cert_id int auto_increment primary key,
+  name_ varchar(64) not null,
   subject varchar(255) not null,
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
   updated_by varchar(32) not null,
-  unique key uniq_cert (subject)
+  unique key uniq_cert (name_)
 );
 
 create table config (

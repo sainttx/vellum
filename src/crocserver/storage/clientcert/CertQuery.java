@@ -12,6 +12,7 @@ public enum CertQuery {
     insert,
     update,
     find_id,
+    find_name,
     find_subject,
     delete,
     enabled,

@@ -60,8 +60,8 @@ public class AdminUser extends AbstractIdEntity<String> {
         return userName;
     }
 
-    public void formatSubject() {
-        subject = KeyStores.formatDname(email, displayName, userName, locality, region, country);
+    public String formatSubject() {
+        return KeyStores.formatDname(email, displayName, userName, locality, region, country);
     }
     
     public Org getOrg() {

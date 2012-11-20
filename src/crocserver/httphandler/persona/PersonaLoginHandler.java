@@ -14,25 +14,28 @@ import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.datatype.Emails;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
+import vellum.security.DefaultKeyStores;
+import vellum.security.GeneratedRsaKeyPair;
 import vellum.util.Strings;
 
 /**
  *
  * @author evans
  */
-public class LoginPersonaHandler implements HttpHandler {
+public class PersonaLoginHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 
-    public LoginPersonaHandler(CrocApp app) {
+    public PersonaLoginHandler(CrocApp app) {
         super();
         this.app = app;
     }
@@ -73,6 +76,11 @@ public class LoginPersonaHandler implements HttpHandler {
             user.setRole(AdminRole.DEFAULT);
             user.setEnabled(true);
             user.setSecret(CrocSecurity.createSecret());
+            if (true) {
+                GeneratedRsaKeyPair keyPair = app.generateSignedKeyPair(user.formatSubject());
+                app.getStorage().getCertStorage().save(keyPair.getCert(), user.getEmail());
+                user.setCert(keyPair.getCert());
+            }
         }
         user.setLoginTime(new Date());
         if (user.isStored()) {

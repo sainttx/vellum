@@ -68,10 +68,8 @@ public class GenKeyP12Handler implements HttpHandler {
         if (true) {
             password = "1234".toCharArray();            
         }
-        user.formatSubject();
-        logger.info("generate", user.getSubject());
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
-        keyPair.generate(user.getSubject(), new Date(), 999);
+        keyPair.generate(user.formatSubject(), new Date(), 999);
         String alias = app.getServerKeyAlias();
         X509Certificate serverCert = app.getServerCert();
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);

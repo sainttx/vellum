@@ -480,4 +480,23 @@ public class Strings {
         }
     }
     
+    public static void replace(StringBuilder text, String pattern, String string) {
+        if (string != null) {
+            int index = 0;
+            while (true) {
+                index = text.indexOf(pattern, index);
+                if (index >= 0) {
+                    text.replace(index, index + pattern.length(), string);
+                    index += string.length();
+                    if (index >= text.length()) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+        
+    
 }

@@ -78,7 +78,7 @@
                         <span class="icon-bar"></span>
                     </a>
                     <div class="nav-collapse pull-right collapse">
-                        <div class="navbar-text croc-login-viewable" id="croc-login-div">
+                        <div id="croc-login-div" class="navbar-text croc-login-viewable hide">
                             <a class="croc-login-clickable" href="#"><img src="img/persona-login.png"/></a>
                         </div>
                         <div class="navbar-text croc-loggedin-viewable hide" id="croc-loggedin-div">
@@ -116,14 +116,12 @@
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-loggedin">
                         <h1 id="croc-loggedin-title"></h1>
-                        <form method="post" action="/sign" id="croc-loggedin-csr-form">
-                            <form>
+                        <!--form method="post" action="/sign" id="croc-loggedin-csr-form">
                                 <fieldset>
                                     <textarea rows="2" cols="90" style="width: 100%" id="croc-loggedin-csr-textarea" name="csr" placeholder="Paste your Certificate Signing Request into this box."></textarea>
                                     <button type="submit" class="btn">Submit CSR</button>
                                 </fieldset>
-                            </form>
-                        </form>                        
+                        </form-->
                         <form method="post" action="/genKey" id="croc-loggedin-genkey-form">
                             <form>
                                 <fieldset>
@@ -132,13 +130,13 @@
                                 </fieldset>
                             </form>
                         </form>                        
-                        <p>(Be assured that we store your public certificate only on the server.)</p>
                         <p>Your OTP secret is <tt><span id="croc-totp-text"/></tt>. (You can enter this into your T-OTP client.)</p>
                         <p>Alternatively, scan this QR code into your Google Authenticator app.</p>
                         <p id="croc-loggedin-qr-container">
                             <img id="croc-loggedin-qr-img"/>
                         </p>
                         <p>(This QR code contains the URL <tt><span id="croc-totp-url"/></tt>.)</p>
+                        <p><a href="${secureUrl}" class="btn btn-primary btn-large croc-about-clickable">Enter secure site &raquo;</a></p>
                     </div>
                     <div id="croc-resetotp-modal" class="modal hide fade">
                         <div class="modal-header">
