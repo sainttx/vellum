@@ -23,8 +23,6 @@ public class CrocTrustManager implements X509TrustManager {
     Logr logger = LogrFactory.getLogger(CrocTrustManager.class);
     CrocApp app;
     X509TrustManager trustManager;
-    HashSet<String> whiteList = new HashSet();
-    HashSet<String> blackList = new HashSet();
 
     public CrocTrustManager(CrocApp app) {
         this.app = app;
@@ -33,26 +31,20 @@ public class CrocTrustManager implements X509TrustManager {
     public void init() throws Exception {
         trustManager = DefaultKeyStores.loadTrustManager();
         for (X509Certificate acceptedIssuer : trustManager.getAcceptedIssuers()) {
-            logger.info("acceptedIssuer", acceptedIssuer.getSubjectDN().getName());
+            logger.trace("acceptedIssuer", acceptedIssuer.getSubjectDN().getName());
         }
     }
 
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        logger.info("getAcceptedIssuers");
-        return trustManager.getAcceptedIssuers();
+        logger.info("getAcceptedIssuers", app.getServerCert().getSubjectDN().getName());
+        return new X509Certificate[] {app.getServerCert()};
     }
 
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) {
         String dname = certs[0].getSubjectDN().getName();
         logger.info("checkClientTrusted " + dname);
-        if (blackList.contains(dname)) {
-            throw new RuntimeException(dname);
-        }
-        if (whiteList.contains(dname)) {
-            return;
-        }
         logger.info("server", app.getServerCert().getSubjectDN().getName());
         if (dname.equals(app.getServerCert().getSubjectDN().getName())) {
             return;

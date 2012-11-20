@@ -7,9 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import crocserver.app.CrocApp;
-import crocserver.app.CrocCookie;
 import crocserver.app.CrocExceptionType;
-import crocserver.app.GoogleUserInfo;
 import crocserver.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
@@ -53,20 +51,10 @@ public class GenKeyP12Handler implements HttpHandler {
     }
     
     private void handle() throws Exception {
-        if (false) {
-            GoogleUserInfo userInfo = app.getGoogleUserInfo(httpExchangeInfo);
-            logger.info("userInfo", userInfo);
-        }
-        AdminUser user = app.getUser(httpExchangeInfo);
+        AdminUser user = app.getUser(httpExchangeInfo, true);
         char[] password = httpExchangeInfo.getParameterMap().getString("password").toCharArray();
         if (password.length < 8) {
-            if (false) {
-                throw new EnumException(CrocExceptionType.PASSWORD_TOO_SHORT);
-            }
-            password = user.getEmail().toCharArray();
-        }
-        if (true) {
-            password = "1234".toCharArray();            
+            throw new EnumException(CrocExceptionType.PASSWORD_TOO_SHORT);
         }
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
         keyPair.generate(user.formatSubject(), new Date(), 999);
@@ -81,6 +69,5 @@ public class GenKeyP12Handler implements HttpHandler {
         p12.engineSetKeyEntry(user.getUserName(), keyPair.getPrivateKey(), password, chain);
         httpExchangeInfo.sendResponseFile("application/x-pkcs12", "croc-client.p12");
         p12.engineStore(httpExchangeInfo.getPrintStream(), password);
-        logger.info("pkcs12");
     }    
 }
