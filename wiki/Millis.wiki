@@ -1,9 +1,18 @@
 
-November 2012 - DRAFT
+We present a miniscule Millis utility class for handling intervals, in milliseconds, not least because we record timestamps as per System.currentTimeMillis, i.e the number of milliseconds since the Unix epoch. As such we can skirt around the issue of the time as seen on clocks, with their time zones and calendars and what-not.
 
-Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
+<!--break-->
 
-That aside, for the purposes of some [Timestamped Timestamped] thingies with <tt>millis</tt> since the Epoch, we find ourselves cobbling together a <tt>Millis</tt> util class.
+<p>   
+<a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
+<div style="border-bottom: solid 1px; background-color: #ccff00;">
+<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Timestamped Millis:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
+</div>
+</a>
+
+Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
+
+That said, for the purposes of some <a href="http://code.google.com/p/vellum/wiki/Timestamped"><tt>Timestamped</tt></a>, we find ourselves cobbling together a <tt>Millis</tt> util class.
 
 {{{
 public class Millis {
@@ -18,28 +27,21 @@ public class Millis {
     ...
 }}}
 
-This util class primarily deals with time <i>intervals</i>.
+This util class primarily deals with time <i>intervals</i>. We often express time intervals as a <tt>long</tt> value without an explicit time unit, which is then assumed to be milliseconds. Furthermore we often treat the timestamp of an event as the time interval since the Unix epoch, thanks to <tt>System.currentTimeMillis()</tt>.
 
-We use milliseconds for either the time interval between two events, or the time of an event since the UNIX Epoch i.e. as given by <tt>System.currentTimeMillis()</tt>.
+Time without its time zone, like measurement without units, will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualification. Hence Doug Lea's introduction of <tt>!TimeUnit</tt> in his superlative <tt>java.util.concurrent</tt> package, is sooo good, providing safety <i>and</i> convenience. 
+<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/1000000000seconds.jpg/320px-1000000000seconds.jpg" align="left" hspace="16" vspace="8" width="200px"/>
 
-While the "epochal time" is absolute, the time of an event as recorded on our clock and calendar is relative to the !TimeZone for which that clock is configured. And the problem is there are so many clocks in the world, and so few of them have the same time! ;)
+<h4>Time and tide</h4>
 
-We read http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis,
+While the "epochal time" is absolute, the time of an event as recorded on our clock and calendar is relative to the <tt>TimeZone</tt> for which that clock is configured. And the problem is there are so many clocks in the world, and so few of them have the same time! ;)
+
+<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis">System#currentTimeMillis javadocs</a> says,
 <blockquote>
   See the description of the class Date for a discussion of slight discrepancies that may arise between "computer time" and coordinated universal time (UTC).
 </blockquote>
 
 We will certainly do that, but not today! 
-
-<h4>Millis forever</h4>
-
-We often represent time intervals as a <tt>long</tt> value without an explicit time unit, which is then assumed to be milliseconds.  
-
-Also we express the time as milliseconds since the Epoch. In this article, we avoid looking at any clocks, to put time zones out of scope. 
-
-Time without its time zone, like measurement without units, will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualification. Hence Doug Lea's introduction of <tt>!TimeUnit</tt> in his much-loved <tt>java.util.concurrent</tt> package, is sooo good, providing safety <i>and</i> convenience. 
-
-In a follow-up article, we absolutely must gloss over <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, <tt>!TimeZone</tt>, <tt>Calendar</tt> and that unrepentant <tt>Date</tt> class.
 
 <h4>Time conversion</h4>
 
@@ -133,7 +135,7 @@ We see the folly of using <tt>!SimpleDateFormat</tt> and pretending that a time 
 }}}
 where my default time zone seems to be 2 hours ahead of Greenwich.
 
-Recall that at the moment of time on Earth that the UNIX Epoch happened way back around <tt>1970-01-01</tt>, actually the time was <tt>00:00:00</tt> only up there in Greenwich. So for most of us, our clocks where not <tt>00:00:00</tt> at the time of the Epoch. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
+Recall that at the moment of time on Earth that the Unix epoch happened way back around <tt>1970-01-01</tt>, actually the time was <tt>00:00:00</tt> only up there in Greenwich. So for most of us, our clocks where not <tt>00:00:00</tt> at the time of the Epoch. Gutting. In fact for a good deal of us, it wasn't even 1970 yet - it was still 1969 - yeah baby!
 
 <h4>In parsing</h4>
 
@@ -173,47 +175,24 @@ The test case below illustrates the functionality of this method.
         Assert.assertEquals(Millis.parse("24h"), Millis.parse("1d"));
     }
 }}}
-So this is used for configuration settings of time intervals e.g.
+So this is used for configuration settings of time intervals e.g. in our app's <tt>context.xml</tt>.
 {{{
-  <parameter name="interval" value="45s"/>
+  &lt;parameter name="interval" value="45s"/&gt;
 }}}
-or if we configure our application using JSON,
-{{{
-  { ...
-    "interval" : "12h"; 
-  }
-}}}
-or via a database table,
-{{{
-  insert into config (name, value) values ('interval', '45s'); 
-}}}
-or even a home-grown file-based configuration utility, which we usually don't recommend but will nonetheless introduce in another article.
-{{{
-Config default {
-  ...
-  interval: 60s
-}
-}}}
-Incidently, this configuration is used for a stand-alone monitoring app, which we'll feature later. We'll supercede that with a cloud app, which will favour database configuration, methinks.
 
 <h4>Conclusion</h4>
 
-In this [Timestamped Timestamped] series, we'll sometimes make use of a <tt>Millis</tt> convenience class which is presented here.
+In this Timestamped series, we'll sometimes make use of a <tt>Millis</tt> convenience class which is presented here. This class is a utility for time intervals, rather than "time" per se.
 
-This class is a utility for time intervals, rather than "time" per se.
+We express time intervals in milliseconds, and timestamps as the time interval since the Unix epoch, in order to steer clear of time zones (and <tt>Date</tt> and <tt>Calendar</tt>), for now.
 
-Working with time without time zone is like measurement without units, i.e. potentially disastrous. That notwithstanding, in this article we deal with time intervals and the absolute time since the Epoch, both measured in milliseconds, in order to steer clear of time zones (and <tt>Date</tt> and <tt>Calendar</tt>), for now.
+<h4>Further treatment</h4>
 
-<h4>Coming up</h4>
-
-We should of course delve into <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Date.html"><tt>Date</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html"><tt>Calendar</tt></a>. 
-
-<h4>Further reading</h4>
-
-http://en.wikipedia.org/wiki/Coordinated_Universal_Time
-
-<a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>
+At some stage we should gloss over that unrepentant <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Date.html"><tt>Date</tt></a>, crucial <a href="http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html"><tt>!TimeZone</tt></a>, cardinal <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a>, stupendous <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html"><tt>Calendar</tt></a>, and serendipitous <a href="http://threeten.sourceforge.net/apidocs-2012-10-25/">JSR 310</a>.
 
 <h4>Resources</h4>
 
 https://code.google.com/p/vellum/ - where i collate these articles and their code - e.g. see the <a href="http://code.google.com/p/vellum/source/browse/trunk/src/vellum/datatype/Millis.java"><tt>Millis</tt></a> class.
+
+<a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">Follow @evanxsummers</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
