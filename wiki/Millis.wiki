@@ -167,7 +167,7 @@ The test case below illustrates the functionality of this method.
 }}}
 So this is used for configuration settings of time intervals e.g. in our app's <tt>context.xml</tt>.
 {{{
-  &lt;parameter name="interval" value="45s"/&gt;
+  <parameter name="interval" value="45s"/>
 }}}
 
 <h4>Conclusion</h4>
