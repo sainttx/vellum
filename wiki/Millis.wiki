@@ -1,15 +1,6 @@
 
 We present a miniscule Millis utility class for handling intervals, in milliseconds, not least because we record timestamps as per System.currentTimeMillis, i.e the number of milliseconds since the Unix epoch. As such we can skirt around the issue of the time as seen on clocks, with their time zones and calendars and what-not.
 
-<!--break-->
-
-<p>   
-<a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
-<div style="border-bottom: solid 1px; background-color: #ccff00;">
-<img src="http://upload.wikimedia.org/wikipedia/commons/1/12/Gnome-appointment-new.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Timestamped Millis:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "Timestamped: a trilogy in a few parts."</span>
-</div>
-</a>
-
 Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
 
 That said, for the purposes of some <a href="http://code.google.com/p/vellum/wiki/Timestamped"><tt>Timestamped</tt></a>, we find ourselves cobbling together a <tt>Millis</tt> util class.
