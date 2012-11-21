@@ -21,7 +21,6 @@ public class Millis {
 This util class primarily deals with time <i>intervals</i>. We often express time intervals as a <tt>long</tt> value without an explicit time unit, which is then assumed to be milliseconds. Furthermore we often treat the timestamp of an event as the time interval since the Unix epoch, thanks to <tt>System.currentTimeMillis()</tt>.
 
 Time without its time zone, like measurement without units, will cause us problems at some stage. Remember what happened to that Arianne rocket when the units got mixed up? So we have to be careful with numbers without qualification. Hence Doug Lea's introduction of <tt>!TimeUnit</tt> in his superlative <tt>java.util.concurrent</tt> package, is sooo good, providing safety <i>and</i> convenience. 
-<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/1000000000seconds.jpg/320px-1000000000seconds.jpg" align="left" hspace="16" vspace="8" width="200px"/>
 
 <h4>Time and tide</h4>
 
