@@ -3,7 +3,7 @@ We present a miniscule Millis utility class for handling intervals, in milliseco
 
 Isn't <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html">!TimeUnit</a> the best thing since sliced bread?! Indeed anything and everything from Doug Lea is always thus :)
 
-That said, for the purposes of some <a href="http://code.google.com/p/vellum/wiki/Timestamped"><tt>Timestamped</tt></a>, we find ourselves cobbling together a <tt>Millis</tt> util class.
+That said, for the purposes of some <a href="http://code.google.com/p/vellum/wiki/Timestamped"><tt>Timestamped</tt></a> thingies, we find ourselves cobbling together a <tt>Millis</tt> util class.
 
 {{{
 public class Millis {
