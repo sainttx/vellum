@@ -11,4 +11,4 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 
 [DequeShredder Deque Shredder] (August 2012)
 
-[Millis Millis] (DRAFT, November 2012)
+[Millis Millis] (November 2012)
