@@ -24,7 +24,7 @@ Time without its time zone, like measurement without units, will cause us proble
 
 <h4>Time and tide</h4>
 
-While the "epochal time" is absolute, the time of an event as recorded on our clock and calendar is relative to the <tt>TimeZone</tt> for which that clock is configured. And the problem is there are so many clocks in the world, and so few of them have the same time! ;)
+While the "epochal time" is absolute, the time of an event as recorded on our clock and calendar is relative to the <tt>!TimeZone</tt> for which that clock is configured. And the problem is there are so many clocks in the world, and so few of them have the same time! ;)
 
 <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis">System#currentTimeMillis javadocs</a> says,
 <blockquote>
