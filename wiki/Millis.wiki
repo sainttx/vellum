@@ -151,7 +151,6 @@ We implement some parsing.
         }  
         throw new ParseRuntimeException(string);
     }    
-}
 }}}
 The test case below illustrates the functionality of this method.
 {{{
