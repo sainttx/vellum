@@ -115,7 +115,6 @@ But now let's do the wrong thing.
         System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date(System.currentTimeMillis())));
         System.out.println(Millis.format(System.currentTimeMillis() % Millis.fromDays(1)));
     }    
-}
 }}}
 We see the folly of using <tt>!SimpleDateFormat</tt> and pretending that a time interval is a time of day, on the day of the Epoch. When using <tt>Date</tt> you're putting your clock on the block. 
 {{{
