@@ -21,21 +21,18 @@ public class JsonStrings {
     static Logr logger = LogrFactory.getLogger(JsonStrings.class);
 
     public static String get(String json, String key) {
-        JsonElement element = new JsonParser().parse(json);
-        JsonObject object = element.getAsJsonObject();
-        object.entrySet();
-        return element.getAsJsonObject().get("key").getAsString();
+        return getAsJsonObject(json).get(key).getAsString();
     }
 
     public static StringMap getStringMap(String json) {
         StringMap map = new StringMap();
-        for (Entry<String, JsonElement> entry : getJsonObject(json).entrySet()) {
+        for (Entry<String, JsonElement> entry : getAsJsonObject(json).entrySet()) {
             map.put(entry.getKey(), entry.getValue().getAsString());
         }
         return map;
     }
 
-    public static JsonObject getJsonObject(String json) {
+    public static JsonObject getAsJsonObject(String json) {
         return new JsonParser().parse(json).getAsJsonObject();
     }
     

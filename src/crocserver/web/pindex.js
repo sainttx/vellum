@@ -74,7 +74,6 @@ function initPersona() {
         },
         onlogout: function() {
             console.log("onlogout");
-            // Also, make sure loggedInUser will get set to null on the next page load.
             currentUser = null;
             $.ajax({ 
                 type: 'POST',                

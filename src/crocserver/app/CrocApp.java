@@ -70,7 +70,7 @@ public class CrocApp {
     String serverUrl;
     String secureUrl;
     String serverName = "croc.linuxd.org";
-    String homePage = "/pindex.html";
+    String homePage = "/bindex.html";
     WebHandler webHandler = new WebHandler(this);
 
     public void init() throws Exception {
@@ -320,7 +320,7 @@ public class CrocApp {
                 throw new EnumException(CrocExceptionType.STALE_COOKIE);
             }
             if (auth) {
-                new PersonaApi(serverUrl).getUserInfo(cookie.getAuthCode());
+                googleApi.getUserInfo(cookie.getAuthCode());
             }
             return user;
         }

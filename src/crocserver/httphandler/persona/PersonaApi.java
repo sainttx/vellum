@@ -4,12 +4,13 @@
  */
 package crocserver.httphandler.persona;
 
+import crocserver.app.JsonStrings;
 import java.net.URL;
 import java.net.URLEncoder;
 import javax.net.ssl.HttpsURLConnection;
-import vellum.config.PropertiesMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.parameter.StringMap;
 import vellum.security.DefaultKeyStores;
 import vellum.util.Args;
 import vellum.util.Streams;
@@ -41,9 +42,12 @@ public class PersonaApi {
         connection.getOutputStream().write(builder.toString().getBytes());
         String json = Streams.readString(connection.getInputStream());
         logger.info("json", json);
-        PersonaUserInfo userInfo = new PersonaUserInfo();
-        userInfo.parseJson(json);
-        return userInfo;
+        StringMap map = JsonStrings.getStringMap(json);
+        String status = map.get("status");
+        if (status != null && status.equals("okay")) {
+            return new PersonaUserInfo(map);
+        }
+        return null;
     }
 
     @Override
