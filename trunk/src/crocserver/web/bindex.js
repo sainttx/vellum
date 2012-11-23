@@ -2,9 +2,9 @@
 var clientId = '${clientId}';
 var apiKey = '${apiKey}';
 var scopes = [
-    "https://www.googleapis.com/auth/plus.me", 
-    "https://www.googleapis.com/auth/userinfo.email", 
-    "https://www.googleapis.com/auth/userinfo.profile"
+"https://www.googleapis.com/auth/plus.me", 
+"https://www.googleapis.com/auth/userinfo.email", 
+"https://www.googleapis.com/auth/userinfo.profile"
 ];
     
 function clickAbout() {
@@ -38,6 +38,8 @@ function initDocument() {
     $(".croc-home-clickable").click(clickHome);
     $(".croc-about-clickable").click(clickAbout);
     $(".croc-contact-clickable").click(clickContact);
+    $("#croc-genkey-form").submit(submitGenKey);
+//showReadyAuth();
 }
 
 function redirectDocument() {
@@ -87,11 +89,13 @@ function showBusyAuth() {
 
 function login(accessToken) {
     console.log(accessToken);
-    $.post(
-        '/login',
-        'accessToken=' + accessToken,
-        processLogin
-        );                
+    $.ajax({ 
+        type: 'POST',                
+        url: '/login',
+        data: 'accessToken=' + accessToken,
+        success: processLogin,
+        error: processLoginError
+    });
 }
 
 function processLogin(res) {
@@ -215,14 +219,14 @@ function clickResetOtp() {
 }
 
 function okResetOtp() {
-  console.log('okResetOtp');
-  $('#croc-resetotp-modal').modal('hide');
+    console.log('okResetOtp');
+    $('#croc-resetotp-modal').modal('hide');
     
 }
 
 function cancelResetOtp() {
-  console.log('cancelResetOtp');
-  $('#croc-resetotp-modal').modal('hide');
+    console.log('cancelResetOtp');
+    $('#croc-resetotp-modal').modal('hide');
     
 }
 
@@ -232,15 +236,29 @@ function okGenKey() {
 }
 
 function cancelGenKey() {
-  console.log('cancelGenKey');
-  $('#croc-genkey-modal').modal('hide');    
+    console.log('cancelGenKey');
+    $('#croc-genkey-modal').modal('hide');    
 }
 
 function processGenKey() {
-  console.log('processGenKey');
+    console.log('processGenKey');
 }
 
 function processResetOtp() {
-  console.log('resetOtp');
+    console.log('resetOtp');
 }
 
+function submitGenKey(event) {
+    event.preventDefault();
+    var password = $("croc-genkey-password-input").val;
+    $.post(
+        '/genKey',
+        password,
+        processGenKeyForm
+        );                  
+}
+
+function processGenKeyForm(res) {
+    console.log('processGenKeyForm');
+    console.log(res);
+}
