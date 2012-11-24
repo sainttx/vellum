@@ -44,7 +44,6 @@
     </head>
 
     <body>
-
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
@@ -58,9 +57,9 @@
                             </ul>
                         <li class="dropdown croc-loggedin-viewable hide">
                         </li>
-                        <li class="croc-nav-anchor croc-info-landing-extra"><a href="#" class="croc-home-clickable">Home</a></li>
-                        <li class="croc-nav-anchor croc-info-landing-extra"><a href="#" class="croc-about-clickable">About</a></li>
-                        <li class="croc-nav-anchor croc-info-landing-extra"><a href="#" class="croc-contact-clickable">Contact</a></li>
+                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-home-clickable">Home</a></li>
+                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-about-clickable">About</a></li>
+                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-contact-clickable">Contact</a></li>
                         <li class="dropdown croc-loggedin-viewable hide">
                             <a class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
                             <ul class="dropdown-menu">
@@ -78,18 +77,17 @@
                         <span class="icon-bar"></span>
                     </a>
                     <div class="nav-collapse pull-right collapse">
-                        <div class="navbar-text pull-right croc-loggedin-viewable hide" id="croc-loggedin-div">
+                        <div class="navbar-text pull-right croc-loggedin-viewable hide" id="croc-loggedin-username">
                             <a id="croc-username-text" class="navbar-link croc-logout-clickable">Username</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="span12">
-                    <div class="hero-unit croc-info croc-info-landing-viewable" id="croc-info-landing">
+                    <div class="hero-unit croc-info croc-landing-viewable" id="croc-info-landing">
                         <h1>Croc</h1>
                         <p>
                         <p>Croc is the "cron output collector"</p>                        
@@ -111,8 +109,16 @@
                         <p>Developed by evan.summers at gmail.com, sysadmin at <a href="https://bizswitch.net">BizSwitch.net</a></p>
                         <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home-clickable">Home &raquo;</a></p>
                     </div>
-                    <div class="hero-unit croc-info hide" id="croc-loggedin">
-                        <h1 id="croc-loggedin-title"></h1>
+                    <div class="hero-unit croc-info hide" id="croc-loggedin-info-div">
+                        <h1 id="croc-loggedin-title">Welcome</h1>
+                        <h2>Step 1: OTP</h1>
+                        <p>Your OTP secret is <b><tt><span id="croc-totp-text"/></tt></b>.
+                        <p>Scan this QR code into your Google Authenticator app.</p>
+                        <p id="croc-loggedin-qr-container">
+                            <img id="croc-loggedin-qr-img"/>
+                        </p>
+                        <p>This QR code contains the URL <tt><span id="croc-totp-url"/></tt>.</p>
+                        <h2>Step 2: Browser cert</h2>
                         <form method="post" action="#" id="croc-genkey-form">
                             <form>
                                 <table>
@@ -124,12 +130,6 @@
                             </form>
                         </form>                        
                         <p><i>(Be assured that we store your public certificate only on the server. Alternatively submit a CSR via the Account menu.)</i></p>
-                        <p>Your OTP secret is <b><tt><span id="croc-totp-text"/></tt></b>. You can enter this into your T-OTP client.</p>
-                        <p>Alternatively, scan this QR code into your Google Authenticator app.</p>
-                        <p id="croc-loggedin-qr-container">
-                            <img id="croc-loggedin-qr-img"/>
-                        </p>
-                        <p>This QR code contains the URL <tt><span id="croc-totp-url"/></tt>.</p>
                         <p><a href="${secureUrl}">${secureUrl}</a></p>
                     </div>
                     <div id="croc-resetotp-modal" class="modal hide fade">
@@ -185,7 +185,7 @@
     <script src="./bootstrap/js/bootstrap-collapse.js"></script>
     <script src="./bootstrap/js/bootstrap-carousel.js"></script>
     <script src="./bootstrap/js/bootstrap-typeahead.js"></script>
-    
+
     <script type="text/javascript">
         $(document).ready(function() {    
             initDocument();
