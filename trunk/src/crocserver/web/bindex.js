@@ -38,7 +38,13 @@ function initDocument() {
     $(".croc-home-clickable").click(clickHome);
     $(".croc-about-clickable").click(clickAbout);
     $(".croc-contact-clickable").click(clickContact);
+    $('.croc-logout-clickable').click(clickLogout);
+    $('.croc-login-clickable').click(clickLogin);
+    $('#croc-account-genKey').click(clickGenKey);
+    $('#croc-account-signCert').click(clickSignCert);
+    $('#croc-account-resetOtp').click(clickResetOtp);
     $("#croc-genkey-form").submit(submitGenKey);
+    notify("Welcome");
 //showReadyAuth();
 }
 
@@ -55,6 +61,10 @@ function redirectDocument() {
         return true;
     }
     return false;
+}
+
+function notify(message) {
+    console.log("notify " + message);
 }
 
 function startClient() {
@@ -98,36 +108,39 @@ function login(accessToken) {
     });
 }
 
+function processLoginError() {
+    console.log("login error");
+    showReadyAuth();
+}
+
 function processLogin(res) {
     console.log("login response received")
     if (res.email != null) {
+        notify('Welcome, ' + res.name);
         $('#croc-username-text').text(res.email);
         $('#croc-user-picture').attr('src', res.picture);            
-        $('.croc-logout-clickable').click(clickLogout);
         $('#croc-loggedin-qr-img').attr('src', res.qr);
         $('#croc-loggedin-title').text("Welcome, " + res.name);
         $('#croc-totp-text').text(res.totpSecret);
         $('#croc-totp-url').text(res.totpUrl);
-        $('#croc-account-genKey').click(clickGenKey);
-        $('#croc-account-signCert').click(clickSignCert);
-        $('#croc-account-resetOtp').click(clickResetOtp);
         showLoggedIn();
     } else {        
+        console.log(res);
     }
 }
 
 function showLoggedIn() {
-    $(".croc-info-landing-extra").hide();
     $('.croc-landing-viewable').hide();
     $('.croc-login-viewable').hide();
     $('.croc-login-clickable').hide();
+    $('.croc-info').hide();
     $('.croc-loggedin-viewable').show();
     $('.croc-logout-clickable').show();
-    $('.croc-info').hide();
-    $('#croc-loggedin').show();    
+    $('#croc-loggedin-username').show();    
+    $('#croc-loggedin-info').show();    
 }
 
-function clickAuth(event) {
+function clickLogin(event) {
     gapi.auth.authorize({
         client_id: clientId, 
         scope: scopes, 
@@ -139,7 +152,7 @@ function clickAuth(event) {
 function showReadyAuth() {
     $('.croc-login-clickable').show();
     $('.croc-login-viewable').show();    
-    $('.croc-login-clickable').click(clickAuth);
+    $('.croc-login-clickable').click(clickLogin);
 }
 
 function getPlus() {
@@ -162,13 +175,11 @@ function showLanding() {
 }
 
 function showLoggedOut() {
-    $(".croc-info-landing-extra").show();
     $(".croc-info").hide();
     $("#croc-info-landing").show();
     $('.croc-landing-viewable').show();
     $('.croc-login-clickable').show();
     $('.croc-login-viewable').show();
-    $('.croc-login-clickable').click(clickAuth);
     $('.croc-loggedin-viewable').hide();
     $('.croc-logout-clickable').hide();    
 }
