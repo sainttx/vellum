@@ -82,7 +82,7 @@ public class GoogleLoginHandler implements HttpHandler {
             user.setRole(AdminRole.DEFAULT);
             user.setEnabled(true);
             user.setSecret(CrocSecurity.createSecret());
-        }
+        }        
         user.setLoginTime(new Date());
         if (user.isStored()) {
             app.getStorage().getUserStorage().update(user);

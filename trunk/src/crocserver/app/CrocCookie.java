@@ -81,6 +81,10 @@ public class CrocCookie {
         return loginMillis;
     }
 
+    public String getAccessToken() {
+        return accessToken;
+    }
+    
     @Override
     public String toString() {
         return toMap().toString();

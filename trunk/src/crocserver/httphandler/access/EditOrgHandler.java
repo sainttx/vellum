@@ -22,14 +22,17 @@ import vellum.storage.StorageExceptionType;
  *
  * @author evans
  */
-public class EnrollOrgHandler implements HttpHandler {
+public class EditOrgHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
-    public EnrollOrgHandler(CrocApp app) {
+    String userName;
+    String orgName;
+    
+    public EditOrgHandler(CrocApp app) {
         super();
         this.app = app;
     }
@@ -38,11 +41,22 @@ public class EnrollOrgHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getParameterMap(), httpExchangeInfo.getCookieMap());
-        try {
-            handle();
-        } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+        httpExchange.getResponseHeaders().set("Content-type", "text/plain");
+        out = new PrintStream(httpExchange.getResponseBody());
+        if (httpExchangeInfo.getPathLength() < 4) {
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+            out.printf("ERROR %s\n", httpExchangeInfo.getPath());
+        } else {
+            userName = httpExchangeInfo.getPathString(2);
+            orgName = httpExchangeInfo.getPathString(3);
+            try {
+                handle();
+            } catch (Exception e) {
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+                e.printStackTrace(out);
+                e.printStackTrace(System.err);
+                out.printf("ERROR %s\n", e.getMessage());
+            }
         }
         httpExchange.close();
     }
@@ -50,16 +64,15 @@ public class EnrollOrgHandler implements HttpHandler {
     Org org;
     
     private void handle() throws Exception {
-        AdminUser user = app.getUser(httpExchangeInfo, true);
-        String userName = user.getUserName();
+        AdminUser user = app.getStorage().getUserStorage().get(userName);
         logger.info("user", user);
         String url = httpExchangeInfo.getParameterMap().get("url");
-        if (url != null) {
-            if (!Patterns.matchesUrl(url)) {
-                throw new Exception("url " + url);
-            }
+        if (url == null) {
+            url = orgName;
         }
-        String orgName = url;
+        if (!Patterns.matchesUrl(url)) {
+            throw new Exception("url " + url);
+        }
         org = app.getStorage().getOrgStorage().find(orgName);
         if (org == null) {
             org = new Org(orgName, userName);
