@@ -43,6 +43,8 @@ public class ConfigParser {
             line = line.trim();
             if (line.startsWith("#")) {
                 continue;
+            } else if (line.startsWith("//")) {
+                continue;
             } else if (line.length() == 0) {
                 continue;
             } else if (line.equals(".")) {
