@@ -34,6 +34,10 @@ public class PropertiesMap extends HashMap<String, String> {
         }
         return get(name);
     }
+
+    public String findString(String name) {
+        return get(name);
+    }
     
     public String getString(String name) {
         if (!containsKey(name)) {
