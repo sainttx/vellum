@@ -50,6 +50,8 @@ public class AccessHttpHandler implements HttpHandler {
             return new EchoHandler(app);
         } else if (path.startsWith("/admin")) {
             return new SecureHomeHandler(app);
+        } else if (path.startsWith("/editOrg/")) {
+            return new EditOrgHandler(app);
         } else if (path.startsWith("/enrollUser/")) {
             return new EnrollUserHandler(app);
         } else if (path.startsWith("/enrollOrg/")) {

@@ -1,6 +1,4 @@
 
-var clientId = '${clientId}';
-var apiKey = '${apiKey}';
 var scopes = [
 "https://www.googleapis.com/auth/plus.me", 
 "https://www.googleapis.com/auth/userinfo.email", 
@@ -35,16 +33,42 @@ function startDocument() {
 
 function initDocument() {
     console.log("initDocument");
-    $(".croc-home-clickable").click(clickHome);
-    $(".croc-about-clickable").click(clickAbout);
-    $(".croc-contact-clickable").click(clickContact);
+    $('.croc-edit-org-clickable').click(clickEditOrg);
+    $('.croc-edit-network-clickable').click(clickEditNetwork);
+    $('.croc-edit-host-clickable').click(clickEditHost);
+    $('.croc-edit-client-clickable').click(clickEditClient);
+    $('.croc-edit-service-clickable').click(clickEditService);
+    $('.croc-home-clickable').click(clickHome);
+    $('.croc-about-clickable').click(clickAbout);
+    $('.croc-contact-clickable').click(clickContact);
     $('.croc-logout-clickable').click(clickLogout);
     $('.croc-login-clickable').click(clickLogin);
-    $('#croc-account-genKey').click(clickGenKey);
-    $('#croc-account-signCert').click(clickSignCert);
-    $('#croc-account-resetOtp').click(clickResetOtp);
-    $("#croc-genkey-form").submit(submitGenKey);
+    $('.croc-account-genKey-clickable').click(clickGenKey);
+    $('.croc-account-signCert-clickable').click(clickSignCert);
+    $('.croc-account-resetOtp-clickable').click(clickResetOtp);
+    $('#croc-genkey-form').submit(submitGenKey);
+    $('#croc-editOrg-form').submit(submitEditOrg);
+    $('#croc-editNetwork-form').submit(submitEditNetwork);
+    $('#croc-editHost-form').submit(submitEditHost);
+    $('#croc-editClient-form').submit(submitEditClient);
+    $('#croc-editService-form').submit(submitEditService);
+    $('#croc-secureUrl-anchor').attr('href', secureUrl);
+    $('#croc-secureUrl-anchor').text(secureUrl);
+    $('#croc-edit-org').load('edit-org.html');
+    $('#croc-edit-network').load('edit-network.html');
+    $('#croc-edit-host').load('edit-host.html');
+    $('#croc-edit-client').load('edit-client.html');
+    $('#croc-edit-service').load('edit-service.html');
     notify("Welcome");
+    $(document).ajaxError(
+        function (event, jqXHR, ajaxSettings, thrownError) {
+            console.log('ajax error [event:' + event + '], [jqXHR:' + jqXHR + '], [ajaxSettings:' + ajaxSettings + '], [thrownError:' + thrownError + '])');
+            console.log(event);
+            console.log(jqXHR);
+            console.log(ajaxSettings);
+            console.log(thrownError);
+        }
+    );    
 //showReadyAuth();
 }
 
@@ -123,6 +147,7 @@ function processLogin(res) {
         $('#croc-loggedin-title').text("Welcome, " + res.name);
         $('#croc-totp-text').text(res.totpSecret);
         $('#croc-totp-url').text(res.totpUrl);
+        $('#croc-totp-url').attr('href', res.qr);
         showLoggedIn();
     } else {        
         console.log(res);
@@ -260,16 +285,93 @@ function processResetOtp() {
 }
 
 function submitGenKey(event) {
-    event.preventDefault();
-    var password = $("croc-genkey-password-input").val;
-    $.post(
-        '/genKey',
-        password,
-        processGenKeyForm
-        );                  
+    console.log('submitGenKey');    
+    if (false) {
+        event.preventDefault();
+        $.post(
+            '/genKey',
+            $("#croc-genkey-form").serialize(),
+            processGenKeyForm
+            );
+    }
+    if (false) {
+        $.ajax({ 
+            type: 'POST',                
+            url: '/genkey',
+            data: {
+                password: password
+            },
+            success: processGenKeyForm,
+            error: function(xhr, status, err) {
+                console.log("error");
+            }
+        });
+    }    
+    return true;
 }
 
 function processGenKeyForm(res) {
     console.log('processGenKeyForm');
     console.log(res);
 }
+
+function clickEditOrg() {
+    console.log('clickEditOrg');
+    $('.croc-info').hide();
+    $('#croc-edit-org').show();
+}
+
+function clickEditNetwork() {
+    console.log('clickEditNetwork');
+    $('.croc-info').hide();
+    $('#croc-edit-network').show();
+}
+
+function clickEditHost() {
+    console.log('clickEditHost');
+    $('.croc-info').hide();
+    $('#croc-edit-host').show();
+}
+
+function clickEditClient() {
+    console.log('clickEditClient');
+    $('.croc-info').hide();
+    $('#croc-edit-client').show();
+}
+
+function clickEditService() {
+    console.log('clickEditService');
+    $('.croc-info').hide();
+    $('#croc-edit-service').show();
+}
+
+function submitEditOrg(event) {
+    console.log('submitEditOrg');    
+    event.preventDefault();
+    $.post(
+        '/editOrg',
+        $("#croc-editOrg-form").serialize(),
+        processEditOrg
+        ).error(errorEditOrg);
+}
+
+function submitEditNetwork(event) {
+    console.log('submitEditNetwork');    
+    event.preventDefault();
+    $.post(
+        '/editNetwork',
+        $("#croc-editNetwork-form").serialize(),
+        processEditNetwork
+        ).error(errorEditNetwork);
+}
+
+function submitEditHost(event) {
+    console.log('submitEditHost');    
+    event.preventDefault();
+    $.post(
+        '/editNetwork',
+        $("#croc-editHost-form").serialize(),
+        processEditNetwork
+        ).error(errorEditNetwork);
+}
+

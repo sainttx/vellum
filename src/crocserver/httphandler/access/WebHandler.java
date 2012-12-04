@@ -32,13 +32,14 @@ public class WebHandler implements HttpHandler {
     }
 
     public void init() throws IOException {
-        load("/pindex.html");
-        load("/pindex.js");
-        load("/bindex.html");
-        load("/bindex.js");
+        loadReplace("/local.js");
+        loadReplace("/pindex.html");
+        loadReplace("/pindex.js");
+        loadReplace("/bindex.html");
+        loadReplace("/bindex.js");
     }
     
-    public void load(String path) throws IOException {
+    public void loadReplace(String path) throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
         StringBuilder text = Streams.readStringBuilder(resourceStream);
         replace(text);
@@ -46,6 +47,14 @@ public class WebHandler implements HttpHandler {
         cache.put(path, bytes);
     }
 
+    public void load(String path) throws IOException {
+        InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
+        StringBuilder text = Streams.readStringBuilder(resourceStream);
+        replace(text);
+        byte[] bytes = text.toString().getBytes();
+        cache.put(path, bytes);
+    }
+    
     private void replace(StringBuilder text) {
         Strings.replace(text, "${loginUrl}", app.getGoogleApi().getLoginUrl());
         Strings.replace(text, "${clientId}", app.getGoogleApi().getClientId());

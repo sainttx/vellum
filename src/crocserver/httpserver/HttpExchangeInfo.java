@@ -261,25 +261,20 @@ public class HttpExchangeInfo {
     }
     
     public void handleException(Exception e) throws IOException {
-        PrintStream out = new PrintStream(httpExchange.getResponseBody());
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-        e.printStackTrace(out);
         e.printStackTrace(System.err);
-        out.printf("ERROR %s\n", e.getMessage());
-    }
-
-    public void handleError(String message) throws IOException {
-        logger.warn(message, parameterMap);
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-        PrintStream out = new PrintStream(httpExchange.getResponseBody());
-        out.printf("ERROR %s\n", message);
+        handleError(e.getMessage());
     }
 
     public void handleError() throws IOException {
-        logger.warn("error", getPath(), parameterMap);
+        handleError("");
+    }
+    
+    public void handleError(String message) throws IOException {
+        logger.warn(message, parameterMap);
+        httpExchange.getResponseHeaders().set("Content-type", "text/json");
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         PrintStream out = new PrintStream(httpExchange.getResponseBody());
-        out.printf("ERROR %s\n", getPath());
+        out.printf("{ errorMessage: \"%s\"; }\n", message);
     }
     
     public PrintStream getPrintStream() {

@@ -43,6 +43,7 @@ import vellum.httpserver.VellumHttpsServer;
 import vellum.parameter.StringMap;
 import vellum.security.DefaultKeyStores;
 import vellum.security.GeneratedRsaKeyPair;
+import vellum.util.DefaultDateFormats;
 
 /**
  *
@@ -90,7 +91,7 @@ public class CrocApp {
         trustManager = new CrocTrustManager(this);
         trustManager.init();
         new CrocSchema(storage).verifySchema();
-        String httpServerConfigName = configProperties.getString("httpServer");
+        String httpServerConfigName = configProperties.findString("httpServer");
         if (httpServerConfigName != null) {
             HttpServerConfig httpServerConfig = new HttpServerConfig(
                     configMap.find("HttpServer", httpServerConfigName).getProperties());
@@ -111,7 +112,7 @@ public class CrocApp {
                 publicHttpsServer.init(DefaultKeyStores.createSSLContext());
             }
         }
-        String privateHttpsServerConfigName = configProperties.getString("privateHttpsServer");
+        String privateHttpsServerConfigName = configProperties.findString("privateHttpsServer");
         if (privateHttpsServerConfigName != null) {
             HttpServerConfig httpsServerConfig = new HttpServerConfig(
                     configMap.find("HttpsServer", privateHttpsServerConfigName).getProperties());
@@ -316,11 +317,13 @@ public class CrocApp {
             CrocCookie cookie = new CrocCookie(cookieMap);
             AdminUser user = storage.getUserStorage().get(cookie.getEmail());
             if (user.getLoginTime().getTime() != cookie.getLoginMillis()) {
-                logger.warn("getUser cookie millis", user.getLoginTime().getTime(), cookie.getLoginMillis());
+                logger.warn("getUser cookie millis", DefaultDateFormats.dateFormat.format(user.getLoginTime()), 
+                        DefaultDateFormats.formatTime(cookie.getLoginMillis()),
+                        new Date(cookie.getLoginMillis()));
                 throw new EnumException(CrocExceptionType.STALE_COOKIE);
             }
             if (auth) {
-                googleApi.getUserInfo(cookie.getAuthCode());
+                googleApi.getUserInfo(cookie.getAccessToken());
             }
             return user;
         }
