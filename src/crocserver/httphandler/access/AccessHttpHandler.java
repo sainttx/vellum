@@ -12,6 +12,7 @@ import crocserver.app.CrocApp;
 import crocserver.httphandler.persona.PersonaLoginHandler;
 import crocserver.httphandler.persona.PersonaLogoutHandler;
 import crocserver.httphandler.secure.SecureHomeHandler;
+import crocserver.httphandler.secure.ShutdownHandler;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -84,6 +85,8 @@ public class AccessHttpHandler implements HttpHandler {
             return new ViewOrgHandler(storage);
         } else if (path.startsWith("/storage")) {
             return new StoragePageHandler(storage);
+        } else if (path.equals("/shutdown")) {
+            return new ShutdownHandler(app);
         }
         return null;
     }        

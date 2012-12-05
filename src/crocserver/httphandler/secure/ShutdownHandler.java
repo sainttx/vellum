@@ -17,32 +17,37 @@ import crocserver.storage.common.CrocStorage;
  * @author evans
  */
 public class ShutdownHandler implements HttpHandler {
+
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     CrocStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
-    
+
     public ShutdownHandler(CrocApp app) {
         super();
         this.app = app;
         this.storage = app.getStorage();
     }
-    
+
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
-        try {
-            app.stop();
-            httpExchangeInfo.sendResponse("text/plain", true);
-            httpExchangeInfo.getPrintStream().printf("OK %s\n", httpExchangeInfo.getPath());
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+        String remoteHostHame = httpExchange.getRemoteAddress().getHostName();
+        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), remoteHostHame);
+        if (!remoteHostHame.equals("localhost")) {
+            httpExchangeInfo.handleError(remoteHostHame);
+        } else {
+            try {
+                app.stop();
+                httpExchangeInfo.sendResponse("text/plain", true);
+                httpExchangeInfo.getPrintStream().printf("OK %s\n", httpExchangeInfo.getPath());
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                httpExchangeInfo.handleException(e);
+            }
         }
         httpExchange.close();
     }
-    
 }
