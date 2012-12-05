@@ -47,14 +47,18 @@ public class Millis {
     }
 
     public static boolean isElapsed(long startMillis, long millis) {
-        return (System.currentTimeMillis() - startMillis) > millis;
+        return elapsed(startMillis) > millis;
     }
 
     public static boolean isElapsed(Date startDate, long millis) {
         if (startDate == null) return true;
         return isElapsed(startDate.getTime(), millis);
     }
-    
+
+    public static long elapsed(long startMillis) {
+        return System.currentTimeMillis() - startMillis;
+    }
+        
     public static String formatAsSeconds(long millis) {
         if (millis == 0) return "00:00:00";
         long hour = millis/Millis.fromHours(1);
