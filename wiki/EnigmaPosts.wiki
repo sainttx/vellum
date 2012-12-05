@@ -1,2 +1,4 @@
 
+[PasswordSalt] (December 2012) DRAFT
+
 [GoogleAuthenticator The Google Authenticator] (November 2012)
