@@ -4,17 +4,14 @@
  */
 package vellum.util;
 
-import org.apache.catalina.util.Base64;
-
 /**
  *
  * @author evan
  */
 public class PackedPasswords {
     public static final int HASH_LENGTH = 54;
-    public static final String HASH_VERSION_PREFIX = "0^";
+    public static final String HASH_VERSION_PREFIX = Passwords.formatDefaultParam();
     private static final int PREFIX_LENGTH = 26;
-
 
     private static String pack(String hash, String salt) {
         return HASH_VERSION_PREFIX + salt + hash;
@@ -34,7 +31,7 @@ public class PackedPasswords {
     public static boolean matches(String password, String passwordHash) {
         String salt = unpackSalt(passwordHash);
         passwordHash = unpackPassword(passwordHash);
-        String hash = Passwords.hashPassword(password, Passwords.decode(salt));
+        String hash = Passwords.hashPassword(password, Base64.decode(salt));
         return hash.equals(passwordHash);
     }
 

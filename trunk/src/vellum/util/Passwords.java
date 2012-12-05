@@ -21,19 +21,35 @@ public class Passwords {
     private static final int ITERATION_COUNT = 9999;
     private static final int KEY_SIZE = 160;
 
+    public static String formatDefaultParam() {
+        return format(ALGORITHM, ITERATION_COUNT, KEY_SIZE);
+    }
+    
+    public static String format(String algorithm, int iterationCount, int keySize) {
+        return String.format("%s/%d/%d/");
+    }
+    
     public static String hashPassword(String password, byte[] salt) {
+        return hashPassword(password.toCharArray(), salt, ITERATION_COUNT, KEY_SIZE);
+    }
+    
+    public static String hashPassword(char[] password, byte[] salt, int iterationCount, int keySize) {
+        KeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
+        return hashPassword(spec);
+    }
+    
+    public static String hashPassword(KeySpec spec) {
         try {
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, KEY_SIZE);
-            SecretKeyFactory f = SecretKeyFactory.getInstance(ALGORITHM);
-            byte[] hash = f.generateSecret(spec).getEncoded();
-            return encode(hash);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+            return Base64.encode(hash);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     
     public static boolean matches(String password, String passwordHash, String salt) {
-        byte[] saltBytes = decode(salt);
+        byte[] saltBytes = Base64.decode(salt);
         String hash = hashPassword(password, saltBytes);
         return hash.equals(passwordHash);
     }
@@ -44,16 +60,4 @@ public class Passwords {
         random.nextBytes(salt);
         return salt;
     }
-
-    public static String encode(byte[] bytes) {
-        return new BASE64Encoder().encode(bytes);
-    }
-
-    public static byte[] decode(String string) {
-        try {
-            return new BASE64Decoder().decodeBuffer(string);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }    
 }
