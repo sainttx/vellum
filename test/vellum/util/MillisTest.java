@@ -41,7 +41,7 @@ public class MillisTest {
     public void testParse() {
         Assert.assertEquals(Millis.parse("1 SECONDS"), 1000);
         Assert.assertEquals(Millis.parse("1m"), 60000);
-        Assert.assertEquals(Millis.parse("60m"), 3600000L);
+        Assert.assertEquals(Millis.parse("60m"), 3600000);
         Assert.assertEquals(Millis.parse("60m"), Millis.parse("1h"));
         Assert.assertEquals(Millis.parse("24h"), Millis.parse("1d"));
     }
