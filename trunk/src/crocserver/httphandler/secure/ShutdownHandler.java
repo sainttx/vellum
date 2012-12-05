@@ -36,7 +36,7 @@ public class ShutdownHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         String remoteHostHame = httpExchange.getRemoteAddress().getHostName();
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), remoteHostHame);
-        if (!remoteHostHame.equals("localhost")) {
+        if (!remoteHostHame.equals("127.0.0.1")) {
             httpExchangeInfo.handleError(remoteHostHame);
         } else {
             try {

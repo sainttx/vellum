@@ -358,7 +358,6 @@ function submitEditOrg(event) {
         $('#croc-editOrg-form').serialize(),
         processEditOrg
         ).error(errorEditOrg);
-    console.log('submitEditOrg return');    
     return false;
 }
 
