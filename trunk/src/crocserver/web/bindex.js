@@ -43,22 +43,27 @@ function initDocument() {
     $('.croc-contact-clickable').click(clickContact);
     $('.croc-logout-clickable').click(clickLogout);
     $('.croc-login-clickable').click(clickLogin);
+    $('#croc-edit-org').load('edit-org.html', function() {
+        $('#croc-editOrg-form').submit(submitEditOrg);        
+    });
+    $('#croc-edit-network').load('edit-network.html', function() {
+        $('#croc-editNetwork-form').submit(submitEditNetwork);        
+    });
+    $('#croc-edit-host').load('edit-host.html', function() {
+        $('#croc-editHost-form').submit(submitEditHost);        
+    });
+    $('#croc-edit-client').load('edit-client.html', function() {
+        $('#croc-editClient-form').submit(submitEditClient);
+    });
+    $('#croc-edit-service').load('edit-service.html', function() {
+        $('#croc-editService-form').submit(submitEditService);
+    });
+    $('#croc-genkey-form').submit(submitGenKey);        
     $('.croc-account-genKey-clickable').click(clickGenKey);
     $('.croc-account-signCert-clickable').click(clickSignCert);
     $('.croc-account-resetOtp-clickable').click(clickResetOtp);
-    $('#croc-genkey-form').submit(submitGenKey);
-    $('#croc-editOrg-form').submit(submitEditOrg);
-    $('#croc-editNetwork-form').submit(submitEditNetwork);
-    $('#croc-editHost-form').submit(submitEditHost);
-    $('#croc-editClient-form').submit(submitEditClient);
-    $('#croc-editService-form').submit(submitEditService);
     $('#croc-secureUrl-anchor').attr('href', secureUrl);
     $('#croc-secureUrl-anchor').text(secureUrl);
-    $('#croc-edit-org').load('edit-org.html');
-    $('#croc-edit-network').load('edit-network.html');
-    $('#croc-edit-host').load('edit-host.html');
-    $('#croc-edit-client').load('edit-client.html');
-    $('#croc-edit-service').load('edit-service.html');
     notify("Welcome");
     $(document).ajaxError(
         function (event, jqXHR, ajaxSettings, thrownError) {
@@ -68,7 +73,7 @@ function initDocument() {
             console.log(ajaxSettings);
             console.log(thrownError);
         }
-    );    
+        );    
 //showReadyAuth();
 }
 
@@ -350,9 +355,19 @@ function submitEditOrg(event) {
     event.preventDefault();
     $.post(
         '/editOrg',
-        $("#croc-editOrg-form").serialize(),
+        $('#croc-editOrg-form').serialize(),
         processEditOrg
         ).error(errorEditOrg);
+    console.log('submitEditOrg return');    
+    return false;
+}
+
+function processEditOrg(res) {
+    console.log('processEditOrg');    
+}
+
+function errorEditOrg() {
+    console.log('errorEditOrg');    
 }
 
 function submitEditNetwork(event) {
@@ -360,18 +375,42 @@ function submitEditNetwork(event) {
     event.preventDefault();
     $.post(
         '/editNetwork',
-        $("#croc-editNetwork-form").serialize(),
+        $('#croc-editNetwork-form').serialize(),
         processEditNetwork
         ).error(errorEditNetwork);
+    return false;
 }
 
 function submitEditHost(event) {
     console.log('submitEditHost');    
     event.preventDefault();
     $.post(
-        '/editNetwork',
-        $("#croc-editHost-form").serialize(),
-        processEditNetwork
-        ).error(errorEditNetwork);
+        '/editHost',
+        $('#croc-editHost-form').serialize(),
+        processEditHost
+        ).error(errorEditHost);
+    return false;
+}
+
+function submitEditClient(event) {
+    console.log('submitEditClient');    
+    event.preventDefault();
+    $.post(
+        '/editClient',
+        $('#croc-editClient-form').serialize(),
+        processEditClient
+        ).error(errorEditClient);
+    return false;
+}
+
+function submitEditService(event) {
+    console.log('submitEditService');    
+    event.preventDefault();
+    $.post(
+        '/editService',
+        $('#croc-editService-form').serialize(),
+        processEditService
+        ).error(errorEditService);
+    return false;
 }
 
