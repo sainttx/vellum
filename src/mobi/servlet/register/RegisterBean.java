@@ -4,6 +4,7 @@
  */
 package mobi.servlet.register;
 
+import vellum.util.Base64;
 import vellum.util.Passwords;
 
 /**
@@ -51,7 +52,7 @@ public class RegisterBean {
     }
 
     public String encodeSalt() {
-        return Passwords.encode(salt);
+        return Base64.encode(salt);
     }
 
     public String hashPassword() {
