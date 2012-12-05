@@ -7,6 +7,6 @@ The first new article in that series will be "Password Salt" not least because t
 
 [Cryptonomical Cryptonomical] (March 2007)
 
-[Enigma Enigma]
+[Encryptic Encryptic] (April 2007)
 
-[Encryptic Encryptic]
+[Enigma Enigma] (May 2007)
