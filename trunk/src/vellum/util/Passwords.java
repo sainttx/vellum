@@ -11,7 +11,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
-import vellum.exception.Exceptions;
 
 /**
  *
@@ -34,13 +33,9 @@ public class Passwords {
     }
     
     public static boolean matches(String password, String passwordHash, String salt) {
-        try {
-            byte[] saltBytes = decode(salt);
-            String hash = hashPassword(password, saltBytes);
-            return hash.equals(passwordHash);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        byte[] saltBytes = decode(salt);
+        String hash = hashPassword(password, saltBytes);
+        return hash.equals(passwordHash);
     }
 
     public static byte[] nextSalt() {
@@ -54,7 +49,11 @@ public class Passwords {
         return new BASE64Encoder().encode(bytes);
     }
 
-    public static byte[] decode(String string) throws IOException {
-        return new BASE64Decoder().decodeBuffer(string);
+    public static byte[] decode(String string) {
+        try {
+            return new BASE64Decoder().decodeBuffer(string);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }    
 }
