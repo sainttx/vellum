@@ -12,7 +12,7 @@ import org.apache.catalina.util.Base64;
  */
 public class PackedPasswords {
     public static final int HASH_LENGTH = 54;
-    public static final String HASH_VERSION_PREFIX = "00";
+    public static final String HASH_VERSION_PREFIX = "0^";
     private static final int PREFIX_LENGTH = 26;
 
 
@@ -32,15 +32,10 @@ public class PackedPasswords {
     }
         
     public static boolean matches(String password, String passwordHash) {
-        try {
-            String salt = unpackSalt(passwordHash);
-            byte[] saltBytes = Passwords.decode(salt);
-            passwordHash = unpackPassword(passwordHash);
-            String hash = Passwords.hashPassword(password, saltBytes);
-            return hash.equals(passwordHash);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        String salt = unpackSalt(passwordHash);
+        passwordHash = unpackPassword(passwordHash);
+        String hash = Passwords.hashPassword(password, Passwords.decode(salt));
+        return hash.equals(passwordHash);
     }
 
     private static String unpackPassword(String passwordHash) {
