@@ -9,37 +9,46 @@ package vellum.util;
  * @author evan
  */
 public class PackedPasswords {
-    public static final int HASH_LENGTH = 54;
-    public static final String HASH_VERSION_PREFIX = Passwords.formatDefaultParam();
-    private static final int PREFIX_LENGTH = 26;
-
-    private static String pack(String hash, String salt) {
-        return HASH_VERSION_PREFIX + salt + hash;
+    public static final int REVISION_PREFIX_LENGTH = 2;    
+    
+    private static String pack(String hash, String salt, int revisionIndex) {
+        assert revisionIndex >= 0 && revisionIndex <= 9;
+        return "^" + revisionIndex + salt + hash;
     }
 
     public static boolean isPacked(String passwordHash) {
-        return passwordHash.length() == HASH_LENGTH && passwordHash.startsWith(HASH_VERSION_PREFIX);
+        return passwordHash.charAt(0) == '^';
     }
 
-    public static String hashPassword(String password) {
-        byte[] saltBytes = Passwords.nextSalt();
-        String salt = Base64.encode(saltBytes);
-        String hash = Passwords.hashPassword(password, saltBytes);
-        return pack(hash, salt);
+    public static boolean isPackedLatest(String passwordHash) {
+        return passwordHash.charAt(0) == '^' && passwordHash.charAt(1) == '0' + Passwords.LATEST_REVISION_INDEX;
     }
-        
-    public static boolean matches(String password, String passwordHash) {
-        String salt = unpackSalt(passwordHash);
-        passwordHash = unpackPassword(passwordHash);
-        String hash = Passwords.hashPassword(password, Base64.decode(salt));
-        return hash.equals(passwordHash);
-    }
-
-    private static String unpackPassword(String passwordHash) {
-        return passwordHash.substring(PREFIX_LENGTH);
+    
+    private static int unpackRevisionIndex(String passwordHash) {
+        return passwordHash.charAt(1) - '0';
     }
 
     private static String unpackSalt(String passwordHash) {
-        return passwordHash.substring(HASH_VERSION_PREFIX.length(), PREFIX_LENGTH);
+        return passwordHash.substring(REVISION_PREFIX_LENGTH, REVISION_PREFIX_LENGTH + Passwords.ENCODED_SALT_LENGTH);
     }        
+        
+    private static String unpackPassword(String passwordHash) {
+        return passwordHash.substring(REVISION_PREFIX_LENGTH + Passwords.ENCODED_SALT_LENGTH);
+    }
+
+    public static String hashPassword(char[] password) {
+        byte[] saltBytes = Passwords.nextSalt();
+        String salt = Base64.encode(saltBytes);
+        String hash = Passwords.hashPassword(password, saltBytes);
+        return pack(hash, salt, Passwords.LATEST_REVISION_INDEX);
+    }
+        
+    public static boolean matches(char[] password, String passwordHash) {
+        int revisionIndex = unpackRevisionIndex(passwordHash);
+        String salt = unpackSalt(passwordHash);
+        passwordHash = unpackPassword(passwordHash);
+        String hash = Passwords.hashPassword(password, Base64.decode(salt), revisionIndex);
+        return hash.equals(passwordHash);
+    }
+    
 }

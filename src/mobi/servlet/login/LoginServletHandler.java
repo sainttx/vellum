@@ -31,7 +31,7 @@ public class LoginServletHandler {
             Person person = personConnection.find(email);
             if (person == null) {
                 responseMap.put("message", "Email not found");
-            } else if (!Passwords.matches(password, person.getPasswordHash(), person.getPasswordSalt())) {
+            } else if (!Passwords.matches(password.toCharArray(), person.getPasswordHash(), person.getPasswordSalt())) {
                 responseMap.put("message", "Incorrect password");
             } else {
                 responseMap.put("name", person.getPersonName());
