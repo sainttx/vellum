@@ -12,6 +12,7 @@ import java.security.SecureRandom;
  */
 public class Passwords {
     private static final PasswordSpec specs[] = {
+        new PasswordSpec("PBKDF2WithHmacSHA1", 9999, 128),
         new PasswordSpec("PBKDF2WithHmacSHA1", 9999, 160)
     };
     public static final int LATEST_REVISION_INDEX = specs.length - 1;
