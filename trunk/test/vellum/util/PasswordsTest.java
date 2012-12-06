@@ -67,6 +67,19 @@ public class PasswordsTest {
         assertFalse(PackedPasswords.matches("wrong".toCharArray(), hash));
     }
 
+    @Test
+    public void testRevision() throws Exception {
+        char[] password = "12345678".toCharArray();
+        String hash0 = PackedPasswords.hashPassword(password, 0);
+        String hash1 = PackedPasswords.hashPassword(password, 1);
+        System.out.println(hash0);
+        assertTrue(PackedPasswords.isPacked(hash0));
+        assertTrue(PackedPasswords.matches(password, hash0));
+        assertTrue(matches("evanx", password, hash0));
+        assertTrue(matches("evanx", password, hash1));
+        assertFalse(PackedPasswords.matches("wrong".toCharArray(), hash0));
+    }
+    
     public boolean matchesUnsalted(char[] password, String passwordHash) throws Exception {
         return PackedPasswords.matches(password, passwordHash);
     }
@@ -99,5 +112,6 @@ public class PasswordsTest {
     }
 
     private void persistNewPasswordHash(String user, String passwordHash) {
+        System.out.printf("persistNewPasswordHash %s, %s, %d\n", user, passwordHash, PackedPasswords.unpackRevisionIndex(passwordHash));
     }
 }
