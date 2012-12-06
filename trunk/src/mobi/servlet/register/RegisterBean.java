@@ -56,7 +56,7 @@ public class RegisterBean {
     }
 
     public String hashPassword() {
-        return Passwords.hashPassword(password, salt);
+        return Passwords.hashPassword(password.toCharArray(), salt);
     }
 
     
