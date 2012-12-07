@@ -13,4 +13,4 @@ We will be analysing logs in this unwinding series. Ultimately we gonna hook up 
 
 [Millis Millis] (November 2012)
 
-Appender Deque (Planned for January 2012)
+Appender Deque (Planned for early 2013)
