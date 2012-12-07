@@ -4,46 +4,40 @@
  */
 package vellum.util;
 
-import java.security.SecureRandom;
+import java.util.Arrays;
 
 /**
  *
  * @author evan
  */
 public class Passwords {
-    private static final PasswordSpec specs[] = {
-        new PasswordSpec("PBKDF2WithHmacSHA1", 9999, 128),
+    public static final PasswordSpec SPECS[] = {
+        new PasswordSpec("PBKDF2WithHmacSHA1", 1000, 128),
         new PasswordSpec("PBKDF2WithHmacSHA1", 9999, 160)
     };
-    public static final int LATEST_REVISION_INDEX = specs.length - 1;
-    public static final int ENCODED_SALT_LENGTH = 24;    
+    public static final int LATEST_REVISION_INDEX = SPECS.length - 1;
+
+    public static PasswordSpec getSpec() {
+        return SPECS[LATEST_REVISION_INDEX];
+    }
     
-    public static String hashPassword(char[] password, byte[] salt) {
+    public static PasswordSpec getSpec(int revisionIndex) {
+        return SPECS[revisionIndex];
+    }
+    
+    public static byte[] hashPassword(char[] password, byte[] salt) {
         return hashPassword(password, salt, LATEST_REVISION_INDEX);
     }
-
-    public static String hashPassword(char[] password, byte[] salt, int revisionIndex) {
-        return hashPassword(password, salt, specs[revisionIndex]);
-    }
     
-    public static String hashPassword(char[] password, byte[] salt, PasswordSpec spec) {
-        return spec.hashPassword(password, salt);
+    public static byte[] hashPassword(char[] password, byte[] salt, int revisionIndex) {
+        return SPECS[revisionIndex].hashPassword(password, salt);
     }
 
-    public static boolean matches(char[] password, String passwordHash, String salt) {
+    public static boolean matches(char[] password, byte[] passwordHash, byte[] salt) {
         return matches(password, passwordHash, salt, LATEST_REVISION_INDEX);
     }
     
-    public static boolean matches(char[] password, String passwordHash, String salt, int revisionIndex) {
-        byte[] saltBytes = Base64.decode(salt);
-        String hash = hashPassword(password, saltBytes, revisionIndex);
-        return hash.equals(passwordHash);
-    }
-
-    public static byte[] nextSalt() {
-        byte[] salt = new byte[16];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(salt);
-        return salt;
+    public static boolean matches(char[] password, byte[] passwordHash, byte[] salt, int revisionIndex) {
+        return Arrays.equals(passwordHash, hashPassword(password, salt, revisionIndex));
     }
 }

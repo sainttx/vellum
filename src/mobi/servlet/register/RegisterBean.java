@@ -17,7 +17,7 @@ public class RegisterBean {
     String password;
     String confirmPassword;
     String passwordHash;
-    byte[] salt = Passwords.nextSalt();
+    byte[] salt = Passwords.getSpec().nextSalt();
     
     public String getConfirmPassword() {
         return confirmPassword;
@@ -56,7 +56,7 @@ public class RegisterBean {
     }
 
     public String hashPassword() {
-        return Passwords.hashPassword(password.toCharArray(), salt);
+        return Base64.encode(Passwords.hashPassword(password.toCharArray(), salt));
     }
 
     
