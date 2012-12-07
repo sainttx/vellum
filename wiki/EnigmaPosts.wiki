@@ -3,3 +3,5 @@
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
 [PasswordSalt Password Salt] (December 2012) DRAFT
+
+Generating and signing browser certs (Planned for early 2013)
