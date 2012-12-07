@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import mobi.entity.Person;
 import mobi.session.Servlets;
 import mobi.storage.PersonConnection;
+import vellum.util.Base64;
 
 /**
  *
@@ -31,7 +32,7 @@ public class LoginServletHandler {
             Person person = personConnection.find(email);
             if (person == null) {
                 responseMap.put("message", "Email not found");
-            } else if (!Passwords.matches(password.toCharArray(), person.getPasswordHash(), person.getPasswordSalt())) {
+            } else if (!Passwords.matches(password.toCharArray(), Base64.decode(person.getPasswordHash()), Base64.decode(person.getPasswordSalt()))) {
                 responseMap.put("message", "Incorrect password");
             } else {
                 responseMap.put("name", person.getPersonName());
