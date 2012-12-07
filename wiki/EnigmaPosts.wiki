@@ -3,5 +3,3 @@
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
 [PasswordSalt Password Salt] (December 2012) DRAFT
-
-Appender Deque (Planned for January 2012)
