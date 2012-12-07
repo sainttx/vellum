@@ -1,4 +1,7 @@
 
+
+[GoogleAuthenticator Google Authenticator] (November 2012)
+
 [PasswordSalt Password Salt] (December 2012) DRAFT
 
-[GoogleAuthenticator The Google Authenticator] (November 2012)
+Appender Deque (Planned for January 2012)
