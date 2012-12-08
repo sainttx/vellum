@@ -38,16 +38,17 @@ public class ShutdownHandler implements HttpHandler {
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), remoteHostHame);
         if (!remoteHostHame.equals("127.0.0.1")) {
             httpExchangeInfo.handleError(remoteHostHame);
+            httpExchange.close();
         } else {
             try {
-                app.stop();
                 httpExchangeInfo.sendResponse("text/plain", true);
                 httpExchangeInfo.getPrintStream().printf("OK %s\n", httpExchangeInfo.getPath());
-                Thread.sleep(2000);
+                httpExchange.close();
+                app.stop();
             } catch (Exception e) {
                 httpExchangeInfo.handleException(e);
+                httpExchange.close();
             }
         }
-        httpExchange.close();
     }
 }
