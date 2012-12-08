@@ -7,9 +7,10 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
-import crocserver.httpserver.HttpExchangeInfo;
+import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;
+import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
@@ -19,7 +20,7 @@ import vellum.parameter.StringMap;
  * @author evans
  */
 public class EchoHandler implements HttpHandler {
-
+    
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     HttpExchange httpExchange;
@@ -43,7 +44,7 @@ public class EchoHandler implements HttpHandler {
             cookieMap.put(cookieKey, "testValue");
             cookieMap.put("testCookieKey1", "testValue1");
             cookieMap.put("testCookieKey2", "testValue2");
-            httpExchangeInfo.setCookie(cookieMap, HttpExchangeInfo.COOKIE_MLLIS);
+            httpExchangeInfo.setCookie(cookieMap, Millis.fromHours(24));
             httpExchangeInfo.sendResponse("text/plain", true);
             out.println(httpExchange.getRequestURI().toString());
             out.printf("cookie %s: %s\n", cookieKey, httpExchangeInfo.getCookie(cookieKey));
