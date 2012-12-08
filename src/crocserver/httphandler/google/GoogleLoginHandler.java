@@ -11,7 +11,7 @@ import crocserver.app.CrocCookie;
 import crocserver.app.CrocSecurity;
 import crocserver.app.GoogleUserInfo;
 import crocserver.app.JsonStrings;
-import crocserver.httpserver.HttpExchangeInfo;
+import vellum.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;

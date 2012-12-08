@@ -4,7 +4,6 @@ package vellum.httpserver;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import crocserver.httpserver.HttpServerConfig;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.concurrent.ArrayBlockingQueue;

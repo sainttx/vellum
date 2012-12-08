@@ -9,7 +9,7 @@ import vellum.logr.LogrFactory;
 import vellum.printer.PrintStreamAdapter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import crocserver.httpserver.HttpExchangeInfo;
+import vellum.httpserver.HttpExchangeInfo;
 import vellum.printer.Printer;
 import vellum.util.Streams;
 import vellum.util.Strings;

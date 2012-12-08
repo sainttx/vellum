@@ -8,7 +8,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import crocserver.app.CrocApp;
 import crocserver.app.CrocExceptionType;
-import crocserver.httpserver.HttpExchangeInfo;
+import vellum.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import vellum.logr.Logr;

@@ -6,7 +6,7 @@ package crocserver.httphandler.secure;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
-import crocserver.httpserver.HttpExchangeInfo;
+import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
