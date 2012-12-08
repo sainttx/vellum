@@ -1,4 +1,7 @@
 
+-- validate 
+select * from secret where 1 = 0;
+
 -- insert
 insert into secret (group_, name_, secret)
 values (?, ?, ?)
