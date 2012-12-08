@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package vellum.util;
+package vellum.crypto;
 
 import vellum.crypto.PackedPasswords;
 import vellum.crypto.PasswordHash;
@@ -17,6 +17,7 @@ import static junit.framework.Assert.*;
 import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.Bytes;
 
 /**
  *
@@ -156,18 +157,21 @@ public class PasswordsTest {
         logger.info("persistNewPasswordHash", user, Base64.encode(passwordHash));
     }
     
+    static final byte[] PBE_SALT = Base64.decode("nD++3Wv9h9MqnS3bO3KJzA==");
+    
     @Test
     public void testCipher() throws Exception {
         char[] pbePassword = "sshssh".toCharArray();
-        PBECipher cipher = new PBECipher(pbePassword);
+        PBECipher cipher = new PBECipher(pbePassword, PBE_SALT);
         char[] userPassword = "12345678".toCharArray();
         PasswordHash passwordHash0 = new PasswordHash(userPassword, 
                 Passwords.ITERATION_COUNT_EXPONENT, Passwords.KEY_SIZE);
-        byte[] encryptedHash = cipher.encrypt(passwordHash0.pack());
-        byte[] decryptedHash = cipher.decrypt(encryptedHash);
+        byte[] iv = Base64.decode("xI87HaOKY5y9JIjMiqrtLg==");
+        byte[] encryptedHash = cipher.encrypt(passwordHash0.pack(), iv);
+        byte[] decryptedHash = cipher.decrypt(encryptedHash, iv);
         assertTrue(Arrays.equals(decryptedHash, passwordHash0.pack()));
-        encryptedHash = cipher.encrypt(decryptedHash);
-        decryptedHash = cipher.decrypt(encryptedHash);
+        encryptedHash = cipher.encrypt(decryptedHash, iv);
+        decryptedHash = cipher.decrypt(encryptedHash, iv);
         assertTrue(Arrays.equals(decryptedHash, passwordHash0.pack()));
         assertTrue(new PasswordHash(decryptedHash).matches(userPassword));
         assertFalse(new PasswordHash(decryptedHash).matches("wrong".toCharArray()));        
