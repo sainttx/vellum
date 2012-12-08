@@ -76,6 +76,7 @@ public class SaltManagerHandler implements HttpHandler {
         try {
             queryDatabaseTime();
             print(RowSets.getRowSet(connection, "select * from schema_revision"));
+            print(RowSets.getRowSet(connection, "select * from secret"));
             printSchema();
             connectionEntry.setOk(true);
         } finally {

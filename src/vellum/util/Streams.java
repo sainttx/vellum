@@ -12,6 +12,8 @@ import vellum.exception.ArgsRuntimeException;
 import vellum.exception.Exceptions;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -134,6 +136,10 @@ public class Streams {
 
     public static String readString(InputStream stream) {
         return new String(readBytes(stream));
+    }
+
+    public static char[] readChars(InputStream stream) {
+        return Bytes.toCharArray(readBytes(stream));
     }
     
     public static InputStream exec(String command) throws IOException {

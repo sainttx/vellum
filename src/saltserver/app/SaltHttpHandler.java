@@ -6,6 +6,8 @@ package saltserver.app;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
+import saltserver.httphandler.GetSecretHandler;
+import saltserver.httphandler.PostSecretHandler;
 import saltserver.httphandler.SaltManagerHandler;
 import saltserver.httphandler.ShutdownHandler;
 import vellum.logr.Logr;
@@ -43,9 +45,14 @@ public class SaltHttpHandler implements HttpHandler {
                 return new ShutdownHandler(app);
             } else if (path.equals("/manager")) {
                 return new SaltManagerHandler(app);
-            } else if (!path.startsWith("/local")) {
+            } else if (path.startsWith("/local/")) {
                 return null;
             }
+        }
+        if (path.startsWith("/getSecret/")) {
+            return new GetSecretHandler(app);
+        } else if (path.startsWith("/postSecret/")) {
+            return new PostSecretHandler(app);            
         }
         return null;
     }

@@ -260,6 +260,11 @@ public class HttpExchangeInfo {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         }
     }
+
+    public void sendJsonResponse(String json) throws IOException {
+        sendResponse("text/json", true);
+        getPrintStream().println(json);
+    }
     
     public void handleException(Exception e) {
         e.printStackTrace(System.err);
