@@ -113,7 +113,7 @@ public class MonitorHandler {
         for (int i = 0; i < columnNames.length; i++) {
             tablePrinter.th(columnNames[i]);
         }
-        tablePrinter._thead();
+        tablePrinter.theadClose();
         tablePrinter.tbody();
         while (resultSet.next()) {      
             tablePrinter.tr();
@@ -121,10 +121,10 @@ public class MonitorHandler {
                 Object value = resultSet.getObject(columnNames[i]);
                 tablePrinter.td(resultSetMetaData.getColumnClassName(i), value);
             }
-            tablePrinter._tr();
+            tablePrinter.trClose();
         }
-        tablePrinter._tbody();
-        tablePrinter._table();
+        tablePrinter.tbodyClose();
+        tablePrinter.tableClose();
     }
     
     private void print(ResultSet resultSet) throws Exception {
@@ -135,17 +135,17 @@ public class MonitorHandler {
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             tablePrinter.th(resultSetMetaData.getColumnName(i));
         }
-        tablePrinter._thead();
+        tablePrinter.theadClose();
         tablePrinter.tbody();
         while (resultSet.next()) {      
             tablePrinter.tr();
             for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
                 tablePrinter.td(resultSetMetaData.getColumnClassName(i), resultSet.getObject(i));
             }
-            tablePrinter._tr();
+            tablePrinter.trClose();
         }
-        tablePrinter._tbody();
-        tablePrinter._table();
+        tablePrinter.tbodyClose();
+        tablePrinter.tableClose();
     }
     
     private void createSchema() throws Exception {        

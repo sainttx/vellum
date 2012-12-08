@@ -94,8 +94,8 @@ public class OAuthCallbackHandler implements HttpHandler {
         httpExchangeInfo.sendResponse("text/html", true);
         HtmlPrinter p = new HtmlPrinter(httpExchange.getResponseBody());
         p.div("menuBarDiv");
-        p.a_("/", "Home");
-        p._div();
+        p.aClosed("/", "Home");
+        p.divClose();
         p.h(2, "Welcome, " + userInfo.getDisplayName());
         p.span("", String.format("The following provided email address will be used as your username: <tt>%s</tt>", userInfo.getEmail()));
         p.println("<p>");
@@ -109,7 +109,7 @@ public class OAuthCallbackHandler implements HttpHandler {
         p.println("<p>");
         p.form();
         p.textarea("csr", 10, 80, null);
-        p._form();
-        p._div();
+        p.formClose();
+        p.divClose();
     }    
 }

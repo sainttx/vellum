@@ -20,6 +20,8 @@ import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
 import saltserver.storage.schema.SaltSchema;
+import vellum.crypto.Base64;
+import vellum.crypto.PBECipher;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.security.DefaultKeyStores;
 
@@ -38,7 +40,8 @@ public class SecretApp {
     ConfigMap configMap;
     Server h2Server;
     VellumHttpsServer httpsServer;
-
+    PBECipher cipher; 
+    
     public void init() throws Exception {
         initConfig();
         sendShutdown();
@@ -59,7 +62,11 @@ public class SecretApp {
                 httpsServer.init(DefaultKeyStores.createSSLContext());
             }
         }
+        String pbeSalt = configProperties.getString("pbeSalt");
+        String pbeSecret = configProperties.getString("pbeSecret");
+        cipher = new PBECipher(pbeSecret.toCharArray(), Base64.decode(pbeSalt));
     }
+    
     private void initConfig() throws Exception {
         confFileName = getString("salt.conf");
         File confFile = new File(confFileName);
@@ -115,6 +122,10 @@ public class SecretApp {
         return storage;
     }
 
+    public PBECipher getCipher() {
+        return cipher;
+    }
+    
     public static void main(String[] args) throws Exception {
         try {
             SecretApp starter = new SecretApp();

@@ -5,15 +5,15 @@ package saltserver.httphandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import crocserver.app.JsonStrings;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
+import java.util.Arrays;
 import saltserver.app.SecretApp;
 import saltserver.app.SecretAppStorage;
-import saltserver.storage.secret.SecretValue;
+import saltserver.storage.secret.SecretRecord;
+import vellum.crypto.Base64;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.parameter.StringMap;
 
 /**
  *
@@ -54,12 +54,10 @@ public class GetSecretHandler implements HttpHandler {
     }
     
     private void handle() throws Exception {
-        SecretValue secret = app.getStorage().getSecretStorage().get(group, name);
-        StringMap responseMap = new StringMap();
-        responseMap.putObject("id", secret.getId());
-        responseMap.put("secret", secret.getSecret());
-        String json = JsonStrings.buildJson(responseMap);
-        httpExchangeInfo.sendJsonResponse(json);
-        logger.info(json);
+        SecretRecord secret = app.getStorage().getSecretStorage().get(group, name);
+        byte[] secretBytes = app.getCipher().decrypt(Base64.decode(secret.getSecret()));
+        httpExchangeInfo.sendResponse("application/octet-stream", true);
+        httpExchange.getResponseBody().write(secretBytes);
+        Arrays.fill(secretBytes, Byte.MIN_VALUE);
     }
 }

@@ -28,15 +28,15 @@ public class AccessHomeHandler extends AbstractPageHandler {
     public void handle() throws IOException, SQLException {
         h.div("header");
         h.span("brand", "croc");
-        h._div();
-        h.div_id("watermark");
-        h._div();
+        h.divClose();
+        h.divId("watermark");
+        h.divClose();
         h.img("http://upload.wikimedia.org/wikipedia/commons/5/55/Gnome-security-medium.svg");
         h.div("menuBarDiv");
-        h.a_("/", "Home");
+        h.aClosed("/", "Home");
         h.span("style", "|");
-        h.a_(app.getGoogleApi().getLoginUrl(), "Login with Google");
-        h._div();
+        h.aClosed(app.getGoogleApi().getLoginUrl(), "Login with Google");
+        h.divClose();
         if (false) {
             String qrUrl = "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=otpauth:%3A%2F%2Ftotp%2Fevans%3Fsecret%3DAAAAAAAAAAAAAAAAA";
             logger.info("qrUrl", qrUrl);
@@ -59,7 +59,7 @@ public class AccessHomeHandler extends AbstractPageHandler {
                     CalendarFormats.timestampFormat.format(cert.getUpdated()),
                     cert.getUpdatedBy());
         }
-        h._table();
-        h._div();
+        h.tableClose();
+        h.divClose();
     }      
 }

@@ -109,7 +109,7 @@ public class StoragePageHandler extends AbstractPageHandler {
         for (int i = 0; i < columnNames.length && i < COLUMN_LIMIT; i++) {
             h.th(columnNames[i]);
         }
-        h._thead();
+        h.theadClose();
         h.tbody();
         while (resultSet.next()) {      
             h.tr();
@@ -117,10 +117,10 @@ public class StoragePageHandler extends AbstractPageHandler {
                 Object value = resultSet.getObject(columnNames[i]);
                 h.td(Types.getStyleClass(value.getClass()), value);
             }
-            h._tr();
+            h.trClose();
         }
-        h._tbody();
-        h._table();
+        h.tbodyClose();
+        h.tableClose();
     }
 
     private Object trim(Object object) {
@@ -141,16 +141,16 @@ public class StoragePageHandler extends AbstractPageHandler {
         for (int i = 1; i <= resultSetMetaData.getColumnCount() && i < COLUMN_LIMIT; i++) {
             tablePrinter.th(resultSetMetaData.getColumnName(i));
         }
-        tablePrinter._thead();
+        tablePrinter.theadClose();
         tablePrinter.tbody();
         while (resultSet.next()) {      
             tablePrinter.tr();
             for (int i = 1; i <= resultSetMetaData.getColumnCount() && i < COLUMN_LIMIT; i++) {
                 tablePrinter.td(resultSetMetaData.getColumnClassName(i), trim(resultSet.getObject(i)));
             }
-            tablePrinter._tr();
+            tablePrinter.trClose();
         }
-        tablePrinter._tbody();
-        tablePrinter._tableDiv();
+        tablePrinter.tbodyClose();
+        tablePrinter.tableDivClose();
     }    
 }

@@ -25,19 +25,19 @@ public class ViewUserHandler extends AbstractPageHandler {
        HtmlPrinter p = new HtmlPrinter(out);
        String id = pathArgs[1];
        p.div("menuBarDiv");
-       p.a_("/", "Home");
-       p._div();
+       p.aClosed("/", "Home");
+       p.divClose();
        p.span("pageTitle", String.format("User %s", id));
        AdminUser user = storage.getUserStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
-       p._thead();
+       p.theadClose();
        p.tbody();
        p.trhd("Username", user.getId());
        p.trhd("Display name", user.getDisplayName());
        p.trhd("Email", user.getEmail());
        p.trhd("Cert subject", user.getSubject());
-       p._tbody();
-       p._tableDiv();
+       p.tbodyClose();
+       p.tableDivClose();
     }    
 }

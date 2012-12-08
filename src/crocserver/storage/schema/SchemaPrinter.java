@@ -84,7 +84,7 @@ public class SchemaPrinter {
         for (int i = 0; i < columnNames.length; i++) {
             out.th(columnNames[i]);
         }
-        out._thead();
+        out.theadClose();
         out.tbody();
         while (resultSet.next()) {      
             out.tr();
@@ -92,10 +92,10 @@ public class SchemaPrinter {
                 Object value = resultSet.getObject(columnNames[i]);
                 out.td(Types.getStyleClass(value.getClass()), value);
             }
-            out._tr();
+            out.trClose();
         }
-        out._tbody();
-        out._table();
+        out.tbodyClose();
+        out.tableClose();
     }
     
     private void print(ResultSet resultSet) throws Exception {
@@ -106,16 +106,16 @@ public class SchemaPrinter {
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             out.th(resultSetMetaData.getColumnName(i));
         }
-        out._thead();
+        out.theadClose();
         out.tbody();
         while (resultSet.next()) {      
             out.tr();
             for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
                 out.td(resultSetMetaData.getColumnClassName(i), resultSet.getObject(i));
             }
-            out._tr();
+            out.trClose();
         }
-        out._tbody();
-        out._table();
+        out.tbodyClose();
+        out.tableClose();
     }
 }

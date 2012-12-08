@@ -20,11 +20,10 @@ import javax.crypto.spec.SecretKeySpec;
 public class PBECipher {
     private final int iterationCount = 2<<16;
     private final int keySize = 256;
-    private byte[] salt = Base64.decode("nD++3Wv9h9MqnS3bO3KJzA==");
     private Cipher encipher; 
     private Cipher decipher; 
     
-    public PBECipher(char[] password) throws Exception {
+    public PBECipher(char[] password, byte[] salt) throws Exception {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         SecretKey secret = factory.generateSecret(spec);
