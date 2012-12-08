@@ -61,7 +61,7 @@ public class SaltApp {
         }
     }
     private void initConfig() throws Exception {
-        confFileName = getString("conf");
+        confFileName = getString("salt.conf");
         File confFile = new File(confFileName);
         logger.info("conf", confFileName, confFile);
         configMap = ConfigParser.newInstance(new FileInputStream(confFile));

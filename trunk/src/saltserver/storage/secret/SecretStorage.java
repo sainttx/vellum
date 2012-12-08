@@ -37,7 +37,7 @@ public class SecretStorage extends AbstractEntityStorage<Long, Secret> {
                     sqlMap.get(SecretQuery.validate.name()));
             ResultSet resultSet = statement.executeQuery();
             List<String> columnNameList = RowSets.getColumnNameList(resultSet.getMetaData());
-            for (Enum columnNameEnum : UserMeta.values()) {
+            for (Enum columnNameEnum : SecretMeta.values()) {
                 String columnName = columnNameEnum.name().toUpperCase();
                 if (!columnNameList.contains(columnName)) {
                     throw new SQLException(columnName);

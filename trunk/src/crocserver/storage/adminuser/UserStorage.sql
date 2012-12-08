@@ -1,7 +1,7 @@
 
 
 -- validate 
-select * from user_;
+select * from user_ where 1 = 0;
 
 -- insert
 insert into user_ (user_name, first_name, last_name, display_name, email, subject, secret, role_, login)

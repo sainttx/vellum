@@ -157,7 +157,7 @@ public class CrocApp {
 
     private void initConfig() throws Exception {
         serverCert = DefaultKeyStores.getCert(serverKeyAlias);
-        confFileName = getString("conf");
+        confFileName = getString("croc.conf");
         File confFile = new File(confFileName);
         logger.info("conf", confFileName, confFile);
         configMap = ConfigParser.newInstance(new FileInputStream(confFile));
