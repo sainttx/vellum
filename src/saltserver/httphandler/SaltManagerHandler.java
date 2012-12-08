@@ -3,6 +3,8 @@ package saltserver.httphandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import crocserver.httphandler.common.AbstractPageHandler;
+import java.io.IOException;
 import vellum.util.Types;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -22,6 +24,7 @@ import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.ConnectionEntry;
+import vellum.util.Streams;
 
 /**
  *
@@ -30,7 +33,6 @@ import vellum.storage.ConnectionEntry;
 public class SaltManagerHandler implements HttpHandler {
     public static int COLUMN_LIMIT = 8;
     Logr logger = LogrFactory.getLogger(getClass());
-    HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
     ConnectionPool connectionPool;
@@ -48,19 +50,29 @@ public class SaltManagerHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         out = httpExchangeInfo.getPrintStream();
+        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
         try {
+            httpExchangeInfo.sendResponse("text/html", true);
+            printPageHeader();
             handle();
         } catch (Exception e) {
             httpExchangeInfo.handleException(e);
         }
         httpExchange.close();
     }
+
+    protected void printPageHeader() throws IOException {
+        out.println("<html>");
+        out.println("<head>");
+        out.printf("<title>%s</title>", getClass().getSimpleName());
+        out.printf("<style>\n%s\n</style>\n", Streams.readString(getClass(), "style.css"));
+        out.println("</head>");
+        out.println("<body>");
+    }
     
     private void handle() throws Exception {
         connectionEntry = connectionPool.takeEntry();
         connection = connectionEntry.getConnection();
-        String remoteHostHame = httpExchange.getRemoteAddress().getHostName();
-        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), remoteHostHame);
         try {
             queryDatabaseTime();
             print(RowSets.getRowSet(connection, "select * from schema_revision"));

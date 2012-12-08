@@ -41,7 +41,7 @@ public class SaltHttpHandler implements HttpHandler {
         if (httpExchange.getRemoteAddress().getHostName().equals("127.0.0.1"))  {
             if (path.equals("/shutdown")) {
                 return new ShutdownHandler(app);
-            } else if (path.equals("/shutdown")) {
+            } else if (path.equals("/manager")) {
                 return new SaltManagerHandler(app);
             } else if (!path.startsWith("/local")) {
                 return null;
