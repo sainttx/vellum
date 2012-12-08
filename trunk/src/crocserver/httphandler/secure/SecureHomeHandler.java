@@ -41,8 +41,8 @@ public class SecureHomeHandler extends AbstractPageHandler {
     @Override
     protected void handle() throws Exception {
         h.div("menuBarDiv");
-        h.a_("/", "Home");
-        h._div();
+        h.aClosed("/", "Home");
+        h.divClose();
         printOrgs("orgs", storage.getOrgStorage().getList());
         printUsers("admin users", storage.getUserStorage().getList());
         printServices("services", storage.getServiceStorage().getList());
@@ -65,8 +65,8 @@ public class SecureHomeHandler extends AbstractPageHandler {
                     org.getUrl(),
                     CalendarFormats.timestampFormat.format(org.getUpdated()));
         }
-        h._table();
-        h._div();
+        h.tableClose();
+        h.divClose();
     }
 
     private void printUsers(String label, Collection<AdminUser> users) {
@@ -81,8 +81,8 @@ public class SecureHomeHandler extends AbstractPageHandler {
                     user.getEmail(),
                     CalendarFormats.timestampFormat.format(user.getUpdated()));
         }
-        h._table();
-        h._div();
+        h.tableClose();
+        h.divClose();
     }
 
     private void printServices(String label, Collection<Service> certs) {
@@ -98,8 +98,8 @@ public class SecureHomeHandler extends AbstractPageHandler {
                     CalendarFormats.timestampFormat.format(cert.getUpdated()),
                     cert.getUpdatedBy());
         }
-        h._table();
-        h._div();
+        h.tableClose();
+        h.divClose();
     }
 
     private void printCerts(String label, Collection<Cert> certs) throws IOException {
@@ -113,8 +113,8 @@ public class SecureHomeHandler extends AbstractPageHandler {
                     CalendarFormats.timestampFormat.format(cert.getUpdated()),
                     cert.getUpdatedBy());
         }
-        h._table();
-        h._div();
+        h.tableClose();
+        h.divClose();
     }
     
     private void printSeviceRecords(String label, Collection<ServiceRecord> serviceRecords) {
@@ -128,7 +128,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
                     serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus());
         }
-        h._tableDiv();
+        h.tableDivClose();
     }
 
     private void printLog(String label, Collection<LogrRecord> records) {
@@ -140,7 +140,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
         p.h(3, label);
         p.tableDiv("resultSet");
         p.thead();
-        p._thead();
+        p.theadClose();
         p.tbody();
         while (iterator.hasNext()) {
             LogrRecord record = iterator.next();
@@ -149,7 +149,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
                     record.getLevel(), record.getMessage(),
                     ListFormats.displayFormatter.formatArray(record.getArgs()));
         }
-        p._tbody();
-        p._tableDiv();
+        p.tbodyClose();
+        p.tableDivClose();
     }
 }

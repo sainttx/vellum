@@ -26,21 +26,21 @@ public class ViewServiceRecordHandler extends AbstractPageHandler {
        HtmlPrinter p = new HtmlPrinter(out);
        Long id = Long.parseLong(pathArgs[1]);
        p.div("menuBarDiv");
-       p.a_("/", "Home");
-       p._div();
+       p.aClosed("/", "Home");
+       p.divClose();
        p.span("pageTitle", String.format("ServiceRecord %d", id));
        ServiceRecord serviceRecord = storage.getServiceRecordStorage().find(id);
        p.tableDiv("resultSet");
        p.thead();
-       p._thead();
+       p.theadClose();
        p.tbody();
        p.trhd("Id", serviceRecord.getId());
        p.trhd("Host", serviceRecord.getHostName());
        p.trhd("Service", serviceRecord.getServiceName());
        p.trhd("Timestamp", Millis.format(serviceRecord.getTimestamp()));
        p.trhd("Status", serviceRecord.getServiceStatus());
-       p._tbody();
-       p._tableDiv();
+       p.tbodyClose();
+       p.tableDivClose();
        p.pre(serviceRecord.getOutText());
     }    
 }

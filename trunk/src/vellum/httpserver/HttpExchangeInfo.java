@@ -261,11 +261,6 @@ public class HttpExchangeInfo {
         }
     }
 
-    public void sendJsonResponse(String json) throws IOException {
-        sendResponse("text/json", true);
-        getPrintStream().println(json);
-    }
-    
     public void handleException(Exception e) {
         e.printStackTrace(System.err);
         handleError(e.getMessage());

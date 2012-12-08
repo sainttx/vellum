@@ -26,21 +26,21 @@ public class ViewServiceHandler extends AbstractPageHandler {
         Long id = Long.parseLong(pathArgs[1]);
         HtmlPrinter p = new HtmlPrinter(out);
         p.div("menuBarDiv");
-        p.a_("/", "Home");
-        p._div();
+        p.aClosed("/", "Home");
+        p.divClose();
         p.span("pageTitle", String.format("Service %s", id));
         Service service = storage.getServiceStorage().find(id);
         p.tableDiv("resultSet");
         p.thead();
-        p._thead();
+        p.theadClose();
         p.tbody();
         p.trhd("Org", service.getOrgId());
         p.trhd("Host", service.getHostName());
         p.trhd("Client", service.getServiceName());
         p.trhd("Updated", service.getUpdated());
         p.trhd("Updated by", service.getUpdatedBy());
-        p._tbody();
-        p._tableDiv();
+        p.tbodyClose();
+        p.tableDivClose();
         p.pre(service.getCert());
     }
 }

@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import vellum.printer.PrintStreamAdapter;
 import vellum.printer.Printer;
 import vellum.printer.PrinterDelegator;
-import vellum.util.Strings;
 import vellum.util.Types;
 
 /**
@@ -32,7 +31,7 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<%s>%s</%s>", element, text, element);
     }
 
-    public void div_id(String id) {
+    public void divId(String id) {
         out.printf("<div id='%s'>\n", id);
     }    
     
@@ -44,7 +43,7 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<p>%s</p>\n", String.format(format, args));
     }    
     
-    public void _div() {
+    public void divClose() {
         out.printf("</div>\n");
     }    
 
@@ -52,7 +51,7 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<span class='%s'>%s</span>\n", style, string);
     }    
     
-    public void a_(String href, String text) {
+    public void aClosed(String href, String text) {
         out.printf("<a href='%s'>%s</a>\n", href, text);
     }    
     
@@ -72,7 +71,7 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<a class='%s' href='%s'>\n", style, href);
     }    
     
-    public void _a() {
+    public void aClose() {
         out.printf("</a>\n");
     }    
     
@@ -107,7 +106,7 @@ public class HtmlPrinter extends PrinterDelegator {
         for (String name : names) {
             th(name);
         }
-        _thead();
+        theadClose();
     }
 
     public void trh() {
@@ -126,7 +125,7 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<tr>\n");
     }
 
-    public void _thead() {
+    public void theadClose() {
         out.printf("</thead>\n");
         out.flush();
     }
@@ -152,33 +151,33 @@ public class HtmlPrinter extends PrinterDelegator {
                 td(Types.getStyleClass(value.getClass()), value);
             }
         }
-        _tr();
+        trClose();
     }
 
     public void trhd(String label, Object value) {
         tr();
         out.printf("<td class='rowLabel'>%s</td>\n", label);
         out.printf("<td>%s</td>\n", value);
-        _tr();
+        trClose();
     }
     
     public void tdClose() {
         out.printf("</td>\n");
     }
     
-    public void _tr() {
+    public void trClose() {
         out.printf("</tr>\n");
     }
     
-    public void _tbody() {
+    public void tbodyClose() {
         out.printf("</tbody>\n");
     }
 
-    public void _table() {
+    public void tableClose() {
         out.printf("</table>\n");
     }
 
-    public void _tableDiv() {
+    public void tableDivClose() {
         out.printf("</div>\n");
         out.printf("</table>\n");
     }
@@ -199,7 +198,7 @@ public class HtmlPrinter extends PrinterDelegator {
         out.printf("<form>\n");
     }
 
-    public void _form() {
+    public void formClose() {
         out.printf("</form>\n");
     }
 

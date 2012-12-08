@@ -8,9 +8,11 @@ import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.JsonStrings;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
+import java.util.Arrays;
 import saltserver.app.SecretApp;
 import saltserver.app.SecretAppStorage;
-import saltserver.storage.secret.SecretValue;
+import saltserver.storage.secret.SecretRecord;
+import vellum.crypto.Base64;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
@@ -34,7 +36,7 @@ public class PostSecretHandler implements HttpHandler {
     }
     String group;
     String name;
-    String secretValue;
+    byte[] secretBytes;
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -45,12 +47,14 @@ public class PostSecretHandler implements HttpHandler {
         } else {
             group = httpExchangeInfo.getPathString(1);
             name = httpExchangeInfo.getPathString(2);
-            secretValue = Streams.readString(httpExchange.getRequestBody());
-            logger.info("handle", getClass().getSimpleName(), group, name, secretValue);
+            secretBytes = Streams.readBytes(httpExchange.getRequestBody());
             try {
+                logger.info("handle", getClass().getSimpleName(), group, name);
                 handle();
             } catch (Exception e) {
                 httpExchangeInfo.handleException(e);
+            } finally {
+                Arrays.fill(secretBytes, Byte.MIN_VALUE);
             }
         }
         httpExchange.close();
@@ -58,22 +62,25 @@ public class PostSecretHandler implements HttpHandler {
 
     private void handle() throws Exception {
         StringMap responseMap = new StringMap();
-        SecretValue secret = app.getStorage().getSecretStorage().find(group, name);
+        SecretRecord secret = app.getStorage().getSecretStorage().find(group, name);
+        String encodedSecret = Base64.encode(app.getCipher().encrypt(secretBytes));
         if (secret == null) {
-            secret = new SecretValue();
+            secret = new SecretRecord();
             secret.setGroup(group);
             secret.setName(name);
-            secret.setSecret(secretValue);
+            secret.setSecret(encodedSecret);
             app.getStorage().getSecretStorage().insert(secret);
             responseMap.put("action", "inserted");
         } else {
-            secret.setSecret(secretValue);
+            secret.setSecret(encodedSecret);
             app.getStorage().getSecretStorage().update(secret);
             responseMap.put("action", "updated");
         }
         responseMap.putObject("id", secret.getId());
+        responseMap.putObject("encoded", encodedSecret);
         String json = JsonStrings.buildJson(responseMap);
-        httpExchangeInfo.sendJsonResponse(json);
+        httpExchangeInfo.sendResponse("text/json", true);
+        httpExchangeInfo.getPrintStream().println(json);
         logger.info(json);
     }
 }

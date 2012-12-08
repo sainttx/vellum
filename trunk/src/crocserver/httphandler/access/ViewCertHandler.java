@@ -26,19 +26,19 @@ public class ViewCertHandler extends AbstractPageHandler {
         Long id = Long.parseLong(pathArgs[1]);
         HtmlPrinter p = new HtmlPrinter(out);
         p.div("menuBarDiv");
-        p.a_("/", "Home");
-        p._div();
+        p.aClosed("/", "Home");
+        p.divClose();
         p.span("pageTitle", String.format("Cert %s", id));
         Cert cert = storage.getCertStorage().find(id);
         p.tableDiv("resultSet");
         p.thead();
-        p._thead();
+        p.theadClose();
         p.tbody();
         p.trhd("Subject", cert.getSubject());
         p.trhd("Updated", cert.getUpdated());
         p.trhd("Updated by", cert.getUpdatedBy());
-        p._tbody();
-        p._tableDiv();
+        p.tbodyClose();
+        p.tableDivClose();
         p.pre(cert.getCert());
     }
 }

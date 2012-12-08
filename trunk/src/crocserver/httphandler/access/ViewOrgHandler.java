@@ -25,20 +25,20 @@ public class ViewOrgHandler extends AbstractPageHandler {
        HtmlPrinter p = new HtmlPrinter(out);
        long id = Long.parseLong(pathArgs[1]);
        p.div("menuBarDiv");
-       p.a_("/", "Home");
-       p._div();
+       p.aClosed("/", "Home");
+       p.divClose();
        p.span("pageTitle", String.format("Org %s", id));
        Org org = storage.getOrgStorage().get(id);
        p.tableDiv("resultSet");
        p.thead();
-       p._thead();
+       p.theadClose();
        p.tbody();
        p.trhd("Org name", org.getId());
        p.trhd("Display name", org.getDisplayName());
        p.trhd("Url", org.getUrl());
        p.trhd("Updated", org.getUpdated());
        p.trhd("Updated by", org.getUpdatedBy());
-       p._tbody();
-       p._tableDiv();
+       p.tbodyClose();
+       p.tableDivClose();
     }    
 }

@@ -135,7 +135,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
        p.h(3, "log");
        p.tableDiv("resultSet");
        p.thead();
-       p._thead();
+       p.theadClose();
        p.tbody();
        while (iterator.hasNext()) {
            LogrRecord record = iterator.next();
@@ -144,8 +144,8 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
                    record.getLevel(), record.getMessage(),
                    ListFormats.displayFormatter.formatArray(record.getArgs()));
        }
-       p._tbody();
-       p._tableDiv();
+       p.tbodyClose();
+       p.tableDivClose();
     }
     
 }
