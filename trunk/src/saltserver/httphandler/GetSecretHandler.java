@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
+ * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
  */
 package saltserver.httphandler;
 
@@ -33,17 +33,19 @@ public class GetSecretHandler implements HttpHandler {
 
     String group;
     String name;
+    byte[] iv;
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", getClass().getSimpleName());
-        if (httpExchangeInfo.getPathArgs().length < 3) {
+        if (httpExchangeInfo.getPathArgs().length < 4) {
             httpExchangeInfo.handleError();
         } else {
             group = httpExchangeInfo.getPathString(1);
             name = httpExchangeInfo.getPathString(2);
+            iv = Base64.decode(httpExchangeInfo.getPathString(3));
             try {
                 handle();
             } catch (Exception e) {
@@ -55,7 +57,7 @@ public class GetSecretHandler implements HttpHandler {
     
     private void handle() throws Exception {
         SecretRecord secret = app.getStorage().getSecretStorage().get(group, name);
-        byte[] secretBytes = app.getCipher().decrypt(Base64.decode(secret.getSecret()));
+        byte[] secretBytes = app.getCipher().decrypt(Base64.decode(secret.getSecret()), iv);
         httpExchangeInfo.sendResponse("application/octet-stream", true);
         httpExchange.getResponseBody().write(secretBytes);
         Arrays.fill(secretBytes, Byte.MIN_VALUE);

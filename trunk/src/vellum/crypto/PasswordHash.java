@@ -17,12 +17,14 @@ public class PasswordHash {
     private static final byte version = 0x00;
     int iterationCountExponent;
     int keySize;
-    byte[] salt;
     byte[] hash;
+    byte[] salt;
+    byte[] iv;
 
-    public PasswordHash(byte[] hash, byte[] salt, int iterationCountExponent, int keySize) {
+    public PasswordHash(byte[] hash, byte[] salt, byte[] iv, int iterationCountExponent, int keySize) {
         this.hash = hash;
         this.salt = salt;
+        this.iv = iv;
         this.iterationCountExponent = iterationCountExponent;
         this.keySize = keySize;
     }
@@ -41,6 +43,7 @@ public class PasswordHash {
         }
         hash = new byte[stream.read()];
         salt = new byte[stream.read()];
+        iv = new byte[stream.read()];
         iterationCountExponent = stream.read();
         keySize = 16*stream.read();
         stream.read(hash);
@@ -55,6 +58,10 @@ public class PasswordHash {
         return salt;
     }
 
+    public byte[] getIv() {
+        return iv;
+    }
+    
     public int getIterationCountExponent() {
         return iterationCountExponent;
     }
@@ -71,9 +78,10 @@ public class PasswordHash {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             stream.write(version);
-            stream.write(salt.length + hash.length + 6);
+            stream.write(salt.length + hash.length + 7);
             stream.write(hash.length);
             stream.write(salt.length);
+            stream.write(iv.length);
             stream.write(iterationCountExponent);
             stream.write(keySize/16);
             stream.write(hash);
@@ -92,7 +100,8 @@ public class PasswordHash {
         int length = stream.read();
         int hashLength = stream.read();
         int saltLength = stream.read();
-        if (packedBytes.length != length || length != hashLength + saltLength + 6) {
+        int ivLength = stream.read();
+        if (packedBytes.length != length || length != hashLength + saltLength + ivLength + 7) {
             return false;
         }
         return true;
