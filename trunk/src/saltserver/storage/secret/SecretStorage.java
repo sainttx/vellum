@@ -15,6 +15,8 @@ import saltserver.app.SaltStorage;
 import vellum.query.QueryMap;
 import vellum.query.RowSets;
 import vellum.storage.ConnectionEntry;
+import vellum.storage.StorageException;
+import vellum.storage.StorageExceptionType;
 import vellum.util.Lists;
 
 /**
@@ -106,6 +108,14 @@ public class SecretStorage extends AbstractEntityStorage<Long, Secret> {
         }
     }
 
+    public Secret get(String group, String name) throws SQLException {
+        Secret secret = find(group, name);
+        if (secret == null) {
+            throw new StorageException(StorageExceptionType.NOT_FOUND, group, name);
+        }
+        return secret;
+    }
+    
     public Secret find(String group, String name) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {

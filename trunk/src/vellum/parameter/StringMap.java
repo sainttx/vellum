@@ -26,6 +26,10 @@ public class StringMap extends HashMap<String, String> {
     public StringMap(Map m) {
         super(m);
     }
+
+    public String putObject(String key, Object object) {
+        return super.put(key, object.toString());
+    }
     
     public long getLong(String key) {
         return Long.parseLong(getString(key));
