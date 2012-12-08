@@ -5,7 +5,6 @@
 package vellum.util;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  *
@@ -14,19 +13,14 @@ import java.util.Arrays;
 public class PackedPasswords {
     
     public static byte[] hashPassword(char[] password) {
-        return hashPassword(password, Passwords.LATEST_REVISION_INDEX);
-    }
-    
-    public static byte[] hashPassword(char[] password, int revisionIndex) {
-        byte[] salt = Passwords.getSpec().nextSalt();
-        byte[] hash = Passwords.hashPassword(password, salt, revisionIndex);
-        return new PasswordHash(hash, salt, revisionIndex).pack();
-    }
-        
-    public static boolean matches(char[] password, byte[] packedBytes) throws IOException {
-        PasswordHash passwordHash = new PasswordHash(packedBytes);
-        byte[] hash = Passwords.hashPassword(password, passwordHash.getSalt(), passwordHash.getRevisionIndex());
-        return Arrays.equals(hash, passwordHash.getHash());
+        return hashPassword(password, Passwords.ITERATION_COUNT_EXPONENT, Passwords.KEY_SIZE);
     }
 
+    public static byte[] hashPassword(char[] password, int iterationCountExponent, int keySize) {
+        return new PasswordHash(password, iterationCountExponent, keySize).pack();
+    }
+
+    public static boolean matches(char[] password, byte[] packedBytes) throws IOException {
+        return new PasswordHash(packedBytes).matches(password);
+    }
 }

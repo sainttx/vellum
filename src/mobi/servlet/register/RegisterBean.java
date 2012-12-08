@@ -5,6 +5,7 @@
 package mobi.servlet.register;
 
 import vellum.util.Base64;
+import vellum.util.PasswordSalts;
 import vellum.util.Passwords;
 
 /**
@@ -17,7 +18,7 @@ public class RegisterBean {
     String password;
     String confirmPassword;
     String passwordHash;
-    byte[] salt = Passwords.getSpec().nextSalt();
+    byte[] salt = PasswordSalts.nextSalt();
     
     public String getConfirmPassword() {
         return confirmPassword;
