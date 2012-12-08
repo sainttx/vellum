@@ -4,6 +4,12 @@
  */
 package vellum.util;
 
+import vellum.crypto.PackedPasswords;
+import vellum.crypto.PasswordHash;
+import vellum.crypto.PasswordSalts;
+import vellum.crypto.Passwords;
+import vellum.crypto.PBECipher;
+import vellum.crypto.Base64;
 import java.util.Arrays;
 import javax.crypto.Cipher;
 import org.junit.Test;
