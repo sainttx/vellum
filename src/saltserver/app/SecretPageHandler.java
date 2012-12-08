@@ -30,6 +30,7 @@ public class SecretPageHandler {
     }
     
     public void printPageHeader(String title) throws IOException {
+        httpExchangeInfo.sendResponse("text/html", true);
         out.println("<html>");
         out.println("<head>");
         out.printf("<title>%s</title>", title);
@@ -39,13 +40,19 @@ public class SecretPageHandler {
     }
 
     public void handleException(Exception e) {
-        out.println("<html>");
-        out.println("<head>");
-        out.printf("<title>%s</title>", "Error");
-        out.printf("<style>\n%s\n</style>\n", Streams.readString(getClass(), "style.css"));
-        out.println("</head>");
-        out.println("<body>");
-        e.printStackTrace(out);
+        try {
+            httpExchangeInfo.sendResponse("text/html", true);
+            out.println("<html>");
+            out.println("<head>");
+            out.printf("<title>%s</title>", "Error");
+            out.printf("<style>\n%s\n</style>\n", Streams.readString(getClass(), "style.css"));
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<pre>");
+            e.printStackTrace(out);
+        } catch (IOException ioe) {
+            e.printStackTrace(System.err);
+        }
     }
         
     public void print(ResultSet resultSet) throws Exception {

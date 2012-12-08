@@ -42,7 +42,6 @@ public class SecretAdminHandler implements HttpHandler {
         out = httpExchangeInfo.getPrintStream();
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
         try {
-            httpExchangeInfo.sendResponse("text/html", true);
             handle();
         } catch (Exception e) {
             handler.handleException(e);
@@ -51,9 +50,8 @@ public class SecretAdminHandler implements HttpHandler {
     }
     
     private void handle() throws IOException {
-        httpExchangeInfo.sendResponse("text/html", true);
         handler.printPageHeader("Admin");
-        
+        out.printf("<h1>Admin</h2>");
     }
     
 }
