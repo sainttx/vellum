@@ -1,0 +1,127 @@
+/*
+ * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
+ * 
+ */
+package saltserver.app;
+
+import vellum.httpserver.HttpServerConfig;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import org.h2.tools.Server;
+import vellum.config.ConfigMap;
+import vellum.config.ConfigParser;
+import vellum.config.PropertiesMap;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
+import vellum.logr.LogrLevel;
+import vellum.storage.DataSourceConfig;
+import vellum.storage.SimpleConnectionPool;
+import vellum.util.Streams;
+import saltserver.storage.schema.SaltSchema;
+import vellum.httpserver.VellumHttpsServer;
+import vellum.security.DefaultKeyStores;
+
+/**
+ *
+ * @author evan
+ */
+public class SaltApp {
+
+    Logr logger = LogrFactory.getLogger(getClass());
+    SaltStorage storage;
+    DataSourceConfig dataSourceConfig;
+    PropertiesMap configProperties;
+    Thread serverThread;
+    String confFileName;
+    ConfigMap configMap;
+    Server h2Server;
+    VellumHttpsServer httpsServer;
+
+    public void init() throws Exception {
+        initConfig();
+        sendShutdown();
+        if (configProperties.getBoolean("startH2TcpServer")) {
+            h2Server = Server.createTcpServer().start();
+        }
+        dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
+                configProperties.getString("dataSource")).getProperties());
+        storage = new SaltStorage(new SimpleConnectionPool(dataSourceConfig));
+        storage.init();
+        new SaltSchema(storage).verifySchema();
+        String httpsServerConfigName = configProperties.getString("httpsServer");
+        if (httpsServerConfigName != null) {
+            HttpServerConfig httpsServerConfig = new HttpServerConfig(
+                    configMap.find("HttpsServer", httpsServerConfigName).getProperties());
+            if (httpsServerConfig.isEnabled()) {
+                httpsServer = new VellumHttpsServer(httpsServerConfig);
+                httpsServer.init(DefaultKeyStores.createSSLContext());
+            }
+        }
+    }
+    private void initConfig() throws Exception {
+        confFileName = getString("conf");
+        File confFile = new File(confFileName);
+        logger.info("conf", confFileName, confFile);
+        configMap = ConfigParser.newInstance(new FileInputStream(confFile));
+        configProperties = configMap.find("Config", "default").getProperties();
+        String logLevelName = configProperties.get("logLevel");
+        if (logLevelName != null) {
+            LogrFactory.setDefaultLevel(LogrLevel.valueOf(logLevelName));
+        }
+    }
+
+    public void start() throws Exception {
+        if (httpsServer != null) {
+            httpsServer.start();
+            httpsServer.startContext("/", new SaltHttpHandler(this));
+            logger.info("HTTPS server started");
+        }
+    }
+
+    public void sendShutdown() {
+        String shutdownUrl = configProperties.getString("shutdownUrl");
+        logger.info("sendShutdown", shutdownUrl);
+        try {
+            URL url = new URL(shutdownUrl);
+            URLConnection connection = url.openConnection();
+            String response = Streams.readString(connection.getInputStream());
+            connection.getInputStream().close();
+            logger.info(response);
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public void stop() throws Exception {
+        if (httpsServer != null) {
+            httpsServer.stop();
+        }
+        if (h2Server != null) {
+            h2Server.stop();
+        }
+    }
+
+    private String getString(String name) {
+        String string = System.getProperty(name);
+        if (string == null) {
+            throw new RuntimeException(name);
+        }
+        return string;
+    }
+
+    public SaltStorage getStorage() {
+        return storage;
+    }
+
+    public static void main(String[] args) throws Exception {
+        try {
+            SaltApp starter = new SaltApp();
+            starter.init();
+            starter.start();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+}

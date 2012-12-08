@@ -1,0 +1,45 @@
+/*
+ * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
+ */
+package saltserver.app;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import java.io.IOException;
+import saltserver.httphandler.ShutdownHandler;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
+
+/**
+ *
+ * @author evans
+ */
+public class SaltHttpHandler implements HttpHandler {
+    Logr logger = LogrFactory.getLogger(SaltHttpHandler.class);
+    SaltApp app;
+    SaltStorage storage;
+    
+    public SaltHttpHandler(SaltApp app) {
+        this.app = app;
+        this.storage = app.getStorage();
+    }
+    
+    @Override
+    public void handle(HttpExchange httpExchange) throws IOException {
+        HttpHandler handler = getHandler(httpExchange);
+        if (handler != null) {
+            handler.handle(httpExchange);
+        } else {
+            
+        }
+    }
+    
+    public HttpHandler getHandler(HttpExchange httpExchange) throws IOException {
+        String path = httpExchange.getRequestURI().getPath();
+        logger.info("path", path);
+        if (path.equals("/shutdown")) {
+            return new ShutdownHandler(app);
+        }
+        return null;
+    }
+}
