@@ -13,6 +13,7 @@ import saltserver.app.SecretApp;
 import saltserver.app.SecretAppStorage;
 import saltserver.storage.secret.SecretRecord;
 import vellum.crypto.Base64;
+import vellum.crypto.Encrypted;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
@@ -36,22 +37,20 @@ public class PostSecretHandler implements HttpHandler {
     }
     String group;
     String name;
-    byte[] iv;
     byte[] secretBytes;
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        if (httpExchangeInfo.getPathArgs().length < 4) {
+        if (httpExchangeInfo.getPathArgs().length < 3) {
             httpExchangeInfo.handleError();
         } else {
             group = httpExchangeInfo.getPathString(1);
             name = httpExchangeInfo.getPathString(2);
-            iv = Base64.decode(httpExchangeInfo.getPathString(3));
             secretBytes = Streams.readBytes(httpExchange.getRequestBody());
             try {
-                logger.info("handle", getClass().getSimpleName(), group, name, iv);
+                logger.info("handle", getClass().getSimpleName(), group, name);
                 handle();
             } catch (Exception e) {
                 httpExchangeInfo.handleException(e);
@@ -65,7 +64,8 @@ public class PostSecretHandler implements HttpHandler {
     private void handle() throws Exception {
         StringMap responseMap = new StringMap();
         SecretRecord secret = app.getStorage().getSecretStorage().find(group, name);
-        String encodedSecret = Base64.encode(app.getCipher().encrypt(secretBytes, iv));
+        Encrypted encrypted = app.getCipher().encrypt(secretBytes);
+        String encodedSecret = Base64.encode(encrypted.getEncryptedBytes());
         if (secret == null) {
             secret = new SecretRecord();
             secret.setGroup(group);
@@ -79,7 +79,7 @@ public class PostSecretHandler implements HttpHandler {
             responseMap.put("action", "updated");
         }
         responseMap.putObject("id", secret.getId());
-        responseMap.putObject("encoded", encodedSecret);
+        responseMap.put("iv", Base64.encode(encrypted.getIv()));
         String json = JsonStrings.buildJson(responseMap);
         httpExchangeInfo.sendResponse("text/json", true);
         httpExchangeInfo.getPrintStream().println(json);

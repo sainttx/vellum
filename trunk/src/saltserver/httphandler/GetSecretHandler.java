@@ -14,6 +14,7 @@ import saltserver.storage.secret.SecretRecord;
 import vellum.crypto.Base64;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.Streams;
 
 /**
  *
@@ -33,19 +34,19 @@ public class GetSecretHandler implements HttpHandler {
 
     String group;
     String name;
-    byte[] iv;
+    String iv;
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", getClass().getSimpleName());
-        if (httpExchangeInfo.getPathArgs().length < 4) {
+        if (httpExchangeInfo.getPathArgs().length < 3) {
             httpExchangeInfo.handleError();
         } else {
             group = httpExchangeInfo.getPathString(1);
             name = httpExchangeInfo.getPathString(2);
-            iv = Base64.decode(httpExchangeInfo.getPathString(3));
+            iv = Streams.readString(httpExchange.getRequestBody());            
             try {
                 handle();
             } catch (Exception e) {
@@ -57,7 +58,7 @@ public class GetSecretHandler implements HttpHandler {
     
     private void handle() throws Exception {
         SecretRecord secret = app.getStorage().getSecretStorage().get(group, name);
-        byte[] secretBytes = app.getCipher().decrypt(Base64.decode(secret.getSecret()), iv);
+        byte[] secretBytes = app.getCipher().decrypt(Base64.decode(secret.getSecret()), Base64.decode(iv));
         httpExchangeInfo.sendResponse("application/octet-stream", true);
         httpExchange.getResponseBody().write(secretBytes);
         Arrays.fill(secretBytes, Byte.MIN_VALUE);
