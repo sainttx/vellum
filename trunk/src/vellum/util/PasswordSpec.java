@@ -14,8 +14,6 @@ import javax.crypto.spec.PBEKeySpec;
  * @author evan
  */
 public class PasswordSpec {
-    private final int saltLength = 16;    
-    private final int encodedSaltLength = 24;    
     private String algorithm;
     private int iterationCount;
     private int keySize;
@@ -39,30 +37,4 @@ public class PasswordSpec {
             throw new RuntimeException(e);
         }
     }    
-    
-    public byte[] nextSalt() {
-        byte[] salt = new byte[saltLength];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(salt);
-        return salt;
-    }
-
-    public int getEncodedSaltLength() {
-        return encodedSaltLength;
-    }          
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

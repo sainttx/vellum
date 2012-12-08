@@ -10,7 +10,7 @@ import java.security.SecureRandom;
  *
  * @author evan
  */
-public class PasswordSalt {
+public class PasswordSalts {
     public static final int SALT_LENGTH = 16;    
     public static final int ENCODED_SALT_LENGTH = 24;    
     

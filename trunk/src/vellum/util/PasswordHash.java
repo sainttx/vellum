@@ -7,16 +7,32 @@ package vellum.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  *
  * @author evan
  */
 public class PasswordHash {
-    byte[] hash;
+    int iterationCountExponent;
+    int keySize;
     byte[] salt;
-    int revisionIndex;
+    byte[] hash;
 
+    public PasswordHash(char[] password, int iterationCountExponent, int keySize) {
+        this.iterationCountExponent = iterationCountExponent;
+        this.keySize = keySize;
+        this.salt = PasswordSalts.nextSalt();
+        this.hash = Passwords.hashPassword(password, salt, iterationCountExponent, keySize);
+    }
+    
+    public PasswordHash(byte[] hash, byte[] salt, int iterationCountExponent, int keySize) {
+        this.hash = hash;
+        this.salt = salt;
+        this.iterationCountExponent = iterationCountExponent;
+        this.keySize = keySize;
+    }
+    
     public PasswordHash(byte[] packedBytes) throws IOException {
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
         if (packedBytes.length != stream.read()) {
@@ -24,17 +40,12 @@ public class PasswordHash {
         }
         hash = new byte[stream.read()];
         salt = new byte[stream.read()];
-        revisionIndex = stream.read();
+        iterationCountExponent = stream.read();
+        keySize = 16*stream.read();
         stream.read(hash);
         stream.read(salt);
     }
     
-    public PasswordHash(byte[] hash, byte[] salt, int revisionIndex) {
-        this.hash = hash;
-        this.salt = salt;
-        this.revisionIndex = revisionIndex;
-    }
-
     public byte[] getHash() {
         return hash;
     }
@@ -43,17 +54,26 @@ public class PasswordHash {
         return salt;
     }
 
-    public int getRevisionIndex() {
-        return revisionIndex;
+    public int getIterationCountExponent() {
+        return iterationCountExponent;
     }
-    
+
+    public int getKeySize() {
+        return keySize;
+    }
+
+    public boolean matches(char[] password) {
+        return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCountExponent, keySize));
+    }
+        
     public byte[] pack() {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            stream.write(salt.length + hash.length + 4);
+            stream.write(salt.length + hash.length + 5);
             stream.write(hash.length);
             stream.write(salt.length);
-            stream.write(revisionIndex);
+            stream.write(iterationCountExponent);
+            stream.write(keySize/16);
             stream.write(hash);
             stream.write(salt);
             return stream.toByteArray();
@@ -67,18 +87,9 @@ public class PasswordHash {
         int length = stream.read();
         int hashLength = stream.read();
         int saltLength = stream.read();
-        if (packedBytes.length != length || length != hashLength + saltLength + 4) {
+        if (packedBytes.length != length || length != hashLength + saltLength + 5) {
             return false;
         }
         return true;
     }
-
-    public static boolean isPackedLatest(byte[] packedBytes) {
-        if (!isPacked(packedBytes)) return false;
-        try {
-            return new PasswordHash(packedBytes).getRevisionIndex() == Passwords.LATEST_REVISION_INDEX;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }    
 }
