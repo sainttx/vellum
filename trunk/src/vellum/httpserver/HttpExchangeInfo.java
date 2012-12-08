@@ -42,6 +42,10 @@ public class HttpExchangeInfo {
     public HttpExchangeInfo(HttpExchange httpExchange) {
         this.httpExchange = httpExchange;
     }
+    
+    public String getRemoteHostName() {
+        return httpExchange.getRemoteAddress().getHostName();
+    }
 
     public String getQuery() {
         return httpExchange.getRequestURI().getQuery();
@@ -122,7 +126,6 @@ public class HttpExchangeInfo {
             
         }
     }
-
     
     public void setCookie(StringMap map, long ageMillis) {
         String path = map.get("path");
@@ -258,7 +261,7 @@ public class HttpExchangeInfo {
         }
     }
     
-    public void handleException(Exception e) throws IOException {
+    public void handleException(Exception e) {
         e.printStackTrace(System.err);
         handleError(e.getMessage());
     }
@@ -267,12 +270,16 @@ public class HttpExchangeInfo {
         handleError("");
     }
     
-    public void handleError(String message) throws IOException {
-        logger.warn(message, parameterMap);
-        httpExchange.getResponseHeaders().set("Content-type", "text/json");
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-        PrintStream out = new PrintStream(httpExchange.getResponseBody());
-        out.printf("{ errorMessage: \"%s\"; }\n", message);
+    public void handleError(String message) {
+        try {
+            logger.warn(message, parameterMap);
+            httpExchange.getResponseHeaders().set("Content-type", "text/json");
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+            PrintStream out = new PrintStream(httpExchange.getResponseBody());
+            out.printf("{ errorMessage: \"%s\"; }\n", message);
+        } catch (Exception e) {
+            logger.warn(e);
+        }
     }
     
     public PrintStream getPrintStream() {

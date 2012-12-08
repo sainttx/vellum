@@ -34,21 +34,15 @@ public class ShutdownHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        String remoteHostHame = httpExchange.getRemoteAddress().getHostName();
-        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), remoteHostHame);
-        if (!remoteHostHame.equals("127.0.0.1")) {
-            httpExchangeInfo.handleError(remoteHostHame);
+        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
+        try {
+            httpExchangeInfo.sendResponse("text/plain", true);
+            httpExchangeInfo.getPrintStream().printf("OK %s\n", httpExchangeInfo.getPath());
             httpExchange.close();
-        } else {
-            try {
-                httpExchangeInfo.sendResponse("text/plain", true);
-                httpExchangeInfo.getPrintStream().printf("OK %s\n", httpExchangeInfo.getPath());
-                httpExchange.close();
-                app.stop();
-            } catch (Exception e) {
-                httpExchangeInfo.handleException(e);
-                httpExchange.close();
-            }
+            app.stop();
+        } catch (Exception e) {
+            httpExchangeInfo.handleException(e);
+            httpExchange.close();
         }
     }
 }

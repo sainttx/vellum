@@ -6,6 +6,7 @@ package saltserver.app;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
+import saltserver.httphandler.SaltManagerHandler;
 import saltserver.httphandler.ShutdownHandler;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -37,8 +38,14 @@ public class SaltHttpHandler implements HttpHandler {
     public HttpHandler getHandler(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
         logger.info("path", path);
-        if (path.equals("/shutdown")) {
-            return new ShutdownHandler(app);
+        if (httpExchange.getRemoteAddress().getHostName().equals("127.0.0.1"))  {
+            if (path.equals("/shutdown")) {
+                return new ShutdownHandler(app);
+            } else if (path.equals("/shutdown")) {
+                return new SaltManagerHandler(app);
+            } else if (!path.startsWith("/local")) {
+                return null;
+            }
         }
         return null;
     }
