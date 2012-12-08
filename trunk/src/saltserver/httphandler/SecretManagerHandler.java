@@ -19,7 +19,7 @@ import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
 import java.io.PrintStream;
 import java.sql.*;
-import saltserver.app.SaltApp;
+import saltserver.app.SecretApp;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -30,7 +30,7 @@ import vellum.util.Streams;
  *
  * 
  */
-public class SaltManagerHandler implements HttpHandler {
+public class SecretManagerHandler implements HttpHandler {
     public static int COLUMN_LIMIT = 8;
     Logr logger = LogrFactory.getLogger(getClass());
     HttpExchangeInfo httpExchangeInfo;
@@ -41,7 +41,7 @@ public class SaltManagerHandler implements HttpHandler {
     DatabaseMetaData databaseMetaData;
     int revisionNumber;
     
-    public SaltManagerHandler(SaltApp app) {
+    public SecretManagerHandler(SecretApp app) {
         super();
         this.connectionPool = app.getStorage().getConnectionPool();
     }

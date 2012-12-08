@@ -7,8 +7,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
-import saltserver.app.SaltApp;
-import saltserver.app.SaltStorage;
+import saltserver.app.SecretApp;
+import saltserver.app.SecretAppStorage;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -16,15 +16,15 @@ import vellum.logr.LogrFactory;
  *
  * @author evans
  */
-public class ShutdownHandler implements HttpHandler {
+public class SecretShutdownHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
-    SaltApp app;
-    SaltStorage storage;
+    SecretApp app;
+    SecretAppStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 
-    public ShutdownHandler(SaltApp app) {
+    public SecretShutdownHandler(SecretApp app) {
         super();
         this.app = app;
         this.storage = app.getStorage();

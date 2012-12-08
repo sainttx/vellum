@@ -11,14 +11,14 @@ import vellum.entity.AbstractIdEntity;
  *
  * @author evan
  */
-public class Secret extends AbstractIdEntity {
+public class SecretValue extends AbstractIdEntity {
     Long id;
     String group;
     String name;
     String secret;
     boolean stored = false;
             
-    public Secret() {
+    public SecretValue() {
     }
 
     @Override

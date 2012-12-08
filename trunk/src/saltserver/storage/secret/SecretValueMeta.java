@@ -8,7 +8,7 @@ package saltserver.storage.secret;
  *
  * @author evan
  */
-public enum SecretMeta {
+public enum SecretValueMeta {
     secret_id,
     group_,
     name_,

@@ -8,8 +8,8 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import saltserver.httphandler.GetSecretHandler;
 import saltserver.httphandler.PostSecretHandler;
-import saltserver.httphandler.SaltManagerHandler;
-import saltserver.httphandler.ShutdownHandler;
+import saltserver.httphandler.SecretManagerHandler;
+import saltserver.httphandler.SecretShutdownHandler;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -17,12 +17,12 @@ import vellum.logr.LogrFactory;
  *
  * @author evans
  */
-public class SaltHttpHandler implements HttpHandler {
-    Logr logger = LogrFactory.getLogger(SaltHttpHandler.class);
-    SaltApp app;
-    SaltStorage storage;
+public class SecretHttpHandler implements HttpHandler {
+    Logr logger = LogrFactory.getLogger(SecretHttpHandler.class);
+    SecretApp app;
+    SecretAppStorage storage;
     
-    public SaltHttpHandler(SaltApp app) {
+    public SecretHttpHandler(SecretApp app) {
         this.app = app;
         this.storage = app.getStorage();
     }
@@ -42,9 +42,9 @@ public class SaltHttpHandler implements HttpHandler {
         logger.info("path", path);
         if (httpExchange.getRemoteAddress().getHostName().equals("127.0.0.1"))  {
             if (path.equals("/shutdown")) {
-                return new ShutdownHandler(app);
+                return new SecretShutdownHandler(app);
             } else if (path.equals("/manager")) {
-                return new SaltManagerHandler(app);
+                return new SecretManagerHandler(app);
             } else if (path.startsWith("/local/")) {
                 return null;
             }

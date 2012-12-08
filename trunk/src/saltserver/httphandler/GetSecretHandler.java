@@ -8,9 +8,9 @@ import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.JsonStrings;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
-import saltserver.app.SaltApp;
-import saltserver.app.SaltStorage;
-import saltserver.storage.secret.Secret;
+import saltserver.app.SecretApp;
+import saltserver.app.SecretAppStorage;
+import saltserver.storage.secret.SecretValue;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
@@ -21,12 +21,12 @@ import vellum.parameter.StringMap;
  */
 public class GetSecretHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
-    SaltApp app;
-    SaltStorage storage;
+    SecretApp app;
+    SecretAppStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     
-    public GetSecretHandler(SaltApp app) {
+    public GetSecretHandler(SecretApp app) {
         super();
         this.app = app;
     }
@@ -54,7 +54,7 @@ public class GetSecretHandler implements HttpHandler {
     }
     
     private void handle() throws Exception {
-        Secret secret = app.getStorage().getSecretStorage().get(group, name);
+        SecretValue secret = app.getStorage().getSecretStorage().get(group, name);
         StringMap responseMap = new StringMap();
         responseMap.putObject("id", secret.getId());
         responseMap.put("secret", secret.getSecret());
