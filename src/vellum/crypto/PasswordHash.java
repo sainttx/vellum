@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package vellum.util;
+package vellum.crypto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,10 +14,18 @@ import java.util.Arrays;
  * @author evan
  */
 public class PasswordHash {
+    private static final byte version = 0x00;
     int iterationCountExponent;
     int keySize;
     byte[] salt;
     byte[] hash;
+
+    public PasswordHash(byte[] hash, byte[] salt, int iterationCountExponent, int keySize) {
+        this.hash = hash;
+        this.salt = salt;
+        this.iterationCountExponent = iterationCountExponent;
+        this.keySize = keySize;
+    }
 
     public PasswordHash(char[] password, int iterationCountExponent, int keySize) {
         this.iterationCountExponent = iterationCountExponent;
@@ -25,17 +33,10 @@ public class PasswordHash {
         this.salt = PasswordSalts.nextSalt();
         this.hash = Passwords.hashPassword(password, salt, iterationCountExponent, keySize);
     }
-    
-    public PasswordHash(byte[] hash, byte[] salt, int iterationCountExponent, int keySize) {
-        this.hash = hash;
-        this.salt = salt;
-        this.iterationCountExponent = iterationCountExponent;
-        this.keySize = keySize;
-    }
-    
+        
     public PasswordHash(byte[] packedBytes) throws IOException {
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
-        if (packedBytes.length != stream.read()) {
+        if (stream.read() != version || stream.read() != packedBytes.length) {
             throw new IOException();
         }
         hash = new byte[stream.read()];
@@ -69,7 +70,8 @@ public class PasswordHash {
     public byte[] pack() {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            stream.write(salt.length + hash.length + 5);
+            stream.write(version);
+            stream.write(salt.length + hash.length + 6);
             stream.write(hash.length);
             stream.write(salt.length);
             stream.write(iterationCountExponent);
@@ -84,10 +86,13 @@ public class PasswordHash {
     
     public static boolean isPacked(byte[] packedBytes) {        
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
+        if (stream.read() != version) {
+            return false;
+        }        
         int length = stream.read();
         int hashLength = stream.read();
         int saltLength = stream.read();
-        if (packedBytes.length != length || length != hashLength + saltLength + 5) {
+        if (packedBytes.length != length || length != hashLength + saltLength + 6) {
             return false;
         }
         return true;

@@ -4,9 +4,9 @@
  */
 package mobi.servlet.register;
 
-import vellum.util.Base64;
-import vellum.util.PasswordSalts;
-import vellum.util.Passwords;
+import vellum.crypto.Base64;
+import vellum.crypto.PasswordSalts;
+import vellum.crypto.Passwords;
 
 /**
  *

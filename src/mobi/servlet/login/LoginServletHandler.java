@@ -1,6 +1,6 @@
 package mobi.servlet.login;
 
-import vellum.util.Passwords;
+import vellum.crypto.Passwords;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import mobi.entity.Person;
 import mobi.session.Servlets;
 import mobi.storage.PersonConnection;
-import vellum.util.Base64;
+import vellum.crypto.Base64;
 
 /**
  *

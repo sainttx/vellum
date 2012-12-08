@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package vellum.util;
+package vellum.crypto;
 
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
