@@ -36,20 +36,22 @@ public class PostSecretHandler implements HttpHandler {
     }
     String group;
     String name;
+    byte[] iv;
     byte[] secretBytes;
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        if (httpExchangeInfo.getPathArgs().length < 3) {
+        if (httpExchangeInfo.getPathArgs().length < 4) {
             httpExchangeInfo.handleError();
         } else {
             group = httpExchangeInfo.getPathString(1);
             name = httpExchangeInfo.getPathString(2);
+            iv = Base64.decode(httpExchangeInfo.getPathString(3));
             secretBytes = Streams.readBytes(httpExchange.getRequestBody());
             try {
-                logger.info("handle", getClass().getSimpleName(), group, name);
+                logger.info("handle", getClass().getSimpleName(), group, name, iv);
                 handle();
             } catch (Exception e) {
                 httpExchangeInfo.handleException(e);
@@ -63,7 +65,7 @@ public class PostSecretHandler implements HttpHandler {
     private void handle() throws Exception {
         StringMap responseMap = new StringMap();
         SecretRecord secret = app.getStorage().getSecretStorage().find(group, name);
-        String encodedSecret = Base64.encode(app.getCipher().encrypt(secretBytes));
+        String encodedSecret = Base64.encode(app.getCipher().encrypt(secretBytes, iv));
         if (secret == null) {
             secret = new SecretRecord();
             secret.setGroup(group);

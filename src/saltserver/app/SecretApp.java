@@ -62,9 +62,21 @@ public class SecretApp {
                 httpsServer.init(DefaultKeyStores.createSSLContext());
             }
         }
-        String pbeSalt = configProperties.getString("pbeSalt");
-        String pbeSecret = configProperties.getString("pbeSecret");
-        cipher = new PBECipher(pbeSecret.toCharArray(), Base64.decode(pbeSalt));
+        String pbePassword = configProperties.getString("pbePassword");
+        if (pbePassword != null) {
+            initCipher(pbePassword.toCharArray());
+        }
+    }
+
+    public void initCipher(char[] pbePassword) throws Exception {
+        byte[] pbeSalt = Base64.decode(configProperties.getString("pbeSalt"));
+        byte[] iv = Base64.decode(configProperties.getString("pbeSaltIv"));
+        String pbeEncodedSalt = configProperties.getString("pbeEncodedSalt");
+        cipher = new PBECipher(pbePassword, pbeSalt);
+        if (pbeEncodedSalt == null || !Base64.encode(cipher.encrypt(pbeSalt, iv)).equals(pbeEncodedSalt)) {
+            logger.warn("initCipher", Base64.encode(pbeSalt), Base64.encode(cipher.encrypt(pbeSalt, iv)));            
+            cipher = null;
+        }
     }
     
     private void initConfig() throws Exception {
