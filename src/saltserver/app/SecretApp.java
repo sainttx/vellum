@@ -27,10 +27,10 @@ import vellum.security.DefaultKeyStores;
  *
  * @author evan
  */
-public class SaltApp {
+public class SecretApp {
 
     Logr logger = LogrFactory.getLogger(getClass());
-    SaltStorage storage;
+    SecretAppStorage storage;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
     Thread serverThread;
@@ -47,7 +47,7 @@ public class SaltApp {
         }
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
-        storage = new SaltStorage(new SimpleConnectionPool(dataSourceConfig));
+        storage = new SecretAppStorage(new SimpleConnectionPool(dataSourceConfig));
         storage.init();
         new SaltSchema(storage).verifySchema();
         String httpsServerConfigName = configProperties.getString("httpsServer");
@@ -75,7 +75,7 @@ public class SaltApp {
     public void start() throws Exception {
         if (httpsServer != null) {
             httpsServer.start();
-            httpsServer.startContext("/", new SaltHttpHandler(this));
+            httpsServer.startContext("/", new SecretHttpHandler(this));
             logger.info("HTTPS server started");
         }
     }
@@ -111,13 +111,13 @@ public class SaltApp {
         return string;
     }
 
-    public SaltStorage getStorage() {
+    public SecretAppStorage getStorage() {
         return storage;
     }
 
     public static void main(String[] args) throws Exception {
         try {
-            SaltApp starter = new SaltApp();
+            SecretApp starter = new SecretApp();
             starter.init();
             starter.start();
         } catch (Exception e) {

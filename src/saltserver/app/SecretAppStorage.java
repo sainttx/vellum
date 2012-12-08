@@ -7,7 +7,7 @@ package saltserver.app;
 import vellum.storage.DataSourceConfig;
 import javax.sql.DataSource;
 import saltserver.storage.schema.SaltSchema;
-import saltserver.storage.secret.SecretStorage;
+import saltserver.storage.secret.SecretValueStorage;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.*;
@@ -16,18 +16,18 @@ import vellum.storage.*;
  *
  * @author evan
  */
-public class SaltStorage {
+public class SecretAppStorage {
 
-    Logr logger = LogrFactory.getLogger(SaltStorage.class);
+    Logr logger = LogrFactory.getLogger(SecretAppStorage.class);
     ConnectionPool connectionPool;
     DataSource dataSource;
     
-    public SaltStorage(DataSourceConfig dataSourceInfo) {
+    public SecretAppStorage(DataSourceConfig dataSourceInfo) {
         this(new SimpleConnectionPool(dataSourceInfo));
 
     }
             
-    public SaltStorage(ConnectionPool connectionPool) {
+    public SecretAppStorage(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
     
@@ -36,8 +36,8 @@ public class SaltStorage {
         getSecretStorage().validate();
     }
 
-    public SecretStorage getSecretStorage() {
-        return new SecretStorage(this);
+    public SecretValueStorage getSecretStorage() {
+        return new SecretValueStorage(this);
     }
        
     public ConnectionPool getConnectionPool() {

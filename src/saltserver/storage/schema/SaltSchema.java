@@ -4,7 +4,7 @@
  */
 package saltserver.storage.schema;
 
-import saltserver.app.SaltStorage;
+import saltserver.app.SecretAppStorage;
 import vellum.query.RowSets;
 import java.io.InputStream;
 import java.sql.*;
@@ -23,10 +23,10 @@ public class SaltSchema {
     static final int CURRENT_VERSION_NUMBER = 1;
     
     Logr logger = LogrFactory.getLogger(SaltSchema.class);
-    SaltStorage storage;
+    SecretAppStorage storage;
     DatabaseMetaData databaseMetaData;
 
-    public SaltSchema(SaltStorage storage) {
+    public SaltSchema(SecretAppStorage storage) {
         this.storage = storage;
     }
 

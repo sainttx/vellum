@@ -8,7 +8,7 @@ package saltserver.storage.secret;
  *
  * @author evan
  */
-public enum SecretQuery {
+public enum SecretValueQuery {
     insert,
     update,
     exists,
