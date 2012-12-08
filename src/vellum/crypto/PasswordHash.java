@@ -34,6 +34,7 @@ public class PasswordHash {
         this.keySize = keySize;
         this.salt = PasswordSalts.nextSalt();
         this.hash = Passwords.hashPassword(password, salt, iterationCountExponent, keySize);
+        this.iv = new byte[0];
     }
         
     public PasswordHash(byte[] packedBytes) throws IOException {
