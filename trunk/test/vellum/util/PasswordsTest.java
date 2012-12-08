@@ -5,6 +5,7 @@
 package vellum.util;
 
 import java.util.Arrays;
+import javax.crypto.Cipher;
 import org.junit.Test;
 import static junit.framework.Assert.*;
 import vellum.datatype.Millis;
@@ -57,19 +58,41 @@ public class PasswordsTest {
         Passwords.hashPassword(password, saltBytes);
         System.out.println("time " + Millis.elapsed(startMillis));
         if (Millis.elapsed(startMillis) < 10) {
-            System.out.println("Ooooooo.... i don't know");
+            System.out.println("Ooooooo.... i'm not sure");
         } else if (Millis.elapsed(startMillis) > 500) {
-            System.out.println("Ooooooo....");
+            System.out.println("Ooooooo.... i don't know");
         }
+    }
+
+    @Test
+    public void testPasswordHash() throws Exception {
+        char[] password = "12345678".toCharArray();
+        PasswordHash passwordHash = new PasswordHash(password, 
+                Passwords.ITERATION_COUNT_EXPONENT, Passwords.KEY_SIZE);
+        byte[] hashBytes = passwordHash.pack();
+        String hashString = Base64.encode(hashBytes);
+        System.out.printf("%s\n", hashString);
+        System.out.printf("byte array length %d, encoded length %d\n", 
+                hashBytes.length, hashString.length());
+        assertTrue(PasswordHash.isPacked(hashBytes));
+        assertTrue(passwordHash.matches(password));
+        assertFalse(passwordHash.matches("wrong".toCharArray()));
+        assertTrue(new PasswordHash(passwordHash.pack()).matches(password));
+        assertFalse(new PasswordHash(passwordHash.pack()).matches("wrong".toCharArray()));
+        passwordHash = new PasswordHash(password, 16, 256);
+        assertTrue(new PasswordHash(passwordHash.pack()).matches(password));
     }
     
     @Test
     public void testPacked() throws Exception {
         char[] password = "12345678".toCharArray();
-        byte[] hash = PackedPasswords.hashPassword(password);
-        System.out.printf("testPacked: byte array length %d, encoded length %d\n", hash.length, Base64.encode(hash).length());
-        assertTrue(PackedPasswords.matches(password, hash));
-        assertFalse(PackedPasswords.matches("wrong".toCharArray(), hash));
+        byte[] hashBytes = PackedPasswords.hashPassword(password);
+        String hashString = Base64.encode(hashBytes);
+        System.out.printf("testPacked: %s\n", hashString);
+        System.out.printf("testPacked: byte array length %d, encoded length %d\n", hashBytes.length, hashString.length());
+        assertTrue(PasswordHash.isPacked(hashBytes));
+        assertTrue(PackedPasswords.matches(password, hashBytes));
+        assertFalse(PackedPasswords.matches("wrong".toCharArray(), hashBytes));
     }
 
     @Test
@@ -90,7 +113,7 @@ public class PasswordsTest {
     public boolean matchesUnsalted(char[] password, byte[] passwordHash) throws Exception {
         return PackedPasswords.matches(password, passwordHash);
     }
-
+    
     @Test
     public void testProto() throws Exception {
         char[] password = "12345678".toCharArray();
@@ -126,4 +149,22 @@ public class PasswordsTest {
     private void persistRevisedPasswordHash(String user, byte[] passwordHash) {
         logger.info("persistNewPasswordHash", user, Base64.encode(passwordHash));
     }
+    
+    @Test
+    public void testCipher() throws Exception {
+        char[] pbePassword = "sshssh".toCharArray();
+        PBECipher cipher = new PBECipher(pbePassword);
+        char[] userPassword = "12345678".toCharArray();
+        PasswordHash passwordHash0 = new PasswordHash(userPassword, 
+                Passwords.ITERATION_COUNT_EXPONENT, Passwords.KEY_SIZE);
+        byte[] encryptedHash = cipher.encrypt(passwordHash0.pack());
+        byte[] decryptedHash = cipher.decrypt(encryptedHash);
+        assertTrue(Arrays.equals(decryptedHash, passwordHash0.pack()));
+        encryptedHash = cipher.encrypt(decryptedHash);
+        decryptedHash = cipher.decrypt(encryptedHash);
+        assertTrue(Arrays.equals(decryptedHash, passwordHash0.pack()));
+        assertTrue(new PasswordHash(decryptedHash).matches(userPassword));
+        assertFalse(new PasswordHash(decryptedHash).matches("wrong".toCharArray()));        
+    }
+    
 }
