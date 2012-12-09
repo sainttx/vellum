@@ -10,8 +10,6 @@ package saltserver.storage.adminuser;
  */
 public enum AdminUserMeta {
     user_name,
-    first_name,
-    last_name,
     display_name,
     email,
     cert_subject,

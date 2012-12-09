@@ -37,7 +37,7 @@ select count(1) from admin_user where email = ?
 ;
 
 -- exists_subject
-select count(1) from admin_user where subject = ?
+select count(1) from admin_user where cert_subject = ?
 ;
 
 -- find_username
@@ -49,7 +49,7 @@ select * from admin_user where email = ?
 ;
 
 -- find_subject
-select * from admin_user where subject = ?
+select * from admin_user where cert_subject = ?
 ;
 
 -- list
