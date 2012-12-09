@@ -14,7 +14,7 @@ import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.org.Org;
-import crocserver.storage.servicecert.Service;
+import crocserver.storage.service.Service;
 import java.util.Date;
 import vellum.format.ListFormats;
 import vellum.security.KeyStores;

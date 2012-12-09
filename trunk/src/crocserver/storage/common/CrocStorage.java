@@ -17,7 +17,7 @@ import vellum.logr.LogrFactory;
 import vellum.storage.*;
 import crocserver.storage.schema.SchemaPrinter;
 import crocserver.storage.org.OrgStorage;
-import crocserver.storage.servicecert.ServiceStorage;
+import crocserver.storage.service.ServiceStorage;
 
 /**
  *

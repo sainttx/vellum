@@ -5,7 +5,7 @@ package crocserver.httphandler.access;
 
 import crocserver.app.CrocApp;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.servicecert.Service;
+import crocserver.storage.service.Service;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;

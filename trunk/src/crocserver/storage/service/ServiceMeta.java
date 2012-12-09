@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package crocserver.storage.servicecert;
+package crocserver.storage.service;
 
 /**
  *
