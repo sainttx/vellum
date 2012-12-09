@@ -27,6 +27,7 @@ create table admin_history (
 create table admin_user (
   admin_user_id int auto_increment primary key not null,
   user_name varchar(64),
+  display_name varchar(64),
   email varchar(64),
   role_ varchar(32),
   cert_subject varchar(255),
