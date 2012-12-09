@@ -39,9 +39,9 @@ public class VaultHttpHandler implements HttpHandler {
         logger.info("path", path);
         if (httpExchange.getRemoteAddress().getHostName().equals("127.0.0.1"))  {
             if (path.equals("/shutdown")) {
-                return new VaultShutdownHandler(app);
+                return new ShutdownHandler(app);
             } else if (path.equals("/manager")) {
-                return new VaultManagerHandler(app);
+                return new ManagerHandler(app);
             } else if (path.startsWith("/local/")) {
                 return null;
             }
@@ -49,9 +49,9 @@ public class VaultHttpHandler implements HttpHandler {
         if (path.startsWith("/getSecret/")) {
             return new GetSecretHandler(app);
         } else if (path.startsWith("/postSecret/")) {
-            return new VaultSecretHandler(app);            
+            return new SecretHandler(app);            
         } else if (path.equals("/admin")) {
-            return new VaultAdminHandler(app);
+            return new AdminHandler(app);
         }
         return null;
     }
