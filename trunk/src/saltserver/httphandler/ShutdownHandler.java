@@ -16,7 +16,7 @@ import vellum.logr.LogrFactory;
  *
  * @author evans
  */
-public class VaultShutdownHandler implements HttpHandler {
+public class ShutdownHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     VaultApp app;
@@ -24,7 +24,7 @@ public class VaultShutdownHandler implements HttpHandler {
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 
-    public VaultShutdownHandler(VaultApp app) {
+    public ShutdownHandler(VaultApp app) {
         super();
         this.app = app;
         this.storage = app.getStorage();
