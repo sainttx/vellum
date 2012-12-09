@@ -18,6 +18,10 @@ public class VaultPasswordManager {
     public Map<String, char[]> getPasswordMap() {
         return passwordMap;
     }
+
+    public int getPasswordMapSize() {
+        return passwordMap.size();
+    }
     
     public void clear() {
         for (String key : passwordMap.keySet()) {
@@ -25,5 +29,10 @@ public class VaultPasswordManager {
             Arrays.fill(value, '0');
         }
         passwordMap.clear();
+    }
+
+    public void put(String principalName, char[] toCharArray) {
+        passwordMap.put(principalName, toCharArray);
+        
     }
 }

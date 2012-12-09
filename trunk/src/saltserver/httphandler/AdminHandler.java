@@ -69,7 +69,7 @@ public class AdminHandler implements HttpHandler {
         }
         String password = httpExchangeInfo.getParameterMap().get("password");
         if (password != null) {
-            app.getPasswordManager().getPasswordMap().put(principalName, password.toCharArray());
+            app.getPasswordManager().put(principalName, password.toCharArray());
         }
         out.printf("<h3>%s</h3>\n", principalName);
         out.printf("<form action='/admin' method='post'>\n");
@@ -84,6 +84,5 @@ public class AdminHandler implements HttpHandler {
                 out.printf("<span>%s</span><br>\n", key);
             }
         }
-    }
-    
+    }    
 }
