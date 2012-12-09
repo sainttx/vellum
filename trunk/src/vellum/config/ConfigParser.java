@@ -89,7 +89,9 @@ public class ConfigParser {
         ConfigLineParser lineParser = new ConfigLineParser();
         if (lineParser.parse(line)) {
             configEntry.getProperties().put(lineParser.getKey(), lineParser.getValue());
-            System.out.printf("insert into config (group_, name_, value) values ('%s', %s', '%s');\n", name, lineParser.getKey(), lineParser.getValue());
+            if (false) {
+                System.out.printf("insert into config (group_, name_, value) values ('%s', %s', '%s');\n", name, lineParser.getKey(), lineParser.getValue());
+            }
             logger.trace("parseLine lineParser", lineParser);
         } else {
             throw new ConfigParserException(lineCount, type, name, line);
