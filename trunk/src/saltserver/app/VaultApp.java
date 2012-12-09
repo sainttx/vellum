@@ -30,7 +30,7 @@ import vellum.security.DefaultKeyStores;
 public class VaultApp {
 
     Logr logger = LogrFactory.getLogger(getClass());
-    ValutStorage storage;
+    VaultStorage storage;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
     Thread serverThread;
@@ -49,7 +49,7 @@ public class VaultApp {
         }
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
-        storage = new ValutStorage(new SimpleConnectionPool(dataSourceConfig));
+        storage = new VaultStorage(new SimpleConnectionPool(dataSourceConfig));
         storage.init();
         String httpsServerConfigName = configProperties.getString("httpsServer");
         if (httpsServerConfigName != null) {
@@ -77,7 +77,7 @@ public class VaultApp {
     public void start() throws Exception {
         if (httpsServer != null) {
             httpsServer.start();
-            httpsServer.startContext("/", new ValutHttpHandler(this));
+            httpsServer.startContext("/", new VaultHttpHandler(this));
             logger.info("HTTPS server started");
         }
     }
@@ -113,7 +113,7 @@ public class VaultApp {
         return string;
     }
 
-    public ValutStorage getStorage() {
+    public VaultStorage getStorage() {
         return storage;
     }
 

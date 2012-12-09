@@ -17,7 +17,7 @@ import vellum.logr.LogrFactory;
 public class VaultHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(VaultHttpHandler.class);
     VaultApp app;
-    ValutStorage storage;
+    VaultStorage storage;
     
     public VaultHttpHandler(VaultApp app) {
         this.app = app;
