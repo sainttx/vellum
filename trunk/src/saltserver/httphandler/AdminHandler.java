@@ -56,8 +56,7 @@ public class AdminHandler implements HttpHandler {
         out.printf("<h3>%s</h3>\n", principalName);
         out.printf("<form action='/admin' method='post'>\n");
         out.printf("<input type='password' name='password' width='40' placeholder='Cipher passphrase'>\n");
-        out.printf("<input type='submit' value='Enable server'>\n");
-        out.printf("<br><input type='submit' value='Disable server'>\n");
+        out.printf("<input type='submit' value='Send password'>\n");
         out.printf("</form>\n");
         out.printf("<h3>Passwords on hand</h3>\n");
         if (app.getPasswordManager().getPasswordMap().isEmpty()) {
