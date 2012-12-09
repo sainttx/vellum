@@ -4,7 +4,7 @@
  */
 package saltserver.storage.secret;
 
-import crocserver.storage.adminuser.UserMeta;
+import crocserver.storage.adminuser.AdminUserMeta;
 import vellum.entity.AbstractEntityStorage;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
