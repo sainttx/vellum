@@ -8,7 +8,7 @@ package crocserver.storage.adminuser;
  *
  * @author evan
  */
-public enum UserQuery {
+public enum AdminUserQuery {
     validate,
     insert,
     update_login,
