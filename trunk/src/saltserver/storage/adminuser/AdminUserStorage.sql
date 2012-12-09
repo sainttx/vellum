@@ -1,81 +1,59 @@
 
 
 -- validate 
-select * from user_ where 1 = 0;
+select * from admin_user where 1 = 0;
 
 -- insert
-insert into user_ (user_name, first_name, last_name, display_name, email, subject, secret, role_, login)
-values (?, ?, ?, ?, ?, ?, ?, ?, ?);
+insert into admin_user (user_name, email, cert_subject, role_)
+values (?, ?, ?, ?);
 
--- update_display_name_subject_cert
-update user_ 
+-- update_subject
+update admin_user 
 set 
-  display_name = ?, 
-  subject = ?,  
-  cert = ?,
-  updated = now()
+  cert_subject = ?
 where user_name = ?
 ;
 
 -- update_display_name
-update user_ 
+update admin_user 
 set 
-  display_name = ?, 
-  updated = now()
-where user_name = ?
-;
-
--- update_login
-update user_ 
-set 
-  login = ?,
-  updated = now()
-where user_name = ?
-;
-
--- update_logout
-update user_ 
-set 
-  logout = ?,
-  updated = now()
+  display_name = ?
 where user_name = ?
 ;
 
 -- update_secret
-update user_ 
+update admin_user 
 set 
-  secret = ?,
-  updated = now()
-where user_name = ?
-;
-
--- update_cert
-update user_ 
-set 
-  subject = ?,
-  cert = ?,
-  updated = now()
+  secret = ?
 where user_name = ?
 ;
 
 -- exists_username
-select count(1) from user_ where user_name = ?
+select count(1) from admin_user where user_name = ?
 ;
 
 -- exists_email
-select count(1) from user_ where email = ?
+select count(1) from admin_user where email = ?
+;
+
+-- exists_subject
+select count(1) from admin_user where subject = ?
 ;
 
 -- find_username
-select * from user_ where user_name = ?
+select * from admin_user where user_name = ?
 ;
 
 -- find_email
-select * from user_ where email = ?
+select * from admin_user where email = ?
+;
+
+-- find_subject
+select * from admin_user where subject = ?
 ;
 
 -- list
-select * from user_ order by user_name
+select * from admin_user order by user_name
 ;
 
 

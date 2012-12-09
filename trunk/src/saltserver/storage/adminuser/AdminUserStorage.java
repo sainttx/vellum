@@ -4,10 +4,10 @@
  */
 package saltserver.storage.adminuser;
 
-import crocserver.storage.common.CrocStorage;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import saltserver.app.VaultStorage;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.query.QueryMap;
@@ -25,9 +25,9 @@ public class AdminUserStorage {
 
     static Logr logger = LogrFactory.getLogger(AdminUserStorage.class);
     static QueryMap sqlMap = new QueryMap(AdminUserStorage.class);
-    CrocStorage storage;
+    VaultStorage storage;
 
-    public AdminUserStorage(CrocStorage storage) {
+    public AdminUserStorage(VaultStorage storage) {
         this.storage = storage;
     }
 
@@ -61,13 +61,9 @@ public class AdminUserStorage {
         user.setLastName(resultSet.getString(AdminUserMeta.last_name.name()));
         user.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
         user.setEmail(resultSet.getString(AdminUserMeta.email.name()));
-        user.setSubject(resultSet.getString(AdminUserMeta.subject.name()));
-        user.setCert(resultSet.getString(AdminUserMeta.cert.name()));
-        user.setSecret(resultSet.getString(AdminUserMeta.secret.name()));
+        user.setSubject(resultSet.getString(AdminUserMeta.cert_subject.name()));
+        user.setSecret(resultSet.getString(AdminUserMeta.otp_secret.name()));
         user.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
-        user.setLoginTime(resultSet.getTimestamp(AdminUserMeta.login.name()));
-        user.setLogoutTime(resultSet.getTimestamp(AdminUserMeta.logout.name()));
-        user.setUpdated(resultSet.getTimestamp(AdminUserMeta.updated.name()));
         user.setStored(true);
         return user;
     }
@@ -79,9 +75,6 @@ public class AdminUserStorage {
                 sqlMap.get(AdminUserQuery.insert.name()));
             int index = 0;
             statement.setString(++index, user.getUserName());
-            statement.setString(++index, user.getFirstName());
-            statement.setString(++index, user.getLastName());
-            statement.setString(++index, user.getDisplayName());
             statement.setString(++index, user.getEmail());
             statement.setString(++index, user.getSubject());
             statement.setString(++index, user.getSecret());
@@ -171,13 +164,29 @@ public class AdminUserStorage {
         }
     }
 
-    public void update(AdminUser user) throws SQLException {
+    public AdminUser findSubject(String subject) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.update_display_name.name()));
+                    sqlMap.get(AdminUserQuery.find_subject.name()));
+            statement.setString(1, subject);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            return get(resultSet);
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
+    public void update_subject(AdminUser user) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(AdminUserQuery.update_subject.name()));
             int index = 0;
-            statement.setString(++index, user.getDisplayName());
+            statement.setString(++index, user.getSubject());
             statement.setString(++index, user.getUserName());
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
@@ -189,75 +198,6 @@ public class AdminUserStorage {
         }
     }
 
-    public void updateSecret(AdminUser user) throws SQLException {
-        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.update_secret.name()));
-            statement.setString(1, user.getSecret());
-            statement.setString(2, user.getUserName());
-            int updateCount = statement.executeUpdate();
-            connection.setOk(true);
-            if (updateCount != 1) {
-                throw new SQLException();
-            }
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection);
-        }
-    }
-
-    public void updateCert(AdminUser user) throws SQLException {
-        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.update_cert.name()));
-            statement.setString(1, user.getSubject());
-            statement.setString(2, user.getCert());
-            statement.setString(3, user.getUserName());
-            int updateCount = statement.executeUpdate();
-            connection.setOk(true);
-            if (updateCount != 1) {
-                throw new SQLException();
-            }
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection);
-        }
-    }
-    
-    public void updateLogin(AdminUser user) throws SQLException {
-        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.update_login.name()));
-            statement.setTimestamp(1, new Timestamp(user.getLoginTime().getTime()));
-            statement.setString(2, user.getUserName());
-            int updateCount = statement.executeUpdate();
-            connection.setOk(true);
-            if (updateCount != 1) {
-                throw new SQLException();
-            }
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection);
-        }
-    }
-    
-    public void updateLogout(AdminUser user) throws SQLException {
-        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.update_logout.name()));
-            statement.setTimestamp(1, new Timestamp(user.getLogoutTime().getTime()));
-            statement.setString(2, user.getUserName());
-            int updateCount = statement.executeUpdate();
-            connection.setOk(true);
-            if (updateCount != 1) {
-                throw new SQLException();
-            }
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection);
-        }
-    }
-    
     public List<AdminUser> getList() throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {

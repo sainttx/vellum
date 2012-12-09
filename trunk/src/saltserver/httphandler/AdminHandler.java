@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.io.PrintStream;
 import saltserver.app.VaultApp;
 import saltserver.app.VaultPageHandler;
+import saltserver.storage.adminuser.AdminUser;
 import sun.security.x509.X500Name;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.storage.StorageException;
+import vellum.storage.StorageExceptionType;
 
 /**
  *
@@ -45,10 +48,23 @@ public class AdminHandler implements HttpHandler {
         httpExchange.close();
     }
     
-    private void handle() throws IOException {
+    private void handle() throws Exception {
         handler.printPageHeader("Admin");
         HttpsExchange httpsExchange = (HttpsExchange) httpExchange;
         String principalName = new X500Name(httpsExchange.getSSLSession().getPeerPrincipal().getName()).getCommonName();
+        String subject = httpsExchange.getSSLSession().getPeerPrincipal().getName();
+        AdminUser adminUser = app.getStorage().getAdminUserStorage().findSubject(subject);
+        if (adminUser == null) {
+            adminUser = new AdminUser();
+            adminUser.setUserName(subject);
+            adminUser.setEmail(subject);
+            adminUser.setSubject(subject);
+            adminUser.setEnabled(true);
+            app.getStorage().getAdminUserStorage().insert(adminUser);
+        }
+        if (!adminUser.isEnabled()) {
+            throw new StorageException(StorageExceptionType.DISABLED, subject);
+        }
         String password = httpExchangeInfo.getParameterMap().get("password");
         if (password != null) {
             app.getPasswordManager().getPasswordMap().put(principalName, password.toCharArray());
