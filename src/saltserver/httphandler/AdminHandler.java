@@ -7,7 +7,7 @@ import com.sun.net.httpserver.HttpsExchange;
 import java.io.IOException;
 import java.io.PrintStream;
 import saltserver.app.VaultApp;
-import saltserver.app.ValutPageHandler;
+import saltserver.app.VaultPageHandler;
 import sun.security.x509.X500Name;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
@@ -21,7 +21,7 @@ public class AdminHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
-    ValutPageHandler handler;
+    VaultPageHandler handler;
     VaultApp app;
     PrintStream out;
     
@@ -35,7 +35,7 @@ public class AdminHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         out = httpExchangeInfo.getPrintStream();
-        handler = new ValutPageHandler(httpExchange);
+        handler = new VaultPageHandler(httpExchange);
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
         try {
             handle();
