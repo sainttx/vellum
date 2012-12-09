@@ -6,6 +6,7 @@ package saltserver.app;
 
 import vellum.storage.DataSourceConfig;
 import javax.sql.DataSource;
+import saltserver.storage.adminuser.AdminUserStorage;
 import saltserver.storage.schema.VaultSchema;
 import saltserver.storage.secret.SecretStorage;
 import vellum.logr.Logr;
@@ -36,6 +37,10 @@ public class VaultStorage {
         getSecretStorage().validate();
     }
 
+    public AdminUserStorage getAdminUserStorage() {
+        return new AdminUserStorage(this);
+    }
+    
     public SecretStorage getSecretStorage() {
         return new SecretStorage(this);
     }
