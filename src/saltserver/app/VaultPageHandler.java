@@ -1,4 +1,7 @@
-
+/**
+ * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
+ * 
+ */
 package saltserver.app;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -15,7 +18,7 @@ import vellum.util.Types;
  *
  * 
  */
-public class SecretPageHandler {
+public class VaultPageHandler {
     private static int COLUMN_COUNT_LIMIT = 8;
     private static int COLUMN_WIDTH_LIMIT = 32;
 
@@ -23,7 +26,7 @@ public class SecretPageHandler {
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
         
-    public SecretPageHandler(HttpExchange httpExchange) {
+    public VaultPageHandler(HttpExchange httpExchange) {
         this.httpExchange = httpExchange;
         this.httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         this.out = httpExchangeInfo.getPrintStream();

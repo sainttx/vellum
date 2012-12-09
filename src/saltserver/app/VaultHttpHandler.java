@@ -14,12 +14,12 @@ import vellum.logr.LogrFactory;
  *
  * @author evans
  */
-public class SecretHttpHandler implements HttpHandler {
-    Logr logger = LogrFactory.getLogger(SecretHttpHandler.class);
-    SecretApp app;
-    SecretAppStorage storage;
+public class VaultHttpHandler implements HttpHandler {
+    Logr logger = LogrFactory.getLogger(VaultHttpHandler.class);
+    VaultApp app;
+    ValutStorage storage;
     
-    public SecretHttpHandler(SecretApp app) {
+    public VaultHttpHandler(VaultApp app) {
         this.app = app;
         this.storage = app.getStorage();
     }
@@ -39,9 +39,9 @@ public class SecretHttpHandler implements HttpHandler {
         logger.info("path", path);
         if (httpExchange.getRemoteAddress().getHostName().equals("127.0.0.1"))  {
             if (path.equals("/shutdown")) {
-                return new SecretShutdownHandler(app);
+                return new VaultShutdownHandler(app);
             } else if (path.equals("/manager")) {
-                return new SecretManagerHandler(app);
+                return new VaultManagerHandler(app);
             } else if (path.startsWith("/local/")) {
                 return null;
             }
@@ -49,9 +49,9 @@ public class SecretHttpHandler implements HttpHandler {
         if (path.startsWith("/getSecret/")) {
             return new GetSecretHandler(app);
         } else if (path.startsWith("/postSecret/")) {
-            return new PostSecretHandler(app);            
+            return new VaultSecretHandler(app);            
         } else if (path.equals("/admin")) {
-            return new SecretAdminHandler(app);
+            return new VaultAdminHandler(app);
         }
         return null;
     }

@@ -9,9 +9,9 @@ import crocserver.app.JsonStrings;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.util.Arrays;
-import saltserver.app.SecretApp;
-import saltserver.app.SecretAppStorage;
-import saltserver.storage.secret.SecretRecord;
+import saltserver.app.VaultApp;
+import saltserver.app.ValutStorage;
+import saltserver.storage.secret.Secret;
 import vellum.crypto.Base64;
 import vellum.crypto.Encrypted;
 import vellum.logr.Logr;
@@ -23,15 +23,15 @@ import vellum.util.Streams;
  *
  * @author evans
  */
-public class PostSecretHandler implements HttpHandler {
+public class PutSecretHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
-    SecretApp app;
-    SecretAppStorage storage;
+    VaultApp app;
+    ValutStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 
-    public PostSecretHandler(SecretApp app) {
+    public PutSecretHandler(VaultApp app) {
         super();
         this.app = app;
     }
@@ -63,11 +63,11 @@ public class PostSecretHandler implements HttpHandler {
 
     private void handle() throws Exception {
         StringMap responseMap = new StringMap();
-        SecretRecord secret = app.getStorage().getSecretStorage().find(group, name);
+        Secret secret = app.getStorage().getSecretStorage().find(group, name);
         Encrypted encrypted = app.getCipher().encrypt(secretBytes);
         String encodedSecret = Base64.encode(encrypted.getEncryptedBytes());
         if (secret == null) {
-            secret = new SecretRecord();
+            secret = new Secret();
             secret.setGroup(group);
             secret.setName(name);
             secret.setSecret(encodedSecret);

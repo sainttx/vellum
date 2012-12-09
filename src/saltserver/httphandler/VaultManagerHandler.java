@@ -14,8 +14,8 @@ import vellum.storage.StorageException;
 import vellum.storage.StorageExceptionType;
 import java.io.PrintStream;
 import java.sql.*;
-import saltserver.app.SecretApp;
-import saltserver.app.SecretPageHandler;
+import saltserver.app.VaultApp;
+import saltserver.app.ValutPageHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -25,11 +25,11 @@ import vellum.storage.ConnectionEntry;
  *
  * 
  */
-public class SecretManagerHandler implements HttpHandler {
+public class VaultManagerHandler implements HttpHandler {
     
     Logr logger = LogrFactory.getLogger(getClass());
     HttpExchangeInfo httpExchangeInfo;
-    SecretPageHandler handler;
+    ValutPageHandler handler;
     PrintStream out;
     ConnectionPool connectionPool;
     ConnectionEntry connectionEntry;
@@ -37,14 +37,14 @@ public class SecretManagerHandler implements HttpHandler {
     DatabaseMetaData databaseMetaData;
     int revisionNumber;
     
-    public SecretManagerHandler(SecretApp app) {
+    public VaultManagerHandler(VaultApp app) {
         super();
         this.connectionPool = app.getStorage().getConnectionPool();
     }
     
     @Override
     public void handle(HttpExchange httpExchange) {
-        handler = new SecretPageHandler(httpExchange);
+        handler = new ValutPageHandler(httpExchange);
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         out = httpExchangeInfo.getPrintStream();
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());

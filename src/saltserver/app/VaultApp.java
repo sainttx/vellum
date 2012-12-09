@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import org.h2.tools.Server;
+import saltserver.crypto.AESCipher;
 import vellum.config.ConfigMap;
 import vellum.config.ConfigParser;
 import vellum.config.PropertiesMap;
@@ -19,9 +20,6 @@ import vellum.logr.LogrLevel;
 import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
-import saltserver.storage.schema.SaltSchema;
-import vellum.crypto.Base64;
-import vellum.crypto.PBECipher;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.security.DefaultKeyStores;
 
@@ -29,10 +27,10 @@ import vellum.security.DefaultKeyStores;
  *
  * @author evan
  */
-public class SecretApp {
+public class VaultApp {
 
     Logr logger = LogrFactory.getLogger(getClass());
-    SecretAppStorage storage;
+    ValutStorage storage;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
     Thread serverThread;
@@ -40,7 +38,8 @@ public class SecretApp {
     ConfigMap configMap;
     Server h2Server;
     VellumHttpsServer httpsServer;
-    PBECipher cipher; 
+    AESCipher cipher; 
+    VaultPasswordManager passwordManager = new VaultPasswordManager();
     
     public void init() throws Exception {
         initConfig();
@@ -50,9 +49,8 @@ public class SecretApp {
         }
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
-        storage = new SecretAppStorage(new SimpleConnectionPool(dataSourceConfig));
+        storage = new ValutStorage(new SimpleConnectionPool(dataSourceConfig));
         storage.init();
-        new SaltSchema(storage).verifySchema();
         String httpsServerConfigName = configProperties.getString("httpsServer");
         if (httpsServerConfigName != null) {
             HttpServerConfig httpsServerConfig = new HttpServerConfig(
@@ -62,23 +60,8 @@ public class SecretApp {
                 httpsServer.init(DefaultKeyStores.createSSLContext());
             }
         }
-        String pbePassword = configProperties.getString("pbePassword");
-        if (pbePassword != null) {
-            initCipher(pbePassword.toCharArray());
-        }
     }
 
-    public void initCipher(char[] pbePassword) throws Exception {
-        byte[] pbeSalt = Base64.decode(configProperties.getString("pbeSalt"));
-        byte[] iv = Base64.decode(configProperties.getString("pbeSaltIv"));
-        String pbeEncodedSalt = configProperties.getString("pbeEncodedSalt");
-        cipher = new PBECipher(pbePassword, pbeSalt);
-        if (pbeEncodedSalt == null || !Base64.encode(cipher.encrypt(pbeSalt, iv)).equals(pbeEncodedSalt)) {
-            logger.warn("initCipher", Base64.encode(pbeSalt), Base64.encode(cipher.encrypt(pbeSalt, iv)));            
-            cipher = null;
-        }
-    }
-    
     private void initConfig() throws Exception {
         confFileName = getString("salt.conf");
         File confFile = new File(confFileName);
@@ -94,7 +77,7 @@ public class SecretApp {
     public void start() throws Exception {
         if (httpsServer != null) {
             httpsServer.start();
-            httpsServer.startContext("/", new SecretHttpHandler(this));
+            httpsServer.startContext("/", new ValutHttpHandler(this));
             logger.info("HTTPS server started");
         }
     }
@@ -130,19 +113,27 @@ public class SecretApp {
         return string;
     }
 
-    public SecretAppStorage getStorage() {
+    public ValutStorage getStorage() {
         return storage;
     }
 
-    public PBECipher getCipher() {
-        return cipher;
+    public void setCipher(AESCipher cipher) {
+        this.cipher = cipher;
     }
     
+    public AESCipher getCipher() {
+        return cipher;
+    }
+
+    public VaultPasswordManager getPasswordManager() {
+        return passwordManager;
+    }    
+        
     public static void main(String[] args) throws Exception {
         try {
-            SecretApp starter = new SecretApp();
-            starter.init();
-            starter.start();
+            VaultApp app = new VaultApp();
+            app.init();
+            app.start();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

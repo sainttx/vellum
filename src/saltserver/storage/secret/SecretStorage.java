@@ -4,14 +4,13 @@
  */
 package saltserver.storage.secret;
 
-import crocserver.storage.adminuser.AdminUserMeta;
 import vellum.entity.AbstractEntityStorage;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import saltserver.app.SecretAppStorage;
+import saltserver.app.VaultStorage;
 import vellum.query.QueryMap;
 import vellum.query.RowSets;
 import vellum.storage.ConnectionEntry;
@@ -23,12 +22,12 @@ import vellum.util.Lists;
  *
  * @author evan
  */
-public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord> {
+public class SecretStorage extends AbstractEntityStorage<Long, Secret> {
 
-    static QueryMap sqlMap = new QueryMap(SecretValueStorage.class);
-    SecretAppStorage storage;
+    static QueryMap sqlMap = new QueryMap(SecretStorage.class);
+    VaultStorage storage;
 
-    public SecretValueStorage(SecretAppStorage storage) {
+    public SecretStorage(VaultStorage storage) {
         this.storage = storage;
     }
 
@@ -36,10 +35,10 @@ public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(SecretValueQuery.validate.name()));
+                    sqlMap.get(SecretQuery.validate.name()));
             ResultSet resultSet = statement.executeQuery();
             List<String> columnNameList = RowSets.getColumnNameList(resultSet.getMetaData());
-            for (Enum columnNameEnum : SecretValueMeta.values()) {
+            for (Enum columnNameEnum : SecretMeta.values()) {
                 String columnName = columnNameEnum.name().toUpperCase();
                 if (!columnNameList.contains(columnName)) {
                     throw new SQLException(columnName);
@@ -54,21 +53,21 @@ public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord
         }
     }
     
-    private SecretRecord get(ResultSet resultSet) throws SQLException {
-        SecretRecord secret = new SecretRecord();
-        secret.setId(resultSet.getLong(SecretValueMeta.secret_id.name()));
-        secret.setGroup(resultSet.getString(SecretValueMeta.group_.name()));
-        secret.setName(resultSet.getString(SecretValueMeta.name_.name()));
-        secret.setSecret(resultSet.getString(SecretValueMeta.secret.name()));
+    private Secret get(ResultSet resultSet) throws SQLException {
+        Secret secret = new Secret();
+        secret.setId(resultSet.getLong(SecretMeta.secret_id.name()));
+        secret.setGroup(resultSet.getString(SecretMeta.group_.name()));
+        secret.setName(resultSet.getString(SecretMeta.name_.name()));
+        secret.setSecret(resultSet.getString(SecretMeta.secret.name()));
         secret.setStored(true);
         return secret;
     }
 
-    public long insert(SecretRecord secret) throws SQLException {
+    public long insert(Secret secret) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                sqlMap.get(SecretValueQuery.insert.name()));
+                sqlMap.get(SecretQuery.insert.name()));
             int index = 0;
             statement.setString(++index, secret.getGroup());
             statement.setString(++index, secret.getName());
@@ -95,7 +94,7 @@ public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord
     public boolean exists(String group, String name) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(SecretValueQuery.exists.name()));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(SecretQuery.exists.name()));
             int index = 0;
             statement.setString(++index, group);
             statement.setString(++index, name);
@@ -108,19 +107,19 @@ public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord
         }
     }
 
-    public SecretRecord get(String group, String name) throws SQLException {
-        SecretRecord secret = find(group, name);
+    public Secret get(String group, String name) throws SQLException {
+        Secret secret = find(group, name);
         if (secret == null) {
             throw new StorageException(StorageExceptionType.NOT_FOUND, group, name);
         }
         return secret;
     }
     
-    public SecretRecord find(String group, String name) throws SQLException {
+    public Secret find(String group, String name) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(SecretValueQuery.find.name()));
+                    sqlMap.get(SecretQuery.find.name()));
             int index = 0;
             statement.setString(++index, group);
             statement.setString(++index, name);
@@ -136,11 +135,11 @@ public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord
     }
     
     @Override
-    public SecretRecord find(Long id) throws SQLException {
+    public Secret find(Long id) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(SecretValueQuery.find_id.name()));
+                    sqlMap.get(SecretQuery.find_id.name()));
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
@@ -153,11 +152,11 @@ public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord
         }
     }
 
-    public void update(SecretRecord secret) throws SQLException {
+    public void update(Secret secret) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(SecretValueQuery.update.name()));
+                    sqlMap.get(SecretQuery.update.name()));
             int index = 0;
             statement.setString(++index, secret.getSecret());
             statement.setLong(++index, secret.getId());
@@ -172,11 +171,11 @@ public class SecretValueStorage extends AbstractEntityStorage<Long, SecretRecord
         }
     }
 
-    public List<SecretRecord> getList() throws SQLException {
+    public List<Secret> getList() throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            List<SecretRecord> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(SecretValueQuery.list.name()));
+            List<Secret> list = new ArrayList();
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(SecretQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(get(resultSet));

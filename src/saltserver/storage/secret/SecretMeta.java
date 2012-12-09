@@ -8,13 +8,12 @@ package saltserver.storage.secret;
  *
  * @author evan
  */
-public enum SecretValueQuery {
-    insert,
-    update,
-    exists,
-    delete,
-    find_id,
-    find,
-    list,
-    validate
+public enum SecretMeta {
+    secret_id,
+    group_,
+    name_,
+    secret,
+    key_alias
+    ;
+    
 }
