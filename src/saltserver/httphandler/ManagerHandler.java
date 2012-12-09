@@ -25,7 +25,7 @@ import vellum.storage.ConnectionEntry;
  *
  * 
  */
-public class VaultManagerHandler implements HttpHandler {
+public class ManagerHandler implements HttpHandler {
     
     Logr logger = LogrFactory.getLogger(getClass());
     HttpExchangeInfo httpExchangeInfo;
@@ -37,7 +37,7 @@ public class VaultManagerHandler implements HttpHandler {
     DatabaseMetaData databaseMetaData;
     int revisionNumber;
     
-    public VaultManagerHandler(VaultApp app) {
+    public ManagerHandler(VaultApp app) {
         super();
         this.connectionPool = app.getStorage().getConnectionPool();
     }
