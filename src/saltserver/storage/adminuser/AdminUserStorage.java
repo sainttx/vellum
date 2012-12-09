@@ -57,8 +57,6 @@ public class AdminUserStorage {
     private AdminUser get(ResultSet resultSet) throws SQLException {
         AdminUser user = new AdminUser();
         user.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
-        user.setFirstName(resultSet.getString(AdminUserMeta.first_name.name()));
-        user.setLastName(resultSet.getString(AdminUserMeta.last_name.name()));
         user.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
         user.setEmail(resultSet.getString(AdminUserMeta.email.name()));
         user.setSubject(resultSet.getString(AdminUserMeta.cert_subject.name()));
@@ -68,7 +66,7 @@ public class AdminUserStorage {
         return user;
     }
 
-    public void insert(AdminUser user) throws SQLException, StorageException {
+    public void insert(AdminUser user) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -77,13 +75,11 @@ public class AdminUserStorage {
             statement.setString(++index, user.getUserName());
             statement.setString(++index, user.getEmail());
             statement.setString(++index, user.getSubject());
-            statement.setString(++index, user.getSecret());
             if (user.getRole() != null) {
                 statement.setString(++index, user.getRole().name());
             } else {
                 statement.setString(++index, null);    
             }
-            statement.setTimestamp(++index, new Timestamp(user.getLoginTime().getTime()));
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
             if (updateCount != 1) {

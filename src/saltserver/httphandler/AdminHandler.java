@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import saltserver.app.VaultApp;
 import saltserver.app.VaultPageHandler;
+import saltserver.storage.adminuser.AdminRole;
 import saltserver.storage.adminuser.AdminUser;
 import sun.security.x509.X500Name;
 import vellum.httpserver.HttpExchangeInfo;
@@ -56,9 +57,10 @@ public class AdminHandler implements HttpHandler {
         AdminUser adminUser = app.getStorage().getAdminUserStorage().findSubject(subject);
         if (adminUser == null) {
             adminUser = new AdminUser();
-            adminUser.setUserName(subject);
-            adminUser.setEmail(subject);
+            adminUser.setUserName(principalName);
+            adminUser.setEmail(principalName);
             adminUser.setSubject(subject);
+            adminUser.setRole(AdminRole.SUPER);
             adminUser.setEnabled(true);
             app.getStorage().getAdminUserStorage().insert(adminUser);
         }

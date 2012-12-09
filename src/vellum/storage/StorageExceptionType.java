@@ -18,6 +18,7 @@ public enum StorageExceptionType {
     UPDATE_COUNT,
     MULTIPLE_RESULTS,
     NOT_DELETED, 
-    CONNECTION_ERROR;
-    
+    CONNECTION_ERROR,
+    DISABLED;
+
 }
