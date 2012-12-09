@@ -5,13 +5,12 @@
 package crocserver.app;
 
 import crocserver.storage.clientcert.Cert;
-import crocserver.storage.common.CrocStorage;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
-import java.util.HashSet;
 import javax.net.ssl.X509TrustManager;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.security.Certificates;
 import vellum.security.DefaultKeyStores;
 
 /**
@@ -50,7 +49,7 @@ public class CrocTrustManager implements X509TrustManager {
             return;
         }
         try {
-            String cname = CrocSecurity.getCommonName(dname);
+            String cname = Certificates.getCommonName(dname);
             Cert cert = app.getStorage().getCertStorage().findName(cname);
             if (cert == null) {
                 logger.info("cert not found", cname);

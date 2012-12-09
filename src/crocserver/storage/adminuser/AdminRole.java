@@ -11,6 +11,5 @@ package crocserver.storage.adminuser;
 public enum AdminRole {
     SUPER,
     DEFAULT
-    
-    
+        
 }

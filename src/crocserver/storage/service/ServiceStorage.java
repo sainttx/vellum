@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage.servicecert;
+package crocserver.storage.service;
 
 import crocserver.storage.common.CrocStorage;
 import java.sql.*;

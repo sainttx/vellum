@@ -6,7 +6,7 @@ package crocserver.httphandler.access;
 import crocserver.httphandler.common.AbstractPageHandler;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.common.CrocStorage;
-import crocserver.storage.servicecert.Service;
+import crocserver.storage.service.Service;
 
 /**
  *

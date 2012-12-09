@@ -4,10 +4,10 @@
  */
 package crocserver.storage.clientcert;
 
-import crocserver.app.CrocSecurity;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
+import vellum.security.Certificates;
 import vellum.security.KeyStores;
 
 /**
@@ -32,7 +32,7 @@ public final class Cert extends AbstractIdEntity {
     public void setCert(X509Certificate x509Cert) {
         this.cert = KeyStores.buildCertPem(x509Cert);
         this.subject = x509Cert.getSubjectDN().getName();
-        this.name = CrocSecurity.getCommonName(subject);
+        this.name = Certificates.getCommonName(subject);
     }
 
     public String getName() {
