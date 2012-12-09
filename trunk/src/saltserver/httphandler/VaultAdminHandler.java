@@ -5,37 +5,29 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsExchange;
 import java.io.IOException;
-import java.sql.DatabaseMetaData;
-import vellum.storage.ConnectionPool;
 import java.io.PrintStream;
-import java.sql.*;
-import saltserver.app.SecretApp;
-import saltserver.app.SecretPageHandler;
+import saltserver.app.VaultApp;
+import saltserver.app.ValutPageHandler;
 import sun.security.x509.X500Name;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.storage.ConnectionEntry;
 
 /**
  *
  * 
  */
-public class SecretAdminHandler implements HttpHandler {
+public class AdminHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
-    SecretPageHandler handler;
+    ValutPageHandler handler;
+    VaultApp app;
     PrintStream out;
-    ConnectionPool connectionPool;
-    ConnectionEntry connectionEntry;
-    Connection connection;
-    DatabaseMetaData databaseMetaData;
-    int revisionNumber;
     
-    public SecretAdminHandler(SecretApp app) {
+    public AdminHandler(VaultApp app) {
         super();
-        this.connectionPool = app.getStorage().getConnectionPool();
+        this.app = app;
     }
     
     @Override
@@ -43,7 +35,7 @@ public class SecretAdminHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         out = httpExchangeInfo.getPrintStream();
-        handler = new SecretPageHandler(httpExchange);
+        handler = new ValutPageHandler(httpExchange);
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath());
         try {
             handle();
@@ -56,12 +48,25 @@ public class SecretAdminHandler implements HttpHandler {
     private void handle() throws IOException {
         handler.printPageHeader("Admin");
         HttpsExchange httpsExchange = (HttpsExchange) httpExchange;
-        out.printf("<h3>%s</h3>\n", new X500Name(httpsExchange.getSSLSession().getPeerPrincipal().getName()).getCommonName());
+        String principalName = new X500Name(httpsExchange.getSSLSession().getPeerPrincipal().getName()).getCommonName();
+        String password = httpExchangeInfo.getParameterMap().get("password");
+        if (password != null) {
+            app.getPasswordManager().getPasswordMap().put(principalName, password.toCharArray());
+        }
+        out.printf("<h3>%s</h3>\n", principalName);
         out.printf("<form action='/admin' method='post'>\n");
         out.printf("<input type='password' name='password' width='40' placeholder='Cipher passphrase'>\n");
         out.printf("<input type='submit' value='Enable server'>\n");
         out.printf("<br><input type='submit' value='Disable server'>\n");
         out.printf("</form>\n");
+        out.printf("<h3>Passwords on hand</h3>\n");
+        if (app.getPasswordManager().getPasswordMap().isEmpty()) {
+                out.printf("None<br>\n");
+        } else {
+            for (String key : app.getPasswordManager().getPasswordMap().keySet()) {
+                out.printf("<span>%s</span><br>\n", key);
+            }
+        }
     }
     
 }

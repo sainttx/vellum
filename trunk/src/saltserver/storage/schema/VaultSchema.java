@@ -4,11 +4,11 @@
  */
 package saltserver.storage.schema;
 
-import saltserver.app.SecretAppStorage;
 import vellum.query.RowSets;
 import java.io.InputStream;
 import java.sql.*;
 import javax.sql.RowSet;
+import saltserver.app.VaultStorage;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.storage.ConnectionEntry;
@@ -17,16 +17,16 @@ import vellum.storage.ConnectionEntry;
  *
  * @author evan
  */
-public class SaltSchema {
+public class VaultSchema {
 
     static final int MIN_VERSION_NUMBER = 0;
     static final int CURRENT_VERSION_NUMBER = 1;
     
-    Logr logger = LogrFactory.getLogger(SaltSchema.class);
-    SecretAppStorage storage;
+    Logr logger = LogrFactory.getLogger(VaultSchema.class);
+    VaultStorage storage;
     DatabaseMetaData databaseMetaData;
 
-    public SaltSchema(SecretAppStorage storage) {
+    public VaultSchema(VaultStorage storage) {
         this.storage = storage;
     }
 
@@ -72,7 +72,7 @@ public class SaltSchema {
         try {
             String sqlScriptName = getClass().getSimpleName() + ".sql";
             InputStream stream = getClass().getResourceAsStream(sqlScriptName);
-            logger.verbose(sqlScriptName);
+            logger.info(sqlScriptName);
             byte[] bytes = new byte[stream.available()];
             stream.read(bytes);
             String sql = new String(bytes);

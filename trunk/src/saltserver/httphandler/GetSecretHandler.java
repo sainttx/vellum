@@ -1,5 +1,6 @@
 /*
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
+ * 
  */
 package saltserver.httphandler;
 
@@ -8,9 +9,9 @@ import com.sun.net.httpserver.HttpHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.util.Arrays;
-import saltserver.app.SecretApp;
-import saltserver.app.SecretAppStorage;
-import saltserver.storage.secret.SecretRecord;
+import saltserver.app.VaultApp;
+import saltserver.app.ValutStorage;
+import saltserver.storage.secret.Secret;
 import vellum.crypto.Base64;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -22,12 +23,12 @@ import vellum.util.Streams;
  */
 public class GetSecretHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
-    SecretApp app;
-    SecretAppStorage storage;
+    VaultApp app;
+    ValutStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     
-    public GetSecretHandler(SecretApp app) {
+    public GetSecretHandler(VaultApp app) {
         super();
         this.app = app;
     }
@@ -57,7 +58,7 @@ public class GetSecretHandler implements HttpHandler {
     }
     
     private void handle() throws Exception {
-        SecretRecord secret = app.getStorage().getSecretStorage().get(group, name);
+        Secret secret = app.getStorage().getSecretStorage().get(group, name);
         byte[] secretBytes = app.getCipher().decrypt(Base64.decode(secret.getSecret()), Base64.decode(iv));
         httpExchangeInfo.sendResponse("application/octet-stream", true);
         httpExchange.getResponseBody().write(secretBytes);
