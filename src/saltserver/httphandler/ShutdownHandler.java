@@ -8,7 +8,7 @@ import com.sun.net.httpserver.HttpHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import saltserver.app.VaultApp;
-import saltserver.app.ValutStorage;
+import saltserver.app.VaultStorage;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -20,7 +20,7 @@ public class ShutdownHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     VaultApp app;
-    ValutStorage storage;
+    VaultStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 

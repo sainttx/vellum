@@ -10,7 +10,7 @@ import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.util.Arrays;
 import saltserver.app.VaultApp;
-import saltserver.app.ValutStorage;
+import saltserver.app.VaultStorage;
 import saltserver.storage.secret.Secret;
 import vellum.crypto.Base64;
 import vellum.crypto.Encrypted;
@@ -27,7 +27,7 @@ public class PutSecretHandler implements HttpHandler {
 
     Logr logger = LogrFactory.getLogger(getClass());
     VaultApp app;
-    ValutStorage storage;
+    VaultStorage storage;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
 
