@@ -21,13 +21,13 @@ import vellum.util.Lists;
  *
  * @author evan
  */
-public class UserStorage {
+public class AdminUserStorage {
 
-    static Logr logger = LogrFactory.getLogger(UserStorage.class);
-    static QueryMap sqlMap = new QueryMap(UserStorage.class);
+    static Logr logger = LogrFactory.getLogger(AdminUserStorage.class);
+    static QueryMap sqlMap = new QueryMap(AdminUserStorage.class);
     CrocStorage storage;
 
-    public UserStorage(CrocStorage storage) {
+    public AdminUserStorage(CrocStorage storage) {
         this.storage = storage;
     }
 
@@ -35,10 +35,10 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.validate.name()));
+                    sqlMap.get(AdminUserQuery.validate.name()));
             ResultSet resultSet = statement.executeQuery();
             List<String> columnNameList = RowSets.getColumnNameList(resultSet.getMetaData());
-            for (Enum columnNameEnum : UserMeta.values()) {
+            for (Enum columnNameEnum : AdminUserMeta.values()) {
                 String columnName = columnNameEnum.name().toUpperCase();
                 logger.info("validate", columnName);        
                 if (!columnNameList.contains(columnName)) {
@@ -56,18 +56,18 @@ public class UserStorage {
     
     private AdminUser get(ResultSet resultSet) throws SQLException {
         AdminUser user = new AdminUser();
-        user.setUserName(resultSet.getString(UserMeta.user_name.name()));
-        user.setFirstName(resultSet.getString(UserMeta.first_name.name()));
-        user.setLastName(resultSet.getString(UserMeta.last_name.name()));
-        user.setDisplayName(resultSet.getString(UserMeta.display_name.name()));
-        user.setEmail(resultSet.getString(UserMeta.email.name()));
-        user.setSubject(resultSet.getString(UserMeta.subject.name()));
-        user.setCert(resultSet.getString(UserMeta.cert.name()));
-        user.setSecret(resultSet.getString(UserMeta.secret.name()));
-        user.setRole(AdminRole.valueOf(resultSet.getString(UserMeta.role_.name())));
-        user.setLoginTime(resultSet.getTimestamp(UserMeta.login.name()));
-        user.setLogoutTime(resultSet.getTimestamp(UserMeta.logout.name()));
-        user.setUpdated(resultSet.getTimestamp(UserMeta.updated.name()));
+        user.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
+        user.setFirstName(resultSet.getString(AdminUserMeta.first_name.name()));
+        user.setLastName(resultSet.getString(AdminUserMeta.last_name.name()));
+        user.setDisplayName(resultSet.getString(AdminUserMeta.display_name.name()));
+        user.setEmail(resultSet.getString(AdminUserMeta.email.name()));
+        user.setSubject(resultSet.getString(AdminUserMeta.subject.name()));
+        user.setCert(resultSet.getString(AdminUserMeta.cert.name()));
+        user.setSecret(resultSet.getString(AdminUserMeta.secret.name()));
+        user.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
+        user.setLoginTime(resultSet.getTimestamp(AdminUserMeta.login.name()));
+        user.setLogoutTime(resultSet.getTimestamp(AdminUserMeta.logout.name()));
+        user.setUpdated(resultSet.getTimestamp(AdminUserMeta.updated.name()));
         user.setStored(true);
         return user;
     }
@@ -76,7 +76,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                sqlMap.get(UserQuery.insert.name()));
+                sqlMap.get(AdminUserQuery.insert.name()));
             int index = 0;
             statement.setString(++index, user.getUserName());
             statement.setString(++index, user.getFirstName());
@@ -104,7 +104,7 @@ public class UserStorage {
     public boolean exists(String userName) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.exists_username.name()));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(AdminUserQuery.exists_username.name()));
             statement.setString(1, userName);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -119,7 +119,7 @@ public class UserStorage {
     public boolean existsEmail(String email) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.exists_email.name()));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(AdminUserQuery.exists_email.name()));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -143,7 +143,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.find_username.name()));
+                    sqlMap.get(AdminUserQuery.find_username.name()));
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
@@ -159,7 +159,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.find_email.name()));
+                    sqlMap.get(AdminUserQuery.find_email.name()));
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
@@ -175,7 +175,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_display_name.name()));
+                    sqlMap.get(AdminUserQuery.update_display_name.name()));
             int index = 0;
             statement.setString(++index, user.getDisplayName());
             statement.setString(++index, user.getUserName());
@@ -193,7 +193,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_secret.name()));
+                    sqlMap.get(AdminUserQuery.update_secret.name()));
             statement.setString(1, user.getSecret());
             statement.setString(2, user.getUserName());
             int updateCount = statement.executeUpdate();
@@ -210,7 +210,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_cert.name()));
+                    sqlMap.get(AdminUserQuery.update_cert.name()));
             statement.setString(1, user.getSubject());
             statement.setString(2, user.getCert());
             statement.setString(3, user.getUserName());
@@ -228,7 +228,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_login.name()));
+                    sqlMap.get(AdminUserQuery.update_login.name()));
             statement.setTimestamp(1, new Timestamp(user.getLoginTime().getTime()));
             statement.setString(2, user.getUserName());
             int updateCount = statement.executeUpdate();
@@ -245,7 +245,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(UserQuery.update_logout.name()));
+                    sqlMap.get(AdminUserQuery.update_logout.name()));
             statement.setTimestamp(1, new Timestamp(user.getLogoutTime().getTime()));
             statement.setString(2, user.getUserName());
             int updateCount = statement.executeUpdate();
@@ -262,7 +262,7 @@ public class UserStorage {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             List<AdminUser> list = new ArrayList();
-            PreparedStatement statement = connection.prepareStatement(sqlMap.get(UserQuery.list.name()));
+            PreparedStatement statement = connection.prepareStatement(sqlMap.get(AdminUserQuery.list.name()));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(get(resultSet));
