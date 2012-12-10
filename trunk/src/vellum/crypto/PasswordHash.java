@@ -7,6 +7,7 @@ package vellum.crypto;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
 /**
@@ -15,28 +16,31 @@ import java.util.Arrays;
  */
 public class PasswordHash {
     private static final byte version = 0x00;
-    int iterationCountExponent;
+    
+    int iterationCount;
     int keySize;
     byte[] hash;
     byte[] salt;
     byte[] iv;
 
-    public PasswordHash(byte[] hash, byte[] salt, byte[] iv, int iterationCountExponent, int keySize) {
+    public PasswordHash(byte[] hash, byte[] salt, byte[] iv, 
+            int iterationCount, int keySize) {
         this.hash = hash;
         this.salt = salt;
         this.iv = iv;
-        this.iterationCountExponent = iterationCountExponent;
+        this.iterationCount = iterationCount;
         this.keySize = keySize;
     }
 
-    public PasswordHash(char[] password, int iterationCountExponent, int keySize) {
-        this.iterationCountExponent = iterationCountExponent;
+    public PasswordHash(char[] password, int iterationCount, int keySize) 
+            throws GeneralSecurityException {
+        this.iterationCount = iterationCount;
         this.keySize = keySize;
         this.salt = PasswordSalts.nextSalt();
-        this.hash = Passwords.hashPassword(password, salt, iterationCountExponent, keySize);
+        this.hash = Passwords.hashPassword(password, salt, iterationCount, keySize);
         this.iv = new byte[0];
     }
-        
+
     public PasswordHash(byte[] packedBytes) throws IOException {
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
         if (stream.read() != version || stream.read() != packedBytes.length) {
@@ -45,12 +49,13 @@ public class PasswordHash {
         hash = new byte[stream.read()];
         salt = new byte[stream.read()];
         iv = new byte[stream.read()];
-        iterationCountExponent = stream.read();
-        keySize = 16*stream.read();
+        iterationCount = stream.read()*256 + stream.read();
+        keySize = 16 * stream.read();
         stream.read(hash);
         stream.read(salt);
+        stream.read(iv);
     }
-    
+
     public byte[] getHash() {
         return hash;
     }
@@ -62,49 +67,65 @@ public class PasswordHash {
     public byte[] getIv() {
         return iv;
     }
-    
-    public int getIterationCountExponent() {
-        return iterationCountExponent;
+
+    public int getIterationCount() {
+        return iterationCount;
     }
 
     public int getKeySize() {
         return keySize;
     }
 
-    public boolean matches(char[] password) {
-        return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCountExponent, keySize));
+    public boolean matches(char[] password) throws GeneralSecurityException {
+        return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
     }
-        
+
     public byte[] pack() {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             stream.write(version);
-            stream.write(salt.length + hash.length + 7);
+            stream.write(salt.length + hash.length + iv.length + 8);
             stream.write(hash.length);
             stream.write(salt.length);
             stream.write(iv.length);
-            stream.write(iterationCountExponent);
+            stream.write(iterationCount/256);
+            stream.write(iterationCount%256);
             stream.write(keySize/16);
             stream.write(hash);
             stream.write(salt);
+            stream.write(iv);
             return stream.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }       
+    }
     
-    public static boolean isPacked(byte[] packedBytes) {        
+    public void encryptSalt(PBECipher cipher) throws GeneralSecurityException {
+        assert iv.length == 0;
+        Encrypted encryptedSalt = cipher.encrypt(salt);
+        salt = encryptedSalt.getEncryptedBytes();
+        iv = encryptedSalt.getIv();        
+    }
+
+    public void decryptSalt(PBECipher cipher) throws GeneralSecurityException {
+        assert iv.length > 0;
+        salt = cipher.decrypt(salt, iv);
+        iv = new byte[0];
+    }
+
+    public static boolean isPacked(byte[] packedBytes) {
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
         if (stream.read() != version) {
             return false;
-        }        
+        }
         int length = stream.read();
         int hashLength = stream.read();
         int saltLength = stream.read();
         int ivLength = stream.read();
-        if (packedBytes.length != length || length != hashLength + saltLength + ivLength + 7) {
+        if (packedBytes.length != length || 
+                length != hashLength + saltLength + ivLength + 8) {
             return false;
         }
         return true;
-    }
+    }        
 }

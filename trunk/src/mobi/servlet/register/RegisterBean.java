@@ -4,6 +4,7 @@
  */
 package mobi.servlet.register;
 
+import java.security.GeneralSecurityException;
 import vellum.crypto.Base64;
 import vellum.crypto.PasswordSalts;
 import vellum.crypto.Passwords;
@@ -56,7 +57,7 @@ public class RegisterBean {
         return Base64.encode(salt);
     }
 
-    public String hashPassword() {
+    public String hashPassword() throws GeneralSecurityException {
         return Base64.encode(Passwords.hashPassword(password.toCharArray(), salt));
     }
 

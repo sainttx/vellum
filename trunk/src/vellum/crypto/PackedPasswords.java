@@ -5,6 +5,7 @@
 package vellum.crypto;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /**
  *
@@ -12,15 +13,18 @@ import java.io.IOException;
  */
 public class PackedPasswords {
     
-    public static byte[] hashPassword(char[] password) {
-        return hashPassword(password, Passwords.ITERATION_COUNT_EXPONENT, Passwords.KEY_SIZE);
+    public static byte[] hashPassword(char[] password)
+            throws GeneralSecurityException {
+        return hashPassword(password, Passwords.ITERATION_COUNT, Passwords.KEY_SIZE);
     }
 
-    public static byte[] hashPassword(char[] password, int iterationCountExponent, int keySize) {
-        return new PasswordHash(password, iterationCountExponent, keySize).pack();
+    public static byte[] hashPassword(char[] password, int iterationCount, int keySize)
+            throws GeneralSecurityException {
+        return new PasswordHash(password, iterationCount, keySize).pack();
     }
 
-    public static boolean matches(char[] password, byte[] packedBytes) throws IOException {
-        return new PasswordHash(packedBytes).matches(password);
+    public static boolean matches(char[] password, byte[] packedBytes)
+        throws IOException, GeneralSecurityException {
+            return new PasswordHash(packedBytes).matches(password);
+        }
     }
-}
