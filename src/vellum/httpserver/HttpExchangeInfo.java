@@ -79,13 +79,12 @@ public class HttpExchangeInfo {
         if (httpExchange.getRequestMethod().equals("POST")) {
             urlQuery = Streams.readString(httpExchange.getRequestBody());
         }
-        logger.info("parseParameterMap", urlQuery, httpExchange.getRequestMethod());
+        logger.info("parseParameterMap", httpExchange.getRequestMethod());
         if (urlQuery == null) {
             return;
         }
         int index = 0;
         while (index < urlQuery.length()) {
-            logger.info("parseParameterMap", index, urlQuery);
             int endIndex = urlQuery.indexOf("&", index);
             if (endIndex > 0) {
                 put(urlQuery.substring(index, endIndex));
