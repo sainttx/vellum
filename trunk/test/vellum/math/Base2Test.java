@@ -6,7 +6,7 @@ package vellum.math;
 
 import java.util.Arrays;
 import org.junit.Test;
-import vellum.crypto.Base2;
+import vellum.util.Base2;
 import static junit.framework.Assert.*;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
