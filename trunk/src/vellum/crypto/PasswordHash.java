@@ -85,10 +85,6 @@ public class PasswordHash {
         return keySize;
     }
 
-    public boolean matches(char[] password) throws GeneralSecurityException {
-        return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
-    }
-
     public byte[] pack() {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -122,6 +118,10 @@ public class PasswordHash {
         iv = new byte[0];
     }
 
+    public boolean matches(char[] password) throws GeneralSecurityException {
+        return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
+    }
+    
     public static boolean isPacked(byte[] packedBytes) {
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
         if (stream.read() != version) {
