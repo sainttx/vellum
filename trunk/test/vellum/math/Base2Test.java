@@ -2,10 +2,11 @@
  * Copyright Evan Summers
  * 
  */
-package vellum.crypto;
+package vellum.math;
 
 import java.util.Arrays;
 import org.junit.Test;
+import vellum.crypto.Base2;
 import static junit.framework.Assert.*;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -14,9 +15,9 @@ import vellum.logr.LogrFactory;
  *
  * @author evan
  */
-public class Log2Test {
+public class Base2Test {
 
-    static Logr logger = LogrFactory.getLogger(Log2Test.class);
+    static Logr logger = LogrFactory.getLogger(Base2Test.class);
 
     @Test
     public void test() throws Exception {
