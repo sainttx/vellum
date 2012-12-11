@@ -18,17 +18,15 @@ import javax.crypto.spec.SecretKeySpec;
  * @author evan
  */
 public class PBECipher {
-    private final int iterationCount = 2<<16;
-    private final int keySize = 256;
     private final SecretKey key;
     
-    public PBECipher(char[] password, byte[] salt) throws GeneralSecurityException  {
+    public PBECipher(char[] password, byte[] salt, int iterationCount, int keySize) throws GeneralSecurityException  {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         SecretKey secret = factory.generateSecret(spec);
         key = new SecretKeySpec(secret.getEncoded(), "AES");
     }
-    
+
     public Encrypted encrypt(byte[] bytes) throws GeneralSecurityException  {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, key);

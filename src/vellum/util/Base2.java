@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package vellum.crypto;
+package vellum.util;
 
 import java.util.Arrays;
 
