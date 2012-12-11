@@ -18,15 +18,15 @@ public class PBESalt {
     int keySize;
     byte[] salt;
     byte[] iv;
-    byte[] encryptedSalt;
+    byte[] saltHash;
 
     public PBESalt(byte[] salt, int iterationCount, int keySize, 
-            byte[] iv, byte[] encryptedSalt) {
+            byte[] iv, byte[] hash) {
         this.salt = salt;
         this.iterationCount = iterationCount;
         this.keySize = keySize;
         this.iv = iv;
-        this.encryptedSalt = encryptedSalt;
+        this.saltHash = hash;
     }
 
     public PBESalt(byte[] bytes) throws IOException {
@@ -36,12 +36,12 @@ public class PBESalt {
         }
         salt = new byte[stream.read()];
         iv = new byte[stream.read()];
-        encryptedSalt = new byte[stream.read()];
+        saltHash = new byte[stream.read()];
         iterationCount = stream.read()*256 + stream.read();
         keySize = 16 * stream.read();
         stream.read(salt);
         stream.read(iv);
-        stream.read(encryptedSalt);
+        stream.read(saltHash);
     }
 
     public int getIterationCount() {
@@ -61,23 +61,23 @@ public class PBESalt {
     }
 
     public byte[] getEncryptedSalt() {
-        return encryptedSalt;
+        return saltHash;
     }
     
     public byte[] getBytes() {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             stream.write(version);
-            stream.write(salt.length + iv.length + encryptedSalt.length + 8);
+            stream.write(salt.length + iv.length + saltHash.length + 8);
             stream.write(salt.length);
             stream.write(iv.length);
-            stream.write(encryptedSalt.length);
+            stream.write(saltHash.length);
             stream.write(iterationCount/256);
             stream.write(iterationCount%256);
             stream.write(keySize/16);
             stream.write(salt);
             stream.write(iv);
-            stream.write(encryptedSalt);
+            stream.write(saltHash);
             return stream.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e);

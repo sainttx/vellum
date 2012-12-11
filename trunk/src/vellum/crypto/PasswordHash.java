@@ -41,6 +41,15 @@ public class PasswordHash {
         this.iv = new byte[0];
     }
 
+    public PasswordHash(char[] secret, byte[] salt, byte[] iv, int iterationCount, int keySize) 
+            throws GeneralSecurityException {
+        this.iterationCount = iterationCount;
+        this.keySize = keySize;
+        this.salt = salt;
+        this.hash = Passwords.hashPassword(secret, salt, iterationCount, keySize);
+        this.iv = iv;
+    }
+    
     public PasswordHash(byte[] packedBytes) throws IOException {
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
         if (stream.read() != version || stream.read() != packedBytes.length) {
