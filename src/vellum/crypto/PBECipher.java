@@ -6,6 +6,7 @@ package vellum.crypto;
 
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -19,6 +20,13 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class PBECipher {
     private final SecretKey key;
+
+    public PBECipher(char[] password, PBESalt salt) throws GeneralSecurityException  {
+        this(password, salt.getSalt(), salt.getIterationCount(), salt.keySize);
+        if (!Arrays.equals(salt.getSalt(), decrypt(salt.getEncryptedSalt(), salt.getIv()))) {
+            throw new IllegalArgumentException("PBE password is incorrect");
+        }
+    }
     
     public PBECipher(char[] password, byte[] salt, int iterationCount, int keySize) throws GeneralSecurityException  {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
