@@ -63,7 +63,7 @@ public class OAuthCallbackHandler implements HttpHandler {
                 httpExchangeInfo.handleError("internal error");
             }
         } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+            httpExchangeInfo.handleError(e);
         }
         httpExchange.close();
     }

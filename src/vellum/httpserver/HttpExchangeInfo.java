@@ -5,6 +5,7 @@
 package vellum.httpserver;
 
 import com.sun.net.httpserver.HttpExchange;
+import crocserver.app.JsonStrings;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -260,7 +261,7 @@ public class HttpExchangeInfo {
         }
     }
 
-    public void handleException(Exception e) {
+    public void handleError(Exception e) {
         e.printStackTrace(System.err);
         handleError(e.getMessage());
     }
@@ -288,6 +289,11 @@ public class HttpExchangeInfo {
         return out;
     }
 
+    public void write(StringMap map) throws IOException {
+        sendResponse("text/json", true);
+        getPrintStream().println(JsonStrings.buildJson(map));
+    }
+    
     public String getInputString() {
         return Streams.readString(httpExchange.getRequestBody());
     }

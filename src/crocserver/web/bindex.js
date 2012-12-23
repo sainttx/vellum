@@ -206,12 +206,12 @@ function showLanding() {
 
 function showLoggedOut() {
     $(".croc-info").hide();
+    $('.croc-loggedin-viewable').hide();
+    $('.croc-logout-clickable').hide();    
     $("#croc-info-landing").show();
     $('.croc-landing-viewable').show();
     $('.croc-login-clickable').show();
     $('.croc-login-viewable').show();
-    $('.croc-loggedin-viewable').hide();
-    $('.croc-logout-clickable').hide();    
 }
 
 function clickLogout(event) {
@@ -363,6 +363,7 @@ function submitEditOrg(event) {
 
 function processEditOrg(res) {
     console.log('processEditOrg');    
+    console.log(res);
 }
 
 function errorEditOrg() {

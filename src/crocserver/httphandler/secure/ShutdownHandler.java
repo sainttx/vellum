@@ -44,7 +44,7 @@ public class ShutdownHandler implements HttpHandler {
                 httpExchangeInfo.sendResponse("text/plain", true);
                 httpExchangeInfo.getPrintStream().printf("OK %s\n", httpExchangeInfo.getPath());
             } catch (Exception e) {
-                httpExchangeInfo.handleException(e);
+                httpExchangeInfo.handleError(e);
             }
         }
         httpExchange.close();

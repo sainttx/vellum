@@ -53,7 +53,7 @@ public class ManagerHandler implements HttpHandler {
             handler.printPageHeader("Manager");
             handle();
         } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+            httpExchangeInfo.handleError(e);
         }
         httpExchange.close();
     }

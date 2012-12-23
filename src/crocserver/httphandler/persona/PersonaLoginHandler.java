@@ -55,7 +55,7 @@ public class PersonaLoginHandler implements HttpHandler {
                     httpExchangeInfo.handleError("require assertion");
                 }
             } catch (Exception e) {
-                httpExchangeInfo.handleException(e);
+                httpExchangeInfo.handleError(e);
             }
         httpExchange.close();
     }
