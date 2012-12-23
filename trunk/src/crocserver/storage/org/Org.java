@@ -5,18 +5,21 @@
 package crocserver.storage.org;
 
 import java.util.Date;
+import vellum.datatype.Patterns;
 import vellum.entity.AbstractIdEntity;
+import vellum.parameter.StringMap;
+import vellum.validation.ValidationException;
+import vellum.validation.ValidationExceptionType;
 
 /**
  *
  * @author evan
  */
-public class Org extends AbstractIdEntity {
+public final class Org extends AbstractIdEntity {
     Long id;
-    String name;
+    String orgName;
     String displayName;
     String url;
-    String org;
     String region;
     String locality;
     String country;
@@ -30,10 +33,41 @@ public class Org extends AbstractIdEntity {
     }
 
     public Org(String orgName, String updatedBy) {
-        this.name = orgName;
+        this.orgName = orgName;
         this.updatedBy = updatedBy;
     }
       
+    public Org(StringMap map) {
+        update(map);
+    }
+
+    public void update(Org bean) {
+        update(bean.getStringMap());
+    }
+    
+    public void update(StringMap map) {
+        orgName = map.get("orgName");
+        url = map.get("url");
+        displayName = map.get("displayName");
+        region = map.get("region");
+        locality = map.get("locality");
+        country = map.get("country");        
+    }
+    
+    public StringMap getStringMap() {
+        StringMap map = new StringMap();
+        map.put("orgId", id);
+        map.put("updatedBy", updatedBy);
+        map.put("orgName", orgName);
+        map.put("displayName", displayName);
+        map.put("url", url);
+        map.put("region", region);
+        map.put("locality", locality);
+        map.put("country", country);
+        map.put("enabled", enabled);
+        return map;
+    }
+    
     @Override
     public Long getId() {
         return id;
@@ -108,11 +142,11 @@ public class Org extends AbstractIdEntity {
     }
 
     public String getName() {
-        return name;
+        return orgName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.orgName = name;
     }
 
     public Date getUpdated() {
@@ -130,7 +164,13 @@ public class Org extends AbstractIdEntity {
     public boolean isStored() {
         return stored;
     }
-           
+
+    public void validate() throws ValidationException {
+        if (!Patterns.matchesUrl(url)) {
+            throw new ValidationException(ValidationExceptionType.INVALID_URL, url);
+        }
+    }
+    
     @Override
     public String toString() {
         return getId().toString();

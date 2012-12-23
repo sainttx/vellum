@@ -53,7 +53,7 @@ public class PutSecretHandler implements HttpHandler {
                 logger.info("handle", getClass().getSimpleName(), group, name);
                 handle();
             } catch (Exception e) {
-                httpExchangeInfo.handleException(e);
+                httpExchangeInfo.handleError(e);
             } finally {
                 Arrays.fill(secretBytes, Byte.MIN_VALUE);
             }
@@ -78,7 +78,7 @@ public class PutSecretHandler implements HttpHandler {
             app.getStorage().getSecretStorage().update(secret);
             responseMap.put("action", "updated");
         }
-        responseMap.putObject("id", secret.getId());
+        responseMap.put("id", secret.getId());
         responseMap.put("iv", Base64.encode(encrypted.getIv()));
         String json = JsonStrings.buildJson(responseMap);
         httpExchangeInfo.sendResponse("text/json", true);

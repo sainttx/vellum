@@ -42,7 +42,7 @@ public class GoogleLogoutHandler implements HttpHandler {
         try {
             handle();
         } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+            httpExchangeInfo.handleError(e);
         }
         httpExchange.close();
     }

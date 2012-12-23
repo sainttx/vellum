@@ -27,10 +27,10 @@ public class StringMap extends HashMap<String, String> {
         super(m);
     }
 
-    public String putObject(String key, Object object) {
+    public String put(String key, Object object) {
         return super.put(key, object.toString());
     }
-    
+
     public long getLong(String key) {
         return Long.parseLong(getString(key));
     }

@@ -8,13 +8,15 @@ import crocserver.storage.org.Org;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
+import vellum.parameter.StringMap;
 import vellum.security.KeyStores;
 
 /**
  *
  * @author evan
  */
-public class AdminUser extends AbstractIdEntity<String> {
+public class AdminUser extends AbstractIdEntity<Long> {
+    Long id;
     String userName;
     String displayName;
     String firstName;
@@ -56,8 +58,8 @@ public class AdminUser extends AbstractIdEntity<String> {
     }
 
     @Override
-    public String getId() {
-        return userName;
+    public Long getId() {
+        return id;
     }
 
     public String formatSubject() {
@@ -269,6 +271,18 @@ public class AdminUser extends AbstractIdEntity<String> {
         return authMillis;
     }
 
+    public StringMap getStringMap() {
+        StringMap map = new StringMap();
+        map.put("orgId", id);
+        map.put("userName", userName);
+        map.put("displayName", displayName);
+        map.put("region", region);
+        map.put("locality", locality);
+        map.put("country", country);
+        map.put("enabled", enabled);
+        return map;
+    }
+    
     @Override
     public String toString() {
         return getId().toString();

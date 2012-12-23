@@ -41,7 +41,7 @@ public class ShutdownHandler implements HttpHandler {
             httpExchange.close();
             app.stop();
         } catch (Exception e) {
-            httpExchangeInfo.handleException(e);
+            httpExchangeInfo.handleError(e);
             httpExchange.close();
         }
     }

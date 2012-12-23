@@ -59,7 +59,7 @@ public class GoogleLoginHandler implements HttpHandler {
                     httpExchangeInfo.handleError("require access_token");
                 }
             } catch (Exception e) {
-                httpExchangeInfo.handleException(e);
+                httpExchangeInfo.handleError(e);
             }
         } else {
             httpExchangeInfo.handleError();
