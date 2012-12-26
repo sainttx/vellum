@@ -36,7 +36,6 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         org.setDisplayName(resultSet.getString(OrgMeta.display_name.name()));
         org.setUrl(resultSet.getString(OrgMeta.url.name()));
         org.setUpdated(resultSet.getTimestamp(OrgMeta.updated.name()));
-        org.setUpdatedBy(resultSet.getString(OrgMeta.updated_by.name()));
         org.setStored(true);
         return org;
     }
@@ -50,7 +49,6 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             statement.setString(++index, org.getOrgName());
             statement.setString(++index, org.getUrl());
             statement.setString(++index, org.getDisplayName());
-            statement.setString(++index, org.getUpdatedBy());
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
             if (updateCount != 1) {
@@ -143,7 +141,6 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             int index = 0;
             statement.setString(++index, org.getUrl());
             statement.setString(++index, org.getDisplayName());
-            statement.setString(++index, org.getUpdatedBy());
             statement.setLong(++index, org.getId());
             int updateCount = statement.executeUpdate();
             connection.setOk(true);

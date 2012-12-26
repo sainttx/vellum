@@ -56,6 +56,7 @@ public class AdminUserStorage {
     
     private AdminUser get(ResultSet resultSet) throws SQLException {
         AdminUser user = new AdminUser();
+        user.setId(resultSet.getLong(AdminUserMeta.user_id.name()));
         user.setUserName(resultSet.getString(AdminUserMeta.user_name.name()));
         user.setFirstName(resultSet.getString(AdminUserMeta.first_name.name()));
         user.setLastName(resultSet.getString(AdminUserMeta.last_name.name()));
@@ -68,10 +69,14 @@ public class AdminUserStorage {
         user.setLoginTime(resultSet.getTimestamp(AdminUserMeta.login.name()));
         user.setLogoutTime(resultSet.getTimestamp(AdminUserMeta.logout.name()));
         user.setUpdated(resultSet.getTimestamp(AdminUserMeta.updated.name()));
+        user.setOrgId(resultSet.getLong(AdminUserMeta.org_id.name()));
+        if (resultSet.wasNull()) {
+            user.setOrg(null);
+        }
         user.setStored(true);
         return user;
     }
-
+    
     public void insert(AdminUser user) throws SQLException, StorageException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {

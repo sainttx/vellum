@@ -1,16 +1,14 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
  * Apache Software License 2.0
- * Supported by iPay (Pty) Ltd, BizSwitch.net
  */
 
 package vellum.parameter;
 
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import vellum.exception.EnumRuntimeException;
 
 /**
@@ -27,8 +25,17 @@ public class StringMap extends HashMap<String, String> {
         super(m);
     }
 
+    public String put(String key, String value) {
+        return super.put(key, value);
+    }
+
+    
     public String put(String key, Object object) {
-        return super.put(key, object.toString());
+        if (object == null) {
+            return super.put(key, null);
+        } else {
+            return super.put(key, object.toString());            
+        }
     }
 
     public long getLong(String key) {
@@ -58,6 +65,9 @@ public class StringMap extends HashMap<String, String> {
         }
         return Long.parseLong(string);        
     }
-    
+
+    public String buildJson() {
+        return new Gson().toJson(this);
+    }    
 }
 
