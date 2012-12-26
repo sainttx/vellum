@@ -9,6 +9,8 @@ package crocserver.storage.adminuser;
  * @author evan
  */
 public enum AdminUserMeta {
+    user_id,
+    org_id,
     user_name,
     first_name,
     last_name,

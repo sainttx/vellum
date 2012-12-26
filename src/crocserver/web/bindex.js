@@ -65,6 +65,7 @@ function initDocument() {
     $('#croc-secureUrl-anchor').attr('href', secureUrl);
     $('#croc-secureUrl-anchor').text(secureUrl);
     notify("Welcome");
+    initTest();
     $(document).ajaxError(
         function (event, jqXHR, ajaxSettings, thrownError) {
             console.log('ajax error [event:' + event + '], [jqXHR:' + jqXHR + '], [ajaxSettings:' + ajaxSettings + '], [thrownError:' + thrownError + '])');
@@ -75,6 +76,10 @@ function initDocument() {
         }
         );    
 //showReadyAuth();
+}
+
+function initTest() {
+    $('#editOrg-url').val('myorg.com');
 }
 
 function redirectDocument() {

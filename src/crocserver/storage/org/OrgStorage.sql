@@ -1,7 +1,7 @@
 
 -- insert
-insert into org (org_name, url, display_name, updated_by)
-values (?, ?, ?, ?)
+insert into org (org_name, url, display_name)
+values (?, ?, ?)
 ;
 
 -- update
@@ -9,7 +9,6 @@ update org
 set 
   url = ?, 
   display_name = ?,
-  updated_by = ?,
   updated = now()
 where org_id = ?
 ;

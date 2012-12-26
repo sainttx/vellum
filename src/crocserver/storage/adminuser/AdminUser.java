@@ -4,6 +4,7 @@
  */
 package crocserver.storage.adminuser;
 
+import crocserver.app.JsonStrings;
 import crocserver.storage.org.Org;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -62,6 +63,10 @@ public class AdminUser extends AbstractIdEntity<Long> {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String formatSubject() {
         return KeyStores.formatDname(email, displayName, userName, locality, region, country);
     }
@@ -273,7 +278,8 @@ public class AdminUser extends AbstractIdEntity<Long> {
 
     public StringMap getStringMap() {
         StringMap map = new StringMap();
-        map.put("orgId", id);
+        map.put("id", id);
+        map.put("orgId", orgId);
         map.put("userName", userName);
         map.put("displayName", displayName);
         map.put("region", region);
@@ -285,7 +291,7 @@ public class AdminUser extends AbstractIdEntity<Long> {
     
     @Override
     public String toString() {
-        return userName;
+        return getStringMap().buildJson();
     }
 
     
