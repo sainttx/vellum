@@ -60,7 +60,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
         for (Org org : orgs) {
             h.trd(
                     String.format("<a href='/viewOrg/%d'>%d</a>", org.getId(), org.getId()),
-                    org.getName(),
+                    org.getOrgName(),
                     org.getDisplayName(),
                     org.getUrl(),
                     CalendarFormats.timestampFormat.format(org.getUpdated()));

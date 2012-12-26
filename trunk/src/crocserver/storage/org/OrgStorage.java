@@ -32,7 +32,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     private Org get(ResultSet resultSet) throws SQLException {
         Org org = new Org();
         org.setId(resultSet.getLong(OrgMeta.org_id.name()));
-        org.setName(resultSet.getString(OrgMeta.org_name.name()));
+        org.setOrgName(resultSet.getString(OrgMeta.org_name.name()));
         org.setDisplayName(resultSet.getString(OrgMeta.display_name.name()));
         org.setUrl(resultSet.getString(OrgMeta.url.name()));
         org.setUpdated(resultSet.getTimestamp(OrgMeta.updated.name()));
@@ -47,7 +47,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             PreparedStatement statement = connection.prepareStatement(
                 sqlMap.get(OrgQuery.insert.name()));
             int index = 0;
-            statement.setString(++index, org.getName());
+            statement.setString(++index, org.getOrgName());
             statement.setString(++index, org.getUrl());
             statement.setString(++index, org.getDisplayName());
             statement.setString(++index, org.getUpdatedBy());

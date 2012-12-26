@@ -37,7 +37,6 @@ public class ViewOrgHandler extends AbstractPageHandler {
        p.trhd("Display name", org.getDisplayName());
        p.trhd("Url", org.getUrl());
        p.trhd("Updated", org.getUpdated());
-       p.trhd("Updated by", org.getUpdatedBy());
        p.tbodyClose();
        p.tableDivClose();
     }    

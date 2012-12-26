@@ -22,7 +22,7 @@ public class AdminUser extends AbstractIdEntity<Long> {
     String firstName;
     String lastName;
     AdminRole role;
-    long orgId;
+    Long orgId;
     Org org;
     long authMillis;
     boolean enabled = true;
@@ -74,11 +74,11 @@ public class AdminUser extends AbstractIdEntity<Long> {
         this.org = org;
     }
 
-    public void setOrgId(long orgId) {
+    public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
 
-    public long getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
     
@@ -285,7 +285,7 @@ public class AdminUser extends AbstractIdEntity<Long> {
     
     @Override
     public String toString() {
-        return getId().toString();
+        return userName;
     }
 
     

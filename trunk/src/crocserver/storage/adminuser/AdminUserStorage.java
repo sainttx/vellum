@@ -240,14 +240,30 @@ public class AdminUserStorage {
             storage.getConnectionPool().releaseConnection(connection);
         }
     }
-    
+
     public void updateLogout(AdminUser user) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(AdminUserQuery.update_logout.name()));
-            statement.setTimestamp(1, new Timestamp(user.getLogoutTime().getTime()));
+            statement.setTimestamp(1, new Timestamp(user.getLoginTime().getTime()));
             statement.setString(2, user.getUserName());
+            int updateCount = statement.executeUpdate();
+            connection.setOk(true);
+            if (updateCount != 1) {
+                throw new SQLException();
+            }
+        } finally {
+            storage.getConnectionPool().releaseConnection(connection);
+        }
+    }
+    
+    public void updateOrg(AdminUser user) throws SQLException {
+        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    sqlMap.get(AdminUserQuery.update_org.name()));
+            statement.setString(1, user.getUserName());
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
             if (updateCount != 1) {
