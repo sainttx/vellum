@@ -52,7 +52,7 @@ public class BizstatServer implements Runnable {
     Contact adminContact;
     Set<Contact> adminContacts = new TreeSet();
     Server h2Server;
-    Org org = new Org("default", "auto");
+    Org org = new Org("default");
     
     public BizstatServer() {
         org.setId(1);

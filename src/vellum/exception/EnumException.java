@@ -8,16 +8,16 @@ package vellum.exception;
  *
  * @author evan
  */
-public class EnumException extends Exception {
+public class EnumException extends DisplayException {
     Enum exceptionType;
 
     public EnumException(Enum exceptionType, Throwable exception) {
-        super(EnumExceptions.formatMessage(exception, exceptionType), exception);
+        super(exceptionType.toString(), exception);
         this.exceptionType = exceptionType;
     }
     
     public EnumException(Enum exceptionType) {
-        super(EnumExceptions.formatMessage(exceptionType));
+        super(exceptionType.toString());
         this.exceptionType = exceptionType;
     }
 

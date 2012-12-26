@@ -58,6 +58,13 @@ set
 where user_name = ?
 ;
 
+-- update_org
+update user_ 
+set 
+  org_id = ?
+where user_name = ?
+;
+
 -- exists_username
 select count(1) from user_ where user_name = ?
 ;

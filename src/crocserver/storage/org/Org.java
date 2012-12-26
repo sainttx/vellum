@@ -24,17 +24,14 @@ public final class Org extends AbstractIdEntity {
     String locality;
     String country;
     boolean enabled = true;
-    String updatedBy;
-    Date inserted;
     Date updated;
     boolean stored = false;
             
     public Org() {
     }
 
-    public Org(String orgName, String updatedBy) {
+    public Org(String orgName) {
         this.orgName = orgName;
-        this.updatedBy = updatedBy;
     }
       
     public Org(StringMap map) {
@@ -57,7 +54,6 @@ public final class Org extends AbstractIdEntity {
     public StringMap getStringMap() {
         StringMap map = new StringMap();
         map.put("orgId", id);
-        map.put("updatedBy", updatedBy);
         map.put("orgName", orgName);
         map.put("displayName", displayName);
         map.put("url", url);
@@ -93,14 +89,6 @@ public final class Org extends AbstractIdEntity {
         this.country = country;
     }
 
-    public Date getInserted() {
-        return inserted;
-    }
-
-    public void setInserted(Date inserted) {
-        this.inserted = inserted;
-    }
-
     public String getRegion() {
         return region;
     }
@@ -109,14 +97,6 @@ public final class Org extends AbstractIdEntity {
         this.region = region;
     }
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-    
     public String getDisplayName() {
         return displayName;
     }
@@ -141,12 +121,12 @@ public final class Org extends AbstractIdEntity {
         this.enabled = enabled;
     }
 
-    public String getName() {
+    public String getOrgName() {
         return orgName;
     }
 
-    public void setName(String name) {
-        this.orgName = name;
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
     public Date getUpdated() {
@@ -168,6 +148,12 @@ public final class Org extends AbstractIdEntity {
     public void validate() throws ValidationException {
         if (!Patterns.matchesUrl(url)) {
             throw new ValidationException(ValidationExceptionType.INVALID_URL, url);
+        }        
+        if (orgName == null) {
+            orgName = url;
+        }
+        if (displayName == null) {
+            displayName = orgName;
         }
     }
     

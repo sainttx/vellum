@@ -51,7 +51,6 @@ public class EnrollOrgHandler implements HttpHandler {
     
     private void handle() throws Exception {
         AdminUser user = app.getUser(httpExchangeInfo, true);
-        String userName = user.getUserName();
         logger.info("user", user);
         String url = httpExchangeInfo.getParameterMap().get("url");
         if (url != null) {
@@ -62,8 +61,8 @@ public class EnrollOrgHandler implements HttpHandler {
         String orgName = url;
         org = app.getStorage().getOrgStorage().find(orgName);
         if (org == null) {
-            org = new Org(orgName, userName);
-        } else if (!org.getUpdatedBy().equals(userName)) {
+            org = new Org(orgName);
+        } else if (org.getId() != user.getOrgId()) {
             throw new StorageException(StorageExceptionType.ALREADY_EXISTS, orgName);
         }
         org.setDisplayName(httpExchangeInfo.getParameterMap().get("displayName"));
@@ -71,14 +70,13 @@ public class EnrollOrgHandler implements HttpHandler {
         org.setRegion(httpExchangeInfo.getParameterMap().get("region"));
         org.setLocality(httpExchangeInfo.getParameterMap().get("locality"));
         org.setCountry(httpExchangeInfo.getParameterMap().get("country"));
-        org.setUpdatedBy(userName);
         if (org.isStored()) {
             app.getStorage().getOrgStorage().update(org);
         } else {
             app.getStorage().getOrgStorage().insert(org);
         }
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.printf("OK %s %d\n", org.getName(), org.getId());
+        out.printf("OK %s %d\n", org.getOrgName(), org.getId());
     }
     
 }

@@ -13,6 +13,7 @@ public enum AdminUserQuery {
     insert,
     update_login,
     update_logout,
+    update_org,
     update_secret,
     update_cert,
     update_display_name,

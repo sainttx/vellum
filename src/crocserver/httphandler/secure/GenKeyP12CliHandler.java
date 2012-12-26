@@ -74,7 +74,7 @@ public class GenKeyP12CliHandler implements HttpHandler {
     private void handle() throws Exception {
         org = storage.getOrgStorage().get(orgName);
         if (org == null) {
-            org = new Org(orgName, userName);
+            org = new Org(orgName);
             storage.getOrgStorage().insert(org);
         }
         String dname = KeyStores.formatDname(clientName, hostName, orgName, 

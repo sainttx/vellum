@@ -52,14 +52,21 @@ public class EditOrgHandler implements HttpHandler {
         AdminUser user = app.getUser(httpExchangeInfo, true);
         logger.info("user", user);
         Org bean = new Org(httpExchangeInfo.getParameterMap());
-        org = app.getStorage().getOrgStorage().find(bean.getName());
+        org = app.getStorage().getOrgStorage().find(bean.getOrgName());
         if (org == null) {
+            if (user.getOrgId() != null) {
+                throw new StorageException(StorageExceptionType.ALREADY_EXISTS, user.getUserName());                
+            }
             org = bean;
+            org.validate();
             app.getStorage().getOrgStorage().insert(org);
-        } else if (!org.getUpdatedBy().equals(user.getUserName())) {
+            user.setOrgId(org.getId());
+            app.getStorage().getUserStorage().update(user);
+        } else if (org.getId() != user.getOrgId()) {
             throw new StorageException(StorageExceptionType.ALREADY_EXISTS, user.getUserName());
         } else {
             org.update(bean);
+            org.validate();
             app.getStorage().getOrgStorage().update(org);            
         }
         httpExchangeInfo.write(org.getStringMap());
