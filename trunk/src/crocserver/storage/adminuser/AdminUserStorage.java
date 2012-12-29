@@ -71,7 +71,7 @@ public class AdminUserStorage {
         user.setUpdated(resultSet.getTimestamp(AdminUserMeta.updated.name()));
         user.setOrgId(resultSet.getLong(AdminUserMeta.org_id.name()));
         if (resultSet.wasNull()) {
-            user.setOrg(null);
+            user.setOrgId(null);
         }
         user.setStored(true);
         return user;
@@ -268,7 +268,8 @@ public class AdminUserStorage {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(AdminUserQuery.update_org.name()));
-            statement.setString(1, user.getUserName());
+            statement.setLong(1, user.getOrgId());
+            statement.setString(2, user.getUserName());
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
             if (updateCount != 1) {

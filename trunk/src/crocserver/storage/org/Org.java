@@ -43,12 +43,18 @@ public final class Org extends AbstractIdEntity {
     }
     
     public void update(StringMap map) {
-        orgName = map.get("orgName");
         url = map.get("url");
+        orgName = map.get("orgName");
         displayName = map.get("displayName");
         region = map.get("region");
         locality = map.get("locality");
         country = map.get("country");        
+        if (orgName == null) {
+            orgName = url;
+        }
+        if (displayName == null) {
+            displayName = orgName;
+        }
     }
     
     public StringMap getStringMap() {
@@ -149,17 +155,11 @@ public final class Org extends AbstractIdEntity {
         if (!Patterns.matchesUrl(url)) {
             throw new ValidationException(ValidationExceptionType.INVALID_URL, url);
         }        
-        if (orgName == null) {
-            orgName = url;
-        }
-        if (displayName == null) {
-            displayName = orgName;
-        }
     }
     
     @Override
     public String toString() {
-        return getId().toString();
+        return getStringMap().buildJson();
     }
     
 }

@@ -72,14 +72,20 @@ public class SecureHomeHandler extends AbstractPageHandler {
     private void printUsers(String label, Collection<AdminUser> users) {
         h.h(3, label);
         h.tableDiv("resultSet");
-        h.trh("id", "username", "display name", "email", "updated");
+        h.trh("id", "username", "display name", "email", "login", "org");
         for (AdminUser user : users) {
+            String orgHtml = "";
+            if (user.getOrgId() != null) {
+                orgHtml = String.format("<a href='/viewOrg/%d'>%d</a>", user.getOrgId(), user.getOrgId());
+            }
             h.trd(
                     String.format("<a href='/viewUser/%s'>%s</a>", user.getId(), user.getId()),
                     user.getUserName(),
                     user.getDisplayName(),
                     user.getEmail(),
-                    CalendarFormats.timestampFormat.format(user.getUpdated()));
+                    CalendarFormats.timestampFormat.format(user.getLoginTime()),
+                    orgHtml
+                    );
         }
         h.tableClose();
         h.divClose();
@@ -88,15 +94,15 @@ public class SecureHomeHandler extends AbstractPageHandler {
     private void printServices(String label, Collection<Service> certs) {
         h.h(3, label);
         h.tableDiv("resultSet");
-        h.trh("id", "org", "host", "client", "updated", "updated by");
+        h.trh("id", "org", "host", "client", "updated");
         for (Service cert : certs) {
             h.trd(
                     String.format("<a href='/viewService/%s'>%s</a>", cert.getId(), cert.getId()),
                     cert.getOrgId(),
                     cert.getHostName(),
                     cert.getServiceName(),
-                    CalendarFormats.timestampFormat.format(cert.getUpdated()),
-                    cert.getUpdatedBy());
+                    CalendarFormats.timestampFormat.format(cert.getUpdated())
+                    );
         }
         h.tableClose();
         h.divClose();
@@ -105,13 +111,13 @@ public class SecureHomeHandler extends AbstractPageHandler {
     private void printCerts(String label, Collection<Cert> certs) throws IOException {
         h.h(3, label);
         h.tableDiv("resultSet");
-        h.trh("id", "subject", "updated", "updated by");
+        h.trh("id", "subject", "updated");
         for (Cert cert : certs) {
             h.trd(
                     String.format("<a href='/viewCert/%s'>%s</a>", cert.getId(), cert.getId()),
                     new X500Name(cert.getSubject()).getCommonName(),
-                    CalendarFormats.timestampFormat.format(cert.getUpdated()),
-                    cert.getUpdatedBy());
+                    CalendarFormats.timestampFormat.format(cert.getUpdated())
+                    );
         }
         h.tableClose();
         h.divClose();

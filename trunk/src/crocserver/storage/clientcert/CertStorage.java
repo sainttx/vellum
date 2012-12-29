@@ -37,7 +37,6 @@ public class CertStorage {
         cert.setSubject(resultSet.getString(CertMeta.subject.name()));
         cert.setCert(resultSet.getString(CertMeta.cert.name()));
         cert.setUpdated(resultSet.getTimestamp(CertMeta.updated.name()));
-        cert.setUpdatedBy(resultSet.getString(CertMeta.updated_by.name()));
         cert.setStored(true);
         return cert;
     }
@@ -50,7 +49,6 @@ public class CertStorage {
             statement.setString(++index, cert.getName());
             statement.setString(++index, cert.getSubject());
             statement.setString(++index, cert.getCert());
-            statement.setString(++index, cert.getUpdatedBy());
             int insertCount = statement.executeUpdate();
             if (insertCount != 1) {
                 throw new StorageException(StorageExceptionType.NOT_INSERTED);
@@ -72,7 +70,6 @@ public class CertStorage {
                     sqlMap.get(CertQuery.update.name()));
             int index = 0;
             statement.setString(++index, cert.getCert());
-            statement.setString(++index, cert.getUpdatedBy());
             statement.setString(++index, cert.getName());
             int updateCount = statement.executeUpdate();
             if (updateCount != 1) {
@@ -168,7 +165,6 @@ public class CertStorage {
             clientCert = new Cert();
         }
         clientCert.setCert(x509Cert);
-        clientCert.setUpdatedBy(updatedBy);
         if (clientCert.isStored()) {
             update(clientCert);
         } else {

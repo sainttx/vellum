@@ -12,12 +12,14 @@ import java.util.Date;
 public class DefaultDateFormats {
 
     public static final SafeDateFormat dateFormat = new SafeDateFormat("yyyy-MM-dd");
-    public static final SafeDateFormat timeMillisFormat = new SafeDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-    public static final SafeDateFormat timeSecondsFormat = new SafeDateFormat("HH:mm:ss,SSS");
+    public static final SafeDateFormat timeSecondsFormat = new SafeDateFormat("HH:mm:ss");
+    public static final SafeDateFormat timeMillisFormat = new SafeDateFormat("HH:mm:ss,SSS");
+    public static final SafeDateFormat dateTimeSecondsFormat = new SafeDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SafeDateFormat dateTimeMillisFormat = new SafeDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 
-    public static String formatTime(long millis) {
+    public static String formatDateTimeSeconds(long millis) {
         if (millis == 0) return "";
-        return timeSecondsFormat.format(new Date(millis));
+        return dateTimeSecondsFormat.format(new Date(millis));
     }
     
     public static Date parseTimestampMillis(String string) {

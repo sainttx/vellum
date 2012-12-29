@@ -28,7 +28,6 @@ create table cert (
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
   unique key uniq_cert (name_)
 );
 
@@ -59,7 +58,6 @@ create table org (
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
   unique key uniq_org_name (org_name)
 );
 
@@ -97,7 +95,6 @@ create table contact (
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
   unique key uniq_contact_name (contact_name)
 );
 
@@ -108,7 +105,6 @@ create table contact_group (
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
   unique key uniq_contact_group (org_id, contact_group_name)
 );
 
@@ -120,7 +116,6 @@ create table contact_group_member (
   enabled boolean default true,
   inserted timestamp default now(),
   updated timestamp default now(),
-  updated_by varchar(32) not null,
   unique key unique_contact_group_member (contact_group_id, contact_id)
 );
 
@@ -132,7 +127,6 @@ create table host_ (
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
   unique key uniq_host (org_id, host_name)
 );
 
@@ -143,7 +137,6 @@ create table service_type (
   enabled boolean default true,
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
   unique key uniq_service_type (org_id, service_name)
 );
 
@@ -156,7 +149,6 @@ create table service (
   cert varchar(8192),
   inserted timestamp not null default now(),
   updated timestamp not null default now(),
-  updated_by varchar(32) not null,
   unique key uniq_service (org_id, host_name, service_name)
 );
 

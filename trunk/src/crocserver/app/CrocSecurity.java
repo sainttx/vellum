@@ -4,13 +4,11 @@
  */
 package crocserver.app;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base32;
-import sun.security.x509.X500Name;
 
 /**
  *

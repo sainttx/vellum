@@ -36,7 +36,6 @@ public class ViewCertHandler extends AbstractPageHandler {
         p.tbody();
         p.trhd("Subject", cert.getSubject());
         p.trhd("Updated", cert.getUpdated());
-        p.trhd("Updated by", cert.getUpdatedBy());
         p.tbodyClose();
         p.tableDivClose();
         p.pre(cert.getCert());

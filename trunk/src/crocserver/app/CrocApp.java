@@ -317,10 +317,12 @@ public class CrocApp {
             CrocCookie cookie = new CrocCookie(cookieMap);
             AdminUser user = storage.getUserStorage().get(cookie.getEmail());
             if (user.getLoginTime().getTime() != cookie.getLoginMillis()) {
-                logger.warn("getUser cookie millis", DefaultDateFormats.dateFormat.format(user.getLoginTime()), 
-                        DefaultDateFormats.formatTime(cookie.getLoginMillis()),
-                        new Date(cookie.getLoginMillis()));
-                throw new EnumException(CrocExceptionType.STALE_COOKIE);
+                logger.warn("getUser cookie millis", DefaultDateFormats.timeMillisFormat.format(user.getLoginTime()), 
+                        DefaultDateFormats.formatDateTimeSeconds(cookie.getLoginMillis())
+                        );
+                if (false) {
+                    throw new EnumException(CrocExceptionType.STALE_COOKIE);
+                }
             }
             if (auth) {
                 googleApi.getUserInfo(cookie.getAccessToken());
