@@ -16,7 +16,6 @@ public enum CertMeta {
     enabled,
     inserted,
     updated,
-    updated_by
     ;
     
 }

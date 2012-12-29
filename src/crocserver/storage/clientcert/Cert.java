@@ -23,7 +23,6 @@ public final class Cert extends AbstractIdEntity {
     boolean enabled = true;
     Date inserted = new Date();
     Date updated = new Date();
-    String updatedBy;
     boolean stored = false;
     
     public Cert() {
@@ -82,14 +81,6 @@ public final class Cert extends AbstractIdEntity {
 
     public void setUpdated(Date updated) {
         this.updated = updated;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
     }
 
     public void setStored(boolean stored) {

@@ -99,6 +99,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     }
         
     public Org find(String name) throws SQLException {
+        logger.info("find", name);
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(

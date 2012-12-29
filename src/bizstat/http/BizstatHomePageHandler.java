@@ -118,7 +118,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
                 detailBuilder.append("</pre>");
             }
             out.printf("<td>%s<td>%s<td><b>%s</b><td>%s\n",
-                    DefaultDateFormats.formatTime(message.getTimestamp()),
+                    DefaultDateFormats.formatDateTimeSeconds(message.getTimestamp()),
                     message.getLevel(),
                     message.getContext().getName(),
                     detailBuilder.toString());

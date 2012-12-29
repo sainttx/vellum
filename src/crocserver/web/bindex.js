@@ -16,6 +16,7 @@ function clickHome() {
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
     $("#croc-info-landing").show();
+    window.location.reload();
 }        
 
 function clickContact() {
@@ -33,6 +34,7 @@ function startDocument() {
 
 function initDocument() {
     console.log("initDocument");
+    $('.croc-list-org-clickable').click(clickListOrg);
     $('.croc-edit-org-clickable').click(clickEditOrg);
     $('.croc-edit-network-clickable').click(clickEditNetwork);
     $('.croc-edit-host-clickable').click(clickEditHost);
@@ -43,6 +45,9 @@ function initDocument() {
     $('.croc-contact-clickable').click(clickContact);
     $('.croc-logout-clickable').click(clickLogout);
     $('.croc-login-clickable').click(clickLogin);
+    $('#croc-list-org').load('list-org.html', function() {
+        
+    });
     $('#croc-edit-org').load('edit-org.html', function() {
         $('#croc-editOrg-form').submit(submitEditOrg);        
     });
@@ -323,6 +328,12 @@ function submitGenKey(event) {
 function processGenKeyForm(res) {
     console.log('processGenKeyForm');
     console.log(res);
+}
+
+function clickListOrg() {
+    $('#org-tbody').append('<tr><td>col1');
+    $('.croc-info').hide();
+    $('#croc-list-org').show();
 }
 
 function clickEditOrg() {

@@ -3,16 +3,14 @@
 insert into cert (
   name_,
   subject,
-  cert,
-  updated_by
-) values (?, ?, ?, ?)
+  cert
+) values (?, ?, ?)
 ;
 
 -- update
 update cert
 set 
   cert = ?, 
-  updated_by = ?,
   updated = now()
 where name_ = ?
 ;
