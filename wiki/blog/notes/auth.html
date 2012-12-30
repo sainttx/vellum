@@ -1,0 +1,41 @@
+
+
+you were banging on about "login" and i was replying "stateless" - let me explain ... 
+
+Stateful web apps keep session state, which at a minimum is used to authenticate the client session, indicated that having previously processed a login for this client.
+
+By "client session," i mean user and browser combo.
+
+However stateless apps don't keep any client state on the application server (in memory or on disk). This facilitates a cluster of application servers, without having to replicate sessions across the cluster.
+
+Which raises the question, how to authenticate the client?
+
+Stateless apps keep UI state (user, etc) in a cookie, notably the username of the client session.
+
+In this case we need to authenticate the cookie, i.e. has it been tampered with? So we use a MAC for that, i.e. a cryptographic "message authentication code," which requires a secret. A cryptographic "secret" is generated at some stage using a random number generator (RNG), and stored. This secret is hashed together with the message, to produce the MAC. Since this MAC can be reproduced if one has the secret, the "message" is thus authenticated.
+
+We might use an app-wide secret used for the MAC.
+
+Usually our app is going to access the database to process the HTTP request  - and indeed we can load the user and use a user-specific MAC to auth the cookie.
+
+I guess some apps/requests do not access any database, but perhaps some local or remote storage (filesystem or other) or other webservices. However, that is not our use case.
+
+Typically our user record in the database will include the login time and thereby session expiry time.
+
+Having said that, the cookie itself can an expiry of course.
+
+So if using an app-wide secret for the cookie MAC, then in theory we don't have to read the user from the database, which can save some time. 
+
+As i was saying, rather than our app having login mechanism with username/password, one can use third party identity provider such as Google, Facebook Connection, Mozilla Persona, etc, to identify and authenticate a user. That is, the identify provider can affirm that this HTTP request is from "evan.summers@gmail.com," and is indeed coming from said person i.e. not someone else just saying they are "evan.summers@gmail.com."
+
+So when user hits our site for the first time that day (having been previously logged out or his session expired overnight), we authenticate with Google, and set the cookie. 
+
+Thereafter we can just authenticate the cookie of the request?
+
+Assuming the user is logged into Google on that browser, then this is transparent to the user, requiring no login action such as providing username/password. If not, the Google client lib will popup a window to login to Google. Google provides an "access token" to our client, which can communicate that to the server via AJAX. Our server can specify that access token in a API call to api.google.com, which will provide the user's name and email etc, which has of course been cryptographically authenticated by Google, i.e. that the provided access token is valid.
+
+
+Or am i missing something? i'm also asking because i'm not using a servlet container which usually we use for session auth (which under the hood is using cookies, what else?)
+
+
+
