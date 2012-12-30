@@ -7,6 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
+        <link href="./croc.css" rel="stylesheet">
         <link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
         <style type="text/css">
             body {
@@ -18,7 +19,7 @@
             }
         </style>        
         <script type="text/javascript">
-            if (window.location.protocol != "https:") {
+            if (window.location.protocol == "http:") {
                 var host = location.host;
                 var index = location.host.indexOf(':');
                 if (index > 0) {
@@ -145,9 +146,9 @@
     </body>
 
     <script src="./bootstrap/js/jquery.js"></script>
+    <!--script src="https://apis.google.com/js/client.js?onload=startClient"/-->    
     <script src="local.js"></script>
-    <script src="bindex.js?onload=startDocument"></script>
-    <script src="https://apis.google.com/js/client.js?onload=startClient"/>    
+    <script src="bindex.js"></script>
     <script src="./bootstrap/js/bootstrap-transition.js"></script>
     <script src="./bootstrap/js/bootstrap-alert.js"></script>
     <script src="./bootstrap/js/bootstrap-modal.js"></script>
@@ -162,7 +163,7 @@
     <script src="./bootstrap/js/bootstrap-typeahead.js"></script>
 
     <script type="text/javascript">
-        $(document).ready(function() {    
+        $(document).ready(function() {
             initDocument();
         });
     </script>
