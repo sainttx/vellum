@@ -1,4 +1,13 @@
 
+var evanLogin = {
+    name: 'Evan Summers',
+    email: 'evan.summers@gmail.com',
+    picture: '',
+    totpSecret: '',
+    totpUrl: '',
+    qr: ''
+};
+
 function mockRes(req) {
     if (req.url == '/login') {
         return {
@@ -146,7 +155,7 @@ function initDocument() {
     $('.croc-login-clickable').click(server.clickLogin);
     $('#croc-list-org').load('list-org.html', function() {        
     });
-    $('#croc-edit-org').load('edit-org.html', function() {
+    $('#croc-edit-org').load('/edit-org.html', function() {
         $('#croc-editOrg-form').submit(submitEditOrg);        
     });
     $('#croc-edit-network').load('edit-network.html', function() {
