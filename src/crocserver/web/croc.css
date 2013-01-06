@@ -1,5 +1,15 @@
 
+form.croc div {
+    float: left;    
+    padding-right: 1em;
+} 
+
+form.croc label {
+    margin: 0em;
+} 
+
 table.croc {
+  float: left;
   margin-left: 2ex;
   border: solid 1px;
   background-color: #e0ecef;
