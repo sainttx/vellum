@@ -52,7 +52,7 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Croc <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li class="croc-nav-anchor"><a href="#" class="croc-home-clickable" href="#">Home</a></li>
+                                <li class="croc-nav-anchor"><a href="#" class="croc-reload-clickable" href="#">Home</a></li>
                                 <li class="croc-nav-anchor"><a href="#" class="croc-about-clickable">About</a></li>
                                 <li class="croc-nav-anchor"><a href="#" class="croc-contact-clickable">Contact</a></li>
                             </ul>
@@ -67,19 +67,22 @@
                                 <li><a class="croc-logout-clickable">Logout</a></li>
                                 <li><a href="#">Settings</a></li>
                                 <li class="nav-header">Security</li>
-                                <li><a class="croc-account-genKey-clickable" href="#">Generate key</a></li>
-                                <li><a class="croc-account-signCert-clickable" href="#">Sign cert</a></li>
-                                <li><a class="croc-account-resetOtp-clickable" href="#">Reset OTP secret</a></li>
+                                <li><a href="#" class="croc-account-genKey-clickable">Generate key</a></li>
+                                <li><a href="#" class="croc-account-signCert-clickable">Sign cert</a></li>
+                                <li><a href="#" class="croc-account-resetOtp-clickable">Reset OTP secret</a></li>
                             </ul>
                         </li>
                         <li class="dropdown croc-loggedin-viewable hide">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Edit <b class="caret"></b></a>
+                            <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a class="croc-list-org-clickable" href="#">Organisation</a></li>
-                                <li><a class="croc-edit-network-clickable" href="#">Network</a></li>
-                                <li><a class="croc-edit-host-clickable" href="#">Host</a></li>
-                                <li><a class="croc-edit-client-clickable" href="#">Client</a></li>
-                                <li><a class="croc-edit-service-clickable" href="#">Service</a></li>
+                                <li class="nav-header">List</li>
+                                <li><a href="#" class="croc-list-org-clickable">Organisation</a></li>
+                                <li class="nav-header">Add</li>
+                                <li><a href="#" class="croc-edit-org-clickable">Organisation</a></li>
+                                <li><a href="#" class="croc-edit-network-clickable">Network</a></li>
+                                <li><a href="#" class="croc-edit-host-clickable">Host</a></li>
+                                <li><a href="#" class="croc-edit-client-clickable">Client</a></li>
+                                <li><a href="#" class="croc-edit-service-clickable">Service</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -149,6 +152,8 @@
     <!--script src="https://apis.google.com/js/client.js?onload=startClient"/-->    
     <script src="local.js"></script>
     <script src="bindex.js"></script>
+    <script src="bindex.mock.js"></script>
+    <script src="bindex.model.js"></script>
     <script src="./bootstrap/js/bootstrap-transition.js"></script>
     <script src="./bootstrap/js/bootstrap-alert.js"></script>
     <script src="./bootstrap/js/bootstrap-modal.js"></script>

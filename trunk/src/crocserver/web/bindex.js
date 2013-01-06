@@ -1,29 +1,4 @@
 
-var evanLogin = {
-    name: 'Evan Summers',
-    email: 'evan.summers@gmail.com',
-    picture: '',
-    totpSecret: '',
-    totpUrl: '',
-    qr: ''
-};
-
-function mockRes(req) {
-    if (req.url == '/login') {
-        return {
-            name: 'Evan Summers',
-            email: 'evan.summers@gmail.com',
-            picture: '',
-            totpSecret: '',
-            totpUrl: '',
-            qr: ''
-        }
-    }
-    return { 
-        error: 'mockRes ' + req.url
-    }
-}
-
 var serverTest = {
     checkAuth: function() {
         var res = {
@@ -84,7 +59,7 @@ var serverReal = {
     initServer: function() {        
     },
     initData: function() {
-        $('#editOrg-url').val('myorg.com');        
+        initData();
     }
 };
 
@@ -110,6 +85,9 @@ function clickHome() {
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
     $("#croc-info-landing").show();
+}        
+
+function clickReload() {
     window.location.reload();
 }        
 
@@ -149,13 +127,14 @@ function initDocument() {
     $('.croc-edit-client-clickable').click(clickEditClient);
     $('.croc-edit-service-clickable').click(clickEditService);
     $('.croc-home-clickable').click(clickHome);
+    $('.croc-reload-clickable').click(clickReload);
     $('.croc-about-clickable').click(clickAbout);
     $('.croc-contact-clickable').click(clickContact);
     $('.croc-logout-clickable').click(clickLogout);
     $('.croc-login-clickable').click(server.clickLogin);
     $('#croc-list-org').load('list-org.html', function() {        
     });
-    $('#croc-edit-org').load('/edit-org.html', function() {
+    $('#croc-edit-org').load('edit-org.html', function() {
         $('#croc-editOrg-form').submit(submitEditOrg);        
     });
     $('#croc-edit-network').load('edit-network.html', function() {
