@@ -34,6 +34,7 @@ public class HttpExchangeInfo {
     PrintStream out;
     StringMap parameterMap;
     String urlQuery;
+    String requestBody;
     String[] args;
     boolean headersParsed = false;
     boolean acceptGzip = false;
@@ -67,6 +68,12 @@ public class HttpExchangeInfo {
         return getPathArgs().length;
     }
 
+    public String getRequestBody() {
+        if (requestBody == null) {
+            requestBody = Streams.readString(httpExchange.getRequestBody());        
+        }
+        return requestBody;
+    }
     public StringMap getParameterMap() {
         if (parameterMap == null) {
             parseParameterMap();
@@ -245,6 +252,13 @@ public class HttpExchangeInfo {
         return httpExchange.getRequestHeaders().get(key);
     }
 
+    public void sendResponse(String contentType, byte[] bytes) throws IOException {
+        httpExchange.getResponseHeaders().set("Content-type", contentType);
+        httpExchange.getResponseHeaders().set("Content-length", Integer.toString(bytes.length));
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        getPrintStream().write(bytes);
+    }
+    
     public void sendResponseFile(String contentType, String fileName) throws IOException {
         httpExchange.getResponseHeaders().add("Content-Disposition",
                 "attachment; filename=" + fileName);

@@ -307,6 +307,13 @@ public class CrocApp {
     }
 
     public AdminUser getUser(HttpExchangeInfo httpExchangeInfo, boolean auth) throws Exception {
+        if (true) {
+            if (httpExchangeInfo.getPathLength() > 1) {
+                String email = httpExchangeInfo.getPathString(1);
+                AdminUser user = storage.getUserStorage().getEmail(email);
+                return user;
+            }
+        }
         StringMap cookieMap = httpExchangeInfo.getCookieMap();
         String email = cookieMap.get("email");
         if (email == null) {

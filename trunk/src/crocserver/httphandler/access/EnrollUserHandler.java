@@ -11,7 +11,6 @@ import crocserver.storage.adminuser.AdminRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
@@ -21,7 +20,6 @@ import sun.security.pkcs.PKCS10;
 import vellum.datatype.Patterns;
 import vellum.security.DefaultKeyStores;
 import vellum.security.KeyStores;
-import vellum.util.Streams;
 
 /**
  *
@@ -49,20 +47,17 @@ public class EnrollUserHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
-        certReqPem = Streams.readString(httpExchange.getRequestBody());
-        out = new PrintStream(httpExchange.getResponseBody());
-        if (httpExchangeInfo.getPathLength() < 3) {
-            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-            out.printf("ERROR %s\n", httpExchangeInfo.getPath());
+        logger.info("handle", getClass().getName(), httpExchangeInfo.getPath(), httpExchangeInfo.getRequestBody(), httpExchangeInfo.getParameterMap());
+        certReqPem = httpExchangeInfo.getRequestBody();
+        out = httpExchangeInfo.getPrintStream();
+        if (httpExchangeInfo.getPathLength() < 2) {
+            httpExchangeInfo.handleError(httpExchangeInfo.getPath());
         } else {
-            userName = httpExchangeInfo.getPathString(2);
+            userName = httpExchangeInfo.getPathString(1);
             try {
                 handle();
             } catch (Exception e) {
-                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
-                e.printStackTrace(out);
-                e.printStackTrace(System.err);
-                out.printf("ERROR %s\n", e.getMessage());
+                httpExchangeInfo.handleError(e);
             }
         }
         httpExchange.close();
@@ -88,24 +83,27 @@ public class EnrollUserHandler implements HttpHandler {
             user.setRegion(httpExchangeInfo.getParameterMap().get("region"));
             user.setCountry(httpExchangeInfo.getParameterMap().get("country"));
             user.setRole(AdminRole.DEFAULT);
+            user.setLoginTime(new Date());
             user.setEnabled(true);
         }
         logger.info("sign", user.getSubject(), certReqPem.length());
-        String alias = app.getServerKeyAlias();
-        PKCS10 certReq = KeyStores.createCertReq(certReqPem);
-        X509Certificate signedCert = KeyStores.signCert(
-                DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias),
-                certReq, new Date(), 999);
-        String signedCertPem = KeyStores.buildCertPem(signedCert);
-        logger.info("subject", KeyStores.getSubjectDname(signedCertPem));
-        logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
-        if (user.isStored()) {
-            storage.getUserStorage().update(user);
+        if (!certReqPem.isEmpty()) {
+            String alias = app.getServerKeyAlias();
+            PKCS10 certReq = KeyStores.createCertReq(certReqPem);
+            X509Certificate signedCert = KeyStores.signCert(
+                    DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias),
+                    certReq, new Date(), 999);
+            String signedCertPem = KeyStores.buildCertPem(signedCert);
+            logger.info("subject", KeyStores.getSubjectDname(signedCertPem));
+            logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
+            storage.getUserStorage().store(user);
+            if (false) {
+                app.sendGtalkMessage(user.getEmail(), signedCert.getSubjectDN().toString());
+            }
+            httpExchangeInfo.sendResponse("application/x-pem-file", signedCertPem.getBytes());
         } else {
-            storage.getUserStorage().insert(user);
+            storage.getUserStorage().store(user);
+            httpExchangeInfo.write(user.getStringMap());            
         }
-        app.sendGtalkMessage(user.getEmail(), signedCert.getSubjectDN().toString());
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.print(signedCertPem);
     }
 }
