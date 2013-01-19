@@ -3,10 +3,10 @@ These articles are drafted here, published on my blog, http://www.java.net/blogs
 
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
-[PasswordSalt Password Salt] (January 2012) DRAFT
+[PasswordSalt Password Salt] (January 2013) DRAFT
 
 Password Rehash (PLANNED for February 2013)
 
-Password Cipher (PLANNED for March 2013)
+Password Salt Cipher (PLANNED for March 2013)
 
 Generating and signing browser certs (PLANNED for April 2013)
