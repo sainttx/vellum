@@ -41,6 +41,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
     }
 
     public long insert(Org org) throws SQLException {
+        logger.info("insert", org);
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(

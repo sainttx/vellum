@@ -31,6 +31,14 @@ public class AdminUserStorage {
         this.storage = storage;
     }
 
+    public void store(AdminUser user) throws SQLException {
+        if (user.isStored()) {
+            update(user);
+        } else {
+            insert(user);
+        }
+    }
+    
     public void validate() throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
@@ -138,6 +146,14 @@ public class AdminUserStorage {
     
     public AdminUser get(String username) throws SQLException, StorageException {
         AdminUser adminUser = find(username);
+        if (adminUser == null) {
+            throw new StorageException(StorageExceptionType.NOT_FOUND, username);
+        }
+        return adminUser;
+    }
+
+    public AdminUser getEmail(String username) throws SQLException, StorageException {
+        AdminUser adminUser = findEmail(username);
         if (adminUser == null) {
             throw new StorageException(StorageExceptionType.NOT_FOUND, username);
         }

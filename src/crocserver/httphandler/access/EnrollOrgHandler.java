@@ -33,12 +33,21 @@ public class EnrollOrgHandler implements HttpHandler {
         super();
         this.app = app;
     }
+
+    String userName;
+    String orgName;
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getParameterMap(), httpExchangeInfo.getCookieMap());
+        if (httpExchangeInfo.getPathLength() < 2) {
+            httpExchangeInfo.handleError(httpExchangeInfo.getPath());
+        } else {
+            userName = httpExchangeInfo.getPathString(1);
+        }
+        orgName = httpExchangeInfo.getPathString(2);
         try {
             handle();
         } catch (Exception e) {
@@ -53,6 +62,9 @@ public class EnrollOrgHandler implements HttpHandler {
         AdminUser user = app.getUser(httpExchangeInfo, true);
         logger.info("user", user);
         String url = httpExchangeInfo.getParameterMap().get("url");
+        if (url == null) {
+            url = orgName;
+        }
         if (url != null) {
             if (!Patterns.matchesUrl(url)) {
                 throw new Exception("url " + url);
