@@ -4,8 +4,7 @@
  */
 package common.entity;
 
-import common.entity.Entities;
-import common.entity.Entity;
+import vellum.entity.Comparables;
 
 /**
  *
