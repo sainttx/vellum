@@ -96,12 +96,24 @@ public class ServiceType extends AbstractIdEntity {
         this.description = description;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
     public boolean isEnabled() {
         return enabled;
     }
 
+    public void setIntervalMillis(long intervalMillis) {
+        this.intervalMillis = intervalMillis;
+    }
+    
     public long getIntervalMillis() {
         return intervalMillis;
+    }
+
+    public void setNotifyType(NotifyType notifyType) {
+        this.notifyType = notifyType;
     }
         
     public NotifyType getNotifyType() {
@@ -124,6 +136,14 @@ public class ServiceType extends AbstractIdEntity {
         this.notifyMillis = notifyMillis;
     }
 
+    public Map<StatusChangeType, Long> getNotifyIntervalMap() {
+        return notifyIntervalMap;
+    }
+
+    public Map<StatusChangeType, Integer> getRepeatCountMap() {
+        return repeatCountMap;
+    }
+    
     @Override
     public String toString() {
         return Args.format(name);
