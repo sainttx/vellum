@@ -8,7 +8,7 @@ package vellum.entity;
  *
  * @author evan
  */
-public abstract class AbstractIdEntity<T extends Comparable> implements IdEntity<T> {
+public abstract class AbstractIdEntity<T extends Comparable> implements IdEntity<T>, Comparable<IdEntity> {
 
     @Override
     public boolean equals(Object obj) {
