@@ -7,7 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
 import vellum.httpserver.HttpExchangeInfo;
-import crocserver.storage.adminuser.AdminRole;
+import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -82,7 +82,7 @@ public class EnrollUserHandler implements HttpHandler {
             user.setLocality(httpExchangeInfo.getParameterMap().get("locality"));
             user.setRegion(httpExchangeInfo.getParameterMap().get("region"));
             user.setCountry(httpExchangeInfo.getParameterMap().get("country"));
-            user.setRole(AdminRole.DEFAULT);
+            user.setRole(AdminUserRole.DEFAULT);
             user.setLoginTime(new Date());
             user.setEnabled(true);
         }

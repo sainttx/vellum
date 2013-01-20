@@ -12,7 +12,7 @@ import crocserver.app.CrocSecurity;
 import crocserver.app.GoogleUserInfo;
 import crocserver.app.JsonStrings;
 import vellum.httpserver.HttpExchangeInfo;
-import crocserver.storage.adminuser.AdminRole;
+import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.util.Date;
@@ -79,7 +79,7 @@ public class GoogleLoginHandler implements HttpHandler {
             user.setFirstName(userInfo.getGivenName());
             user.setLastName(userInfo.getFamilyName());
             user.setEmail(userInfo.getEmail());
-            user.setRole(AdminRole.DEFAULT);
+            user.setRole(AdminUserRole.DEFAULT);
             user.setEnabled(true);
             user.setSecret(CrocSecurity.createSecret());
         }        

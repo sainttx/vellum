@@ -22,7 +22,7 @@ public class AdminUser extends AbstractIdEntity<Long> {
     String displayName;
     String firstName;
     String lastName;
-    AdminRole role;
+    AdminUserRole role;
     Long orgId;
     Org org;
     long authMillis;
@@ -51,7 +51,7 @@ public class AdminUser extends AbstractIdEntity<Long> {
         this.userName = userName;
     }
     
-    public AdminUser(String userName, String displayName, AdminRole role, boolean enabled) {
+    public AdminUser(String userName, String displayName, AdminUserRole role, boolean enabled) {
         this.userName = userName;
         this.displayName = displayName;
         this.role = role;
@@ -119,11 +119,11 @@ public class AdminUser extends AbstractIdEntity<Long> {
         this.enabled = enabled;
     }
 
-    public AdminRole getRole() {
+    public AdminUserRole getRole() {
         return role;
     }
 
-    public void setRole(AdminRole role) {
+    public void setRole(AdminUserRole role) {
         this.role = role;
     }
 

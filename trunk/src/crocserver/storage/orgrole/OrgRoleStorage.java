@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage.orgperm;
+package crocserver.storage.orgrole;
 
 import vellum.entity.LongIdEntityMapStorage;
 
@@ -10,6 +10,6 @@ import vellum.entity.LongIdEntityMapStorage;
  *
  * @author evan
  */
-public class OrgPermStorage extends LongIdEntityMapStorage<Long, OrgPerm> {
+public class OrgRoleStorage extends LongIdEntityMapStorage<Long, OrgRole> {
 
 }
