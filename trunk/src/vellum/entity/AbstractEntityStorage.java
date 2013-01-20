@@ -12,9 +12,10 @@ import vellum.logr.LogrFactory;
  *
  * @author evan
  */
-public abstract class AbstractEntityStorage<I, E> {
+public abstract class AbstractEntityStorage<I, E> implements EntityStorage<I, E> {
     protected Logr logger = LogrFactory.getLogger(getClass());
     
-    public abstract E find(I id) throws SQLException ;
+    @Override
+    public abstract E find(I id) throws SQLException;
         
 }

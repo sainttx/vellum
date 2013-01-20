@@ -8,7 +8,7 @@ package venigma.entity;
  *
  * @author evan
  */
-public abstract class AbstractIdEntity implements IdEntity, Comparable<IdEntity> {
+public abstract class AbstractIdEntity<I extends Comparable> implements IdEntity<I>, Comparable<IdEntity> {
 
     public AbstractIdEntity() {
     }

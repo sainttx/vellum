@@ -4,8 +4,8 @@
  */
 package venigma.data;
 
-import venigma.entity.IdEntity;
 import java.util.Date;
+import vellum.entity.IdEntity;
 
 /**
  *
@@ -131,6 +131,5 @@ public class AdminUser implements IdEntity {
     public String toString() {
         return getId().toString();
     }
-
     
 }

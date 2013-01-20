@@ -13,24 +13,15 @@ import java.util.Map;
  *
  * @author evan
  */
-public class EntityMap<E> {
+public class EntityMap<I extends Comparable, E extends IdEntity> {
 
-    Class entityType;
-    Map<Comparable, IdEntity> entityMap = new HashMap();
+    Map<I, IdEntity> entityMap = new HashMap();
     
-    public EntityMap(Class entityType) {
-        this.entityType = entityType;
-    }
-
-    public Class getEntityType() {
-        return entityType;
-    }    
-    
-    public void put(IdEntity entity) {
-        entityMap.put(entity.getId(), entity);
+    public void put(E entity) {
+        entityMap.put((I) entity.getId(), entity);
     }
     
-    public E get(Comparable id) {
+    public E get(I id) {
         return (E) entityMap.get(id);
     }
 
@@ -50,6 +41,5 @@ public class EntityMap<E> {
     
     public List<IdEntity> getEntityList() {
         return new ArrayList(entityMap.values());
-    }
-    
+    }    
 }
