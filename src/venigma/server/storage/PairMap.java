@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import venigma.data.EntityPair;
-import venigma.data.IdPair;
+import venigma.entity.EntityPair;
+import venigma.entity.IdPair;
 
 /**
  *

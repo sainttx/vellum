@@ -4,6 +4,9 @@
  */
 package venigma.data;
 
+import venigma.entity.IdPair;
+import venigma.entity.AbstractPair;
+
 /**
  *
  * @author evan

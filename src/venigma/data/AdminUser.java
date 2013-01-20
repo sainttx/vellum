@@ -4,6 +4,7 @@
  */
 package venigma.data;
 
+import venigma.entity.IdEntity;
 import java.util.Date;
 
 /**

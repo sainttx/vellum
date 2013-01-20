@@ -4,6 +4,7 @@
  */
 package venigma.data;
 
+import venigma.entity.AbstractIdEntity;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import javax.crypto.Cipher;

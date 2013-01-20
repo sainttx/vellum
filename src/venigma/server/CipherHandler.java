@@ -4,6 +4,7 @@
  */
 package venigma.server;
 
+import vellum.io.JsonSockets;
 import java.io.IOException;
 import java.security.AlgorithmParameters;
 import java.security.cert.Certificate;
