@@ -8,8 +8,9 @@ package crocserver.storage.adminuser;
  *
  * @author evan
  */
-public enum AdminRole {
-    SUPER,
+public enum AdminUserRole {
+    SUPER,    
+    ADMIN,
     DEFAULT
         
 }

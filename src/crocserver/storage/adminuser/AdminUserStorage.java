@@ -73,7 +73,7 @@ public class AdminUserStorage {
         user.setSubject(resultSet.getString(AdminUserMeta.subject.name()));
         user.setCert(resultSet.getString(AdminUserMeta.cert.name()));
         user.setSecret(resultSet.getString(AdminUserMeta.secret.name()));
-        user.setRole(AdminRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
+        user.setRole(AdminUserRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
         user.setLoginTime(resultSet.getTimestamp(AdminUserMeta.login.name()));
         user.setLogoutTime(resultSet.getTimestamp(AdminUserMeta.logout.name()));
         user.setUpdated(resultSet.getTimestamp(AdminUserMeta.updated.name()));
