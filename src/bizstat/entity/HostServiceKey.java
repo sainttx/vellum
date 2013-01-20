@@ -13,7 +13,7 @@ public class HostServiceKey extends ComparableTuple {
     BizstatService service;
 
     public HostServiceKey(Host host, BizstatService service) {
-        super(new Comparable[] {host, service});
+        super(new Comparable[] {host.getId(), service.getId()});
         this.host = host;
         this.service = service;
     }

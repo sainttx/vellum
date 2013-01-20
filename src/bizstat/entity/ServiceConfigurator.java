@@ -32,46 +32,46 @@ public class ServiceConfigurator {
     }
     
     public void configure() {
-        service.label = properties.getString("label", null);
-        service.enabled = properties.getBoolean("enabled", true);
-        service.host = server.getConfigStorage().get(Host.class, properties.getString("host", null));
+        service.setLabel(properties.getString("label", null));
+        service.setEnabled(properties.getBoolean("enabled", true));
+        service.setHost(server.getConfigStorage().get(Host.class, properties.getString("host", null)));
         for (String contactGroupName : properties.splitCsv("contactGroups")) {            
             service.contactGroupList.add(server.getConfigStorage().find(ContactGroup.class, contactGroupName));
         }         
-        service.notifyType = properties.getEnum("notifyType", NotifyType.class, NotifyType.STATUS_CHANGED);
-        service.scheduleTime = properties.getTime("scheduleTime", null);
-        if (service.scheduleTime != null) {
-            if (service.notifyType == null) {
-                service.notifyType = NotifyType.ALWAYS;
+        service.setNotifyType(properties.getEnum("notifyType", NotifyType.class, NotifyType.STATUS_CHANGED));
+        service.setScheduleTime(properties.getTime("scheduleTime", null));
+        if (service.getScheduleTime() != null) {
+            if (service.getNotifyType() == null) {
+                service.setNotifyType(NotifyType.ALWAYS);
             }
-            service.intervalMillis = properties.getMillis("interval", Millis.fromDays(1));
+            service.setIntervalMillis(properties.getMillis("interval", Millis.fromDays(1)));
             if (false) {
                 long millis = System.currentTimeMillis(); 
                 millis -= millis % Millis.fromMinutes(10);
                 millis += Millis.fromMinutes(10);
-                service.scheduleTime = new Date(millis);
+                service.setScheduleTime(new Date(millis));
             }
         } else {
-            service.intervalMillis = properties.getMillis("interval", server.getConfig().getIntervalMillis());
-            if (service.notifyType == null) {
-                service.notifyType = NotifyType.STATUS_CHANGED;
-            } else if (service.notifyType != NotifyType.STATUS_CHANGED) {
-                service.notifyMillis = properties.getMillis("notify", service.intervalMillis);
+            service.setIntervalMillis(properties.getMillis("interval", server.getConfig().getIntervalMillis()));
+            if (service.getNotifyType() == null) {
+                service.setNotifyType(NotifyType.STATUS_CHANGED);
+            } else if (service.getNotifyType() != NotifyType.STATUS_CHANGED) {
+                service.setNotifyMillis(properties.getMillis("notify", service.getIntervalMillis()));
             }
-            service.repeatCountMap.putAll(server.getConfig().getRepeatCountMap());
+            service.getRepeatCountMap().putAll(server.getConfig().getRepeatCountMap());
             List<String> repeatCounts = properties.splitCsv("repeatCounts");
             if (!repeatCounts.isEmpty()) {
-                service.repeatCountMap.putAll(StatusChangeType.newIntegerMap(repeatCounts));
+                service.getRepeatCountMap().putAll(StatusChangeType.newIntegerMap(repeatCounts));
             }
-            service.notifyIntervalMap.putAll(server.getConfig().getNotifyIntervalMap());
+            service.getNotifyIntervalMap().putAll(server.getConfig().getNotifyIntervalMap());
             List<String> notifyIntervals = properties.splitCsv("notifyIntervals");
             if (!notifyIntervals.isEmpty()) {
-                service.notifyIntervalMap.putAll(StatusChangeType.newIntervalMap(notifyIntervals));
+                service.getNotifyIntervalMap().putAll(StatusChangeType.newIntervalMap(notifyIntervals));
             }
             configureRepeatCount();
         }
         if (properties.containsKey("values")) {
-            MetricInfo metricInfo = new MetricInfo(service, service.name);
+            MetricInfo metricInfo = new MetricInfo(service, service.getName());
             metricInfo.setMetricType(properties.getEnum("metricType", MetricType.class, MetricType.FLOAT));
             metricInfo.setValueMap(StatusChangeType.newValueMap(properties.splitCsv("values")));
         }
@@ -85,14 +85,14 @@ public class ServiceConfigurator {
     }
     
     private void configureRepeatCount() {
-        for (StatusChangeType notifyEventType : service.notifyIntervalMap.keySet()) {
-            Integer repeatCount = service.repeatCountMap.get(notifyEventType);
+        for (StatusChangeType notifyEventType : service.getNotifyIntervalMap().keySet()) {
+            Integer repeatCount = service.getRepeatCountMap().get(notifyEventType);
             if (repeatCount != null) {
-                Long notifyInterval = service.notifyIntervalMap.get(notifyEventType);
+                Long notifyInterval = service.getNotifyIntervalMap().get(notifyEventType);
                 if (notifyInterval != null) {
-                    int minimumRepeatCount = (int) (notifyInterval / service.intervalMillis);
+                    int minimumRepeatCount = (int) (notifyInterval / service.getIntervalMillis());
                     if (repeatCount < minimumRepeatCount) {
-                        service.repeatCountMap.put(notifyEventType, minimumRepeatCount);
+                        service.getRepeatCountMap().put(notifyEventType, minimumRepeatCount);
                     }
                     logger.verbose("configureRepeatCount", notifyEventType, repeatCount, notifyEventType, minimumRepeatCount);
                 }
