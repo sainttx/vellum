@@ -4,14 +4,14 @@
  */
 package bizstat.entity;
 
-import vellum.entity.LongIdEntity;
+import vellum.entity.AbstractLongIdEntity;
 import java.util.Date;
 
 /**
  *
  * @author evan
  */
-public class Notify extends LongIdEntity {
+public class Notify extends AbstractLongIdEntity {
     Date time;
     
     
