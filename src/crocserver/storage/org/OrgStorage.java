@@ -40,7 +40,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
         return org;
     }
 
-    public long insert(Org org) throws SQLException {
+    public Long insert(Org org) throws SQLException {
         logger.info("insert", org);
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
@@ -170,5 +170,4 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             storage.getConnectionPool().releaseConnection(connection);
         }
     }
-
 }

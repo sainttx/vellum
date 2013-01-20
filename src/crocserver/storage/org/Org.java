@@ -15,7 +15,7 @@ import vellum.validation.ValidationExceptionType;
  *
  * @author evan
  */
-public final class Org extends AbstractIdEntity {
+public final class Org extends AbstractIdEntity<Long> {
     Long id;
     String orgName;
     String displayName;

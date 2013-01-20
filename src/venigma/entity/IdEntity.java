@@ -8,7 +8,7 @@ package venigma.entity;
  *
  * @author evan
  */
-public interface IdEntity {
-    public Comparable getId();    
+public interface IdEntity<I extends Comparable> {
+    public I getId();    
     
 }

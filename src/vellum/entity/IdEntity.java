@@ -8,6 +8,6 @@ package vellum.entity;
  *
  * @author evan
  */
-public interface IdEntity<T extends Comparable> extends Comparable<IdEntity> {
-    public T getId();
+public interface IdEntity<I extends Comparable> {
+    public I getId();
 }

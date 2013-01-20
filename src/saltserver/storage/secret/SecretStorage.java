@@ -63,7 +63,7 @@ public class SecretStorage extends AbstractEntityStorage<Long, Secret> {
         return secret;
     }
 
-    public long insert(Secret secret) throws SQLException {
+    public Long insert(Secret secret) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -186,4 +186,5 @@ public class SecretStorage extends AbstractEntityStorage<Long, Secret> {
             storage.getConnectionPool().releaseConnection(connection);
         }
     }
+
 }
