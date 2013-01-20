@@ -5,7 +5,7 @@
 package venigma.server;
 
 import java.sql.SQLException;
-import venigma.data.IdEntity;
+import venigma.entity.IdEntity;
 
 /**
  *

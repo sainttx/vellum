@@ -5,7 +5,7 @@
 package venigma.data;
 
 import java.util.Date;
-import venigma.data.IdEntity;
+import venigma.entity.IdEntity;
 import venigma.server.CipherRequest;
 import venigma.server.CipherRequestType;
 import venigma.server.CipherResponseType;
