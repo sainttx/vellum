@@ -12,7 +12,7 @@ import bizstat.enumtype.ServiceStatus;
 import java.util.Collection;
 import java.util.List;
 import vellum.datatype.Millis;
-import vellum.entity.LongIdEntity;
+import vellum.entity.AbstractLongIdEntity;
 import vellum.datatype.Timestamped;
 import vellum.util.Strings;
 
@@ -20,7 +20,7 @@ import vellum.util.Strings;
  *
  * @author evan
  */
-public class ServiceRecord extends LongIdEntity implements Timestamped {
+public class ServiceRecord extends AbstractLongIdEntity implements Timestamped {
 
     String hostName;
     String serviceName;
