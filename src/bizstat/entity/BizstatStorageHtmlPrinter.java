@@ -27,13 +27,14 @@ public class BizstatStorageHtmlPrinter {
 
     public void print(PrintStream stream) {
         this.stream = stream;
-        for (EntityMap entityMap : storage.entityTypeMap.values()) {
-            print(entityMap);
+        for (Class entityType : storage.entityTypeMap.keySet()) {            
+            EntityMap entityMap = storage.entityTypeMap.get(entityType);
+            print(entityType, entityMap);
         }
     }
 
-    private <E extends IdEntity> void print(EntityMap<E> entityMap) {
-        stream.printf("\n<h2>%s</h2>\n", entityMap.getEntityType().getSimpleName());
+    private <I extends Comparable, E extends IdEntity> void print(Class entityType, EntityMap<I, E> entityMap) {
+        stream.printf("\n<h2>%s</h2>\n", entityType.getSimpleName());
         for (E entity : entityMap.getExtentList()) {
             stream.println(format(entity));
         }
