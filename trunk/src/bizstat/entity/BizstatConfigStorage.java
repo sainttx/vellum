@@ -35,7 +35,7 @@ public class BizstatConfigStorage implements Storage, ConfigMapInitialisable {
     public EntityMap getMap(Class type) {
         EntityMap map = entityTypeMap.get(type);
         if (map == null) {
-            map = new EntityMap(type);
+            map = new EntityMap();
             entityTypeMap.put(type, map);
         }
         return map;
