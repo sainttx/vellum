@@ -7,6 +7,6 @@ These articles are drafted here, published on my blog, http://www.java.net/blogs
 
 Password Rehash (PLANNED for February 2013)
 
-Password Salt Cipher (PLANNED for March 2013)
+Password Cipher (PLANNED for March 2013)
 
-Generating and signing browser certs (PLANNED for April 2013)
+Generating and signing browser certs (PLANNED for April 2013) (see http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/httphandler/access/GenKeyP12Handler.java)
