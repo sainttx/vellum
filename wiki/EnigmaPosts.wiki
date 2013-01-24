@@ -3,7 +3,7 @@ These articles are drafted here, published on my blog, http://www.java.net/blogs
 
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
-[PasswordSalt Password Salt] (January 2013) DRAFT
+[PasswordSalt Password Salt] (January 2013) 
 
 Password Rehash - planned for February 2013
 
