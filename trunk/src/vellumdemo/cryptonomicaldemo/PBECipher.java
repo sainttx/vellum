@@ -9,13 +9,13 @@ import javax.crypto.spec.PBEParameterSpec;
 import vellum.crypto.Base64;
 
 public class PBECipher {
-    private static final String pbeAlgorithm = "PBEWithMD5AndDES";
-    private static final String defaultPassword = "Ssh ssh!";
-    private static byte[] salt = {
+    private static final String ALGORITHM = "PBEWithMD5AndDES"; // PBEWithSHAAnd3KeyTripleDES
+    private static final String DEFAULT_PASSWORD = "Ssh ssh!";
+    private static byte[] SALT = {
         (byte) 0x56, (byte) 0x35, (byte) 0xE3, (byte) 0x03,
         (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32
     };
-    private static final int iterationCount = 5;
+    private static final int ITERATION_COUNT = 5;
     
     SecretKey secretKey;
     PBEParameterSpec parameterSpec;
@@ -23,15 +23,15 @@ public class PBECipher {
     Cipher decryptCipher;
 
     public PBECipher() {
-        this(defaultPassword);
+        this(DEFAULT_PASSWORD);
     }
     
     public PBECipher(String password) {
         try {
-            parameterSpec = new PBEParameterSpec(salt, iterationCount);
+            parameterSpec = new PBEParameterSpec(SALT, ITERATION_COUNT);
             secretKey = createSecretKey(password);
-            encryptCipher = createEncryptCipher();
-            decryptCipher = createDecryptCipher();
+            encryptCipher = createCipher(Cipher.ENCRYPT_MODE);
+            decryptCipher = createCipher(Cipher.DECRYPT_MODE);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -39,20 +39,14 @@ public class PBECipher {
     
     private SecretKey createSecretKey(String secretKey) throws Exception {
         KeySpec keySpec = new PBEKeySpec(secretKey.toCharArray());
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(pbeAlgorithm);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
         return keyFactory.generateSecret(keySpec);
     }
     
-    private Cipher createEncryptCipher() throws Exception {
-        Cipher encryptCipher = Cipher.getInstance(pbeAlgorithm);
-        encryptCipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
-        return encryptCipher;
-    }
-    
-    private Cipher createDecryptCipher() throws Exception {
-        Cipher decryptCipher = Cipher.getInstance(pbeAlgorithm);
-        decryptCipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
-        return decryptCipher;
+    private Cipher createCipher(int mode) throws Exception {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(mode, secretKey, parameterSpec);
+        return cipher;
     }
     
     public String encrypt(String string) {

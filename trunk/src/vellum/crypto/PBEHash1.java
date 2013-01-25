@@ -14,7 +14,7 @@ import java.util.Arrays;
  *
  * @author evan
  */
-public class PBEHash {
+public class PBEHash1 {
     private static final byte version = 0x00;    
     private int iterationCount;
     private int keySize;
@@ -22,7 +22,7 @@ public class PBEHash {
     private byte[] iv;
     private byte[] encrypted;
 
-    public PBEHash(byte[] salt, int iterationCount, int keySize, 
+    public PBEHash1(byte[] salt, int iterationCount, int keySize, 
             byte[] iv, byte[] encrypted) throws GeneralSecurityException {
         this.salt = salt;
         this.iterationCount = iterationCount;
@@ -31,7 +31,7 @@ public class PBEHash {
         this.encrypted = encrypted;
     }
 
-    public PBEHash(byte[] bytes) throws IOException {
+    public PBEHash1(byte[] bytes) throws IOException {
         ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
         if (stream.read() != version || stream.read() != bytes.length) {
             throw new IOException();
