@@ -17,11 +17,11 @@ import java.util.Arrays;
 public class PasswordHash {
     private static final byte version = 0x00;
     
-    int iterationCount;
-    int keySize;
-    byte[] hash;
-    byte[] salt;
-    byte[] iv;
+    private int iterationCount;
+    private int keySize;
+    private byte[] hash;
+    private byte[] salt;
+    private byte[] iv;
 
     public PasswordHash(byte[] hash, byte[] salt, byte[] iv, 
             int iterationCount, int keySize) {
@@ -105,6 +105,10 @@ public class PasswordHash {
         }
     }
     
+    public boolean isEncrypted() {
+        return iv.length > 0;
+    }
+        
     public void encryptSalt(PBECipher cipher) throws GeneralSecurityException {
         assert iv.length == 0;
         Encrypted encryptedSalt = cipher.encrypt(salt);
@@ -122,7 +126,7 @@ public class PasswordHash {
         return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
     }
     
-    public static boolean isPacked(byte[] packedBytes) {
+    public static boolean verifyBytes(byte[] packedBytes) {
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
         if (stream.read() != version) {
             return false;

@@ -18,17 +18,18 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @author evan
  */
-public class PBECipher {
+public final class PBECipher {
     private final SecretKey key;
 
-    public PBECipher(char[] password, PBEHash salt) throws GeneralSecurityException  {
-        this(password, salt.getSalt(), salt.getIterationCount(), salt.keySize);
-        if (!Arrays.equals(salt.getSalt(), decrypt(salt.getEncryptedSalt(), salt.getIv()))) {
+    public PBECipher(char[] password, PasswordHash salt) throws GeneralSecurityException  {
+        this(password, salt.getSalt(), salt.getIterationCount(), salt.getKeySize());
+        if (!Arrays.equals(salt.getSalt(), decrypt(salt.getHash(), salt.getIv()))) {
             throw new IllegalArgumentException("PBE password is incorrect");
         }
     }
     
-    public PBECipher(char[] password, byte[] salt, int iterationCount, int keySize) throws GeneralSecurityException  {
+    public PBECipher(char[] password, byte[] salt, int iterationCount, int keySize) 
+            throws GeneralSecurityException  {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         SecretKey secret = factory.generateSecret(spec);
@@ -53,7 +54,5 @@ public class PBECipher {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
         return cipher.doFinal(bytes);
-    }
-        
-    
+    }            
 }

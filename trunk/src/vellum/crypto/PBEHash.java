@@ -16,19 +16,19 @@ import java.util.Arrays;
  */
 public class PBEHash {
     private static final byte version = 0x00;    
-    int iterationCount;
-    int keySize;
-    byte[] salt;
-    byte[] iv;
-    byte[] hash;
+    private int iterationCount;
+    private int keySize;
+    private byte[] salt;
+    private byte[] iv;
+    private byte[] encrypted;
 
     public PBEHash(byte[] salt, int iterationCount, int keySize, 
-            byte[] iv, byte[] hash) throws GeneralSecurityException {
+            byte[] iv, byte[] encrypted) throws GeneralSecurityException {
         this.salt = salt;
         this.iterationCount = iterationCount;
         this.keySize = keySize;
         this.iv = iv;
-        this.hash = hash;
+        this.encrypted = encrypted;
     }
 
     public PBEHash(byte[] bytes) throws IOException {
@@ -38,14 +38,18 @@ public class PBEHash {
         }
         salt = new byte[stream.read()];
         iv = new byte[stream.read()];
-        hash = new byte[stream.read()];
+        encrypted = new byte[stream.read()];
         iterationCount = stream.read()*256 + stream.read();
         keySize = 16 * stream.read();
         stream.read(salt);
         stream.read(iv);
-        stream.read(hash);
+        stream.read(encrypted);
     }
 
+    public boolean isEncrypted() {
+        return iv.length > 0;
+    }
+    
     public void encryptSalt(PBECipher cipher) throws GeneralSecurityException {
         assert iv.length == 0;
         Encrypted encryptedSalt = cipher.encrypt(salt);
@@ -75,24 +79,24 @@ public class PBEHash {
         return iv;
     }
 
-    public byte[] getEncryptedSalt() {
-        return hash;
+    public byte[] getHash() {
+        return encrypted;
     }
     
     public byte[] getBytes() {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             stream.write(version);
-            stream.write(salt.length + iv.length + hash.length + 8);
+            stream.write(salt.length + iv.length + encrypted.length + 8);
             stream.write(salt.length);
             stream.write(iv.length);
-            stream.write(hash.length);
+            stream.write(encrypted.length);
             stream.write(iterationCount/256);
             stream.write(iterationCount%256);
             stream.write(keySize/16);
             stream.write(salt);
             stream.write(iv);
-            stream.write(hash);
+            stream.write(encrypted);
             return stream.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -100,7 +104,7 @@ public class PBEHash {
     }
 
     public boolean matches(char[] password) throws GeneralSecurityException {
-        return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
+        return Arrays.equals(encrypted, Passwords.hashPassword(password, salt, iterationCount, keySize));
     }
     
     public static boolean verifyBytes(byte[] bytes) {
