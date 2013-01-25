@@ -4,8 +4,6 @@
  */
 package vellum.crypto;
 
-import java.security.SecureRandom;
-import java.security.spec.KeySpec;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
