@@ -4,8 +4,6 @@
  */
 package vellum.crypto;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import static junit.framework.Assert.*;
 import org.junit.Test;
 import vellum.logr.Logr;
@@ -17,49 +15,41 @@ import vellum.logr.LogrFactory;
  */
 public class PBESaltTest {
 
-    private static Logr logger = LogrFactory.getLogger(PBESaltTest.class);
-    private static final byte[] PBE_SALT = Base64.decode("ADgQEBAEAAj1GIDl10HHLVS36sp5J6PUHzF9xs/P1DgCABUBWw+OrJbyDEjrOrtWt7A1v0oE0T4=");
-    int iterationCount = 1024;
-    int keySize = 128;
+    static Logr logger = LogrFactory.getLogger(PBESaltTest.class);
+    private static final char[] PBE_PASSWORD = "ssh ssh".toCharArray();
+    private static final int ITERATION_COUNT = 1024;
+    private static final int KEY_SIZE = 128;
+    private static final byte[] PBE_SALT = Base64.decode("ACgQEAAEAAj1CnAYfWSowhtQawWAR8A4zHVUZdcwzpcfQf9fTDFesA==");
 
-    @Test
-    public void testEncryptedSalt() throws Exception {
-        char[] pbePassword = "sshssh".toCharArray();
-        byte[] salt = PasswordSalts.nextSalt();
-        PBECipher cipher = new PBECipher(pbePassword, salt, iterationCount, keySize);
-        Encrypted encryptedSalt = cipher.encrypt(salt);
-        PasswordHash packedSalt = new PasswordHash(
-                Base64.encode(encryptedSalt.getEncryptedBytes()).toCharArray(), 
-                salt, encryptedSalt.getIv(), iterationCount, keySize);
-        assertTrue(PasswordHash.verifyBytes(packedSalt.pack()));
-        System.out.println("More salt: " + Base64.encode(packedSalt.pack()));
+    
+ @Test
+    public void testGenerate() throws Exception {
+        PasswordHash pbeSalt = new PasswordHash(PBE_PASSWORD, ITERATION_COUNT, KEY_SIZE);
+        assertTrue(PasswordHash.verifyBytes(pbeSalt.getBytes()));
+        pbeSalt = new PasswordHash(pbeSalt.getBytes());
+        assertTrue(pbeSalt.matches(PBE_PASSWORD));
+        assertEquals(ITERATION_COUNT, pbeSalt.getIterationCount());
+        assertEquals(KEY_SIZE, pbeSalt.getKeySize());
+        System.out.println("packed PBE salt et al: " + Base64.encode(pbeSalt.getBytes()));
+        verify(PBE_PASSWORD, pbeSalt.getBytes());
     }
 
     @Test
-    public void testCipher() throws Exception {
-        char[] pbePassword = "sshssh".toCharArray();
-        PasswordHash salt = new PasswordHash(PBE_SALT);
-        assertEquals(iterationCount, salt.getIterationCount());
-        assertEquals(keySize, salt.getKeySize());
-        assertEquals(16, salt.getSalt().length);
-        assertEquals(16, salt.getIv().length);
-        assertTrue(verify(pbePassword, salt));
-        assertTrue(verify(pbePassword, salt));
-        assertTrue(!verify("sshsshh".toCharArray(), salt));
+    public void testVerify() throws Exception {        
+        verify(PBE_PASSWORD, PBE_SALT);
     }
 
-    public boolean verify(char[] pbePassword, PasswordHash salt) 
-            throws GeneralSecurityException, IOException {
-        PBECipher cipher = new PBECipher(pbePassword, salt.getSalt(), 
-                salt.getIterationCount(), salt.getKeySize());
-        salt.encryptSalt(cipher);
-        assertTrue(PasswordHash.verifyBytes(salt.pack()));
-        salt = new PasswordHash(salt.pack());
-        assertTrue(PasswordHash.verifyBytes(salt.pack()));
-        salt.decryptSalt(cipher);        
-        if (salt.matches(Base64.encode(cipher.encrypt(salt.getSalt(), salt.getIv())).toCharArray())) {
-            return true;
-        }
-        return false;
+    @Test(expected = AssertionError.class)
+    public void testInvalidPasswordAssertion() throws Exception {        
+        verify("wrong password".toCharArray(), PBE_SALT);
     }
+    
+    public void verify(char[] pbePassword, byte[] pbeSaltBytes) throws Exception {
+        PasswordHash pbeSalt = new PasswordHash(pbeSaltBytes);
+        PBECipher cipher = new PBECipher(pbePassword, pbeSalt);
+        assertTrue(pbeSalt.matches(pbePassword));
+        pbeSalt.encryptSalt(cipher);
+        pbeSalt.decryptSalt(cipher);
+        assertTrue(pbeSalt.matches(pbePassword));
+    }          
 }

@@ -69,7 +69,7 @@ public class PasswordsTest {
     public void testPasswordHash() throws Exception {
         char[] password = "12345678".toCharArray();
         PasswordHash passwordHash = new PasswordHash(password, iterationCount, keySize);
-        byte[] hashBytes = passwordHash.pack();
+        byte[] hashBytes = passwordHash.getBytes();
         String hashString = Base64.encode(hashBytes);
         System.out.printf("%s\n", hashString);
         System.out.printf("byte array length %d, encoded length %d\n", 
@@ -77,10 +77,10 @@ public class PasswordsTest {
         assertTrue(PasswordHash.verifyBytes(hashBytes));
         assertTrue(passwordHash.matches(password));
         assertFalse(passwordHash.matches("wrong".toCharArray()));
-        assertTrue(new PasswordHash(passwordHash.pack()).matches(password));
-        assertFalse(new PasswordHash(passwordHash.pack()).matches("wrong".toCharArray()));
+        assertTrue(new PasswordHash(passwordHash.getBytes()).matches(password));
+        assertFalse(new PasswordHash(passwordHash.getBytes()).matches("wrong".toCharArray()));
         passwordHash = new PasswordHash(password, 16, 256);
-        assertTrue(new PasswordHash(passwordHash.pack()).matches(password));
+        assertTrue(new PasswordHash(passwordHash.getBytes()).matches(password));
     }
     
     @Test
