@@ -54,17 +54,10 @@ public class EditOrgHandler implements HttpHandler {
         Org bean = new Org(httpExchangeInfo.getParameterMap());
         org = app.getStorage().getOrgStorage().find(bean.getOrgName());
         if (org == null) {
-            if (user.getOrgId() != null) {
-                throw new StorageException(StorageExceptionType.ALREADY_EXISTS, user.getUserName());                
-            }
             org = bean;
             org.validate();
             logger.info("insert", org);
             app.getStorage().getOrgStorage().insert(org);
-            user.setOrgId(org.getId());
-            app.getStorage().getUserStorage().updateOrg(user);
-        } else if (org.getId() != user.getOrgId()) {
-            throw new StorageException(StorageExceptionType.ALREADY_EXISTS, user.getUserName(), user.getOrgId(), org.getOrgName(), org.getId());
         } else {
             org.update(bean);
             org.validate();

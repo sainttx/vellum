@@ -82,7 +82,6 @@ public class EnrollUserHandler implements HttpHandler {
             user.setLocality(httpExchangeInfo.getParameterMap().get("locality"));
             user.setRegion(httpExchangeInfo.getParameterMap().get("region"));
             user.setCountry(httpExchangeInfo.getParameterMap().get("country"));
-            user.setRole(AdminUserRole.DEFAULT);
             user.setLoginTime(new Date());
             user.setEnabled(true);
         }

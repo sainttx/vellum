@@ -8,6 +8,7 @@ import java.util.Date;
 import vellum.datatype.Patterns;
 import vellum.entity.AbstractIdEntity;
 import vellum.parameter.StringMap;
+import vellum.security.KeyStores;
 import vellum.validation.ValidationException;
 import vellum.validation.ValidationExceptionType;
 
@@ -135,6 +136,10 @@ public final class Org extends AbstractIdEntity<Long> {
         this.orgName = orgName;
     }
 
+    public String formatDname(String cn, String ou) {
+        return KeyStores.formatDname(cn, ou, orgName, locality, region, country);
+    }
+    
     public Date getUpdated() {
         return updated;
     }
@@ -160,6 +165,5 @@ public final class Org extends AbstractIdEntity<Long> {
     @Override
     public String toString() {
         return getStringMap().buildJson();
-    }
-    
+    }    
 }

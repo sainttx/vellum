@@ -22,9 +22,6 @@ public class AdminUser extends AbstractIdEntity<Long> {
     String displayName;
     String firstName;
     String lastName;
-    AdminUserRole role;
-    Long orgId;
-    Org org;
     long authMillis;
     boolean enabled = true;
     String email;
@@ -51,10 +48,9 @@ public class AdminUser extends AbstractIdEntity<Long> {
         this.userName = userName;
     }
     
-    public AdminUser(String userName, String displayName, AdminUserRole role, boolean enabled) {
+    public AdminUser(String userName, String displayName, boolean enabled) {
         this.userName = userName;
         this.displayName = displayName;
-        this.role = role;
         this.enabled = enabled;
     }
 
@@ -69,22 +65,6 @@ public class AdminUser extends AbstractIdEntity<Long> {
     
     public String formatSubject() {
         return KeyStores.formatDname(email, displayName, userName, locality, region, country);
-    }
-    
-    public Org getOrg() {
-        return org;
-    }
-    
-    public void setOrg(Org org) {
-        this.org = org;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
-    }
-
-    public Long getOrgId() {
-        return orgId;
     }
     
     public String getDisplayName() {
@@ -117,14 +97,6 @@ public class AdminUser extends AbstractIdEntity<Long> {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public AdminUserRole getRole() {
-        return role;
-    }
-
-    public void setRole(AdminUserRole role) {
-        this.role = role;
     }
 
     public String getUserName() {
@@ -279,7 +251,6 @@ public class AdminUser extends AbstractIdEntity<Long> {
     public StringMap getStringMap() {
         StringMap map = new StringMap();
         map.put("id", id);
-        map.put("orgId", orgId);
         map.put("userName", userName);
         map.put("displayName", displayName);
         map.put("region", region);
@@ -293,6 +264,5 @@ public class AdminUser extends AbstractIdEntity<Long> {
     public String toString() {
         return getStringMap().buildJson();
     }
-
     
 }
