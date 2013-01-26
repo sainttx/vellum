@@ -4,6 +4,7 @@
  */
 package crocserver.storage.org;
 
+import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.common.CrocStorage;
 import vellum.entity.AbstractEntityStorage;
 import java.sql.PreparedStatement;
@@ -170,4 +171,5 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             storage.getConnectionPool().releaseConnection(connection);
         }
     }
+
 }

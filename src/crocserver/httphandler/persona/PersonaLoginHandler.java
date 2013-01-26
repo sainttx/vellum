@@ -71,7 +71,6 @@ public class PersonaLoginHandler implements HttpHandler {
             user.setEmail(userInfo.getEmail());
             user.setFirstName(Emails.getUsername(userInfo.getEmail()));
             user.setDisplayName(Emails.getUsername(userInfo.getEmail()));
-            user.setRole(AdminUserRole.DEFAULT);
             user.setEnabled(true);
             user.setSecret(CrocSecurity.createSecret());
             if (true) {

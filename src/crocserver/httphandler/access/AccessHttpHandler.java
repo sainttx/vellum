@@ -57,8 +57,8 @@ public class AccessHttpHandler implements HttpHandler {
             return new EnrollUserHandler(app);
         } else if (path.startsWith("/enrollOrg/")) {
             return new EnrollOrgHandler(app);
-        } else if (path.startsWith("/enrollService/")) {
-            return new EnrollServiceHandler(storage);
+        } else if (path.startsWith("/enrollClient/")) {
+            return new EnrollClientHandler(app);
         } else if (path.startsWith("/getCert/")) {
             return new GetCertHandler(storage);
         } else if (path.equals("/login")) {

@@ -13,10 +13,8 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.storage.StorageException;
 import crocserver.storage.org.Org;
 import vellum.datatype.Patterns;
-import vellum.storage.StorageExceptionType;
 
 /**
  *
@@ -74,8 +72,6 @@ public class EnrollOrgHandler implements HttpHandler {
         org = app.getStorage().getOrgStorage().find(orgName);
         if (org == null) {
             org = new Org(orgName);
-        } else if (org.getId() != user.getOrgId()) {
-            throw new StorageException(StorageExceptionType.ALREADY_EXISTS, orgName);
         }
         org.setDisplayName(httpExchangeInfo.getParameterMap().get("displayName"));
         org.setUrl(url);

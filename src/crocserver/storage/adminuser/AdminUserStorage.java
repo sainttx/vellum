@@ -73,14 +73,9 @@ public class AdminUserStorage {
         user.setSubject(resultSet.getString(AdminUserMeta.subject.name()));
         user.setCert(resultSet.getString(AdminUserMeta.cert.name()));
         user.setSecret(resultSet.getString(AdminUserMeta.secret.name()));
-        user.setRole(AdminUserRole.valueOf(resultSet.getString(AdminUserMeta.role_.name())));
         user.setLoginTime(resultSet.getTimestamp(AdminUserMeta.login.name()));
         user.setLogoutTime(resultSet.getTimestamp(AdminUserMeta.logout.name()));
         user.setUpdated(resultSet.getTimestamp(AdminUserMeta.updated.name()));
-        user.setOrgId(resultSet.getLong(AdminUserMeta.org_id.name()));
-        if (resultSet.wasNull()) {
-            user.setOrgId(null);
-        }
         user.setStored(true);
         return user;
     }
@@ -98,11 +93,6 @@ public class AdminUserStorage {
             statement.setString(++index, user.getEmail());
             statement.setString(++index, user.getSubject());
             statement.setString(++index, user.getSecret());
-            if (user.getRole() != null) {
-                statement.setString(++index, user.getRole().name());
-            } else {
-                statement.setString(++index, null);    
-            }
             statement.setTimestamp(++index, new Timestamp(user.getLoginTime().getTime()));
             int updateCount = statement.executeUpdate();
             connection.setOk(true);
@@ -268,23 +258,6 @@ public class AdminUserStorage {
             PreparedStatement statement = connection.prepareStatement(
                     sqlMap.get(AdminUserQuery.update_logout.name()));
             statement.setTimestamp(1, new Timestamp(user.getLoginTime().getTime()));
-            statement.setString(2, user.getUserName());
-            int updateCount = statement.executeUpdate();
-            connection.setOk(true);
-            if (updateCount != 1) {
-                throw new SQLException();
-            }
-        } finally {
-            storage.getConnectionPool().releaseConnection(connection);
-        }
-    }
-    
-    public void updateOrg(AdminUser user) throws SQLException {
-        ConnectionEntry connection = storage.getConnectionPool().takeEntry();
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    sqlMap.get(AdminUserQuery.update_org.name()));
-            statement.setLong(1, user.getOrgId());
             statement.setString(2, user.getUserName());
             int updateCount = statement.executeUpdate();
             connection.setOk(true);

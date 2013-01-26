@@ -24,7 +24,7 @@ public final class Cert extends AbstractIdEntity {
     Date inserted = new Date();
     Date updated = new Date();
     boolean stored = false;
-    
+
     public Cert() {
     }
 

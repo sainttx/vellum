@@ -4,8 +4,8 @@
 select * from user_ where 1 = 0;
 
 -- insert
-insert into user_ (user_name, first_name, last_name, display_name, email, subject, secret, role_, login)
-values (?, ?, ?, ?, ?, ?, ?, ?, ?);
+insert into user_ (user_name, first_name, last_name, display_name, email, subject, secret, login)
+values (?, ?, ?, ?, ?, ?, ?, ?);
 
 -- update_display_name_subject_cert
 update user_ 
@@ -55,13 +55,6 @@ set
   subject = ?,
   cert = ?,
   updated = now()
-where user_name = ?
-;
-
--- update_org
-update user_ 
-set 
-  org_id = ?
 where user_name = ?
 ;
 

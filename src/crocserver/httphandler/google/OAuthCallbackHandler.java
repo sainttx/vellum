@@ -79,7 +79,6 @@ public class OAuthCallbackHandler implements HttpHandler {
             user.setFirstName(userInfo.getGivenName());
             user.setLastName(userInfo.getFamilyName());
             user.setEmail(userInfo.getEmail());
-            user.setRole(AdminUserRole.DEFAULT);
             user.setEnabled(true);
             user.setSecret(CrocSecurity.createSecret());
         }
