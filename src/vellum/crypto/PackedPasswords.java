@@ -20,7 +20,7 @@ public class PackedPasswords {
 
     public static byte[] hashPassword(char[] password, int iterationCount, int keySize)
             throws GeneralSecurityException {
-        return new PasswordHash(password, iterationCount, keySize).pack();
+        return new PasswordHash(password, iterationCount, keySize).getBytes();
     }
 
     public static boolean matches(char[] password, byte[] packedBytes)

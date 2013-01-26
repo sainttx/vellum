@@ -21,11 +21,9 @@ import javax.crypto.spec.SecretKeySpec;
 public final class PBECipher {
     private final SecretKey key;
 
-    public PBECipher(char[] password, PasswordHash salt) throws GeneralSecurityException  {
-        this(password, salt.getSalt(), salt.getIterationCount(), salt.getKeySize());
-        if (!Arrays.equals(salt.getSalt(), decrypt(salt.getHash(), salt.getIv()))) {
-            throw new IllegalArgumentException("PBE password is incorrect");
-        }
+    public PBECipher(char[] password, PasswordHash hash) throws GeneralSecurityException  {
+        this(password, hash.getSalt(), hash.getIterationCount(), hash.getKeySize());
+        assert hash.matches(password);
     }
     
     public PBECipher(char[] password, byte[] salt, int iterationCount, int keySize) 
