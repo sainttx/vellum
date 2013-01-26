@@ -74,7 +74,7 @@ public class PasswordsTest {
         System.out.printf("%s\n", hashString);
         System.out.printf("byte array length %d, encoded length %d\n", 
                 hashBytes.length, hashString.length());
-        assertTrue(PasswordHash.isPacked(hashBytes));
+        assertTrue(PasswordHash.verifyBytes(hashBytes));
         assertTrue(passwordHash.matches(password));
         assertFalse(passwordHash.matches("wrong".toCharArray()));
         assertTrue(new PasswordHash(passwordHash.pack()).matches(password));
@@ -90,7 +90,7 @@ public class PasswordsTest {
         String hashString = Base64.encode(hashBytes);
         System.out.printf("testPacked: %s\n", hashString);
         System.out.printf("testPacked: byte array length %d, encoded length %d\n", hashBytes.length, hashString.length());
-        assertTrue(PasswordHash.isPacked(hashBytes));
+        assertTrue(PasswordHash.verifyBytes(hashBytes));
         assertTrue(PackedPasswords.matches(password, hashBytes));
         assertFalse(PackedPasswords.matches("wrong".toCharArray(), hashBytes));
     }
@@ -126,7 +126,7 @@ public class PasswordsTest {
     }
     
     public boolean matches(String user, char[] password, byte[] packedBytes) throws Exception {
-        if (PasswordHash.isPacked(packedBytes)) {
+        if (PasswordHash.verifyBytes(packedBytes)) {
             PasswordHash passwordHash = new PasswordHash(packedBytes);
             if (passwordHash.matches(password)) {
                 if (passwordHash.getIterationCount() != Passwords.ITERATION_COUNT ||

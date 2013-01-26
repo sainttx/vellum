@@ -6,7 +6,6 @@ package vellum.crypto;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import static junit.framework.Assert.*;
 import org.junit.Test;
 import vellum.logr.Logr;
@@ -32,7 +31,7 @@ public class PBESaltTest {
         PasswordHash packedSalt = new PasswordHash(
                 Base64.encode(encryptedSalt.getEncryptedBytes()).toCharArray(), 
                 salt, encryptedSalt.getIv(), iterationCount, keySize);
-        assertTrue(PasswordHash.isPacked(packedSalt.pack()));
+        assertTrue(PasswordHash.verifyBytes(packedSalt.pack()));
         System.out.println("More salt: " + Base64.encode(packedSalt.pack()));
     }
 
@@ -54,9 +53,9 @@ public class PBESaltTest {
         PBECipher cipher = new PBECipher(pbePassword, salt.getSalt(), 
                 salt.getIterationCount(), salt.getKeySize());
         salt.encryptSalt(cipher);
-        assertTrue(PasswordHash.isPacked(salt.pack()));
+        assertTrue(PasswordHash.verifyBytes(salt.pack()));
         salt = new PasswordHash(salt.pack());
-        assertTrue(PasswordHash.isPacked(salt.pack()));
+        assertTrue(PasswordHash.verifyBytes(salt.pack()));
         salt.decryptSalt(cipher);        
         if (salt.matches(Base64.encode(cipher.encrypt(salt.getSalt(), salt.getIv())).toCharArray())) {
             return true;

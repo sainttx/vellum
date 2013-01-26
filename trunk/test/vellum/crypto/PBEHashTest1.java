@@ -6,7 +6,6 @@ package vellum.crypto;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import static junit.framework.Assert.*;
 import org.junit.Test;
 import vellum.logr.Logr;
@@ -16,9 +15,9 @@ import vellum.logr.LogrFactory;
  *
  * @author evan
  */
-public class PBEHashTest {
+public class PBEHashTest1 {
 
-    private static Logr logger = LogrFactory.getLogger(PBEHashTest.class);
+    private static Logr logger = LogrFactory.getLogger(PBEHashTest1.class);
     private static final byte[] PBE_SALT = Base64.decode("ADgQEBAEAAj1GIDl10HHLVS36sp5J6PUHzF9xs/P1DgCABUBWw+OrJbyDEjrOrtWt7A1v0oE0T4=");
     int iterationCount = 1024;
     int keySize = 128;
@@ -31,15 +30,15 @@ public class PBEHashTest {
         Encrypted encryptedSalt = cipher.encrypt(salt);
         char[] secretChars = Base64.encode(encryptedSalt.getEncryptedBytes()).toCharArray();
         byte[] hash = Passwords.hashPassword(secretChars, salt, iterationCount, keySize);
-        PBEHash packedSalt = new PBEHash(salt, iterationCount, keySize, encryptedSalt.getIv(), hash);
-        assertTrue(PasswordHash.isPacked(packedSalt.getBytes()));
-        System.out.println("More salt: " + Base64.encode(packedSalt.getBytes()));
+        PasswordHash packedSalt = new PasswordHash(hash, encryptedSalt.getIv(), salt, iterationCount, keySize);
+        assertTrue(PasswordHash.verifyBytes(packedSalt.pack()));
+        System.out.println("More salt: " + Base64.encode(packedSalt.pack()));
     }
 
     @Test
     public void testCipher() throws Exception {
         char[] pbePassword = "sshssh".toCharArray();
-        PBEHash salt = new PBEHash(PBE_SALT);
+        PasswordHash salt = new PasswordHash(PBE_SALT);
         assertEquals(iterationCount, salt.getIterationCount());
         assertEquals(keySize, salt.getKeySize());
         assertEquals(16, salt.getSalt().length);
@@ -49,15 +48,15 @@ public class PBEHashTest {
         assertTrue(!verify("sshsshh".toCharArray(), salt));
     }
 
-    public boolean verify(char[] pbePassword, PBEHash salt) 
+    public boolean verify(char[] pbePassword, PasswordHash salt) 
             throws GeneralSecurityException, IOException {
         PBECipher cipher = new PBECipher(pbePassword, salt.getSalt(), 
                 salt.getIterationCount(), salt.getKeySize());
         byte[] encryptedSalt = cipher.encrypt(salt.getSalt(), salt.getIv());
         salt.encryptSalt(cipher);
-        assertTrue(PBEHash.verifyBytes(salt.getBytes()));
-        salt = new PBEHash(salt.getBytes());
-        assertTrue(PBEHash.verifyBytes(salt.getBytes()));
+        assertTrue(PasswordHash.verifyBytes(salt.pack()));
+        salt = new PasswordHash(salt.pack());
+        assertTrue(PasswordHash.verifyBytes(salt.pack()));
         salt.decryptSalt(cipher);        
         if (salt.matches(Base64.encode(encryptedSalt).toCharArray())) {
             return true;
