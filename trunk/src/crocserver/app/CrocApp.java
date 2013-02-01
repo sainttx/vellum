@@ -160,7 +160,7 @@ public class CrocApp {
         confFileName = getString("croc.conf");
         File confFile = new File(confFileName);
         logger.info("conf", confFileName, confFile);
-        configMap = ConfigParser.newInstance(new FileInputStream(confFile));
+        configMap = ConfigParser.parse(new FileInputStream(confFile));
         configProperties = configMap.find("Config", "default").getProperties();
         String logLevelName = configProperties.get("logLevel");
         if (logLevelName != null) {
