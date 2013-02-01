@@ -2,7 +2,7 @@
  * Copyright Evan Summers
  * 
  */
-package keystoremanager.app;
+package mantra.app;
 
 import saltserver.app.*;
 import java.util.Arrays;

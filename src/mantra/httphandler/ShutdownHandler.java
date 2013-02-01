@@ -1,13 +1,13 @@
 /*
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
  */
-package keystoremanager.httphandler;
+package mantra.httphandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
-import keystoremanager.app.MantraApp;
+import mantra.app.MantraApp;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 

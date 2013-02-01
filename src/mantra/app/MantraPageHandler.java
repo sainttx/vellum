@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
  * 
  */
-package keystoremanager.app;
+package mantra.app;
 
 import saltserver.app.*;
 import com.sun.net.httpserver.HttpExchange;
