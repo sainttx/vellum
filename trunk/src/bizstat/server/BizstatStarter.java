@@ -97,8 +97,8 @@ public class BizstatStarter implements Runnable, DirWatcherListener {
     }
     
     private void initConfigMap() throws Exception {
-        configMap = ConfigParser.newInstance(new FileInputStream(new File(confDirName, MAIN_CONFIG_FILE)));
-        ConfigMap contactsConfigMap = ConfigParser.newInstance(new FileInputStream(new File(confDirName, CONTACTS_CONFIG_FILE)));
+        configMap = ConfigParser.parse(new FileInputStream(new File(confDirName, MAIN_CONFIG_FILE)));
+        ConfigMap contactsConfigMap = ConfigParser.parse(new FileInputStream(new File(confDirName, CONTACTS_CONFIG_FILE)));
         configMap.putAll(contactsConfigMap);
         configProperties = configMap.find("Config", "default").getProperties();
         String logLevelName = configProperties.get("logLevel");
@@ -110,7 +110,7 @@ public class BizstatStarter implements Runnable, DirWatcherListener {
         for (ConfigEntry network : configMap.getList("Network")) {
             File networkFile = new File(confDirName, network.getName() + CONFIG_FILE_EXTENSION);
             if (networkFile.exists()) {
-                ConfigMap networkConfigMap = ConfigParser.newInstance(new FileInputStream(networkFile));
+                ConfigMap networkConfigMap = ConfigParser.parse(new FileInputStream(networkFile));
                 for (ConfigEntry entry : networkConfigMap.getEntryList()) {
                     entry.getProperties().put("network", network.getName());
                 }
