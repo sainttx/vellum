@@ -46,12 +46,14 @@ public class AdminHandler implements HttpHandler {
         handler.printPageHeader("Admin");
         String user = httpExchangeInfo.getParameterMap().get("user");
         String password = httpExchangeInfo.getParameterMap().get("password");
-        if (password != null) {
+        if (user != null && password != null) {
             app.getPasswordManager().put(user, password.toCharArray());
+            logger.info("put", user);
         }
-        out.printf("<h3>%s</h3>\n", user);
+        out.printf("<h3>%s</h3>\n", getClass().getSimpleName());
         out.printf("<form action='/admin' method='post'>\n");
-        out.printf("<input type='password' name='password' width='40' placeholder='Cipher passphrase'>\n");
+        out.printf("<input type='text' name='username' width='40' placeholder='Username'>\n");
+        out.printf("<input type='password' name='password' width='40' placeholder='Passphrase'>\n");
         out.printf("<input type='submit' value='Send password'>\n");
         out.printf("</form>\n");
         out.printf("<h3>Passwords on hand</h3>\n");

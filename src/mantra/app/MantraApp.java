@@ -4,9 +4,7 @@
  */
 package mantra.app;
 
-import saltserver.app.*;
 import vellum.httpserver.HttpServerConfig;
-import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -64,10 +62,7 @@ public class MantraApp {
     }
 
     private void initConfig() throws Exception {
-        confFileName = getPropertyFileName("mantra.conf");
-        File confFile = new File(confFileName);
-        logger.info("conf", confFileName, confFile);
-        configMap = ConfigParser.newInstance(new FileInputStream(confFile));
+        configMap = ConfigParser.parseConfFile("mantra.conf");
         configProperties = configMap.find("Config", "default").getProperties();
         String logLevelName = configProperties.get("logLevel");
         if (logLevelName != null) {
@@ -104,15 +99,6 @@ public class MantraApp {
         if (h2Server != null) {
             h2Server.stop();
         }
-    }
-
-    private String getPropertyFileName(String name) {
-        String homeDir = System.getProperty("user.home");
-        String fileName = System.getProperty(name);
-        if (fileName == null) {
-            throw new RuntimeException(name);
-        }
-        return homeDir + "/" + fileName;
     }
 
     public MantraStorage getStorage() {

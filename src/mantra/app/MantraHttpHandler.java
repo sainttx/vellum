@@ -25,12 +25,7 @@ public class MantraHttpHandler implements HttpHandler {
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        HttpHandler handler = getHandler(httpExchange);
-        if (handler != null) {
-            handler.handle(httpExchange);
-        } else {
-            
-        }
+        getHandler(httpExchange).handle(httpExchange);
     }
     
     public HttpHandler getHandler(HttpExchange httpExchange) throws IOException {
@@ -46,6 +41,6 @@ public class MantraHttpHandler implements HttpHandler {
         if (path.equals("/admin")) {
             return new AdminHandler(app);
         }
-        return null;
+        return new AdminHandler(app);
     }
 }

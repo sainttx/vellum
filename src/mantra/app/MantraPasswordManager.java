@@ -32,8 +32,7 @@ public class MantraPasswordManager {
         passwordMap.clear();
     }
 
-    public void put(String principalName, char[] toCharArray) {
-        passwordMap.put(principalName, toCharArray);
-        
+    public void put(String principalName, char[] password) {
+        passwordMap.put(principalName, password);        
     }
 }
