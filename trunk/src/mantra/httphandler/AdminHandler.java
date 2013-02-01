@@ -44,11 +44,11 @@ public class AdminHandler implements HttpHandler {
     
     private void handle() throws Exception {
         handler.printPageHeader("Admin");
-        String user = httpExchangeInfo.getParameterMap().get("user");
+        String username = httpExchangeInfo.getParameterMap().get("username");
         String password = httpExchangeInfo.getParameterMap().get("password");
-        if (user != null && password != null) {
-            app.getPasswordManager().put(user, password.toCharArray());
-            logger.info("put", user);
+        logger.info("username", username);
+        if (username != null && password != null) {
+            app.getPasswordManager().put(username, password.toCharArray());
         }
         out.printf("<h3>%s</h3>\n", getClass().getSimpleName());
         out.printf("<form action='/admin' method='post'>\n");
