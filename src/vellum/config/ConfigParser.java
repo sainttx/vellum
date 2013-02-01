@@ -90,7 +90,8 @@ public class ConfigParser {
         if (lineParser.parse(line)) {
             configEntry.getProperties().put(lineParser.getKey(), lineParser.getValue());
             if (false) {
-                System.out.printf("insert into config (group_, name_, value) values ('%s', %s', '%s');\n", name, lineParser.getKey(), lineParser.getValue());
+                System.out.printf("insert into config (group_, name_, value) values ('%s', %s', '%s');\n", 
+                        name, lineParser.getKey(), lineParser.getValue());
             }
             logger.trace("parseLine lineParser", lineParser);
         } else {
@@ -108,9 +109,24 @@ public class ConfigParser {
         return configMap;
     }
 
-    public static ConfigMap newInstance(InputStream stream) throws Exception {
+    public static ConfigMap parseConfFile(String confFilePropertyName) throws Exception {
+        String confFileName = getPropertyFileName(confFilePropertyName);
+        File confFile = new File(confFileName);
+        return parse(new FileInputStream(confFile));        
+    }
+    
+    public static ConfigMap parse(InputStream stream) throws Exception {
         ConfigParser parser = new ConfigParser();
         parser.init(stream);
         return parser.getConfigMap();
+    }
+    
+    public static String getPropertyFileName(String name) {
+        String homeDir = System.getProperty("user.home");
+        String fileName = System.getProperty(name);
+        if (fileName == null) {
+            throw new RuntimeException(name);
+        }
+        return homeDir + "/" + fileName;
     }
 }
