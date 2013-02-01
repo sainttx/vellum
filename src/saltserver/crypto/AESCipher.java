@@ -7,7 +7,6 @@ package saltserver.crypto;
 import java.security.*;
 import vellum.crypto.*;
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
