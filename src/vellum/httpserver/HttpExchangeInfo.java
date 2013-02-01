@@ -13,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.Entry;
@@ -105,9 +104,7 @@ public class HttpExchangeInfo {
     }
 
     private void put(String string) {
-        logger.info("put", string);
         Entry<String, String> entry = Parameters.parseEntry(string);
-        logger.info("put entry", entry);
         if (entry != null) {
             String value = Strings.decodeUrl(entry.getValue());
             parameterMap.put(entry.getKey(), value);
