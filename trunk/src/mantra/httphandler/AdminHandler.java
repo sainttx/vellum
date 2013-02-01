@@ -1,20 +1,14 @@
 
-package keystoremanager.httphandler;
+package mantra.httphandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsExchange;
 import java.io.PrintStream;
-import keystoremanager.app.MantraApp;
-import keystoremanager.app.MantraPageHandler;
-import saltserver.storage.adminuser.AdminRole;
-import saltserver.storage.adminuser.AdminUser;
-import sun.security.x509.X500Name;
+import mantra.app.MantraApp;
+import mantra.app.MantraPageHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.storage.StorageException;
-import vellum.storage.StorageExceptionType;
 
 /**
  *
@@ -50,27 +44,12 @@ public class AdminHandler implements HttpHandler {
     
     private void handle() throws Exception {
         handler.printPageHeader("Admin");
-        HttpsExchange httpsExchange = (HttpsExchange) httpExchange;
-        String principalName = new X500Name(httpsExchange.getSSLSession().getPeerPrincipal().getName()).getCommonName();
-        String subject = httpsExchange.getSSLSession().getPeerPrincipal().getName();
-        AdminUser adminUser = app.getStorage().getAdminUserStorage().findSubject(subject);
-        if (adminUser == null) {
-            adminUser = new AdminUser();
-            adminUser.setUserName(principalName);
-            adminUser.setEmail(principalName);
-            adminUser.setSubject(subject);
-            adminUser.setRole(AdminRole.SUPER);
-            adminUser.setEnabled(true);
-            app.getStorage().getAdminUserStorage().insert(adminUser);
-        }
-        if (!adminUser.isEnabled()) {
-            throw new StorageException(StorageExceptionType.DISABLED, subject);
-        }
+        String user = httpExchangeInfo.getParameterMap().get("user");
         String password = httpExchangeInfo.getParameterMap().get("password");
         if (password != null) {
-            app.getPasswordManager().put(principalName, password.toCharArray());
+            app.getPasswordManager().put(user, password.toCharArray());
         }
-        out.printf("<h3>%s</h3>\n", principalName);
+        out.printf("<h3>%s</h3>\n", user);
         out.printf("<form action='/admin' method='post'>\n");
         out.printf("<input type='password' name='password' width='40' placeholder='Cipher passphrase'>\n");
         out.printf("<input type='submit' value='Send password'>\n");

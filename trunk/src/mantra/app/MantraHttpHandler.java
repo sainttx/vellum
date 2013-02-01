@@ -1,14 +1,13 @@
 /*
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
  */
-package keystoremanager.app;
+package mantra.app;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
-import keystoremanager.httphandler.AdminHandler;
-import keystoremanager.httphandler.ShutdownHandler;
-import saltserver.app.VaultStorage;
+import mantra.httphandler.AdminHandler;
+import mantra.httphandler.ShutdownHandler;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -19,11 +18,9 @@ import vellum.logr.LogrFactory;
 public class MantraHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(MantraHttpHandler.class);
     MantraApp app;
-    VaultStorage storage;
     
     public MantraHttpHandler(MantraApp app) {
         this.app = app;
-        this.storage = app.getStorage();
     }
     
     @Override

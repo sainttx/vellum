@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
  * 
  */
-package keystoremanager.app;
+package mantra.app;
 
 import saltserver.app.*;
 import vellum.httpserver.HttpServerConfig;
@@ -31,7 +31,7 @@ import vellum.security.DefaultKeyStores;
 public class MantraApp {
 
     Logr logger = LogrFactory.getLogger(getClass());
-    VaultStorage storage;
+    MantraStorage storage;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
     Thread serverThread;
@@ -50,7 +50,7 @@ public class MantraApp {
         }
         dataSourceConfig = new DataSourceConfig(configMap.get("DataSource",
                 configProperties.getString("dataSource")).getProperties());
-        storage = new VaultStorage(new SimpleConnectionPool(dataSourceConfig));
+        storage = new MantraStorage(new SimpleConnectionPool(dataSourceConfig));
         storage.init();
         String httpsServerConfigName = configProperties.getString("httpsServer");
         if (httpsServerConfigName != null) {
@@ -64,7 +64,7 @@ public class MantraApp {
     }
 
     private void initConfig() throws Exception {
-        confFileName = getString("salt.conf");
+        confFileName = getPropertyFileName("mantra.conf");
         File confFile = new File(confFileName);
         logger.info("conf", confFileName, confFile);
         configMap = ConfigParser.newInstance(new FileInputStream(confFile));
@@ -106,15 +106,16 @@ public class MantraApp {
         }
     }
 
-    private String getString(String name) {
-        String string = System.getProperty(name);
-        if (string == null) {
+    private String getPropertyFileName(String name) {
+        String homeDir = System.getProperty("user.home");
+        String fileName = System.getProperty(name);
+        if (fileName == null) {
             throw new RuntimeException(name);
         }
-        return string;
+        return homeDir + "/" + fileName;
     }
 
-    public VaultStorage getStorage() {
+    public MantraStorage getStorage() {
         return storage;
     }
 
