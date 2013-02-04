@@ -7,6 +7,7 @@ package vellum.config;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import java.io.*;
+import vellum.util.Systems;
 
 /**
  *
@@ -109,8 +110,8 @@ public class ConfigParser {
         return configMap;
     }
 
-    public static ConfigMap parseConfFile(String confFilePropertyName) throws Exception {
-        String confFileName = getPropertyFileName(confFilePropertyName);
+    public static ConfigMap parseConfFile(String path) throws Exception {
+        String confFileName = Systems.getPath(path);
         File confFile = new File(confFileName);
         return parse(new FileInputStream(confFile));        
     }
@@ -119,14 +120,5 @@ public class ConfigParser {
         ConfigParser parser = new ConfigParser();
         parser.init(stream);
         return parser.getConfigMap();
-    }
-    
-    public static String getPropertyFileName(String name) {
-        String homeDir = System.getProperty("user.home");
-        String fileName = System.getProperty(name);
-        if (fileName == null) {
-            throw new RuntimeException(name);
-        }
-        return homeDir + "/" + fileName;
     }
 }

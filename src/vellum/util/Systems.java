@@ -52,5 +52,13 @@ public class Systems {
         return hostName;
     }
 
-    
+    public static String getPath(String fileName) {
+        if (fileName == null) {
+            throw new RuntimeException(fileName);
+        }
+        if (Character.isLetter(fileName.charAt(0))) {
+            return homeDir + "/" + fileName;
+        }
+        return fileName;
+    }
 }

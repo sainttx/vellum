@@ -51,6 +51,27 @@ public class KeyStores {
         return dashes + label + dashes;
     }
 
+    public static X509TrustManager loadTrustManager(TrustManagerFactory trustManagerFactory) throws Exception {
+        for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
+            if (trustManager instanceof X509TrustManager) {
+                return (X509TrustManager) trustManager;
+            }
+        }
+        throw new RuntimeException();
+    }
+
+    public static SSLSocketFactory createSSLSocketFactory(KeyManagerFactory keyManagerFactory, 
+            TrustManagerFactory trustManagerFactory) throws Exception {
+        return createSSLContext(keyManagerFactory, trustManagerFactory).getSocketFactory();
+    }
+    
+    public static SSLContext createSSLContext(KeyManagerFactory keyManagerFactory, 
+            TrustManagerFactory trustManagerFactory) throws Exception {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
+        return sslContext;
+    }
+    
     public static TrustManagerFactory loadTrustManagerFactory(KeyStore trustStore) {
         try {
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
@@ -82,6 +103,7 @@ public class KeyStores {
         }
     }
 
+    
     public static HttpsConfigurator createHttpsConfigurator(SSLContext sslContext, final boolean needClientAuth) throws Exception {
         return new HttpsConfigurator(sslContext) {
 
