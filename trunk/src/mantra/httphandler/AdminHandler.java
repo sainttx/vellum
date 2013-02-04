@@ -9,6 +9,7 @@ import mantra.app.MantraPageHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.Strings;
 
 /**
  *
@@ -46,13 +47,20 @@ public class AdminHandler implements HttpHandler {
         handler.printPageHeader("Admin");
         String username = httpExchangeInfo.getParameterMap().get("username");
         String password = httpExchangeInfo.getParameterMap().get("password");
+        String keyStorePassword = httpExchangeInfo.getParameterMap().get("keyStorePassword");
+        if (Strings.isEmpty(keyStorePassword)) {
+            app.getKeyStoreManager().loadKeyStore(keyStorePassword, 
+                    keyStorePassword.toCharArray());
+        }
         logger.info("username", username);
         if (username != null && password != null) {
             app.getPasswordManager().put(username, password.toCharArray());
         }
-        out.printf("<h3>%s</h3>\n", getClass().getSimpleName());
-        out.printf("<form action='/admin' method='post'>\n");
+        out.printf("<h3>%s %s</h3>\n", getClass().getSimpleName(),
+                app.getKeyStorePath());
+        out.printf("<form action='/admin' method='POST'>\n");
         out.printf("<input type='text' name='username' width='40' placeholder='Username'>\n");
+        out.printf("<input type='keyStorePassword' name='keyStorePassword' width='40' placeholder='KeyStore Password'>\n");
         out.printf("<input type='password' name='password' width='40' placeholder='Passphrase'>\n");
         out.printf("<input type='submit' value='Send password'>\n");
         out.printf("</form>\n");
