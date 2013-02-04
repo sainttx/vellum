@@ -5,7 +5,6 @@
 package mantra.app;
 
 import vellum.httpserver.HttpServerConfig;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import org.h2.tools.Server;
@@ -21,6 +20,7 @@ import vellum.storage.SimpleConnectionPool;
 import vellum.util.Streams;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.security.DefaultKeyStores;
+import vellum.util.Systems;
 
 /**
  *
@@ -39,7 +39,10 @@ public class MantraApp {
     VellumHttpsServer httpsServer;
     AESCipher cipher; 
     MantraPasswordManager passwordManager = new MantraPasswordManager();
-    
+    MantraKeyStoreManager keyStoreManager = new MantraKeyStoreManager();
+    String keyAlias;
+    String keyStorePath;
+
     public void init() throws Exception {
         initConfig();
         sendShutdown();
@@ -59,10 +62,12 @@ public class MantraApp {
                 httpsServer.init(DefaultKeyStores.createSSLContext());
             }
         }
+        keyAlias = configProperties.getString("keyAlias");
+        keyStorePath = Systems.getPath(configProperties.getString("keyStore"));
     }
 
     private void initConfig() throws Exception {
-        configMap = ConfigParser.parseConfFile("mantra.conf");
+        configMap = ConfigParser.parseConfFile(System.getProperty("mantra.conf"));
         configProperties = configMap.find("Config", "default").getProperties();
         String logLevelName = configProperties.get("logLevel");
         if (logLevelName != null) {
@@ -113,10 +118,22 @@ public class MantraApp {
         return cipher;
     }
 
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+    
+    public String getKeyStorePath() {
+        return keyStorePath;
+    }
+    
     public MantraPasswordManager getPasswordManager() {
         return passwordManager;
     }    
-        
+
+    public MantraKeyStoreManager getKeyStoreManager() {
+        return keyStoreManager;
+    }
+    
     public static void main(String[] args) throws Exception {
         try {
             MantraApp app = new MantraApp();
