@@ -25,11 +25,19 @@ public class MantraHttpHandler implements HttpHandler {
     
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        getHandler(httpExchange).handle(httpExchange);
+        HttpHandler handler = getHandler(httpExchange);
+        if (handler != null) {
+            handler.handle(httpExchange);
+        } else {
+            httpExchange.close();
+        }        
     }
     
     public HttpHandler getHandler(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
+        if (path.equals("/favicon.ico")) {
+            return null;
+        }
         logger.info("path", path);
         if (httpExchange.getRemoteAddress().getHostName().equals("127.0.0.1"))  {
             if (path.equals("/shutdown")) {
@@ -41,6 +49,6 @@ public class MantraHttpHandler implements HttpHandler {
         if (path.equals("/admin")) {
             return new AdminHandler(app);
         }
-        return new AdminHandler(app);
+        return null;
     }
 }

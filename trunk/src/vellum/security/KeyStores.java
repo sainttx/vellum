@@ -8,6 +8,7 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -274,5 +275,12 @@ public class KeyStores {
     public static X509Certificate parseCert(String pem) throws Exception {
         return new X509CertImpl(decodePemDer(pem));
     }
-        
+
+    public static void createKeyStore(String type, String fileName, char[] password) throws Exception {
+        KeyStore ks = KeyStore.getInstance(type);
+        ks.load(null, password);
+        FileOutputStream fos = new FileOutputStream(fileName);
+        ks.store(fos, password);
+        fos.close();        
+    }
 }

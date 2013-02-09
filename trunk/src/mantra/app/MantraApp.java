@@ -7,6 +7,8 @@ package mantra.app;
 import vellum.httpserver.HttpServerConfig;
 import java.net.URL;
 import java.net.URLConnection;
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
 import org.h2.tools.Server;
 import saltserver.crypto.AESCipher;
 import vellum.config.ConfigMap;
@@ -39,7 +41,6 @@ public class MantraApp {
     VellumHttpsServer httpsServer;
     AESCipher cipher; 
     MantraPasswordManager passwordManager = new MantraPasswordManager();
-    MantraKeyStoreManager keyStoreManager = new MantraKeyStoreManager();
     String keyAlias;
     String keyStorePath;
 
@@ -121,19 +122,15 @@ public class MantraApp {
     public String getKeyAlias() {
         return keyAlias;
     }
-    
+
     public String getKeyStorePath() {
         return keyStorePath;
     }
-    
+        
     public MantraPasswordManager getPasswordManager() {
         return passwordManager;
     }    
 
-    public MantraKeyStoreManager getKeyStoreManager() {
-        return keyStoreManager;
-    }
-    
     public static void main(String[] args) throws Exception {
         try {
             MantraApp app = new MantraApp();

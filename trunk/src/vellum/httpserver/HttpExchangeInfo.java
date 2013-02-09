@@ -80,6 +80,12 @@ public class HttpExchangeInfo {
         return parameterMap;
     }
 
+    public boolean isParameter(String name) {
+        String value = getParameterMap().get(name);
+        if (value == null) return false;
+        return value.equals("on");
+    }
+    
     private void parseParameterMap() {
         parameterMap = new StringMap();
         urlQuery = httpExchange.getRequestURI().getQuery();
