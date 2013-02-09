@@ -14,11 +14,14 @@ import java.security.cert.X509Certificate;
  * @author evan
  */
 public class MantraKeyStoreManager {
+    String keyStorePath;
     KeyStore keyStore;
 
-    public MantraKeyStoreManager() {        
+    public MantraKeyStoreManager(String keyStorePath) {
+        this.keyStorePath = keyStorePath;
     }
-    public void loadKeyStore(String keyStorePath, char[] keyStorePassword) {
+    
+    public void loadKeyStore(char[] keyStorePassword) {
         keyStore = KeyStores.loadKeyStore("JKS", keyStorePath, keyStorePassword);
     }
     
@@ -30,5 +33,17 @@ public class MantraKeyStoreManager {
         return (X509Certificate) keyStore.getCertificate(alias);
     }
 
+    public String getKeyStorePath() {
+        return keyStorePath;
+    }
+
+    public KeyStore getKeyStore() {
+        return keyStore;
+    }
+    
+    public void create(char[] password) throws Exception {
+        KeyStores.createKeyStore("jks", keyStorePath, password);    
+    }
+    
     
 }
