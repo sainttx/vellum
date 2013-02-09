@@ -48,16 +48,16 @@ public class AdminHandler implements HttpHandler {
         String username = httpExchangeInfo.getParameterMap().get("username");
         String password = httpExchangeInfo.getParameterMap().get("password");
         String keyStorePassword = httpExchangeInfo.getParameterMap().get("keyStorePassword");
-        if (Strings.isEmpty(keyStorePassword)) {
-            app.getKeyStoreManager().loadKeyStore(keyStorePassword, 
-                    keyStorePassword.toCharArray());
+        logger.info("handle", app.getKeyStoreManager().getKeyStorePath());
+        if (!Strings.isEmpty(keyStorePassword)) {
+            app.getKeyStoreManager().loadKeyStore(keyStorePassword.toCharArray());
         }
         logger.info("username", username);
         if (username != null && password != null) {
             app.getPasswordManager().put(username, password.toCharArray());
         }
         out.printf("<h3>%s %s</h3>\n", getClass().getSimpleName(),
-                app.getKeyStorePath());
+                app.getKeyStoreManager().getKeyStorePath());
         out.printf("<form action='/admin' method='POST'>\n");
         out.printf("<input type='text' name='username' width='40' placeholder='Username'>\n");
         out.printf("<input type='keyStorePassword' name='keyStorePassword' width='40' placeholder='KeyStore Password'>\n");
