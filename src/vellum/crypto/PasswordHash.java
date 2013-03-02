@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
+import vellum.datatype.Millis;
 
 /**
  *
@@ -22,7 +23,8 @@ public class PasswordHash {
     private byte[] hash;
     private byte[] salt;
     private byte[] iv;
-
+    private long millis;
+    
     public PasswordHash(byte[] hash, byte[] salt, byte[] iv, 
             int iterationCount, int keySize) {
         this.hash = hash;
@@ -115,7 +117,16 @@ public class PasswordHash {
 
     public boolean matches(char[] password) throws GeneralSecurityException {
         assert iv.length == 0;
-        return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
+        millis = System.currentTimeMillis();
+        try {
+            return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
+        } finally {
+            millis = Millis.elapsed(millis);
+        }
+    }
+
+    public long getMillis() {
+        return millis;
     }
     
     public static boolean verifyBytes(byte[] packedBytes) {
