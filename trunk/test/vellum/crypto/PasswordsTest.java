@@ -18,9 +18,11 @@ import vellum.util.Bytes;
  */
 public class PasswordsTest {
     private static Logr logger = LogrFactory.getLogger(PasswordsTest.class);
-    int iterationCount = 1024;
-    int keySize = 128;
-
+    private int keySize = 128;
+    private int iterationCount = Passwords.ITERATION_COUNT;
+    private IterationCountManager iterationCountManager = new IterationCountManager(
+            Passwords.ITERATION_COUNT, Passwords.HASH_MILLIS);
+            
     @Test
     public void testSaltEncoding() throws Exception {
         byte[] saltBytes = PasswordSalts.nextSalt();
@@ -124,16 +126,17 @@ public class PasswordsTest {
         assertTrue(PackedPasswords.matches(password, hash0));        
         assertTrue(PackedPasswords.matches(password, hash1));
     }
-    
+
     public boolean matches(String user, char[] password, byte[] packedBytes) throws Exception {
         if (PasswordHash.verifyBytes(packedBytes)) {
             PasswordHash passwordHash = new PasswordHash(packedBytes);
             if (passwordHash.matches(password)) {
-                if (passwordHash.getIterationCount() != Passwords.ITERATION_COUNT ||
+                if (passwordHash.getIterationCount() < iterationCountManager.getIterationCount() ||
                         passwordHash.getKeySize() != Passwords.KEY_SIZE) {
                     packedBytes = PackedPasswords.hashPassword(password);
                     persistRevisedPasswordHash(user, packedBytes);
                 }
+                iterationCountManager.handleMillis(passwordHash.getMillis());
                 return true;
             }
             return false;
@@ -145,8 +148,9 @@ public class PasswordsTest {
         }
         return false;
     }
-
+    
     private void persistRevisedPasswordHash(String user, byte[] passwordHash) {
         logger.info("persistNewPasswordHash", user, Base64.encode(passwordHash));
     }
+
 }
