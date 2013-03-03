@@ -17,12 +17,11 @@ import vellum.util.Bytes;
  * @author evan
  */
 public class PasswordsTest {
+
     private static Logr logger = LogrFactory.getLogger(PasswordsTest.class);
-    private int keySize = 128;
+    private int keySize = Passwords.KEY_SIZE;
     private int iterationCount = Passwords.ITERATION_COUNT;
-    private IterationCountManager iterationCountManager = new IterationCountManager(
-            Passwords.ITERATION_COUNT, Passwords.HASH_MILLIS);
-            
+
     @Test
     public void testSaltEncoding() throws Exception {
         byte[] saltBytes = PasswordSalts.nextSalt();
@@ -35,10 +34,10 @@ public class PasswordsTest {
 
     @Test
     public void printEncodedLength() throws Exception {
-        System.out.printf("testEncodedLength 128bit: %d\n", Base64.encode(new byte[128/8]).length());
-        System.out.printf("testEncodedLength 160bit: %d\n", Base64.encode(new byte[160/8]).length());
-        System.out.printf("testEncodedLength 256bit: %d\n", Base64.encode(new byte[256/8]).length());
-        System.out.printf("testEncodedLength 512bit: %d\n", Base64.encode(new byte[512/8]).length());
+        System.out.printf("testEncodedLength 128bit: %d\n", Base64.encode(new byte[128 / 8]).length());
+        System.out.printf("testEncodedLength 160bit: %d\n", Base64.encode(new byte[160 / 8]).length());
+        System.out.printf("testEncodedLength 256bit: %d\n", Base64.encode(new byte[256 / 8]).length());
+        System.out.printf("testEncodedLength 512bit: %d\n", Base64.encode(new byte[512 / 8]).length());
     }
 
     @Test
@@ -68,21 +67,62 @@ public class PasswordsTest {
     }
 
     @Test
+    public void testMatchesEffort() throws Exception {
+        char[] password = "12345678".toCharArray();
+        byte[] saltBytes = PasswordSalts.nextSalt();
+        long startMillis = System.currentTimeMillis();
+        byte[] hashBytes = Passwords.hashPassword(password, saltBytes, 30000, 160);
+        System.out.println("hash time (30k): " + Millis.elapsed(startMillis));
+        startMillis = System.currentTimeMillis();
+        Passwords.hashPassword(password, saltBytes, 300000, 160);
+        System.out.println("10x hash time (300k): " + Millis.elapsed(startMillis));
+        startMillis = System.currentTimeMillis();
+        assertTrue(Passwords.matches(password, hashBytes, saltBytes, 30000, 160));
+        System.out.println("matches time: " + Millis.elapsed(startMillis));
+        assertFalse(Passwords.matches(password, hashBytes, saltBytes, 30001, 160));
+        assertFalse(Passwords.matches(password, hashBytes, saltBytes, 30000, 128));
+        assertFalse(Passwords.matches("wrong".toCharArray(), 
+                hashBytes, saltBytes, 30000, 160));
+    }
+    
+    @Test
     public void testPasswordHash() throws Exception {
         char[] password = "12345678".toCharArray();
+        iterationCount = 512000;
         PasswordHash passwordHash = new PasswordHash(password, iterationCount, keySize);
         byte[] hashBytes = passwordHash.getBytes();
-        String hashString = Base64.encode(hashBytes);
-        System.out.printf("%s\n", hashString);
-        System.out.printf("byte array length %d, encoded length %d\n", 
-                hashBytes.length, hashString.length());
+        passwordHash = new PasswordHash(hashBytes) ;
+        assertEquals(iterationCount, passwordHash.getIterationCount());
+        assertEquals(keySize, passwordHash.getKeySize());
+        String encodedString = Base64.encode(hashBytes);
         assertTrue(PasswordHash.verifyBytes(hashBytes));
-        assertTrue(passwordHash.matches(password));
         assertFalse(passwordHash.matches("wrong".toCharArray()));
+        assertTrue(passwordHash.matches(password));
+        System.out.printf("iterationCount: %d\n", iterationCount);
+        System.out.printf("keySize: %d\n", keySize);
+        System.out.printf("byte array length: %d\n", hashBytes.length);
+        System.out.printf("encoded string: %s\n", encodedString);
+        System.out.printf("encoded length: %d\n", encodedString.length());
+        System.out.printf("millis: %d\n", passwordHash.getMillis());
+    }
+    
+    @Test
+    public void testPasswordHashMore() throws Exception {
+        char[] password = "12345678".toCharArray();
+        PasswordHash passwordHash = new PasswordHash(password, iterationCount, keySize);
         assertTrue(new PasswordHash(passwordHash.getBytes()).matches(password));
         assertFalse(new PasswordHash(passwordHash.getBytes()).matches("wrong".toCharArray()));
-        passwordHash = new PasswordHash(password, 16, 256);
+        passwordHash = new PasswordHash(password, iterationCount*2, 256);
+        System.out.printf("millis %d\n", passwordHash.getMillis());
         assertTrue(new PasswordHash(passwordHash.getBytes()).matches(password));
+        System.out.printf("millis %d\n", passwordHash.getMillis());
+        assertFalse(new PasswordHash(passwordHash.getBytes()).matches("wrong".toCharArray()));
+    }
+
+    private void assertPassword(byte[] packedBytes, char[] password) throws Exception {
+        PasswordHash passwordHash = new PasswordHash(packedBytes);
+        assertTrue(passwordHash.matches(password));
+        assertFalse(passwordHash.matches("wrong".toCharArray()));
     }
     
     @Test
@@ -115,7 +155,7 @@ public class PasswordsTest {
     public boolean matchesUnsalted(char[] password, byte[] passwordHash) throws Exception {
         return PackedPasswords.matches(password, passwordHash);
     }
-    
+
     @Test
     public void testProto() throws Exception {
         char[] password = "12345678".toCharArray();
@@ -123,7 +163,7 @@ public class PasswordsTest {
         byte[] hash1 = PackedPasswords.hashPassword(password, 16, 256);
         assertTrue(matches("evanx", password, hash0));
         assertTrue(matches("evanx", password, hash1));
-        assertTrue(PackedPasswords.matches(password, hash0));        
+        assertTrue(PackedPasswords.matches(password, hash0));
         assertTrue(PackedPasswords.matches(password, hash1));
     }
 
@@ -131,12 +171,13 @@ public class PasswordsTest {
         if (PasswordHash.verifyBytes(packedBytes)) {
             PasswordHash passwordHash = new PasswordHash(packedBytes);
             if (passwordHash.matches(password)) {
-                if (passwordHash.getIterationCount() < iterationCountManager.getIterationCount() ||
-                        passwordHash.getKeySize() != Passwords.KEY_SIZE) {
-                    packedBytes = PackedPasswords.hashPassword(password);
-                    persistRevisedPasswordHash(user, packedBytes);
+                monitor(passwordHash.getMillis());
+                if (passwordHash.getIterationCount() != Passwords.ITERATION_COUNT
+                        || passwordHash.getKeySize() != Passwords.KEY_SIZE) {
+                    passwordHash = new PasswordHash(password,
+                            Passwords.ITERATION_COUNT, Passwords.KEY_SIZE);
+                    persistRevisedPasswordHash(user, passwordHash.getBytes());
                 }
-                iterationCountManager.handleMillis(passwordHash.getMillis());
                 return true;
             }
             return false;
@@ -148,9 +189,16 @@ public class PasswordsTest {
         }
         return false;
     }
-    
+
     private void persistRevisedPasswordHash(String user, byte[] passwordHash) {
         logger.info("persistNewPasswordHash", user, Base64.encode(passwordHash));
     }
 
+    private void monitor(long millis) {
+        if (millis > Passwords.HASH_MILLIS) {
+            logger.warn("password hashing millis", millis);
+        } else if (millis < Passwords.HASH_MILLIS / 10) {
+            logger.warn("matches millis", millis);
+        }
+    }
 }
