@@ -51,8 +51,11 @@ public class PasswordHash {
         hash = new byte[stream.read()];
         salt = new byte[stream.read()];
         iv = new byte[stream.read()];
-        iterationCount = stream.read()*256 + stream.read();
-        keySize = 16 * stream.read();
+        iterationCount = stream.read()<<16;
+        iterationCount |= stream.read()<<8;
+        iterationCount |= stream.read();
+        keySize = stream.read()<<8;
+        keySize |= stream.read();
         stream.read(hash);
         stream.read(salt);
         stream.read(iv);
@@ -82,13 +85,15 @@ public class PasswordHash {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             stream.write(version);
-            stream.write(salt.length + hash.length + iv.length + 8);
+            stream.write(salt.length + hash.length + iv.length + 10);
             stream.write(hash.length);
             stream.write(salt.length);
             stream.write(iv.length);
-            stream.write(iterationCount/256);
-            stream.write(iterationCount%256);
-            stream.write(keySize/16);
+            stream.write(iterationCount >>> 16);
+            stream.write((iterationCount >>> 8) & 0xff);
+            stream.write(iterationCount & 0xff);
+            stream.write(keySize >>> 8);
+            stream.write(keySize & 0xff);
             stream.write(hash);
             stream.write(salt);
             stream.write(iv);
@@ -139,7 +144,7 @@ public class PasswordHash {
         int saltLength = stream.read();
         int ivLength = stream.read();
         if (packedBytes.length != length || 
-                length != hashLength + saltLength + ivLength + 8) {
+                length != hashLength + saltLength + ivLength + 10) {
             return false;
         }
         return true;
