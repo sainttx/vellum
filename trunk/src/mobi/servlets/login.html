@@ -1,33 +1,33 @@
 <html>
-<head>
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no" />
+    <head>
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no" />
         <title>GiftMe.mobi</title>
         <style>
         </style>
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
         <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-        <script>  
-            var hdrMainvar = null;  
-            var contentMainVar = null;  
-            var ftrMainVar = null;  
-            var contentTransitionVar = null;  
-            var stateLabelVar = null;  
-            var provinceVar = null;  
-            var confirmationVar = null;  
-            var contentDialogVar = null;  
-            var hdrConfirmationVar = null;  
-            var contentConfirmationVar = null;  
-            var ftrConfirmationVar = null;  
-            var inputMapVar = null;  
-  
-            var MISSING = "missing";  
-            var EMPTY = "";  
+        <script>
+            var hdrMainvar = null;
+            var contentMainVar = null;
+            var ftrMainVar = null;
+            var contentTransitionVar = null;
+            var stateLabelVar = null;
+            var provinceVar = null;
+            var confirmationVar = null;
+            var contentDialogVar = null;
+            var hdrConfirmationVar = null;
+            var contentConfirmationVar = null;
+            var ftrConfirmationVar = null;
+            var inputMapVar = null;
 
-            $(document).ready(function() {  
+            var MISSING = "missing";
+            var EMPTY = "";
+
+            $(document).ready(function() {
                 // Assign global variables  
-                hdrMainVar = $('#hdrMain');  
-                contentMainVar = $('#contentMain'); 
-                var deviceAgent = navigator.userAgent.toLowerCase();                
+                hdrMainVar = $('#hdrMain');
+                contentMainVar = $('#contentMain');
+                var deviceAgent = navigator.userAgent.toLowerCase();
                 var agentID = deviceAgent.match(/(iphone|ipod|ipad|android)/);
                 alert("agentID");
             }
@@ -35,7 +35,7 @@
         </script>
         <script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>    
     </head>
-    
+
     <body>
 
         <div data-role="page" id="loginPage">
@@ -85,7 +85,7 @@
                     <input id="confirmPassword" name="confirmPassword" type="password"/>  
                 </div>
             </div>
-            
+
             <div data-role="footer" class="ui-bar">
                 <div data-role="controlgroup" data-type="horizontal">
                     <a href="#loggedInPage" data-role="button">Register</a>
@@ -97,7 +97,7 @@
             <div data-role="header"> 
                 <h1>GiftMe.mobi</h1> 
             </div>
-                
+
             <div data-role="content">   
                 <div id="loggedInAmountDiv" data-role="fieldcontain">  
                     <label id="loggedInAmountLabel" for="loggedInAmount">Amount</label>  
@@ -112,7 +112,7 @@
                     <input id="loggedInToEmail" name="loggedInToEmail" type="text"/>  
                 </div>
             </div>
-                
+
             <div data-role="footer" class="ui-bar">
                 <div data-role="controlgroup" data-type="horizontal">
                     <a href="#givePage" data-role="button">Give</a>
@@ -123,12 +123,12 @@
                 </div>
             </div>                
         </div>
-        
+
         <div data-role="page" id="givePage">
             <div data-role="header"> 
                 <h1>GiftMe.mobi</h1> 
             </div>
-                
+
             <div data-role="content">   
                 <div id="giveAmountDiv" data-role="fieldcontain">  
                     <label id="giveAmountLabel" for="giveAmount">Amount</label>  
@@ -137,11 +137,11 @@
                         <option value="amount250">R250</option>  
                         <option value="amount500">R500</option>  
                     </select>  
-                    </div>
-                    <div id="giveInToEmailDiv" data-role="fieldcontain">  
-                        <label for="giveInToEmail">To email</label>  
-                        <input id="giveInToEmail" name="giveInToEmail" type="text"/>  
-                    </div>
+                </div>
+                <div id="giveInToEmailDiv" data-role="fieldcontain">  
+                    <label for="giveInToEmail">To email</label>  
+                    <input id="giveInToEmail" name="giveInToEmail" type="text"/>  
+                </div>
             </div>
 
             <div data-role="footer" class="ui-bar">
@@ -159,15 +159,15 @@
                 <h1>GiftMe.mobi</h1> 
             </div>
 
-                <div id="spendAmountDiv" data-role="fieldcontain">  
-                    <label id="spendAmountLabel" for="spendAmount">Amount</label>  
-                    <select id="spendAmount" name="spendAmount" tabindex="2">  
-                        <option value="amount100">R100</option>  
-                        <option value="amount250">R250</option>  
-                        <option value="amount500">R500</option>  
-                    </select>  
-                </div>
-            
+            <div id="spendAmountDiv" data-role="fieldcontain">  
+                <label id="spendAmountLabel" for="spendAmount">Amount</label>  
+                <select id="spendAmount" name="spendAmount" tabindex="2">  
+                    <option value="amount100">R100</option>  
+                    <option value="amount250">R250</option>  
+                    <option value="amount500">R500</option>  
+                </select>  
+            </div>
+
             <div data-role="content">   
                 <div id="spendAccountDiv" data-role="fieldcontain">  
                     <label id="spendAccountLabel" for="spendAccount">Store</label>  
@@ -194,7 +194,7 @@
             <div data-role="header"> 
                 <h1>GiftMe.mobi</h1> 
             </div>
-                
+
             <div data-role="content">   
                 <div id="withdrawAccountDiv" data-role="fieldcontain">  
                     <label id="withdrawAccountLabel" for="withdrawAccount">Account</label>  
@@ -220,7 +220,7 @@
             <div data-role="header"> 
                 <h1>GiftMe.mobi</h1> 
             </div>
-                
+
             <div data-role="content">   
                 <div id="accountInfoDiv" data-role="fieldcontain">  
                     <label id="accountInfoLabel" for="accountInfo">Info</label>  
@@ -240,6 +240,6 @@
                 </div>
             </div>                            
         </div>    
-        
-</body>
+
+    </body>
 </html>
