@@ -7,15 +7,21 @@ package vellum.crypto;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import vellum.datatype.Millis;
+import vellum.logr.Logr;
+import vellum.logr.LogrFactory;
+import vellum.util.Args;
 
 /**
  *
  * @author evan
  */
 public class PasswordHash {
+    private static Logr logger = LogrFactory.getLogger(PasswordHash.class);
+    
     private static final byte version = 0x00;
     
     private int iterationCount;
@@ -45,8 +51,12 @@ public class PasswordHash {
 
     public PasswordHash(byte[] bytes) throws IOException {
         ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-        if (stream.read() != version || stream.read() != bytes.length) {
-            throw new IOException();
+        if (stream.read() != version) {
+            throw new IOException(Args.format("mismatch version", version));
+        }
+        int length = stream.read();
+        if (length != bytes.length) {
+            throw new IOException(Args.format("mismatch length", bytes.length, length));
         }
         hash = new byte[stream.read()];
         salt = new byte[stream.read()];
@@ -81,26 +91,27 @@ public class PasswordHash {
         return keySize;
     }
 
-    public byte[] getBytes() {
-        try {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            stream.write(version);
-            stream.write(salt.length + hash.length + iv.length + 10);
-            stream.write(hash.length);
-            stream.write(salt.length);
-            stream.write(iv.length);
-            stream.write(iterationCount >>> 16);
-            stream.write((iterationCount >>> 8) & 0xff);
-            stream.write(iterationCount & 0xff);
-            stream.write(keySize >>> 8);
-            stream.write(keySize & 0xff);
-            stream.write(hash);
-            stream.write(salt);
-            stream.write(iv);
-            return stream.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public byte[] getBytes() throws IOException {
+        int length = salt.length + hash.length + iv.length + 10;
+        logger.verbose("length", salt.length, hash.length, iv.length);
+        if (length >= 256) {
+            throw new IOException("capacity exceeded: " + length);
         }
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        stream.write(version);
+        stream.write(length);
+        stream.write(hash.length);
+        stream.write(salt.length);
+        stream.write(iv.length);
+        stream.write(iterationCount >>> 16);
+        stream.write((iterationCount >>> 8) & 0xff);
+        stream.write(iterationCount & 0xff);
+        stream.write(keySize >>> 8);
+        stream.write(keySize & 0xff);
+        stream.write(hash);
+        stream.write(salt);
+        stream.write(iv);
+        return stream.toByteArray();
     }
     
     public boolean isEncrypted() {
@@ -135,6 +146,9 @@ public class PasswordHash {
     }
     
     public static boolean verifyBytes(byte[] packedBytes) {
+        if (packedBytes.length < 42) {
+            return false;
+        }
         ByteArrayInputStream stream = new ByteArrayInputStream(packedBytes);
         if (stream.read() != version) {
             return false;
