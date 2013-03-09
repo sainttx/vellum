@@ -4,6 +4,7 @@
  */
 package vellum.crypto;
 
+import java.io.IOException;
 import java.util.Arrays;
 import org.junit.Test;
 import static junit.framework.Assert.*;
@@ -84,11 +85,35 @@ public class PasswordsTest {
         assertFalse(Passwords.matches("wrong".toCharArray(), 
                 hashBytes, saltBytes, 30000, 160));
     }
+
+    @Test
+    public void testPasswordHash30k() throws Exception {
+        testPasswordHash(30000, 160);
+    }
+
+    @Test
+    public void testPasswordHash300k() throws Exception {
+        testPasswordHash(300000, 160);
+    }
     
     @Test
-    public void testPasswordHash() throws Exception {
+    public void testPasswordHashKeySize() throws Exception {
+        testPasswordHash(10000, 128);
+        testPasswordHash(10000, 160);
+        testPasswordHash(10000, 192);
+        testPasswordHash(10000, 256);
+        testPasswordHash(10000, 512);
+        testPasswordHash(10000, 1024);
+        testPasswordHash(10000, 1536);
+    }
+    
+    @Test(expected = IOException.class)
+    public void testPasswordHash2048() throws Exception {
+        testPasswordHash(10000, 2048);
+    }
+    
+    private void testPasswordHash(int iterationCount, int keySize) throws Exception {
         char[] password = "12345678".toCharArray();
-        iterationCount = 512000;
         PasswordHash passwordHash = new PasswordHash(password, iterationCount, keySize);
         byte[] hashBytes = passwordHash.getBytes();
         passwordHash = new PasswordHash(hashBytes) ;
