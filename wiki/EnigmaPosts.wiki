@@ -5,7 +5,7 @@ These articles are drafted here, published on my blog, http://www.java.net/blogs
 
 [PasswordSalt Password Salt] (January 2013) 
 
-Password Rehash - due in March 2013
+[PasswordRehash Password Rehash] DRAFT (March 2013)
 
 Password Cipher - planned for April 2013
 
