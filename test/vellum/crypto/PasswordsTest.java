@@ -157,7 +157,6 @@ public class PasswordsTest {
         String hashString = Base64.encode(hashBytes);
         System.out.printf("testPacked: %s\n", hashString);
         System.out.printf("testPacked: byte array length %d, encoded length %d\n", hashBytes.length, hashString.length());
-        assertTrue(PasswordHash.verifyBytes(hashBytes));
         assertTrue(PackedPasswords.matches(password, hashBytes));
         assertFalse(PackedPasswords.matches("wrong".toCharArray(), hashBytes));
     }
@@ -206,11 +205,12 @@ public class PasswordsTest {
                 return true;
             }
             return false;
-        }
-        if (matchesUnsalted(password, packedBytes)) {
-            packedBytes = PackedPasswords.hashPassword(password);
-            persistRevisedPasswordHash(user, packedBytes);
-            return true;
+        } else {
+            if (matchesUnsalted(password, packedBytes)) {
+                packedBytes = PackedPasswords.hashPassword(password);
+                persistRevisedPasswordHash(user, packedBytes);
+                return true;
+            }
         }
         return false;
     }
