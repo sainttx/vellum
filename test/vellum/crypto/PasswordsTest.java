@@ -95,6 +95,11 @@ public class PasswordsTest {
     public void testPasswordHash300k() throws Exception {
         testPasswordHash(300000, 160);
     }
+
+    @Test
+    public void testPasswordHashMinimumKeySize() throws Exception {
+        testPasswordHash(10000, 128);
+    }
     
     @Test
     public void testPasswordHashKeySize() throws Exception {
