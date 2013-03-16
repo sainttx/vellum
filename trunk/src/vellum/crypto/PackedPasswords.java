@@ -14,12 +14,12 @@ import java.security.GeneralSecurityException;
 public class PackedPasswords {
     
     public static byte[] hashPassword(char[] password)
-            throws GeneralSecurityException {
+            throws GeneralSecurityException, IOException {
         return hashPassword(password, Passwords.ITERATION_COUNT, Passwords.KEY_SIZE);
     }
 
     public static byte[] hashPassword(char[] password, int iterationCount, int keySize)
-            throws GeneralSecurityException {
+            throws GeneralSecurityException, IOException {
         return new PasswordHash(password, iterationCount, keySize).getBytes();
     }
 
