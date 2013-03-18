@@ -19,7 +19,7 @@ public class Passwords {
     public static final int HASH_MILLIS = 200;
     public static final int ITERATION_COUNT = 30000;
     public static final int KEY_SIZE = 160;
-
+            
     public static byte[] hashPassword(char[] password, byte[] salt)
             throws GeneralSecurityException {
         return hashPassword(password, salt, ITERATION_COUNT, KEY_SIZE);
@@ -27,9 +27,13 @@ public class Passwords {
 
     public static byte[] hashPassword(char[] password, byte[] salt,
             int iterationCount, int keySize) throws GeneralSecurityException {
-        PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
-        return factory.generateSecret(spec).getEncoded();
+        try {
+            PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
+            return factory.generateSecret(spec).getEncoded();
+        } catch (IllegalArgumentException e) {
+            throw new GeneralSecurityException("key size " + keySize, e);
+        }
     }
 
     public static boolean matches(char[] password, byte[] passwordHash, byte[] salt) 
