@@ -10,10 +10,11 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.Callable;
 import javax.net.ssl.*;
+import org.bouncycastle.util.test.Test;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.Lists;
 
 /**
  *
@@ -22,9 +23,11 @@ import vellum.logr.LogrFactory;
 public class SimpleSSLClientDemo {
 
     static Logr logger = LogrFactory.getLogger(SimpleSSLClientDemo.class);
+    static final String server = System.getProperty("server");
+    static final int port = Integer.getInteger("port");
     static final String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
     static final char[] keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
-    static final char[] keyPassword = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
+    static final char[] keyPassword = System.getProperty("javax.net.ssl.keyPassword").toCharArray();
     static final String trustStorePath = System.getProperty("javax.net.ssl.trustStore");
     static final char[] trustStorePassword = System.getProperty("javax.net.ssl.trustStorePassword").toCharArray();
     
@@ -55,7 +58,7 @@ public class SimpleSSLClientDemo {
         X509Certificate[] serverCertificates = (X509Certificate[]) 
                 clientSocket.getSession().getPeerCertificates();
         for (X509Certificate certificate : serverCertificates) {
-            logger.info(certificate.getIssuerDN().toString());
+            System.out.println("cert: " + certificate.getIssuerDN().toString());
         }
     }
 
@@ -65,8 +68,11 @@ public class SimpleSSLClientDemo {
         keyStore.load(inputStream, keyStorePassword);
         KeyManagerFactory keyManagerFactory = 
                 KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, null);
+        keyManagerFactory.init(keyStore, keyPassword);
         this.keyManagers = keyManagerFactory.getKeyManagers();
+        for (String alias : Lists.asList(keyStore.aliases())) {
+            System.out.println("alias " + alias);
+        }
     }
 
     protected void initTrustManagers() throws Exception {
@@ -81,14 +87,15 @@ public class SimpleSSLClientDemo {
         sslContext.init(keyManagers, trustManagers, secureRandom);
     }
 
-    protected void start() throws Exception {
+    //@Test
+    public void test() throws Exception {
         init();
-        connect("google.com", 443);
+        connect(server, port);
     }
     
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
-            new SimpleSSLClientDemo().start();
+            new SimpleSSLClientDemo().test();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

@@ -207,4 +207,67 @@ public class Lists {
         return list;
     }
     
+    public static boolean intersects(String[] array, String[] other) {
+        return intersects(asHashSet(array), asHashSet(other));
+    }
+
+    public static <T> HashSet<T> coalesceHashSetArgs(T ... args) {
+        HashSet<T> set = new HashSet();
+        for (T arg : args) {
+            if (arg != null) {
+                set.add(arg);
+            }
+        }
+        return set;
+    }
+    
+    public static <T> HashSet<T> coalesceHashSet(Collection<T> collection) {
+        HashSet<T> set = new HashSet();
+        for (T item : collection) {
+            if (item != null) {
+                set.add(item);
+            }
+        }
+        return set;
+    }
+    
+    public static HashSet asHashSet(String[] array) {
+        return new HashSet(Arrays.asList(array));
+    }
+    
+    public static boolean intersects(HashSet set, HashSet other) {
+        int size = set.size();
+        set = new HashSet(set);
+        set.removeAll(other);
+        return set.size() < size;
+    }           
+
+    public static boolean containsArgs(Object value, Object ... args) {
+        for (Object arg : args) {
+            if (value == arg) {
+                return true;
+            }
+            if (value != null && arg != null && value.equals(arg)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static <T extends Enum> boolean contains(T[] args, Object value) {
+        for (T arg : args) {
+            if (value == arg) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static <T> List<T> asList(Enumeration<T> en) {
+        List list = new ArrayList();
+        while (en.hasMoreElements()) {
+            list.add(en.nextElement());
+        }
+        return list;
+    }
 }
