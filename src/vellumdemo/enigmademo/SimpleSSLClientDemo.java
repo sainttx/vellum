@@ -83,7 +83,7 @@ public class SimpleSSLClientDemo {
 
     protected void start() throws Exception {
         init();
-        connect("41.204.194.188", 9045);
+        connect("google.com", 443);
     }
     
     public static void main(String[] args) throws Exception {
