@@ -25,12 +25,12 @@ import vellum.util.Integers;
 public class PasswordHash {
     private static Logr logger = LogrFactory.getLogger(PasswordHash.class);
 
-    private int iterationCount;
-    private int keySize;
-    private byte[] hash;
-    private byte[] salt;
-    private byte[] iv;
-    private long millis;
+    int iterationCount;
+    int keySize;
+    byte[] hash;
+    byte[] salt;
+    byte[] iv;
+    long millis;
     
     public PasswordHash(char[] password, int iterationCount, int keySize) 
             throws GeneralSecurityException {
@@ -55,22 +55,22 @@ public class PasswordHash {
         if (hash.length > 255) {
             throw new IOException("Invalid hash length");
         }
-        int version = 1;
-        if (version == 0) {
-            stream.write(0);
-            writeObject0(new ObjectOutputStream(stream));
-        } else {
+        int version = 0;
+        if (version == 1) {
             stream.write(1);
-            writeObject1(stream);
+            new PasswordHashSerializer1(this).writeObject(stream);
+        } else {
+            stream.write(0);
+            writeObject(new ObjectOutputStream(stream));
         }
     }
 
     private void readObject(InputStream stream) throws IOException {
         int version = stream.read();
         if (version == 0) {
-            readObject0(new ObjectInputStream(stream));
+            readObject(new ObjectInputStream(stream));
         } else if (version == 1) {
-            readObject1(stream);
+            new PasswordHashSerializer1(this).readObject(stream);
         } else {
             throw new IOException("version not supported " + version);
         }
@@ -131,7 +131,7 @@ public class PasswordHash {
         return bytes.length > 24;
     }    
 
-    private void writeObject0(ObjectOutputStream stream) throws IOException {
+    private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.writeInt(iterationCount);
         stream.writeShort(keySize);
         stream.write(hash.length);
@@ -143,45 +143,12 @@ public class PasswordHash {
         stream.flush();
     }
 
-    private void readObject0(ObjectInputStream stream) throws IOException {
+    private void readObject(ObjectInputStream stream) throws IOException {
         iterationCount = stream.readInt();
         keySize = stream.readShort();
         hash = new byte[stream.read()];
         salt = new byte[stream.read()];
         iv = new byte[stream.read()];
-        stream.read(hash);
-        stream.read(salt);
-        stream.read(iv);
-    }
-
-    private static final int[] ITERATION_COUNT_MAP = {
-        1000, 2000, 10000, 20000, 30000, 60000, 300000
-    };
-        
-    public void writeObject1(OutputStream stream) throws IOException {
-        if (keySize % 8 != 0) {
-            throw new IOException("Invalid key size " + keySize);
-        }
-        int iterationCountIndex = Arrays.binarySearch(ITERATION_COUNT_MAP, iterationCount);
-        if (iterationCountIndex < 0) {
-            throw new IOException("Invalid iteration count " + iterationCount);
-        }
-        stream.write(hash.length);
-        stream.write(salt.length);
-        stream.write(iv.length);
-        stream.write(iterationCountIndex);
-        stream.write(keySize / 8);
-        stream.write(hash);
-        stream.write(salt);
-        stream.write(iv);
-    }
-
-    public void readObject1(InputStream stream) throws IOException {
-        hash = new byte[stream.read()];
-        salt = new byte[stream.read()];
-        iv = new byte[stream.read()];
-        iterationCount = ITERATION_COUNT_MAP[stream.read()];
-        keySize = stream.read() * 8;
         stream.read(hash);
         stream.read(salt);
         stream.read(iv);
