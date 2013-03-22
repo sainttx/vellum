@@ -10,7 +10,6 @@ import org.junit.Test;
 import static junit.framework.Assert.*;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.test.Woohoo;
 
 /**
  *
@@ -21,6 +20,7 @@ public class PasswordHashTest {
     private static Logr logger = LogrFactory.getLogger(PasswordHashTest.class);
     private int keySize = Passwords.KEY_SIZE;
     private int iterationCount = Passwords.ITERATION_COUNT;
+
     @Test
     public void testPasswordHash30k() throws Exception {
         testPasswordHash(30000, 160);
@@ -33,10 +33,10 @@ public class PasswordHashTest {
 
     @Test
     public void testPasswordHashMinimumKeySize() throws Exception {
-        testPasswordHash(10000, 128);
+        testPasswordHash(30000, 128);
     }
-    
-    @Test
+
+    //@Test
     public void testPasswordHashKeySize() throws Exception {
         testPasswordHash(10000, 128);
         testPasswordHash(10000, 160);
@@ -46,19 +46,20 @@ public class PasswordHashTest {
         testPasswordHash(10000, 1024);
         testPasswordHash(10000, 1536);
     }
-    
-    @Test(expected = IOException.class)
+
+    //@Test(expected = IOException.class)
     public void testPasswordHash2048() throws Exception {
         testPasswordHash(10000, 2048);
     }
-    
+
     private void testPasswordHash(int iterationCount, int keySize) throws Exception {
         char[] password = "12345678".toCharArray();
         PasswordHash passwordHash = new PasswordHash(password, iterationCount, keySize);
         byte[] hashBytes = passwordHash.getBytes();
-        passwordHash = new PasswordHash(hashBytes) ;        
-        Woohoo.assertEquals("iterationCount", iterationCount, passwordHash.getIterationCount());
-        Woohoo.assertEquals("keySize", keySize, passwordHash.getKeySize());
+        passwordHash = new PasswordHash(hashBytes);
+        assertEquals("iterationCount", iterationCount, passwordHash.getIterationCount());
+        assertEquals("keySize", keySize, passwordHash.getKeySize());
+        assertTrue(PasswordHash.verifyBytes(hashBytes));
         String encodedString = Base64.encode(hashBytes);
         assertTrue(PasswordHash.verifyBytes(hashBytes));
         assertFalse(passwordHash.matches("wrong".toCharArray()));
@@ -70,14 +71,14 @@ public class PasswordHashTest {
         System.out.printf("encoded length: %d\n", encodedString.length());
         System.out.printf("millis: %d\n", passwordHash.getMillis());
     }
-    
+
     @Test
     public void testPasswordHashMore() throws Exception {
         char[] password = "12345678".toCharArray();
         PasswordHash passwordHash = new PasswordHash(password, iterationCount, keySize);
         assertTrue(new PasswordHash(passwordHash.getBytes()).matches(password));
         assertFalse(new PasswordHash(passwordHash.getBytes()).matches("wrong".toCharArray()));
-        passwordHash = new PasswordHash(password, iterationCount*2, 256);
+        passwordHash = new PasswordHash(password, iterationCount * 2, 256);
         System.out.printf("millis %d\n", passwordHash.getMillis());
         assertTrue(new PasswordHash(passwordHash.getBytes()).matches(password));
         System.out.printf("millis %d\n", passwordHash.getMillis());
@@ -89,7 +90,7 @@ public class PasswordHashTest {
         assertTrue(passwordHash.matches(password));
         assertFalse(passwordHash.matches("wrong".toCharArray()));
     }
-    
+
     @Test
     public void testPacked() throws Exception {
         char[] password = "12345678".toCharArray();
