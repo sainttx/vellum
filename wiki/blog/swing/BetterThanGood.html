@@ -1,0 +1,100 @@
+<p>
+Thanks to comments to <a href='http://weblogs.java.net/blog/evanx/archive/2006/10/the_good_the_ba_1.html'>The Good, The Bad and The Ugly</a>, i was taught that closures have important features,  like access to non final variables in scope. 
+<p>
+This does simplify code as follows (see <a href='http://weblogs.java.net/blog/evanx/archive/2006/05/swing_and_round_5.html'>Event DTs</a>), where otherwise arguments all have to be <tt>final</tt>, and variables like <tt>option</tt> can't be local in <tt>showConfirmDialog()</tt>. 
+
+<pre>
+public Class EdtHelper {
+    ...
+    int option; // not needed, yay
+    public int showConfirmDialog(String message) {
+        int option;
+        invokeAndWait(Runnable() { 
+            option = JOptionPane.showConfirmDialog(null, message, null, 
+                JOptionPane.YES_NO_OPTION);
+        });
+        return option;
+    }
+
+    public void showExceptionDialog(Exception e, String message) {            
+        if (message == null) message = "D'oh!";
+        invokeAndWait(Runnable() { 
+            JOptionPane.showMessageDialog(null, 
+                new String[] {message, e.getMessage()}, 
+                null, JOptionPane.OK_OPTION);
+        });
+    }
+
+    public void setEnabled(Component component, boolean enabled) {
+        invokeAndWait(Runnable() { 
+            component.setEnabled(enabled);
+        });
+    }
+
+    public void requestFocusInWindow(Component component) {
+        SwingUtilities.invokeLater(Runnable() { 
+            component.requestFocusInWindow();
+        });
+    }
+    ...
+    public void invokeAndWait(Runnable runnable) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeAndWait(runnable);
+        } else {
+            runnable.run();
+        }
+    }
+   
+    public void setWaitCursor(boolean waitCursor) {
+        invokeAndWait(Runnable() {
+            Cursor cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+            if (!waitCursor) cursor = null;
+            applicationFrame.setCursor(cursor);
+            if (glassPane != null) glassPane.setVisible(waitCursor);
+        });
+    }
+
+    public void startWorker(Runnable runnable) {
+        SwingWorker swingWorker = new SwingWorker() {
+            public Object construct() throws Exception {
+                setWaitCursor(true);
+                try {
+                    runnable.run();
+                } catch (Exception e) {
+                    showExceptionDialog(e, null);
+                } finally {
+                    setWaitCursor(false);
+                }
+                return null;
+            }
+        };
+        swingWorker.start();
+    }
+}
+</pre>
+
+Then starting long tasks using above EDT-agnostic support methods would be quite neat, and we can use non <tt>final</tt> variables in scope, eg. <tt>taskDescription</tt>. 
+
+<pre>
+    refreshButton.addActionListener(ActionListener(ActionEvent e) {         
+        String taskDescription = "Refresh data from server";
+        edtHelper.startWorker(Runnable() {
+            try {
+                ... // long task
+                if (!edtHelper.showConfirmDialog(
+                    "Oops, timeout! You wanna try another server?")) {
+                    return;
+                }
+                ...
+            } catch (Exception e) {
+                edtHelper.showExceptionDialog(e, taskDescription);
+            }
+        });
+    }
+</pre>
+
+So potentially very nice and useful. 
+
+But if closures can have access to non final variables in scope, then why can't anonymous classes just get them first? I mean, is that all closures offer compared to anonymous classes? 
+
+That is apart from saving keystrokes, which i don't think is terribly important, because IDEs type those for us anyway, as argued in my original blog - and that arguably it's harmful because it reduces clarity as to the relevant method, and provides two syntaxes for the same thing.

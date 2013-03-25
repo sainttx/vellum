@@ -1,0 +1,51 @@
+In <a href='http://www.writely.com/Doc.aspx?id=k73_1ggr36h'>Concise Instance Creation Expressions: Closures without Complexity</a> by Bob Lee, Doug Lea, and Josh Bloch, they propose the following syntax for closures, as a shorthand notation for anonymous classes with a single abstract method type, e.g. <tt>Runnable</tt>, <tt>Comparator</tt> and the like. 
+<pre>
+  List<String> stringList = ... ;
+   Collections.sort(stringList,
+      Comparator<String>(String s1, String s2) {
+         return s1.length() - s2.length(); 
+      }
+   );
+</pre>
+
+At first i thought why not include the method name as follows, for clarity.
+
+<pre>
+   Collections.sort(stringList, 
+      Comparator<String>.compareTo(String s1, String s2) {
+         return s1.length() - s2.length(); 
+      }
+   );
+</pre>
+
+Then i remembered, i just prefer the old familiar anonymous classes, and i'm not much interested in shorthand.
+
+Take abbreviations for instance. <i>Abbreviation is the Clarity-Killer, which passes through you and all that remains is Confusion.</i> Programmers, that don't use IDEs, are not lazy enough! And inconsiderate. They leave a trail of broken windows like abbreviations and inconsistent names, and code in need of refactoring, which they can't fix - because they don't use IDEs! That's why not using IDEs is the root of all evil ;)
+
+Anyway enough of that nonsense. Let's consider Swing event handlers.
+
+<pre>
+   okButton.addActionListener(new ActionListener() {
+       public void actionPerformed(ActionEvent e) { 
+          okActionPerformed();
+       }
+   });
+</pre>
+
+The following shorthand would avoid the method declaration. 
+
+<pre>
+   okButton.addActionListener(new ActionListener().actionPerformed(ActionEvent e) { 
+      okActionPerformed();
+   });
+</pre>
+
+And the following is as shorthandish as one could possibly make it, as in the above-mentioned proposal. 
+
+<pre>
+   okButton.addActionListener(ActionListener(ActionEvent e) { 
+      okActionPerformed();
+   });
+</pre>
+
+Considering that in Matisse, Netbeans generates and hides this code, and in general IDEs generate anonymous class methods for you, to save those keystrokes, is there really a need for such a shorthand notation? It goes towards having multiple ways to do the same thing (The Bad), and towards less keystrokes for IDEA-less Clarity Killers (The Ugly), and anyway what's wrong with anonymous classes (The Good, The Verbose and The Clear)?
