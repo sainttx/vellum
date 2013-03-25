@@ -64,7 +64,6 @@ create table org (
 create table user_ (
   user_id int auto_increment primary key, 
   user_name varchar(32) not null, 
-  org_id int,
   first_name varchar(32), 
   last_name varchar(32), 
   display_name varchar(64), 
