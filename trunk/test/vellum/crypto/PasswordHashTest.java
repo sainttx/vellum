@@ -32,11 +32,15 @@ public class PasswordHashTest {
     }
 
     @Test
+    public void testPasswordHash512b() throws Exception {
+        testPasswordHash(1000, 512);
+    }
+
+    @Test
     public void testPasswordHashMinimumKeySize() throws Exception {
         testPasswordHash(30000, 128);
     }
-
-    //@Test
+    
     public void testPasswordHashKeySize() throws Exception {
         testPasswordHash(10000, 128);
         testPasswordHash(10000, 160);
@@ -48,8 +52,8 @@ public class PasswordHashTest {
     }
 
     //@Test(expected = IOException.class)
-    public void testPasswordHash2048() throws Exception {
-        testPasswordHash(10000, 2048);
+    public void testPasswordHash2048b() throws Exception {
+        testPasswordHash(1000, 2048);
     }
 
     private void testPasswordHash(int iterationCount, int keySize) throws Exception {
