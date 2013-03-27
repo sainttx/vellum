@@ -43,7 +43,9 @@ public class PasswordHash {
     }
 
     public PasswordHash(byte[] bytes) throws IOException {
-        readObject(new ByteArrayInputStream(bytes));
+        InputStream stream = new ByteArrayInputStream(bytes);
+        int version = stream.read();        
+        readObject(stream);
     }
 
     public byte[] getBytes() throws IOException {
