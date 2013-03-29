@@ -90,7 +90,6 @@ public class EnrollOrgHandler extends CrocStorageHandler implements HttpHandler 
             OrgRole orgRole = new OrgRole(user, org, AdminUserRole.SUPER);
             storage.getOrgRoleStorage().insert(orgRole);
         }
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.printf(org.toJson());
+        httpExchangeInfo.write(org.getStringMap());
     }    
 }
