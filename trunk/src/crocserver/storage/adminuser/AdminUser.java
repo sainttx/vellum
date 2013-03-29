@@ -262,7 +262,7 @@ public class AdminUser extends AbstractIdEntity<Long> {
     
     @Override
     public String toString() {
-        return getStringMap().buildJson();
+        return getStringMap().toJson();
     }
     
 }

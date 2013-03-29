@@ -34,6 +34,16 @@ public class OrgRoleStorage extends LongIdEntityMapStorage<Long, OrgRole> {
         }
         return list;
     }
+
+    public List<OrgRole> getOrgRoleList(AdminUser user, Org org) {
+        List<OrgRole> list = new ArrayList();
+        for (OrgRole entity : super.getExtentList()) {
+            if (entity.getUser().equals(user) && entity.getOrg().equals(org)) {
+                list.add(entity);
+            }
+        }
+        return list;
+    }
     
     public Org getOrg(AdminUser user, String certName) throws StorageException {
         List<OrgRole> list = getOrgRoleList(user);
