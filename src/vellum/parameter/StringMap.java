@@ -66,7 +66,7 @@ public class StringMap extends HashMap<String, String> {
         return Long.parseLong(string);        
     }
 
-    public String buildJson() {
+    public String toJson() {
         return new Gson().toJson(this);
     }    
 }

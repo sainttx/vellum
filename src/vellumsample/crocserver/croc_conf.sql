@@ -13,8 +13,6 @@ insert into config (group_, name_, value) values ('main', testPost', 'false');
 insert into config (group_, name_, value) values ('main', testPostUrl', 'https://localhost:8443/post/aide/evans');
 insert into config (group_, name_, value) values ('main', shutdownUrl', 'https://localhost:8444/shutdown');
 insert into config (group_, name_, value) values ('main', terminate', '16s');
-insert into config (group_, name_, value) values ('GoogleApi.default', clientId', '680048185176-il77s0nh7iqforb9che0gpa4ckoptg96.apps.googleusercontent.com');
-insert into config (group_, name_, value) values ('GoogleApi.default', apiKey', 'AIzaSyDfxO8P5pyXjeuciH4-opSoNT4rN5xvKUk');
 insert into config (group_, name_, value) values ('Gtalk.default', enabled', 'false');
 insert into config (group_, name_, value) values ('Contact.evans', fullName', 'Evan Summers');
 insert into config (group_, name_, value) values ('Contact.evans', email', 'evan.summers@gmail.com');

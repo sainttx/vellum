@@ -8,28 +8,30 @@ import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
 import vellum.httpserver.HttpExchangeInfo;
 import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.AdminUserRole;
+import crocserver.storage.common.CrocStorageHandler;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.org.Org;
+import crocserver.storage.orgrole.OrgRole;
+import java.util.List;
 import vellum.datatype.Patterns;
 
 /**
  *
  * @author evans
  */
-public class EnrollOrgHandler implements HttpHandler {
+public class EnrollOrgHandler extends CrocStorageHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
-    CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     PrintStream out;
 
     public EnrollOrgHandler(CrocApp app) {
-        super();
-        this.app = app;
+        super(app);
     }
 
     String userName;
@@ -69,7 +71,7 @@ public class EnrollOrgHandler implements HttpHandler {
             }
         }
         String orgName = url;
-        org = app.getStorage().getOrgStorage().find(orgName);
+        org = storage.getOrgStorage().find(orgName);
         if (org == null) {
             org = new Org(orgName);
         }
@@ -79,12 +81,16 @@ public class EnrollOrgHandler implements HttpHandler {
         org.setLocality(httpExchangeInfo.getParameterMap().get("locality"));
         org.setCountry(httpExchangeInfo.getParameterMap().get("country"));
         if (org.isStored()) {
-            app.getStorage().getOrgStorage().update(org);
+            storage.getOrgStorage().update(org);
         } else {
-            app.getStorage().getOrgStorage().insert(org);
+            storage.getOrgStorage().insert(org);
+        }
+        List<OrgRole> orgRoleList = storage.getOrgRoleStorage().getOrgRoleList(user, org);
+        if (orgRoleList.isEmpty()) {
+            OrgRole orgRole = new OrgRole(user, org, AdminUserRole.SUPER);
+            storage.getOrgRoleStorage().insert(orgRole);
         }
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        out.printf("OK %s %d\n", org.getOrgName(), org.getId());
-    }
-    
+        out.printf(org.toJson());
+    }    
 }
