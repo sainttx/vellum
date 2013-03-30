@@ -1,7 +1,7 @@
 
 java -Djavax.net.ssl.keyStore=security/croc.jks -Djavax.net.ssl.keyStorePassword=crocserver -Djavax.net.ssl.keyPassword=crocserver -Djavax.net.ssl.trustStore=security/croc.jks -Djavax.net.ssl.trustStorePassword=crocserver
 
-keytool -keystore security/croc.jks -storepass crocserver -alias crocserver -genkey -keypass crocserver -dname "CN=crocserver, OU=crocserver-ou, O=crocserver-org, L=CPT, S=WP, C=ZA"
+~/jdk7/jre/bin/keytool -keystore security/croc.jks -storepass crocserver -alias crocserver -genkeypair -keyalg RSA -keysize 2048 -keypass crocserver -dname "CN=crocserver, OU=crocserver-ou, O=crocserver-org, L=CPT, S=WP, C=ZA"
 
 keytool -keystore security/croc.jks -storepass crocserver -list
 
