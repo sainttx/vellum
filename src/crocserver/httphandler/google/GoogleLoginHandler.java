@@ -44,25 +44,22 @@ public class GoogleLoginHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), httpExchangeInfo.getParameterMap());
+        logger.info("handle", getClass().getSimpleName(), httpExchangeInfo.getPath(), 
+                httpExchangeInfo.getParameterMap());
         if (httpExchangeInfo.getPath().length() == 0) {
             httpExchange.close();
             return;
         }
-        if (httpExchangeInfo.getPathLength() == 1) {
-            accessToken = httpExchangeInfo.getParameter("accessToken");
-            logger.info("input", userId, accessToken);
-            try {
-                if (accessToken != null) {
-                    handle();
-                } else {
-                    httpExchangeInfo.handleError("require access_token");
-                }
-            } catch (Exception e) {
-                httpExchangeInfo.handleError(e);
+        accessToken = httpExchangeInfo.getParameter("accessToken");
+        logger.info("input", userId, accessToken);
+        try {
+            if (accessToken != null) {
+                handle();
+            } else {
+                httpExchangeInfo.handleError("require access_token");
             }
-        } else {
-            httpExchangeInfo.handleError();
+        } catch (Exception e) {
+            httpExchangeInfo.handleError(e);
         }
         httpExchange.close();
     }

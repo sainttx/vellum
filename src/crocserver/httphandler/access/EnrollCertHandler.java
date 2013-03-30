@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
 import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.clientcert.Cert;
 import crocserver.storage.org.Org;
 import vellum.httpserver.HttpExchangeInfo;
@@ -24,17 +25,17 @@ import vellum.security.GeneratedRsaKeyPair;
  *
  * @author evans
  */
-public class EnrollClientHandler implements HttpHandler {
+public class EnrollCertHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());
     CrocApp app;
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
-    PrintStream out;
 
     String userName;
+    String orgName;
     String certName;
  
-    public EnrollClientHandler(CrocApp app) {
+    public EnrollCertHandler(CrocApp app) {
         super();
         this.app = app;
     }
@@ -43,12 +44,12 @@ public class EnrollClientHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
-        httpExchange.getResponseHeaders().set("Content-type", "text/plain");
-        out = new PrintStream(httpExchange.getResponseBody());
+        logger.info("handle", getClass().getName(), httpExchangeInfo.getPathArgs());
         if (httpExchangeInfo.getPathArgs().length < 4) {
-            httpExchangeInfo.handleError();
+            httpExchangeInfo.handleError(CrocError.INVALID_ARGS);
         } else {
-            userName = httpExchangeInfo.getPathString(2);
+            userName = httpExchangeInfo.getPathString(1);
+            orgName = httpExchangeInfo.getPathString(2);
             certName = httpExchangeInfo.getPathString(3);
             try {
                 generate();
@@ -61,7 +62,9 @@ public class EnrollClientHandler implements HttpHandler {
     
     private void generate() throws Exception {
         AdminUser user = app.getStorage().getUserStorage().find(userName);
-        Org org = app.getStorage().getOrgRoleStorage().getOrg(user, certName);
+        Org org = app.getStorage().getOrgStorage().get(orgName);
+        app.getStorage().getOrgRoleStorage().verifyRole(user, org, AdminUserRole.SUPER);
+        logger.info("handle", user.getUserName(), org.getOrgName());
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
         String dname = org.formatDname(certName, userName);
         keyPair.generate(dname, new Date(), 999);
@@ -70,10 +73,8 @@ public class EnrollClientHandler implements HttpHandler {
         Cert cert = new Cert();
         cert.setName(certName);
         cert.setCert(keyPair.getCert());
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-         httpExchangeInfo.sendResponse("application/x-pem-file", 
-                 Certificates.buildKeyPem(keyPair.getPrivateKey()).getBytes());
-           
+        httpExchangeInfo.sendResponse("application/x-pem-file",
+                Certificates.buildKeyPem(keyPair.getPrivateKey()).getBytes());
+
     }    
-    
 }

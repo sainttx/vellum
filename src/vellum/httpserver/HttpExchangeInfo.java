@@ -283,17 +283,14 @@ public class HttpExchangeInfo {
         handleError(e.getMessage());
     }
 
-    public void handleError() throws IOException {
-        handleError("");
-    }
-    
-    public void handleError(String message) {
+    public void handleError(Object message) {
+        String messageString = message.toString();
         try {
-            logger.warn(message, parameterMap);
+            logger.warn(messageString, parameterMap);
             httpExchange.getResponseHeaders().set("Content-type", "text/json");
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
             PrintStream out = new PrintStream(httpExchange.getResponseBody());
-            out.printf("{ errorMessage: \"%s\"; }\n", message);
+            out.printf("{ errorMessage: \"%s\"; }\n", messageString);
         } catch (Exception e) {
             logger.warn(e);
         }
