@@ -52,11 +52,11 @@ import vellum.util.DefaultDateFormats;
 public class CrocApp {
 
     Logr logger = LogrFactory.getLogger(getClass());
+    CrocConfig config;
     CrocStorage storage;
     DataSourceConfig dataSourceConfig;
     PropertiesMap configProperties;
     Thread serverThread;
-    String confFileName;
     ConfigMap configMap;
     Server h2Server;
     VellumHttpServer httpServer;
@@ -65,7 +65,6 @@ public class CrocApp {
     CrocTrustManager trustManager;
     GtalkConnection gtalkConnection;
     Contact adminContact;
-    String serverKeyAlias = System.getProperty("serverKeyAlias");
     X509Certificate serverCert;
     GoogleApi googleApi;
     String serverUrl;
@@ -156,10 +155,10 @@ public class CrocApp {
     }
 
     private void initConfig() throws Exception {
-        serverCert = DefaultKeyStores.getCert(serverKeyAlias);
-        confFileName = getString("croc.conf");
-        File confFile = new File(confFileName);
-        logger.info("conf", confFileName, confFile);
+        config = new CrocConfig();
+        serverCert = DefaultKeyStores.getCert(config.serverKeyAlias);
+        File confFile = new File(config.confFileName);
+        logger.info("conf", config.confFileName, confFile);
         configMap = ConfigParser.parse(new FileInputStream(confFile));
         configProperties = configMap.find("Config", "default").getProperties();
         String logLevelName = configProperties.get("logLevel");
@@ -240,14 +239,6 @@ public class CrocApp {
         }
     }
 
-    private String getString(String name) {
-        String string = System.getProperty(name);
-        if (string == null) {
-            throw new RuntimeException(name);
-        }
-        return string;
-    }
-
     public CrocStorage getStorage() {
         return storage;
     }
@@ -257,13 +248,13 @@ public class CrocApp {
     }
 
     public String getServerKeyAlias() {
-        return serverKeyAlias;
+        return config.serverKeyAlias;
     }
 
     public GeneratedRsaKeyPair generateSignedKeyPair(String subject) throws Exception {
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
         keyPair.generate(subject, new Date(), 999);
-        keyPair.sign(DefaultKeyStores.getPrivateKey(serverKeyAlias), serverCert);
+        keyPair.sign(DefaultKeyStores.getPrivateKey(config.serverKeyAlias), serverCert);
         return keyPair;
     }
 

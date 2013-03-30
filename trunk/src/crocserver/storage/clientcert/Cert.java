@@ -8,7 +8,6 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
 import vellum.security.Certificates;
-import vellum.security.KeyStores;
 
 /**
  *
@@ -29,7 +28,7 @@ public final class Cert extends AbstractIdEntity {
     }
 
     public void setCert(X509Certificate x509Cert) {
-        this.cert = KeyStores.buildCertPem(x509Cert);
+        this.cert = Certificates.buildCertPem(x509Cert);
         this.subject = x509Cert.getSubjectDN().getName();
         this.name = Certificates.getCommonName(subject);
     }

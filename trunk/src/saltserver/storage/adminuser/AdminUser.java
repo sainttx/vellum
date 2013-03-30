@@ -8,7 +8,7 @@ import crocserver.storage.org.Org;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import vellum.entity.AbstractIdEntity;
-import vellum.security.KeyStores;
+import vellum.security.Certificates;
 
 /**
  *
@@ -61,7 +61,7 @@ public class AdminUser extends AbstractIdEntity<String> {
     }
 
     public String formatSubject() {
-        return KeyStores.formatDname(email, displayName, userName, locality, region, country);
+        return Certificates.formatDname(email, displayName, userName, locality, region, country);
     }
     
     public Org getOrg() {
@@ -225,7 +225,7 @@ public class AdminUser extends AbstractIdEntity<String> {
     }
 
     public void setCert(X509Certificate x509Cert) {
-        this.cert = KeyStores.buildCertPem(x509Cert);
+        this.cert = Certificates.buildCertPem(x509Cert);
         this.subject = x509Cert.getSubjectDN().getName();
     }
     

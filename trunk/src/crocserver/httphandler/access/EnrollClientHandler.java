@@ -16,8 +16,8 @@ import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import java.util.Date;
+import vellum.security.Certificates;
 import vellum.security.DefaultKeyStores;
-import vellum.security.KeyStores;
 import vellum.security.GeneratedRsaKeyPair;
 
 /**
@@ -72,7 +72,7 @@ public class EnrollClientHandler implements HttpHandler {
         cert.setCert(keyPair.getCert());
         httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
          httpExchangeInfo.sendResponse("application/x-pem-file", 
-                 KeyStores.buildKeyPem(keyPair.getPrivateKey()).getBytes());
+                 Certificates.buildKeyPem(keyPair.getPrivateKey()).getBytes());
            
     }    
     
