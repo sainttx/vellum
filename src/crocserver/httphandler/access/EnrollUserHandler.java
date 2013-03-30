@@ -7,7 +7,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
 import vellum.httpserver.HttpExchangeInfo;
-import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.adminuser.AdminUser;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -18,8 +17,8 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import sun.security.pkcs.PKCS10;
 import vellum.datatype.Patterns;
+import vellum.security.Certificates;
 import vellum.security.DefaultKeyStores;
-import vellum.security.KeyStores;
 
 /**
  *
@@ -88,13 +87,13 @@ public class EnrollUserHandler implements HttpHandler {
         logger.info("sign", user.getSubject(), certReqPem.length());
         if (!certReqPem.isEmpty()) {
             String alias = app.getServerKeyAlias();
-            PKCS10 certReq = KeyStores.createCertReq(certReqPem);
-            X509Certificate signedCert = KeyStores.signCert(
+            PKCS10 certReq = Certificates.createCertReq(certReqPem);
+            X509Certificate signedCert = Certificates.signCert(
                     DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias),
                     certReq, new Date(), 999);
-            String signedCertPem = KeyStores.buildCertPem(signedCert);
-            logger.info("subject", KeyStores.getSubjectDname(signedCertPem));
-            logger.info("issuer", KeyStores.getIssuerDname(signedCertPem));
+            String signedCertPem = Certificates.buildCertPem(signedCert);
+            logger.info("subject", Certificates.getSubjectDname(signedCertPem));
+            logger.info("issuer", Certificates.getIssuerDname(signedCertPem));
             storage.getUserStorage().store(user);
             if (false) {
                 app.sendGtalkMessage(user.getEmail(), signedCert.getSubjectDN().toString());

@@ -3,7 +3,6 @@
  */
 package crocserver.httphandler.secure;
 
-import crocserver.httphandler.access.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
@@ -11,7 +10,6 @@ import crocserver.app.CrocApp;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import crocserver.storage.common.CrocStorage;
@@ -19,8 +17,8 @@ import crocserver.storage.org.Org;
 import crocserver.storage.service.Service;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import vellum.security.Certificates;
 import vellum.security.DefaultKeyStores;
-import vellum.security.KeyStores;
 import vellum.security.GeneratedRsaKeyPair;
 
 /**
@@ -77,7 +75,7 @@ public class GenKeyP12CliHandler implements HttpHandler {
             org = new Org(orgName);
             storage.getOrgStorage().insert(org);
         }
-        String dname = KeyStores.formatDname(clientName, hostName, orgName, 
+        String dname = Certificates.formatDname(clientName, hostName, orgName, 
                 org.getRegion(), org.getLocality(), org.getCountry());
         logger.info("generate", dname);
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
@@ -103,7 +101,7 @@ public class GenKeyP12CliHandler implements HttpHandler {
         p12.engineSetKeyEntry(clientName, keyPair.getPrivateKey(), password, chain);
         if (httpExchangeInfo.getQuery().toLowerCase().contains("pem")) {
             httpExchangeInfo.sendResponse("text/plain", true);
-            out.println(KeyStores.buildPem(p12, clientName, password));
+            out.println(Certificates.buildPem(p12, clientName, password));
             logger.info("pem");
         } else {
             httpExchangeInfo.sendResponse("application/x-pkcs12", true);

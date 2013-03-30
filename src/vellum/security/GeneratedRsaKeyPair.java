@@ -43,7 +43,7 @@ public class GeneratedRsaKeyPair {
     }
 
     public void sign(PrivateKey signerKey, X509Certificate signerCert) throws Exception {
-        cert = KeyStores.signCert(signerKey, signerCert, certReq, startDate, validityDays);
+        cert = Certificates.signCert(signerKey, signerCert, certReq, startDate, validityDays);
     }
     
     public PrivateKey getPrivateKey() {

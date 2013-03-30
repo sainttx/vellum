@@ -21,7 +21,7 @@ public class VKeyTool {
     String keyStoreType = "JKS";
     String providerName = null;
     String keyAlgName = "RSA";
-    String dname = KeyStores.LOCAL_DNAME;
+    String dname = Certificates.LOCAL_DNAME;
     String keyStorePath;
     String trustStorePath;
     String keyStorePassword;
