@@ -10,3 +10,4 @@ curl -k "https://localhost:8443/enrollUser/evan.summers@gmail.com?displayName=Ev
 curl -k "https://localhost:8443/enrollOrg/evan.summers@gmail.com/crocserver.org?displayName=CrocServer.Org"
 
 curl -k "https://localhost:8443/enrollCert/evan.summers@gmail.com/crocserver.org/evanx@desktop"
+
