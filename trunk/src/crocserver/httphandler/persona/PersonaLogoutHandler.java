@@ -45,7 +45,7 @@ public class PersonaLogoutHandler implements HttpHandler {
             if (cookie.getEmail() == null) {
                 logger.warn("cookie", cookie);
                 if (false) {
-                    httpExchangeInfo.handleError();
+                    httpExchangeInfo.handleError("No username in cookie");
                 }
             } else {
                 handle();

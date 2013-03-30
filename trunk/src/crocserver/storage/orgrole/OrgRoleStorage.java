@@ -5,6 +5,7 @@
 package crocserver.storage.orgrole;
 
 import crocserver.storage.adminuser.AdminUser;
+import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.common.CrocStorage;
 import crocserver.storage.org.Org;
 import java.util.ArrayList;
@@ -52,4 +53,12 @@ public class OrgRoleStorage extends LongIdEntityMapStorage<Long, OrgRole> {
         }
         return list.get(0).getOrg();
     }            
+
+    public boolean verifyRole(AdminUser user, Org org, AdminUserRole role) throws StorageException {
+        if (true) {
+            return true;
+        }
+        throw new StorageException(StorageExceptionType.NOT_FOUND, user.getUserName(),
+                org.getOrgName(), role);
+    }
 }
