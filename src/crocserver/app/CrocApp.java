@@ -9,7 +9,6 @@ import crocserver.gtalk.GtalkConnection;
 import crocserver.httphandler.access.AccessHttpHandler;
 import crocserver.httphandler.access.WebHandler;
 import crocserver.httphandler.insecure.InsecureHttpHandler;
-import crocserver.httphandler.persona.PersonaApi;
 import crocserver.httphandler.secure.SecureHttpHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.httpserver.HttpServerConfig;
