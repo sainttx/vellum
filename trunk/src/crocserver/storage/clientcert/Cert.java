@@ -15,6 +15,7 @@ import vellum.security.Certificates;
  */
 public final class Cert extends AbstractIdEntity {
     Long id;
+    Long orgId;
     String name;
     String subject;
     String cert;
@@ -26,7 +27,7 @@ public final class Cert extends AbstractIdEntity {
 
     public Cert() {
     }
-
+    
     public void setCert(X509Certificate x509Cert) {
         this.cert = Certificates.buildCertPem(x509Cert);
         this.subject = x509Cert.getSubjectDN().getName();
@@ -82,6 +83,14 @@ public final class Cert extends AbstractIdEntity {
         this.updated = updated;
     }
 
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
+    }
+
+    public Long getOrgId() {
+        return orgId;
+    }
+    
     public void setStored(boolean stored) {
         this.stored = stored;
     }

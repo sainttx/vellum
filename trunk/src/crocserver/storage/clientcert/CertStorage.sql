@@ -1,10 +1,11 @@
 
 -- insert
 insert into cert (
+  org_id,
   name_,
   subject,
   cert
-) values (?, ?, ?)
+) values (?, ?, ?, ?)
 ;
 
 -- update

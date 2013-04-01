@@ -75,7 +75,7 @@ public class PersonaLoginHandler implements HttpHandler {
             user.setSecret(CrocSecurity.createSecret());
             if (true) {
                 GeneratedRsaKeyPair keyPair = app.generateSignedKeyPair(user.formatSubject());
-                app.getStorage().getCertStorage().save(keyPair.getCert(), user.getEmail());
+                app.getStorage().getCertStorage().save(keyPair.getCert());
                 user.setCert(keyPair.getCert());
             }
         }

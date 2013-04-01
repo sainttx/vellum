@@ -26,7 +26,7 @@ public class EnumException extends DisplayException {
         this.exceptionType = exceptionType;
     }
     
-    public Enum getStorageExceptionType() {
+    public Enum getExceptionType() {
         return exceptionType;
     }
         
