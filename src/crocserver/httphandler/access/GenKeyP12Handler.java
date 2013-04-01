@@ -66,7 +66,7 @@ public class GenKeyP12Handler implements HttpHandler {
         keyPair.sign(DefaultKeyStores.getPrivateKey(alias), serverCert);
         user.setCert(keyPair.getCert());
         storage.getUserStorage().updateCert(user);
-        storage.getCertStorage().save(keyPair.getCert(), user.getEmail());
+        storage.getCertStorage().save(keyPair.getCert());
         PKCS12KeyStore p12 = new PKCS12KeyStore();
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCert(), serverCert};
         p12.engineSetKeyEntry(user.getUserName(), keyPair.getPrivateKey(), password, chain);

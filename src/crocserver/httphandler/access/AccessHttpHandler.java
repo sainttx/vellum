@@ -60,7 +60,7 @@ public class AccessHttpHandler implements HttpHandler {
         } else if (path.startsWith("/enrollCert/")) {
             return new EnrollCertHandler(app);
         } else if (path.startsWith("/getCert/")) {
-            return new GetCertHandler(storage);
+            return new GetCertHandler(app);
         } else if (path.equals("/login")) {
             return new GoogleLoginHandler(app);
         } else if (path.equals("/logout")) {

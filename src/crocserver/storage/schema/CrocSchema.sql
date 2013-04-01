@@ -23,6 +23,7 @@ create table schema_revision (
 
 create table cert (
   cert_id int auto_increment primary key,
+  org_id int not null,
   name_ varchar(64) not null,
   subject varchar(255) not null,
   cert varchar(8192),
@@ -177,3 +178,6 @@ create table metric_record (
   time_ timestamp,
   unique key uniq_metric_record (org_id, host_name, service_name, metric_name, time_)
 );
+
+
+alter table cert add constraint fk_cert_org_id foreign key (org_id) references org (org_id);

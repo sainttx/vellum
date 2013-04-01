@@ -5,6 +5,7 @@
 package crocserver.storage.clientcert;
 
 import crocserver.storage.common.CrocStorage;
+import crocserver.storage.org.Org;
 import java.security.cert.X509Certificate;
 import java.sql.*;
 import vellum.storage.StorageExceptionType;
@@ -33,6 +34,7 @@ public class CertStorage {
     private Cert build(ResultSet resultSet) throws SQLException {
         Cert cert = new Cert();
         cert.setId(resultSet.getLong(CertMeta.cert_id.name()));
+        cert.setOrgId(resultSet.getLong(CertMeta.org_id.name()));
         cert.setName(resultSet.getString(CertMeta.name_.name()));
         cert.setSubject(resultSet.getString(CertMeta.subject.name()));
         cert.setCert(resultSet.getString(CertMeta.cert.name()));
@@ -46,6 +48,7 @@ public class CertStorage {
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(CertQuery.insert.name()));
             int index = 0;
+            statement.setLong(++index, cert.getOrgId());
             statement.setString(++index, cert.getName());
             statement.setString(++index, cert.getSubject());
             statement.setString(++index, cert.getCert());
@@ -80,6 +83,14 @@ public class CertStorage {
         }
     }
 
+    public void save(Cert cert) throws SQLException {
+        if (cert.isStored()) {
+            update(cert);
+        } else {
+            insert(cert);
+        }
+    }
+        
     public Cert find(long id) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
@@ -159,10 +170,11 @@ public class CertStorage {
         }
     }
 
-    public void save(X509Certificate x509Cert, String updatedBy) throws SQLException {
+    public void save(X509Certificate x509Cert) throws SQLException {
         Cert clientCert = findSubject(x509Cert.getSubjectDN().getName());
         if (clientCert == null) {
             clientCert = new Cert();
+            clientCert.setCert(x509Cert);
         }
         clientCert.setCert(x509Cert);
         if (clientCert.isStored()) {
