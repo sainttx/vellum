@@ -11,7 +11,7 @@ import bizstat.server.BizstatServer;
 import crocserver.storage.org.Org;
 import vellum.type.UniqueList;
 import java.util.List;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.entity.AbstractIdEntity;
 import vellum.entity.ConfigurableEntity;
 
@@ -113,7 +113,7 @@ public class Host extends AbstractIdEntity implements ConfigurableEntity<Bizstat
     }
     
     @Override
-    public void config(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesStringMap properties) {
         ipNumber = properties.getString("ipNumber", null);
         enabled = properties.getBoolean("enabled", true);
         network = server.getConfigStorage().find(Network.class, properties.getString("network"));

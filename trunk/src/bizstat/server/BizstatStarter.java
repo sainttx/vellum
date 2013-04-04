@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import vellum.config.ConfigEntry;
 import vellum.config.ConfigMap;
 import vellum.config.ConfigParser;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrLevel;
@@ -32,7 +32,7 @@ public class BizstatStarter implements Runnable, DirWatcherListener {
     
     Logr logger = LogrFactory.getLogger(BizstatStarter.class);
     ConfigMap configMap;
-    PropertiesMap configProperties;
+    PropertiesStringMap configProperties;
     BizstatServer server;
     Thread serverThread;
     

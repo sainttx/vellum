@@ -7,7 +7,7 @@ package crocserver.app;
 import java.net.URL;
 import java.net.URLEncoder;
 import javax.net.ssl.HttpsURLConnection;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.exception.EnumException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -30,7 +30,7 @@ public class GoogleApi {
     String redirectUrl;
     String apiKey;
 
-    public GoogleApi(String serverUrl, String redirectUrl, PropertiesMap props) {
+    public GoogleApi(String serverUrl, String redirectUrl, PropertiesStringMap props) {
         this.serverUrl = serverUrl;
         this.redirectUrl = redirectUrl;
         clientId = props.get("clientId");

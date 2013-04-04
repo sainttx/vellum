@@ -11,7 +11,7 @@ import bizstat.server.BizstatServer;
 import vellum.type.UniqueList;
 import vellum.entity.AbstractIdEntity;
 import java.util.List;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.entity.ConfigurableEntity;
 
 /**
@@ -60,7 +60,7 @@ public class ContactGroup extends AbstractIdEntity implements ConfigurableEntity
     }
 
     @Override
-    public void config(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesStringMap properties) {
         label = properties.getString("label", null);
         enabled = properties.getBoolean("enabled");
         for (String contactName : properties.splitCsv("contacts")) {

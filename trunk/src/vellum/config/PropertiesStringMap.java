@@ -19,8 +19,8 @@ import vellum.util.DefaultDateFormats;
  *
  * @author evan
  */
-public class PropertiesMap extends HashMap<String, String> {
-    Logr logger = LogrFactory.getLogger(PropertiesMap.class);
+public class PropertiesStringMap extends HashMap<String, String> {
+    Logr logger = LogrFactory.getLogger(PropertiesStringMap.class);
     
     private String get(String name) {
         String string = super.get(name);

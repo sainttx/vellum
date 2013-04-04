@@ -11,7 +11,7 @@ import bizstat.server.BizstatServer;
 import vellum.datatype.Millis;
 import java.util.Date;
 import java.util.List;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -23,9 +23,9 @@ public class ServiceConfigurator {
     Logr logger = LogrFactory.getLogger(ServiceConfigurator.class);
     BizstatService service;
     BizstatServer server;
-    PropertiesMap properties;
+    PropertiesStringMap properties;
 
-    public ServiceConfigurator(BizstatServer server, PropertiesMap properties, BizstatService service) {
+    public ServiceConfigurator(BizstatServer server, PropertiesStringMap properties, BizstatService service) {
         this.server = server;
         this.properties = properties;
         this.service = service;

@@ -7,7 +7,7 @@ package bizstat.entity;
 import vellum.entity.AbstractIdEntity;
 import java.util.Date;
 import vellum.config.ConfigEntry;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.util.Args;
 
 /**
@@ -33,7 +33,7 @@ public class Contact extends AbstractIdEntity {
         this(entry.getName(), entry.getProperties());
     }
     
-    public Contact(String name, PropertiesMap props) {
+    public Contact(String name, PropertiesStringMap props) {
         this.name = name;
         this.fullName = props.getString("fullName");
         this.email = props.getString("email");
@@ -110,8 +110,8 @@ public class Contact extends AbstractIdEntity {
         return contactGroup;
     }
 
-    public PropertiesMap getPropertiesMap() {
-        PropertiesMap map = new PropertiesMap();
+    public PropertiesStringMap getPropertiesMap() {
+        PropertiesStringMap map = new PropertiesStringMap();
         map.put("name", name);
         map.put("fullName", fullName);
         map.put("sms", sms);

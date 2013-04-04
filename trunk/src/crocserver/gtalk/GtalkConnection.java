@@ -9,7 +9,7 @@ import bizstat.entity.Contact;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -19,14 +19,14 @@ import vellum.logr.LogrFactory;
  */
 public class GtalkConnection implements MessageListener {
     Logr logger = LogrFactory.getLogger(GtalkConnection.class);
-    PropertiesMap properties;
+    PropertiesStringMap properties;
         
     String username;
     String password;
     
     XMPPConnection connection;    
     
-    public GtalkConnection(PropertiesMap properties) {
+    public GtalkConnection(PropertiesStringMap properties) {
         username = properties.getString("gtalkUsername", System.getProperty("gtalk.username"));
         password = properties.getString("gtalkPassword", System.getProperty("gtalk.password"));
         logger.info("gtalkUsername", username);

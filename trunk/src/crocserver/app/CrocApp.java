@@ -22,7 +22,7 @@ import java.net.URLConnection;
 import org.h2.tools.Server;
 import vellum.config.ConfigMap;
 import vellum.config.ConfigParser;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.datatype.SimpleEntityCache;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -54,7 +54,7 @@ public class CrocApp {
     CrocConfig config;
     CrocStorage storage;
     DataSourceConfig dataSourceConfig;
-    PropertiesMap configProperties;
+    PropertiesStringMap configProperties;
     Thread serverThread;
     ConfigMap configMap;
     Server h2Server;
@@ -121,7 +121,7 @@ public class CrocApp {
         }
         String gtalkConfigName = configProperties.getString("gtalk");
         if (gtalkConfigName != null) {
-            PropertiesMap gtalkProps = configMap.find("Gtalk", gtalkConfigName).getProperties();
+            PropertiesStringMap gtalkProps = configMap.find("Gtalk", gtalkConfigName).getProperties();
             if (gtalkProps.getBoolean("enabled", false)) {
                 gtalkConnection = new GtalkConnection(gtalkProps);
             }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import vellum.config.ConfigException;
 import vellum.config.ConfigExceptionType;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.lifecycle.Initialisable;
 import vellum.storage.DataSourceConfig;
 
@@ -75,7 +75,7 @@ public class BizstatConfig extends AbstractConfig implements Initialisable {
     private void initHttpServerInfoConfig() {
         String httpServerName = properties.getString("httpServer");
         if (httpServerName != null) {
-            PropertiesMap props = server.configMap.find("HttpServer", httpServerName).getProperties();
+            PropertiesStringMap props = server.configMap.find("HttpServer", httpServerName).getProperties();
             httpServerConfig = new HttpServerConfig(props);
         }
     }
