@@ -71,13 +71,13 @@ public class PasswordsTest {
         byte[] saltBytes = PasswordSalts.nextSalt();
         long startMillis = System.currentTimeMillis();
         byte[] hashBytes = Passwords.hashPassword(password, saltBytes, 30000, 160);
-        System.out.println("hash time (30k): " + Millis.elapsed(startMillis));
+        System.out.printf("hash time (30k): %dms\n", Millis.elapsed(startMillis));
         startMillis = System.currentTimeMillis();
         Passwords.hashPassword(password, saltBytes, 300000, 160);
-        System.out.println("10x hash time (300k): " + Millis.elapsed(startMillis));
+        System.out.printf("10x hash time (300k): %dms\n", Millis.elapsed(startMillis));
         startMillis = System.currentTimeMillis();
         assertTrue(Passwords.matches(password, hashBytes, saltBytes, 30000, 160));
-        System.out.println("matches time: " + Millis.elapsed(startMillis));
+        System.out.printf("matches time: %dms\n", Millis.elapsed(startMillis));
         assertFalse(Passwords.matches(password, hashBytes, saltBytes, 30001, 160));
         assertFalse(Passwords.matches(password, hashBytes, saltBytes, 30000, 128));
         assertFalse(Passwords.matches("wrong".toCharArray(), 
