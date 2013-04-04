@@ -4,7 +4,7 @@
  */
 package vellum.httpserver;
 
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 
 /**
  *
@@ -15,7 +15,7 @@ public class HttpServerConfig {
     boolean enabled;
     boolean clientAuth;
             
-    public HttpServerConfig(PropertiesMap props) {
+    public HttpServerConfig(PropertiesStringMap props) {
         this(props.getInt("port"),
                 props.getBoolean("clientAuth", false),
                 props.getBoolean("enabled", true));

@@ -13,7 +13,7 @@ import org.h2.tools.Server;
 import saltserver.crypto.AESCipher;
 import vellum.config.ConfigMap;
 import vellum.config.ConfigParser;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrLevel;
@@ -33,7 +33,7 @@ public class MantraApp {
     Logr logger = LogrFactory.getLogger(getClass());
     MantraStorage storage;
     DataSourceConfig dataSourceConfig;
-    PropertiesMap configProperties;
+    PropertiesStringMap configProperties;
     Thread serverThread;
     String confFileName;
     ConfigMap configMap;

@@ -13,7 +13,7 @@ import bizstat.server.BizstatServer;
 import crocserver.storage.org.Org;
 import crocserver.storage.service.ServiceType;
 import java.util.*;
-import vellum.config.PropertiesMap;
+import vellum.config.PropertiesStringMap;
 import vellum.entity.ConfigurableEntity;
 import vellum.type.UniqueList;
 
@@ -39,7 +39,7 @@ public class BizstatService extends ServiceType implements ConfigurableEntity<Bi
     }
 
     @Override
-    public void config(BizstatServer server, PropertiesMap properties) {
+    public void config(BizstatServer server, PropertiesStringMap properties) {
         new ServiceConfigurator(server, properties, this).configure();
     }    
 }

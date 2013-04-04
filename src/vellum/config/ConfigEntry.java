@@ -14,7 +14,7 @@ public class ConfigEntry {
     final String type;
     final String name;
     final ComparableTuple key;
-    final PropertiesMap properties = new PropertiesMap();
+    final PropertiesStringMap properties = new PropertiesStringMap();
 
     public ConfigEntry(String type, String name) {
         this.type = type;
@@ -34,7 +34,7 @@ public class ConfigEntry {
         return name;
     }
 
-    public PropertiesMap getProperties() {
+    public PropertiesStringMap getProperties() {
         return properties;
     }
     
