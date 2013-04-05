@@ -24,7 +24,7 @@ import vellum.util.Integers;
  */
 public class PasswordHash {
     private static Logr logger = LogrFactory.getLogger(PasswordHash.class);
-    private static final int VERSION_OBJECT_STREAM = 255;
+    private static final int VERSION_OBJECT_STREAM = 120;
     private static final int VERSION = VERSION_OBJECT_STREAM;
     int iterationCount;
     int keySize;
@@ -55,9 +55,9 @@ public class PasswordHash {
     
     private void writeObject(OutputStream stream) throws IOException {
         if (hash.length > 255) {
-            throw new IOException("Invalid hash length");
+            throw new IOException("Hash length not supported");
         }
-        if (VERSION == 255) {
+        if (VERSION == VERSION_OBJECT_STREAM) {
             stream.write(VERSION);
             writeObject(new ObjectOutputStream(stream));
         } else {
@@ -67,7 +67,7 @@ public class PasswordHash {
 
     private void readObject(InputStream stream) throws IOException {
         int version = stream.read();
-        if (version == VERSION) {
+        if (version == VERSION_OBJECT_STREAM) {
             readObject(new ObjectInputStream(stream));
         } else {            
             MinimalPasswordHashSerializer.readObject(this, stream, version);
@@ -126,7 +126,8 @@ public class PasswordHash {
     }
                     
     public static boolean verifyBytes(byte[] bytes) {
-        return bytes.length > 24;
+        logger.info("verifyBytes", bytes.length, (int) bytes[0]);
+        return bytes.length >= 48 && bytes[0] == VERSION;
     }    
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
