@@ -75,7 +75,6 @@ public class PostHandler implements HttpHandler {
         if (notifyName != null) {
             notifyType = NotifyType.valueOf(notifyName);
             ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(certName, serviceName);
-            logger.info("previous", previousRecord);
             processor.process(notifyType, previousRecord, newRecord);
             logger.info("notify", processor.isNotify());
         }
@@ -84,10 +83,6 @@ public class PostHandler implements HttpHandler {
             throw new CrocException(CrocExceptionType.NOT_FOUND, certName);
         }
         storage.getServiceRecordStorage().insert(cert.getOrgId(), newRecord);
-        if (processor.isNotify()) {
-            app.sendAdminGtalkMessage(MessageFormat.format("@{0} CHANGED {1} {2}/view/serviceRecord/{3}",
-                    newRecord.getCertName(), newRecord.getServiceName(), app.getSecureUrl(), newRecord.getId()));
-        }
         httpExchangeInfo.write(newRecord.getStringMap());
     }
 }
