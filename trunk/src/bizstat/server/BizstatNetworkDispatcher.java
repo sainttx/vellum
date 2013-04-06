@@ -4,7 +4,6 @@
  */
 package bizstat.server;
 
-import crocserver.storage.servicerecord.ServiceRecord;
 import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -63,7 +62,7 @@ public class BizstatNetworkDispatcher implements Runnable {
                         logger.info("checkServicePath blocked", service);
                         ServiceRecord statusRecord = new ServiceRecord(host, service, server.dispatcherMillis);
                         statusRecord.setServiceStatus(ServiceStatus.BLOCKED);
-                        server.setserviceRecord(statusRecord);
+                        server.setServiceRecord(statusRecord);
                     }
                     statusKeySet.add(key);
                 } else {
@@ -94,7 +93,7 @@ public class BizstatNetworkDispatcher implements Runnable {
                     ServiceRecord statusRecord = new ServiceRecord(host, service, server.dispatcherMillis);
                     statusRecord.setServiceStatus(ServiceStatus.INDETERMINATE);
                     statusRecord.setException(e);
-                    server.setserviceRecord(statusRecord);
+                    server.setServiceRecord(statusRecord);
                 }
                 statusKeySet.add(key);
             } else {

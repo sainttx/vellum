@@ -4,7 +4,7 @@
  */
 package bizstat.server;
 
-import crocserver.storage.servicerecord.ServiceRecord;
+import bizstat.entity.ServiceRecord;
 import java.util.Comparator;
 import java.util.TreeSet;
 

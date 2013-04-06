@@ -155,7 +155,7 @@ create table service (
 create table service_record (
   org_id int not null,
   service_record_id int auto_increment primary key, 
-  host_name varchar(32),
+  cert_name varchar(64),
   service_name varchar(32),
   status varchar(16),
   time_ timestamp,
@@ -165,7 +165,7 @@ create table service_record (
   out_ varchar,
   err_ varchar,
   notify boolean,
-  unique key uniq_service_record (org_id, host_name, service_name, time_)
+  unique key uniq_service_record (org_id, cert_name, service_name, time_)
 );
 
 create table metric_record (

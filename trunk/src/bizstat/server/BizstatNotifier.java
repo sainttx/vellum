@@ -3,7 +3,6 @@
  */
 package bizstat.server;
 
-import crocserver.storage.servicerecord.ServiceRecord;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import bizstat.entity.*;
@@ -66,7 +65,7 @@ public class BizstatNotifier implements Runnable {
                     contactNotifier = new BizstatContactNotifier(server, contact);
                     contactNotifierMap.put(contact, contactNotifier);
                 }
-                contactNotifier.getserviceRecordList().add(serviceRecord);
+                contactNotifier.getServiceRecordList().add(serviceRecord);
             }
         }
     }

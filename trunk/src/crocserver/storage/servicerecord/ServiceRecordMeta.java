@@ -10,7 +10,7 @@ package crocserver.storage.servicerecord;
  */
 public enum ServiceRecordMeta {
     service_record_id,
-    host_name,
+    cert_name,
     service_name,
     time_,
     notified_time,

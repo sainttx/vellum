@@ -6,11 +6,11 @@ package bizstat.http;
 import bizstat.entity.HostServiceKey;
 import bizstat.entity.HostServiceStatus;
 import bizstat.entity.BizstatService;
-import crocserver.storage.servicerecord.ServiceRecord;
+import bizstat.entity.ServiceRecord;
 import bizstat.server.BizstatMessageBuilder;
 import bizstat.server.BizstatServer;
+import bizstat.storage.BizstatStorage;
 import crocserver.httphandler.common.AbstractPageHandler;
-import crocserver.storage.common.CrocStorage;
 import java.util.Collection;
 import java.util.Iterator;
 import vellum.util.DefaultDateFormats;
@@ -29,12 +29,12 @@ import vellum.format.ListFormats;
 public class BizstatHomePageHandler extends AbstractPageHandler {
 
     BizstatServer context;
-    CrocStorage storage;
+    BizstatStorage storage;
 
     public BizstatHomePageHandler(BizstatServer context) {
         super();
         this.context = context;
-        this.storage = context.getDataStorage();
+        this.storage = context.getStorage();
     }
 
     @Override

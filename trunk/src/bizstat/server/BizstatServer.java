@@ -4,12 +4,11 @@
  */
 package bizstat.server;
 
-import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.http.BizstatHttpServer;
 import bizstat.entity.*;
 import bizstat.enumtype.ServiceStatus;
 import bizstat.http.BizstatTypeCache;
-import crocserver.storage.common.CrocStorage;
+import bizstat.storage.BizstatStorage;
 import crocserver.storage.org.Org;
 import java.sql.SQLException;
 import vellum.logr.Logr;
@@ -36,7 +35,7 @@ public class BizstatServer implements Runnable {
     PropertiesStringMap configProperties;
     BizstatConfig config;
     BizstatConfigStorage configStorage;
-    CrocStorage dataStorage;
+    BizstatStorage storage;
     BizstatHttpServer httpServer;
     BizstatGtalkConnection gtalk;
     boolean stopped = false;
@@ -68,8 +67,8 @@ public class BizstatServer implements Runnable {
         }    
         if (config.getDataSourceInfo() != null && config.getDataSourceInfo().isEnabled()) {
             ConnectionPool connectionPool = new SimpleConnectionPool(config.getDataSourceInfo());
-            dataStorage = new CrocStorage(new BizstatTypeCache(this), connectionPool);
-            dataStorage.init();
+            storage = new BizstatStorage(new BizstatTypeCache(this), connectionPool);
+            storage.init();
         }
         configStorage = new BizstatConfigStorage(this);
         configStorage.init(configMap);
@@ -174,14 +173,14 @@ public class BizstatServer implements Runnable {
         return status;
     }
 
-    public synchronized void setserviceRecord(ServiceRecord serviceRecord) {
+    public synchronized void setServiceRecord(ServiceRecord serviceRecord) {
         HostServiceStatus status = getStatus(serviceRecord.getHostServiceKey());
         status.setServiceRecord(serviceRecord);
         logger.info("setserviceRecord", serviceRecord);
     }
 
-    public CrocStorage getDataStorage() {
-        return dataStorage;
+    public BizstatStorage getStorage() {
+        return storage;
     }
 
     public BizstatConfigStorage getConfigStorage() {
@@ -218,7 +217,7 @@ public class BizstatServer implements Runnable {
 
     public void insert(ServiceRecord serviceRecord) {
         try {
-            dataStorage.getServiceRecordStorage().insert(org, serviceRecord);
+            storage.getServiceRecordStorage().insert(org, serviceRecord);
         } catch (SQLException e) {
             throw Exceptions.newRuntimeException(e);
         }
