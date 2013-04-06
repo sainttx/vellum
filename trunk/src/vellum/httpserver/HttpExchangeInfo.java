@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import vellum.exception.DisplayMessage;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.Entry;
@@ -283,8 +284,11 @@ public class HttpExchangeInfo {
         handleError(e.getMessage());
     }
 
-    public void handleError(Object message) {
-        String messageString = message.toString();
+    public void handleError(DisplayMessage message) {
+        handleError(message.getDisplayMessage());
+    }
+    
+    public void handleError(String messageString) {
         try {
             logger.warn(messageString, parameterMap);
             httpExchange.getResponseHeaders().set("Content-type", "text/json");

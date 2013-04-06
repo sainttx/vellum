@@ -8,7 +8,7 @@ package vellum.exception;
  *
  * @author evan
  */
-public class DisplayException extends Exception {
+public class DisplayException extends Exception implements DisplayMessage {
     String displayMessage;
     
     public DisplayException(String displayMessage, Throwable exception) {
@@ -21,6 +21,7 @@ public class DisplayException extends Exception {
         this.displayMessage = displayMessage;
     }
     
+    @Override
     public String getDisplayMessage() {
         return displayMessage;
     }

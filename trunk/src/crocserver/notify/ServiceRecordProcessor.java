@@ -8,7 +8,6 @@ import bizstat.enumtype.NotifyType;
 import bizstat.enumtype.ServiceStatus;
 import crocserver.app.CrocApp;
 import crocserver.storage.servicerecord.ServiceRecord;
-import java.text.MessageFormat;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Strings;
@@ -23,17 +22,17 @@ public class ServiceRecordProcessor {
     CrocApp app;
     NotifyType notifyType;
     ServiceRecord previousRecord; 
-    ServiceRecord currentRecord;
+    ServiceRecord newRecord;
     boolean notify = false;
     
     public ServiceRecordProcessor(CrocApp app) {
         this.app = app;
     }
 
-    public void process(NotifyType notifyType, ServiceRecord previousRecord, ServiceRecord currentRecord) {
+    public void process(NotifyType notifyType, ServiceRecord previousRecord, ServiceRecord newRecord) {
         this.notifyType = notifyType;
         this.previousRecord = previousRecord;
-        this.currentRecord = currentRecord;
+        this.newRecord = newRecord;
         processNotifyType();
     }
 
@@ -41,24 +40,28 @@ public class ServiceRecordProcessor {
         if (notifyType == NotifyType.ALWAYS) {
             notify = true;
         } else if (notifyType == NotifyType.OUTPUT_CHANGED) {
-            if (!Strings.equals(previousRecord.getOutText(), currentRecord.getOutText())) {
+            if (previousRecord == null) {
+                notify = false;
+            } else if (!Strings.equals(previousRecord.getOutText(), newRecord.getOutText())) {
                 notify = true;
-                logger.info("output changed", previousRecord.getOutText().length(), currentRecord.getOutText().length());
+                logger.info("output changed", previousRecord.getOutText().length(), newRecord.getOutText().length());
             }    
         } else if (notifyType == NotifyType.NOT_OK) {
-            if (currentRecord.getServiceStatus() == ServiceStatus.WARNING || 
-                    currentRecord.getServiceStatus() == ServiceStatus.CRITICAL) {
+            if (newRecord.getServiceStatus() == ServiceStatus.WARNING || 
+                    newRecord.getServiceStatus() == ServiceStatus.CRITICAL) {
                 notify = true;
             }
         } else if (notifyType == NotifyType.STATUS_CHANGED) {
-            if (previousRecord.getServiceStatus().isKnown() &&
-                    currentRecord.getServiceStatus().isKnown() &&
-                    previousRecord.getServiceStatus() != currentRecord.getServiceStatus()) {
+            if (previousRecord == null) {
+                notify = false;
+            } else if (previousRecord.getServiceStatus().isKnown() &&
+                    newRecord.getServiceStatus().isKnown() &&
+                    previousRecord.getServiceStatus() != newRecord.getServiceStatus()) {
                 notify = true;
             }
         }
         if (notify) {
-            currentRecord.setNotify(notify);
+            newRecord.setNotify(notify);
         }        
     }
 
