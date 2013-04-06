@@ -44,12 +44,12 @@ public class ServiceRecordStorage {
         return serviceRecord;
     }
 
-    public void insert(Org org, ServiceRecord serviceRecord) throws SQLException {
+    public void insert(Long orgId, ServiceRecord serviceRecord) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.insert.name()));
             int index = 0;
-            statement.setLong(++index, org.getId());
+            statement.setLong(++index, orgId);
             statement.setString(++index, serviceRecord.getCertName());
             statement.setString(++index, serviceRecord.getServiceName());
             if (serviceRecord.getServiceStatus() == null) {
@@ -110,13 +110,12 @@ public class ServiceRecordStorage {
         }
     }
     
-    public ServiceRecord findLatest(long orgId, String certName, String serviceName) throws SQLException {
+    public ServiceRecord findLatest(String certName, String serviceName) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_latest.name()));
-            statement.setLong(1, orgId);
-            statement.setString(2, certName);
-            statement.setString(3, serviceName);
+            statement.setString(1, certName);
+            statement.setString(2, serviceName);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
                 return null;
