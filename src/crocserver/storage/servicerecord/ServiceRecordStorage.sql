@@ -20,7 +20,7 @@ select sr.*
 from (
   select service_name, max(time_) as max_time
   from service_record 
-  where org_id = ? and cert_name = ? and service_name = ?
+  where cert_name = ? and service_name = ?
   group by service_name
 ) msr
 inner join service_record sr on (

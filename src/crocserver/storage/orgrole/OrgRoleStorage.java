@@ -54,6 +54,13 @@ public class OrgRoleStorage extends LongIdEntityMapStorage<Long, OrgRole> {
         return list.get(0).getOrg();
     }            
 
+    public boolean verifyRole(String userName, Long orgId, AdminUserRole role) throws StorageException {
+        if (true) {
+            return true;
+        }
+        throw new StorageException(StorageExceptionType.NOT_FOUND, userName, orgId, role);
+    }
+    
     public boolean verifyRole(AdminUser user, Org org, AdminUserRole role) throws StorageException {
         if (true) {
             return true;

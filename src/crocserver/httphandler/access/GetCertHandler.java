@@ -9,6 +9,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
 import crocserver.exception.CrocError;
+import crocserver.exception.CrocException;
 import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.clientcert.Cert;
@@ -31,7 +32,6 @@ public class GetCertHandler implements HttpHandler {
     PrintStream out;
 
     String userName;
-    String orgName;
     String certName;
     
     public GetCertHandler(CrocApp app) {
@@ -44,12 +44,11 @@ public class GetCertHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", httpExchangeInfo.getPath());
-        if (httpExchangeInfo.getPathArgs().length != 4) {
+        if (httpExchangeInfo.getPathArgs().length != 3) {
             httpExchangeInfo.handleError(new CrocError(CrocExceptionType.INVALID_ARGS, httpExchangeInfo.getPath()));
         } else {
             userName = httpExchangeInfo.getPathString(1);
-            orgName = httpExchangeInfo.getPathString(2);
-            certName = httpExchangeInfo.getPathString(3);
+            certName = httpExchangeInfo.getPathString(2);
             try {
                 handle();
             } catch (Exception e) {
@@ -61,14 +60,13 @@ public class GetCertHandler implements HttpHandler {
     
     private void handle() throws Exception {
         AdminUser user = app.getStorage().getUserStorage().get(userName);
-        Org org = app.getStorage().getOrgStorage().get(orgName);
-        app.getStorage().getOrgRoleStorage().verifyRole(user, org, AdminUserRole.SUPER);
         Cert cert = app.getStorage().getCertStorage().findName(certName);
         if (cert == null) {
-            httpExchangeInfo.handleError(new CrocError(CrocExceptionType.NOT_FOUND));
-        } else {
-            httpExchangeInfo.sendResponse("application/x-pem-file",
-                    cert.getCert().getBytes());
+            throw new CrocException(CrocExceptionType.NOT_FOUND, certName);
         }
+        app.getStorage().getOrgRoleStorage().verifyRole(
+                user.getUserName(), cert.getOrgId(), AdminUserRole.SUPER);
+        httpExchangeInfo.sendResponse("application/x-pem-file", 
+                cert.getCert().getBytes());
     }    
 }
