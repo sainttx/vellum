@@ -13,7 +13,6 @@ import crocserver.exception.CrocException;
 import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.clientcert.Cert;
-import crocserver.storage.org.Org;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;

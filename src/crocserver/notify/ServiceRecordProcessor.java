@@ -8,6 +8,7 @@ import bizstat.enumtype.NotifyType;
 import bizstat.enumtype.ServiceStatus;
 import crocserver.app.CrocApp;
 import crocserver.storage.servicerecord.ServiceRecord;
+import java.text.MessageFormat;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Strings;
@@ -62,6 +63,8 @@ public class ServiceRecordProcessor {
         }
         if (notify) {
             newRecord.setNotify(notify);
+            app.sendAdminGtalkMessage(MessageFormat.format("CHANGED @{0} {1} {2}/view/serviceRecord/{3}",
+                    newRecord.getCertName(), newRecord.getServiceName(), app.getSecureUrl(), newRecord.getId()));
         }        
     }
 
