@@ -1,11 +1,11 @@
 /*
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  */
-package bizstat.server;
+package crocserver.app;
 
-import bizstat.entity.ServiceRecord;
-import vellum.util.DefaultDateFormats;
 import bizstat.enumtype.ServiceStatus;
+import crocserver.storage.servicerecord.ServiceRecord;
+import vellum.util.DefaultDateFormats;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,13 +15,13 @@ import vellum.datatype.IntegerCounterMap;
  *
  * @author evans
  */
-public class BizstatMessageBuilder {
+public class CrocMessageBuilder {
 
     List<ServiceRecord> serviceRecords;
     StringBuilder messageBuilder = new StringBuilder();
     IntegerCounterMap<ServiceStatus> counterMap = new IntegerCounterMap();
 
-    public BizstatMessageBuilder(LinkedList<ServiceRecord> serviceRecords) {
+    public CrocMessageBuilder(LinkedList<ServiceRecord> serviceRecords) {
         this.serviceRecords = serviceRecords;
     }
 
@@ -72,8 +72,7 @@ public class BizstatMessageBuilder {
                         builder.append(", ");
                     }
                     builder.append(String.format("%s",
-                            serviceRecord.getService().getName(),
-                            serviceRecord.getHost().getName()));
+                            serviceRecord.getCertName()));
                 }
             }
             messageBuilder.append(" (");
@@ -87,11 +86,11 @@ public class BizstatMessageBuilder {
         builder.append(DefaultDateFormats.timeSecondsFormat.format(new Date(serviceRecord.getTimestamp())));
         builder.append(" ");
         builder.append("<i>");
-        builder.append(serviceRecord.getHost().getName());
+        builder.append(serviceRecord.getCertName());
         builder.append("</i>");
         builder.append(" ");
         builder.append("<b>");
-        builder.append(serviceRecord.getService().getName());
+        builder.append(serviceRecord.getServiceName());
         builder.append("</b>");
         builder.append(" ");
         builder.append(serviceRecord.getServiceStatus().name());
@@ -102,9 +101,9 @@ public class BizstatMessageBuilder {
         StringBuilder builder = new StringBuilder();
         builder.append(DefaultDateFormats.timeSecondsFormat.format(new Date(serviceRecord.getTimestamp())));
         builder.append(" ");
-        builder.append(serviceRecord.getHost().getName());
+        builder.append(serviceRecord.getCertName());
         builder.append(" ");
-        builder.append(serviceRecord.getService().getName());
+        builder.append(serviceRecord.getServiceName());
         builder.append(" ");
         builder.append(serviceRecord.getServiceStatus().name());
         if (serviceRecord.getOutText() != null) {

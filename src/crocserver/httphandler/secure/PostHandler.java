@@ -35,7 +35,6 @@ public class PostHandler implements HttpHandler {
     HttpExchange httpExchange;
     HttpExchangeInfo httpExchangeInfo;
     String orgName;
-    String hostName;
     String certName;
     String serviceName;
     String notifyName;
@@ -56,31 +55,30 @@ public class PostHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         serviceText = Streams.readString(httpExchange.getRequestBody());
-        if (httpExchangeInfo.getPathLength() == 6) {
+        if (httpExchangeInfo.getPathLength() != 5) {
+            httpExchangeInfo.handleError(new CrocError(CrocExceptionType.INVALID_ARGS, httpExchangeInfo.getPath()));
+        } else {
             orgName = httpExchangeInfo.getPathString(1);
-            hostName = httpExchangeInfo.getPathString(2);
-            certName = httpExchangeInfo.getPathString(3);
-            serviceName = httpExchangeInfo.getPathString(4);
-            notifyName = httpExchangeInfo.getPathString(5);
+            certName = httpExchangeInfo.getPathString(2);
+            serviceName = httpExchangeInfo.getPathString(3);
+            notifyName = httpExchangeInfo.getPathString(4);
             try {
                 handle();
             } catch (Exception e) {
                 httpExchangeInfo.handleError(e);
             }
-        } else {
-            httpExchangeInfo.handleError(new CrocError(CrocExceptionType.INVALID_ARGS, httpExchangeInfo.getPathLength()));
         }
         httpExchange.close();
     }
     
     private void handle() throws Exception {
         Org org = storage.getOrgStorage().get(orgName);
-        newRecord = new ServiceRecord(hostName, certName);
+        newRecord = new ServiceRecord(certName, serviceName);
         newRecord.parseOutText(serviceText);
         ServiceRecordProcessor processor = new ServiceRecordProcessor(app);
         if (notifyName != null) {
             notifyType = NotifyType.valueOf(notifyName);
-            ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(org.getId(), hostName, certName);
+            ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(org.getId(), certName, serviceName);
             logger.info("previous", previousRecord);
             processor.process(notifyType, previousRecord, newRecord);
             logger.info("notify", processor.isNotify());
@@ -88,9 +86,8 @@ public class PostHandler implements HttpHandler {
         storage.getServiceRecordStorage().insert(org, newRecord);
         if (processor.isNotify()) {
             app.sendAdminGtalkMessage(MessageFormat.format("@{0} CHANGED {1} {2}/view/serviceRecord/{3}",
-                    newRecord.getHostName(), newRecord.getServiceName(), app.getSecureUrl(), newRecord.getId()));
+                    newRecord.getCertName(), newRecord.getServiceName(), app.getSecureUrl(), newRecord.getId()));
         }
-        StringMap responseMap = new StringMap();
-        httpExchangeInfo.write(responseMap);
+        httpExchangeInfo.write(newRecord.getStringMap());
     }
 }

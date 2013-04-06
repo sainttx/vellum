@@ -3,9 +3,8 @@
  */
 package crocserver.httphandler.admin;
 
-import crocserver.httphandler.access.*;
+import crocserver.app.CrocMessageBuilder;
 import crocserver.storage.servicerecord.ServiceRecord;
-import bizstat.server.BizstatMessageBuilder;
 import crocserver.httphandler.common.AbstractPageHandler;
 import java.util.Collection;
 import java.util.Iterator;
@@ -56,10 +55,10 @@ public class AdminHomePageHandler extends AbstractPageHandler {
                     serviceRecord.getId(),
                     serviceRecord.getId(),
                     Millis.formatAsSeconds(serviceRecord.getTimestamp()),
-                    serviceRecord.getHostName(),
+                    serviceRecord.getCertName(),
                     serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus(),
-                    BizstatMessageBuilder.buildOutText(serviceRecord));
+                    CrocMessageBuilder.buildOutText(serviceRecord));
         }
         out.printf("</table>\n");
         out.printf("</div>\n");

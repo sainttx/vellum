@@ -32,7 +32,6 @@ public class GetCertHandler implements HttpHandler {
 
     String userName;
     String orgName;
-    String hostName;
     String certName;
     
     public GetCertHandler(CrocApp app) {
@@ -45,14 +44,12 @@ public class GetCertHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", httpExchangeInfo.getPath());
-        if (httpExchangeInfo.getPathArgs().length < 5) {
+        if (httpExchangeInfo.getPathArgs().length != 4) {
             httpExchangeInfo.handleError(new CrocError(CrocExceptionType.INVALID_ARGS, httpExchangeInfo.getPath()));
         } else {
             userName = httpExchangeInfo.getPathString(1);
             orgName = httpExchangeInfo.getPathString(2);
-            hostName = httpExchangeInfo.getPathString(3);
-            certName = httpExchangeInfo.getPathString(4);
-            logger.info("handle", userName, orgName, hostName, certName);
+            certName = httpExchangeInfo.getPathString(3);
             try {
                 handle();
             } catch (Exception e) {
@@ -66,7 +63,6 @@ public class GetCertHandler implements HttpHandler {
         AdminUser user = app.getStorage().getUserStorage().get(userName);
         Org org = app.getStorage().getOrgStorage().get(orgName);
         app.getStorage().getOrgRoleStorage().verifyRole(user, org, AdminUserRole.SUPER);
-        certName = certName + "@" + hostName + "." + orgName;
         Cert cert = app.getStorage().getCertStorage().findName(certName);
         if (cert == null) {
             httpExchangeInfo.handleError(new CrocError(CrocExceptionType.NOT_FOUND));

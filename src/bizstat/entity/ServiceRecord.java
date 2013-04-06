@@ -2,11 +2,17 @@
  * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
  * 
  */
-package crocserver.storage.servicerecord;
+package bizstat.entity;
 
+import crocserver.storage.servicerecord.*;
+import bizstat.entity.Host;
+import bizstat.entity.HostServiceKey;
+import bizstat.entity.BizstatService;
+import vellum.util.Args;
 import bizstat.enumtype.ServiceStatus;
 import java.util.Collection;
 import java.util.List;
+import vellum.datatype.Millis;
 import vellum.entity.AbstractLongIdEntity;
 import vellum.datatype.Timestamped;
 import vellum.parameter.StringMap;
@@ -18,7 +24,7 @@ import vellum.util.Strings;
  */
 public class ServiceRecord extends AbstractLongIdEntity implements Timestamped {
 
-    String certName;
+    String hostName;
     String serviceName;
     String[] args;
     String outText;
@@ -31,14 +37,27 @@ public class ServiceRecord extends AbstractLongIdEntity implements Timestamped {
     boolean notify;
     transient ServiceStatus serviceStatus;
     transient Throwable exception;
+    transient Host host;
+    transient BizstatService service;
     transient List<String> outList;
     
     public ServiceRecord() {
     }
 
-    public ServiceRecord(String certName, String serviceName) {
-        this.certName = certName;
+    public ServiceRecord(Host host, BizstatService service) {
+        this(host.getName(), service.getName());
+        this.host = host;
+        this.service = service;
+    }
+
+    public ServiceRecord(String hostName, String serviceName) {
+        this.hostName = hostName;
         this.serviceName = serviceName;
+    }
+    
+    public ServiceRecord(Host host, BizstatService service, long dispatchedMillis) {
+        this(host, service);
+        this.dispatchedMillis = dispatchedMillis;
     }
     
     public void parseOutText(String outText) {
@@ -59,14 +78,26 @@ public class ServiceRecord extends AbstractLongIdEntity implements Timestamped {
         }
     }
     
-    public String getCertName() {
-        return certName;
+    public String getHostName() {
+        return hostName;
     }
 
     public String getServiceName() {
         return serviceName;
     }
         
+    public HostServiceKey getHostServiceKey() {
+        return new HostServiceKey(host, service);
+    }
+
+    public Host getHost() {
+        return host;
+    }
+    
+    public BizstatService getService() {
+        return service;
+    }
+    
     public String[] getArgs() {
         return args;
     }
@@ -193,7 +224,7 @@ public class ServiceRecord extends AbstractLongIdEntity implements Timestamped {
     public StringMap getStringMap() {
         StringMap map = new StringMap();
         map.put("id", id);
-        map.put("hostName", certName);
+        map.put("hostName", hostName);
         map.put("serviceName", serviceName);
         map.put("serviceStatus", serviceStatus);
         return map;

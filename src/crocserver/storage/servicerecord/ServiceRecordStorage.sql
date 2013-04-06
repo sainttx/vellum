@@ -2,7 +2,7 @@
 -- insert
 insert into service_record (
   org_id,
-  host_name,
+  cert_name,
   service_name,
   status,
   time_,
@@ -20,7 +20,7 @@ select sr.*
 from (
   select service_name, max(time_) as max_time
   from service_record 
-  where org_id = ? and host_name = ? and service_name = ?
+  where org_id = ? and cert_name = ? and service_name = ?
   group by service_name
 ) msr
 inner join service_record sr on (

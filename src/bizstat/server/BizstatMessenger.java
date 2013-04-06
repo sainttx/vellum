@@ -4,7 +4,6 @@
  */
 package bizstat.server;
 
-import crocserver.storage.servicerecord.ServiceRecord;
 import vellum.util.Lists;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;

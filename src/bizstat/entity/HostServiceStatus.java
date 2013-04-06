@@ -4,7 +4,6 @@
  */
 package bizstat.entity;
 
-import crocserver.storage.servicerecord.ServiceRecord;
 import bizstat.enumtype.NotifyType;
 import bizstat.enumtype.StatusChangeType;
 import vellum.util.Args;
@@ -80,7 +79,7 @@ public class HostServiceStatus implements Runnable {
     }
 
     public void executeServiceRecord() {
-        server.setserviceRecord(new HostServiceExecuter(server, host, service).execute());
+        server.setServiceRecord(new HostServiceExecuter(server, host, service).execute());
     }
 
     public void setNotifiedServiceRecord(ServiceRecord notifiedServiceRecord) {

@@ -32,7 +32,7 @@ public class ServiceRecordStorage {
     }
 
     private ServiceRecord build(ResultSet resultSet) throws SQLException {
-        ServiceRecord serviceRecord = new ServiceRecord(resultSet.getString(ServiceRecordMeta.host_name.name()),
+        ServiceRecord serviceRecord = new ServiceRecord(resultSet.getString(ServiceRecordMeta.cert_name.name()),
                 resultSet.getString(ServiceRecordMeta.service_name.name()));
         serviceRecord.setId(resultSet.getLong(ServiceRecordMeta.service_record_id.name()));
         serviceRecord.setDispatchedMillis(getTimestamp(resultSet, ServiceRecordMeta.dispatched_time.name(), 0));
@@ -50,7 +50,7 @@ public class ServiceRecordStorage {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.insert.name()));
             int index = 0;
             statement.setLong(++index, org.getId());
-            statement.setString(++index, serviceRecord.getHostName());
+            statement.setString(++index, serviceRecord.getCertName());
             statement.setString(++index, serviceRecord.getServiceName());
             if (serviceRecord.getServiceStatus() == null) {
                 statement.setString(++index, null);
@@ -110,12 +110,12 @@ public class ServiceRecordStorage {
         }
     }
     
-    public ServiceRecord findLatest(long orgId, String hostName, String serviceName) throws SQLException {
+    public ServiceRecord findLatest(long orgId, String certName, String serviceName) throws SQLException {
         ConnectionEntry connection = storage.getConnectionPool().takeEntry();
         try {
             PreparedStatement statement = connection.prepareStatement(sqlMap.get(ServiceRecordQuery.find_latest.name()));
             statement.setLong(1, orgId);
-            statement.setString(2, hostName);
+            statement.setString(2, certName);
             statement.setString(3, serviceName);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
