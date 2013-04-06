@@ -4,11 +4,13 @@
  */
 package crocserver.app;
 
+import vellum.exception.DisplayMessage;
+
 /**
  *
  * @author evan
  */
-public enum CrocExceptionType {
+public enum CrocExceptionType implements DisplayMessage {
     NO_COOKIE,
     EXPIRED_COOKIE,
     STALE_COOKIE,
@@ -16,5 +18,10 @@ public enum CrocExceptionType {
     NO_AUTH,
     AUTH_FAILED,
     AUTH_EXPIRED,
-    PASSWORD_TOO_SHORT,
+    PASSWORD_TOO_SHORT,;
+
+    @Override
+    public String getDisplayMessage() {
+        return name();
+    }
 }

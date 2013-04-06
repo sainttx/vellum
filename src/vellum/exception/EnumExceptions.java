@@ -11,6 +11,7 @@ import vellum.util.Args;
  * @author evan
  */
 public class EnumExceptions {
+    
     public static String formatMessage(Enum exceptionType) {
         return exceptionType.name();
     }

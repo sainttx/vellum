@@ -7,7 +7,7 @@ import crocserver.exception.CrocExceptionType;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import crocserver.app.CrocApp;
-import crocserver.exception.CrocException;
+import crocserver.exception.CrocError;
 import crocserver.storage.adminuser.AdminUser;
 import crocserver.storage.adminuser.AdminUserRole;
 import crocserver.storage.clientcert.Cert;
@@ -34,6 +34,7 @@ public class EnrollCertHandler implements HttpHandler {
 
     String userName;
     String orgName;
+    String hostName;
     String certName;
  
     public EnrollCertHandler(CrocApp app) {
@@ -47,19 +48,16 @@ public class EnrollCertHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         logger.info("handle", getClass().getName(), httpExchangeInfo.getPathArgs());
         if (httpExchangeInfo.getPathArgs().length < 4) {
-            httpExchangeInfo.handleError(CrocExceptionType.INVALID_ARGS);
+            httpExchangeInfo.handleError(new CrocError(CrocExceptionType.INVALID_ARGS));
         } else {
             userName = httpExchangeInfo.getPathString(1);
             orgName = httpExchangeInfo.getPathString(2);
-            certName = httpExchangeInfo.getPathString(3);
-            if (!Emails.matchesEmail(certName)) {
-                httpExchangeInfo.handleError(CrocExceptionType.CERT_NAME_NOT_EMAIL_FORMAT);
-            } else {
-                try {
-                    handle();
-                } catch (Exception e) {
-                    httpExchangeInfo.handleError(e);
-                }
+            hostName = httpExchangeInfo.getPathString(3);
+            certName = httpExchangeInfo.getPathString(4);
+            try {
+                handle();
+            } catch (Exception e) {
+                httpExchangeInfo.handleError(e);
             }
         }
         httpExchange.close();
@@ -71,6 +69,9 @@ public class EnrollCertHandler implements HttpHandler {
         app.getStorage().getOrgRoleStorage().verifyRole(user, org, AdminUserRole.SUPER);
         logger.info("handle", user.getUserName(), org.getOrgName());
         GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        if (!Emails.matchesEmail(certName)) {
+            certName = certName + "@" + hostName + "." + orgName;
+        }
         String dname = org.formatDname(certName, userName);
         keyPair.generate(dname, new Date(), 999);
         String alias = app.getServerKeyAlias();
