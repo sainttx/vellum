@@ -124,7 +124,7 @@ command0_df() { # with no args, executes 'df -h'
 }
 </code>
 
-Our help now shows overloaded <tt>df</tt> command as follows.
+Our help now shows our overloaded <tt>df</tt> commands as follows.
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh help df
