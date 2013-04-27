@@ -124,6 +124,8 @@ command0_df() { # with no args, executes 'df -h'
 }
 </code>
 
+Our help now shows overloaded <tt>df</tt> command as follows.
+
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh help df
 df: partition
