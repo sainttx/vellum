@@ -25,6 +25,7 @@ command0_usage() {
 }
 
 command0_default() {
+  echo "The default invocation of this script has no functionality at yet"
   command0_usage
 }
 
