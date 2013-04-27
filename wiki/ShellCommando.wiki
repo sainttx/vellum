@@ -1,5 +1,5 @@
 
-This article is part of the [BinBash Bin Bash] series :) 
+This article is the first installment of the [BinBash Bin Bash] series :) 
 
 == Introduction == 
 
