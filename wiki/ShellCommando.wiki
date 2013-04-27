@@ -124,9 +124,7 @@ command0_yesterday() { # print yesterday's date in YYYY-MM-DD format
 Let's check the usage. 
 
 <code language="xml">
-evans@beethoven:~$ sh scripts/test.sh help
-The following commands are available:
-df: 1 args: partition
+evans@beethoven:~$ sh scripts/test.sh help yesterday
 yesterday: 0 args: print yesterday's date in YYYY-MM-DD format
 </code>
 
