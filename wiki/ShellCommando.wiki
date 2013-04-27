@@ -66,7 +66,7 @@ where <tt>command0_help()</tt> will parse the script for command methods, and pr
 
 We invoke the <tt>command1_df()</tt> with one argument, namely is the partition. 
 
-<code language="none">
+<code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh df home
 /dev/sdb2             128G  109G   13G  90% /home
 </code>
