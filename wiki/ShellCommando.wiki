@@ -115,6 +115,20 @@ evans@beethoven:~$ sh scripts/test.sh dff home
 scripts/test.sh: 25: command1_dff: not found
 </code>
 
+We can overload functions, for example let's introduce <tt>command0_df()</tt> with no arguments, as follows.
+
+<code language="xml">
+command0_df() { # with no args, executes 'df -h'
+  df -h
+}
+</code>
+
+<code language="xml">
+evanx@beethoven:~$ sh scripts/test.sh help df
+df: partition
+df: with no args, executes 'df -h'
+</code>
+
 === Example ===
 
 As an example, let's implement a new command to print yesterday's date in our preferred format. 
