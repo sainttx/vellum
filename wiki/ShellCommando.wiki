@@ -19,9 +19,13 @@ command1_df() { # partition
   df -h | grep $1
 }
 
-command0_default() { # no args
+command0_usage() {
   echo "The following commands are available:" 
   cat $0 | grep '^command[0-9]_' | sed 's/^command\([0-9]\)_\(.*\)() { # \(.*\)/\2: \1 args: \3/'
+}
+
+command0_default() {
+  command0_usage
 }
 
 invoke() {
@@ -40,9 +44,11 @@ invoke $@
 
 Firstly we always set "nounset" so that if our script encounters an unset variable, this is treated as an safe bug, and the script exits.
 
+We implement custom commands in the script as per the <tt>command1_df</tt> example, using a specific naming convention as invoked by <tt>invoke()</tt>, and a comment for each method which documents the arguments it expects, if any, for the purpose of <tt>command0_usage()</tt> to print said usage. 
+
 If no command-line arguments are provided, we will invoke the method <tt>command0_default()</tt>.
 
-The above implementation of <tt>command0_default()</tt> actually lists all the methods at our command, where we document the required arguments in the script itself. 
+The above implementation of <tt>command0_usage()</tt> lists all the methods at our command, where we document the required arguments in the script itself. 
 
 {{{
 evanx@beethoven:~$ sh scripts/test.sh
