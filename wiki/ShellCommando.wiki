@@ -187,20 +187,20 @@ Another example we will present in a further article is a script for keytool and
 <code language="xml">
 $ ./keytool.sh
 commands:
-certreq csr_file
-changealias alias destalias
-connect ip:port cert
-delete alias
-exportcert pem_output_file
-exportp12 p12_file
-genkey alias 
-importcert pem_file 
-importp12 p12_file pass
-list list 
-listv alias 
-newkeypass alias keypass new
-pkcs12 p12_file 
-printcert alias
+certreq: csr_file
+changealias: alias destalias
+connect: ip:port cert
+delete: alias
+exportcert: pem_output_file
+exportp12: p12_file
+genkey: alias 
+importcert: pem_file 
+importp12: p12_file pass
+list: list 
+listv: alias 
+newkeypass: alias keypass new
+pkcs12: p12_file 
+printcert: alias
 </code>
 
 == Resources ==
