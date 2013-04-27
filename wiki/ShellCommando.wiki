@@ -5,7 +5,7 @@ This article is part of the [BinBash Bin Bash] series :)
 
 We write lots of cron scripts to perform routine maintenance tasks on our systems, so... 
 
-We might want a script to perform various tasks in succession, but able to invoke those individually e.g. to test them.
+We might want a script to perform various tasks in succession, but also be able to invoke those individually in an adhoc fashion e.g. to test them.
 
 == Template == 
 
