@@ -208,10 +208,14 @@ state_notify: ld
 where for example the <tt>ldSetProp</tt> function is implemented as follows.
 
 {{{
-command2_ldSetProp() { # ld prop
-  /opt/MegaRAID/CmdTool2/CmdTool264 -ldSetProp $2 -l$1 -a0
+enc=14 
+
+command1_pdInfo() { # slot
+  /opt/MegaRAID/CmdTool2/CmdTool264 -pdInfo -physdrv [$enc:$1] -a0
 }
 }}}
+
+where our script contains some context for our environment e.g. the enclosure number (14).  
 
 Such scripts provide a useful reference for such commands, if nothing else :)
 
