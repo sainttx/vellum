@@ -63,7 +63,7 @@ default: 0 args: no args
 
 ==== Invocation ====
 
-We can invoke the command <tt>df</tt> with one argument which is the partition. Actually we see in the <tt>command1_df()</tt> method that this argument is just a pattern we grep from the output of <tt>df</tt> 
+We can invoke the <tt>command1_df()</tt> with one argument, namely is the partition. Actually we see in our implementation of <tt>command1_df()</tt> that this argument is just a pattern we grep from the output of <tt>df</tt>. 
 
 {{{
 evanx@beethoven:~$ sh scripts/test.sh df home
