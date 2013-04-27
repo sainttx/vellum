@@ -111,7 +111,7 @@ evans@beethoven:~$ sh scripts/test.sh yesterday
 
 == Conclusion == 
 
-We suggest a simple trick for invoking methods in a bash script, where the script can self-document any arguments required by that method. 
+We introduce a template for a convenient menu-esque approach to invoking methods in a bash script.
 
 The implementation will ensure <tt>command</tt> methods are invoked with the correct number of arguments, by virtue of the using the number of arguments in the method name e.g. <tt>command1_</tt> will prefix methods requiring one argument only.
 
