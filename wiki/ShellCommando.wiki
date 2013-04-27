@@ -189,7 +189,7 @@ $ ./keytool.sh
 commands:
 certreq: csr_file
 changealias: alias destalias
-connect: ip:port cert
+connect: ip port cert
 delete: alias
 exportcert: pem_output_file
 exportp12: p12_file
