@@ -97,19 +97,19 @@ command0_yesterday() { # print yesterday's date in YYYY-MM-DD format
 
 Let's check the usage. 
 
-{{{
+<pre>
 evans@beethoven:~$ sh scripts/test.sh
 The following commands are available:
 df: 1 args: partition
 yesterday: 0 args: print yesterday's date in YYYY-MM-DD format
-}}}
+</pre>
 
 And let's invoke it. 
 
-{{{
+<pre>
 evans@beethoven:~$ sh scripts/test.sh yesterday
 2013-04-26
-}}}
+</pre>
 
 == Conclusion == 
 
