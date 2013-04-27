@@ -116,7 +116,7 @@ scripts/test.sh: 25: command0_df: not found
 </code>
 where the intentioned function is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
-However can overload functions e.g. let's introduce <tt>command0_df()</tt> with no arguments, as follows.
+However we can overload functions e.g. let's introduce <tt>command0_df()</tt> with no arguments, as follows.
 
 <code language="xml">
 command0_df() { # with no args, executes 'df -h'
