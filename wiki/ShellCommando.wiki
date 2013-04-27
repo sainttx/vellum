@@ -66,10 +66,10 @@ where <tt>command0_help()</tt> will parse the script for command methods, and pr
 
 We invoke the <tt>command1_df()</tt> with one argument, namely is the partition. 
 
-{{{
+<blockquote>
 evanx@beethoven:~$ sh scripts/test.sh df home
 /dev/sdb2             128G  109G   13G  90% /home
-}}}
+<blockquote>
 
 We see in our implementation of <tt>command1_df()</tt> that this argument is just a pattern we grep from the output of <tt>df</tt>. 
 
