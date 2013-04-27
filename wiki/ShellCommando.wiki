@@ -102,7 +102,7 @@ scripts/test.sh: 25: command0_df: not found
 </code>
 where the intentioned method is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
-If we provide an invalid command, the script will abort as follows, courtesy of the <tt>nounset</tt>. 
+If we provide an invalid command, the script will abort as follows, courtesy of the <tt>nounset</tt> setting. 
 
 <code language="xml">
 evans@beethoven:~$ sh scripts/test.sh dff home
