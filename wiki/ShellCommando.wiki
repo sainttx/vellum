@@ -69,7 +69,7 @@ evanx@beethoven:~$ sh scripts/test.sh df home
 /dev/sdb2             128G  109G   13G  90% /home
 }}}
 
-If we do not provide the correct number of arguments that the method is expecting, the script will abort as follows, courtesy of the <tt>nounset</tt>. 
+If we do not provide the correct number of arguments that the method is expecting, the script will abort as follows. 
 
 {{{
 evanx@beethoven:~$ sh scripts/test.sh df 
