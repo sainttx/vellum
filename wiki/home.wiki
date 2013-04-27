@@ -19,3 +19,8 @@ This series was published on my [http://weblogs.java.net/evanx blog] in 2007 but
 
 See the [EnigmaPrequels Enigma Prequels] page.
 
+=== Bin Bash ===
+
+This is a series of tips and trips for shell scripts.
+
+See the [BinBash Bin Bash] page. 

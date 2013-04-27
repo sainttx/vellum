@@ -1,0 +1,81 @@
+
+== Introduction == 
+
+We write lots of cron scripts to perform routine maintenance tasks on our systems, so... 
+
+We might want a script to perform various tasks in succession, but able to invoke those individually e.g. to test them.
+
+== Template == 
+
+The following is a basic template.
+
+{{{
+set -o nounset
+
+command1_df() { # partition
+  partition=$1
+  df -h | grep $1
+}
+
+command0_default() { # no args
+  echo "The following commands are available:" 
+  cat $0 | grep '^command[0-9]_' | sed 's/^command\([0-9]\)_\(.*\)() { # \(.*\)/\2: \1 args: \3/'
+}
+
+invoke() {
+  if [ $# -gt 0 ]
+  then
+    command=$1
+    shift
+  else
+    command=default
+  fi
+  command$#_$command $@
+}
+
+invoke $@
+}}}
+
+Firstly we always set "nounset" so that if our script encounters an unset variable, this is treated as an safe bug, and the script exits.
+
+If no command-line arguments are provided, we will invoke the method <tt>command0_default()</tt>.
+
+The above implementation of <tt>command0_default()</tt> actually lists all the methods at our command, where we document the required arguments in the script itself. 
+
+{{{
+evanx@beethoven:~$ sh scripts/test.sh
+The following commands are available:
+df: 1 args: partition
+default: 0 args: no args
+}}}
+
+We can invoke the command <tt>df</tt> with one argument which is the partition. Actually we see in the <tt>command1_df()</tt> method that this argument is just a pattern we grep from the output of <tt>df</tt> 
+
+{{{
+evanx@beethoven:~$ sh scripts/test.sh df home
+/dev/sdb2             128G  109G   13G  90% /home
+}}}
+
+If we do not provide the correct number of arguments that the method is expected, the script will abort as follows, courtesy of the <tt>nounset</tt>. 
+
+{{{
+evanx@beethoven:~$ sh scripts/test.sh df 
+scripts/test.sh: 25: command0_df: not found
+}}}
+
+If we provide an invalid command, the script will abort as follows, courtesy of the <tt>nounset</tt>. 
+
+{{{
+evans@beethoven:~$ sh scripts/test.sh dff home
+scripts/test.sh: 25: command1_dff: not found
+}}}
+
+== Conclusion == 
+
+We suggest a simple trick for invoking methods in a bash script, where the script can self-document any arguments required by that method. 
+
+The implementation will ensure <tt>command</tt> methods are invoked with the correct number of arguments, by virtue of the using the number of arguments in the method name e.g. <tt>command1_</tt> will prefix methods requiring one argument only.
+
+
+
+
