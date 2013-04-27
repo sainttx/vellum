@@ -176,6 +176,27 @@ megaraid2_ldSetProp() { # ld prop
 
 Such scripts provide a useful reference for such commands, if nothing else :)
 
+Another example we will present in a further article is a script for keytool and openssl commands.
+
+<code language="xml">
+$ ./keytool.sh
+commands:
+0 list list 
+1 listv alias 
+1 certreq csr_file
+1 genkey alias 
+1 delete alias
+1 importcert pem_file 
+1 exportcert pem_output_file
+2 changealias alias destalias
+3 newkeypass alias keypass new
+1 printcert alias
+1 exportp12 p12_file
+2 importp12 p12_file pass
+2 connect ip:port cert
+1 pkcs12 p12_file 
+</code>
+
 == Resources ==
 
 See the [BinBash Bin Bash] page. 
