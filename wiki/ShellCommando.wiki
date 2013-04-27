@@ -79,7 +79,7 @@ df: 1 args: partition
 
 ==== Invocation ====
 
-Consider our customer method for <tt>df</tt>.
+Consider our first custom method, using <tt>df</tt>.
 
 <code language="shell">
 command1_df() { # partition
