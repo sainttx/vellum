@@ -208,10 +208,10 @@ state_notify: ld
 where for example the <tt>ldSetProp</tt> function is implemented as follows.
 
 {{{
-enc=14 
+enclosure=14 
 
 command1_pdInfo() { # slot
-  /opt/MegaRAID/CmdTool2/CmdTool264 -pdInfo -physdrv [$enc:$1] -a0
+  /opt/MegaRAID/CmdTool2/CmdTool264 -pdInfo -physdrv [$enclosure:$1] -a0
 }
 }}}
 
