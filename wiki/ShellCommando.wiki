@@ -115,7 +115,7 @@ evans@beethoven:~$ sh scripts/test.sh yesterday
 
 We introduce a template for a convenient menu-esque approach to invoking methods in a bash script.
 
-The implementation will ensure <tt>command</tt> methods are invoked with the correct number of arguments, by virtue of the using the number of arguments in the method name e.g. <tt>command1_</tt> will prefix methods requiring one argument only.
+The implementation will ensure <tt>command</tt> methods are invoked with the correct number of arguments, by virtue of the using the number of arguments in the method name e.g. <tt>command1</tt> will prefix methods requiring one argument only.
 
 === Resources === 
 
