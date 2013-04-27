@@ -45,7 +45,7 @@ invoke $@
 
 Firstly, we always set the bash option <tt>nounset</tt> so that if our script encounters an unset variable, this is treated as an inherently unsafe bug, and the script will abort.
 
-We implement custom commands in the script as per the <tt>command1_df()</tt> example, using a specific naming convention as invoked by <tt>invoke()</tt>.
+We implement custom commands in the script as per the <tt>command1_df()</tt> example, using a specific naming convention as per <tt>invoke()</tt>, namely prefixed by <tt>command</tt> and a digit which is the number of arguments required and expected.
 
 If no command-line arguments are provided, we will invoke the method <tt>command0_default()</tt>.
 
