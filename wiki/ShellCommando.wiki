@@ -7,6 +7,10 @@ We write lots of cron scripts to perform routine maintenance tasks on our system
 
 We might want a script to perform various tasks in succession, but also be able to invoke those individually in an adhoc fashion e.g. to test them.
 
+Also one often wishes to cut and paste commonly used commands into a shell script for later reference, and reuse. 
+
+So we introduce an approach for invoking parameterized functions in a bash script.
+
 == Template == 
 
 The following is a basic template, with one custom command for illustration, namely <tt>command1_df()</tt>.
