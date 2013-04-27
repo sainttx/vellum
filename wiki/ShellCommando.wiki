@@ -73,6 +73,7 @@ command1_help() {
   command0_help | grep $1
 }
 </code>
+where we have "overloaded" our <tt>help</tt> function with different numbers of arguments.
 
 For example,
 
