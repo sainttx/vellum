@@ -78,7 +78,7 @@ evanx@beethoven:~$ sh scripts/test.sh df
 scripts/test.sh: 25: command0_df: not found
 }}}
 
-since our method is actually prefixed by <tt>command1</tt> and thus requires 1 argument.
+where the intentioned method is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
 If we provide an invalid command, the script will abort as follows, courtesy of the <tt>nounset</tt>. 
 
