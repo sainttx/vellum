@@ -101,6 +101,13 @@ evanx@beethoven:~$ sh scripts/test.sh df home
 /dev/sdb2             128G  109G   13G  90% /home
 </code>
 
+If we provide an invalid command, the script will abort as follows.
+
+<code language="xml">
+evans@beethoven:~$ sh scripts/test.sh dff home
+scripts/test.sh: 25: command1_dff: not found
+</code>
+
 If we do not provide the correct number of arguments that the function is expecting, the script will abort as follows. 
 
 <code language="xml">
@@ -109,14 +116,7 @@ scripts/test.sh: 25: command0_df: not found
 </code>
 where the intentioned function is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
-If we provide an invalid command, the script will abort as follows.
-
-<code language="xml">
-evans@beethoven:~$ sh scripts/test.sh dff home
-scripts/test.sh: 25: command1_dff: not found
-</code>
-
-We can overload functions, for example let's introduce <tt>command0_df()</tt> with no arguments, as follows.
+However can overload functions e.g. let's introduce <tt>command0_df()</tt> with no arguments, as follows.
 
 <code language="xml">
 command0_df() { # with no args, executes 'df -h'
@@ -124,7 +124,7 @@ command0_df() { # with no args, executes 'df -h'
 }
 </code>
 
-Our help now shows our overloaded <tt>df</tt> commands as follows.
+Our help now shows the overloaded <tt>df</tt> commands as follows.
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh help df
