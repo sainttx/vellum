@@ -64,7 +64,7 @@ df: 1 args: partition
 where <tt>command0_help()</tt> will parse the script itself for command methods, and print any comments regarding their usage. 
 
 We might provide help on a specific command as follows.
-<code language="shell">
+<code language="sh">
 command1_help() {
   command0_help | grep $1
 }
