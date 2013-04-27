@@ -77,14 +77,22 @@ df: 1 args: partition
 
 ==== Invocation ====
 
-We invoke the <tt>command1_df()</tt> with one argument, namely is the partition. 
+Consider our customer method for <tt>df</tt>.
+
+<code language="shell">
+command1_df() { # partition
+  partition=$1
+  df -h | grep $1
+}
+</code>
+
+We invoke the <tt>command1_df()</tt> with one argument, which we see in its implementation is 
+just a pattern we grep from the output of <tt>df</tt>. 
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh df home
 /dev/sdb2             128G  109G   13G  90% /home
 </code>
-
-We see in our implementation of <tt>command1_df()</tt> that this argument is just a pattern we grep from the output of <tt>df</tt>. 
 
 If we do not provide the correct number of arguments that the method is expecting, the script will abort as follows. 
 
