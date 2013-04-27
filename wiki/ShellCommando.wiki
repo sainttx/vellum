@@ -23,7 +23,7 @@ command1_df() { # partition
 
 command0_help() {
   echo "The following commands are available:" 
-  cat $0 | grep '^command[0-9]_' | sed 's/^command\([0-9]\)_\(.*\)() { # \(.*\)/\2: \1 args: \3/'
+  cat $0 | grep '^command[0-9]_' | sed 's/^command\([0-9]\)_\(.*\)() { #\(.*\)/\2:\3/' | sort
 }
 
 command0_default() {
@@ -59,7 +59,7 @@ The above implementation of <tt>command0_help()</tt> lists all the functions at 
 evanx@beethoven:~$ sh scripts/test.sh
 Sorry but the default invocation of this script has no functionality yet.
 The following commands are available:
-df: 1 args: partition
+df: partition
 </code>
 where <tt>command0_help()</tt> will parse the script itself for command functions, and print any comments regarding their usage. 
 
@@ -74,7 +74,7 @@ For example,
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh help df
-df: 1 args: partition
+df: partition
 </code>
 
 ==== Invocation ====
@@ -125,7 +125,7 @@ Let's check the usage.
 
 <code language="xml">
 evans@beethoven:~$ sh scripts/test.sh help yesterday
-yesterday: 0 args: print yesterday's date in YYYY-MM-DD format
+yesterday: print yesterday's date in YYYY-MM-DD format
 </code>
 
 And let's invoke it. 
@@ -147,23 +147,29 @@ In an upcoming article, we'll use the above approach for LSI MegaRAID commands a
 <code language="xml">
 $ sh scripts/megaraid.sh 
 commands:
-1 ldGetProp ld 
-2 ldSetProp ld prop
-1 setProp prop
-1 getProp prop
-1 pdInfo slot
-1 pdMakeGood slot
-3 pdReplaceMissing slot array row
-1 pdRbld_showProg slot
-1 pdRbld_start slot
-1 ldInfo ld
-1 ldInfo_state ld
-0 alarmSilence 
-0 alarmDisplay 
-0 pdInfo 
-0 pdGetMissing 
-0 pdList 
-0 events 
+alarmDsply: 
+alarmSilence: 
+battery: (battery status)
+events:
+getProp: prop
+help: command
+help: (MegaCli64 -help)
+latestEvents:
+ldGetProp: ld 
+ldInfo: 
+ldInfo: ld
+ldInfo_state: ld
+ldSetProp: ld prop
+pdGetMissing:
+pdInfo: 
+pdInfo: slot
+pdList:
+pdMakeGood: slot
+pdRbld_showProg: slot
+pdRbld_start: slot
+pdReplaceMissing: slot array row
+setProp: prop
+state_notify: ld
 </code>
 
 where for example the <tt>ldSetProp</tt> function is implemented as follows.
@@ -181,20 +187,20 @@ Another example we will present in a further article is a script for keytool and
 <code language="xml">
 $ ./keytool.sh
 commands:
-0 list list 
-1 listv alias 
-1 certreq csr_file
-1 genkey alias 
-1 delete alias
-1 importcert pem_file 
-1 exportcert pem_output_file
-2 changealias alias destalias
-3 newkeypass alias keypass new
-1 printcert alias
-1 exportp12 p12_file
-2 importp12 p12_file pass
-2 connect ip:port cert
-1 pkcs12 p12_file 
+certreq csr_file
+changealias alias destalias
+connect ip:port cert
+delete alias
+exportcert pem_output_file
+exportp12 p12_file
+genkey alias 
+importcert pem_file 
+importp12 p12_file pass
+list list 
+listv alias 
+newkeypass alias keypass new
+pkcs12 p12_file 
+printcert alias
 </code>
 
 == Resources ==
