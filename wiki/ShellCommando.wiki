@@ -53,7 +53,7 @@ If no command-line arguments are provided, we will invoke the method <tt>command
 
 The above implementation of <tt>command0_help()</tt> lists all the methods at our command, where we document the expected arguments in the script itself via a comment next to the method declaration. 
 
-<code language="text">
+<code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh
 Sorry but the default invocation of this script has no functionality yet.
 The following commands are available:
