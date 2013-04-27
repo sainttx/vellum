@@ -11,7 +11,7 @@ We might want a script to perform various tasks in succession, but also be able 
 
 The following is a basic template, with one custom command for illustration, namely <tt>command1_df()</tt>.
 
-<code language="shell">
+{{{
 #!/bin/bash
 
 set -o nounset
@@ -43,7 +43,7 @@ invoke() {
 }
 
 invoke $@
-</code>
+}}}
 
 Firstly, we always set the bash option <tt>nounset</tt> so that if our script encounters an unset variable, this is treated as an inherently unsafe bug, and the script will abort.
 
