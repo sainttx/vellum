@@ -37,7 +37,7 @@ invoke() {
   else
     command=default
   fi
-  command$#_$command $@
+  command${#}_$command $@
 }
 
 invoke $@
