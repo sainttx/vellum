@@ -206,7 +206,7 @@ state_notify: ld
 
 $ ./megaraid.sh pdInfo 5 | grep Error
 Media Error Count: 0
-Other Error Count: 122
+Other Error Count: 0
 </code>
 
 where for example the <tt>pdInfo</tt> function with 1 argument is implemented as follows.
