@@ -84,6 +84,33 @@ evans@beethoven:~$ sh scripts/test.sh dff home
 scripts/test.sh: 25: command1_dff: not found
 }}}
 
+=== Example ===
+
+As an example, let's implement a new command to print yesterday's date in our preferred format. 
+
+{{{
+command0_yesterday() { # print yesterday's date in YYYY-MM-DD format
+  date -d 'yesterday' +'%Y-%m-%d'
+}
+}}}
+
+Let's check the usage. 
+
+{{{
+evans@beethoven:~$ sh scripts/test.sh
+The following commands are available:
+df: 1 args: partition
+yesterday: 0 args: print yesterday's date in YYYY-MM-DD format
+}}}
+
+And let's invoke it. 
+
+{{{
+evans@beethoven:~$ sh scripts/test.sh yesterday
+2013-04-26
+}}}
+
+
 == Conclusion == 
 
 We suggest a simple trick for invoking methods in a bash script, where the script can self-document any arguments required by that method. 
