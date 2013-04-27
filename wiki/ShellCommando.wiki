@@ -162,13 +162,8 @@ commands:
 0 alarmDisplay 
 0 pdInfo 
 0 pdGetMissing 
-0 pdList_grep 
-0 pdList_status 
 0 pdList 
 0 events 
-0 latest 
-0 battery 
-0 ldInfo 
 </code>
 
 where for example the <tt>ldSetProp</tt> function is implemented as follows.
