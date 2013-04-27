@@ -59,7 +59,6 @@ Sorry but the default invocation of this script has no functionality yet.
 The following commands are available:
 df: 1 args: partition
 </code>
-
 where <tt>command0_help()</tt> will parse the script for command methods, and print any comments regarding their usage. 
 
 We might provide help on a specific command only as follows.
@@ -93,7 +92,6 @@ If we do not provide the correct number of arguments that the method is expectin
 evanx@beethoven:~$ sh scripts/test.sh df 
 scripts/test.sh: 25: command0_df: not found
 </code>
-
 where the intentioned method is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
 If we provide an invalid command, the script will abort as follows, courtesy of the <tt>nounset</tt>. 
