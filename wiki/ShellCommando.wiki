@@ -58,7 +58,6 @@ The above implementation of <tt>command0_usage()</tt> lists all the methods at o
 evanx@beethoven:~$ sh scripts/test.sh
 The following commands are available:
 df: 1 args: partition
-default: 0 args: no args
 }}}
 
 ==== Invocation ====
