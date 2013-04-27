@@ -58,7 +58,7 @@ The following commands are available:
 df: 1 args: partition
 }}}
 
-Where a comment is provided for a specific method, <tt>command0_usage()</tt> will print that for us. 
+where <tt>command0_usage()</tt> will parse the script for command methods, and print any comments regarding their usage. 
 
 ==== Invocation ====
 
