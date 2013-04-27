@@ -143,7 +143,7 @@ The implementation will ensure that <tt>command</tt> functions are invoked with 
 
 === Coming up ===
 
-In an upcoming article, we'll use the above template for LSI MegaRAID commands as follows.
+In an upcoming article, we'll use the above approach for LSI MegaRAID commands as follows.
 <code language="xml">
 $ sh scripts/megaraid.sh 
 commands:
@@ -171,7 +171,7 @@ commands:
 0 ldInfo 
 </code>
 
-where in this case we display the number of arguments first.
+where for example the <tt>ldSetProp</tt> function is implementated as follows.
 
 {{{
 megaraid2_ldSetProp() { # ld prop
