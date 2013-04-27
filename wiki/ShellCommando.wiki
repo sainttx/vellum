@@ -141,7 +141,7 @@ We introduce a template for a convenient menu-esque approach to invoking functio
 
 The implementation will ensure that <tt>command</tt> functions are invoked with the correct number of arguments, by virtue of the using the number of arguments in the function name itself e.g. <tt>command1</tt> will prefix functions requiring one argument only.
 
-=== Coming up ===
+== Coming up ==
 
 In an upcoming article, we'll use the above approach for LSI MegaRAID commands as follows.
 <code language="xml">
@@ -176,7 +176,7 @@ megaraid2_ldSetProp() { # ld prop
 
 Such scripts provide a useful reference for such commands, if nothing else :)
 
-=== Resources === 
+== Resources ==
 
 See the [BinBash Bin Bash] page. 
 
