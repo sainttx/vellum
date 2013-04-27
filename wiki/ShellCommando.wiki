@@ -9,7 +9,7 @@ We might want a script to perform various tasks in succession, but able to invok
 
 == Template == 
 
-The following is a basic template.
+The following is a basic template, with one custom command for illustration, namely <tt>command1_df()</tt>.
 
 {{{
 set -o nounset
@@ -73,7 +73,6 @@ command1_help() {
 evanx@beethoven:~$ sh scripts/test.sh help df
 df: 1 args: partition
 </code>
-
 
 ==== Invocation ====
 
