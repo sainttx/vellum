@@ -66,7 +66,7 @@ We might provide help on a specific command only as follows.
 command1_help() {
   command0_help | grep $1
 }
-<code>
+</code>
 
 For example,
 
