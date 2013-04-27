@@ -179,7 +179,7 @@ state_notify: ld
 where for example the <tt>ldSetProp</tt> function is implemented as follows.
 
 {{{
-megaraid2_ldSetProp() { # ld prop
+command2_ldSetProp() { # ld prop
   /opt/MegaRAID/CmdTool2/CmdTool264 -ldSetProp $2 -l$1 -a0
 }
 }}}
