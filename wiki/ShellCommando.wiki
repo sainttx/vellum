@@ -47,13 +47,13 @@ invoke $@
 
 Firstly, we always set the bash option <tt>nounset</tt> so that if our script encounters an unset variable, this is treated as an inherently unsafe bug, and the script will abort.
 
-We implement custom commands in the script as per the <tt>command1_df()</tt> example, using a specific naming convention whereby the method name is prefixed by "command" and a digit which is the number of arguments that are expected, courtesy of <tt>$#</tt> in <tt>invoke()</tt>.
+We implement custom commands in the script as per the <tt>command1_df()</tt> example, using a specific naming convention whereby the function name is prefixed by "command" and a digit which is the number of arguments that are expected, courtesy of <tt>$#</tt> in <tt>invoke()</tt>.
 
-If no command-line arguments are provided, we will invoke the method <tt>command0_default()</tt>.
+If no command-line arguments are provided, we will invoke the function <tt>command0_default()</tt>.
 
 ==== Help ====
 
-The above implementation of <tt>command0_help()</tt> lists all the methods at our command, where we document the expected arguments in the script itself via a comment next to the method declaration. 
+The above implementation of <tt>command0_help()</tt> lists all the functions at our command, where we document the expected arguments in the script itself via a comment next to the function declaration. 
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh
@@ -61,7 +61,7 @@ Sorry but the default invocation of this script has no functionality yet.
 The following commands are available:
 df: 1 args: partition
 </code>
-where <tt>command0_help()</tt> will parse the script itself for command methods, and print any comments regarding their usage. 
+where <tt>command0_help()</tt> will parse the script itself for command functions, and print any comments regarding their usage. 
 
 We might provide help on a specific command as follows.
 <code language="sh">
@@ -79,7 +79,7 @@ df: 1 args: partition
 
 ==== Invocation ====
 
-Consider our first custom method, using <tt>df</tt>.
+Consider our first custom function, using <tt>df</tt>.
 
 <code language="shell">
 command1_df() { # partition
@@ -96,13 +96,13 @@ evanx@beethoven:~$ sh scripts/test.sh df home
 /dev/sdb2             128G  109G   13G  90% /home
 </code>
 
-If we do not provide the correct number of arguments that the method is expecting, the script will abort as follows. 
+If we do not provide the correct number of arguments that the function is expecting, the script will abort as follows. 
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh df 
 scripts/test.sh: 25: command0_df: not found
 </code>
-where the intentioned method is actually prefixed by <tt>command1</tt> since it requires 1 argument.
+where the intentioned function is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
 If we provide an invalid command, the script will abort as follows.
 
@@ -137,9 +137,47 @@ evans@beethoven:~$ sh scripts/test.sh yesterday
 
 == Conclusion == 
 
-We introduce a template for a convenient menu-esque approach to invoking methods in a bash script.
+We introduce a template for a convenient menu-esque approach to invoking functions in a bash script.
 
-The implementation will ensure that <tt>command</tt> methods are invoked with the correct number of arguments, by virtue of the using the number of arguments in the method name itself e.g. <tt>command1</tt> will prefix methods requiring one argument only.
+The implementation will ensure that <tt>command</tt> functions are invoked with the correct number of arguments, by virtue of the using the number of arguments in the function name itself e.g. <tt>command1</tt> will prefix functions requiring one argument only.
+
+=== Coming up ===
+
+In an upcoming article, we'll use the above template for LSI MegaRAID commands as follows.
+<code language="xml">
+$ sh scripts/megaraid.sh 
+commands:
+1 ldGetProp ld 
+2 ldSetProp ld prop
+1 setProp prop
+1 getProp prop
+1 pdInfo slot
+1 pdMakeGood slot
+3 pdReplaceMissing slot array row
+1 pdRbld_showProg slot
+1 pdRbld_start slot
+1 ldInfo ld
+1 ldInfo_state ld
+0 alarmSilence 
+0 alarmDisplay 
+0 pdInfo 
+0 pdGetMissing 
+0 pdList_grep 
+0 pdList_status 
+0 pdList 
+0 events 
+0 latest 
+0 battery 
+0 ldInfo 
+</code>
+
+where in this case we display the number of arguments first.
+
+{{{
+megaraid2_ldSetProp() { # ld prop
+  /opt/MegaRAID/MegaCli/MegaCli64 -ldSetProp $2 -l$1
+}
+}}}
 
 === Resources === 
 
