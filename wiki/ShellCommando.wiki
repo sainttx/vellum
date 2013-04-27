@@ -132,6 +132,16 @@ df: partition
 df: with no args, executes 'df -h'
 </code>
 
+One can implement a <tt>command0</tt> as follows, 
+
+<code language="xml">
+command0_df() { 
+  echo "Incorrect usage! Arguments are required for this command, e.g. the partition to grep."
+}
+</code>
+
+That is, where this is just help for the usage of same command with arguments :)
+
 === Example ===
 
 As an example, let's implement a new command to print yesterday's date in our preferred format. 
@@ -161,6 +171,8 @@ evans@beethoven:~$ sh scripts/test.sh yesterday
 We introduce a template for a convenient menu-esque approach to invoking functions in a bash script.
 
 The implementation will ensure that "command functions" are invoked with the correct number of arguments, by virtue of the using the number of arguments in the function name to be invoked e.g. <tt>command1</tt> will prefix functions requiring one argument only.
+
+Furthermore this allows us to "overload" functions, according to the number of arguments, e.g. to have a more general implementation which takes no arguments, alongside an implementation which takes a number of arguments in order to be more specific.
 
 == Coming up ==
 
