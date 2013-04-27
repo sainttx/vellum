@@ -203,9 +203,13 @@ pdRbld_start: slot
 pdReplaceMissing: slot array row
 setProp: prop
 state_notify: ld
+
+$ ./megaraid.sh pdInfo 5 | grep Error
+Media Error Count: 0
+Other Error Count: 122
 </code>
 
-where for example the <tt>ldSetProp</tt> function is implemented as follows.
+where for example the <tt>pdInfo</tt> function with 1 argument is implemented as follows.
 
 {{{
 enclosure=14 
