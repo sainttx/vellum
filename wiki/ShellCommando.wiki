@@ -149,11 +149,11 @@ $ sh scripts/megaraid.sh
 commands:
 alarmDsply: 
 alarmSilence: 
-battery: (battery status)
+battery:
 events:
 getProp: prop
 help: command
-help: (MegaCli64 -help)
+megahelp: (MegaCli64 -help)
 latestEvents:
 ldGetProp: ld 
 ldInfo: 
