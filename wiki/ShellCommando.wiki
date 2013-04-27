@@ -174,7 +174,7 @@ The implementation will ensure that "command functions" are invoked with the cor
 
 Furthermore this allows us to "overload" functions, according to the number of arguments, e.g. to have a more general implementation which takes no arguments, alongside an implementation which takes a number of arguments in order to be more specific.
 
-== Coming up ==
+== Sneak preview ==
 
 In an upcoming article, we'll use the above approach for LSI MegaRAID commands as follows.
 <code language="xml">
