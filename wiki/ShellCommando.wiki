@@ -11,7 +11,7 @@ We might want a script to perform various tasks in succession, but also be able 
 
 The following is a basic template, with one custom command for illustration, namely <tt>command1_df()</tt>.
 
-{{{
+<code language="bash">
 set -o nounset
 
 command1_df() { # partition
@@ -41,7 +41,7 @@ invoke() {
 }
 
 invoke $@
-}}}
+</code>
 
 Firstly, we always set the bash option <tt>nounset</tt> so that if our script encounters an unset variable, this is treated as an inherently unsafe bug, and the script will abort.
 
@@ -63,11 +63,13 @@ df: 1 args: partition
 where <tt>command0_help()</tt> will parse the script for command methods, and print any comments regarding their usage. 
 
 We might provide help on a specific command only as follows.
-{{{
+<code language="bash">
 command1_help() {
   command0_help | grep $1
 }
-}}}
+<code>
+
+For example,
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh help df
