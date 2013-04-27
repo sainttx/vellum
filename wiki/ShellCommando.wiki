@@ -61,6 +61,8 @@ df: 1 args: partition
 default: 0 args: no args
 }}}
 
+==== Invocation ====
+
 We can invoke the command <tt>df</tt> with one argument which is the partition. Actually we see in the <tt>command1_df()</tt> method that this argument is just a pattern we grep from the output of <tt>df</tt> 
 
 {{{
