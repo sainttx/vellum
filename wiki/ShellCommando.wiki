@@ -196,7 +196,7 @@ exportp12: p12_file
 genkey: alias 
 importcert: pem_file 
 importp12: p12_file pass
-list: list 
+list:
 listv: alias 
 newkeypass: alias keypass new
 pkcs12: p12_file 
