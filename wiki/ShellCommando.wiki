@@ -12,6 +12,8 @@ We might want a script to perform various tasks in succession, but also be able 
 The following is a basic template, with one custom command for illustration, namely <tt>command1_df()</tt>.
 
 <code language="shell">
+#!/bin/bash
+
 set -o nounset
 
 command1_df() { # partition
