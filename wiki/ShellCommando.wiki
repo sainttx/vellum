@@ -102,7 +102,7 @@ command0_yesterday() { # print yesterday's date in YYYY-MM-DD format
 Let's check the usage. 
 
 <pre>
-evans@beethoven:~$ sh scripts/test.sh
+evans@beethoven:~$ sh scripts/test.sh help
 The following commands are available:
 df: 1 args: partition
 yesterday: 0 args: print yesterday's date in YYYY-MM-DD format
