@@ -1,4 +1,6 @@
 
+This article is part of the [BinBash Bin Bash] series :) 
+
 == Introduction == 
 
 We write lots of cron scripts to perform routine maintenance tasks on our systems, so... 
@@ -76,6 +78,8 @@ We suggest a simple trick for invoking methods in a bash script, where the scrip
 
 The implementation will ensure <tt>command</tt> methods are invoked with the correct number of arguments, by virtue of the using the number of arguments in the method name e.g. <tt>command1_</tt> will prefix methods requiring one argument only.
 
+=== Resources === 
 
+See the [BinBash Bin Bash] page. 
 
 
