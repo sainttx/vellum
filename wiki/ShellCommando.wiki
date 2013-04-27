@@ -50,7 +50,7 @@ If no command-line arguments are provided, we will invoke the method <tt>command
 
 ==== Usage ====
 
-The above implementation of <tt>command0_usage()</tt> lists all the methods at our command, where we document the required arguments in the script itself. 
+The above implementation of <tt>command0_usage()</tt> lists all the methods at our command, where we document the expected arguments in the script itself via a comment next to the method declaration. 
 
 {{{
 evanx@beethoven:~$ sh scripts/test.sh
