@@ -62,6 +62,19 @@ df: 1 args: partition
 
 where <tt>command0_help()</tt> will parse the script for command methods, and print any comments regarding their usage. 
 
+We might provide help on a specific command only as follows.
+{{{
+command1_help() {
+  command0_help | grep $1
+}
+}}}
+
+<code language="xml">
+evanx@beethoven:~$ sh scripts/test.sh help df
+df: 1 args: partition
+</code>
+
+
 ==== Invocation ====
 
 We invoke the <tt>command1_df()</tt> with one argument, namely is the partition. 
