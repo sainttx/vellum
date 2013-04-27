@@ -62,7 +62,7 @@ where <tt>command0_usage()</tt> will parse the script for command methods, and p
 
 ==== Invocation ====
 
-We can invoke the <tt>command1_df()</tt> with one argument, namely is the partition. Actually we see in our implementation of <tt>command1_df()</tt> that this argument is just a pattern we grep from the output of <tt>df</tt>. 
+We invoke the <tt>command1_df()</tt> with one argument, namely is the partition. Actually we see in our implementation of <tt>command1_df()</tt> that this argument is just a pattern we grep from the output of <tt>df</tt>. 
 
 {{{
 evanx@beethoven:~$ sh scripts/test.sh df home
