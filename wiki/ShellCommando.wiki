@@ -42,7 +42,7 @@ invoke() {
 invoke $@
 }}}
 
-Firstly we always set "nounset" so that if our script encounters an unset variable, this is treated as an safe bug, and the script exits.
+Firstly, we always set "nounset" so that if our script encounters an unset variable, this is treated as an inherently unsafe bug, and the script exits.
 
 We implement custom commands in the script as per the <tt>command1_df</tt> example, using a specific naming convention as invoked by <tt>invoke()</tt>, and a comment for each method which documents the arguments it expects, if any, for the purpose of <tt>command0_usage()</tt> to print said usage. 
 
