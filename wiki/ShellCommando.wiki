@@ -160,7 +160,7 @@ evans@beethoven:~$ sh scripts/test.sh yesterday
 
 We introduce a template for a convenient menu-esque approach to invoking functions in a bash script.
 
-The implementation will ensure that <tt>command</tt> functions are invoked with the correct number of arguments, by virtue of the using the number of arguments in the function name itself e.g. <tt>command1</tt> will prefix functions requiring one argument only.
+The implementation will ensure that "command functions" are invoked with the correct number of arguments, by virtue of the using the number of arguments in the function name to be invoked e.g. <tt>command1</tt> will prefix functions requiring one argument only.
 
 == Coming up ==
 
