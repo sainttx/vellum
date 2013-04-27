@@ -197,7 +197,7 @@ genkey: alias
 importcert: pem_file 
 importp12: p12_file pass
 list:
-listv: alias 
+list: alias 
 newkeypass: alias keypass new
 pkcs12: p12_file 
 printcert: alias
