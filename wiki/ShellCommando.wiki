@@ -171,13 +171,15 @@ commands:
 0 ldInfo 
 </code>
 
-where for example the <tt>ldSetProp</tt> function is implementated as follows.
+where for example the <tt>ldSetProp</tt> function is implemented as follows.
 
 {{{
 megaraid2_ldSetProp() { # ld prop
-  /opt/MegaRAID/MegaCli/MegaCli64 -ldSetProp $2 -l$1
+  /opt/MegaRAID/CmdTool2/CmdTool264 -ldSetProp $2 -l$1 -a0
 }
 }}}
+
+Such scripts provide a useful reference for such commands, if nothing else :)
 
 === Resources === 
 
