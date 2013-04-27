@@ -66,7 +66,7 @@ where <tt>command0_help()</tt> will parse the script for command methods, and pr
 
 We invoke the <tt>command1_df()</tt> with one argument, namely is the partition. 
 
-<code language="text">
+<code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh df home
 /dev/sdb2             128G  109G   13G  90% /home
 </code>
@@ -75,7 +75,7 @@ We see in our implementation of <tt>command1_df()</tt> that this argument is jus
 
 If we do not provide the correct number of arguments that the method is expecting, the script will abort as follows. 
 
-<code language="text">
+<code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh df 
 scripts/test.sh: 25: command0_df: not found
 </code>
@@ -84,7 +84,7 @@ where the intentioned method is actually prefixed by <tt>command1</tt> since it 
 
 If we provide an invalid command, the script will abort as follows, courtesy of the <tt>nounset</tt>. 
 
-<code language="text">
+<code language="xml">
 evans@beethoven:~$ sh scripts/test.sh dff home
 scripts/test.sh: 25: command1_dff: not found
 </code>
@@ -101,7 +101,7 @@ command0_yesterday() { # print yesterday's date in YYYY-MM-DD format
 
 Let's check the usage. 
 
-<code language="text">
+<code language="xml">
 evans@beethoven:~$ sh scripts/test.sh help
 The following commands are available:
 df: 1 args: partition
@@ -110,7 +110,7 @@ yesterday: 0 args: print yesterday's date in YYYY-MM-DD format
 
 And let's invoke it. 
 
-<code language="text">
+<code language="xml">
 evans@beethoven:~$ sh scripts/test.sh yesterday
 2013-04-26
 </code>
