@@ -224,7 +224,6 @@ command0_diskspace() {
 WARNING diskspace 1.6T 701G 768G 48% /files
 </code>
 
-
 == Resources ==
 
 See the [BinBash Bin Bash] page. 
