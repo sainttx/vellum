@@ -9,7 +9,7 @@ We might want a script to perform various tasks in succession, but also be able 
 
 Also one often wishes to cut and paste commonly used commands into a shell script for later reference, and reuse. 
 
-So we introduce an approach for invoking parameterized functions in a bash script.
+So we introduce an approach for dynamically invoking parameterized functions in a bash script.
 
 == Template == 
 
@@ -167,7 +167,7 @@ evans@beethoven:~$ sh scripts/command.sh yesterday
 
 == Conclusion == 
 
-We introduce a template for a dynamic menu-esque approach to invoking parameterized commands in a bash script.
+We introduce a template for a convenient menu-esque approach for dynamically invoking parameterized commands in a bash script.
 
 The implementation will ensure that "command functions" are invoked with the correct number of arguments, by virtue of the using the number of arguments in the function name to be invoked e.g. <tt>command1</tt> will prefix functions requiring one argument only.
 
@@ -239,6 +239,18 @@ command1_pdInfo() { # slot
 
 where our script contains some context for our environment e.g. the enclosure number (14).  
 
+Actually, we can implement context based on the hostname as follows
+
+{{{
+context_beethoven() {
+  enclosure=14 
+}
+
+context_`hostname -s`
+}}}
+
+Naturally this could be explicitly implemented using <tt>if-elif</tt> constructs, but nevertheless the above dynamic invocation approach is quite neat :)
+
 <code language="xml">
 $ ./megaraid.sh pdInfo 5 | grep Error
 Media Error Count: 0
@@ -249,6 +261,4 @@ Such scripts provide a useful reference for such commands, if nothing else :)
 
 == Resources ==
 
-See the [BinBash Bin Bash] page. 
-
-
+See the [BinBash Bin Bash] page.
