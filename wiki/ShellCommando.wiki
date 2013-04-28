@@ -13,14 +13,14 @@ So we introduce an approach for invoking parameterized functions in a bash scrip
 
 == Template == 
 
-The following is a basic template, with one custom command for illustration, namely <tt>command1_df()</tt>.
+The following is a basic template, with one custom command for illustration, namely <tt>command1_dfh</tt>.
 
 {{{
 #!/bin/bash
 
 set -o nounset
 
-command1_df() { # partition
+command1_dfh() { # partition
   partition=$1
   df -h | grep $1
 }
@@ -51,7 +51,7 @@ invoke $@
 
 Firstly, we always set the bash option <tt>nounset</tt> so that if our script encounters an unset variable, this is treated as an inherently unsafe bug, and the script will abort.
 
-We implement custom commands in the script as per the <tt>command1_df()</tt> example, using a specific naming convention whereby the function name is prefixed by "command" and a digit which is the number of arguments that are expected, courtesy of <tt>$#</tt> in <tt>invoke()</tt>.
+We implement custom commands in the script as per the <tt>command1_dfh</tt> example, using a specific naming convention whereby the function name is prefixed by "command" and a digit which is the number of arguments that are expected, courtesy of <tt>"$#"</tt> in <tt>invoke()</tt>.
 
 If no command-line arguments are provided, we will invoke the function <tt>command0_default()</tt>.
 
@@ -63,7 +63,7 @@ The above implementation of <tt>command0_help()</tt> lists all the functions at 
 evanx@beethoven:~$ sh scripts/test.sh
 Sorry but the default invocation of this script has no functionality yet.
 The following commands are available:
-df: partition
+dfh: partition
 </code>
 where <tt>command0_help()</tt> will parse the script itself for command functions, and print any comments regarding their usage. 
 
@@ -73,31 +73,30 @@ command1_help() {
   command0_help | grep $1
 }
 </code>
-where we have "overloaded" our <tt>help</tt> function with different numbers of arguments.
+where we have "overloaded" our <tt>help</tt> function per the number of arguments.
 
-For example,
+Let's try <tt>command1_help</tt> i.e. with 1 argument.
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh help df
-df: partition
+evanx@beethoven:~$ sh scripts/test.sh help dfh
+dfh: partition
 </code>
 
 ==== Invocation ====
 
-Consider our first custom function, using <tt>df</tt>.
+Consider our first custom function, using <tt>dfh</tt>.
 
 <code language="shell">
-command1_df() { # partition
+command1_dfh() { # partition
   partition=$1
   df -h | grep $1
 }
 </code>
 
-We invoke the <tt>command1_df()</tt> with one argument, which we see in its implementation is 
-just a pattern we grep from the output of <tt>df</tt>. 
+We invoke the <tt>command1_dfh()</tt> with one argument, which is a pattern to grep the output of <tt>df</tt>. 
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh df home
+evanx@beethoven:~$ sh scripts/test.sh dfh home
 /dev/sdb2             128G  109G   13G  90% /home
 </code>
 
@@ -111,31 +110,31 @@ scripts/test.sh: 25: command1_dff: not found
 If we do not provide the correct number of arguments that the function is expecting, the script will abort as follows. 
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh df 
-scripts/test.sh: 25: command0_df: not found
+evanx@beethoven:~$ sh scripts/test.sh dfh
+scripts/test.sh: 25: command0_dfh: not found
 </code>
 where the intentioned function is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
-However we can overload functions e.g. let's introduce <tt>command0_df()</tt> with no arguments, as follows.
+However we can overload functions e.g. let's introduce <tt>command0_dfh()</tt> with no arguments, as follows.
 
 <code language="xml">
-command0_df() { # with no args, executes 'df -h'
+command0_dfh() { # with no args, executes 'df -h'
   df -h
 }
 </code>
 
-Our help now shows the overloaded <tt>df</tt> commands as follows.
+Our help now shows the overloaded <tt>dfh</tt> commands as follows.
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh help df
-df: partition
-df: with no args, executes 'df -h'
+evanx@beethoven:~$ sh scripts/test.sh help dfh
+dfh: partition
+dfh: with no args, executes 'df -h'
 </code>
 
 One can implement a <tt>command0</tt> as follows, 
 
 <code language="xml">
-command0_df() { 
+command0_dfh() { 
   echo "Incorrect usage! Arguments are required for this command, e.g. the partition to grep."
 }
 </code>
