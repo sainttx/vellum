@@ -270,4 +270,10 @@ public class Lists {
         }
         return list;
     }
+
+    public static List<String> subList(String[] array, int fromIndex) {
+        List<String> list = new ArrayList();
+        list.addAll(asList(array));
+        return list.subList(fromIndex, array.length);
+    }
 }
