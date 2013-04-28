@@ -236,27 +236,6 @@ Other Error Count: 0
 
 Such scripts provide a useful reference for such commands, if nothing else :)
 
-== Sneak preview 2 ==
-
-In a further upcoming article, we'll implement some basic monitoring, including a diskspace check as follows.
-
-{{{
-command0_diskspace() {
-  for usage in `df -h | grep "% /" | sed 's/.* \([0-9]*\)%.*/\1/'`
-  do
-    if [ $usage -gt 40 ]
-    then
-      echo "WARNING diskspace" `df -h | grep " ${usage}% /"`
-    fi
-  done
-}
-}}}
-
-<code language="xml">
-# sh scripts/nightly.sh diskspace
-WARNING diskspace 1.6T 701G 768G 48% /files
-</code>
-
 == Resources ==
 
 See the [BinBash Bin Bash] page.
