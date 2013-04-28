@@ -239,7 +239,7 @@ command1_pdInfo() { # slot
 
 where our script contains some context for our environment e.g. the enclosure number (14).  
 
-Actually, we can implement context based on the hostname as follows
+Actually, we can implement context based on the hostname, as follows.
 
 {{{
 context_beethoven() {
@@ -249,7 +249,7 @@ context_beethoven() {
 context_`hostname -s`
 }}}
 
-Naturally this could be explicitly implemented using <tt>if-elif</tt> constructs, but nevertheless the above dynamic invocation approach is quite neat :)
+Naturally this could be explicitly implemented using <tt>if-elif</tt> constructs, but nevertheless the above dynamic invocation approach is quite neat.
 
 <code language="xml">
 $ ./megaraid.sh pdInfo 5 | grep Error
