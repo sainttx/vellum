@@ -16,7 +16,6 @@ import java.util.Arrays;
 import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Integers;
 
 /**
  *
@@ -153,4 +152,3 @@ public class PasswordHash {
         stream.read(iv);
     }
 }
-\
