@@ -131,7 +131,7 @@ dfh: volume
 dfh: with no args, executes 'df -h'
 </code>
 
-One can implement a <tt>command0</tt> as follows, 
+One can implement a <tt>command0</tt> as follows...
 
 <code language="xml">
 command0_dfh() { 
@@ -139,7 +139,7 @@ command0_dfh() {
 }
 </code>
 
-That is, where this is just help for the usage of same command with arguments :)
+where this is just help for the usage of same command with arguments :)
 
 === Example ===
 
