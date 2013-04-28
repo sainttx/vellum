@@ -257,8 +257,6 @@ command0_diskspace() {
 WARN 1.6T 701G 768G 48% /files
 </code>
 
-Thereafter, we'll implement a MTA script for cron, which uses <tt>mutt</tt> to send email alerts.  
-
 == Resources ==
 
 See the [BinBash Bin Bash] page.
