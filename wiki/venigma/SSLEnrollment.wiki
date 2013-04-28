@@ -1,21 +1,26 @@
 
 the client (which could be a device that is deployed in the field), is configured with SSL enrollment URL eg. venigmacode.com and enroll as follows
 
+<code language="xml">
 curl https://enroll.venigmacode.com/GenerateKey" -d "CN=<clientId>, C=ZA, O=ACME, etc" -o mykey.pem
 curl https://enroll.venigmacode.com/GetCert" -o mycert.pem 
+</code>
 
 so the above generates a private key and signs it with the server key - alternatively one can generate private key and send a CSR as follows - more secure for paranoid but less convenient:
 
+<code language="xml">
 cat my.csr | curl https://enroll.venigmacode.com/Sign" -o mycert.pem 
+</code>
 
 now the above enroll.secure.net is not client auth SSL, but now that we have a signed cert, the client can connect to the "secure server" using their key ie. client side cert required ie. client auth enabled https 
 
+<code language="xml">
 curl https://secure.venigmacode.com/Post" --key mykey.pem --cert mycert.pem -d 'data to post to server' 
+</code>
 
 so now the client is communicating securely!
 
 the trick is that the client cert needs to be enabled on the secure server of course - which is done via website by responsible affected parties 
-
 while the cert is signed by the server, the server uses a dynamic trust store which checks the cert in the database to see if it is enabled, post enrollment, by said parties
 
 i have prototyped this  - actually by checking code of keytool from java7 - which does more than the ol' keytool from java6
