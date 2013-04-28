@@ -175,7 +175,7 @@ Furthermore this allows us to "overload" functions, according to the number of a
 
 == Sneak preview 1 ==
 
-In an upcoming article, we'll implement a nightly cron diskspace check, as follows.
+In an upcoming article, we'll implement a diskspace check, as follows.
 
 {{{
 command0_diskspace() {
