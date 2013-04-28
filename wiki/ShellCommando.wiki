@@ -246,15 +246,15 @@ command0_diskspace() {
   do
     if [ $usage -gt 40 ]
     then
-      echo "WARN" `df -h | grep " ${usage}% /"`
+      echo "WARNING diskspace" `df -h | grep " ${usage}% /"`
     fi
   done
 }
 }}}
 
 <code language="xml">
-# sh scripts/nightly.sh diskspace | grep WARN
-WARN 1.6T 701G 768G 48% /files
+# sh scripts/nightly.sh diskspace
+WARNING diskspace 1.6T 701G 768G 48% /files
 </code>
 
 == Resources ==
