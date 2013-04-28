@@ -20,8 +20,8 @@ The following is a basic template, with one custom command for illustration, nam
 
 set -o nounset
 
-command1_dfh() { # partition
-  partition=$1
+command1_dfh() { # volume
+  volume=$1
   df -h | grep $1
 }
 
@@ -63,7 +63,7 @@ The above implementation of <tt>command0_help()</tt> lists all the functions at 
 evanx@beethoven:~$ sh scripts/test.sh
 Sorry but the default invocation of this script has no functionality yet.
 The following commands are available:
-dfh: partition
+dfh: volume
 </code>
 where <tt>command0_help()</tt> will parse the script itself for command functions, and print any comments regarding their usage. 
 
@@ -79,7 +79,7 @@ Let's try <tt>command1_help</tt> i.e. with 1 argument.
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh help dfh
-dfh: partition
+dfh: volume
 </code>
 
 ==== Invocation ====
@@ -87,8 +87,8 @@ dfh: partition
 Consider our first custom function, using <tt>dfh</tt>.
 
 <code language="shell">
-command1_dfh() { # partition
-  partition=$1
+command1_dfh() { # volume
+  volume=$1
   df -h | grep $1
 }
 </code>
@@ -127,7 +127,7 @@ Our help now shows the overloaded <tt>dfh</tt> commands as follows.
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/test.sh help dfh
-dfh: partition
+dfh: volume
 dfh: with no args, executes 'df -h'
 </code>
 
@@ -135,7 +135,7 @@ One can implement a <tt>command0</tt> as follows,
 
 <code language="xml">
 command0_dfh() { 
-  echo "Incorrect usage! Arguments are required for this command, e.g. the partition to grep."
+  echo "Incorrect usage! Arguments are required for this command, e.g. the volume to grep."
 }
 </code>
 
