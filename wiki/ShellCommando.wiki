@@ -173,30 +173,7 @@ The implementation will ensure that "command functions" are invoked with the cor
 
 Furthermore this allows us to "overload" functions, according to the number of arguments, e.g. to have a more general implementation which takes no arguments, alongside an implementation which takes a number of arguments in order to be more specific.
 
-== Sneak preview 1 ==
-
-In an upcoming article, we'll implement a diskspace check, as follows.
-
-{{{
-command0_diskspace() {
-  for usage in `df -h | grep "% /" | sed 's/.* \([0-9]*\)%.*/\1/'`
-  do
-    if [ $usage -gt 40 ]
-    then
-      echo "WARN" `df -h | grep " ${usage}% /"`
-    fi
-  done
-}
-}}}
-
-<code language="xml">
-# sh scripts/nightly.sh diskspace | grep WARN
-WARN 1.6T 701G 768G 48% /files
-</code>
-
-In a further article, we'll implement a MTA script for cron, which uses <tt>mutt</tt> to send email alerts.  
-
-== Sneak preview 2 ==
+== Sneak preview ==
 
 In an upcoming article, we'll use the above approach for LSI MegaRAID commands as follows.
 <code language="xml">
@@ -258,6 +235,29 @@ Other Error Count: 0
 </code>
 
 Such scripts provide a useful reference for such commands, if nothing else :)
+
+== Sneak preview 2 ==
+
+In an upcoming article, we'll implement a diskspace check, as follows.
+
+{{{
+command0_diskspace() {
+  for usage in `df -h | grep "% /" | sed 's/.* \([0-9]*\)%.*/\1/'`
+  do
+    if [ $usage -gt 40 ]
+    then
+      echo "WARN" `df -h | grep " ${usage}% /"`
+    fi
+  done
+}
+}}}
+
+<code language="xml">
+# sh scripts/nightly.sh diskspace | grep WARN
+WARN 1.6T 701G 768G 48% /files
+</code>
+
+And thereafter, we'll implement a MTA script for cron, which uses <tt>mutt</tt> to send email alerts.  
 
 == Resources ==
 
