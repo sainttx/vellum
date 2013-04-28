@@ -60,7 +60,7 @@ If no command-line arguments are provided, we will invoke the function <tt>comma
 The above implementation of <tt>command0_help()</tt> lists all the functions at our command, where we document the expected arguments in the script itself via a comment next to the function declaration. 
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh
+evanx@beethoven:~$ sh scripts/command.sh
 Sorry but the default invocation of this script has no functionality yet.
 The following commands are available:
 dfh: volume
@@ -78,7 +78,7 @@ where we have "overloaded" our <tt>help</tt> function per the number of argument
 Let's try <tt>command1_help</tt> i.e. with 1 argument.
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh help dfh
+evanx@beethoven:~$ sh scripts/command.sh help dfh
 dfh: volume
 </code>
 
@@ -96,22 +96,22 @@ command1_dfh() { # volume
 We invoke the <tt>command1_dfh()</tt> with one argument, which is a pattern to grep the output of <tt>df</tt>. 
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh dfh home
+evanx@beethoven:~$ sh scripts/command.sh dfh home
 /dev/sdb2             128G  109G   13G  90% /home
 </code>
 
 If we provide an invalid command, the script will abort as follows.
 
 <code language="xml">
-evans@beethoven:~$ sh scripts/test.sh dff home
-scripts/test.sh: 25: command1_dff: not found
+evans@beethoven:~$ sh scripts/command.sh dff home
+scripts/command.sh: 25: command1_dff: not found
 </code>
 
 If we do not provide the correct number of arguments that the function is expecting, the script will abort as follows. 
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh dfh
-scripts/test.sh: 25: command0_dfh: not found
+evanx@beethoven:~$ sh scripts/command.sh dfh
+scripts/command.sh: 25: command0_dfh: not found
 </code>
 where the intentioned function is actually prefixed by <tt>command1</tt> since it requires 1 argument.
 
@@ -126,7 +126,7 @@ command0_dfh() { # with no args, executes 'df -h'
 Our help now shows the overloaded <tt>dfh</tt> commands as follows.
 
 <code language="xml">
-evanx@beethoven:~$ sh scripts/test.sh help dfh
+evanx@beethoven:~$ sh scripts/command.sh help dfh
 dfh: volume
 dfh: with no args, executes 'df -h'
 </code>
@@ -154,14 +154,14 @@ command0_yesterday() { # print yesterday's date in YYYY-MM-DD format
 Let's check the usage. 
 
 <code language="xml">
-evans@beethoven:~$ sh scripts/test.sh help yesterday
+evans@beethoven:~$ sh scripts/command.sh help yesterday
 yesterday: print yesterday's date in YYYY-MM-DD format
 </code>
 
 And let's invoke it. 
 
 <code language="xml">
-evans@beethoven:~$ sh scripts/test.sh yesterday
+evans@beethoven:~$ sh scripts/command.sh yesterday
 2013-04-26
 </code>
 
