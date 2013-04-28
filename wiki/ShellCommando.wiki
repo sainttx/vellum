@@ -225,10 +225,6 @@ pdRbld_start: slot
 pdReplaceMissing: slot array row
 setProp: prop
 state_notify: ld
-
-$ ./megaraid.sh pdInfo 5 | grep Error
-Media Error Count: 0
-Other Error Count: 0
 </code>
 
 where for example the <tt>pdInfo</tt> function with 1 argument is implemented as follows.
@@ -242,6 +238,12 @@ command1_pdInfo() { # slot
 }}}
 
 where our script contains some context for our environment e.g. the enclosure number (14).  
+
+<code language="xml">
+$ ./megaraid.sh pdInfo 5 | grep Error
+Media Error Count: 0
+Other Error Count: 0
+</code>
 
 Such scripts provide a useful reference for such commands, if nothing else :)
 
