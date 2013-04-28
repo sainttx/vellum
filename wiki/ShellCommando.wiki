@@ -84,7 +84,7 @@ dfh: volume
 
 ==== Invocation ====
 
-Consider our first custom function, using <tt>dfh</tt>.
+Consider our first custom function, using <tt>df</tt>.
 
 <code language="shell">
 command1_dfh() { # volume
@@ -93,7 +93,7 @@ command1_dfh() { # volume
 }
 </code>
 
-We invoke the <tt>command1_dfh()</tt> with one argument, which is a pattern to grep the output of <tt>df</tt>. 
+We invoke the <tt>command1_dfh</tt> with one argument, which is a pattern to grep the output of <tt>df</tt>. 
 
 <code language="xml">
 evanx@beethoven:~$ sh scripts/command.sh dfh home
