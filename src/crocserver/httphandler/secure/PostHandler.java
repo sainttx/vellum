@@ -20,7 +20,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Streams;
 import crocserver.storage.common.CrocStorage;
-import java.text.MessageFormat;
+import vellum.parameter.StringMap;
 
 /**
  *
@@ -35,11 +35,11 @@ public class PostHandler implements HttpHandler {
     HttpExchangeInfo httpExchangeInfo;
     String certName;
     String serviceName;
-    String notifyName;
     String serviceText;
     ServiceRecord newRecord;
     ServiceStatus serviceStatus = ServiceStatus.UNKNOWN;
     NotifyType notifyType;
+    StringMap pathParameterMap = new StringMap();
 
     public PostHandler(CrocApp app) {
         super();
@@ -53,12 +53,12 @@ public class PostHandler implements HttpHandler {
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
         serviceText = Streams.readString(httpExchange.getRequestBody());
-        if (httpExchangeInfo.getPathLength() != 4) {
+        if (httpExchangeInfo.getPathLength() < 3) {
             httpExchangeInfo.handleError(new CrocError(CrocExceptionType.INVALID_ARGS, httpExchangeInfo.getPath()));
         } else {
             certName = httpExchangeInfo.getPathString(1);
             serviceName = httpExchangeInfo.getPathString(2);
-            notifyName = httpExchangeInfo.getPathString(3);
+            httpExchangeInfo.parsePathParameters(pathParameterMap, 3);
             try {
                 handle();
             } catch (Exception e) {
@@ -67,11 +67,12 @@ public class PostHandler implements HttpHandler {
         }
         httpExchange.close();
     }
-    
+
     private void handle() throws Exception {
         newRecord = new ServiceRecord(certName, serviceName);
         newRecord.parseOutText(serviceText);
         ServiceRecordProcessor processor = new ServiceRecordProcessor(app);
+        String notifyName = pathParameterMap.get(NotifyType.class.getSimpleName());
         if (notifyName != null) {
             notifyType = NotifyType.valueOf(notifyName);
             ServiceRecord previousRecord = storage.getServiceRecordStorage().findLatest(certName, serviceName);

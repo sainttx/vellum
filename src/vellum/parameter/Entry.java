@@ -1,11 +1,10 @@
 /*
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
- * Apache Software License 2.0
- * Supported by iPay (Pty) Ltd, BizSwitch.net
  */
 
 package vellum.parameter;
 
+import java.util.Map;
 import vellum.util.Args;
 
 /**
@@ -33,5 +32,4 @@ public class Entry<K, V> {
     public String toString() {
         return Args.format(key, value);
     }
-
 }

@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import vellum.exception.DisplayMessage;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -20,6 +21,7 @@ import vellum.parameter.Entry;
 import vellum.parameter.StringMap;
 import vellum.parameter.Parameters;
 import vellum.util.Beans;
+import vellum.util.Lists;
 import vellum.util.Streams;
 import vellum.util.Strings;
 
@@ -74,17 +76,18 @@ public class HttpExchangeInfo {
         }
         return requestBody;
     }
+    
+    public boolean isParameter(String name) {
+        String value = getParameterMap().get(name);
+        if (value == null) return false;
+        return value.equals("on");
+    }
+
     public StringMap getParameterMap() {
         if (parameterMap == null) {
             parseParameterMap();
         }
         return parameterMap;
-    }
-
-    public boolean isParameter(String name) {
-        String value = getParameterMap().get(name);
-        if (value == null) return false;
-        return value.equals("on");
     }
     
     private void parseParameterMap() {
@@ -248,6 +251,18 @@ public class HttpExchangeInfo {
         return defaultValue;
     }
 
+    public void parsePathParameters(Map pathParameterMap, int fromIndex) {
+        List<String> args = Lists.subList(getPathArgs(), fromIndex);
+        for (String arg : args) {
+            int index = arg.indexOf('=');
+            if (index < 1) {
+                throw new IllegalArgumentException(arg);
+            } else {
+                Parameters.put(pathParameterMap, arg);
+            }
+        }
+    }
+
     public void setResponseHeader(String key, String value) throws IOException {
         httpExchange.getResponseHeaders().set(key, value);
     }
@@ -315,5 +330,5 @@ public class HttpExchangeInfo {
     public String getInputString() {
         return Streams.readString(httpExchange.getRequestBody());
     }
-    
+
 }

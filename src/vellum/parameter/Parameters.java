@@ -1,6 +1,5 @@
 /*
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
- * Supported by iPay (Pty) Ltd, BizSwitch.net
  */
 package vellum.parameter;
 
@@ -20,14 +19,19 @@ public class Parameters {
         return list == null || list.isEmpty() || list.get(0) == null;
     }
 
-    public static Entry<String, String> parseEntry(String string) {
+    public static StringEntry parseEntry(String string) {
         int index = string.indexOf("=");
         if (index > 0 && index < string.length()) {
-            return new Entry(string.substring(0, index), string.substring(index + 1));
+            return new StringEntry(string.substring(0, index), string.substring(index + 1));
         }
-        return null;
+        throw new IllegalArgumentException(string);
     }
 
+    public static void put(Map map, String string) {
+        StringEntry entry = parseEntry(string);
+        map.put(entry.getKey(), entry.getValue());
+    }
+    
     public static <T> T get(Class<T> type) {
         T object;
         try {
@@ -131,5 +135,4 @@ public class Parameters {
         }
         return false;
     }
-
 }
