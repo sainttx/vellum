@@ -1,0 +1,24 @@
+
+Is Linux the OS for the Internet Age?
+Issued by: ITWeb News Services	 
+
+[Johannesburg, 1 February 2000] - Evan Summers, a member of the Linux Professionals Association, delves into the reasons he believes Linux has witnessed such success as an Internet server and browser platform.
+
+The Internet changes everything, as the saying goes, and while Linux itself is not a revolution – it is a product of the Internet revolution. More than that, Linux is not the only feature on the "open-source" landscape.
+
+Open-source software, because it is totally non-restrictive and non-proprietary, is able to optimally leverage the Internet as a communications medium, to harness the collective energies, synergy and imagination of the Internet`s many communities.
+
+It is popular wisdom that the Internet will ultimately encompass every wired and wireless device in our solar system, from set-top computers and cellphones, to cars, airbuses, geo-stationary satellites and space probes. And as the Internet becomes ever more expansive and its nodes more diverse, the pull towards open standard "commodity reference implementations" such as Linux and Apache, will become ever more popular.
+
+A consequence of this is the "commoditisation" of networks, information, software and computing systems. For example, an aerospace company looking for an embedded operating system for a new satellite, or probe, is more likely to download and customise Linux for its requirements than write a new operating system from scratch.
+
+Similarly, it is likely to customise the implementation of Internet protocols and tools under Linux for its communications system, rather than develop a set of proprietary protocols and communications tools from scratch.
+
+The trend is to build supercomputers in order to assemble clusters of "commodity-class" Linux servers. Indeed, the Internet itself is starting to be utilised as a massively parallel computing resource, where the nodes are commodity-class computing devices connecting over the Internet.
+
+In the home computing market, the focus on Internet computing is fuelling the demand for simple, cheap Internet "appliances" rather than relatively complicated and expensive personal computers. Many computer manufacturers are turning to Linux to break through on critical pricing levels, as they brace themselves for the impact of game consoles and set-top boxes into the home computing market.
+
+In the office and enterprise environments, network servers are driving the trend towards stateless, cheap network computing appliances, where internal information systems are evolving into server-based Internet-enabled applications. Linux is the fastest growing Internet server platform, and already appears to be the operating system of choice for desktop appliances.
+
+So looking at the full range of computing environments from PDAs to supercomputers, it appears that Linux is becoming the "reference implementation" system for devices which support Internet communication protocols, and that in the dawn of the new millennium all devices – wired and wireless – will be nodes of the Internet with some form of Linux at their core.
+
