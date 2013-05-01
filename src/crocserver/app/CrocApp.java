@@ -166,6 +166,10 @@ public class CrocApp {
         }
     }
 
+    public CrocConfig getConfig() {
+        return config;
+    }
+        
     public void start() throws Exception {
         if (httpServer != null) {
             httpServer.start();

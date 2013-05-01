@@ -29,5 +29,16 @@ public class SystemProperties {
         return string.toCharArray();
     }
     
-
+    public static int getInt(String name, int defaultValue) {
+        String string = System.getProperty(name);
+        if (string == null) {
+            return defaultValue;
+        }
+        return Integer.parseInt(string);
+    }
+    
+    public static boolean getBoolean(String name) {
+        return Boolean.getBoolean(name);
+    }
+    
 }
