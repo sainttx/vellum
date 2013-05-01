@@ -165,6 +165,35 @@ evans@beethoven:~$ sh scripts/command.sh yesterday
 2013-04-26
 </code>
 
+== Minimal == 
+
+Below is a minimal template for dynamic invocation, without our <tt>command0_help</tt> functionality. 
+
+{{{
+set -u
+
+command0_default() {
+  echo "No default functionality implement yet"
+}
+
+if [ $# -gt 0 ]
+then
+  command=$1
+  shift
+else
+  command=default
+fi
+command$#_$command
+}}}
+
+<code language="xml">
+evans@beethoven:~$ sh scripts/template.sh
+No default functionality implement yet
+
+evans@beethoven:~$ sh scripts/template.sh help
+scripts/template.sh: line 15: command0_help: command not found
+</code>
+
 == Conclusion == 
 
 We introduce a template for a convenient menu-esque approach for dynamically invoking parameterized commands in a bash script.
