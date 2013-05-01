@@ -71,16 +71,16 @@ public class PasswordsTest {
         byte[] saltBytes = PasswordSalts.nextSalt();
         long startMillis = System.currentTimeMillis();
         byte[] hashBytes = Passwords.hashPassword(password, saltBytes, 30000, 160);
-        System.out.printf("hash duration (30k): %dms\n", Millis.elapsed(startMillis));
-        startMillis = System.currentTimeMillis();
-        Passwords.hashPassword(password, saltBytes, 300000, 160);
-        System.out.printf("10x hash duration (300k): %dms\n", Millis.elapsed(startMillis));
-        startMillis = System.currentTimeMillis();
-        Passwords.hashPassword(password, saltBytes, 100000, 160);
-        System.out.printf("hash duration (100k): %dms\n", Millis.elapsed(startMillis));
+        System.out.printf("hash duration (30k, 160bit): %dms\n", Millis.elapsed(startMillis));
         startMillis = System.currentTimeMillis();
         assertTrue(Passwords.matches(password, hashBytes, saltBytes, 30000, 160));
-        System.out.printf("matches duration: %dms\n", Millis.elapsed(startMillis));
+        System.out.printf("matches duration (30k, 160bit): %dms\n", Millis.elapsed(startMillis));
+        startMillis = System.currentTimeMillis();
+        Passwords.hashPassword(password, saltBytes, 100000, 160);
+        System.out.printf("100k hash duration: %dms\n", Millis.elapsed(startMillis));
+        startMillis = System.currentTimeMillis();
+        Passwords.hashPassword(password, saltBytes, 300000, 160);
+        System.out.printf("300k hash duration: %dms\n", Millis.elapsed(startMillis));
         assertFalse(Passwords.matches(password, hashBytes, saltBytes, 30001, 160));
         assertFalse(Passwords.matches(password, hashBytes, saltBytes, 30000, 128));
         assertFalse(Passwords.matches("wrong".toCharArray(), 
