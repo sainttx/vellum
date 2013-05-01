@@ -173,7 +173,7 @@ Below is a minimal template for dynamic invocation, without our <tt>command0_hel
 set -u
 
 command0_default() {
-  echo "No default functionality implement yet"
+  echo "No default functionality implemented yet"
 }
 
 if [ $# -gt 0 ]
@@ -189,7 +189,7 @@ command$#_$command
 
 <code language="xml">
 evans@beethoven:~$ sh scripts/template.sh
-No default functionality implement yet
+No default functionality implemented yet
 
 evans@beethoven:~$ sh scripts/template.sh help
 scripts/template.sh: line 15: command0_help: command not found
