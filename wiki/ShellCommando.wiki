@@ -167,12 +167,12 @@ evans@beethoven:~$ sh scripts/command.sh yesterday
 
 == Minimal == 
 
-Below is a minimal template for dynamic invocation, without our <tt>command0_help</tt> functionality. 
+Below is a slightly different minimal template for dynamic invocation, without our <tt>command0_help</tt> functionality. 
 
 {{{
 set -u
 
-command0_default() {
+command0_() {
   echo "No default functionality implemented yet"
 }
 
@@ -180,11 +180,10 @@ if [ $# -gt 0 ]
 then
   command=$1
   shift
+  command$#_$command
 else
-  command=default
+  command0_
 fi
-
-command$#_$command
 }}}
 
 <code language="xml">
