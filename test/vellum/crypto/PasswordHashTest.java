@@ -60,11 +60,10 @@ public class PasswordHashTest {
         char[] password = "12345678".toCharArray();
         PasswordHash passwordHash = new PasswordHash(password, iterationCount, keySize);
         byte[] hashBytes = passwordHash.getBytes();
+        String encodedString = Base64.encode(hashBytes);
         passwordHash = new PasswordHash(hashBytes);
         assertEquals("iterationCount", iterationCount, passwordHash.getIterationCount());
         assertEquals("keySize", keySize, passwordHash.getKeySize());
-        assertTrue(PasswordHash.verifyBytes(hashBytes));
-        String encodedString = Base64.encode(hashBytes);
         assertTrue(PasswordHash.verifyBytes(hashBytes));
         assertFalse(passwordHash.matches("wrong".toCharArray()));
         assertTrue(passwordHash.matches(password));
