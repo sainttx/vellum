@@ -1,5 +1,6 @@
 
 var serverTest = {
+    accessToken: '',
     checkAuth: function() {
         var res = {
             access_token: 'dummy_access_token'
@@ -7,7 +8,7 @@ var serverTest = {
         processAuthResult(res);        
     },
     ajax: function(req) {
-        console.log(req);
+        console.log('server.ajax: ' + req.url);
         res = mockRes(req);
         console.log(res);
         req.success(res);
@@ -22,11 +23,12 @@ var serverTest = {
     initServer: function() {        
     },
     initData: function() {
-        $('#editOrg-url').val('bizswitch.net');
+        $('#editOrg-url').val('biz.net');
     }    
 };
 
 var serverReal = {
+    accessToken: '',
     ajax: function(req) {
         $.ajax(req);
     },
@@ -120,7 +122,7 @@ function redirectDocument() {
 
 function initDocument() {
     console.log("initDocument");
-    $('.croc-list-org-clickable').click(clickListOrg);
+    $('.croc-list-org-clickable').click(listOrgClick);
     $('.croc-edit-org-clickable').click(clickEditOrg);
     $('.croc-edit-network-clickable').click(clickEditNetwork);
     $('.croc-edit-host-clickable').click(clickEditHost);
@@ -285,11 +287,14 @@ function processGenKeyForm(res) {
     console.log(res);
 }
 
-function clickListOrg() {
-    $('#org-tbody').append('<tr><td>col1<td>col2');
-    $('#org-tbody').append('<tr><td>row2');
-    $('.croc-info').hide();
-    $('#croc-list-org').show();
+function listOrgClick() {
+    server.ajax({ 
+        type: 'POST',                
+        url: '/listOrg',
+        data: 'accessToken=' + server.accessToken,
+        success: listOrgRes,
+        error: listOrgError
+    });    
 }
 
 function clickEditOrg() {
@@ -322,6 +327,39 @@ function clickEditService() {
     $('#croc-edit-service').show();
 }
 
+function buildTr(array) {
+    var html = '<tr>';
+    for (var i = 0; i < array.length; i++) {
+        html += '<td>' + array[i];
+    }
+    return html;
+}
+
+var orgHandler = {
+    toColumnArray: function(org) {
+        console.log(org);
+        return [org.orgUrl, org.orgName, org.displayName];
+    }
+};
+
+function buildTable(tbody, list, handler) {
+    tbody.innerHTML = '';
+    for (var i = 0; i < list.length; i++) {
+        tbody.append(buildTr(handler.toColumnArray(list[i])));
+    }    
+}
+
+function listOrgRes(res) {
+    console.log('listOrgRes');    
+    buildTable($('#org-tbody'), res.list, orgHandler);
+    $('.croc-info').hide();
+    $('#croc-list-org').show();
+}
+
+function listOrgError() {
+    console.log('listOrgError');    
+}
+
 function processEditOrg(res) {
     console.log('processEditOrg');    
     console.log(res);
@@ -334,8 +372,8 @@ function errorEditOrg() {
 function post(req) {
     
 }
-
 function processAccessToken(accessToken) {
+    server.accessToken = accessToken;
     console.log(accessToken);
     server.ajax({ 
         type: 'POST',                

@@ -1,6 +1,6 @@
 
 function initDate() {
-    $('#editOrg-url').val('myorg.com');        
+    $('#editOrg-url').val('biz.com');
 }
 
 var evanLogin = {
@@ -17,8 +17,13 @@ var evanLogout = {
 }
 
 var bizOrg = {
+    orgUrl: 'biz.net',
     orgName: 'biz',
     displayName: 'Biz (Pty) Ltd'
+}
+
+var listOrg = {
+    list: [bizOrg]
 }
 
 var hetznerNetwork = {
@@ -51,8 +56,12 @@ function mockRes(req) {
         return evanLogin;
     } else if (req.url == '/logout') {
         return evanLogout;
+    } else if (req.url == '/editOrg') {
+        return bizOrg;
+    } else if (req.url == '/listOrg') {
+        return listOrg;
     }
-    return { 
+    return {
         error: 'mockRes ' + req.url
     }
 }
