@@ -25,14 +25,11 @@ public class Sockets {
             return false;
         }
     }
-    
-    public static boolean waitPort(int port, long millis, long sleep) {
-        long time = System.currentTimeMillis() + millis;
-        while (!portAvailable(port)) {
-            if (System.currentTimeMillis() > time) {
-                return false;
-            }
-            Threads.sleep(sleep);
+
+    public static boolean waitPort(int port, long timeoutMillis, long sleepMillis) {
+        long time = System.currentTimeMillis() + timeoutMillis;
+        while (!portAvailable(port) && System.currentTimeMillis() < time) {
+            Threads.sleep(sleepMillis);
             logger.warn("waitPort");
         }
         return true;
