@@ -52,37 +52,37 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Croc <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li class="croc-nav-anchor"><a href="#" class="croc-reload-clickable" href="#">Home</a></li>
-                                <li class="croc-nav-anchor"><a href="#" class="croc-about-clickable">About</a></li>
-                                <li class="croc-nav-anchor"><a href="#" class="croc-contact-clickable">Contact</a></li>
+                                <li class="croc-nav-anchor"><a href="#" class="croc-reloadClick" href="#">Home</a></li>
+                                <li class="croc-nav-anchor"><a href="#" class="croc-aboutClick">About</a></li>
+                                <li class="croc-nav-anchor"><a href="#" class="croc-contactClick">Contact</a></li>
                             </ul>
                         <li class="dropdown croc-loggedin-viewable hide">
                         </li>
-                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-home-clickable">Home</a></li>
-                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-about-clickable">About</a></li>
-                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-contact-clickable">Contact</a></li>
+                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-homeClick">Home</a></li>
+                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-aboutClick">About</a></li>
+                        <li class="croc-nav-anchor croc-landing-viewable"><a href="#" class="croc-contactClick">Contact</a></li>
                         <li class="dropdown croc-loggedin-viewable hide">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a class="croc-logout-clickable">Logout</a></li>
+                                <li><a class="croc-logoutClick">Logout</a></li>
                                 <li><a href="#">Settings</a></li>
                                 <li class="nav-header">Security</li>
-                                <li><a href="#" class="croc-account-genKey-clickable">Generate key</a></li>
-                                <li><a href="#" class="croc-account-signCert-clickable">Sign cert</a></li>
-                                <li><a href="#" class="croc-account-resetOtp-clickable">Reset OTP secret</a></li>
+                                <li><a href="#" class="croc-account-genKeyClick">Generate key</a></li>
+                                <li><a href="#" class="croc-account-signCertClick">Sign cert</a></li>
+                                <li><a href="#" class="croc-account-resetOtpClick">Reset OTP secret</a></li>
                             </ul>
                         </li>
                         <li class="dropdown croc-loggedin-viewable hide">
                             <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li class="nav-header">List</li>
-                                <li><a href="#" class="croc-list-org-clickable">Organisation</a></li>
+                                <li><a href="#" class="listOrgClick">Organisation</a></li>
                                 <li class="nav-header">Add</li>
-                                <li><a href="#" class="croc-edit-org-clickable">Organisation</a></li>
-                                <li><a href="#" class="croc-edit-network-clickable">Network</a></li>
-                                <li><a href="#" class="croc-edit-host-clickable">Host</a></li>
-                                <li><a href="#" class="croc-edit-client-clickable">Client</a></li>
-                                <li><a href="#" class="croc-edit-service-clickable">Service</a></li>
+                                <li><a href="#" class="editOrgClick">Organisation</a></li>
+                                <li><a href="#" class="editNetworkClick">Network</a></li>
+                                <li><a href="#" class="editHostClick">Host</a></li>
+                                <li><a href="#" class="editClientClick">Client</a></li>
+                                <li><a href="#" class="editServiceClick">Service</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -92,10 +92,15 @@
                     </a>
                     <div class="nav-collapse pull-right collapse">
                         <div class="navbar-text pull-right croc-loggedin-viewable hide" id="croc-loggedin-username">
-                            <a id="croc-username-text" class="navbar-link croc-logout-clickable">Username</a>
+                            <a id="croc-username-text" class="navbar-link croc-logoutClick">Username</a>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12 croc-info hide" id="listOrg"></div>
             </div>
         </div>
         <div class="container-fluid">
@@ -106,34 +111,33 @@
                         <p>
                         <p>Croc is the "cron output collector"</p>                        
                         <p>
-                            <a id="croc-learn-btn" class="btn btn-primary btn-large croc-login-clickable hide">Login with Google &raquo;</a>
-                            <a id="croc-learn-btn" class="btn btn-primary btn-large croc-about-clickable">Learn more &raquo;</a>
+                            <a id="croc-learn-btn" class="btn btn-primary btn-large croc-loginClick hide">Login with Google &raquo;</a>
+                            <a id="croc-learn-btn" class="btn btn-primary btn-large croc-aboutClick">Learn more &raquo;</a>
                         </p>
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-info-contact">
                         <h1>Contact</h1>
                         <p>
                         <p>evan.summers at gmail.com</p>
-                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home-clickable">Home &raquo;</a></p>
+                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-homeClick">Home &raquo;</a></p>
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-info-about">
                         <h1>About Croc</h1>
                         <p>
                         <p>Croc is the "cron output collector"</p>
                         <p>Developed by evan.summers at gmail.com, sysadmin at <a href="https://bizswitch.net">BizSwitch.net</a></p>
-                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-home-clickable">Home &raquo;</a></p>
+                        <p><a id="croc-home-btn" class="btn btn-primary btn-large croc-homeClick">Home &raquo;</a></p>
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-loggedin-info">
                         <h1 id="croc-loggedin-title">Welcome</h1>
-                        <p><a href="#" class="croc-edit-org-clickable">Edit your organisation</a></p>
+                        <p><a href="#" class="editOrgClick">Edit your organisation</a></p>
                     </div>
-                    <div class="hero-unit croc-info hide" id="croc-list-org"></div>
-                    <div class="hero-unit croc-info hide" id="croc-edit-org"></div>
-                    <div class="hero-unit croc-info hide" id="croc-edit-network"></div>
-                    <div class="hero-unit croc-info hide" id="croc-edit-host"></div>
-                    <div class="hero-unit croc-info hide" id="croc-edit-client"></div>
-                    <div class="hero-unit croc-info hide" id="croc-edit-service"></div>
-                    <div class="hero-unit croc-info hide" id="croc-enroll"/>
+                    <div class="hero-unit croc-info hide" id="editOrg"></div>
+                    <div class="hero-unit croc-info hide" id="editNetwork"></div>
+                    <div class="hero-unit croc-info hide" id="editHost"></div>
+                    <div class="hero-unit croc-info hide" id="editClient"></div>
+                    <div class="hero-unit croc-info hide" id="editService"></div>
+                    <div class="hero-unit croc-info hide" id="enrollUser"/>
                     <div id="croc-resetotp-modal" class="modal hide fade"/>
                     <div id="croc-genkey-modal" class="modal hide fade"/>
                 </div><!--/span-->
@@ -170,10 +174,10 @@
     <script src="./bootstrap/js/bootstrap-typeahead.js"></script>
 
     <script type="text/javascript">
-        $(document).ready(function() {
-            initDocument();
-            //initBean();
-        });
+            $(document).ready(function() {
+                initDocument();
+                //initBean();
+            });
     </script>
 
 </html>
