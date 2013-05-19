@@ -120,7 +120,19 @@ function redirectDocument() {
     return false;
 }
 
+function initLib() {
+    if (!String.prototype.format) {
+        String.prototype.format = function() {
+            var args = arguments;
+            return this.replace(/{(\d+)}/g, function(match, number) {
+                return args[number];
+            });
+        };
+    }
+}
+
 function initDocument() {
+    initLib();
     console.log("initDocument");
     $('.listOrgClick').click(listOrgClick);
     $('.editOrgClick').click(clickEditOrg);
@@ -327,25 +339,31 @@ function clickEditService() {
     $('#editService').show();
 }
 
-function buildTr(array) {
-    var html = '<tr>';
+var orgHandler = {
+    name: 'Org',
+    columnArray: function(org) {
+        return [org.orgUrl, org.orgName, org.displayName];
+    },
+    id: function(org) {
+        return org.orgId;
+    },    
+};
+
+function buildTr(handler, object) {
+    var array = handler.columnArray(object);
+    var html = "<tr onclick='list" + handler.name + "RowClick(" + handler.id(object) + ")'>";
     for (var i = 0; i < array.length; i++) {
-        html += '<td>' + array[i];
+        html += '<td>' + array[i] + '</td>';
     }
+    html += '</tr>';
+    console.log(html);
     return html;
 }
-
-var orgHandler = {
-    toColumnArray: function(org) {
-        console.log(org);
-        return [org.orgUrl, org.orgName, org.displayName];
-    }
-};
 
 function buildTable(tbody, list, handler) {
     tbody.innerHTML = '';
     for (var i = 0; i < list.length; i++) {
-        tbody.append(buildTr(handler.toColumnArray(list[i])));
+        tbody.append(buildTr(handler, list[i]));
     }    
 }
 
@@ -358,6 +376,10 @@ function listOrgRes(res) {
 
 function listOrgError() {
     console.log('listOrgError');    
+}
+
+function listOrgRowClick(id) {
+    console.log(['listOrgRowClick', id]);
 }
 
 function processEditOrg(res) {

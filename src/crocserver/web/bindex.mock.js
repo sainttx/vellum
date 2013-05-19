@@ -17,6 +17,7 @@ var evanLogout = {
 }
 
 var bizOrg = {
+    orgId: 1,
     orgUrl: 'biz.net',
     orgName: 'biz',
     displayName: 'Biz (Pty) Ltd'
