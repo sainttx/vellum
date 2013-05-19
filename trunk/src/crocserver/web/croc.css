@@ -23,6 +23,7 @@ table.croc {
 table.croc thead tr {
   font-family: monospace;
   font-size: 09pt;
+  background-color: #fff;  
 }
 
 table.croc thead th {
@@ -41,6 +42,7 @@ table.croc thead th.sub {
 
 table.croc tbody tr {
   vertical-align: top;
+  background-color: #fff;  
 }
 
 table.croc tbody td {
