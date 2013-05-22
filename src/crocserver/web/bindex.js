@@ -13,7 +13,7 @@ var serverTest = {
         console.log(res);
         req.success(res);
     },
-    clickLogin: function(event) {
+    loginClick: function(event) {
         processAuthResult(res);
     },
     startGoogleClient: function() {        
@@ -39,7 +39,7 @@ var serverReal = {
             immediate: true
         }, processAuthResult);
     },
-    clickLogin: function(event) {
+    loginClick: function(event) {
         gapi.auth.authorize({
             client_id: clientId, 
             scope: scopes, 
@@ -76,24 +76,24 @@ function initServer() {
     server.checkAuth();
 }
 
-function clickAbout() {
-    console.log("clickAbout");
+function aboutClick() {
+    console.log("aboutClick");
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
     $("#croc-info-about").show();        
 }
 
-function clickHome() {
+function homeClick() {
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
     $("#croc-info-landing").show();
 }        
 
-function clickReload() {
+function reloadClick() {
     window.location.reload();
 }        
 
-function clickContact() {
+function contactClick() {
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
     $("#croc-info-contact").show();
@@ -135,38 +135,38 @@ function initDocument() {
     initLib();
     console.log("initDocument");
     $('.listOrgClick').click(listOrgClick);
-    $('.editOrgClick').click(clickEditOrg);
-    $('.editNetworkClick').click(clickEditNetwork);
-    $('.editHostClick').click(clickEditHost);
-    $('.editClientClick').click(clickEditClient);
-    $('.editServiceClick').click(clickEditService);
-    $('.croc-homeClick').click(clickHome);
-    $('.croc-reloadClick').click(clickReload);
-    $('.croc-aboutClick').click(clickAbout);
-    $('.croc-contactClick').click(clickContact);
-    $('.croc-logoutClick').click(clickLogout);
-    $('.croc-loginClick').click(server.clickLogin);
+    $('.editOrgClick').click(editOrgClick);
+    $('.editNetworkClick').click(editNetworkClick);
+    $('.editHostClick').click(editHostClick);
+    $('.editClientClick').click(editClientClick);
+    $('.editServiceClick').click(editServiceClick);
+    $('.homeClick').click(homeClick);
+    $('.reloadClick').click(reloadClick);
+    $('.aboutClick').click(aboutClick);
+    $('.contactClick').click(contactClick);
+    $('.logoutClick').click(logoutClick);
+    $('.loginClick').click(server.loginClick);
     $('#listOrg').load('listOrg.html', function() {
     });    
     $('#editOrg').load('editOrg.html', function() {
-        $('#croc-editOrg-form').submit(submitEditOrg);        
+        $('#croc-editOrg-form').submit(editOrgSubmit);        
     });
     $('#editNetwork').load('editNetwork.html', function() {
-        $('#croc-editNetwork-form').submit(submitEditNetwork);        
+        $('#croc-editNetwork-form').submit(editNetworkSubmit);        
     });
     $('#editHost').load('editHost.html', function() {
-        $('#croc-editHost-form').submit(submitEditHost);        
+        $('#croc-editHost-form').submit(editHostSubmit);        
     });
     $('#editClient').load('editClient.html', function() {
-        $('#croc-editClient-form').submit(submitEditClient);
+        $('#croc-editClient-form').submit(editClientSubmit);
     });
     $('#editService').load('editService.html', function() {
-        $('#croc-editService-form').submit(submitEditService);
+        $('#croc-editService-form').submit(editServiceSubmit);
     });
-    $('#croc-genkey-form').submit(submitGenKey);        
-    $('.croc-account-genKeyClick').click(clickGenKey);
-    $('.croc-account-signCertClick').click(clickSignCert);
-    $('.croc-account-resetOtpClick').click(clickResetOtp);
+    $('#croc-genkey-form').submit(genKeySubmit);        
+    $('.genKeyClick').click(genKeyClick);
+    $('.signCertClick').click(signCertClick);
+    $('.resetOtpClick').click(resetOtpClick);
     $('#croc-secureUrl-anchor').attr('href', secureUrl);
     $('#croc-secureUrl-anchor').text(secureUrl);
     notify("Welcome");
@@ -189,9 +189,9 @@ function processAuthResult(res) {
 }
 
 function showBusyAuth() {
-    $('.croc-loginClick').hide();
+    $('.loginClick').hide();
     $('.croc-login-viewable').hide();
-    $('.croc-logoutClick').hide();
+    $('.logoutClick').hide();
     $('.croc-loggedin-viewable').hide();          
 }
 
@@ -220,18 +220,18 @@ function processLogin(res) {
 function showLoggedIn() {
     $('.croc-landing-viewable').hide();
     $('.croc-login-viewable').hide();
-    $('.croc-loginClick').hide();
+    $('.loginClick').hide();
     $('.croc-info').hide();
     $('.croc-loggedin-viewable').show();
-    $('.croc-logoutClick').show();
+    $('.logoutClick').show();
     $('#croc-loggedin-username').show();    
     $('#croc-loggedin-info').show();    
 }
 
 function showReadyAuth() {
-    $('.croc-loginClick').show();
+    $('.loginClick').show();
     $('.croc-login-viewable').show();    
-    $('.croc-loginClick').click(server.clickLogin);
+    $('.loginClick').click(server.loginClick);
 }
 
 function setPlus(me) {
@@ -248,10 +248,10 @@ function showLanding() {
 function showLoggedOut() {
     $(".croc-info").hide();
     $('.croc-loggedin-viewable').hide();
-    $('.croc-logoutClick').hide();    
+    $('.logoutClick').hide();    
     $("#croc-info-landing").show();
     $('.croc-landing-viewable').show();
-    $('.croc-loginClick').show();
+    $('.loginClick').show();
     $('.croc-login-viewable').show();
 }
 
@@ -309,32 +309,32 @@ function listOrgClick() {
     });    
 }
 
-function clickEditOrg() {
-    console.log('clickEditOrg');
+function editOrgClick() {
+    console.log('editOrgClick');
     $('.croc-info').hide();
     $('#editOrg').show();
 }
 
-function clickEditNetwork() {
-    console.log('clickEditNetwork');
+function editNetworkClick() {
+    console.log('editNetworkClick');
     $('.croc-info').hide();
     $('#editNetwork').show();
 }
 
-function clickEditHost() {
-    console.log('clickEditHost');
+function editHostClick() {
+    console.log('editHostClick');
     $('.croc-info').hide();
     $('#editHost').show();
 }
 
-function clickEditClient() {
-    console.log('clickEditClient');
+function editClientClick() {
+    console.log('editClientClick');
     $('.croc-info').hide();
     $('#editClient').show();
 }
 
-function clickEditService() {
-    console.log('clickEditService');
+function editServiceClick() {
+    console.log('editServiceClick');
     $('.croc-info').hide();
     $('#editService').show();
 }
@@ -361,7 +361,7 @@ function buildTr(handler, object) {
 }
 
 function buildTable(tbody, list, handler) {
-    tbody.innerHTML = '';
+    tbody.empty();
     for (var i = 0; i < list.length; i++) {
         tbody.append(buildTr(handler, list[i]));
     }    
@@ -380,6 +380,7 @@ function listOrgError() {
 
 function listOrgRowClick(id) {
     console.log(['listOrgRowClick', id]);
+    editOrgClick();
 }
 
 function processEditOrg(res) {
@@ -406,7 +407,7 @@ function processAccessToken(accessToken) {
     });
 }
 
-function clickLogout(event) {
+function logoutClick(event) {
     server.ajax({
         type: 'POST',                
         url: '/logout',
@@ -416,7 +417,7 @@ function clickLogout(event) {
     });                
 }
 
-function clickResetOtp() {
+function resetOtpClick() {
     $('#croc-resetotp-modal').modal('show');
     if (false) {
         $.post(
@@ -427,7 +428,7 @@ function clickResetOtp() {
     }
 }
 
-function clickGenKey() {
+function genKeyClick() {
     //$('#croc-genkey-modal').modal('show');
     $.post(
         '/genKey',
@@ -436,7 +437,7 @@ function clickGenKey() {
         );              
 }
 
-function clickSignCert() {
+function signCertClick() {
     $.post(
         '/signCert',
         null,
@@ -444,8 +445,8 @@ function clickSignCert() {
         );    
 }
 
-function submitGenKey(event) {
-    console.log('submitGenKey');    
+function genKeySubmit(event) {
+    console.log('genKeySubmit');    
     if (false) {
         event.preventDefault();
         $.post(
@@ -470,8 +471,8 @@ function submitGenKey(event) {
     return true;
 }
 
-function submitEditOrg(event) {
-    console.log('submitEditOrg');    
+function editOrgSubmit(event) {
+    console.log('editOrgSubmit');    
     event.preventDefault();
     server.ajax({
         url: '/editOrg',
@@ -482,8 +483,8 @@ function submitEditOrg(event) {
     return false;
 }
 
-function submitEditNetwork(event) {
-    console.log('submitEditNetwork');    
+function editNetworkSubmit(event) {
+    console.log('editNetworkSubmit');    
     event.preventDefault();
     $.post(
         '/editNetwork',
@@ -493,8 +494,8 @@ function submitEditNetwork(event) {
     return false;
 }
 
-function submitEditHost(event) {
-    console.log('submitEditHost');    
+function editHostSubmit(event) {
+    console.log('editHostSubmit');    
     event.preventDefault();
     $.post(
         '/editHost',
@@ -504,8 +505,8 @@ function submitEditHost(event) {
     return false;
 }
 
-function submitEditClient(event) {
-    console.log('submitEditClient');    
+function editClientSubmit(event) {
+    console.log('editClientSubmit');    
     event.preventDefault();
     $.post(
         '/editClient',
@@ -515,8 +516,8 @@ function submitEditClient(event) {
     return false;
 }
 
-function submitEditService(event) {
-    console.log('submitEditService');    
+function editServiceSubmit(event) {
+    console.log('editServiceSubmit');    
     event.preventDefault();
     $.post(
         '/editService',
