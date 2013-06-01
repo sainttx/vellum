@@ -1,3 +1,7 @@
+function initTest() {
+    console.log('initTest');
+    initTestMeta();
+}
 
 var serverTest = {
     accessToken: '',
@@ -24,7 +28,9 @@ var serverTest = {
     },
     initData: function() {
         $('#editOrg-url').val('biz.net');
-    }    
+    },
+    initTest: function() {
+    }
 };
 
 var serverReal = {
@@ -62,6 +68,8 @@ var serverReal = {
     },
     initData: function() {
         initData();
+    },
+    initTest: function() {
     }
 };
 
@@ -74,6 +82,7 @@ function initServer() {
     server.initServer();
     server.initData();
     server.checkAuth();
+    server.initTest();
 }
 
 function aboutClick() {
@@ -134,7 +143,6 @@ function initLib() {
 function initDocument() {
     initLib();
     console.log("initDocument");
-    $('.listOrgClick').click(listOrgClick);
     $('.editOrgClick').click(editOrgClick);
     $('.editNetworkClick').click(editNetworkClick);
     $('.editHostClick').click(editHostClick);
@@ -147,21 +155,23 @@ function initDocument() {
     $('.logoutClick').click(logoutClick);
     $('.loginClick').click(server.loginClick);
     $('#listOrg').load('listOrg.html', function() {
+        $('.listOrgClick').click(listOrgClick);
     });    
     $('#editOrg').load('editOrg.html', function() {
-        $('#croc-editOrg-form').submit(editOrgSubmit);        
+        editOrgInit();
     });
     $('#editNetwork').load('editNetwork.html', function() {
-        $('#croc-editNetwork-form').submit(editNetworkSubmit);        
+        $('#editNetwork-form').submit(editNetworkSubmit);        
     });
     $('#editHost').load('editHost.html', function() {
-        $('#croc-editHost-form').submit(editHostSubmit);        
+        $('#editHost-form').submit(editHostSubmit);        
     });
     $('#editClient').load('editClient.html', function() {
-        $('#croc-editClient-form').submit(editClientSubmit);
+        $('#editClient-form').submit(editClientSubmit);
     });
     $('#editService').load('editService.html', function() {
-        $('#croc-editService-form').submit(editServiceSubmit);
+        $('#editService-form').submit(editServiceSubmit);
+        initTest();
     });
     $('#croc-genkey-form').submit(genKeySubmit);        
     $('.genKeyClick').click(genKeyClick);
@@ -299,20 +309,35 @@ function processGenKeyForm(res) {
     console.log(res);
 }
 
-function listOrgClick() {
-    server.ajax({ 
-        type: 'POST',                
-        url: '/listOrg',
-        data: 'accessToken=' + server.accessToken,
-        success: listOrgRes,
-        error: listOrgError
-    });    
+function buildInput(formName, field) {
+    console.log(field);
+    var fieldName = 'url';
+    var fieldId = formName + '-' + fieldName;
+    return '<input type="text" name="' + fieldName + '" placeholder="' + field.label + '" id="' + fieldId + '"/>';
+}
+
+function buildInputs(fieldset, formName, fields) {
+    console.log(fields);
+    fieldset.empty();
+    for (var i = 0; i < fields.length; i++) {
+        fieldset.append(buildInput(formName, fields[i]));
+    }    
+}
+
+function editOrgInit() {
+    $('#editOrg-form').submit(editOrgSubmit);    
 }
 
 function editOrgClick() {
     console.log('editOrgClick');
+    console.log(orgMeta.editOrg);
     $('.croc-info').hide();
+    //buildInputs($('#editOrg-fieldset'), '', orgMeta.editOrg);
     $('#editOrg').show();
+}
+
+function editOrgSet(org) {
+    $('#editOrg-url').val(org.orgUrl);
 }
 
 function editNetworkClick() {
@@ -339,17 +364,8 @@ function editServiceClick() {
     $('#editService').show();
 }
 
-var orgHandler = {
-    name: 'Org',
-    columnArray: function(org) {
-        return [org.orgUrl, org.orgName, org.displayName];
-    },
-    id: function(org) {
-        return org.orgId;
-    },    
-};
-
-function buildTr(handler, object) {
+function buildTr(handler, index) {
+    var object = handler.list[index];
     var array = handler.columnArray(object);
     var html = "<tr onclick='list" + handler.name + "RowClick(" + handler.id(object) + ")'>";
     for (var i = 0; i < array.length; i++) {
@@ -360,16 +376,37 @@ function buildTr(handler, object) {
     return html;
 }
 
-function buildTable(tbody, list, handler) {
+function buildTable(tbody, handler) {
     tbody.empty();
-    for (var i = 0; i < list.length; i++) {
-        tbody.append(buildTr(handler, list[i]));
+    for (var i = 0; i < handler.list.length; i++) {
+        tbody.append(buildTr(handler, i));
     }    
 }
 
+function listOrgClick() {
+    server.ajax({ 
+        type: 'POST',                
+        url: '/listOrg',
+        data: 'accessToken=' + server.accessToken,
+        success: listOrgRes,
+        error: listOrgError
+    });    
+}
+
+var orgHandler = {
+    name: 'Org',
+    id: function(org) {
+        return org.orgId;
+    },
+    columnArray: function(org) {
+        return [org.orgUrl, org.orgName, org.displayName];
+    },
+};
+
 function listOrgRes(res) {
     console.log('listOrgRes');    
-    buildTable($('#org-tbody'), res.list, orgHandler);
+    orgHandler.list = res.list;
+    buildTable($('#listOrg-tbody'), orgHandler);
     $('.croc-info').hide();
     $('#listOrg').show();
 }
@@ -380,6 +417,13 @@ function listOrgError() {
 
 function listOrgRowClick(id) {
     console.log(['listOrgRowClick', id]);
+    for (i = 0; i < orgHandler.list.length; i++) {
+        console.log(orgHandler.list[i]);
+        console.log(orgHandler.id(orgHandler.list[i]));
+        if (orgHandler.id(orgHandler.list[i]) === id) {
+            editOrgSet(orgHandler.list[i]);
+        }
+    }
     editOrgClick();
 }
 
@@ -476,7 +520,7 @@ function editOrgSubmit(event) {
     event.preventDefault();
     server.ajax({
         url: '/editOrg',
-        data: $('#croc-editOrg-form').serialize(),
+        data: $('#editOrg-form').serialize(),
         success: processEditOrg,
         error: errorEditOrg
     });

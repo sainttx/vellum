@@ -1,5 +1,6 @@
 
-var orgMeta = {
+
+orgMeta = {
     orgUrl: {
         label: "Organisation URL"
     },
@@ -13,26 +14,33 @@ var orgMeta = {
         label: "Region (e.g. State or Province)"
     },
     locality: {
-        label: "Locality (e.g. City)" 
+        label: "Locality (e.g. City)"
     },
     countryCode: {
         label: "Country (TLD code)"
     },
-    editOrg: [
-        orgUrl,
-        orgCode,
-        orgName,
-        region,
-        locality,
-        countryCode
-    ],
-    listOrg: [
-        orgUrl,
-        orgCode,
-        orgName,
-        region,
-        locality,
-        countryCode
-    ]
 };
 
+orgMeta.editOrg = [
+    orgMeta.orgUrl,
+    orgMeta.orgCode,
+    orgMeta.orgName,
+    orgMeta.region,
+    orgMeta.locality,
+    orgMeta.countryCode
+];
+
+orgMeta.listOrg = [
+    orgMeta.orgUrl,
+    orgMeta.orgCode,
+    orgMeta.orgName,
+    orgMeta.region,
+    orgMeta.locality,
+    orgMeta.countryCode
+];
+
+function initTestMeta() {
+    console.log('initTestMeta');
+    console.log(orgMeta);
+    console.log(orgMeta.editOrg);
+}

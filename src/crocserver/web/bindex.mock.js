@@ -57,6 +57,8 @@ function mockRes(req) {
         return evanLogin;
     } else if (req.url == '/logout') {
         return evanLogout;
+    } else if (req.url == '/getOrg') {
+        return bizOrg;
     } else if (req.url == '/editOrg') {
         return bizOrg;
     } else if (req.url == '/listOrg') {
