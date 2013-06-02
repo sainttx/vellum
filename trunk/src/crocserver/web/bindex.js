@@ -27,7 +27,6 @@ var serverTest = {
     initServer: function() {        
     },
     initData: function() {
-        $('#editOrg-url').val('biz.net');
     },
     initTest: function() {
     }
@@ -108,10 +107,10 @@ function contactClick() {
     $("#croc-info-contact").show();
 }
 
-function startDocument() {
-    console.log("startDocument");
+function documentReadyRedirect() {
+    console.log("documentReadyRedirect");
     if (!redirectDocument()) {
-        initDocument();
+        documentReady();
     }
 }
 function redirectDocument() {
@@ -140,10 +139,11 @@ function initLib() {
     }
 }
 
-function initDocument() {
+function documentReady() {
     initLib();
-    console.log("initDocument");
-    $('.editOrgClick').click(editOrgClick);
+    console.log("documentReady");
+    orgListLoad();
+    editOrgLoad();
     $('.editNetworkClick').click(editNetworkClick);
     $('.editHostClick').click(editHostClick);
     $('.editClientClick').click(editClientClick);
@@ -154,12 +154,6 @@ function initDocument() {
     $('.contactClick').click(contactClick);
     $('.logoutClick').click(logoutClick);
     $('.loginClick').click(server.loginClick);
-    $('#listOrg').load('listOrg.html', function() {
-        $('.listOrgClick').click(listOrgClick);
-    });    
-    $('#editOrg').load('editOrg.html', function() {
-        editOrgInit();
-    });
     $('#editNetwork').load('editNetwork.html', function() {
         $('#editNetwork-form').submit(editNetworkSubmit);        
     });
@@ -276,24 +270,24 @@ function processLogout(res) {
 
 function okResetOtp() {
     console.log('okResetOtp');
-    $('#croc-resetotp-modal').modal('hide');
+    $('#resetotp-modal').modal('hide');
     
 }
 
 function cancelResetOtp() {
     console.log('cancelResetOtp');
-    $('#croc-resetotp-modal').modal('hide');
+    $('#resetotp-modal').modal('hide');
     
 }
 
 function okGenKey() {
     console.log('okGenKey');
-    $('#croc-genkey-modal').modal('hide');
+    $('#genkey-modal').modal('hide');
 }
 
 function cancelGenKey() {
     console.log('cancelGenKey');
-    $('#croc-genkey-modal').modal('hide');    
+    $('#genkey-modal').modal('hide');    
 }
 
 function processGenKey() {
@@ -322,22 +316,6 @@ function buildInputs(fieldset, formName, fields) {
     for (var i = 0; i < fields.length; i++) {
         fieldset.append(buildInput(formName, fields[i]));
     }    
-}
-
-function editOrgInit() {
-    $('#editOrg-form').submit(editOrgSubmit);    
-}
-
-function editOrgClick() {
-    console.log('editOrgClick');
-    console.log(orgMeta.editOrg);
-    $('.croc-info').hide();
-    //buildInputs($('#editOrg-fieldset'), '', orgMeta.editOrg);
-    $('#editOrg').show();
-}
-
-function editOrgSet(org) {
-    $('#editOrg-url').val(org.orgUrl);
 }
 
 function editNetworkClick() {
@@ -383,62 +361,6 @@ function buildTable(tbody, handler) {
     }    
 }
 
-function listOrgClick() {
-    server.ajax({ 
-        type: 'POST',                
-        url: '/listOrg',
-        data: 'accessToken=' + server.accessToken,
-        success: listOrgRes,
-        error: listOrgError
-    });    
-}
-
-var orgHandler = {
-    name: 'Org',
-    id: function(org) {
-        return org.orgId;
-    },
-    columnArray: function(org) {
-        return [org.orgUrl, org.orgName, org.displayName];
-    },
-};
-
-function listOrgRes(res) {
-    console.log('listOrgRes');    
-    orgHandler.list = res.list;
-    buildTable($('#listOrg-tbody'), orgHandler);
-    $('.croc-info').hide();
-    $('#listOrg').show();
-}
-
-function listOrgError() {
-    console.log('listOrgError');    
-}
-
-function listOrgRowClick(id) {
-    console.log(['listOrgRowClick', id]);
-    for (i = 0; i < orgHandler.list.length; i++) {
-        console.log(orgHandler.list[i]);
-        console.log(orgHandler.id(orgHandler.list[i]));
-        if (orgHandler.id(orgHandler.list[i]) === id) {
-            editOrgSet(orgHandler.list[i]);
-        }
-    }
-    editOrgClick();
-}
-
-function processEditOrg(res) {
-    console.log('processEditOrg');    
-    console.log(res);
-}
-
-function errorEditOrg() {
-    console.log('errorEditOrg');    
-}
-
-function post(req) {
-    
-}
 function processAccessToken(accessToken) {
     server.accessToken = accessToken;
     console.log(accessToken);
@@ -513,18 +435,6 @@ function genKeySubmit(event) {
         });
     }    
     return true;
-}
-
-function editOrgSubmit(event) {
-    console.log('editOrgSubmit');    
-    event.preventDefault();
-    server.ajax({
-        url: '/editOrg',
-        data: $('#editOrg-form').serialize(),
-        success: processEditOrg,
-        error: errorEditOrg
-    });
-    return false;
 }
 
 function editNetworkSubmit(event) {
