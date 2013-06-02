@@ -52,7 +52,7 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Croc <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li class="nav-anchor"><a href="#" class="reloadClick" href="#">Home</a></li>
+                                <li class="nav-anchor"><a href="#" class="reloadClick">Home</a></li>
                                 <li class="croc-nav-anchor"><a href="#" class="aboutClick">About</a></li>
                                 <li class="croc-nav-anchor"><a href="#" class="contactClick">Contact</a></li>
                             </ul>
@@ -76,9 +76,9 @@
                             <a href="" class="dropdown-toggle" data-toggle="dropdown">Edit <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li class="nav-header">List</li>
-                                <li><a href="#" class="listOrgClick">Organisation</a></li>
+                                <li><a href="#" class="orgList-clickable">Organisation</a></li>
                                 <li class="nav-header">Add</li>
-                                <li><a href="#" class="editOrgClick">Organisation</a></li>
+                                <li><a href="#" class="orgEdit-clickable">Organisation</a></li>
                                 <li><a href="#" class="editNetworkClick">Network</a></li>
                                 <li><a href="#" class="editHostClick">Host</a></li>
                                 <li><a href="#" class="editClientClick">Client</a></li>
@@ -100,7 +100,7 @@
         </div>
         <div class="container-fluid">
             <div class="row-fluid">
-                <div class="span12 croc-info hide" id="listOrg"></div>
+                <div class="span12 croc-info hide" id="orgList-container"></div>
             </div>
         </div>
         <div class="container-fluid">
@@ -130,16 +130,16 @@
                     </div>
                     <div class="hero-unit croc-info hide" id="croc-loggedin-info">
                         <h1 id="croc-loggedin-title">Welcome</h1>
-                        <p><a href="#" class="editOrgClick">Edit your organisation</a></p>
+                        <p><a href="#" class="orgEdit-clickable">Edit your organisation</a></p>
                     </div>
-                    <div class="hero-unit croc-info hide" id="editOrg"></div>
-                    <div class="hero-unit croc-info hide" id="editNetwork"></div>
-                    <div class="hero-unit croc-info hide" id="editHost"></div>
-                    <div class="hero-unit croc-info hide" id="editClient"></div>
-                    <div class="hero-unit croc-info hide" id="editService"></div>
-                    <div class="hero-unit croc-info hide" id="enrollUser"/>
-                    <div id="croc-resetotp-modal" class="modal hide fade"/>
-                    <div id="croc-genkey-modal" class="modal hide fade"/>
+                    <div class="hero-unit croc-info hide" id="orgEdit-container"></div>
+                    <div class="hero-unit croc-info hide" id="editNetwork-container"></div>
+                    <div class="hero-unit croc-info hide" id="editHost-container"></div>
+                    <div class="hero-unit croc-info hide" id="editClient-container"></div>
+                    <div class="hero-unit croc-info hide" id="editService-container"></div>
+                    <div class="hero-unit croc-info hide" id="enrollUser-container"/>
+                    <div id="resetotp-modal" class="modal hide fade"/>
+                    <div id="genkey-modal" class="modal hide fade"/>
                 </div><!--/span-->
             </div><!--/row-->
 
@@ -150,11 +150,11 @@
 
         </div><!--/.fluid-container-->
 
-    </body>
-
     <script src="./bootstrap/js/jquery.js"></script>
     <!--script src="https://apis.google.com/js/client.js?onload=startClient"/-->    
     <script src="local.js"></script>
+    <script src="orgEdit.js"></script>
+    <script src="orgList.js"></script>
     <script src="bindex.meta.js"></script>
     <script src="bindex.js"></script>
     <script src="bindex.model.js"></script>
@@ -175,9 +175,9 @@
 
     <script type="text/javascript">
             $(document).ready(function() {
-                initDocument();
-                //initBean();
+                documentReady();
             });
     </script>
 
+</body>
 </html>

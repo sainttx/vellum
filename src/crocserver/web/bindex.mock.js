@@ -19,12 +19,25 @@ var evanLogout = {
 var bizOrg = {
     orgId: 1,
     orgUrl: 'biz.net',
-    orgName: 'biz',
-    displayName: 'Biz (Pty) Ltd'
+    orgCode: 'biz',
+    displayName: 'Biz (Pty) Ltd',
+    region: 'Western Cape',
+    locality: 'Cape Town',
+    country: 'South Africa'
+}
+
+var otherOrg = {
+    orgId: 2,
+    orgUrl: 'other.net',
+    orgCode: 'other',
+    displayName: 'Other (Pty) Ltd',
+    region: 'Western Cape',
+    locality: 'Cape Town',
+    country: 'South Africa'    
 }
 
 var listOrg = {
-    list: [bizOrg]
+    list: [bizOrg, otherOrg]
 }
 
 var hetznerNetwork = {
