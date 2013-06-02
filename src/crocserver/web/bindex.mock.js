@@ -1,10 +1,6 @@
 
-function initDate() {
-    $('#editOrg-url').val('biz.com');
-}
-
 var evanLogin = {
-    name: 'Evan Summers',
+    name: 'Evan B. Summers',
     email: 'evan.summers@gmail.com',
     picture: '',
     totpSecret: '',
@@ -30,13 +26,13 @@ var otherOrg = {
     orgId: 2,
     orgUrl: 'other.net',
     orgCode: 'other',
-    displayName: 'Other (Pty) Ltd',
+    displayName: 'The Other Company (Pty) Ltd',
     region: 'Western Cape',
     locality: 'Cape Town',
     country: 'South Africa'    
 }
 
-var listOrg = {
+var orgList = {
     list: [bizOrg, otherOrg]
 }
 
@@ -70,12 +66,12 @@ function mockRes(req) {
         return evanLogin;
     } else if (req.url == '/logout') {
         return evanLogout;
-    } else if (req.url == '/getOrg') {
+    } else if (req.url == '/orgGet') {
         return bizOrg;
-    } else if (req.url == '/editOrg') {
+    } else if (req.url == '/orgEdit') {
         return bizOrg;
-    } else if (req.url == '/listOrg') {
-        return listOrg;
+    } else if (req.url == '/orgList') {
+        return orgList;
     }
     return {
         error: 'mockRes ' + req.url

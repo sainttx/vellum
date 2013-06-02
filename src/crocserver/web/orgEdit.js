@@ -15,7 +15,7 @@ function orgEditClick() {
     console.log(orgMeta.orgEdit);
     $('.croc-info').hide();
     //buildInputs($('#orgEdit-fieldset'), '', orgMeta.orgEdit);
-    $('#orgEdit').show();
+    $('#orgEdit-container').show();
 }
 
 function orgEditSet(org) {
