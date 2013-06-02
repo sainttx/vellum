@@ -1,10 +1,11 @@
 
 var orgListHandler = {
+    name: 'org',
     id: function(org) {
         return org.orgId;
     },
     columnArray: function(org) {
-        return [org.orgId, org.orgUrl, org.orgCode, org.displayName, org.locality];
+        return [org.orgId, org.orgUrl, org.orgCode, org.displayName];
     },
 };
 
@@ -33,7 +34,7 @@ function orgListRes(res) {
     orgListHandler.list = res.list;
     buildTable($('#orgList-tbody'), orgListHandler);
     $('.croc-info').hide();
-    $('#orgList').show();
+    $('#orgList-container').show();
 }
 
 function orgListError() {
@@ -46,8 +47,8 @@ function orgListRowClick(id) {
         console.log(orgListHandler.list[i]);
         console.log(orgListHandler.id(orgListHandler.list[i]));
         if (orgListHandler.id(orgListHandler.list[i]) === id) {
-            editOrgSet(orgListHandler.list[i]);
+            orgEditSet(orgListHandler.list[i]);
         }
     }
-    editOrgClick();
+    orgEditClick();
 }

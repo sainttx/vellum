@@ -143,7 +143,7 @@ function documentReady() {
     initLib();
     console.log("documentReady");
     orgListLoad();
-    editOrgLoad();
+    orgEditLoad();
     $('.editNetworkClick').click(editNetworkClick);
     $('.editHostClick').click(editHostClick);
     $('.editClientClick').click(editClientClick);
@@ -199,12 +199,12 @@ function showBusyAuth() {
     $('.croc-loggedin-viewable').hide();          
 }
 
-function processLoginError() {
+function loginError() {
     console.log("login error");
     showReadyAuth();
 }
 
-function processLogin(res) {
+function loginRes(res) {
     console.log("login response received")
     if (res.email != null) {
         notify('Welcome, ' + res.name);
@@ -345,7 +345,7 @@ function editServiceClick() {
 function buildTr(handler, index) {
     var object = handler.list[index];
     var array = handler.columnArray(object);
-    var html = "<tr onclick='list" + handler.name + "RowClick(" + handler.id(object) + ")'>";
+    var html = "<tr onclick='" + handler.name + "ListRowClick(" + handler.id(object) + ")'>";
     for (var i = 0; i < array.length; i++) {
         html += '<td>' + array[i] + '</td>';
     }
@@ -368,8 +368,8 @@ function processAccessToken(accessToken) {
         type: 'POST',                
         url: '/login',
         data: 'accessToken=' + accessToken,
-        success: processLogin,
-        error: processLoginError
+        success: loginRes,
+        error: loginError
     });
 }
 
