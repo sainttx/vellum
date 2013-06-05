@@ -2,7 +2,9 @@
 function contactAddReady() {
     $('.contactAdd-clickable').click(contactAddClick);
     $('#contactAdd-container').load('contactAdd.html', function() {
-        $('#contactAdd-form').submit(contactAddSubmit);        
+        $('#contactAdd-save').click(contactAddSave);
+        $('#contactAdd-cancel').click(contactAddCancel);
+        
     });
 }
 
@@ -12,7 +14,10 @@ function contactAddClick() {
     $('#contactAdd-container').show();
 }
 
-function contactAddSubmit() {
-    console.log("contactAddSubmit");
+function contactAddSave() {
+    console.log("contactAddSave");
+}
 
+function contactAddCancel() {
+    console.log("contactAddCancel");
 }
