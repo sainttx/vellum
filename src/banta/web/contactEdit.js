@@ -1,51 +1,47 @@
 
-function orgEditLoad() {
-    $('#orgEdit-container').load('orgEdit.html', function() {
-        orgEditReady();
+function contactEditReady() {
+    $('#contactEdit-container').load('contactEdit.html', function() {
+        $('.contactEdit-clickable').click(contactEditClick);    
+        $('#contactEdit-form').submit(contactEditSubmit);    
     });
 }
 
-function orgEditReady() {
-    $('.orgEdit-clickable').click(orgEditClick);    
-    $('#orgEdit-form').submit(orgEditSubmit);    
-}
-
-function orgEditClick() {
-    console.log('orgEditClick');
-    console.log(orgMeta.orgEdit);
+function contactEditClick() {
+    console.log('contactEditClick');
+    console.log(orgMeta.contactEdit);
     $('.croc-info').hide();
-    //buildInputs($('#orgEdit-fieldset'), '', orgMeta.orgEdit);
-    $('#orgEdit-container').show();
+    //buildInputs($('#contactEdit-fieldset'), '', orgMeta.contactEdit);
+    $('#contactEdit-container').show();
 }
 
-function orgEditSet(org) {
-    $('#orgEdit-orgId').val(org.orgId);
-    $('#orgEdit-orgUrl').val(org.orgUrl);
-    $('#orgEdit-orgCode').val(org.orgCode);
-    $('#orgEdit-displayName').val(org.displayName);
-    $('#orgEdit-region').val(org.region);
-    $('#orgEdit-locality').val(org.locality);
-    $('#orgEdit-country').val(org.country);
+function contactEditSet(org) {
+    $('#contactEdit-orgId').val(org.orgId);
+    $('#contactEdit-orgUrl').val(org.orgUrl);
+    $('#contactEdit-orgCode').val(org.orgCode);
+    $('#contactEdit-displayName').val(org.displayName);
+    $('#contactEdit-region').val(org.region);
+    $('#contactEdit-locality').val(org.locality);
+    $('#contactEdit-country').val(org.country);
 }
 
-function orgEditSubmit(event) {
-    console.log('orgEditSubmit');    
+function contactEditSubmit(event) {
+    console.log('contactEditSubmit');    
     event.preventDefault();
     server.ajax({
-        url: '/orgEdit',
-        data: $('#orgEdit-form').serialize(),
-        success: orgEditRes,
-        error: orgEditError
+        url: '/contactEdit',
+        data: $('#contactEdit-form').serialize(),
+        success: contactEditRes,
+        error: contactEditError
     });
     return false;
 }
 
-function orgEditRes(res) {
+function contactEditRes(res) {
     console.log('processEditOrg');    
     console.log(res);
 }
 
-function orgEditError() {
+function contactEditError() {
     console.log('errorEditOrg');    
 }
 

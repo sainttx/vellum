@@ -1,5 +1,5 @@
 
-var orgListHandler = {
+var contactListHandler = {
     name: 'org',
     id: function(org) {
         return org.orgId;
@@ -9,45 +9,41 @@ var orgListHandler = {
     },
 };
 
-function orgListLoad() {
-    $('#orgList-container').load('orgList.html', function() {
-        orgListReady();
+function contactListReady() {
+    $('#contactList-container').load('contactList.html', function() {
+        $('.contactList-clickable').click(contactListClick);
     });
 }
 
-function orgListReady() {
-    $('.orgList-clickable').click(orgListClick);
-}
-
-function orgListClick() {
+function contactListClick() {
     server.ajax({
         type: 'POST',
-        url: '/orgList',
+        url: '/contactList',
         data: 'accessToken=' + server.accessToken,
-        success: orgListRes,
-        error: orgListError
+        success: contactListRes,
+        error: contactListError
     });
 }
 
-function orgListRes(res) {
-    console.log('orgListRes');
-    orgListHandler.list = res.list;
-    buildTable($('#orgList-tbody'), orgListHandler);
+function contactListRes(res) {
+    console.log('contactListRes');
+    contactListHandler.list = res.list;
+    buildTable($('#contactList-tbody'), contactListHandler);
     $('.croc-info').hide();
-    $('#orgList-container').show();
+    $('#contactList-container').show();
 }
 
-function orgListError() {
-    console.log('orgListError');
+function contactListError() {
+    console.log('contactListError');
 }
 
-function orgListRowClick(id) {
-    console.log(['orgListRowClick', id]);
-    for (i = 0; i < orgListHandler.list.length; i++) {
-        console.log(orgListHandler.list[i]);
-        console.log(orgListHandler.id(orgListHandler.list[i]));
-        if (orgListHandler.id(orgListHandler.list[i]) === id) {
-            orgEditSet(orgListHandler.list[i]);
+function contactListRowClick(id) {
+    console.log(['contactListRowClick', id]);
+    for (i = 0; i < contactListHandler.list.length; i++) {
+        console.log(contactListHandler.list[i]);
+        console.log(contactListHandler.id(contactListHandler.list[i]));
+        if (contactListHandler.id(contactListHandler.list[i]) === id) {
+            orgEditSet(contactListHandler.list[i]);
         }
     }
     orgEditClick();
