@@ -28,7 +28,7 @@
                 }
             }
 
-      #login-form input {
+      .banta-form-large input {
         font-size: 20px;
         height: auto;
         margin-bottom: 15px;
@@ -75,30 +75,44 @@
             </div>
         </div>
 
-        <div class="container home-container" id="landing-container">
-            <p><a class="btn btn-primary btn-large about-clickable">Learn more &raquo;</a></p>
-            <p><a class="btn btn-primary btn-large loginGoogle-clickable">Login with Google</a></p>
-            <form action="login()" id="login-form" class="hide">
+        <div class="container page-container" id="landing-container">
+            <p><a class="btn btn-primary about-clickable">Learn more &raquo;</a></p>
+            <p><a class="btn btn-primary loginGoogle-clickable">Login with Google</a></p>
+            <form action="login()" id="login-form" class="hide banta-form">
                 <input type="text" name="id" placeholder="Phone number" id="login-id-input">
-                <button type="button" class="btn btn-large">Login</button>
-                <button type="button" class="btn btn-large">Register</button>
+                <button type="button" class="btn">Login</button>
+                <button type="button" class="btn">Register</button>
             </form>
         </div>
 
-        <div class="container home-container hide" id="about-container">
+        <div class="container page-container hide" id="about-container">
             <h1>About Banta</h1>
             <p>
             <p>Developed by evan.summers at gmail.com</p>
-            <p><a class="btn btn-primary btn-large home-clickable">Home &raquo;</a></p>
+            <p><a class="btn btn-primary home-clickable">Home &raquo;</a></p>
         </div>
 
-        <div class="container home-container hide" id="welcome-container">
+        <div class="container page-container hide" id="welcome-container">
+            <p>
+                <a class="btn btn-primary contacts-clickable">Contacts &raquo;</a>
+            </p>
             <h1 id="loggedin-title">Welcome</h1>
-            <p><a class="btn btn-primary btn-large contacts-clickable">Contacts &raquo;</a></p>
         </div>
 
-        <div class="container home-container hide" id="contacts-container">
-            <p><a class="btn btn-primary btn-large contactsAdd-clickable">Add contact &raquo;</a></p>
+        <div class="container page-container hide" id="home-container">
+            <p>
+                <a class="btn btn-primary contacts-clickable">Contacts &raquo;</a>
+            </p>
+        </div>
+        
+        <div class="container page-container hide" id="contacts-container">
+            <p>
+                <a class="btn btn-primary contactAdd-clickable">Add contact &raquo;</a>
+                <a class="btn home-clickable">Home &raquo;</a>
+            </p>
+        </div>
+
+        <div class="container page-container hide" id="contactAdd-container">
         </div>
         
         <script src="bootstrap/js/jquery.js"></script>
@@ -107,6 +121,7 @@
         <script src="banta.home.js"></script>
         <script src="banta.mock.js"></script>
         <script src="banta.contacts.js"></script>
+        <script src="banta.contactAdd.js"></script>
         <!--
         <script src="bootstrap/js/bootstrap-transition.js"></script>
         <script src="bootstrap/js/bootstrap-alert.js"></script>

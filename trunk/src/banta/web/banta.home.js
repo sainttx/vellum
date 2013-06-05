@@ -5,6 +5,24 @@ $(document).ready(function() {
     documentReady();
 });
 
+function documentReady() {
+    console.log("documentReady");
+    initLib();
+    contactsReady();
+    contactAddReady();
+    $('.home-clickable').click(homeClick);
+    $('.reload-clickable').click(reloadClick);
+    $('.about-clickable').click(aboutClick);
+    $('.contact-clickable').click(contactClick);
+    $('.loginGoogle-clickable').click(loginGoogleClick);
+    $('.logout-clickable').click(logoutClick);
+    if (window.location.protocol == "http:") {
+        server = serverTest;
+    }
+    initServer();
+}
+
+
 function removeCookies() {
     $.removeCookie('googleAuth');
 }
@@ -87,27 +105,12 @@ function initLib() {
     }
 }
 
-function documentReady() {
-    initLib();
-    console.log("documentReady");
-    $('.home-clickable').click(homeClick);
-    $('.reload-clickable').click(reloadClick);
-    $('.about-clickable').click(aboutClick);
-    $('.contact-clickable').click(contactClick);
-    $('.loginGoogle-clickable').click(loginGoogleClick);
-    $('.logout-clickable').click(logoutClick);
-    if (window.location.protocol == "http:") {
-        server = serverTest;
-    }
-    initServer();
-}
-
 function showLanding() {
     showLoggedOut();
 }
 
 function showLoggedOut() {
-    $('.home-container').hide();
+    $('.page-container').hide();
     $('.loggedin-viewable').hide();
     $('.logout-clickable').hide();
     $("#landing-container").show();
@@ -120,7 +123,7 @@ function showLoggedIn() {
     $('.landing-viewable').hide();
     $('.login-viewable').hide();
     $('.login-clickable').hide();
-    $('.home-container').hide();
+    $('.page-container').hide();
     $('.loggedin-viewable').show();
     $('.logout-clickable').show();
     $('#loggedin-username').show();
@@ -241,17 +244,17 @@ function logoutClick(event) {
 function aboutClick() {
     console.log("aboutClick");
     $('.nav-item').removeClass("active");
-    $('.home-container').hide();
+    $('.page-container').hide();
     $("#about-container").show();
 }
 
 function homeClick() {
     $('.nav-item').removeClass("active");
-    $('.home-container').hide();
-    if (loggedInUser) {
-        $("#welcome-container").show();
-    } else {
+    $('.page-container').hide();
+    if (!loggedInUser) {
         $("#landing-container").show();        
+    } else {
+        $("#home-container").show();
     }
 }
 
@@ -266,6 +269,6 @@ function reloadClick() {
 
 function contactClick() {
     $('.nav-item').removeClass("active");
-    $('.home-container').hide();
+    $('.page-container').hide();
     $("#contact-container").show();
 }
