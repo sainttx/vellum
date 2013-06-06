@@ -34,6 +34,7 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
+        httpExchange.getResponseHeaders().add("Cache-Control", "no-cache, no-store, must-revalidate");
         if (path.endsWith("/log")) {
             String message = Streams.readString(httpExchange.getRequestBody());
             logger.info(message);
