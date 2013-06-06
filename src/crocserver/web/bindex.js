@@ -5,11 +5,11 @@ function initTest() {
 
 var serverTest = {
     accessToken: '',
-    checkAuth: function() {
+    googleAuthorize: function() {
         var res = {
             access_token: 'dummy_access_token'
         };
-        processAuthResult(res);        
+        googleAuthorizeRes(res);        
     },
     ajax: function(req) {
         console.log('server.ajax: ' + req.url);
@@ -17,10 +17,7 @@ var serverTest = {
         console.log(res);
         req.success(res);
     },
-    loginClick: function(event) {
-        processAuthResult(res);
-    },
-    startGoogleClient: function() {        
+    googleClient: function() {        
     },
     getPlus: function() {        
     },
@@ -37,24 +34,16 @@ var serverReal = {
     ajax: function(req) {
         $.ajax(req);
     },
-    checkAuth: function() {
+    googleAuthorize: function() {
         gapi.auth.authorize({
             client_id: clientId, 
             scope: scopes, 
             immediate: true
-        }, processAuthResult);
+        }, googleAuthorizeRes);
     },
-    loginClick: function(event) {
-        gapi.auth.authorize({
-            client_id: clientId, 
-            scope: scopes, 
-            immediate: false
-        }, processAuthResult);
-        return false;
-    },
-    startGoogleClient: function() {        
+    googleClient: function() {        
         gapi.client.setApiKey(apiKey);
-        window.setTimeout(checkAuth, 1);
+        window.setTimeout(googleAuthorize, 1);
     },
     getPlus: function() {
         gapi.client.load('plus', 'v1', function() {
@@ -80,12 +69,12 @@ function initServer() {
     }
     server.initServer();
     server.initData();
-    server.checkAuth();
+    server.googleAuthorize();
     server.initTest();
 }
 
 function aboutClick() {
-    console.log("aboutClick");
+    console.log("about-clickable");
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
     $("#croc-info-about").show();        
@@ -144,16 +133,16 @@ function documentReady() {
     console.log("documentReady");
     orgListLoad();
     orgEditLoad();
-    $('.editNetworkClick').click(editNetworkClick);
-    $('.editHostClick').click(editHostClick);
-    $('.editClientClick').click(editClientClick);
-    $('.editServiceClick').click(editServiceClick);
-    $('.homeClick').click(homeClick);
-    $('.reloadClick').click(reloadClick);
-    $('.aboutClick').click(aboutClick);
-    $('.contactClick').click(contactClick);
-    $('.logoutClick').click(logoutClick);
-    $('.loginClick').click(server.loginClick);
+    $('.editNetwork-clickable').click(editNetworkClick);
+    $('.editHost-clickable').click(editHostClick);
+    $('.editClient-clickable').click(editClientClick);
+    $('.editService-clickable').click(editServiceClick);
+    $('.home-clickable').click(homeClick);
+    $('.reload-clickable').click(reloadClick);
+    $('.about-clickable').click(aboutClick);
+    $('.contact-clickable').click(contactClick);
+    $('.logout-clickable').click(logoutClick);
+    $('.login-clickable').click(server.googleAuthorize());
     $('#editNetwork').load('editNetwork.html', function() {
         $('#editNetwork-form').submit(editNetworkSubmit);        
     });
@@ -168,9 +157,9 @@ function documentReady() {
         initTest();
     });
     $('#croc-genkey-form').submit(genKeySubmit);        
-    $('.genKeyClick').click(genKeyClick);
-    $('.signCertClick').click(signCertClick);
-    $('.resetOtpClick').click(resetOtpClick);
+    $('.genKey-clickable').click(genKeyClick);
+    $('.signCert-clickable').click(signCertClick);
+    $('.resetOtp-clickable').click(resetOtpClick);
     $('#croc-secureUrl-anchor').attr('href', secureUrl);
     $('#croc-secureUrl-anchor').text(secureUrl);
     notify("Welcome");
@@ -181,22 +170,15 @@ function notify(message) {
     console.log("notify " + message);
 }
 
-function processAuthResult(res) {
+function googleAuthorizeRes(res) {
     console.log(res);
     if (res && !res.error) {
         showBusyAuth();
-        processAccessToken(res.access_token);
+        googleAuthorizeAccessToken(res.access_token);
     } else {
         showReadyAuth();
         console.log("login required");
     }
-}
-
-function showBusyAuth() {
-    $('.loginClick').hide();
-    $('.croc-login-viewable').hide();
-    $('.logoutClick').hide();
-    $('.croc-loggedin-viewable').hide();          
 }
 
 function loginError() {
@@ -224,18 +206,25 @@ function loginRes(res) {
 function showLoggedIn() {
     $('.croc-landing-viewable').hide();
     $('.croc-login-viewable').hide();
-    $('.loginClick').hide();
+    $('.login-clickable').hide();
     $('.croc-info').hide();
     $('.croc-loggedin-viewable').show();
-    $('.logoutClick').show();
+    $('.logout-clickable').show();
     $('#croc-loggedin-username').show();    
     $('#croc-loggedin-info').show();    
 }
 
 function showReadyAuth() {
-    $('.loginClick').show();
+    $('.login-clickable').show();
     $('.croc-login-viewable').show();    
-    $('.loginClick').click(server.loginClick);
+    $('.login-clickable').click(server.loginClick);
+}
+
+function showBusyAuth() {
+    $('.login-clickable').hide();
+    $('.croc-login-viewable').hide();
+    $('.logout-clickable').hide();
+    $('.croc-loggedin-viewable').hide();          
 }
 
 function setPlus(me) {
@@ -252,14 +241,14 @@ function showLanding() {
 function showLoggedOut() {
     $(".croc-info").hide();
     $('.croc-loggedin-viewable').hide();
-    $('.logoutClick').hide();    
+    $('.logout-clickable').hide();    
     $("#croc-info-landing").show();
     $('.croc-landing-viewable').show();
-    $('.loginClick').show();
+    $('.login-clickable').show();
     $('.croc-login-viewable').show();
 }
 
-function processLogout(res) {
+function logoutRes(res) {
     console.log('logout response received');
     if (res.email != null) {
         $('#croc-username-text').text(null);
@@ -319,25 +308,25 @@ function buildInputs(fieldset, formName, fields) {
 }
 
 function editNetworkClick() {
-    console.log('editNetworkClick');
+    console.log('editNetwork-clickable');
     $('.croc-info').hide();
     $('#editNetwork').show();
 }
 
 function editHostClick() {
-    console.log('editHostClick');
+    console.log('editHost-clickable');
     $('.croc-info').hide();
     $('#editHost').show();
 }
 
 function editClientClick() {
-    console.log('editClientClick');
+    console.log('editClient-clickable');
     $('.croc-info').hide();
     $('#editClient').show();
 }
 
 function editServiceClick() {
-    console.log('editServiceClick');
+    console.log('editService-clickable');
     $('.croc-info').hide();
     $('#editService').show();
 }
@@ -361,7 +350,7 @@ function buildTable(tbody, handler) {
     }    
 }
 
-function processAccessToken(accessToken) {
+function googleAuthorizeAccessToken(accessToken) {
     server.accessToken = accessToken;
     console.log(accessToken);
     server.ajax({ 
@@ -378,8 +367,8 @@ function logoutClick(event) {
         type: 'POST',                
         url: '/logout',
         data: null,
-        success: processLogout,
-        error: processLogoutError
+        success: logoutRes,
+        error: logoutResError
     });                
 }
 

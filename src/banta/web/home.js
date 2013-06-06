@@ -1,76 +1,48 @@
 
-var loggedInUser = null;
+var server = googleServer;
 
 $(document).ready(function() {
+    if (window.location.protocol == "http:") {
+        server = mockServer;
+    }
     documentReady();
 });
 
 function documentReady() {
     console.log("documentReady");
     initLib();
+    personaReady();
+    googleLoginReady();
     contactsReady();
     contactAddReady();
     $('.home-clickable').click(homeClick);
     $('.reload-clickable').click(reloadClick);
     $('.about-clickable').click(aboutClick);
     $('.contact-clickable').click(contactClick);
-    $('.loginGoogle-clickable').click(loginGoogleClick);
     $('.logout-clickable').click(logoutClick);
-    if (window.location.protocol == "http:") {
-        server = serverTest;
-    }
     initServer();
 }
 
+function initLib() {
+    if (!String.prototype.format) {
+        String.prototype.format = function() {
+            var args = arguments;
+            return this.replace(/{(\d+)}/g, function(match, number) {
+                return args[number];
+            });
+        };
+    }
+}
 
 function removeCookies() {
     $.removeCookie('googleAuth');
 }
-
-var serverReal = {
-    accessToken: '',
-    ajax: function(req) {
-        $.ajax(req);
-    },
-    googleAuthorize: function() {
-        gapi.auth.authorize({
-            client_id: clientId,
-            scope: scopes,
-            immediate: true
-        }, googleAuthorizeRes);
-    },
-    googleClient: function() {
-        gapi.client.setApiKey(apiKey);
-        window.setTimeout(googleAuthorize, 1);
-    },
-    getPlus: function() {
-        gapi.client.load('plus', 'v1', function() {
-            gapi.client.plus.people.get({
-                'userId': 'me'
-            }).execute(setMe);
-        });
-    },
-};
-
-var server = serverReal;
 
 function initServer() {
     console.log("initServer");
     if (false) {
         removeCookies();
     }
-    var googleAuthCookie = $.cookie("googleAuth");
-    if (googleAuthCookie) {
-        console.log("cookie googleAuth " + googleAuthCookie);
-        $('.loginGoogle-clickable').hide();
-        server.googleAuthorize();
-    } else {
-        $('.loginGoogle-clickable').show();
-    }
-}
-
-function loginGoogleClick() {
-    server.googleAuthorize();
 }
 
 function documentReadyRedirect() {
@@ -94,17 +66,6 @@ function redirectDocument() {
     return false;
 }
 
-function initLib() {
-    if (!String.prototype.format) {
-        String.prototype.format = function() {
-            var args = arguments;
-            return this.replace(/{(\d+)}/g, function(match, number) {
-                return args[number];
-            });
-        };
-    }
-}
-
 function showLanding() {
     showLoggedOut();
 }
@@ -113,17 +74,21 @@ function showLoggedOut() {
     $('.page-container').hide();
     $('.loggedin-viewable').hide();
     $('.logout-clickable').hide();
+    $('.loggedout-viewable').show();
     $("#landing-container").show();
-    $('.landing-viewable').show();
-    $('.loginGoogle-clickable').show();
-    $('.login-viewable').show();
+}
+
+function showLoggedInEmail(email) {
+    notify('Welcome, ' + email);
+    $('#loggedin-username-clickable').text(email);
+    $('#loggedin-username-clickable').show();
+    showLoggedIn();    
 }
 
 function showLoggedIn() {
-    $('.landing-viewable').hide();
-    $('.login-viewable').hide();
     $('.login-clickable').hide();
     $('.page-container').hide();
+    $('.loggedout-viewable').hide();
     $('.loggedin-viewable').show();
     $('.logout-clickable').show();
     $('#loggedin-username').show();
@@ -131,85 +96,8 @@ function showLoggedIn() {
     $('#welcome-container').show();
 }
 
-function showReadyAuth() {
-    $('.login-clickable').show();
-    $('.login-viewable').show();
-    $('.loginGoogle-clickable').click(loginGoogleClick);
-}
-
-function googleAuthorizeRes(res) {
-    console.log(res);
-    if (res && !res.error) {
-        showBusyAuth();
-        googleAuthorizeAccessToken(res.access_token);
-    } else {
-        showReadyAuth();
-        console.log("login required");
-    }
-}
-
-function googleAuthorizeAccessToken(accessToken) {
-    server.accessToken = accessToken;
-    console.log(accessToken);
-    server.ajax({
-        type: 'POST',
-        url: '/login',
-        data: 'accessToken=' + accessToken,
-        success: loginRes,
-        error: loginError
-    });
-}
-
-function showBusyAuth() {
-    $('.loginGoogle-clickable').hide();
-    $('.login-viewable').hide();
-    $('.logout-clickable').hide();
-    $('.loggedin-viewable').hide();
-}
-
-function loginError() {
-    console.log("login error");
-    showReadyAuth();
-}
-
 function notify(message) {
     console.log(message);
-}
-
-function loginRes(res) {
-    console.log("login response received")
-    if (res.email != null) {
-        notify('Welcome, ' + res.name);
-        $('#loggedin-username-clickable').text(res.email);
-        $('#loggedin-username-clickable').show();
-        $.cookie("googleAuth", res.email);
-        loggedInUser = res.email;
-        showLoggedIn();
-    } else {
-        console.log(res);
-    }
-}
-
-function setPlus(me) {
-    $('#login').hide();
-    $('#username-text').text(me.displayName);
-    $('#user-picture').attr('src', me.image.url);
-    $('#username').show();
-}
-
-function logoutRes(res) {
-    loggedInUser = null;
-    console.log('logoutRes');
-    if (res.email != null) {
-        $('#username-text').text(null);
-        $('#user-picture').attr('src', null);
-        showLoggedOut();
-    }
-}
-
-function logoutError() {
-    console.log('logoutError');
-    showLoggedOut();
 }
 
 function buildTr(handler, index) {
@@ -232,6 +120,16 @@ function buildTable(tbody, handler) {
 }
 
 function logoutClick(event) {
+    if (personaEmail !== null) {
+        personaLogoutClick();
+    } else if (googleLoginEmail !== null) {
+        googleLogoutClick();
+    } else {
+        console.warn("not logged in");
+    }
+}
+
+function logoutReq() {
     server.ajax({
         type: 'POST',
         url: '/logout',
@@ -239,6 +137,19 @@ function logoutClick(event) {
         success: logoutRes,
         error: logoutError
     });
+}
+
+function logoutRes(res) {
+    console.log("logoutRes");
+    console.log(res);
+    if (res.email !== null) {
+    }
+    showLoggedOut();
+}
+
+function logoutError() {
+    console.log("logoutError");
+    showLoggedOut();
 }
 
 function aboutClick() {
@@ -251,7 +162,7 @@ function aboutClick() {
 function homeClick() {
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
-    if (!loggedInUser) {
+    if (!googleLoginEmail) {
         $("#landing-container").show();        
     } else {
         $("#home-container").show();
