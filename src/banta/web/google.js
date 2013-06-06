@@ -1,7 +1,6 @@
 
-var googleLoginEmail = null;
-
 var googleServer = {
+    auth: '',
     googleAccessToken: '',
     ajax: function(req) {
         $.ajax(req);
@@ -57,35 +56,14 @@ function googleLoginAuthorizeRes(res) {
 function googleLoginAccessToken(accessToken) {
     server.googleAccessToken = accessToken;
     console.log(accessToken);
+    server.auth = 'google';
     server.ajax({
         type: 'POST',
         url: '/googleLogin',
         data: 'accessToken=' + accessToken,
-        success: googleLoginRes,
-        error: googleLoginError
+        success: loginRes,
+        error: loginError
     });
-}
-
-function googleLoginError() {
-    console.log("googleLoginError");
-    showLoggedOut();
-}
-
-function googleLoginRes(res) {
-    console.log("login response received")
-    if (res.email !== null) {
-        $.cookie("googleAuth", res.email);
-        googleLoginEmail = res.email;
-        showLoggedInEmail(googleLoginEmail);
-    } else {
-        console.log(res);
-    }
-}
-
-function googleLogoutClick() {
-    console.log("googleLogoutClick");
-    googleLoginEmail = null;
-    logoutReq();
 }
 
 function setPlus(me) {

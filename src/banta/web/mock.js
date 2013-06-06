@@ -4,6 +4,7 @@ function initTest() {
 }
 
 var mockServer = {
+    auth: '',
     googleAccessToken: '',
     googleLoginAuthorize: function() {
         var res = {
@@ -23,13 +24,26 @@ var mockServer = {
     }
 };
 
+var contact1 = {
+    name: 'Joe Soap',
+    mobile: '27827779988',
+    email: 'joe@gmail.com',
+}
+
+var contact2 = {
+    name: 'Ginger Bread',
+    mobile: '2783667300',
+    email: 'gingerb@gmail.com',
+}
+
 var evanLogin = {
     name: 'Evan B. Summers',
     email: 'evan.summers@gmail.com',
     picture: '',
     totpSecret: '',
     totpUrl: '',
-    qr: ''
+    qr: '',
+    contacts: ['ginger', 'harry', 'ian', 'jenny']
 }
 
 var evanLogout = {
@@ -92,12 +106,12 @@ function mockRes(req) {
         return evanLogin;
     } else if (req.url == '/logout') {
         return evanLogout;
-    } else if (req.url == '/orgGet') {
-        return bizOrg;
-    } else if (req.url == '/orgEdit') {
-        return bizOrg;
-    } else if (req.url == '/orgList') {
-        return orgList;
+    } else if (req.url == '/contactEdit') {
+        return contact1;
+    } else if (req.url == '/contactAdd') {
+        return contact2;
+    } else if (req.url == '/contactList') {
+        return [contact1, contact2];
     }
     return {
         error: 'mockRes ' + req.url

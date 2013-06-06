@@ -20,4 +20,5 @@ function contactAddSave() {
 
 function contactAddCancel() {
     console.log("contactAddCancel");
+    contactsClick();
 }

@@ -1,11 +1,11 @@
 
 var contactListHandler = {
-    name: 'org',
-    id: function(org) {
-        return org.orgId;
+    name: 'contact',
+    id: function(o) {
+        return o.name;
     },
-    columnArray: function(org) {
-        return [org.orgId, org.orgUrl, org.orgCode, org.displayName];
+    columnArray: function(o) {
+        return [o.name];
     },
 };
 
@@ -19,7 +19,6 @@ function contactListClick() {
     server.ajax({
         type: 'POST',
         url: '/contactList',
-        data: 'accessToken=' + server.accessToken,
         success: contactListRes,
         error: contactListError
     });
@@ -29,7 +28,7 @@ function contactListRes(res) {
     console.log('contactListRes');
     contactListHandler.list = res.list;
     buildTable($('#contactList-tbody'), contactListHandler);
-    $('.croc-info').hide();
+    $('.page-container').hide();
     $('#contactList-container').show();
 }
 
@@ -37,14 +36,16 @@ function contactListError() {
     console.log('contactListError');
 }
 
-function contactListRowClick(id) {
-    console.log(['contactListRowClick', id]);
-    for (i = 0; i < contactListHandler.list.length; i++) {
-        console.log(contactListHandler.list[i]);
-        console.log(contactListHandler.id(contactListHandler.list[i]));
-        if (contactListHandler.id(contactListHandler.list[i]) === id) {
-            orgEditSet(contactListHandler.list[i]);
+function listHandlerFind(handler, id) {
+    for (i = 0; i < handler.list.length; i++) {
+        if (handler.id(handler.list[i]) === id) {
+            return handler.list[i];
         }
-    }
-    orgEditClick();
+    }    
+    return null;
+}
+
+function contactListRowClick(id) {
+    contactEditSet(listHandlerFind(contactListHandler, id));
+    contactEditClick();
 }

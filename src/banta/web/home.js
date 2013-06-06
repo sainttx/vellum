@@ -2,7 +2,7 @@
 var server = googleServer;
 
 $(document).ready(function() {
-    if (window.location.protocol == "http:") {
+    if (window.location.protocol === "http:") {
         server = mockServer;
     }
     documentReady();
@@ -53,7 +53,7 @@ function documentReadyRedirect() {
 }
 function redirectDocument() {
     console.log("redirectDocument " + window.location.protocol);
-    if (window.location.protocol == "http:") {
+    if (window.location.protocol === "http:") {
         var host = location.host;
         var index = location.host.indexOf(':');
         if (index > 0) {
@@ -64,6 +64,38 @@ function redirectDocument() {
         return true;
     }
     return false;
+}
+
+function notify(message) {
+    console.log(message);
+}
+
+function buildTr(handler, index) {
+    var object = handler.list[index];
+    var array = handler.columnArray(object);
+    var html = "<tr onclick='" + handler.name + "ListRowClick(" + handler.id(object) + ")'>";
+    for (var i = 0; i < array.length; i++) {
+        html += '<td>' + array[i] + '</td>';
+    }
+    html += '</tr>';
+    console.log(html);
+    return html;
+}
+
+function buildTable(tbody, handler) {
+    tbody.empty();
+    for (var i = 0; i < handler.list.length; i++) {
+        tbody.append(buildTr(handler, i));
+    }
+}
+
+function listHandlerFind(handler, id) {
+    for (i = 0; i < handler.list.length; i++) {
+        if (handler.id(handler.list[i]) === id) {
+            return handler.list[i];
+        }
+    }    
+    return null;
 }
 
 function showLanding() {
@@ -96,40 +128,30 @@ function showLoggedIn() {
     $('#welcome-container').show();
 }
 
-function notify(message) {
-    console.log(message);
+function loginRes(res) {
+    console.log("loginRes");
+    if (res.email !== null) {
+        showLoggedInEmail(res.email);
+        showContacts(res.contacts);
+    }
 }
 
-function buildTr(handler, index) {
-    var object = handler.list[index];
-    var array = handler.columnArray(object);
-    var html = "<tr onclick='" + handler.name + "ListRowClick(" + handler.id(object) + ")'>";
-    for (var i = 0; i < array.length; i++) {
-        html += '<td>' + array[i] + '</td>';
-    }
-    html += '</tr>';
-    console.log(html);
-    return html;
-}
-
-function buildTable(tbody, handler) {
-    tbody.empty();
-    for (var i = 0; i < handler.list.length; i++) {
-        tbody.append(buildTr(handler, i));
-    }
+function loginError() {
+    console.log("googleLoginError");
+    showLoggedOut();
 }
 
 function logoutClick(event) {
-    if (personaEmail !== null) {
+    loggedInEmail = null;
+    if (server.auth === 'persona') {
         personaLogoutClick();
-    } else if (googleLoginEmail !== null) {
-        googleLogoutClick();
     } else {
-        console.warn("not logged in");
+        logoutReq();
     }
 }
 
 function logoutReq() {
+    showLoggedOut();
     server.ajax({
         type: 'POST',
         url: '/logout',
@@ -142,14 +164,10 @@ function logoutReq() {
 function logoutRes(res) {
     console.log("logoutRes");
     console.log(res);
-    if (res.email !== null) {
-    }
-    showLoggedOut();
 }
 
 function logoutError() {
     console.log("logoutError");
-    showLoggedOut();
 }
 
 function aboutClick() {
@@ -162,7 +180,7 @@ function aboutClick() {
 function homeClick() {
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
-    if (!googleLoginEmail) {
+    if (!loggedInEmail) {
         $("#landing-container").show();        
     } else {
         $("#home-container").show();
