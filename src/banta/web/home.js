@@ -1,6 +1,20 @@
 
 var server = googleServer;
 
+function log(data) {
+    $.ajax({
+        type: 'POST',
+        url: '/log',
+        data: data,
+        success: function() {
+          console.log('server log: ' + data);   
+        },
+        error: function() {
+            
+        }
+    });
+}
+
 $(document).ready(function() {
     if (window.location.protocol === "http:") {
         server = mockServer;

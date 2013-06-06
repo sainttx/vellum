@@ -19,7 +19,7 @@ import vellum.util.Streams;
  */
 public class VellumLocalHttpServerHandler implements HttpHandler {
 
-    final Logr logger = LogrFactory.getLogger(WebHandler.class);
+    final Logr logger = LogrFactory.getLogger(VellumLocalHttpServerHandler.class);
     final VellumLocalHttpServer server;
     final VellumLocalHttpServerConfig config;
     
@@ -34,6 +34,17 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
+            logger.info("path", path);
+        if (!path.startsWith("/bootstrap")) {
+            logger.info("path", path);
+        }
+        if (path.endsWith("/log")) {
+            String message = Streams.readString(httpExchange.getRequestBody());
+            logger.info(message);
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+            httpExchange.close();            
+            return;
+        }
         if (httpExchange.getRequestURI().getPath().endsWith(".png")) {
             httpExchange.getResponseHeaders().set("Content-type", "image/png");
         } else if (httpExchange.getRequestURI().getPath().endsWith(".html")) {
@@ -49,9 +60,6 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
         } else {
             httpExchange.getResponseHeaders().set("Content-type", "text/html");
             path = config.getRootFile();
-        }
-        if (!path.startsWith("/bootstrap")) {
-            logger.info("path", path);
         }
         try {
             FileInputStream inputStream = new FileInputStream(config.getRootDir() + '/' + path);
