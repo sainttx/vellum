@@ -7,6 +7,10 @@ var contactListHandler = {
     columnArray: function(o) {
         return [o.name];
     },
+    clickRow: function(o) {
+      console.log('clickRow:');
+      console.log(o);
+    }
 };
 
 function contactListReady() {
@@ -26,8 +30,7 @@ function contactListClick() {
 
 function contactListRes(res) {
     console.log('contactListRes');
-    contactListHandler.list = res.list;
-    buildTable($('#contactList-tbody'), contactListHandler);
+    buildTable($('#contactList-tbody'), contactListHandler, res.list);
     $('.page-container').hide();
     $('#contactList-container').show();
 }

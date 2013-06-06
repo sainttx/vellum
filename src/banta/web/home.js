@@ -70,10 +70,8 @@ function notify(message) {
     console.log(message);
 }
 
-function buildTr(handler, index) {
-    var object = handler.list[index];
-    var array = handler.columnArray(object);
-    var html = "<tr onclick='" + handler.name + "ListRowClick(" + handler.id(object) + ")'>";
+function buildTr(array) {
+    var html = "<tr>";
     for (var i = 0; i < array.length; i++) {
         html += '<td>' + array[i] + '</td>';
     }
@@ -82,20 +80,11 @@ function buildTr(handler, index) {
     return html;
 }
 
-function buildTable(tbody, handler) {
+function buildTable(tbody, handler, list) {
     tbody.empty();
-    for (var i = 0; i < handler.list.length; i++) {
-        tbody.append(buildTr(handler, i));
+    for (var i = 0; i < list.length; i++) {
+        tbody.append(buildTr(handler.columnArray(list[i])));
     }
-}
-
-function listHandlerFind(handler, id) {
-    for (i = 0; i < handler.list.length; i++) {
-        if (handler.id(handler.list[i]) === id) {
-            return handler.list[i];
-        }
-    }    
-    return null;
 }
 
 function showLanding() {

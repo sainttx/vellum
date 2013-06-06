@@ -11,26 +11,28 @@ function contactsClick() {
 }
 
 function showContacts(contactList) {
+    console.log('showContacts');
+    console.log(contactList);
     buildContacts(contactList);
     $('.page-container').hide();
     $('#contacts-container').show();    
 }
 
 var contactsListHandler = {
-    name: 'contacts',
-    id: function(o) {
-        return o.name;
-    },
     columnArray: function(o) {
-        return [o.name];
+        return [o];
     },
 };
 
-function buildContacts(list) {
-    contactsListHandler.list = list;
-    buildTable($('#contacts-tbody'), contactListHandler);
+function buildContacts(contactList) {
+    console.log('buildContacts');
+    console.log(contactList);
+    buildTable($('#contacts-tbody'), contactsListHandler, contactList);
+    $("#contacts-tbody > tr").click(function() {
+        contactsListRowClick($(this).children('td').first().text());
+    });    
 }
 
 function contactsListRowClick(id) {
-    console.log(listHandlerFind(contactListHandler, id));
+    console.log(id);
 }
