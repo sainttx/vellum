@@ -14,6 +14,7 @@ var mockServer = {
     },
     ajax: function(req) {
         console.log('server.ajax: ' + req.url);
+        console.log(req.data);
         res = mockRes(req);
         console.log(res);
         req.success(res);

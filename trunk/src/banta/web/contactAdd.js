@@ -16,9 +16,30 @@ function contactAddClick() {
 
 function contactAddSave() {
     console.log("contactAddSave");
+    event.preventDefault();
+    server.ajax({
+        url: '/contactAdd',
+        data: $('#contactAdd-form').serialize(),
+        success: contactAddRes,
+        error: contactAddError
+    });
+    return false;
+}
+
+function contactAddRes(res) {
+    console.log('processEditOrg');    
+    console.log(res);
+}
+
+function contactAddError() {
+    console.log('errorEditOrg');    
 }
 
 function contactAddCancel() {
     console.log("contactAddCancel");
     contactsClick();
+}
+
+function contactAddSet(o) {
+    $('#contactAdd > input[name=name]').val(o.name);
 }

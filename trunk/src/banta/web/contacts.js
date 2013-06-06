@@ -34,6 +34,5 @@ function buildContacts(contactList) {
 }
 
 function contactsListRowClick(id) {
-    console.log(id);
     log(id);
 }
