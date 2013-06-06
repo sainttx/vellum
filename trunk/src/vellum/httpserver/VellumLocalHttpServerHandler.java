@@ -34,10 +34,6 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         String path = httpExchange.getRequestURI().getPath();
-            logger.info("path", path);
-        if (!path.startsWith("/bootstrap")) {
-            logger.info("path", path);
-        }
         if (path.endsWith("/log")) {
             String message = Streams.readString(httpExchange.getRequestBody());
             logger.info(message);
@@ -45,17 +41,20 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
             httpExchange.close();            
             return;
         }
-        if (httpExchange.getRequestURI().getPath().endsWith(".png")) {
+        if (!path.startsWith("/bootstrap")) {
+            logger.info("path", path);
+        }
+        if (path.endsWith(".png")) {
             httpExchange.getResponseHeaders().set("Content-type", "image/png");
-        } else if (httpExchange.getRequestURI().getPath().endsWith(".html")) {
+        } else if (path.endsWith(".html")) {
             httpExchange.getResponseHeaders().set("Content-type", "text/html");
-        } else if (httpExchange.getRequestURI().getPath().endsWith(".css")) {
+        } else if (path.endsWith(".css")) {
             httpExchange.getResponseHeaders().set("Content-type", "text/css");
-        } else if (httpExchange.getRequestURI().getPath().endsWith(".js")) {
+        } else if (path.endsWith(".js")) {
             httpExchange.getResponseHeaders().set("Content-type", "text/javascript");
-        } else if (httpExchange.getRequestURI().getPath().endsWith(".txt")) {
+        } else if (path.endsWith(".txt")) {
             httpExchange.getResponseHeaders().set("Content-type", "text/plain");
-        } else if (httpExchange.getRequestURI().getPath().endsWith(".html")) {
+        } else if (path.endsWith(".html")) {
             httpExchange.getResponseHeaders().set("Content-type", "text/html");
         } else {
             httpExchange.getResponseHeaders().set("Content-type", "text/html");

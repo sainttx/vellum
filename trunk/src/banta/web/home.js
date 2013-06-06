@@ -7,10 +7,10 @@ function log(data) {
         url: '/log',
         data: data,
         success: function() {
-          console.log('server log: ' + data);   
+            console.log('server log: ' + data);
         },
         error: function() {
-            
+            alert('error logging: ' + data);
         }
     });
 }
@@ -117,7 +117,7 @@ function showLoggedInEmail(email) {
     notify('Welcome, ' + email);
     $('#loggedin-username-clickable').text(email);
     $('#loggedin-username-clickable').show();
-    showLoggedIn();    
+    showLoggedIn();
 }
 
 function showLoggedIn() {
@@ -184,7 +184,7 @@ function homeClick() {
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     if (!loggedInEmail) {
-        $("#landing-container").show();        
+        $("#landing-container").show();
     } else {
         $("#home-container").show();
     }
