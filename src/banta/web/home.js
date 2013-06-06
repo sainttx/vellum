@@ -2,12 +2,12 @@
 var server = googleServer;
 
 function log(data) {
+    console.log('server log: ' + data);
     $.ajax({
         type: 'POST',
         url: '/log',
         data: data,
         success: function() {
-            console.log('server log: ' + data);
         },
         error: function() {
             alert('error logging: ' + data);
@@ -106,6 +106,7 @@ function showLanding() {
 }
 
 function showLoggedOut() {
+    server.auth = null;
     $('.page-container').hide();
     $('.loggedin-viewable').hide();
     $('.logout-clickable').hide();
@@ -114,6 +115,10 @@ function showLoggedOut() {
 }
 
 function showLoggedInEmail(email) {
+    if (server.auth === null) {
+        console.warn('no server auth');
+        server.auth = 'unknown';
+    }
     notify('Welcome, ' + email);
     $('#loggedin-username-clickable').text(email);
     $('#loggedin-username-clickable').show();
@@ -145,10 +150,11 @@ function loginError() {
 }
 
 function logoutClick(event) {
-    loggedInEmail = null;
     if (server.auth === 'persona') {
+        server.auth = null;
         personaLogoutClick();
     } else {
+        server.auth = null;
         logoutReq();
     }
 }
@@ -183,7 +189,7 @@ function aboutClick() {
 function homeClick() {
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
-    if (!loggedInEmail) {
+    if (server.auth === null) {
         $("#landing-container").show();
     } else {
         $("#home-container").show();
