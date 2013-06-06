@@ -43,7 +43,7 @@ var evanLogin = {
     totpSecret: '',
     totpUrl: '',
     qr: '',
-    contacts: ['ginger', 'harry', 'ian', 'jenny']
+    contacts: ['Ginger', 'Harry', 'Ian', 'Jenny']
 }
 
 var evanLogout = {
