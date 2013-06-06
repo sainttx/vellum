@@ -3,13 +3,13 @@ function initTest() {
     console.log('initTest');
 }
 
-var serverTest = {
-    accessToken: '',
-    googleAuthorize: function() {
+var mockServer = {
+    googleAccessToken: '',
+    googleLoginAuthorize: function() {
         var res = {
             access_token: 'dummy_access_token'
         };
-        googleAuthorizeRes(res);        
+        googleLoginAuthorizeRes(res);        
     },
     ajax: function(req) {
         console.log('server.ajax: ' + req.url);
@@ -20,7 +20,7 @@ var serverTest = {
     googleClient: function() {        
     },
     getPlus: function() {        
-    },
+    }
 };
 
 var evanLogin = {
@@ -86,7 +86,9 @@ var biz1RootNightlyService = {
 }
 
 function mockRes(req) {
-    if (req.url == '/login') {
+    if (req.url == '/googleLogin') {
+        return evanLogin;
+    } else if (req.url == '/personaLogin') {
         return evanLogin;
     } else if (req.url == '/logout') {
         return evanLogout;
