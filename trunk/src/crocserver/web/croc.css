@@ -1,4 +1,11 @@
 
+form.croc-large input {
+    font-size: 20px;
+    height: auto;
+    margin-bottom: 15px;
+    padding: 7px 9px;
+}
+
 form.croc div {
     float: left;    
     padding-right: 1em;
