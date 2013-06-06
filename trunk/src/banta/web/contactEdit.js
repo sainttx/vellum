@@ -9,19 +9,14 @@ function contactEditReady() {
 function contactEditClick() {
     console.log('contactEditClick');
     console.log(orgMeta.contactEdit);
-    $('.croc-info').hide();
-    //buildInputs($('#contactEdit-fieldset'), '', orgMeta.contactEdit);
+    $('.page-container').hide();
     $('#contactEdit-container').show();
 }
 
-function contactEditSet(org) {
-    $('#contactEdit-orgId').val(org.orgId);
-    $('#contactEdit-orgUrl').val(org.orgUrl);
-    $('#contactEdit-orgCode').val(org.orgCode);
-    $('#contactEdit-displayName').val(org.displayName);
-    $('#contactEdit-region').val(org.region);
-    $('#contactEdit-locality').val(org.locality);
-    $('#contactEdit-country').val(org.country);
+function contactEditSet(o) {
+    $('#contactEdit-name').val(o.name);
+    $('#contactEdit-mobile').val(o.mobile);
+    $('#contactEdit-email').val(o.email);
 }
 
 function contactEditSubmit(event) {

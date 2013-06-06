@@ -1,7 +1,5 @@
 
 
-var personaEmail = null;
-
 function personaLoginClick() {
     console.log("personaLoginClick");
     navigator.id.request();
@@ -14,9 +12,9 @@ function personaLogoutClick() {
 
 function personaReady() {
     navigator.id.watch({
-        loggedInUser: personaEmail,
+        loggedInUser: null,
         onlogin: personaLogin,
-        onlogout: personaLogout
+        onlogout: logoutReq,
     });
     $('.personaLogin-clickable').click(personaLoginClick);
 }
@@ -24,6 +22,7 @@ function personaReady() {
 function personaLogin(assertion) {
     console.log("personaLogin");
     console.log("onlogin");
+    server.auth = 'persona';
     server.ajax({
         type: 'POST',
         url: '/personaLogin',
@@ -31,30 +30,10 @@ function personaLogin(assertion) {
             assertion: assertion
         },
         success: function(res, status, xhr) {
-            personaLoginRes(res);
+            loginRes(res);
         },
         error: function(xhr, status, err) {
-            personaLoginError();
+            loginError();
         }
     });
-}
-
-function personaLoginRes(res) {
-    console.log("personaLoginRes");
-    console.log(res);
-    if (res.email !== null) {
-        personaEmail = res.email;
-        showLoggedInEmail(personaEmail);
-    }
-}
-
-function personaLoginError() {
-    console.log("personaLoginError");
-    personaEmail = null;    
-}
-
-function personaLogout() {
-    console.log("personaLogout");
-    personaEmail = null;
-    logoutReq();
 }

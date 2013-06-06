@@ -27,16 +27,10 @@
                     padding-right: 5px;
                 }
             }
-
-      .banta-form-large input {
-        font-size: 20px;
-        height: auto;
-        margin-bottom: 15px;
-        padding: 7px 9px;
-      }
             
         </style>
         <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="banta.css" rel="stylesheet">
         
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -77,9 +71,9 @@
 
         <div class="container page-container" id="landing-container">
             <p>
-                <a class="btn btn-primary about-clickable">Learn more &raquo;</a>
                 <a class="btn btn-primary googleLogin-clickable loggedout-viewable hide">Login with Google</a>
-                <a class="btn btn-primary personaLogin-clickable loggedout-viewable hide">Login with Persona</a>
+                <a class="btn personaLogin-clickable loggedout-viewable hide">Login with Persona</a>
+                <a class="btn about-clickable">Learn more &raquo;</a>
             <form action="login()" id="login-form" class="hide banta-form">
                 <input type="text" name="id" placeholder="Phone number" id="login-id-input">
                 <button type="button" class="btn">Login</button>
@@ -98,22 +92,31 @@
 
         <div class="container page-container hide" id="welcome-container">
             <p>
-                <a class="btn btn-primary contacts-clickable">Contacts &raquo;</a>
+                <a class="btn btn-primary contacts-clickable">Contacts</a>
             </p>
             <h1 id="loggedin-title">Welcome</h1>
         </div>
 
         <div class="container page-container hide" id="home-container">
             <p>
-                <a class="btn btn-primary contacts-clickable">Contacts &raquo;</a>
+                <a class="btn btn-primary contacts-clickable">Contacts</a>
             </p>
         </div>
-        
+
         <div class="container page-container hide" id="contacts-container">
             <p>
-                <a class="btn btn-primary contactAdd-clickable">Add contact &raquo;</a>
-                <a class="btn home-clickable">Home &raquo;</a>
+                <a class="btn btn-primary contactAdd-clickable">Add contact</a>
+                <a class="btn home-clickable">Home</a>
             </p>
+            <table class="banta hide">
+                <thead>
+                    <tr>
+                        <th>Contacts</th>
+                    </tr>
+                </thead>
+                <tbody id="contacts-tbody">
+                </tbody>
+            </table>    
         </div>
 
         <div class="container page-container hide" id="contactAdd-container">
@@ -128,6 +131,8 @@
         <script src="home.js"></script>
         <script src="contacts.js"></script>
         <script src="contactAdd.js"></script>
+        <script src="contactEdit.js"></script>
+        <script src="contactList.js"></script>
         <script src="https://apis.google.com/js/client.js?onload=startClient"></script>
         <script src="https://login.persona.org/include.js"></script>    
         
