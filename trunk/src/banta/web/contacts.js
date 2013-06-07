@@ -1,4 +1,8 @@
 
+function contactsArray(o) {
+    return [o.name];
+};
+
 function contactsReady() {
     console.log("contactsReady");
     $('.contacts-clickable').click(contactsClick);
@@ -6,27 +10,35 @@ function contactsReady() {
 
 function contactsClick() {
     console.log("contactsClick");
-    buildContacts(server.loginRes.contacts);
+    contactsBuild(server.login.contacts);
     $('.page-container').hide();
     $('#contacts-container').show();
 }
 
-var contactsListHandler = {
-    columnArray: function(o) {
-        return [o];
-    },
-};
+function contactsSort(array) {
+    array.sort(function(a, b) {
+        if (a.name === b.name) {
+            return 0;
+        } else if (a.name.toLowerCase() > b.name.toLowerCase()) {
+            return 1;
+        }
+        return -1;
+    });    
+}
 
-function buildContacts(contactList) {
-    console.log('buildContacts');
-    console.log(contactList);
-    buildTable($('#contacts-tbody'), contactsListHandler, contactList);
+function contactsFind(array) {
+}
+
+function contactsBuild(array) {
+    contactsSort(array);
+    buildTable($('#contacts-tbody'), contactsArray, array);
     $("#contacts-tbody > tr").click(function() {
         contactsListRowClick($(this).children('td').first().text());
     });    
 }
 
 function contactsListRowClick(id) {
-    log(id);
-    contactEdit(id);
+    var contact = contactsFind(id);
+    contactEdit(contact);
 }
+

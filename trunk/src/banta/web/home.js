@@ -16,7 +16,6 @@ function log(data) {
 }
 
 $(document).ready(function() {
-    console.log(testLogin);
     if (window.location.protocol === "http:" && window.location.port === "8080") {
         server = mockServer;
         googleLoginReadyMock();
@@ -100,14 +99,16 @@ function buildTr(array) {
         html += '<td>' + array[i] + '</td>';
     }
     html += '</tr>';
-    console.log(html);
+    if (false) {
+        console.log(html);
+    }
     return html;
 }
 
-function buildTable(tbody, handler, list) {
+function buildTable(tbody, arrayer, list) {
     tbody.empty();
     for (var i = 0; i < list.length; i++) {
-        tbody.append(buildTr(handler.columnArray(list[i])));
+        tbody.append(buildTr(arrayer(list[i])));
     }
 }
 
@@ -134,8 +135,8 @@ function showLoggedInRes() {
         console.warn('no server auth');
         server.auth = 'unknown';
     }
-    notify('Welcome, ' + server.loginRes.email);
-    $('#loggedin-username-clickable').text(server.loginRes.email);
+    notify('Welcome, ' + server.login.email);
+    $('#loggedin-username-clickable').text(server.login.email);
     $('#loggedin-username-clickable').show();
     showLoggedIn();
 }
@@ -154,7 +155,7 @@ function showLoggedIn() {
 function loginRes(res) {
     console.log("loginRes");
     if (res.email !== null) {
-        server.loginRes = res;
+        server.login = res;
         showLoggedInRes();
         contactsClick();
     }
