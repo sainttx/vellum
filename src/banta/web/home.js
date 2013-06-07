@@ -36,7 +36,7 @@ function documentReady() {
     console.log("documentReady");
     initLib();
     contactsReady();
-    contactAddReady();
+    contactEditReady();
     $('.home-clickable').click(homeClick);
     $('.reload-clickable').click(reloadClick);
     $('.about-clickable').click(aboutClick);
