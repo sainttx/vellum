@@ -9,7 +9,7 @@
         <meta name="author" content="">
 
         <!-- Le styles -->
-        <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+        <link href="bootstrap/css/united-bootstrap.css" rel="stylesheet">
         <style type="text/css">
             body {
                 padding-top: 60px;
@@ -47,7 +47,7 @@
 
     <body>
 
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
                     <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -55,7 +55,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="brand">Banta</a>
+                    <a class="brand reload-clickable">Banta</a>
                     <div class="nav-collapse collapse">
                         <p class="navbar-text pull-right">
                             <a class="navbar-link hide loggedin-viewable logout-clickable" id="loggedin-username-clickable"></a>
@@ -63,6 +63,7 @@
                         <ul class="nav">
                             <li class="active nav-item"><a class="reload-clickable nav-clickable">Home</a></li>
                             <li class="nav-item"><a class="about-clickable nav-clickable">About</a></li>
+                            <li class="nav-item"><a class="logout-clickable nav-clickable">Logout</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
                 </div>
@@ -73,12 +74,11 @@
             <p><a class="btn about-clickable">Learn more &raquo;</a></p>
             <p><a class="btn btn-primary googleLogin-clickable loggedout-viewable hide">Login with Google</a></p>
             <p><a class="btn personaLogin-clickable loggedout-viewable hide">Login with Persona</a></p>
-            <p><form action="login()" id="login-form" class="hide banta-form">
+            <form action="login()" id="login-form" class="hide banta-form">
                 <input type="text" name="id" placeholder="Phone number" id="login-id-input">
                 <button type="button" class="btn">Login</button>
                 <button type="button" class="btn">Register</button>
             </form>
-            </p>
         </div>
 
         <div class="container page-container hide" id="about-container">
@@ -133,10 +133,10 @@
         <script src="contactAdd.js"></script>
         <script src="contactEdit.js"></script>
         <script src="contactList.js"></script>
-        <script src="https://apis.google.com/js/client.js?onload=startClient"></script>
-        <script src="https://login.persona.org/include.js"></script>    
         
         <!--
+        <script src="https://apis.google.com/js/client.js?onload=startClient"></script>
+        <script src="https://login.persona.org/include.js"></script>    
         <script src="bootstrap/js/bootstrap-transition.js"></script>
         <script src="bootstrap/js/bootstrap-alert.js"></script>
         <script src="bootstrap/js/bootstrap-modal.js"></script>

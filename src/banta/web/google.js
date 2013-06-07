@@ -25,6 +25,11 @@ var googleServer = {
     },
 };
 
+function googleLoginReadyMock() {
+    $('.googleLogin-clickable').click(googleLoginClick);
+    server.googleLoginAuthorize();
+}
+
 function googleLoginReady() {
     $('.googleLogin-clickable').click(googleLoginClick);
     console.log('googleLoginReady');

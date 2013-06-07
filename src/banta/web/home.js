@@ -10,23 +10,32 @@ function log(data) {
         success: function() {
         },
         error: function() {
-            alert('error logging: ' + data);
+            //alert('error logging: ' + data);
         }
     });
 }
 
 $(document).ready(function() {
-    if (window.location.protocol === "http:") {
+    console.log(testLogin);
+    if (window.location.protocol === "http:" && window.location.port === "8080") {
         server = mockServer;
+        googleLoginReadyMock();
+    } else {
+        $.load("https://apis.google.com/js/client.js", function() {
+            startClient();
+            googleLoginReady();
+        });
+        $.load("https://login.persona.org/include.js", function() {
+            personaReady();
+        });
     }
     documentReady();
+    console.log(window.location);
 });
 
 function documentReady() {
     console.log("documentReady");
     initLib();
-    personaReady();
-    googleLoginReady();
     contactsReady();
     contactAddReady();
     $('.home-clickable').click(homeClick);
@@ -65,6 +74,7 @@ function documentReadyRedirect() {
         documentReady();
     }
 }
+
 function redirectDocument() {
     console.log("redirectDocument " + window.location.protocol);
     if (window.location.protocol === "http:") {
@@ -101,6 +111,11 @@ function buildTable(tbody, handler, list) {
     }
 }
 
+function showPage(name) {
+    $('.page-container').hide();
+    $('.' + name + '-container').show();
+}
+
 function showLanding() {
     showLoggedOut();
 }
@@ -114,13 +129,13 @@ function showLoggedOut() {
     $("#landing-container").show();
 }
 
-function showLoggedInEmail(email) {
+function showLoggedInRes() {    
     if (server.auth === null) {
         console.warn('no server auth');
         server.auth = 'unknown';
     }
-    notify('Welcome, ' + email);
-    $('#loggedin-username-clickable').text(email);
+    notify('Welcome, ' + server.loginRes.email);
+    $('#loggedin-username-clickable').text(server.loginRes.email);
     $('#loggedin-username-clickable').show();
     showLoggedIn();
 }
@@ -139,8 +154,9 @@ function showLoggedIn() {
 function loginRes(res) {
     console.log("loginRes");
     if (res.email !== null) {
-        showLoggedInEmail(res.email);
-        showContacts(res.contacts);
+        server.loginRes = res;
+        showLoggedInRes();
+        contactsClick();
     }
 }
 

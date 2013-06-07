@@ -1,15 +1,28 @@
-<form method="post" id="contactAdd-form">
-    <p>
-        <button type="button" class="btn btn-primary" id="contactAdd-save">Save</button>
-        <button type="button" class="btn" id="contactAdd-cancel">Cancel</button>
-    </p>
-    <div>
-        <input type="text" name="name" class="input" placeholder="Contact name"/>
-    </div>
-    <div>
-        <input type="text" name="mobile" class="input" placeholder="Mobile number"/>
-    </div>
-    <div>
-        <input type="text" name="email" class="input" placeholder="Email"/>
-    </div>
+<form class="form-horizontal well" id="contactAdd-form">
+    <fieldset>
+        <legend>Add contact</legend>
+        <div class="control-group">
+            <label class="control-label" for="contactName">Contact name</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" name="name" id="contactAdd-name" placeholder="Contact name"/>
+                <p class="help-block"></p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="phoneNumber">Mobile number</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" name="mobile" id="contactAdd-mobile" placeholder="Mobile number"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email">Email</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" name="email" id="contactAdd-email" placeholder="Email"/>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn" id="contactAdd-save">Save</button>
+            <button type="button" class="btn" id="contactAdd-cancel">Cancel</button>
+        </div>
+    </fieldset>
 </form>
