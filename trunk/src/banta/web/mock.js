@@ -87,7 +87,7 @@ function mockRes(req) {
         return mockData.logout;
     } else if (req.url === '/contactEdit') {
         return req.data;
-    } else if (req.url === '/contactAdd') {
+    } else if (req.url === '/contactEdit') {
         console.log('mockRes memo', req.memo);
         mockData.contacts.push(req.memo);
         return req.data;
