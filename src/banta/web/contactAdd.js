@@ -18,7 +18,7 @@ function changeButtonPrimary(event) {
 function contactAddLoad() {    
     $('#contactAdd-save').click(contactAddSave);
     $('#contactAdd-cancel').click(contactAddCancel);
-    $('#contactAdd-name').change('#contactAdd-save', changeButtonPrimary);
+    $('#contactAdd-name-input').change('#contactAdd-save', changeButtonPrimary);
 }
 
 function contactAddClick() {
@@ -61,21 +61,29 @@ function contactAddCancel() {
     contactsClick();
 }
 
+function contactAddClear() {
+    $('#contactAdd-save').removeClass('btn-primary');    
+    contactAddSet({
+        name: '', 
+        mobile: '', 
+        email: ''
+    });
+}
+
 function contactAddSet(o) {
-    $('#contactAdd > input[name=name]').val(o.name);
+    $('#contactAdd-name-input').val(o.name);
+    $('#contactAdd-mobile-input').val(o.mobile);
+    $('#contactAdd-email-input').val(o.email);
 }
 
 function contactAddGet() {
     return {
-        name: $('#contactAdd-name').val()
+        name: $('#contactAdd-name-input').val(),
+        mobile: $('#contactAdd-mobile-input').val(),
+        email: $('#contactAdd-email-input').val()
     };   
 }
 
-function contactAddClear() {
-    $('#contactAdd-save').removeClass('btn-primary');    
-    $('#contactAdd-name').val('');
-}
-
 function contactAddFocus() {
-    $('#contactAdd-name').focus();
+    $('#contactAdd-name-input').focus();
 }

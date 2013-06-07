@@ -76,12 +76,12 @@ var mockData = {
 };
 
 
-
 function mockRes(req) {
     if (req.url === '/googleLogin') {
         mockData.login.contacts = mockData.contacts;
         return mockData.login;
     } else if (req.url === '/personaLogin') {
+        mockData.login.contacts = mockData.contacts;
         return mockData.login;
     } else if (req.url === '/logout') {
         return mockData.logout;
@@ -90,10 +90,9 @@ function mockRes(req) {
     } else if (req.url === '/contactAdd') {
         console.log('mockRes memo', req.memo);
         mockData.contacts.push(req.memo);
-        mockData.login.contacts.push(req.memo.name);
         return req.data;
     } else if (req.url === '/contactList') {
-        return mock.contactList;
+        return mock.contacts;
     }
     return {
         error: 'mockRes ' + req.url
