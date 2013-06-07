@@ -11,12 +11,14 @@ function personaLogoutClick() {
 }
 
 function personaReady() {
-    navigator.id.watch({
-        loggedInUser: null,
-        onlogin: personaLogin,
-        onlogout: logoutReq,
-    });
-    $('.personaLogin-clickable').click(personaLoginClick);
+    if (navigator.id) {
+        navigator.id.watch({
+            loggedInUser: null,
+            onlogin: personaLogin,
+            onlogout: logoutReq,
+        });
+        $('.personaLogin-clickable').click(personaLoginClick);
+    }
 }
 
 function personaLogin(assertion) {

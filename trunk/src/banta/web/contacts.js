@@ -6,16 +6,9 @@ function contactsReady() {
 
 function contactsClick() {
     console.log("contactsClick");
+    buildContacts(server.loginRes.contacts);
     $('.page-container').hide();
     $('#contacts-container').show();
-}
-
-function showContacts(contactList) {
-    console.log('showContacts');
-    console.log(contactList);
-    buildContacts(contactList);
-    $('.page-container').hide();
-    $('#contacts-container').show();    
 }
 
 var contactsListHandler = {

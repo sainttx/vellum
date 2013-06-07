@@ -13,10 +13,9 @@ var mockServer = {
         googleLoginAuthorizeRes(res);        
     },
     ajax: function(req) {
-        console.log('server.ajax: ' + req.url);
-        console.log(req.data);
+        console.log('mockServer.ajax', req.url, req.data);
         res = mockRes(req);
-        console.log(res);
+        console.log("mockServer res", res);
         req.success(res);
     },
     googleClient: function() {        
@@ -37,9 +36,9 @@ var contact2 = {
     email: 'gingerb@gmail.com',
 }
 
-var evanLogin = {
-    name: 'Evan B. Summers',
-    email: 'evan.summers@gmail.com',
+var testLogin = {
+    name: 'Testy Tester',
+    email: 'test@gmail.com',
     picture: '',
     totpSecret: '',
     totpUrl: '',
@@ -47,8 +46,8 @@ var evanLogin = {
     contacts: ['Ginger', 'Harry', 'Ian', 'Jenny']
 }
 
-var evanLogout = {
-    email: 'evan.summers@gmail.com'
+var testLogout = {
+    email: 'test@gmail.com'
 }
 
 var bizOrg = {
@@ -71,48 +70,27 @@ var otherOrg = {
     country: 'South Africa'    
 }
 
-var orgList = {
-    list: [bizOrg, otherOrg]
-}
-
-var hetznerNetwork = {
-    networkName: 'hetzner',
-    displayName: 'Hetzner CT1 DC',
-    address: '192.168.1.0/24'
-}
-
-var biz1Host = {
-    hostName: 'biz1',
-    ip: '192.168.1.1'
-}
-
-var biz1RootClient = {
-    hostName: 'biz1',
-    clientName: 'root',
-    certSubject: 'CN=root@biz1, O=biz, OU=biz1, S=local, L=Cape Town, C=za'
-}
-
-var biz1RootNightlyService = {
-    hostName: 'biz1',
-    clientName: 'root',
-    serviceName: 'nightly',
-    status: 'OK',
-    reportTime: '2013-01-01 01:01:01'
+var mock = {
+    orgList: [bizOrg, otherOrg],
+    contactList: [contact1, contact2]
 }
 
 function mockRes(req) {
-    if (req.url == '/googleLogin') {
-        return evanLogin;
-    } else if (req.url == '/personaLogin') {
-        return evanLogin;
-    } else if (req.url == '/logout') {
-        return evanLogout;
-    } else if (req.url == '/contactEdit') {
-        return contact1;
-    } else if (req.url == '/contactAdd') {
-        return contact2;
-    } else if (req.url == '/contactList') {
-        return [contact1, contact2];
+    if (req.url === '/googleLogin') {
+        return testLogin;
+    } else if (req.url === '/personaLogin') {
+        return testLogin;
+    } else if (req.url === '/logout') {
+        return testLogout;
+    } else if (req.url === '/contactEdit') {
+        return req.data;
+    } else if (req.url === '/contactAdd') {
+        console.log('mockRes memo', req.memo);
+        mock.contactList.push(req.memo);
+        testLogin.contacts.push(req.memo.name);
+        return req.data;
+    } else if (req.url === '/contactList') {
+        return mock.contactList;
     }
     return {
         error: 'mockRes ' + req.url

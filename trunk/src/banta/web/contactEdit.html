@@ -1,18 +1,34 @@
-<form method="post" id="contactEdit-form" class="banta-form">
-    <div>
-        <label for="contactName">Contact name</label>
-        <input type="text" name="name" id="contactEdit-name" class="input" placeholder="Contact name"/>
-    </div>
-    <div>
-        <label for="phoneNumber">Mobile number</label>
-        <input type="text" name="mobile" id="contactEdit-mobile" class="input" placeholder="Mobile number"/>
-    </div>
-    <div>
-        <label for="email">Email</label>
-        <input type="text" name="email" id="contactEdit-email" class="input" placeholder="Email"/>
-    </div>
-    <div>
-        <button type="button" class="btn btn-primary" id="contactAdd-save">Save</button>
-        <button type="button" class="btn" id="contactAdd-cancel">Cancel</a>
-    </div>
+<form class="form-horizontal well">
+    <fieldset>
+        <legend>Edit contact</legend>
+        <div class="control-group">
+            <label class="control-label" for="contactName">Contact name</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" name="name" id="contactEdit-name" placeholder="Contact name"/>
+                <p class="help-block"></p>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label for="contactName">Contact name</label>
+                <input type="text" class="input-xlarge" name="name" id="contactEdit-name" placeholder="Contact name"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label class="control-label" for="phoneNumber">Mobile number</label>
+                <input type="text" class="input-xlarge" name="mobile" id="contactEdit-mobile" placeholder="Mobile number"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label class="control-label" for="email">Email</label>
+                <input type="text" class="input-xlarge" name="email" id="contactEdit-email" placeholder="Email"/>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary" id="contactAdd-save">Save</button>
+            <button type="button" class="btn" id="contactAdd-cancel">Cancel</button>
+        </div>
+    </fieldset>
 </form>
