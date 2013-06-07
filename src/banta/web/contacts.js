@@ -28,4 +28,5 @@ function buildContacts(contactList) {
 
 function contactsListRowClick(id) {
     log(id);
+    contactEdit(id);
 }
