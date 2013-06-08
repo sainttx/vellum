@@ -76,8 +76,10 @@ function showLoggedInRes() {
     }
     notify('Welcome, ' + state.login.email);
     $('#loggedin-message').text("Welcome, " + state.login.name);
-    $('#loggedin-username-clickable').text(state.login.email);
-    $('#loggedin-username-clickable').show();
+    if (false) {
+        $('#loggedin-username-clickable').text(state.login.email);
+        $('#loggedin-username-clickable').show();
+    }
     showLoggedIn();
 }
 
