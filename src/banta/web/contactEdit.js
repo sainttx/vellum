@@ -18,7 +18,7 @@ function changeButtonPrimary(event) {
 function contactEditLoad() {    
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
-    $('#contactEdit-name-input').change('#contactEdit-save', changeButtonPrimary);
+    $('#contactEdit-name-input').change('#contactEdit-save-input', changeButtonPrimary);
 }
 
 function contactEdit(contact) {
@@ -90,11 +90,23 @@ function contactEditSet(o) {
     $('#contactEdit-email-input').val(o.email);
 }
 
+function parseName(text) {
+    return text.replace(/[<>]/gi,' ');
+}
+
+function parseMobile(text) {
+    return text.replace(/[^ +0-9]/gi,'');
+}
+
+function parseEmail(text) {
+    return text.replace(/[<>]/gi,'');
+}
+
 function contactEditGet() {
     return {
-        name: $('#contactEdit-name-input').val(),
-        mobile: $('#contactEdit-mobile-input').val(),
-        email: $('#contactEdit-email-input').val()
+        name: parseName($('#contactEdit-name-input').val()),
+        mobile: parseMobile($('#contactEdit-mobile-input').val()),
+        email: parseEmail($('#contactEdit-email-input').val())
     };   
 }
 
