@@ -26,6 +26,7 @@ function contactEditLoad() {
 function contactEdit(contact) {
     state.contact = contact;
     console.log("contactEdit", contact);
+    $('#title').text('Edit contact');    
     $('#contactEdit-legend').text('Edit contact');
     contactEditSet(contact);
     contactEditShow();
@@ -33,6 +34,7 @@ function contactEdit(contact) {
 
 function contactAddClick() {
     state.contact = null;
+    $('#title').text('Add contact');    
     $('#contactEdit-legend').text('Add contact');
     contactEditClear();
     contactEditShow();

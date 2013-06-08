@@ -75,6 +75,7 @@ function showLoggedInRes() {
         state.auth = 'unknown';
     }
     notify('Welcome, ' + state.login.email);
+    $('#loggedin-message').text("Welcome, " + state.login.name);
     $('#loggedin-username-clickable').text(state.login.email);
     $('#loggedin-username-clickable').show();
     showLoggedIn();
@@ -137,13 +138,14 @@ function logoutError() {
 }
 
 function aboutClick() {
-    console.log("aboutClick");
+    $('#title').text('About');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     $("#about-container").show();
 }
 
 function homeClick() {
+    $('#title').text('Home');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     if (state.auth === null) {
@@ -163,6 +165,7 @@ function reloadClick() {
 }
 
 function contactClick() {
+    $('#title').text('Contact');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     $("#contact-container").show();
