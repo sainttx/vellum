@@ -47,7 +47,13 @@ function contactsPut(contact) {
             state.contacts[index] = contact;
         }
     } else {
-        state.contacts.push(contact);
+        var index = contactsIndexOf(contact.name);
+        if (index !== null && index >= 0) {
+            console.log('contactsPut', contact.name, index);
+            state.contacts[index] = contact;
+        } else {
+            state.contacts.push(contact);
+        }
     }
 }
 
