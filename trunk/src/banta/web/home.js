@@ -1,40 +1,35 @@
 
 var server = googleServer;
-
-function log(data) {
-    console.log('server log: ' + data);
-    $.ajax({
-        type: 'POST',
-        url: '/log',
-        data: data,
-        success: function() {
-        },
-        error: function() {
-            //alert('error logging: ' + data);
-        }
-    });
-}
+var state = {};
 
 $(document).ready(function() {
-    if (window.location.protocol === "http:" && window.location.port === "8080") {
+    if (true || window.location.hostname === 'localhost' || window.location.hostname.startsWith("192.168")) {
         server = mockServer;
         googleLoginReadyMock();
     } else {
-        $.load("https://apis.google.com/js/client.js", function() {
-            startClient();
-            googleLoginReady();
-        });
-        $.load("https://login.persona.org/include.js", function() {
-            personaReady();
-        });
+        googleLoginLoad();
+        personaLoginLoad();
     }
     documentReady();
     console.log(window.location);
 });
 
+function googleLoginLoad() {
+    $.load("https://apis.google.com/js/client.js", function() {
+        startClient();
+        googleLoginReady();
+    });
+}
+
+function personaLoginLoad() {
+    $.load("https://login.persona.org/include.js", function() {
+        personaReady();
+    });
+}
+
 function documentReady() {
     console.log("documentReady");
-    initLib();
+    utilReady();
     contactsReady();
     contactEditReady();
     $('.home-clickable').click(homeClick);
@@ -43,17 +38,6 @@ function documentReady() {
     $('.contact-clickable').click(contactClick);
     $('.logout-clickable').click(logoutClick);
     initServer();
-}
-
-function initLib() {
-    if (!String.prototype.format) {
-        String.prototype.format = function() {
-            var args = arguments;
-            return this.replace(/{(\d+)}/g, function(match, number) {
-                return args[number];
-            });
-        };
-    }
 }
 
 function removeCookies() {
@@ -67,51 +51,6 @@ function initServer() {
     }
 }
 
-function documentReadyRedirect() {
-    console.log("documentReadyRedirect");
-    if (!redirectDocument()) {
-        documentReady();
-    }
-}
-
-function redirectDocument() {
-    console.log("redirectDocument " + window.location.protocol);
-    if (window.location.protocol === "http:") {
-        var host = location.host;
-        var index = location.host.indexOf(':');
-        if (index > 0) {
-            host = location.host.substring(0, index) + ':8443';
-        }
-        window.location = "https://" + host + location.pathname + location.search + location.hash;
-        console.log(window.location);
-        return true;
-    }
-    return false;
-}
-
-function notify(message) {
-    console.log(message);
-}
-
-function buildTr(array) {
-    var html = "<tr>";
-    for (var i = 0; i < array.length; i++) {
-        html += '<td>' + array[i] + '</td>';
-    }
-    html += '</tr>';
-    if (false) {
-        console.log(html);
-    }
-    return html;
-}
-
-function buildTable(tbody, arrayer, list) {
-    tbody.empty();
-    for (var i = 0; i < list.length; i++) {
-        tbody.append(buildTr(arrayer(list[i])));
-    }
-}
-
 function showPage(name) {
     $('.page-container').hide();
     $('.' + name + '-container').show();
@@ -122,7 +61,7 @@ function showLanding() {
 }
 
 function showLoggedOut() {
-    server.auth = null;
+    state.auth = null;
     $('.page-container').hide();
     $('.loggedin-viewable').hide();
     $('.logout-clickable').hide();
@@ -131,12 +70,12 @@ function showLoggedOut() {
 }
 
 function showLoggedInRes() {    
-    if (server.auth === null) {
+    if (state.auth === null) {
         console.warn('no server auth');
-        server.auth = 'unknown';
+        state.auth = 'unknown';
     }
-    notify('Welcome, ' + server.login.email);
-    $('#loggedin-username-clickable').text(server.login.email);
+    notify('Welcome, ' + state.login.email);
+    $('#loggedin-username-clickable').text(state.login.email);
     $('#loggedin-username-clickable').show();
     showLoggedIn();
 }
@@ -155,7 +94,8 @@ function showLoggedIn() {
 function loginRes(res) {
     console.log("loginRes");
     if (res.email !== null) {
-        server.login = res;
+        state.login = res;
+        state.contacts = res.contacts;
         showLoggedInRes();
         contactsClick();
     }
@@ -167,11 +107,11 @@ function loginError() {
 }
 
 function logoutClick(event) {
-    if (server.auth === 'persona') {
-        server.auth = null;
+    if (state.auth === 'persona') {
+        state.auth = null;
         personaLogoutClick();
     } else {
-        server.auth = null;
+        state.auth = null;
         logoutReq();
     }
 }
@@ -206,7 +146,7 @@ function aboutClick() {
 function homeClick() {
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
-    if (server.auth === null) {
+    if (state.auth === null) {
         $("#landing-container").show();
     } else {
         $("#home-container").show();

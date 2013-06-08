@@ -1,7 +1,8 @@
 
 var googleServer = {
-    auth: '',
-    googleAccessToken: '',
+    log: function(message) {
+        console.log('server log: ' + message);
+    },
     ajax: function(req) {
         $.ajax(req);
     },
@@ -59,9 +60,9 @@ function googleLoginAuthorizeRes(res) {
 }
 
 function googleLoginAccessToken(accessToken) {
-    server.googleAccessToken = accessToken;
+    state.googleAccessToken = accessToken;
     console.log(accessToken);
-    server.auth = 'google';
+    state.auth = 'google';
     server.ajax({
         type: 'POST',
         url: '/googleLogin',

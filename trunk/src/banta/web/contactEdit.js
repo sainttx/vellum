@@ -1,6 +1,6 @@
 
 function contactEditReady() {
-    $('.contactEdit-clickable').click(contactEditClick);
+    $('.contactAdd-clickable').click(contactAddClick);
     $('#contactEdit-container').load('contactEdit.html', function() {
         contactEditLoad();
     });
@@ -22,20 +22,24 @@ function contactEditLoad() {
 }
 
 function contactEdit(contact) {
+    state.contact = contact;
     console.log("contactEdit", contact);
+    $('#contactEdit-legend').text('Edit contact');
     contactEditSet(contact);
     contactEditShow();
 }
 
-function contactEditClick() {
+function contactAddClick() {
+    state.contact = null;
+    $('#contactEdit-legend').text('Add contact');
     contactEditClear();
     contactEditShow();
+    contactEditFocus();
 }
 
 function contactEditShow() {
     $('.page-container').hide();
     $('#contactEdit-container').show();
-    contactEditFocus();
 }
 
 function contactEditSave() {
@@ -44,7 +48,8 @@ function contactEditSave() {
     var contact = contactEditGet();
     if (contact.name.length === 0) {
         return false;
-    }
+    }    
+    contactsPut(contact);
     server.ajax({
         url: '/contactEdit',
         data: $('#contactEdit-form').serialize(),
