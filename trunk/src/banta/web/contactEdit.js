@@ -9,16 +9,18 @@ function contactEditReady() {
 function changeButtonPrimary(event) {
     console.log('changeButtonPrimary', event.data);
     if (this.value.length > 0) {
-        $(event.data).addClass('btn-primary');
+        $('#contactEdit-cancel').removeClass('btn-primary');
+        $('#contactEdit-save').addClass('btn-primary');
     } else {
-        $(event.data).removeClass('btn-primary');
+        $('#contactEdit-save').removeClass('btn-primary');
+        $('#contactEdit-cancel').addClass('btn-primary');
     }
 }
 
 function contactEditLoad() {    
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
-    $('#contactEdit-name-input').change('#contactEdit-save-input', changeButtonPrimary);
+    $('#contactEdit-name-input').change(changeButtonPrimary);
 }
 
 function contactEdit(contact) {
@@ -38,6 +40,8 @@ function contactAddClick() {
 }
 
 function contactEditShow() {
+    $('#contactEdit-cancel').addClass('btn-primary');
+    $('#contactEdit-save').removeClass('btn-primary');
     $('.page-container').hide();
     $('#contactEdit-container').show();
 }
