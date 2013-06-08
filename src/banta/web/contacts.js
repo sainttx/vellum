@@ -11,6 +11,7 @@ function contactsReady() {
 function contactsClick() {
     console.log("contactsClick");
     contactsBuild(state.contacts);
+    $('#title').text('Contacts');
     $('.page-container').hide();
     $('#contacts-container').show();
 }

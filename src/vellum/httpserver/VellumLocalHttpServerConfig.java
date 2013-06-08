@@ -14,7 +14,7 @@ public class VellumLocalHttpServerConfig {
     int port = 8080;
     String[] allowHosts = {"127.0.0.1"};
     String rootDir = SystemProperties.getString("vellum.web.root");
-    String rootFile = "index.html";
+    String rootFile = "home.html";
     
     public int getPort() {
         return port;
