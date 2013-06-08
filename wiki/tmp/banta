@@ -1,0 +1,211 @@
+
+
+i wrote this little app yesterday and put on amazon this evening - playing with forms tables in javascript/jquery - using bootstrap template of course - i mean for the CSS, and HTML conventions
+
+bootstrap gives a nice look and feel right off the bat, and responsive to mobile/tablet/desktop :)
+
+http://54.217.223.166:8080/
+
+this is a test server with 4gig RAM and static IP on AWS organised for me by someone i know - "free to those who can afford it" ;) 
+
+i installed tomcat7 (and postgresql9) and copied my web/ resources to ROOT, and viola !
+
+currently there is no server side so this is all javascript - i need to do the validation next :) 
+
+you can click on table rows and add new contact, and appears in the list - all on client side - and all single page javascript app so no reloading - all ajax - well mocked ajax
+
+in the javascript, i mock the ajax where i have a mock server which fakes the ajax requests (and google login etc) - vs the real server which does that for real of course
+
+this makes it MUCH faster to prototype the client side because no compile/deploy/test cycles - just edit the html and js, and reload in browser !
+
+once happy with front-end, then i'll do the servlets handling the login/auth and processing the ajax requests, knowing that the UI functionality is done and dusted
+
+then the UI functionality development, is divorced from the client/server integration development 
+
+actually i'm trying divorce UI dev, from client/server integration dev, from server servlets dev, from server/database integration dev - and do it all separately in isolation 
+
+i have found that trying to tweak the frontend and servlets and database integration, all at once, makes prototyping front-end functionality extremely tedious 
+
+i plan to dev the servlets with mock database integration where persistent objects just stored in memory - so that server vs server/database integration are separate exercises. Here's an example of that:
+
+https://code.google.com/p/vellum/source/browse/trunk/src/crocserver/storage/orgrole/OrgRoleStorage.java
+
+another idea there the persistent objects, which have toMap() method, which is used to producing JSON to return to client, can just store those properties from the map, to further simulate real database persistence rather than just storing the object as is, in a HashMap. One can then even have a further intermediate phase of auto mapping those properties to actual database columns - and then optimising retrieval as needed
+
+my crocserver project i was trying to tweak the frontend learning javascript, against real servlets, against actual SQL persistence, and it was sooo tedious, that i eventually lost interest in that because it wasn't fun anymore 
+
+but now i fancy this prototyping approach:
+
+1. prototype frontend (javascript/jquery using bootstrap css) with mock ajax so no server - just edit html and js and reload in browser - so its fast and fun
+2. prototype servlets using mock persistence (DAO's just store in Map) - automated test cases using mock http client requests 
+3. swop in real persistence impl's of DAO's into servlets to test database integration
+
+if the backend unit test pass, first against mock database DAOs, and then against real database DAO's (albeit using H2 database in memory), only then one need manually test client/server with real ajax - and then first against database with mock database, and it that's OK, then against real database :)
+
+so the "final" end to end integration testing is... just that :) For the purposes of fixing integration issues between client/server, or server/database, but not both at once, and not any end-user functionality testing per se
+
+by the waym, for testing front-end i use simple webserver (for localhost) pointed at the web/ directory where index.html etc - actually this simple webserver i also have nice customisation which is to let the client log via ajax into the console - which is handy for testing the app on my phone which doesn't have debug web console like you get in firefox and chrome - which of course one uses heavily for javascript apps :)
+
+where i point this webserver at my web/ resources directory, for isolated UI dev
+
+-Dvellum.web.root=/home/evans/NetBeansProjects/svn/vellum/src/banta/web
+
+https://code.google.com/p/vellum/source/browse/trunk/src/vellum/httpserver/VellumLocalHttpServerHandler.java
+
+you can see that just reads the files of the disk (html, css, js, png etc) and serves them - altho it does trivially support remote logging by the client which i did for testing on my phone 
+
+you can check the front-end code:
+
+https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fbanta%2Fweb
+
+for example the following shows the real server vs fake ajax with mock responses with mock data - the idea is when the hiostname is localhost or 192.168 (my phone via wifi) then the mock server is used - altho currently since servlets not implemented yet, its mockServer is used even on the above AWS "deployment" on http://54.217.223.166:8080/
+
+btw. under thing i tested before is client auto redirects to https when a http URL is entered by user, using javascript to set the location as such - but right now that test server is http
+
+basically the real server and mock server objects both have ajax() method where the real server does actual ajax request to server, and mock server just pretends to, returning mock data in "responses"
+
+the log() method must of course do ajax to send logging message back to server to display in console especially for mobile device UI testing/debugging :)
+
+var server = realServer;
+var state = {};
+
+$(document).ready(function() {
+    if (window.location.hostname === 'localhost' || window.location.hostname.startsWith("192.168")) {
+        server = mockServer;
+        googleLoginReadyMock();
+    } else {
+        googleLoginLoad();
+        personaLoginLoad();
+    }
+    documentReady();
+    console.log(window.location);
+});
+
+var realServer = {
+    log: function(message) {
+        console.log('server log: ' + message);
+    },
+    ajax: function(req) {
+        $.ajax(req);
+    },
+    googleLoginAuthorize: function() {
+        gapi.auth.authorize({
+            client_id: clientId,
+            scope: scopes,
+            immediate: true
+        }, googleLoginAuthorizeRes);
+    },
+    googleClient: function() {
+        gapi.client.setApiKey(apiKey);
+        window.setTimeout(googleLoginAuthorize, 1);
+    },
+    getPlus: function() {
+        gapi.client.load('plus', 'v1', function() {
+            gapi.client.plus.people.get({
+                'userId': 'me'
+            }).execute(setMe);
+        });
+    },
+};
+
+var mockServer = {
+    log: function(message) {
+        console.log('server log: ' + message);
+        $.ajax({
+            type: 'POST',
+            url: '/log',
+            data: message,
+            success: function() {
+            },
+            error: function() {
+                //alert('error logging: ' + data);
+            }
+        });
+    },    
+    ajax: function(req) {
+        console.log('mockServer.ajax', req.url, req.data);
+        res = mockRes(req);
+        console.log("mockServer res", res);
+        req.success(res);
+    },
+    googleLoginAuthorize: function() {
+        var res = {
+            access_token: 'dummy_access_token'
+        };
+        googleLoginAuthorizeRes(res);        
+    },
+};
+
+var mockData = {
+    login: {
+        name: 'Testy Tester',
+        email: 'test@gmail.com',
+        picture: '',
+        totpSecret: '',
+        totpUrl: '',
+        qr: '',
+    },
+    logout: {
+        email: 'test@gmail.com'
+    },
+    contacts: [
+        {
+            name: 'Joe Soap',
+            mobile: '27827779988',
+            email: 'joe@gmail.com',
+        },
+        {
+            name: 'Ginger Bread',
+            mobile: '2783667300',
+            email: 'gingerb@gmail.com',
+        },
+        {
+            name: 'Harry Potter',
+            mobile: '2783667400',
+            email: 'harryp@gmail.com',
+        }
+    ],
+    orgs: [
+        {
+            orgId: 1,
+            orgUrl: 'biz.net',
+            orgCode: 'biz',
+            displayName: 'Biz (Pty) Ltd',
+            region: 'Western Cape',
+            locality: 'Cape Town',
+            country: 'South Africa'
+        },
+        {
+            orgId: 2,
+            orgUrl: 'other.net',
+            orgCode: 'other',
+            displayName: 'The Other Company (Pty) Ltd',
+            region: 'Western Cape',
+            locality: 'Cape Town',
+            country: 'South Africa'
+        }
+    ]
+};
+
+function mockRes(req) {
+    if (req.url === '/googleLogin') {
+        mockData.login.contacts = mockData.contacts;
+        return mockData.login;
+    } else if (req.url === '/personaLogin') {
+        mockData.login.contacts = mockData.contacts;
+        return mockData.login;
+    } else if (req.url === '/logout') {
+        return mockData.logout;
+    } else if (req.url === '/contactEdit') {
+        return req.data;
+    } else if (req.url === '/contactEdit') {
+        console.log('mockRes memo', req.memo);
+        return req.data;
+    } else if (req.url === '/contactList') {
+        return mock.contacts;
+    }
+    return {
+        error: 'mockRes ' + req.url
+    }
+}
+
