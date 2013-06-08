@@ -24,7 +24,7 @@ function personaReady() {
 function personaLogin(assertion) {
     console.log("personaLogin");
     console.log("onlogin");
-    server.auth = 'persona';
+    state.auth = 'persona';
     server.ajax({
         type: 'POST',
         url: '/personaLogin',

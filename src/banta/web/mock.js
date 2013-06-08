@@ -4,19 +4,30 @@ function initTest() {
 }
 
 var mockServer = {
-    auth: '',
-    googleAccessToken: '',
-    googleLoginAuthorize: function() {
-        var res = {
-            access_token: 'dummy_access_token'
-        };
-        googleLoginAuthorizeRes(res);        
-    },
+    log: function(message) {
+        console.log('server log: ' + message);
+        $.ajax({
+            type: 'POST',
+            url: '/log',
+            data: message,
+            success: function() {
+            },
+            error: function() {
+                //alert('error logging: ' + data);
+            }
+        });
+    },    
     ajax: function(req) {
         console.log('mockServer.ajax', req.url, req.data);
         res = mockRes(req);
         console.log("mockServer res", res);
         req.success(res);
+    },
+    googleLoginAuthorize: function() {
+        var res = {
+            access_token: 'dummy_access_token'
+        };
+        googleLoginAuthorizeRes(res);        
     },
     googleClient: function() {        
     },
@@ -89,7 +100,6 @@ function mockRes(req) {
         return req.data;
     } else if (req.url === '/contactEdit') {
         console.log('mockRes memo', req.memo);
-        mockData.contacts.push(req.memo);
         return req.data;
     } else if (req.url === '/contactList') {
         return mock.contacts;

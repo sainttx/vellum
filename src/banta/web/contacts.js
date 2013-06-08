@@ -10,7 +10,7 @@ function contactsReady() {
 
 function contactsClick() {
     console.log("contactsClick");
-    contactsBuild(server.login.contacts);
+    contactsBuild(state.contacts);
     $('.page-container').hide();
     $('#contacts-container').show();
 }
@@ -26,9 +26,6 @@ function contactsSort(array) {
     });    
 }
 
-function contactsFind(array) {
-}
-
 function contactsBuild(array) {
     contactsSort(array);
     buildTable($('#contacts-tbody'), contactsArray, array);
@@ -37,8 +34,27 @@ function contactsBuild(array) {
     });    
 }
 
+function contactsIndexOf(id) {
+    return arrayIndexOf(state.contacts, id, function(object, id) {
+        return object.name === id;
+    });
+    
+}
+function contactsPut(contact) {
+    if (state.contact) {
+        var index = contactsIndexOf(state.contact.name);
+        if (index >= 0) {
+            state.contacts[index] = contact;
+        }
+    } else {
+        state.contacts.push(contact);
+    }
+}
+
 function contactsListRowClick(id) {
-    var contact = contactsFind(id);
-    contactEdit(contact);
+    var index = contactsIndexOf(id);
+    if (index >= 0) {
+        contactEdit(state.contacts[index]);
+    }
 }
 
