@@ -48,7 +48,7 @@ function contactEditShow() {
     $('#contactEdit-container').show();
 }
 
-function contactEditSave() {
+function contactEditSave(event) {
     console.log("contactEditSave");
     event.preventDefault();
     var contact = contactEditGet();
