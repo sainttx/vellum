@@ -62,3 +62,13 @@ function arrayIndexOf(array, data, matcher) {
     }
     return null;
 }
+
+function validatorHighlight(element) {
+    $(element).closest('.control-group').removeClass('success').addClass('error');
+}
+
+function validatorSuccess(element) {
+    $(element).addClass('valid');
+    $(element).closest('.control-group').removeClass('error').addClass('success');
+}
+
