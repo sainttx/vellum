@@ -2,17 +2,35 @@
 var server = googleServer;
 var state = {};
 
-$(document).ready(function() {
-    if (true || window.location.hostname === 'localhost' || window.location.hostname.startsWith("192.168")) {
-        server = mockServer;
-        googleLoginReadyMock();
-    } else {
-        googleLoginLoad();
-        personaLoginLoad();
-    }
-    documentReady();
+function locationDev() {
+    return window.location.hostname.startsWith('localhost') || window.location.hostname.startsWith("192.168");    
+}
+
+function locationLive() {
+    return window.location.hostname.indexOf('appcentral.info') > 0;    
+}
+
+$(document).ready(function() {    
+    utilReady();
     console.log(window.location);
+    if (locationDev()) {
+        documentReadyDev();
+    } else if (!redirectDocument()) {
+        documentReadyDev();
+    }
 });
+
+function documentReadyLive() {
+    googleLoginLoad();
+    personaLoginLoad();
+    documentReady();
+}
+
+function documentReadyDev() {
+    server = mockServer;
+    googleLoginReadyMock();
+    documentReady();
+}
 
 function googleLoginLoad() {
     $.load("https://apis.google.com/js/client.js", function() {
@@ -29,7 +47,6 @@ function personaLoginLoad() {
 
 function documentReady() {
     console.log("documentReady");
-    utilReady();
     contactsReady();
     contactEditReady();
     $('.home-clickable').click(homeClick);
@@ -159,11 +176,11 @@ function homeClick() {
 
 function reloadClick() {
     console.log('reload');
-    console.log(window.location);
+    console.log(window.location.origin);
     if (true) {
         removeCookies();
     }
-    window.location = window.location.origin;
+    window.location.reload();
 }
 
 function contactClick() {

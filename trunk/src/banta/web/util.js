@@ -1,5 +1,11 @@
 
 function utilReady() {
+    String.prototype.startsWith = function(string) {
+        return this.indexOf(string) === 0;
+    };
+    String.prototype.contains = function(string) {
+        return this.indexOf(string) === 0 || this.indexOf(string) > 0;
+    };
     if (!String.prototype.format) {
         String.prototype.format = function() {
             var args = arguments;
@@ -7,13 +13,6 @@ function utilReady() {
                 return args[number];
             });
         };
-    }
-}
-
-function documentReadyRedirect() {
-    console.log("documentReadyRedirect");
-    if (!redirectDocument()) {
-        documentReady();
     }
 }
 
