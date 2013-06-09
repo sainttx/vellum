@@ -24,6 +24,7 @@ var contactEditValidatorConfig = {
 function contactEditHighlight(element) {
     $(element).closest('.control-group').removeClass('success').addClass('error');
     contactEditButtons(false);
+    $(element).focus();
 }
 
 function contactEditSuccess(element) {
@@ -55,6 +56,13 @@ function contactEditLoad() {
     contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
+    $('#contactEdit-cancel').focus(contactEditCancelFocus);
+}
+
+function contactEditCancelFocus(event) {
+    if (contactEditValidator.valid()) {
+        $('#contactEdit-save').focus();        
+    }
 }
 
 function contactEdit(contact) {
