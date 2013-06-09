@@ -1,4 +1,49 @@
 
+
+var contactEditValidatorConfig = {
+    rules: {
+        name: {
+            minlength: 2,
+            required: true
+        },
+        email: {
+            required: false,
+            email: true
+        },
+        mobile: {
+            minlength: 10,
+            maxlength: 10,
+            digits: true,
+            required: false
+        }
+    },
+    highlight: contactEditHighlight,
+    success: contactEditSuccess
+}
+
+function contactEditHighlight(element) {
+    $(element).closest('.control-group').removeClass('success').addClass('error');
+    contactEditButtons(false);
+}
+
+function contactEditSuccess(element) {
+    console.log("contactEditSuccess");
+    $(element).closest('.control-group').removeClass('error').addClass('success');
+    contactEditButtons(true);
+}
+
+function contactEditButtons(ok) {
+    if (ok) {
+        $('#contactEdit-save').addClass('btn-primary');
+        $('#contactEdit-cancel').removeClass('btn-primary');
+    } else {
+        $('#contactEdit-save').removeClass('btn-primary');
+        $('#contactEdit-cancel').addClass('btn-primary');
+    }
+}
+
+var contactEditValidator = null;
+
 function contactEditReady() {
     $('.contactAdd-clickable').click(contactAddClick);
     $('#contactEdit-container').load('contactEdit.html', function() {
@@ -6,42 +51,33 @@ function contactEditReady() {
     });
 }
 
-function changeButtonPrimary(event) {
-    console.log('changeButtonPrimary', event.data);
-    if (this.value.length > 0) {
-        $('#contactEdit-cancel').removeClass('btn-primary');
-        $('#contactEdit-save').addClass('btn-primary');
-    } else {
-        $('#contactEdit-save').removeClass('btn-primary');
-        $('#contactEdit-cancel').addClass('btn-primary');
-    }
-}
-
-function contactEditLoad() {    
+function contactEditLoad() {
+    contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
-    $('#contactEdit-name-input').change(changeButtonPrimary);
 }
 
 function contactEdit(contact) {
     state.contact = contact;
     console.log("contactEdit", contact);
-    $('#title').text('Edit contact');    
+    $('#title').text('Edit contact');
     $('#contactEdit-legend').text('Edit contact');
+    contactEditClear();
     contactEditSet(contact);
     contactEditShow();
 }
 
 function contactAddClick() {
     state.contact = null;
-    $('#title').text('Add contact');    
+    $('#title').text('Add contact');
     $('#contactEdit-legend').text('Add contact');
-    contactEditClear();
+    contactEditClear();    
     contactEditShow();
     contactEditFocus();
 }
 
 function contactEditShow() {
+    contactEditValidator.resetForm();
     $('#contactEdit-cancel').addClass('btn-primary');
     $('#contactEdit-save').removeClass('btn-primary');
     $('.page-container').hide();
@@ -51,41 +87,44 @@ function contactEditShow() {
 function contactEditSave(event) {
     console.log("contactEditSave");
     event.preventDefault();
-    var contact = contactEditGet();
-    if (contact.name.length === 0) {
-        return false;
-    }    
-    contactsPut(contact);
-    server.ajax({
-        url: '/contactEdit',
-        data: $('#contactEdit-form').serialize(),
-        success: contactEditRes,
-        error: contactEditError,
-        memo: contact
-    });
-    return false;
+    if ($('#contactEdit-form').valid()) {
+        var contact = contactEditGet();
+        contactsPut(contact);
+        server.ajax({
+            url: '/contactEdit',
+            data: $('#contactEdit-form').serialize(),
+            success: contactEditRes,
+            error: contactEditError,
+            memo: contact
+        });
+    }
 }
 
 function contactEditRes(res) {
-    console.log('contactEditRes');    
+    console.log('contactEditRes');
     console.log(res);
     contactsClick();
 }
 
 function contactEditError() {
-    console.log('contactEditError');    
+    console.log('contactEditError');
 }
 
 function contactEditCancel() {
     console.log("contactEditCancel");
+    contactEditClear();
     contactsClick();
 }
 
 function contactEditClear() {
-    $('#contactEdit-save').removeClass('btn-primary');    
+    console.log("contactEditClear", $('#contactEdit-form > fieldset > .control-group').length);
+    contactEditValidator.resetForm();
+    contactEditButtons(false);
+    $('#contactEdit-form > fieldset > div.control-group').removeClass('error');
+    $('#contactEdit-form > fieldset > div.control-group').removeClass('success');
     contactEditSet({
-        name: '', 
-        mobile: '', 
+        name: '',
+        mobile: '',
         email: ''
     });
 }
@@ -97,15 +136,15 @@ function contactEditSet(o) {
 }
 
 function parseName(text) {
-    return text.replace(/[<>]/gi,' ');
+    return text.replace(/[<>]/gi, ' ');
 }
 
 function parseMobile(text) {
-    return text.replace(/[^ +0-9]/gi,'');
+    return text.replace(/[^ +0-9]/gi, '');
 }
 
 function parseEmail(text) {
-    return text.replace(/[<>]/gi,'');
+    return text.replace(/[<>]/gi, '');
 }
 
 function contactEditGet() {
@@ -113,7 +152,7 @@ function contactEditGet() {
         name: parseName($('#contactEdit-name-input').val()),
         mobile: parseMobile($('#contactEdit-mobile-input').val()),
         email: parseEmail($('#contactEdit-email-input').val())
-    };   
+    };
 }
 
 function contactEditFocus() {

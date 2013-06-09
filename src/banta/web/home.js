@@ -164,7 +164,7 @@ function aboutClick() {
 }
 
 function homeClick() {
-    $('#title').text('Home');        
+    $('#title').text('Banta');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     if (state.auth === null) {
