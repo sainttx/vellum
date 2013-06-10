@@ -70,6 +70,7 @@ function contactEditCancelFocus(event) {
 }
 
 function contactEdit(contact) {
+    window.history.pushState(null, null, "Edit Contact/" + contact.name);    
     state.contact = contact;
     console.log("contactEdit", contact);
     $('#title').text('Edit contact');
@@ -80,6 +81,7 @@ function contactEdit(contact) {
 }
 
 function contactAddClick() {
+    window.history.pushState(null, null, "Add Contact");    
     state.contact = null;
     $('#title').text('Add contact');
     $('#contactEdit-legend').text('Add contact');

@@ -157,6 +157,7 @@ function logoutError() {
 }
 
 function aboutClick() {
+    window.history.pushState(null, null, "About Us");
     $('#title').text('About');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -164,6 +165,7 @@ function aboutClick() {
 }
 
 function homeClick() {
+    window.history.pushState(null, null, null);
     $('#title').text('Banta');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -184,7 +186,8 @@ function reloadClick() {
 }
 
 function contactClick() {
-    $('#title').text('Contact');
+    window.history.pushState(null, null, "Contact Us");
+    $('#title').text('Contact us');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     $("#contact-container").show();
