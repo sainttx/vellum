@@ -10,6 +10,12 @@ function personaLogoutClick() {
     navigator.id.logout();
 }
 
+function personaLoginLoad() {
+    $.load("https://login.persona.org/include.js", function() {
+        personaReady();
+    });
+}
+
 function personaReady() {
     if (navigator.id) {
         navigator.id.watch({

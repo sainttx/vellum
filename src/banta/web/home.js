@@ -32,19 +32,6 @@ function documentReadyDev() {
     documentReady();
 }
 
-function googleLoginLoad() {
-    $.load("https://apis.google.com/js/client.js", function() {
-        startClient();
-        googleLoginReady();
-    });
-}
-
-function personaLoginLoad() {
-    $.load("https://login.persona.org/include.js", function() {
-        personaReady();
-    });
-}
-
 function documentReady() {
     console.log("documentReady");
     contactsReady();
@@ -61,7 +48,25 @@ function documentReady() {
 }
 
 function windowState(event) {
-    console.log("windowState", event);
+    console.log("windowState", window.location);
+    event.preventDefault();
+    if (window.location.pathname === '/~contacts') {
+        contactsClick();
+    } else if (window.location.pathname === '/~contactAdd') {
+        contactAddClick();
+    } else if (window.location.pathname.startsWith('/~contactEdit/')) {
+        contactsClick();
+    } else if (window.location.pathname === '/~contactEdit') {
+        contactEditClick();
+    } else if (window.location.pathname === '/~contactUs') {
+        contactClick();
+    } else if (window.location.pathname === '/~aboutUs') {
+        aboutClick();
+    } else if (window.location.pathname === '/~home') {
+        homeClick();
+    } else {
+        homeClick();
+    }
 }
 
 function removeCookies() {
@@ -164,7 +169,7 @@ function logoutError() {
 }
 
 function aboutClick() {
-    window.history.pushState(null, null, "~AboutUs");
+    window.history.pushState(null, null, "/~aboutUs");
     $('#title').text('About');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -172,7 +177,7 @@ function aboutClick() {
 }
 
 function homeClick() {
-    window.history.pushState(null, null, "~Home");
+    window.history.pushState(null, null, "/~home");
     $('#title').text('Banta');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -184,7 +189,7 @@ function homeClick() {
 }
 
 function contactClick() {
-    window.history.pushState(null, null, "~ContactUs");
+    window.history.pushState(null, null, "/~contactUs");
     $('#title').text('Contact us');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -199,4 +204,3 @@ function reloadClick() {
     }
     window.location.reload();
 }
-
