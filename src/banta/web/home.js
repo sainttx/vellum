@@ -54,7 +54,14 @@ function documentReady() {
     $('.about-clickable').click(aboutClick);
     $('.contact-clickable').click(contactClick);
     $('.logout-clickable').click(logoutClick);
+    window.addEventListener("popstate", function(event) {
+        windowState(event);
+    });
     initServer();
+}
+
+function windowState(event) {
+    console.log("windowState", event);
 }
 
 function removeCookies() {
@@ -157,7 +164,7 @@ function logoutError() {
 }
 
 function aboutClick() {
-    window.history.pushState(null, null, "About Us");
+    window.history.pushState(null, null, "~AboutUs");
     $('#title').text('About');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -165,7 +172,7 @@ function aboutClick() {
 }
 
 function homeClick() {
-    window.history.pushState(null, null, null);
+    window.history.pushState(null, null, "~Home");
     $('#title').text('Banta');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -174,6 +181,14 @@ function homeClick() {
     } else {
         $("#home-container").show();
     }
+}
+
+function contactClick() {
+    window.history.pushState(null, null, "~ContactUs");
+    $('#title').text('Contact us');
+    $('.nav-item').removeClass("active");
+    $('.page-container').hide();
+    $("#contact-container").show();
 }
 
 function reloadClick() {
@@ -185,10 +200,3 @@ function reloadClick() {
     window.location.reload();
 }
 
-function contactClick() {
-    window.history.pushState(null, null, "Contact Us");
-    $('#title').text('Contact us');
-    $('.nav-item').removeClass("active");
-    $('.page-container').hide();
-    $("#contact-container").show();
-}
