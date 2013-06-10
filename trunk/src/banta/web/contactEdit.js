@@ -21,10 +21,14 @@ var contactEditValidatorConfig = {
     success: contactEditSuccess
 }
 
+var contactEditErrorElement = null;
+
 function contactEditHighlight(element) {
+    console.log("contactEditHighlight", element);
     $(element).closest('.control-group').removeClass('success').addClass('error');
     contactEditButtons(false);
     $(element).focus();
+    errorElement = element;
 }
 
 function contactEditSuccess(element) {
@@ -95,6 +99,7 @@ function contactEditShow() {
 function contactEditSave(event) {
     console.log("contactEditSave");
     event.preventDefault();
+    contactEditErrorElement = null;
     if ($('#contactEdit-form').valid()) {
         var contact = contactEditGet();
         contactsPut(contact);
@@ -105,6 +110,8 @@ function contactEditSave(event) {
             error: contactEditError,
             memo: contact
         });
+    } else {
+        contactEditButtons(false);
     }
 }
 
