@@ -10,7 +10,7 @@ function contactsReady() {
 
 function contactsClick() {
     console.log("contactsClick", window.location);
-    window.history.pushState(null, null, "~Contacts");
+    window.history.pushState(null, null, "/~contacts");
     contactsBuild(state.contacts);
     $('#title').text('Contacts');
     $('.page-container').hide();

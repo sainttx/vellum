@@ -26,6 +26,13 @@ var googleServer = {
     },
 };
 
+function googleLoginLoad() {
+    $.load("https://apis.google.com/js/client.js", function() {
+        startClient();
+        googleLoginReady();
+    });
+}
+
 function googleLoginReadyMock() {
     $('.googleLogin-clickable').click(googleLoginClick);
     server.googleLoginAuthorize();
