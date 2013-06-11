@@ -8,9 +8,13 @@ function contactsReady() {
     $('.contacts-clickable').click(contactsClick);
 }
 
+function contactsClickable() {
+    return state.contacts !== null;
+}
+
 function contactsClick() {
-    console.log("contactsClick", window.location);
-    window.history.pushState(null, null, "/~contacts");
+    console.log("contactsClick");
+    window.history.pushState(null, null, "/#contacts");
     contactsBuild(state.contacts);
     $('#title').text('Contacts');
     $('.page-container').hide();

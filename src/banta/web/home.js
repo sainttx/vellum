@@ -35,11 +35,15 @@ function documentReadyDev() {
 function documentReady() {
     console.log("documentReady");
     contactsReady();
-    contactEditReady();
+    contactEditReady(documentReadyLoaded);
+}
+
+function documentReadyLoaded() {
     $('.home-clickable').click(homeClick);
     $('.reload-clickable').click(reloadClick);
     $('.about-clickable').click(aboutClick);
     $('.contact-clickable').click(contactClick);
+    $('.contacts-clickable').click(contactsClick);
     $('.logout-clickable').click(logoutClick);
     window.addEventListener("popstate", function(event) {
         windowState(event);
@@ -48,22 +52,36 @@ function documentReady() {
 }
 
 function windowState(event) {
-    console.log("windowState", window.location);
     event.preventDefault();
-    if (window.location.pathname === '/~contacts') {
-        contactsClick();
-    } else if (window.location.pathname === '/~contactAdd') {
-        contactAddClick();
-    } else if (window.location.pathname.startsWith('/~contactEdit/')) {
-        contactsClick();
-    } else if (window.location.pathname === '/~contactEdit') {
-        contactEditClick();
-    } else if (window.location.pathname === '/~contactUs') {
-        contactClick();
-    } else if (window.location.pathname === '/~aboutUs') {
-        aboutClick();
-    } else if (window.location.pathname === '/~home') {
+    windowLocation(window.location.pathname);
+} 
+
+function windowClickable() {
+    return contactsClickable() && contactEditClickable()
+}
+
+function windowLocation(pathname) {
+    console.log("windowState", window.location.pathname);
+    if (pathname === '/#home') {
         homeClick();
+    } else if (pathname === '/#contactUs') {
+        contactClick();
+    } else if (pathname === '/#aboutUs') {
+        aboutClick();
+    } else if (!contactsClickable()) {
+        console.warn("windowLocation: contacts not ready");
+        homeClick();
+    } else  if (pathname === '/#contacts') {
+       contactsClick();
+    } else if (pathname.startsWith('/#contactEdit/')) {
+        contactsClick();
+    } else if (!contactEditClickable()) {
+        console.warn("windowLocation: contactEdit not ready");
+        homeClick();
+    } else if (pathname === '/#contactAdd') {
+        contactAddClick();
+    } else if (pathname === '/#contactEdit') {
+        contactEditClick();
     } else {
         homeClick();
     }
@@ -124,12 +142,12 @@ function showLoggedIn() {
 }
 
 function loginRes(res) {
-    console.log("loginRes");
+    console.log("loginRes", window.location.pathname);
     if (res.email !== null) {
         state.login = res;
         state.contacts = res.contacts;
         showLoggedInRes();
-        contactsClick();
+        windowLocation(window.location.pathname);        
     }
 }
 
@@ -169,7 +187,7 @@ function logoutError() {
 }
 
 function aboutClick() {
-    window.history.pushState(null, null, "/~aboutUs");
+    window.history.pushState(null, null, "/#aboutUs");
     $('#title').text('About');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -177,7 +195,7 @@ function aboutClick() {
 }
 
 function homeClick() {
-    window.history.pushState(null, null, "/~home");
+    window.history.pushState(null, null, "/#home");
     $('#title').text('Banta');        
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -189,7 +207,7 @@ function homeClick() {
 }
 
 function contactClick() {
-    window.history.pushState(null, null, "/~contactUs");
+    window.history.pushState(null, null, "/#contactUs");
     $('#title').text('Contact us');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();

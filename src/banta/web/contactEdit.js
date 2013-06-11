@@ -49,18 +49,23 @@ function contactEditButtons(ok) {
 
 var contactEditValidator = null;
 
-function contactEditReady() {
+function contactEditReady(loaded) {
     $('.contactAdd-clickable').click(contactAddClick);
     $('#contactEdit-container').load('contactEdit.html', function() {
-        contactEditLoad();
+        contactEditLoaded(loaded);
     });
 }
 
-function contactEditLoad() {
+function contactEditLoaded(loaded) {
     contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
     $('#contactEdit-cancel').focus(contactEditCancelFocus);
+    loaded();
+}
+
+function contactEditClickable() {
+    return contactEditValidator !== null;
 }
 
 function contactEditCancelFocus(event) {
@@ -70,7 +75,7 @@ function contactEditCancelFocus(event) {
 }
 
 function contactEdit(contact) {
-    window.history.pushState(null, null, "/~contactEdit/" + contact.name.replace(/\s+/g, ''));
+    window.history.pushState(null, null, "/#contactEdit/" + contact.name.replace(/\s+/g, ''));
     state.contact = contact;
     console.log("contactEdit", contact);
     $('#title').text('Edit contact');
@@ -81,13 +86,14 @@ function contactEdit(contact) {
 }
 
 function contactAddClick() {
-    window.history.pushState(null, null, "/~contactAdd");
+    window.history.pushState(null, null, "/#contactAdd");
     state.contact = null;
     $('#title').text('Add contact');
     $('#contactEdit-legend').text('Add contact');
     contactEditClear();    
     contactEditShow();
     contactEditFocus();
+    return true;
 }
 
 function contactEditShow() {
