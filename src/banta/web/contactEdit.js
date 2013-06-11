@@ -4,17 +4,18 @@ var contactEditValidatorConfig = {
     rules: {
         name: {
             minlength: 2,
-            required: true
-        },
-        email: {
-            required: false,
-            email: true
+            required: true,
+            sanitary: true
         },
         mobile: {
             minlength: 10,
             maxlength: 10,
             digits: true,
             required: false
+        },
+        email: {
+            required: false,
+            email: true
         }
     },
     highlight: contactEditHighlight,
@@ -110,6 +111,7 @@ function contactEditSave(event) {
     contactEditErrorElement = null;
     if ($('#contactEdit-form').valid()) {
         var contact = contactEditGet();
+        console.log("contactEditSave", contact);
         contactsPut(contact);
         server.ajax({
             url: '/contactEdit',
@@ -158,23 +160,11 @@ function contactEditSet(o) {
     $('#contactEdit-email-input').val(o.email);
 }
 
-function parseName(text) {
-    return text.replace(/[<>]/gi, ' ');
-}
-
-function parseMobile(text) {
-    return text.replace(/[^ +0-9]/gi, '');
-}
-
-function parseEmail(text) {
-    return text.replace(/[<>]/gi, '');
-}
-
 function contactEditGet() {
     return {
-        name: parseName($('#contactEdit-name-input').val()),
-        mobile: parseMobile($('#contactEdit-mobile-input').val()),
-        email: parseEmail($('#contactEdit-email-input').val())
+        name: sanitize($('#contactEdit-name-input').val()),
+        mobile: $('#contactEdit-mobile-input').val(),
+        email: $('#contactEdit-email-input').val()
     };
 }
 

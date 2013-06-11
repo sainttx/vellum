@@ -14,7 +14,17 @@ function utilReady() {
             });
         };
     }
+    $.validator.addMethod("sanitary", validateSanitary, "Please enter valid characters only.");    
 }
+
+function validateSanitary(value, element){
+    return !/[<>]/.test(value);
+}
+
+function sanitize(text) {
+    return text.replace(/[<>]/gi, '');
+}
+
 
 function redirectDocument() {
     console.log("redirectDocument " + window.location.protocol);
