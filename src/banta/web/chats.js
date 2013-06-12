@@ -3,22 +3,37 @@ function chatsArray(o) {
     return [o.name];
 };
 
-function chatsReady() {
-    console.log("chatsReady");
+function chatsLoad(loaded) {
+    $('#chats-container').load('chats.html', function() {
+        chatsLoaded(loaded);
+    });
+}
+
+function chatsLoaded(loaded) {
     $('.chats-clickable').click(chatsClick);
+    loaded('chats');
 }
 
 function chatsClickable() {
-    return state.chats !== null;
+    return !isEmpty(state.chats);
 }
 
 function chatsClick() {
-    console.log("chatsClick");
-    window.history.pushState(null, null, "/#chats");
-    chatsBuild(state.chats);
-    $('#title').text('Contacts');
-    $('.page-container').hide();
-    $('#chats-container').show();
+    if (assertTrue('chatsClick', chatsClickable())) {
+        window.history.pushState(null, null, "/#chats");
+        chatsBuild(state.chats);
+        $('#title').text('Chats');
+        $('.page-container').hide();
+        $('#chats-container').show();
+    }
+}
+
+function chatsBuild(array) {
+    chatsSort(array);
+    buildTable($('#chats-tbody'), chatsArray, array);
+    $("#chats-tbody > tr").click(function() {
+        chatsListRowClick($(this).children('td').first().text());
+    });    
 }
 
 function chatsSort(array) {
@@ -32,33 +47,25 @@ function chatsSort(array) {
     });    
 }
 
-function chatsBuild(array) {
-    chatsSort(array);
-    buildTable($('#chats-tbody'), chatsArray, array);
-    $("#chats-tbody > tr").click(function() {
-        chatsListRowClick($(this).children('td').first().text());
-    });    
-}
-
 function chatsIndexOf(id) {
     return arrayIndexOf(state.chats, id, function(object, id) {
         return object.name === id;
     });
     
 }
-function chatsPut(contact) {
-    if (state.contact) {
-        var index = chatsIndexOf(state.contact.name);
+function chatsPut(chat) {
+    if (state.chat) {
+        var index = chatsIndexOf(state.chat.name);
         if (index >= 0) {
-            state.chats[index] = contact;
+            state.chats[index] = chat;
         }
     } else {
-        var index = chatsIndexOf(contact.name);
+        var index = chatsIndexOf(chat.name);
         if (index !== null && index >= 0) {
-            console.log('chatsPut', contact.name, index);
-            state.chats[index] = contact;
+            console.log('chatsPut', chat.name, index);
+            state.chats[index] = chat;
         } else {
-            state.chats.push(contact);
+            state.chats.push(chat);
         }
     }
 }
@@ -66,7 +73,7 @@ function chatsPut(contact) {
 function chatsListRowClick(id) {
     var index = chatsIndexOf(id);
     if (index >= 0) {
-        contactEdit(state.chats[index]);
+        chatEdit(state.chats[index]);
     }
 }
 

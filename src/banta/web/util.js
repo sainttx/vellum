@@ -1,5 +1,5 @@
 
-function utilReady() {
+function utilInit() {
     String.prototype.startsWith = function(string) {
         return this.indexOf(string) === 0;
     };
@@ -24,7 +24,6 @@ function validateSanitary(value, element){
 function sanitize(text) {
     return text.replace(/[<>]/gi, '');
 }
-
 
 function redirectDocument() {
     console.log("redirectDocument " + window.location.protocol);
@@ -89,5 +88,22 @@ function formatDate(date) {
 function foreach(array, handler) {
     for (var i = 0; i < array.length; i++) {
         handler(i, array[i]);
+    }
+}
+
+function isEmpty(object) {
+    return (object === undefined || object === null || object.length === 0);
+}
+
+function isTrue(object) {
+    return (object !== undefined && object !== null && object === true);
+}
+
+function assertTrue(message, value) {
+    if (!isTrue(value)) {
+        alert('assert failed: ' + message);
+        return false;
+    } else {
+        return true;
     }
 }

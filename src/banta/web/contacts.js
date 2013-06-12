@@ -3,9 +3,9 @@ function contactsArray(o) {
     return [o.name];
 };
 
-function contactsReady() {
-    console.log("contactsReady");
+function contactsLoad(loaded) {
     $('.contacts-clickable').click(contactsClick);
+    loaded('contacts');
 }
 
 function contactsClickable() {

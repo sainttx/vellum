@@ -96,8 +96,12 @@
         </div>
 
         <div class="container page-container hide" id="welcome-container">
+            <ul class="breadcrumb">
+                <li><span class="active">Home</a> 
+            </ul>
             <p>
-                <a class="btn btn-primary contacts-clickable">Contacts &raquo;</a>
+                <a class="btn contacts-clickable">Contacts</a>
+                <a class="btn chats-clickable">Chats</a>
                 <a class="btn about-clickable">Learn more &raquo;</a>
             </p>
             <h4 id="loggedin-message">Welcome</h4>
@@ -105,12 +109,11 @@
 
         <div class="container page-container hide" id="home-container">
             <ul class="breadcrumb">
-                <li><span class="active">Home</span> 
-                    <span class="divider">/</span></li>
-                <li><a class="contacts-clickable">Contacts</a> 
+                <li><span class="active">Home</a> 
             </ul>
             <p>
-                <a class="btn btn-primary contacts-clickable">Contacts &raquo;</a>
+                <a class="btn contacts-clickable">Contacts</a>
+                <a class="btn chats-clickable">Chats</a>
             </p>
         </div>
 
@@ -132,6 +135,7 @@
                     <tr>
                         <th>Contacts</th>
                     </tr>
+                    </tr>
                 </thead>
                 -->
                 <tbody id="contacts-tbody">
@@ -141,7 +145,13 @@
 
         <div class="container page-container hide" id="contactEdit-container">
         </div>
-        
+
+        <div class="container page-container hide" id="chat-container">
+        </div>
+
+        <div class="container page-container hide" id="chats-container">
+        </div>
+
         <script src="bootstrap/js/jquery.min.js"></script>
         <script src="bootstrap/js/jquery.cookie.min.js"></script>
         <script src="bootstrap/js/jquery.validate.min.js"></script>
@@ -151,10 +161,12 @@
         <script src="persona.js"></script>
         <script src="google.js"></script>
         <script src="mock.js"></script>
-        <script src="home.js"></script>
+        <script src="chat.js"></script>
+        <script src="chats.js"></script>
         <script src="contacts.js"></script>
         <script src="contactEdit.js"></script>
         <script src="contactList.js"></script>
+        <script src="home.js"></script>
         
         <!--
         <script src="https://apis.google.com/js/client.js?onload=startClient"></script>
