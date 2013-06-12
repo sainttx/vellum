@@ -1,5 +1,12 @@
 
 function utilInit() {
+    utilInitString();
+    utilInitDate();
+    utilInitArray();
+    $.validator.addMethod("sanitary", validateSanitary, "Please enter valid characters only.");    
+}
+
+function utilInitString() {
     String.prototype.startsWith = function(string) {
         return this.indexOf(string) === 0;
     };
@@ -14,7 +21,41 @@ function utilInit() {
             });
         };
     }
-    $.validator.addMethod("sanitary", validateSanitary, "Please enter valid characters only.");    
+    if (!String.prototype.isEmpty) {
+        String.prototype.isEmpty = function() {
+            return isEmpty(this);
+        };
+    }
+}
+
+function utilInitArray() {
+    if (!Array.prototype.isEmpty) {
+        Array.prototype.isEmpty = function() {
+            return isEmpty(this);
+        };
+    }
+    if (!Array.prototype.last) {
+        Array.prototype.last = function() {
+            return arrayLast(this);
+        };
+    }
+    if (!Array.prototype.foreach) {
+        Array.prototype.foreach = function(handler) {
+            foreach(this, handler);
+        }
+    }
+}
+
+function utilInitDate() {
+    if (!Date.prototype.formatPretty) {
+        Date.prototype.format = function() {
+            return formatDate(this);
+        }
+    }
+}
+
+function formatDate(date) {
+    return moment(date).format('MMM Do, h:mm:ss a');
 }
 
 function validateSanitary(value, element){
@@ -81,14 +122,14 @@ function validatorSuccess(element) {
     $(element).closest('.control-group').removeClass('error').addClass('success');
 }
 
-function formatDate(date) {
-    return moment(date).format('MMM Do, h:mm:ss a');
-}
-
 function foreach(array, handler) {
     for (var i = 0; i < array.length; i++) {
         handler(i, array[i]);
     }
+}
+
+function arrayLast(array) {
+    return array[array.length - 1];
 }
 
 function isEmpty(object) {

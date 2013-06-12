@@ -1,6 +1,6 @@
 
 function chatsArray(o) {
-    return [o.name];
+    return [o.contacts[0].name, o.messages.last().textMessage, formatDate(o.messages.last().time)];
 };
 
 function chatsLoad(loaded) {

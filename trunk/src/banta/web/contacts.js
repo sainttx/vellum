@@ -3,22 +3,30 @@ function contactsArray(o) {
     return [o.name];
 };
 
-function contactsLoad(loaded) {
+function contactsLoad(loadedCallback) {
+    $('#contacts-container').load('contacts.html', function() {
+        contactEditLoaded(loadedCallback);
+    });
+}
+
+function contactsLoaded(loadedCallback) {
     $('.contacts-clickable').click(contactsClick);
-    loaded('contacts');
+    loadedCallback('contacts');
 }
 
 function contactsClickable() {
-    return state.contacts !== null;
+    return !isEmpty(state.contacts);
 }
 
 function contactsClick() {
-    console.log("contactsClick");
-    window.history.pushState(null, null, "/#contacts");
-    contactsBuild(state.contacts);
-    $('#title').text('Contacts');
-    $('.page-container').hide();
-    $('#contacts-container').show();
+    if (assertTrue('contacts', contactsClickable())) {
+        console.log("contactsClick");
+        window.history.pushState(null, null, "/#contacts");
+        contactsBuild(state.contacts);
+        $('#title').text('Contacts');
+        $('.page-container').hide();
+        $('#contacts-container').show();
+    }
 }
 
 function contactsSort(array) {
