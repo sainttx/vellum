@@ -98,10 +98,10 @@ var mockData = {
         "Hello!",
         "How are you?",
         "Good, thanks. What's up?",
-        "Are you going to the event tonight.",
-        "No, other plans.",
-        "Ok",
-        "So see you Saturday.",
+        "Are you going to the event tonight?",
+        "No, other plans...",
+        "Ok ;)",
+        "So see you Saturday :)",
         "For sure. Ok, bye.",
         "Bye.",
     ],
@@ -123,17 +123,19 @@ function Chat(contacts, messages) {
     server.log('Chat', contacts[0].name, messages.length, messages[0].textMessage);
 }
 
-function mockChatMessages(contact, time) {
+function mockChatMessages(index, contact, time) {
     var chatMessages = [];
     foreach(mockData.textMessages, function(i, textMessage) {
-        var chatMessage = null;
-        if (i % 2 === 0) {
-            chatMessage = new ChatMessage(contact, textMessage, time + i * 7 * 1000);
-        } else {
-            chatMessage = new ChatMessage(null, textMessage, time + i * 9 * 1000);
+        if (index === 0 || i < index*2 + 4) {
+            var chatMessage = null;
+            if (i % 2 === 0) {
+                chatMessage = new ChatMessage(contact, textMessage, time + i * 7 * 1000);
+            } else {
+                chatMessage = new ChatMessage(null, textMessage, time + i * 9 * 1000);
+            }
+            server.log('mockBuildChat', chatMessage);
+            chatMessages.push(chatMessage);
         }
-        server.log('mockBuildChat', chatMessage);
-        chatMessages.push(chatMessage);
     });
     server.log('mockBuildChat', contact.name, chatMessages.length, chatMessages[0].textMessage);
     return chatMessages;
@@ -144,7 +146,7 @@ function mockInit() {
     foreach(mockData.contacts, function(i, contact) {
         server.log('mockReady', contact);
         time = new Date(time.getTime() - 1000 * 999 * i);
-        mockData.chats.push(new Chat([contact], mockChatMessages(contact, time)));
+        mockData.chats.push(new Chat([contact], mockChatMessages(i, contact, time)));
     });
     mockData.login.contacts = mockData.contacts;
     mockData.login.chats = mockData.chats;
