@@ -4,7 +4,7 @@ function clickAbout() {
     console.log("clickAbout");
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
-    $("#croc-info-about").show();        
+    $("#croc-info-about").show();
 }
 
 function clickHome() {
@@ -132,7 +132,7 @@ function showBusyAuth() {
     $('.croc-login-clickable').hide();
     $('.croc-login-viewable').hide();
     $('.croc-logout-clickable').hide();
-    $('.croc-loggedin-viewable').hide();          
+    $('.croc-loggedin-viewable').hide();  
 }
 
 function login(accessToken) {
@@ -141,7 +141,7 @@ function login(accessToken) {
         '/login',
         'accessToken=' + accessToken,
         processLogin
-        );                
+        );
 }
 
 function processLoginPersona(res) {
@@ -170,7 +170,7 @@ function processLogin(res) {
     console.log("login response received")
     if (res.email != null) {
         $('#croc-username-text').text(res.email);
-        $('#croc-user-picture').attr('src', res.picture);            
+        $('#croc-user-picture').attr('src', res.picture);    
         $('#croc-loggedin-qr-img').attr('src', res.qr);
         $('#croc-loggedin-title').text("Welcome, " + res.name);
         $('#croc-totp-text').text(res.totpSecret);
@@ -224,7 +224,7 @@ function getPlus() {
 function setPlus(me) {
     $('#croc-login').hide();
     $('#croc-username-text').text(me.displayName);
-    $('#croc-user-picture').attr('src', me.image.url);            
+    $('#croc-user-picture').attr('src', me.image.url);    
     $('#croc-username').show();
 }
     
@@ -249,7 +249,7 @@ function clickLogout(event) {
         '/logout',
         null,
         processLogout
-        );                
+        );
 }
 
 function processLogout(res) {
@@ -267,7 +267,7 @@ function clickGenKey() {
         '/genKey',
         null,
         processGenKey
-        );              
+        );
 }
 
 function clickSignCert() {
@@ -285,7 +285,7 @@ function clickResetOtp() {
             '/resetOtp',
             null,
             processResetOtp
-            );      
+            );
     }
 }
 

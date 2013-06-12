@@ -1,6 +1,6 @@
 
 function initDate() {
-    $('#editOrg-url').val('myorg.com');        
+    $('#editOrg-url').val('myorg.com');
 }
 
 var evanLogin = {

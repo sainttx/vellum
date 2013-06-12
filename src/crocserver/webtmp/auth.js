@@ -35,11 +35,11 @@ function click_login_google() {
                         if (m[1] == 'access_token') accessToken = m[2];
                     }
                     if (accessToken != null) {
-                        sendToken(accessToken);                            
+                        sendToken(accessToken);    
                     }
                 }                    
             }
-            win.close();                    
+            win.close();    
         }
     }, 200);
 }

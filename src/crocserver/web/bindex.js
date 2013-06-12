@@ -9,7 +9,7 @@ var serverTest = {
         var res = {
             access_token: 'dummy_access_token'
         };
-        googleAuthorizeRes(res);        
+        googleAuthorizeRes(res);
     },
     ajax: function(req) {
         console.log('server.ajax: ' + req.url);
@@ -77,7 +77,7 @@ function aboutClick() {
     console.log("about-clickable");
     $(".croc-nav-anchor").removeClass("active");
     $(".croc-info").hide();
-    $("#croc-info-about").show();        
+    $("#croc-info-about").show();
 }
 
 function homeClick() {
@@ -144,10 +144,10 @@ function documentReady() {
     $('.logout-clickable').click(logoutClick);
     $('.login-clickable').click(server.googleAuthorize());
     $('#editNetwork').load('editNetwork.html', function() {
-        $('#editNetwork-form').submit(editNetworkSubmit);        
+        $('#editNetwork-form').submit(editNetworkSubmit);
     });
     $('#editHost').load('editHost.html', function() {
-        $('#editHost-form').submit(editHostSubmit);        
+        $('#editHost-form').submit(editHostSubmit);
     });
     $('#editClient').load('editClient.html', function() {
         $('#editClient-form').submit(editClientSubmit);
@@ -156,7 +156,7 @@ function documentReady() {
         $('#editService-form').submit(editServiceSubmit);
         initTest();
     });
-    $('#croc-genkey-form').submit(genKeySubmit);        
+    $('#croc-genkey-form').submit(genKeySubmit);
     $('.genKey-clickable').click(genKeyClick);
     $('.signCert-clickable').click(signCertClick);
     $('.resetOtp-clickable').click(resetOtpClick);
@@ -191,7 +191,7 @@ function loginRes(res) {
     if (res.email != null) {
         notify('Welcome, ' + res.name);
         $('#croc-username-text').text(res.email);
-        $('#croc-user-picture').attr('src', res.picture);            
+        $('#croc-user-picture').attr('src', res.picture);    
         $('#croc-loggedin-qr-img').attr('src', res.qr);
         $('#croc-loggedin-title').text("Welcome, " + res.name);
         $('#croc-totp-text').text(res.totpSecret);
@@ -224,13 +224,13 @@ function showBusyAuth() {
     $('.login-clickable').hide();
     $('.croc-login-viewable').hide();
     $('.logout-clickable').hide();
-    $('.croc-loggedin-viewable').hide();          
+    $('.croc-loggedin-viewable').hide();  
 }
 
 function setPlus(me) {
     $('#croc-login').hide();
     $('#croc-username-text').text(me.displayName);
-    $('#croc-user-picture').attr('src', me.image.url);            
+    $('#croc-user-picture').attr('src', me.image.url);    
     $('#croc-username').show();
 }
     
@@ -369,7 +369,7 @@ function logoutClick(event) {
         data: null,
         success: logoutRes,
         error: logoutResError
-    });                
+    });
 }
 
 function resetOtpClick() {
@@ -379,7 +379,7 @@ function resetOtpClick() {
             '/resetOtp',
             null,
             processResetOtp
-            );      
+            );
     }
 }
 
@@ -389,7 +389,7 @@ function genKeyClick() {
         '/genKey',
         null,
         processGenKey
-        );              
+        );
 }
 
 function signCertClick() {
