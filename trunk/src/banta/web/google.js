@@ -13,35 +13,25 @@ var googleServer = {
             immediate: true
         }, googleLoginAuthorizeRes);
     },
-    googleClient: function() {
-        gapi.client.setApiKey(apiKey);
-        window.setTimeout(googleLoginAuthorize, 1);
-    },
     getPlus: function() {
         gapi.client.load('plus', 'v1', function() {
             gapi.client.plus.people.get({
                 'userId': 'me'
             }).execute(setMe);
         });
-    },
+    },            
     documentReady: function() {
+        googleLoginLoaded();
+        gapi.client.setApiKey(apiKey);
+        window.setTimeout(this.googleLoginAuthorize, 1);
     }
-            
 };
 
-function googleLoginLoad() {
-    $.load("https://apis.google.com/js/client.js", function() {
-        startClient();
-        googleLoginReady();
-    });
+function googleLoginLoad(loaded) {
+    loaded('googleLogin');
 }
 
-function googleLoginReadyMock() {
-    $('.googleLogin-clickable').click(googleLoginClick);
-    server.googleLoginAuthorize();
-}
-
-function googleLoginReady() {
+function googleLoginLoaded() {
     $('.googleLogin-clickable').click(googleLoginClick);
     console.log('googleLoginReady');
     var googleAuthCookie = $.cookie("googleAuth");

@@ -1,5 +1,5 @@
 
-var server = googleServer;
+var server = mockServer;
 var state = {};
 
 function locationDev() {
@@ -11,34 +11,33 @@ function locationLive() {
 }
 
 $(document).ready(function() {    
-    utilReady();
-    console.log(window.location);
-    if (locationDev()) {
-        documentReadyDev();
-    } else if (!redirectDocument()) {
-        documentReadyDev();
-    }
+    utilInit();
+    documentLoad();
 });
 
-function documentReadyLive() {
-    googleLoginLoad();
-    personaLoginLoad();
-    documentReady();
+var loadedComponents = [];
+var loadedComponentsLengthRequired = 6;
+
+function documentLoad() {
+    console.log('documentLoad');
+    googleLoginLoad(documentLoaded);
+    personaLoginLoad(documentLoaded);
+    chatLoad(documentLoaded);
+    chatsLoad(documentLoaded);
+    contactsLoad(documentLoaded);
+    contactEditLoad(documentLoaded);
 }
 
-function documentReadyDev() {
-    server = mockServer;
-    googleLoginReadyMock();
-    documentReady();
+function documentLoaded(component) {
+    loadedComponents.push(component);
+    console.log('documentLoaded', loadedComponents.length, component);
+    if (loadedComponents.length === loadedComponentsLengthRequired) {
+        documentReady();
+    }
 }
 
 function documentReady() {
-    console.log("documentReady");
-    contactsReady();
-    contactEditReady(documentReadyLoaded);
-}
-
-function documentReadyLoaded() {
+    console.log('documentReady');
     $('.home-clickable').click(homeClick);
     $('.reload-clickable').click(reloadClick);
     $('.about-clickable').click(aboutClick);
@@ -139,6 +138,7 @@ function loginRes(res) {
     if (res.email !== null) {
         state.login = res;
         state.contacts = res.contacts;
+        state.chats = res.chats;
         showLoggedInRes();
         windowLocation(window.location.pathname);
     }

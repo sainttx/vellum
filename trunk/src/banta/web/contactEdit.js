@@ -50,8 +50,7 @@ function contactEditButtons(ok) {
 
 var contactEditValidator = null;
 
-function contactEditReady(loaded) {
-    $('.contactAdd-clickable').click(contactAddClick);
+function contactEditLoad(loaded) {
     $('#contactEdit-container').load('contactEdit.html', function() {
         contactEditLoaded(loaded);
     });
@@ -59,10 +58,11 @@ function contactEditReady(loaded) {
 
 function contactEditLoaded(loaded) {
     contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
+    $('.contactAdd-clickable').click(contactAddClick);
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
     $('#contactEdit-cancel').focus(contactEditCancelFocus);
-    loaded();
+    loaded("contactEdit");
 }
 
 function contactEditClickable() {

@@ -3,19 +3,26 @@ function initTest() {
     console.log('initTest');
 }
 
+function loggable(message) {
+    return 'none';
+}
+
 var mockServer = {
     log: function(message) {
-        console.log('server log: ' + message);
-        $.ajax({
-            type: 'POST',
-            url: '/log',
-            data: message,
-            success: function() {
-            },
-            error: function() {
-                //alert('error logging: ' + data);
-            }
-        });
+        if (loggable(message) === 'client') {
+            console.log(message);
+        } else if (loggable(message) === 'server') {
+            console.log('server log: ' + message);
+            $.ajax({
+                type: 'POST',
+                url: '/log',
+                data: message,
+                success: function() {
+                },
+                error: function() {
+                }
+            });
+        } 
     },
     ajax: function(req) {
         console.log('mockServer.ajax', req.url, req.data);
@@ -31,10 +38,9 @@ var mockServer = {
     },
     googleClient: function() {
     },
-    getPlus: function() {
-    },
     documentReady: function() {
-        mockReady();
+        mockInit();
+        this.googleLoginAuthorize();
     }
 };
 
@@ -108,13 +114,13 @@ function ChatMessage(contact, textMessage, time) {
     this.contact = contact;
     this.textMessage = textMessage;
     this.time = time;
-    console.log('ChatMessage', contact, textMessage);
+    server.log('ChatMessage', contact, textMessage);
 }
 
 function Chat(contacts, messages) {
     this.contacts = contacts;
     this.messages = messages;
-    console.log('Chat', contacts[0].name, messages.length, messages[0].textMessage);
+    server.log('Chat', contacts[0].name, messages.length, messages[0].textMessage);
 }
 
 function mockChatMessages(contact, time) {
@@ -126,29 +132,29 @@ function mockChatMessages(contact, time) {
         } else {
             chatMessage = new ChatMessage(null, textMessage, time + i * 9 * 1000);
         }
-        console.log(chatMessage);
+        server.log('mockBuildChat', chatMessage);
         chatMessages.push(chatMessage);
     });
-    console.log('mockBuildChat', contact.name, chatMessages.length, chatMessages[0].textMessage);
+    server.log('mockBuildChat', contact.name, chatMessages.length, chatMessages[0].textMessage);
     return chatMessages;
 }
 
-function mockReady() {
+function mockInit() {
     var time = new Date();
     foreach(mockData.contacts, function(i, contact) {
-        console.log('mockReady', contact);
+        server.log('mockReady', contact);
         time = new Date(time.getTime() - 1000 * 999 * i);
         mockData.chats.push(new Chat([contact], mockChatMessages(contact, time)));
     });
-    console.log('mockReady', mockData.chats.length, mockData.chats[0]);
+    mockData.login.contacts = mockData.contacts;
+    mockData.login.chats = mockData.chats;
+    server.log('mockReady', mockData.chats.length, mockData.chats[0]);
 }
 
 function mockRes(req) {
     if (req.url === '/googleLogin') {
-        mockData.login.contacts = mockData.contacts;
         return mockData.login;
     } else if (req.url === '/personaLogin') {
-        mockData.login.contacts = mockData.contacts;
         return mockData.login;
     } else if (req.url === '/logout') {
         return mockData.logout;
@@ -165,4 +171,3 @@ function mockRes(req) {
         error: 'mockRes ' + req.url
     }
 }
-
