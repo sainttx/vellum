@@ -71,7 +71,7 @@ function chatClickable() {
 
 function chatCancelFocus(event) {
     if (chatValidator.valid()) {
-        $('#chat-save').focus();        
+        $('#chat-save').focus();
     }
 }
 

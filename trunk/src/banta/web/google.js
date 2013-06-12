@@ -24,6 +24,9 @@ var googleServer = {
             }).execute(setMe);
         });
     },
+    documentReady: function() {
+    }
+            
 };
 
 function googleLoginLoad() {

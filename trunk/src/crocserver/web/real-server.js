@@ -66,7 +66,7 @@ function clickLogout(event) {
         '/logout',
         null,
         processLogout
-        );                
+        );
 }
 
 function clickResetOtp() {
@@ -76,7 +76,7 @@ function clickResetOtp() {
             '/resetOtp',
             null,
             processResetOtp
-            );      
+            );
     }
 }
 
@@ -86,7 +86,7 @@ function clickGenKey() {
         '/genKey',
         null,
         processGenKey
-        );              
+        );
 }
 
 function clickSignCert() {

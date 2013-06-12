@@ -48,7 +48,7 @@ function documentReadyLoaded() {
     window.addEventListener("popstate", function(event) {
         windowState(event);
     });
-    initServer();
+    server.documentReady();
 }
 
 function windowState(event) {
@@ -89,13 +89,6 @@ function windowLocation(pathname) {
 
 function removeCookies() {
     $.removeCookie('googleAuth');
-}
-
-function initServer() {
-    console.log("initServer");
-    if (false) {
-        removeCookies();
-    }
 }
 
 function showPage(name) {
@@ -147,7 +140,7 @@ function loginRes(res) {
         state.login = res;
         state.contacts = res.contacts;
         showLoggedInRes();
-        windowLocation(window.location.pathname);        
+        windowLocation(window.location.pathname);
     }
 }
 
@@ -188,7 +181,7 @@ function logoutError() {
 
 function aboutClick() {
     window.history.pushState(null, null, "/#aboutUs");
-    $('#title').text('About');        
+    $('#title').text('About');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     $("#about-container").show();
@@ -196,7 +189,7 @@ function aboutClick() {
 
 function homeClick() {
     window.history.pushState(null, null, "/#home");
-    $('#title').text('Banta');        
+    $('#title').text('Banta');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     if (state.auth === null) {

@@ -82,3 +82,12 @@ function validatorSuccess(element) {
     $(element).closest('.control-group').removeClass('error').addClass('success');
 }
 
+function formatDate(date) {
+    return moment(date).format('MMM Do, h:mm:ss a');
+}
+
+function foreach(array, handler) {
+    for (var i = 0; i < array.length; i++) {
+        handler(i, array[i]);
+    }
+}

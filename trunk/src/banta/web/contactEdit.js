@@ -71,7 +71,7 @@ function contactEditClickable() {
 
 function contactEditCancelFocus(event) {
     if (contactEditValidator.valid()) {
-        $('#contactEdit-save').focus();        
+        $('#contactEdit-save').focus();
     }
 }
 
