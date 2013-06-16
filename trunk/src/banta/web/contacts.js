@@ -21,7 +21,7 @@ function contactsClickable() {
 function contactsClick() {
     if (assertTrue('contacts', contactsClickable())) {
         console.log("contactsClick");
-        window.history.pushState(null, null, "/#contacts");
+        setPath('contacts');
         contactsBuild(state.contacts);
         $('#title').text('Contacts');
         $('.page-container').hide();

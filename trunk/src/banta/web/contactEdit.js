@@ -76,7 +76,7 @@ function contactEditCancelFocus(event) {
 }
 
 function contactEdit(contact) {
-    window.history.pushState(null, null, "/#contactEdit/" + contact.name.replace(/\s+/g, ''));
+    setPath('contactEdit/' + contact.name.replace(/\s+/g, ''));
     state.contact = contact;
     console.log("contactEdit", contact);
     $('#title').text('Edit contact');
@@ -87,7 +87,7 @@ function contactEdit(contact) {
 }
 
 function contactAddClick() {
-    window.history.pushState(null, null, "/#contactAdd");
+    setPath('contactAdd');
     state.contact = null;
     $('#title').text('Add contact');
     $('#contactEdit-legend').text('Add contact');

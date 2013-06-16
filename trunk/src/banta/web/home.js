@@ -51,6 +51,7 @@ function documentReady() {
 }
 
 function windowState(event) {
+    console.log("windowState", window.location.pathname);
     event.preventDefault();
     windowLocation(window.location.pathname);
 } 
@@ -60,27 +61,23 @@ function windowClickable() {
 }
 
 function windowLocation(pathname) {
-    console.log("windowState", window.location.pathname);
+    console.log("windowLocation", pathname, window.location.pathname);
     if (pathname === '/#home') {
         homeClick();
     } else if (pathname === '/#contactUs') {
         contactClick();
     } else if (pathname === '/#aboutUs') {
         aboutClick();
-    } else if (!contactsClickable()) {
-        console.warn("windowLocation: contacts not ready");
-        homeClick();
     } else  if (pathname === '/#contacts') {
        contactsClick();
     } else if (pathname.startsWith('/#contactEdit/')) {
-        contactsClick();
-    } else if (!contactEditClickable()) {
-        console.warn("windowLocation: contactEdit not ready");
-        homeClick();
+       contactsClick();
     } else if (pathname === '/#contactAdd') {
         contactAddClick();
-    } else if (pathname === '/#contactEdit') {
-        contactEditClick();
+    } else if (pathname === '/#chats') {
+        chatsClick();
+    } else if (pathname.startsWith('/#chat/')) {
+        chatsClick();
     } else {
         homeClick();
     }
@@ -140,7 +137,16 @@ function loginRes(res) {
         state.contacts = res.contacts;
         state.chats = res.chats;
         showLoggedInRes();
-        windowLocation(window.location.pathname);
+        if (state.auth === 'google') {
+            $.cookie("googleAuth", res.email);
+        }
+        var path = $.cookie('path');
+        console.log('loginRes path', path);
+        if (!isEmpty(path)) {
+            windowLocation(path);
+        } else {
+            windowLocation(window.location.pathname);            
+        }
     }
 }
 
@@ -179,8 +185,15 @@ function logoutError() {
     console.log("logoutError");
 }
 
+function setPath(path) {
+    path = '/#' + path;
+    window.history.pushState(null, null, path);
+    $.cookie('path', path);
+    console.log('setPath', $.cookie('path'));
+}
+
 function aboutClick() {
-    window.history.pushState(null, null, "/#aboutUs");
+    setPath('aboutUs');
     $('#title').text('About');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -188,7 +201,7 @@ function aboutClick() {
 }
 
 function homeClick() {
-    window.history.pushState(null, null, "/#home");
+    setPath('home');
     $('#title').text('Banta');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
@@ -200,7 +213,7 @@ function homeClick() {
 }
 
 function contactClick() {
-    window.history.pushState(null, null, "/#contactUs");
+    setPath('cotactUs');
     $('#title').text('Contact us');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
