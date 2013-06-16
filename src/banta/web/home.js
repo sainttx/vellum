@@ -1,5 +1,6 @@
 
 var server = mockServer;
+var dom = {};
 var state = {};
 
 function locationDev() {
@@ -185,6 +186,45 @@ function logoutError() {
     console.log("logoutError");
 }
 
+function showPageId(title, name, id) {
+    setPath(name + '/' + id.replace(/\s+/g, ''));
+    $('#title').text(title);
+    $('.page-container').hide();
+    $('#' + name + '-container').show();
+    
+}
+
+var pages = {
+    chat: {
+        title: 'Chat'
+    },
+    chats: {
+        title: 'Chats'
+    },            
+    contact: {
+        title: 'Contact'
+    },
+    contacts: {
+        title: 'Contacts'
+    },
+    contactAdd: {
+        title: 'Contact add'
+    },
+    contactEdit: {
+        title: 'Contact edit'
+    },
+}
+function showPage(title, name, id) {
+    var pathName = name;
+    if (id) {
+        pathName += '/' + id.replace(/\s+/g, '');
+    }
+    setPath(name);
+    $('.page-container').hide();
+    $('#' + name + '-container').show();    
+    $('#title').text(title);
+}
+
 function setPath(path) {
     path = '/#' + path;
     window.history.pushState(null, null, path);
@@ -227,4 +267,17 @@ function reloadClick() {
         removeCookies();
     }
     window.location.reload();
+}
+
+function compareName(a, b) {
+    if (a.name === b.name) {
+        return 0;
+    } else if (a.name.toLowerCase() > b.name.toLowerCase()) {
+        return 1;
+    }
+    return -1;
+}
+
+function matchName(object, name) {
+    return object.name === name;
 }

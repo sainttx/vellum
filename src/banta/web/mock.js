@@ -145,6 +145,7 @@ function ChatMessage(contact, textMessage, time) {
 }
 
 function Chat(contacts, messages) {
+    this.name = contacts[0].name;
     this.contacts = contacts;
     this.messages = messages;
     server.log('Chat', contacts[0].name, messages.length, messages[0].textMessage);

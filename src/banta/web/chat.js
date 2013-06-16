@@ -6,19 +6,27 @@ function chatLoad(loaded) {
 }
 
 function chatLoaded(loaded) {
-    $('.chatNew-clickable').click(chatClick);
+    $('.chat-clickable').click(chatClick);
     loaded('chat');
     chatTest();
 }
 
 function chatClickable() {
-    return state.chatContact !== null;
+    return state.chat !== null;
 }
 
 function chatClick() {
     if (!chatClickable()) {
         console.warn('chatClick not ready');
+    } else {
+        showPageId('chat', 'Chat', chat.name);
     }
+}
+
+function chat(chat) {
+    console.log('chat', chat);
+    state.chat = chat;
+    showPage('Chat', 'chat', chat.name);
 }
 
 function chatRes(event) {
