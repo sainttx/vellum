@@ -11,6 +11,10 @@ function chatsLoad(loaded) {
 
 function chatsLoaded(loaded) {
     $('.chats-clickable').click(chatsClick);
+    $('#chats-tbody span').text('');
+    dom.chats = {};
+    dom.chats.tbody = $('#chats-tbody');
+    dom.chats.trHtml = dom.chats.tbody.html();
     loaded('chats');
 }
 
@@ -19,40 +23,31 @@ function chatsClickable() {
 }
 
 function chatsClick() {
-    if (assertTrue('chatsClick', chatsClickable())) {
-        setPath('chats');
-        //chatsBuild(state.chats);
-        $('#title').text('Chats');
-        $('.page-container').hide();
-        $('#chats-container').show();
+    console.log('chatsClick');
+    if (!state.chats) {
+        console.warn('chatsClick');
+    } else {
+        chatsBuild();
+        showPage('Chats', 'chats');
     }
 }
 
-function chatsBuild(array) {
-    chatsSort(array);
-    buildTable($('#chats-tbody'), chatsArray, array);
-    $("#chats-tbody > tr").click(function() {
-        chatsListRowClick($(this).children('td').first().text());
-    });    
+function chatsBuild() {
+    state.chats.sort(compareName);
+    dom.chats.tbody.empty();
+    for (var i = 0; i < state.chats.length; i++) {
+        dom.chats.tbody.append(dom.chats.trHtml);
+        var tr = $("#chats-tbody > tr:last-child");
+        console.log('chatsBuild', tr.find('span.chat-contact'));
+        tr.find('span.chat-contact').text(state.chats[i].name);
+        tr.find('span.chat-time').text(formatDate(arrayLast(state.chats[i].messages).time));
+        tr.find('span.chat-message').text(arrayLast(state.chats[i].messages).textMessage);
+        tr.click(state.chats[i], function(event) {
+            chatsRowClick(event);
+        });
+    }
 }
 
-function chatsSort(array) {
-    array.sort(function(a, b) {
-        if (a.name === b.name) {
-            return 0;
-        } else if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1;
-        }
-        return -1;
-    });    
-}
-
-function chatsIndexOf(id) {
-    return arrayIndexOf(state.chats, id, function(object, id) {
-        return object.name === id;
-    });
-    
-}
 function chatsPut(chat) {
     if (state.chat) {
         var index = chatsIndexOf(state.chat.name);
@@ -70,10 +65,8 @@ function chatsPut(chat) {
     }
 }
 
-function chatsListRowClick(id) {
-    var index = chatsIndexOf(id);
-    if (index >= 0) {
-        chatEdit(state.chats[index]);
-    }
+function chatsRowClick(event) {
+    console.log('chatsRowClick', event.data);
+    chat(event.data);
 }
 

@@ -30,14 +30,11 @@ function contactsClick() {
 }
 
 function contactsSort(array) {
-    array.sort(function(a, b) {
-        if (a.name === b.name) {
-            return 0;
-        } else if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1;
-        }
-        return -1;
-    });    
+    array.sort(compareName);
+}
+
+function contactsIndexOf(name) {
+    return arrayIndexOf(state.contacts, name, matchName);
 }
 
 function contactsBuild(array) {
@@ -48,12 +45,6 @@ function contactsBuild(array) {
     });    
 }
 
-function contactsIndexOf(id) {
-    return arrayIndexOf(state.contacts, id, function(object, id) {
-        return object.name === id;
-    });
-    
-}
 function contactsPut(contact) {
     if (state.contact) {
         var index = contactsIndexOf(state.contact.name);

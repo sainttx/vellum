@@ -55,7 +55,11 @@ function utilInitDate() {
 }
 
 function formatDate(date) {
-    return moment(date).format('MMM Do, h:mm:ss a');
+    if (moment().format('MMM Do') === moment(date).format('MMM Do')) {
+        return moment(date).format('h:mm a');
+    } else {
+        return moment(date).format('h:mm a MMM Do');
+    }
 }
 
 function validateSanitary(value, element){
