@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import vellum.exception.DisplayMessage;

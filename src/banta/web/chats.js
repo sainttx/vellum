@@ -20,8 +20,8 @@ function chatsClickable() {
 
 function chatsClick() {
     if (assertTrue('chatsClick', chatsClickable())) {
-        window.history.pushState(null, null, "/#chats");
-        chatsBuild(state.chats);
+        setPath('chats');
+        //chatsBuild(state.chats);
         $('#title').text('Chats');
         $('.page-container').hide();
         $('#chats-container').show();
