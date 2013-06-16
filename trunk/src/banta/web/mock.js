@@ -7,6 +7,24 @@ function loggable(message) {
     return 'none';
 }
 
+var wsHandler = {
+    open: function() {
+        console.log('open');
+    },
+    close: function() {
+        console.log('close');
+    },
+    events: {
+        chat: function(event) {
+            if (typeof chatRes === 'function') {
+                chatRes(event);
+            } else {
+                console.warn('events chatRes not defined');
+            }
+        }
+    }   
+}
+
 var mockServer = {
     log: function(message) {
         if (loggable(message) === 'client') {
@@ -29,6 +47,15 @@ var mockServer = {
         res = mockRes(req);
         console.log("mockServer res", res);
         req.success(res);
+    },
+    send: function(type, data) {
+        var event = mockSocketEvent(type, data);
+        console.log('mockServer.send', type, data, event);
+        if (type == 'chat') {
+            wsHandler.events.chat(event);
+        } else {
+            console.warn('mockServer.send type', type);
+        }
     },
     googleLoginAuthorize: function() {
         var res = {
@@ -171,5 +198,19 @@ function mockRes(req) {
     }
     return {
         error: 'mockRes ' + req.url
+    }
+}
+
+function mockSocketEvent(type, data) {
+    console.log('mockSocketEvent', type, data);
+    if (type === 'chat') {
+        return {
+            data: {
+                name: data.name,
+                text: 'OK ' + data.text
+            }
+        };
+    } else {
+        console.warn('mockSocketEvent', type, data);
     }
 }
