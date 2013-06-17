@@ -16,18 +16,27 @@ label.error {
 }
 */
 
-span.chat-contact {
+span.chats-contact {
     font-weight: bold;    
 }
 
-span.chat-time {
+span.chats-time {
     font-style: italic;
-    padding-left: 8px;
+    padding-left: 4px;
     font-size: 80%;
 }
 
-span.chat-lastMessage {
+span.chats-lastMessage {
     font-style: italic;
     color: #aaaaaa;
 }
 
+span.chat-contact {
+}
+
+span.chat-time {
+    font-size: 80%;
+}
+
+span.chat-lastMessage {
+}

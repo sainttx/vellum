@@ -1,32 +1,18 @@
 
-function contactsArray(o) {
-    return [o.name];
-};
 
-function contactsLoad(loadedCallback) {
-    $('#contacts-container').load('contacts.html', function() {
-        contactEditLoaded(loadedCallback);
-    });
-}
-
-function contactsLoaded(loadedCallback) {
-    $('.contacts-clickable').click(contactsClick);
-    loadedCallback('contacts');
-}
-
-function contactsClickable() {
-    return !isEmpty(state.contacts);
+function contactsLoaded() {
+    dom.contacts = {};
 }
 
 function contactsClick() {
-    if (assertTrue('contacts', contactsClickable())) {
-        console.log("contactsClick");
-        setPath('contacts');
-        contactsBuild(state.contacts);
-        $('#title').text('Contacts');
-        $('.page-container').hide();
-        $('#contacts-container').show();
+    console.log("contactsClick", state.action);
+    state.contact = null;
+    contactsBuild($('#contacts-tbody'), state.contacts);
+    var title = 'Contacts';
+    if (state.action && state.action === 'chat') {
+        title = 'Contact to chat';
     }
+    showPage(title, 'contacts', 'contacts', null);
 }
 
 function contactsSort(array) {
@@ -37,23 +23,25 @@ function contactsIndexOf(name) {
     return arrayIndexOf(state.contacts, name, matchName);
 }
 
-function contactsBuild(array) {
-    contactsSort(array);
-    buildTable($('#contacts-tbody'), contactsArray, array);
-    $("#contacts-tbody > tr").click(function() {
-        contactsListRowClick($(this).children('td').first().text());
-    });    
+function contactsBuild(tbody, contacts) {
+    contacts.sort(compareName);
+    tbody.empty();
+    for (var i = 0; i < contacts.length; i++) {
+        $('#contacts-tbody').append('<tr><td>' + contacts[i].name + '</td></tr>');
+        $("#contacts-tbody > tr:last-child").click(contacts[i], contactsRowClick);
+    }
 }
 
 function contactsPut(contact) {
     if (state.contact) {
-        var index = contactsIndexOf(state.contact.name);
+        var index = arrayIndexOf(state.contacts, state.contact.name, matchName);
+        console.log('contactsPut', state.contact.name, index);
         if (index >= 0) {
             state.contacts[index] = contact;
         }
     } else {
-        var index = contactsIndexOf(contact.name);
-        if (index !== null && index >= 0) {
+        var index = arrayIndexOf(state.contacts, contact.name, matchName);
+        if (index && index >= 0) {
             console.log('contactsPut', contact.name, index);
             state.contacts[index] = contact;
         } else {
@@ -62,10 +50,6 @@ function contactsPut(contact) {
     }
 }
 
-function contactsListRowClick(id) {
-    var index = contactsIndexOf(id);
-    if (index >= 0) {
-        contactEdit(state.contacts[index]);
-    }
+function contactsRowClick(event) {
+    contactEdit(event.data);
 }
-
