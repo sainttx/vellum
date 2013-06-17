@@ -4,35 +4,38 @@ var dom = {};
 var state = {};
 
 function locationDev() {
-    return window.location.hostname.startsWith('localhost') || window.location.hostname.startsWith("192.168");    
+    return window.location.hostname.startsWith('localhost') || window.location.hostname.startsWith("192.168");
 }
 
 function locationLive() {
-    return window.location.hostname.indexOf('appcentral.info') > 0;    
+    return window.location.hostname.indexOf('appcentral.info') > 0;
 }
 
-$(document).ready(function() {    
+$(document).ready(function() {
     utilInit();
     documentLoad();
 });
 
-var loadedComponents = [];
-var loadedComponentsLengthRequired = 6;
-
 function documentLoad() {
     console.log('documentLoad');
-    googleLoginLoad(documentLoaded);
-    personaLoginLoad(documentLoaded);
-    chatLoad(documentLoaded);
-    chatsLoad(documentLoaded);
-    contactsLoad(documentLoaded);
-    contactEditLoad(documentLoaded);
+    state.loadedComponentsCount = 0;
+    load('contacts');
+    load('contactEdit');
+    load('chats');
+    load('chat');
+    load('chatContacts');
+}
+
+function load(name) {
+    $('#' + name + '-container').load(name + '.html', function() {
+        documentLoaded(name);
+    });
 }
 
 function documentLoaded(component) {
-    loadedComponents.push(component);
-    console.log('documentLoaded', loadedComponents.length, component);
-    if (loadedComponents.length === loadedComponentsLengthRequired) {
+    state.loadedComponentsCount++;
+    console.log('documentLoaded', state.loadedComponentsCount, component);
+    if (state.loadedComponentsCount === 5) {
         documentReady();
     }
 }
@@ -45,6 +48,12 @@ function documentReady() {
     $('.contact-clickable').click(contactClick);
     $('.contacts-clickable').click(contactsClick);
     $('.logout-clickable').click(logoutClick);
+    $('.chat-clickable').click(chatClick);
+    $('.chats-clickable').click(chatsClick);
+    chatLoaded();
+    chatsLoaded();
+    contactsLoaded();
+    contactEditLoaded();
     window.addEventListener("popstate", function(event) {
         windowState(event);
     });
@@ -55,10 +64,6 @@ function windowState(event) {
     console.log("windowState", window.location.pathname);
     event.preventDefault();
     windowLocation(window.location.pathname);
-} 
-
-function windowClickable() {
-    return contactsClickable() && contactEditClickable()
 }
 
 function windowLocation(pathname) {
@@ -69,10 +74,10 @@ function windowLocation(pathname) {
         contactClick();
     } else if (pathname === '/#aboutUs') {
         aboutClick();
-    } else  if (pathname === '/#contacts') {
-       contactsClick();
+    } else if (pathname === '/#contacts') {
+        contactsClick();
     } else if (pathname.startsWith('/#contactEdit/')) {
-       contactsClick();
+        contactsClick();
     } else if (pathname === '/#contactAdd') {
         contactAddClick();
     } else if (pathname === '/#chats') {
@@ -88,11 +93,6 @@ function removeCookies() {
     $.removeCookie('googleAuth');
 }
 
-function showPage(name) {
-    $('.page-container').hide();
-    $('.' + name + '-container').show();
-}
-
 function showLanding() {
     showLoggedOut();
 }
@@ -106,7 +106,7 @@ function showLoggedOut() {
     $("#landing-container").show();
 }
 
-function showLoggedInRes() {    
+function showLoggedInRes() {
     if (state.auth === null) {
         console.warn('no server auth');
         state.auth = 'unknown';
@@ -146,7 +146,7 @@ function loginRes(res) {
         if (!isEmpty(path)) {
             windowLocation(path);
         } else {
-            windowLocation(window.location.pathname);            
+            windowLocation(window.location.pathname);
         }
     }
 }
@@ -186,47 +186,18 @@ function logoutError() {
     console.log("logoutError");
 }
 
-function showPageId(title, name, id) {
-    setPath(name + '/' + id.replace(/\s+/g, ''));
-    $('#title').text(title);
+function showPage(title, page, path, id) {
+    $('#title').text(title);    
     $('.page-container').hide();
-    $('#' + name + '-container').show();
-    
+    $('#' + page + '-container').show();
+    setPath(path, id);
 }
 
-var pages = {
-    chat: {
-        title: 'Chat'
-    },
-    chats: {
-        title: 'Chats'
-    },            
-    contact: {
-        title: 'Contact'
-    },
-    contacts: {
-        title: 'Contacts'
-    },
-    contactAdd: {
-        title: 'Contact add'
-    },
-    contactEdit: {
-        title: 'Contact edit'
-    },
-}
-function showPage(title, name, id) {
-    var pathName = name;
-    if (id) {
-        pathName += '/' + id.replace(/\s+/g, '');
-    }
-    setPath(name);
-    $('.page-container').hide();
-    $('#' + name + '-container').show();    
-    $('#title').text(title);
-}
-
-function setPath(path) {
+function setPath(path, id) {
     path = '/#' + path;
+    if (id) {
+        path += '/' + id.replace(/\s+/g, '');
+    }
     window.history.pushState(null, null, path);
     $.cookie('path', path);
     console.log('setPath', $.cookie('path'));
@@ -241,7 +212,18 @@ function aboutClick() {
 }
 
 function homeClick() {
+    state.contact = null;
     setPath('home');
+    $('.btn').removeClass('btn-primary');
+    if (isEmpty(state.contacts)) {
+        $('.contactAdd-clickable').addClass('btn-primary');        
+    } else if (isEmpty(state.chats)) {
+        $('.chatNew-clickable').addClass('btn-primary');
+    } else if (state.chats) {
+        $('.chats-clickable').addClass('btn-primary');
+    } else {
+        $('.contacts-clickable').addClass('btn-primary');        
+    }
     $('#title').text('Banta');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();

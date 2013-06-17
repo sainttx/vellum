@@ -1,32 +1,41 @@
 
-function chatLoad(loaded) {
-    $('#chat-container').load('chat.html', function() {
-        chatLoaded(loaded);
-    });
-}
-
-function chatLoaded(loaded) {
-    $('.chat-clickable').click(chatClick);
-    loaded('chat');
-    chatTest();
-}
-
-function chatClickable() {
-    return state.chat !== null;
-}
-
 function chatClick() {
-    if (!chatClickable()) {
-        console.warn('chatClick not ready');
+    if (state.contact) {
+        chat(state.contact);
     } else {
-        showPageId('chat', 'Chat', chat.name);
+        state.action = 'chat';
+        contactsClick();
     }
+}
+
+function chatLoaded() {
+    dom.chat = {};
+    dom.chat.tbody = $('#chat-tbody');
+    dom.chat.trHtml = dom.chat.tbody.html();   
 }
 
 function chat(chat) {
     console.log('chat', chat);
     state.chat = chat;
-    showPage('Chat', 'chat', chat.name);
+    chatBuild();
+    showPage(chat.name, 'chat', 'chat', chat.name);
+}
+
+function chatBuild() {
+    dom.chat.tbody.empty();
+    for (var i = 0; i < state.chat.messages.length; i++) {
+        dom.chat.tbody.append(dom.chat.trHtml);
+        var tr = dom.chat.tbody.children('tr:last-child');
+        console.log('chatBuild', state.chat.messages[i]);
+        if (state.chat.messages[i].contact) {
+            tr.find('span.chat-contact').text(state.chat.messages[i].contact.name);
+        } else {
+            tr.find('span.chat-contact').text('');
+        }
+        tr.find('span.chat-time').text(formatDate(state.chat.messages[i].time));
+        tr.find('span.chat-message').text(state.chat.messages[i].textMessage);
+        tr.click(state.chat.messages[i], chatsRowClick);
+    }
 }
 
 function chatRes(event) {

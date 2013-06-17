@@ -10,10 +10,6 @@ function personaLogoutClick() {
     navigator.id.logout();
 }
 
-function personaLoginLoad(loaded) {
-    loaded('personaLogin');
-}
-
 function personaLoginLoaded() {
     if (navigator.id) {
         navigator.id.watch({

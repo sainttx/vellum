@@ -1,21 +1,9 @@
 
-function chatsArray(o) {
-    return [o.contacts[0].name, o.messages.last().textMessage, formatDate(o.messages.last().time)];
-};
-
-function chatsLoad(loaded) {
-    $('#chats-container').load('chats.html', function() {
-        chatsLoaded(loaded);
-    });
-}
-
-function chatsLoaded(loaded) {
-    $('.chats-clickable').click(chatsClick);
+function chatsLoaded() {
     $('#chats-tbody span').text('');
     dom.chats = {};
     dom.chats.tbody = $('#chats-tbody');
     dom.chats.trHtml = dom.chats.tbody.html();
-    loaded('chats');
 }
 
 function chatsClickable() {
@@ -28,7 +16,7 @@ function chatsClick() {
         console.warn('chatsClick');
     } else {
         chatsBuild();
-        showPage('Chats', 'chats');
+        showPage('Chats', 'chats', 'chats', null);
     }
 }
 
@@ -38,13 +26,10 @@ function chatsBuild() {
     for (var i = 0; i < state.chats.length; i++) {
         dom.chats.tbody.append(dom.chats.trHtml);
         var tr = $("#chats-tbody > tr:last-child");
-        console.log('chatsBuild', tr.find('span.chat-contact'));
-        tr.find('span.chat-contact').text(state.chats[i].name);
-        tr.find('span.chat-time').text(formatDate(arrayLast(state.chats[i].messages).time));
-        tr.find('span.chat-message').text(arrayLast(state.chats[i].messages).textMessage);
-        tr.click(state.chats[i], function(event) {
-            chatsRowClick(event);
-        });
+        tr.find('span.chats-contact').text(state.chats[i].name);
+        tr.find('span.chats-time').text(formatDate(arrayLast(state.chats[i].messages).time));
+        tr.find('span.chats-message').text(arrayLast(state.chats[i].messages).textMessage);
+        tr.click(state.chats[i], chatsRowClick);
     }
 }
 

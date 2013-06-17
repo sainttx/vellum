@@ -50,19 +50,12 @@ function contactEditButtons(ok) {
 
 var contactEditValidator = null;
 
-function contactEditLoad(loaded) {
-    $('#contactEdit-container').load('contactEdit.html', function() {
-        contactEditLoaded(loaded);
-    });
-}
-
-function contactEditLoaded(loaded) {
+function contactEditLoaded() {
     contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
     $('.contactAdd-clickable').click(contactAddClick);
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
     $('#contactEdit-cancel').focus(contactEditCancelFocus);
-    loaded("contactEdit");
 }
 
 function contactEditClickable() {
@@ -76,33 +69,26 @@ function contactEditCancelFocus(event) {
 }
 
 function contactEdit(contact) {
-    setPath('contactEdit/' + contact.name.replace(/\s+/g, ''));
     state.contact = contact;
+    $('.home-clickable').hide();
+    $('.chat-clickable').addClass('btn-primary');
+    $('.chat-clickable').show();
     console.log("contactEdit", contact);
-    $('#title').text('Edit contact');
-    $('#contactEdit-legend').text('Edit contact');
     contactEditClear();
     contactEditSet(contact);
-    contactEditShow();
+    $('#contactEdit-legend').text('Edit contact');
+    showPage('Edit contact', 'contactEdit', 'contactEdit', contact.name);
 }
 
 function contactAddClick() {
     setPath('contactAdd');
     state.contact = null;
-    $('#title').text('Add contact');
-    $('#contactEdit-legend').text('Add contact');
     contactEditClear();    
-    contactEditShow();
+    $('.home-clickable').hide();
+    $('.chat-clickable').hide();
+    $('#contactEdit-legend').text('Add contact');
+    showPage('Add contact', 'contactEdit', 'contactAdd', null);
     contactEditFocus();
-    return true;
-}
-
-function contactEditShow() {
-    contactEditValidator.resetForm();
-    $('#contactEdit-cancel').addClass('btn-primary');
-    $('#contactEdit-save').removeClass('btn-primary');
-    $('.page-container').hide();
-    $('#contactEdit-container').show();
 }
 
 function contactEditSave(event) {
@@ -144,6 +130,8 @@ function contactEditCancel() {
 function contactEditClear() {
     console.log("contactEditClear", $('#contactEdit-form > fieldset > .control-group').length);
     contactEditValidator.resetForm();
+    $('#contactEdit-cancel').addClass('btn-primary');
+    $('#contactEdit-save').removeClass('btn-primary');
     contactEditButtons(false);
     $('#contactEdit-form > fieldset > div.control-group').removeClass('error');
     $('#contactEdit-form > fieldset > div.control-group').removeClass('success');

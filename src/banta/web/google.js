@@ -27,10 +27,6 @@ var googleServer = {
     }
 };
 
-function googleLoginLoad(loaded) {
-    loaded('googleLogin');
-}
-
 function googleLoginLoaded() {
     $('.googleLogin-clickable').click(googleLoginClick);
     console.log('googleLoginReady');
