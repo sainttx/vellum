@@ -29,21 +29,6 @@ function utilInitString() {
 }
 
 function utilInitArray() {
-    if (!Array.prototype.isEmpty) {
-        Array.prototype.isEmpty = function() {
-            return isEmpty(this);
-        };
-    }
-    if (!Array.prototype.last) {
-        Array.prototype.last = function() {
-            return arrayLast(this);
-        };
-    }
-    if (!Array.prototype.foreach) {
-        Array.prototype.foreach = function(handler) {
-            foreach(this, handler);
-        }
-    }
 }
 
 function utilInitDate() {
@@ -152,3 +137,12 @@ function assertTrue(message, value) {
         return true;
     }
 }
+
+function validateDigits(value) {
+    return /^\d+$/.test(value);
+}
+
+function validateDigitsLength(value, minLength, maxLength) {
+    return value && validateDigits(value) && value.length >= minLength && value.length <= maxLength;
+}
+

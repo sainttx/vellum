@@ -50,6 +50,7 @@ function documentReady() {
     $('.logout-clickable').click(logoutClick);
     $('.chat-clickable').click(chatClick);
     $('.chats-clickable').click(chatsClick);
+    $('#login-submit').click(loginSubmit);    
     chatLoaded();
     chatsLoaded();
     contactsLoaded();
@@ -78,8 +79,8 @@ function windowLocation(pathname) {
         contactsClick();
     } else if (pathname.startsWith('/#contactEdit/')) {
         contactsClick();
-    } else if (pathname === '/#contactAdd') {
-        contactAddClick();
+    } else if (pathname === '/#contactNew') {
+        contactNewClick();
     } else if (pathname === '/#chats') {
         chatsClick();
     } else if (pathname.startsWith('/#chat/')) {
@@ -90,11 +91,29 @@ function windowLocation(pathname) {
 }
 
 function removeCookies() {
-    $.removeCookie('googleAuth');
+    $.cookie.removeCookie('googleAuth');
 }
 
 function showLanding() {
     showLoggedOut();
+}
+
+function loginSubmit() {
+    var number = $('#login-id-input').val();
+    console.log('loginSubmit', number);
+    if (!validateDigitsLength(number, 10, 10)) {
+        alert('Invalid phone number');
+        $('#login-id-input').val('');        
+    } else {
+        state.auth = 'number';
+        server.ajax({
+            type: 'POST',
+            url: '/loginNumber',
+            data: number,
+            success: loginRes,
+            error: loginError
+        });
+    }
 }
 
 function showLoggedOut() {
@@ -104,6 +123,7 @@ function showLoggedOut() {
     $('.logout-clickable').hide();
     $('.loggedout-viewable').show();
     $("#landing-container").show();
+    showPage('Banta', 'landing', 'landing', null);
 }
 
 function showLoggedInRes() {
@@ -216,7 +236,7 @@ function homeClick() {
     setPath('home');
     $('.btn').removeClass('btn-primary');
     if (isEmpty(state.contacts)) {
-        $('.contactAdd-clickable').addClass('btn-primary');        
+        $('.contactNew-clickable').addClass('btn-primary');        
     } else if (isEmpty(state.chats)) {
         $('.chatNew-clickable').addClass('btn-primary');
     } else if (state.chats) {

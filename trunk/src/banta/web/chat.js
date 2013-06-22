@@ -1,7 +1,9 @@
 
 function chatClick() {
-    if (state.contact) {
-        chat(state.contact);
+    if (state.chat) {
+        chat(state.chat);
+    } else if (state.contact) {
+        console.warn('chatClick', state.contact);
     } else {
         state.action = 'chat';
         contactsClick();
@@ -12,6 +14,9 @@ function chatLoaded() {
     dom.chat = {};
     dom.chat.tbody = $('#chat-tbody');
     dom.chat.trHtml = dom.chat.tbody.html();   
+    $('#chat-draft-input').keypress(function(event) {
+       console.log('keypress', event);
+    });
 }
 
 function chat(chat) {
@@ -34,6 +39,7 @@ function chatBuild() {
         }
         tr.find('span.chat-time').text(formatDate(state.chat.messages[i].time));
         tr.find('span.chat-message').text(state.chat.messages[i].textMessage);
+        console.log('chatBuild', state.chat.messages[i].textMessage);
         tr.click(state.chat.messages[i], chatsRowClick);
     }
 }
