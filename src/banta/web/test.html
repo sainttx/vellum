@@ -72,54 +72,14 @@
         </div>
 
         <div class="container page-container" id="landing-container">
+            <h2 id="heading">test</h2>
             <p><a class="btn about-clickable">Learn more &raquo;</a></p>
-            <!--
-            <p><a class="btn btn-primary googleLogin-clickable loggedout-viewable hide">Login with Google</a><br></p>
-            <p><a class="btn personaLogin-clickable loggedout-viewable hide">Login with Persona</a></p>
-            -->
-            <form class="form-horizontal" id="login-form">
-                <input type="text" name="id" placeholder="My phone number" id="login-id-input">
-                <button type="button" class="btn" id="login-submit">Go</button>
+            <form action="login()" id="login-form" class="banta-form">
+                <input type="text" name="id" placeholder="Phone number" id="login-id-input">
+                <button type="button" class="btn">Login</button>
+                <button type="button" class="btn">Register</button>
             </form>
         </div>
-
-        <div class="container page-container hide" id="about-container">
-            <!--
-            <ul class="breadcrumb">
-                <li><a class="home-clickable">Home</a> 
-                    <span class="divider">/</span></li>
-                <li><span class="active">Contacts</span> 
-            </ul>
-            -->
-            <p>
-                <a class="btn btn-primary home-clickable">Home &laquo;</a>
-            </p>
-            <p>
-            <p>Developed by evan.summers at gmail.com</p>
-        </div>
-
-        <div class="container page-container hide" id="welcome-container">
-            <p>
-                <a class="btn contacts-clickable">Contacts</a>
-                <a class="btn btn-primary chats-clickable">Chats</a>
-                <a class="btn about-clickable">Learn more &raquo;</a>
-            </p>
-            <h4 id="loggedin-message">Welcome</h4>
-        </div>
-
-        <div class="container page-container hide" id="home-container">
-            <p>
-                <a class="btn contacts-clickable">Contacts</a>
-                <a class="btn chats-clickable">Chats</a>
-                <a class="btn logout-clickable">Logout</a>
-            </p>
-        </div>
-
-        <div class="container page-container hide" id="contacts-container"></div>
-        <div class="container page-container hide" id="contactEdit-container"></div>
-        <div class="container page-container hide" id="chat-container"></div>
-        <div class="container page-container hide" id="chats-container"></div>
-        <div class="container page-container hide" id="chatContacts-container"></div>
 
         <script src="assets/js/moment.min.js"></script>
         <script src="assets/js/jquery.min.js"></script>
@@ -129,31 +89,6 @@
         <script src="assets/js/jquery.websocket-0.0.1.js"></script>
         <script src="bootstrap/js/bootstrap.min.js"></script>
         <script src="util.js"></script>
-        <script src="persona.js"></script>
-        <script src="google.js"></script>
-        <script src="mock.js"></script>
-        <script src="chat.js"></script>
-        <script src="chats.js"></script>
-        <script src="contacts.js"></script>
-        <script src="contactEdit.js"></script>
-        <script src="contactList.js"></script>
-        <script src="home.js"></script>
-        
-        <!--
-        <script src="https://apis.google.com/js/client.js?onload=startClient"></script>
-        <script src="https://login.persona.org/include.js"></script>    
-        <script src="bootstrap/js/bootstrap-transition.js"></script>
-        <script src="bootstrap/js/bootstrap-alert.js"></script>
-        <script src="bootstrap/js/bootstrap-modal.js"></script>
-        <script src="bootstrap/js/bootstrap-dropdown.js"></script>
-        <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
-        <script src="bootstrap/js/bootstrap-tab.js"></script>
-        <script src="bootstrap/js/bootstrap-tooltip.js"></script>
-        <script src="bootstrap/js/bootstrap-popover.js"></script>
-        <script src="bootstrap/js/bootstrap-button.js"></script>
-        <script src="bootstrap/js/bootstrap-collapse.js"></script>
-        <script src="bootstrap/js/bootstrap-carousel.js"></script>
-        <script src="bootstrap/js/bootstrap-typeahead.js"></script>
-        -->
+        <script src="test.js"></script>
     </body>
 </html>

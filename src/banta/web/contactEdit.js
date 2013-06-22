@@ -52,7 +52,7 @@ var contactEditValidator = null;
 
 function contactEditLoaded() {
     contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
-    $('.contactAdd-clickable').click(contactAddClick);
+    $('.contactNew-clickable').click(contactNewClick);
     $('#contactEdit-save').click(contactEditSave);
     $('#contactEdit-cancel').click(contactEditCancel);
     $('#contactEdit-cancel').focus(contactEditCancelFocus);
@@ -80,14 +80,14 @@ function contactEdit(contact) {
     showPage('Edit contact', 'contactEdit', 'contactEdit', contact.name);
 }
 
-function contactAddClick() {
-    setPath('contactAdd');
+function contactNewClick() {
+    setPath('contactNew');
     state.contact = null;
     contactEditClear();    
     $('.home-clickable').hide();
     $('.chat-clickable').hide();
-    $('#contactEdit-legend').text('Add contact');
-    showPage('Add contact', 'contactEdit', 'contactAdd', null);
+    $('#contactEdit-legend').text('New contact');
+    showPage('New contact', 'contactEdit', 'contactNew', null);
     contactEditFocus();
 }
 
