@@ -7,8 +7,15 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="https://banta.appcentral.info/bootstrap/css/united-bootstrap.css" rel="stylesheet">
-        <link href="https://banta.appcentral.info/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">        
+        <link href="http://netdna.bootstrapcdn.com/bootswatch/2.3.2/united/bootstrap.min.css" rel="stylesheet"/>        
+        
+        <style type="text/css">
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
+        </style>
+        
         <link rel="shortcut icon" href="https://banta.appcentral.info/favicon.ico">
     </head>
 
@@ -27,7 +34,7 @@
                         <p class="navbar-text pull-right">
                         </p>
                         <ul class="nav">
-                            <li class="active nav-item"><a class="home-clickable nav-clickable">Home</a></li>
+                            <li class="nav-item"><a class="home-clickable nav-clickable">Home</a></li>
                             <li class="nav-item"><a class="about-clickable nav-clickable">About</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
@@ -35,30 +42,30 @@
             </div>
         </div>
 
-        <div class="container page-container" id="landing-container">
-            <p><a class="btn about-clickable">Learn more &raquo;</a></p>
-        </div>
-
-        <div class="container page-container hide" id="about-container">
-            <p>
-                <a class="btn btn-primary home-clickable">Home &laquo;</a>
-            </p>
-            <p>Contact me at evan.summers at gmail.com</p>
-        </div>
-
-        <div class="container page-container hide" id="home-container">
-            <div class="row">
-                <div class="span8">
-                    <ul class="nav nav-tabs nav-stacked">
-                        <li><a class="inactive about-clickable">About</a>
-                    </ul>
-                </div>
+        <div class="container">            
+            <div class="hero-unit page-container" id="home-container">
+                <h1>Welcome</h1>
+                <p>
+                    <a class="btn btn-primary about-clickable">Learn more &raquo;</a>
+                </p>
             </div>
+
+            <div class="hero-unit page-container hide" id="contactus-container">
+                <h1>Contact</h1>
+                <p>By evan.summers at gmail.com</p>
+            </div>
+
+            <div class="hero-unit page-container hide" id="about-container">
+                <h1>About</h1>
+                <p>evan.summers at gmail.com</p>
+                <p>blog: <a href="https://www.java.net/blogs/evanx">https://www.java.net/blogs/evanx</a></p>
+                <p>code: <a href="https://code.google.com/p/vellum">https://code.google.com/p/vellum</a></p>
+            </div>
+
         </div>
 
-        <script src="https://banta.appcentral.info/assets/flatui/js/jquery-1.8.3.min.js"></script>
-        <script src="https://banta.appcentral.info/assets/flatui/js/bootstrap.min.js"></script>
-        <script src="https://banta.appcentral.info/assets/js/jquery.cookie.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>        
         
         <script type="text/javascript">
             $(document).ready(function() {
@@ -67,11 +74,13 @@
             });
 
             function aboutClick() {
+                $('.nav-item').removeClass('active');
                 $('.page-container').hide();
                 $("#about-container").show();
             }
                     
             function homeClick() {
+                $('.nav-item').removeClass('active');
                 $('.page-container').hide();
                 $("#home-container").show();
             }
