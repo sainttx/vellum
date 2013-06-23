@@ -5,11 +5,11 @@ function contactsLoaded() {
 }
 
 function contactsClick() {
-    console.log("contactsClick", state.action);
+    console.log("contactsClick", state.purpose);
     state.contact = null;
     contactsBuild($('#contacts-tbody'), state.contacts);
     var title = 'Contacts';
-    if (state.action && state.action === 'chat') {
+    if (state.purpose && state.purpose === 'chat') {
         title = 'Contact to chat';
     }
     $('.home-clickable').show();    
@@ -48,5 +48,9 @@ function contactsPut(contact) {
 }
 
 function contactsRowClick(event) {
-    contactEdit(event.data);
+    if (state.purpose === 'chat') {
+        chatNew(event.data);
+    } else {
+        contactEdit(event.data);
+    }
 }

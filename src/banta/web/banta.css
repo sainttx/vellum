@@ -45,3 +45,16 @@ span.chat-lastMessage {
 textarea.banta-message-input {
     width: 100%;
 }
+
+span.event-name {
+    font-weight: bold;        
+}
+
+span.event-guests {
+    font-size: 90%;
+    color: #777;
+}
+
+span.event-host {
+    font-style: italic;
+}

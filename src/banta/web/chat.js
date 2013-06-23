@@ -5,7 +5,7 @@ function chatClick() {
     } else if (state.contact) {
         console.warn('chatClick', state.contact);
     } else {
-        state.action = 'chat';
+        state.purpose = 'chat';
         contactsClick();
     }
 }
@@ -14,9 +14,17 @@ function chatLoaded() {
     dom.chat = {};
     dom.chat.tbody = $('#chat-tbody');
     dom.chat.trHtml = dom.chat.tbody.html();   
+    $('#chat-send').click(chatSendClick);
+    $('#chat-cancel').click(chatCancelClick);
     $('#chat-draft-input').keypress(function(event) {
        console.log('keypress', event);
     });
+}
+
+function chatNew(contact) {
+    console.log('chatNew', contact);
+    var chatObject = new Chat([contact], []);
+    chat(chatObject);
 }
 
 function chat(chat) {
@@ -46,6 +54,14 @@ function chatBuild() {
 
 function chatRes(event) {
     console.log('chatRes', event.data.name, event.data.text);    
+}
+
+function chatCancelClick() {
+    homeClick();
+}
+
+function chatSendClick() {
+    console.log('chatSendClick');
 }
 
 function chatTest() {

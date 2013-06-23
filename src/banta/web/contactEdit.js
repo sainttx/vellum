@@ -85,7 +85,7 @@ function contactNewClick() {
     state.contact = null;
     contactEditClear();    
     $('.home-clickable').hide();
-    $('.chat-clickable').hide();
+    //$('.chat-clickable').hide();
     $('#contactEdit-legend').text('New contact');
     showPage('New contact', 'contactEdit', 'contactNew', null);
     contactEditFocus();

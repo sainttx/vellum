@@ -17,7 +17,7 @@ $(document).ready(function() {
 });
 
 function documentLoad() {
-    console.log('documentLoad');
+    console.log('documentLoad', window.location.hostname);
     state.loadedComponentsCount = 0;
     load('contacts');
     load('contactEdit');
@@ -28,7 +28,11 @@ function documentLoad() {
 }
 
 function load(name) {
-    $('#' + name + '-container').load(name + '.html', function() {
+    var hostname = '';
+    if (window.location.hostname === 'evanx.neocities.org') {
+        hostname = 'https://banta.appcentral.info/';
+    }
+    $('#' + name + '-container').load(hostname + name + '.html', function() {
         documentLoaded(name);
     });
 }
@@ -51,6 +55,8 @@ function documentReady() {
     $('.logout-clickable').click(logoutClick);
     $('.chat-clickable').click(chatClick);
     $('.chats-clickable').click(chatsClick);
+    //$('.event-clickable').click(eventClick);
+    $('.events-clickable').click(eventsClick);
     $('#login-submit').click(loginSubmit);
     chatLoaded();
     chatsLoaded();
@@ -74,6 +80,10 @@ function windowLocation(pathname) {
         homeClick();
     } else if (pathname === '/#contactUs') {
         contactClick();
+    } else if (pathname === '/#events') {
+        eventsClick();
+    } else if (pathname.startsWith('/#event')) {
+        eventsClick();
     } else if (pathname === '/#aboutUs') {
         aboutClick();
     } else if (pathname === '/#contacts') {
@@ -241,7 +251,9 @@ function aboutClick() {
 }
 
 function homeClick() {
+    state.chat = null;
     state.contact = null;
+    state.purpose = null;
     setPath('home');
     $('.btn').removeClass('btn-primary');
     if (isEmpty(state.contacts)) {
