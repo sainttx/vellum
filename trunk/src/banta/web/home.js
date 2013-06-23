@@ -1,7 +1,7 @@
 
-var server = mockServer;
 var dom = {};
-var state = {};
+var state = { env: 'test' };
+var server = mockServer;
 
 function locationDev() {
     return window.location.hostname.startsWith('localhost') || window.location.hostname.startsWith("192.168");
@@ -24,6 +24,7 @@ function documentLoad() {
     load('chats');
     load('chat');
     load('chatContacts');
+    load('events');
 }
 
 function load(name) {
@@ -35,7 +36,7 @@ function load(name) {
 function documentLoaded(component) {
     state.loadedComponentsCount++;
     console.log('documentLoaded', state.loadedComponentsCount, component);
-    if (state.loadedComponentsCount === 5) {
+    if (state.loadedComponentsCount === 6) {
         documentReady();
     }
 }
@@ -50,7 +51,7 @@ function documentReady() {
     $('.logout-clickable').click(logoutClick);
     $('.chat-clickable').click(chatClick);
     $('.chats-clickable').click(chatsClick);
-    $('#login-submit').click(loginSubmit);    
+    $('#login-submit').click(loginSubmit);
     chatLoaded();
     chatsLoaded();
     contactsLoaded();
@@ -91,7 +92,7 @@ function windowLocation(pathname) {
 }
 
 function removeCookies() {
-    $.cookie.removeCookie('googleAuth');
+    $.cookie.remove('googleAuth');
 }
 
 function showLanding() {
@@ -101,10 +102,13 @@ function showLanding() {
 function loginSubmit() {
     var number = $('#login-id-input').val();
     console.log('loginSubmit', number);
-    if (!validateDigitsLength(number, 10, 10)) {
-        alert('Invalid phone number');
-        $('#login-id-input').val('');        
+    if (!validatePhoneNumber(number)) {
+        $('#login-alert-div').text('Invalid phone number');
+        $('#login-alert-div').show();
+        $('#login-id-input').val('');
+        $('#login-id-input').focus();
     } else {
+        $('#login-alert-div').hide();
         state.auth = 'number';
         server.ajax({
             type: 'POST',
@@ -117,13 +121,18 @@ function loginSubmit() {
 }
 
 function showLoggedOut() {
-    state.auth = null;
-    $('.page-container').hide();
     $('.loggedin-viewable').hide();
     $('.logout-clickable').hide();
     $('.loggedout-viewable').show();
-    $("#landing-container").show();
+    showLogin();
+}
+
+function showLogin() {
+    state.auth = null;
+    $('#login-alert-div').hide();
+    $('#login-id-input').val('');
     showPage('Banta', 'landing', 'landing', null);
+    $('#login-id-input').focus();
 }
 
 function showLoggedInRes() {
@@ -207,7 +216,7 @@ function logoutError() {
 }
 
 function showPage(title, page, path, id) {
-    $('#title').text(title);    
+    $('#title').text(title);
     $('.page-container').hide();
     $('#' + page + '-container').show();
     setPath(path, id);
@@ -236,19 +245,16 @@ function homeClick() {
     setPath('home');
     $('.btn').removeClass('btn-primary');
     if (isEmpty(state.contacts)) {
-        $('.contactNew-clickable').addClass('btn-primary');        
     } else if (isEmpty(state.chats)) {
-        $('.chatNew-clickable').addClass('btn-primary');
     } else if (state.chats) {
-        $('.chats-clickable').addClass('btn-primary');
     } else {
-        $('.contacts-clickable').addClass('btn-primary');        
     }
     $('#title').text('Banta');
     $('.nav-item').removeClass("active");
     $('.page-container').hide();
     if (state.auth === null) {
         $("#landing-container").show();
+        $('#login-id-input').focus();
     } else {
         $("#home-container").show();
     }

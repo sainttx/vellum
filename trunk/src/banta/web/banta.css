@@ -32,6 +32,7 @@ span.chats-lastMessage {
 }
 
 span.chat-contact {
+    font-weight: bold;    
 }
 
 span.chat-time {
@@ -39,4 +40,8 @@ span.chat-time {
 }
 
 span.chat-lastMessage {
+}
+
+textarea.banta-message-input {
+    width: 100%;
 }

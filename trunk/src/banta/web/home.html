@@ -9,7 +9,7 @@
         <meta name="author" content="">
 
         <!-- Le styles -->
-        <link href="bootstrap/css/united-bootstrap.css" rel="stylesheet">
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
         <style type="text/css">
             body {
                 padding-top: 60px;
@@ -58,8 +58,8 @@
                     <a class="brand reload-clickable" id="title">Banta</a>
                     <div class="nav-collapse collapse">
                         <p class="navbar-text pull-right">
-                            <a class="navbar-link loggedin-viewable logout-clickable hide" id="loggedin-username-clickable"></a>
-                            <a class="navbar-link loggedin-viewable logout-clickable">Logout</a>
+                            <a class="navbar-link loggedin-viewable logout-clickable invisible hide" id="loggedin-username-clickable"></a>
+                            <a class="navbar-link loggedin-viewable logout-clickable invisible">Logout</a>
                         </p>
                         <ul class="nav invisible">
                             <li class="active nav-item"><a class="home-clickable nav-clickable">Home &laquo;</a></li>
@@ -76,11 +76,14 @@
             <!--
             <p><a class="btn btn-primary googleLogin-clickable loggedout-viewable hide">Login with Google</a><br></p>
             <p><a class="btn personaLogin-clickable loggedout-viewable hide">Login with Persona</a></p>
-            -->
+            -->            
             <form class="form-horizontal" id="login-form">
-                <input type="text" name="id" placeholder="My phone number" id="login-id-input">
+                <input type="text" name="id" placeholder="My phone number" id="login-id-input" value="">
                 <button type="button" class="btn" id="login-submit">Go</button>
             </form>
+            <div class="alert alert-error hide" id="login-alert-div">
+                Invalid phone number.
+            </div>
         </div>
 
         <div class="container page-container hide" id="about-container">
@@ -99,20 +102,24 @@
         </div>
 
         <div class="container page-container hide" id="welcome-container">
-            <p>
-                <a class="btn contacts-clickable">Contacts</a>
-                <a class="btn btn-primary chats-clickable">Chats</a>
-                <a class="btn about-clickable">Learn more &raquo;</a>
-            </p>
+            <ul class="nav nav-list">
+                <li><a class="inactive about-clickable">Learn more</a>
+                <li><a class="inactive contacts-clickable">Contacts</a>
+                <li><a class="inactive chats-clickable">Chats</a>
+            </ul>
             <h4 id="loggedin-message">Welcome</h4>
         </div>
 
         <div class="container page-container hide" id="home-container">
-            <p>
-                <a class="btn contacts-clickable">Contacts</a>
-                <a class="btn chats-clickable">Chats</a>
-                <a class="btn logout-clickable">Logout</a>
-            </p>
+            <div class="row">
+                <div class="span8">
+                    <ul class="nav nav-tabs nav-stacked">
+                        <li><a class="inactive contacts-clickable">Contacts</a>
+                        <li><a class="inactive chats-clickable">Chats</a>
+                        <li><a class="inactive logout-clickable">Logout</a>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="container page-container hide" id="contacts-container"></div>
@@ -120,6 +127,7 @@
         <div class="container page-container hide" id="chat-container"></div>
         <div class="container page-container hide" id="chats-container"></div>
         <div class="container page-container hide" id="chatContacts-container"></div>
+        <div class="container page-container hide" id="events-container"></div>
 
         <script src="assets/js/moment.min.js"></script>
         <script src="assets/js/jquery.min.js"></script>

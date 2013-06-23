@@ -175,18 +175,36 @@ var mockData = {
             name: 'Mugg & Bean',
         },
         {
-            name: 'Biz Meeting Room 1',
+            name: 'Meeting Room 1',
             org: 'Biz Company'            
         },
     ],
     events: [
         {            
             type: 'Poker',
-            
+            placeType: 'Home',
+            host: 'Harry Potter',            
+            invitees: [
+                {
+                    name: 'Joe Soap', 
+                },
+                {
+                    name: 'Ginger Bread',
+                },
+                {
+                    name: 'Harry Potter',
+                }
+            ],
+            beginTimestamp: '2013-06-27 19:00',
+            endTimestamp: '2013-06-27 23:00',            
         },        
         { 
             type: 'Meeting',
-            place: 'Meeting Room 1'
+            place: 'Meeting Room 1',
+            hostOrg: 'Biz Company',
+            host: 'Joe Soap',
+            invitees: [                
+            ]
         },
         {            
         },
