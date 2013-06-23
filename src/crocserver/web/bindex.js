@@ -354,7 +354,7 @@ function googleAuthorizeAccessToken(accessToken) {
     server.accessToken = accessToken;
     console.log(accessToken);
     server.ajax({ 
-        type: 'POST',                
+        type: 'POST',    
         url: '/login',
         data: 'accessToken=' + accessToken,
         success: loginRes,
@@ -364,7 +364,7 @@ function googleAuthorizeAccessToken(accessToken) {
 
 function logoutClick(event) {
     server.ajax({
-        type: 'POST',                
+        type: 'POST',    
         url: '/logout',
         data: null,
         success: logoutRes,
@@ -412,7 +412,7 @@ function genKeySubmit(event) {
     }
     if (false) {
         $.ajax({ 
-            type: 'POST',                
+            type: 'POST',    
             url: '/genkey',
             data: {
                 password: password

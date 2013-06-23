@@ -15,16 +15,12 @@ function contactsClick() {
     showPage(title, 'contacts', 'contacts', null);
 }
 
-function contactsSort(array) {
-    array.sort(compareName);
-}
-
 function contactsIndexOf(name) {
     return arrayIndexOf(state.contacts, name, matchName);
 }
 
 function contactsBuild(tbody, contacts) {
-    contacts.sort(compareName);
+    Array.sort(contacts, compareName);
     tbody.empty();
     for (var i = 0; i < contacts.length; i++) {
         $('#contacts-tbody').append('<tr><td>' + contacts[i].name + '</td></tr>');

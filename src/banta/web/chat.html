@@ -5,22 +5,15 @@
 <table class="table table-striped">
     <tbody id="chat-tbody">
         <tr><td>
-                <span class="chat-time">Fri, 21st Feb</span>
-                <span class="chat-contact">Joe</span><br>
+                <span class="chat-contact">Joe</span>
+                <span class="chat-time">Fri, 21st Feb</span><br>
                 <span class="chat-message">For sure, thursday then.</span>
     </tbody>    
 </table>    
-<form class="form-horizontal" id="chat-form">
+<form class="form-vertical" id="chat-form">
     <fieldset>
-        <div class="control-group" id="chat-draft">
-            <label class="control-label" for="draft">Message</label>
-            <div class="controls">
-                <input type="text" class="input-xlarge" name="draft" placeholder="Message" id="chat-draft-input"/>
-            </div>
-        </div>
-        <div class="form-actions">
-            <button type="button" class="btn" id="contactEdit-cancel">Cancel</button>
-            <button type="button" class="btn" id="contactEdit-save">Send</button>
-        </div>
+        <textarea class="input banta-message-input" name="draft" placeholder="Message" id="chat-message-input"/>
     </fieldset>
+    <button type="button" class="btn" id="contactEdit-cancel">Cancel</button>
+    <button type="button" class="btn" id="contactEdit-save">Send</button>
 </form>

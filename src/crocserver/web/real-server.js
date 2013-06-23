@@ -36,7 +36,7 @@ function checkAuth() {
 function login(accessToken) {
     console.log(accessToken);
     $.ajax({ 
-        type: 'POST',                
+        type: 'POST',    
         url: '/login',
         data: 'accessToken=' + accessToken,
         success: processLogin,
@@ -109,7 +109,7 @@ function submitGenKey(event) {
     }
     if (false) {
         $.ajax({ 
-            type: 'POST',                
+            type: 'POST',    
             url: '/genkey',
             data: {
                 password: password

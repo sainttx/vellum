@@ -56,7 +56,7 @@ function initPersona() {
         onlogin: function(assertion) {
             console.log("onlogin");
             $.ajax({ 
-                type: 'POST',                
+                type: 'POST',    
                 url: '/loginPersona',
                 data: {
                     assertion: assertion
@@ -76,7 +76,7 @@ function initPersona() {
             console.log("onlogout");
             currentUser = null;
             $.ajax({ 
-                type: 'POST',                
+                type: 'POST',    
                 url: '/logoutPersona',
                 success: function(res, status, xhr) {
                     console.log("success");
