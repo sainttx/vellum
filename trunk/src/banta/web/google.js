@@ -19,7 +19,7 @@ var googleServer = {
                 'userId': 'me'
             }).execute(setMe);
         });
-    },            
+    },
     documentReady: function() {
         googleLoginLoaded();
         gapi.client.setApiKey(apiKey);

@@ -51,7 +51,7 @@ var mockServer = {
     send: function(type, data) {
         var event = mockSocketEvent(type, data);
         console.log('mockServer.send', type, data, event);
-        if (type == 'chat') {
+        if (type === 'chat') {
             wsHandler.events.chat(event);
         } else {
             console.warn('mockServer.send type', type);
@@ -102,18 +102,16 @@ var mockData = {
     ],
     orgs: [
         {
-            orgId: 1,
             orgUrl: 'biz.net',
-            orgCode: 'biz',
+            orgCode: 'Biz Company',
             displayName: 'Biz (Pty) Ltd',
             region: 'Western Cape',
             locality: 'Cape Town',
             country: 'South Africa'
         },
         {
-            orgId: 2,
             orgUrl: 'other.net',
-            orgCode: 'other',
+            orgCode: 'Other Biz Company',
             displayName: 'The Other Company (Pty) Ltd',
             region: 'Western Cape',
             locality: 'Cape Town',
@@ -133,6 +131,67 @@ var mockData = {
         "Bye.",
     ],
     chats: [
+    ],
+    eventTypes: [
+        {
+            name: 'Meeting',
+        },
+        {
+            name: 'Lunch',
+        },
+        {
+            name: 'Dinner party',
+        },
+        {
+            name: 'Coffee',
+        },
+        {
+            name: 'Drinks',
+        },
+        {
+            name: 'Poker',
+        },
+    ],
+    placeTypes: [
+        {
+            name: 'Restaurant',
+        },
+        {
+            name: 'Coffee House',
+        },
+        {
+            name: 'Bar',
+        },
+        {
+            name: 'Home',
+        },
+        {
+            name: 'Office',
+        },
+
+    ],
+    places: [
+        {
+            name: 'Mugg & Bean',
+        },
+        {
+            name: 'Biz Meeting Room 1',
+            org: 'Biz Company'            
+        },
+    ],
+    events: [
+        {            
+            type: 'Poker',
+            
+        },        
+        { 
+            type: 'Meeting',
+            place: 'Meeting Room 1'
+        },
+        {            
+        },
+        {            
+        },
     ]
 };
 
