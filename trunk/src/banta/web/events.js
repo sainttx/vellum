@@ -1,57 +1,57 @@
 
-function chatsLoaded() {
-    $('#chats-tbody span').text('');
-    dom.chats = {};
-    dom.chats.tbody = $('#chats-tbody');
-    dom.chats.trHtml = dom.chats.tbody.html();
+function eventsLoaded() {
+    $('#events-tbody span').text('');
+    dom.events = {};
+    dom.events.tbody = $('#events-tbody');
+    dom.events.trHtml = dom.events.tbody.html();
 }
 
-function chatsClickable() {
-    return !isEmpty(state.chats);
+function eventsClickable() {
+    return !isEmpty(state.events);
 }
 
-function chatsClick() {
-    console.log('chatsClick');
-    if (!state.chats) {
-        console.warn('chatsClick');
+function eventsClick() {
+    console.log('eventsClick');
+    if (!state.events) {
+        console.warn('eventsClick');
     } else {
-        chatsBuild();
-        showPage('Chats', 'chats', 'chats', null);
+        eventsBuild();
+    }
+    showPage('Events', 'events', 'events', null);
+}
+
+function eventsBuild() {
+    state.events.sort(compareName);
+    dom.events.tbody.empty();
+    for (var i = 0; i < state.events.length; i++) {
+        dom.events.tbody.append(dom.events.trHtml);
+        var tr = $("#events-tbody > tr:last-child");
+        tr.find('span.event-contact').text(state.events[i].name);
+        tr.find('span.event-time').text(formatDate(arrayLast(state.events[i].messages).time));
+        tr.find('span.event-message').text(arrayLast(state.events[i].messages).textMessage);
+        tr.click(state.events[i], eventsRowClick);
     }
 }
 
-function chatsBuild() {
-    state.chats.sort(compareName);
-    dom.chats.tbody.empty();
-    for (var i = 0; i < state.chats.length; i++) {
-        dom.chats.tbody.append(dom.chats.trHtml);
-        var tr = $("#chats-tbody > tr:last-child");
-        tr.find('span.chats-contact').text(state.chats[i].name);
-        tr.find('span.chats-time').text(formatDate(arrayLast(state.chats[i].messages).time));
-        tr.find('span.chats-message').text(arrayLast(state.chats[i].messages).textMessage);
-        tr.click(state.chats[i], chatsRowClick);
-    }
-}
-
-function chatsPut(chat) {
+function eventsPut(chat) {
     if (state.chat) {
-        var index = chatsIndexOf(state.chat.name);
+        var index = eventsIndexOf(state.chat.name);
         if (index >= 0) {
-            state.chats[index] = chat;
+            state.events[index] = chat;
         }
     } else {
-        var index = chatsIndexOf(chat.name);
+        var index = eventsIndexOf(chat.name);
         if (index !== null && index >= 0) {
-            console.log('chatsPut', chat.name, index);
-            state.chats[index] = chat;
+            console.log('eventsPut', chat.name, index);
+            state.events[index] = chat;
         } else {
-            state.chats.push(chat);
+            state.events.push(chat);
         }
     }
 }
 
-function chatsRowClick(event) {
-    console.log('chatsRowClick', event.data);
+function eventsRowClick(event) {
+    console.log('eventsRowClick', event.data);
     chat(event.data);
 }
 

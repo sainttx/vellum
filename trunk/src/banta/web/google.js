@@ -61,7 +61,7 @@ function googleLoginAccessToken(accessToken) {
     state.auth = 'google';
     server.ajax({
         type: 'POST',
-        url: '/googleLogin',
+        url: '/loginGoogle',
         data: 'accessToken=' + accessToken,
         success: loginRes,
         error: loginError

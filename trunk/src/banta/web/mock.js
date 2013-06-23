@@ -225,7 +225,7 @@ function Chat(contacts, messages) {
     this.name = contacts[0].name;
     this.contacts = contacts;
     this.messages = messages;
-    server.log('Chat', contacts[0].name, messages.length, messages[0].textMessage);
+    server.log('Chat', contacts[0].name, messages.length);
 }
 
 function mockChatMessages(index, contact, time) {
@@ -259,9 +259,11 @@ function mockInit() {
 }
 
 function mockRes(req) {
-    if (req.url === '/googleLogin') {
+    if (req.url === '/loginNumber') {
         return mockData.login;
-    } else if (req.url === '/personaLogin') {
+    } else if (req.url === '/loginGoogle') {
+        return mockData.login;
+    } else if (req.url === '/loginPersona') {
         return mockData.login;
     } else if (req.url === '/logout') {
         return mockData.logout;

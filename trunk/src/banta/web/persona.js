@@ -27,7 +27,7 @@ function personaLogin(assertion) {
     state.auth = 'persona';
     server.ajax({
         type: 'POST',
-        url: '/personaLogin',
+        url: '/loginPersona',
         data: {
             assertion: assertion
         },
