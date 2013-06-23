@@ -12,6 +12,7 @@ function contactsClick() {
     if (state.action && state.action === 'chat') {
         title = 'Contact to chat';
     }
+    $('.home-clickable').show();    
     showPage(title, 'contacts', 'contacts', null);
 }
 
@@ -20,7 +21,7 @@ function contactsIndexOf(name) {
 }
 
 function contactsBuild(tbody, contacts) {
-    Array.sort(contacts, compareName);
+    contacts.sort(compareName);
     tbody.empty();
     for (var i = 0; i < contacts.length; i++) {
         $('#contacts-tbody').append('<tr><td>' + contacts[i].name + '</td></tr>');

@@ -3,16 +3,14 @@
  */
 package vellum.httpserver;
 
-import crocserver.httphandler.access.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import vellum.format.ListFormats;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Lists;
 import vellum.util.Streams;
 
 /**
@@ -62,11 +60,22 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
                 httpExchange.getResponseHeaders().set("Content-type", "text/plain");
             } else if (path.endsWith(".html")) {
                 httpExchange.getResponseHeaders().set("Content-type", "text/html");
+            } else if (path.endsWith(".ttf")) {
+                httpExchange.getResponseHeaders().set("Content-type", "font/truetype");
+            } else if (path.endsWith(".woff")) {
+                httpExchange.getResponseHeaders().set("Content-type", "application/font-woff");
             } else {
                 httpExchange.getResponseHeaders().set("Content-type", "text/html");
-                path = config.getRootFile();
+                //httpExchange.getResponseHeaders().set("Content-type", "application/octet-stream");
             }
-            FileInputStream inputStream = new FileInputStream(config.getRootDir() + '/' + path);
+            File file = getFile(config.getRootFile());
+            if (path.length() > 0) {
+                file = getFile(path);
+                if (!file.exists() || file.isDirectory()) {
+                    file = getFile(config.getRootFile());
+                }
+            }
+            FileInputStream inputStream = new FileInputStream(file);
             byte[] bytes = Streams.readBytes(inputStream);
             logger.trace("path", path, bytes.length);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
@@ -76,5 +85,9 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
         }
         httpExchange.close();
+    }
+    
+    private File getFile(String path) {
+        return new File(config.getRootDir() + '/' + path);
     }
 }
