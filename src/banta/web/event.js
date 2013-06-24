@@ -19,25 +19,25 @@ b.event = {
         },
     },
 
-    eventErrorElement: null,
+    errorElement: null,
 
     eventValidator: null,
 
-    eventHighlight: function(element) {
-        console.log("eventHighlight", element);
+    highlight: function(element) {
+        console.log("highlight", element);
         $(element).closest('.control-group').removeClass('success').addClass('error');
-        b.event.eventButtons(false);
+        b.event.buttons(false);
         $(element).focus();
         errorElement = element;
     },
 
-    eventSuccess: function(element) {
-        console.log("eventSuccess");
+    success: function(element) {
+        console.log("success");
         $(element).closest('.control-group').removeClass('error').addClass('success');
-        b.event.eventButtons(true);
+        b.event.buttons(true);
     },
 
-    eventButtons: function(ok) {
+    buttons: function(ok) {
         if (ok) {
             $('#event-save').addClass('btn-primary');
             $('#event-cancel').removeClass('btn-primary');
@@ -48,16 +48,16 @@ b.event = {
     },
 
     eventLoaded: function() {
-        b.event.eventValidatorConfig.highlight = b.event.eventHighlight,
-        b.event.eventValidatorConfig.success = b.event.eventSuccess;
+        b.event.eventValidatorConfig.highlight = b.event.highlight,
+        b.event.eventValidatorConfig.success = b.event.success;
         b.event.eventValidator = $('#event-form').validate(b.event.eventValidatorConfig);
-        $('.event-clickable').click(b.event.eventClick);
-        $('#event-save').click(b.event.eventSave);
-        $('#event-cancel').click(b.event.eventCancel);
-        $('#event-cancel').focus(b.event.eventCancelFocus);
+        $('.event-clickable').click(b.event.click);
+        $('#event-save').click(b.event.save);
+        $('#event-cancel').click(b.event.cancel);
+        $('#event-cancel').focus(b.event.cancelFocus);
     },
 
-    eventCancelFocus: function() {
+    cancelFocus: function() {
         if (b.event.eventValidator.valid()) {
             $('#event-save').focus();
         }
@@ -68,79 +68,79 @@ b.event = {
         $('.chat-clickable').addClass('btn-primary');
         $('.chat-clickable').show();
         console.log("event", event);
-        b.event.eventClear();
-        b.event.eventSet(event);
+        b.event.clear();
+        b.event.set(event);
         $('#event-legend').text('Edit event');
         showPage('Edit event', 'event', 'event', event.name);
     },
 
-    eventClick: function() {
+    click: function() {
         setPath('event');
         state.event = null;
-        b.event.eventClear();
+        b.event.clear();
         $('#event-legend').text('New event');
         showPage('New event', 'event', 'event', null);
-        b.event.eventFocus();
+        b.event.focus();
     },
 
-    eventSave: function(event) {
-        console.log("eventSave");
+    save: function(event) {
+        console.log("save");
         event.preventDefault();
-        b.event.eventErrorElement = null;
+        b.event.errorElement = null;
         if ($('#event-form').valid()) {
-            var event = b.event.eventGet();
-            console.log("eventSave", event);
+            var event = b.event.get();
+            console.log("save", event);
             eventsPut(event);
             server.ajax({
                 url: '/event',
                 data: $('#event-form').serialize(),
-                success: b.event.eventRes,
-                error: b.event.eventError,
+                success: b.event.res,
+                error: b.event.error,
                 memo: event
             });
         } else {
-            b.event.eventButtons(false);
+            b.event.buttons(false);
         }
     },
 
-    eventRes: function(res) {
-        console.log('eventRes');
+    res: function(res) {
+        console.log('res');
         console.log(res);
         eventsClick();
     },
 
-    eventError: function() {
-        console.log('eventError');
+    error: function() {
+        console.log('error');
     },
 
-    eventCancel: function() {
-        console.log("eventCancel");
-        b.event.eventClear();
+    cancel: function() {
+        console.log("cancel");
+        b.event.clear();
         eventsClick();
     },
 
-    eventClear: function() {
-        console.log("eventClear", $('#event-form > fieldset > .control-group').length);
+    clear: function() {
+        console.log("clear", $('#event-form > fieldset > .control-group').length);
         b.event.eventValidator.resetForm();
         $('#event-cancel').addClass('btn-primary');
         $('#event-save').removeClass('btn-primary');
-        b.event.eventButtons(false);
+        b.event.buttons(false);
         $('#event-form > fieldset > div.control-group').removeClass('error');
         $('#event-form > fieldset > div.control-group').removeClass('success');
-        b.event.eventSet({
+        b.event.set({
             time: '',
             day: '',
             duration: ''
         });
     },
 
-    eventSet: function(o) {
+    set: function(o) {
         $('#event-name-input').val(o.name);
         $('#event-mobile-input').val(o.mobile);
         $('#event-email-input').val(o.email);
     },
 
-    eventGet: function() {
+    get: function() {
         return {
             time: sanitize($('#event-time-input').val()),
             day: $('#event-day-input').val(),
@@ -148,7 +148,7 @@ b.event = {
         };
     },
 
-    eventFocus: function() {
+    focus: function() {
         $('#event-time-input').focus();
     },
 
