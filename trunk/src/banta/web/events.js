@@ -1,7 +1,10 @@
 
 function eventsLoaded() {
-    $('#events-tbody span').text('');
+    $('.events-clickable').click(eventsClick);    
     dom.events = {};
+    if (false) {
+        $('#events-tbody span').text('');
+    }
     dom.events.tbody = $('#events-tbody');
     dom.events.trHtml = dom.events.tbody.html();
 }
@@ -11,9 +14,9 @@ function eventsClickable() {
 }
 
 function eventsClick() {
-    console.log('eventsClick');
-    if (!state.events) {
-        console.warn('eventsClick');
+    console.log('eventsClick', state.events);
+    if (isEmpty(state.events)) {
+        console.warn('eventsClick no events');
     } else {
         eventsBuild();
     }
@@ -21,6 +24,7 @@ function eventsClick() {
 }
 
 function eventsBuild() {
+    console.warn('eventsBuild', state.events.length);
     state.events.sort(compareName);
     dom.events.tbody.empty();
     for (var i = 0; i < state.events.length; i++) {
@@ -33,19 +37,22 @@ function eventsBuild() {
     }
 }
 
-function eventsPut(chat) {
+function eventsPut(event) {
+    if (true) {
+        return;
+    }
     if (state.chat) {
         var index = eventsIndexOf(state.chat.name);
         if (index >= 0) {
-            state.events[index] = chat;
+            state.events[index] = event;
         }
     } else {
-        var index = eventsIndexOf(chat.name);
+        var index = eventsIndexOf(event.name);
         if (index !== null && index >= 0) {
-            console.log('eventsPut', chat.name, index);
-            state.events[index] = chat;
+            console.log('eventsPut', event.name, index);
+            state.events[index] = event;
         } else {
-            state.events.push(chat);
+            state.events.push(event);
         }
     }
 }
