@@ -67,7 +67,8 @@ span.event-date {
 }
 
 tr.event-date {
-  background-color: #f9f9f9;
+  background-color: #eee;
+  border-color: #333;
 }
 
 span.event-guests {
