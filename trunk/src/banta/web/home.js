@@ -36,7 +36,7 @@ function componentsLoaded() {
     contactEditLoaded();
     eventsLoaded();
     console.log('componentsLoaded', b.event);
-    b.event.eventLoaded();    
+    b.event.loaded();    
     homeLoaded();
 }
 
