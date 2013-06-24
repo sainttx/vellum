@@ -1,4 +1,5 @@
 
+var b = {};
 var dom = {};
 var state = { env: 'test' };
 var server = mockServer;
@@ -18,13 +19,25 @@ $(document).ready(function() {
 
 function documentLoad() {
     console.log('documentLoad', window.location.hostname);
-    state.loadedComponentsCount = 0;
+    state.loadedComponentsCount = 7;
     load('contacts');
     load('contactEdit');
     load('chats');
     load('chat');
     load('chatContacts');
     load('events');
+    load('event');
+}
+
+function componentsLoaded() {
+    chatLoaded();
+    chatsLoaded();
+    contactsLoaded();
+    contactEditLoaded();
+    eventsLoaded();
+    console.log('componentsLoaded', b.event);
+    b.event.eventLoaded();    
+    homeLoaded();
 }
 
 function load(name) {
@@ -32,21 +45,22 @@ function load(name) {
     if (window.location.hostname === 'evanx.neocities.org') {
         hostname = 'https://banta.appcentral.info/';
     }
-    $('#' + name + '-container').load(hostname + name + '.html', function() {
+    $('#' + name + '-container').load(hostname + name + '.html', function(responseText) {
+        if (name === 'events') {
+        }
         documentLoaded(name);
     });
 }
 
 function documentLoaded(component) {
-    state.loadedComponentsCount++;
+    state.loadedComponentsCount--;
     console.log('documentLoaded', state.loadedComponentsCount, component);
-    if (state.loadedComponentsCount === 6) {
+    if (state.loadedComponentsCount === 0) {
         documentReady();
     }
 }
 
-function documentReady() {
-    console.log('documentReady');
+function homeLoaded() {
     $('.home-clickable').click(homeClick);
     $('.reload-clickable').click(reloadClick);
     $('.about-clickable').click(aboutClick);
@@ -55,13 +69,12 @@ function documentReady() {
     $('.logout-clickable').click(logoutClick);
     $('.chat-clickable').click(chatClick);
     $('.chats-clickable').click(chatsClick);
-    //$('.event-clickable').click(eventClick);
-    $('.events-clickable').click(eventsClick);
-    $('#login-submit').click(loginSubmit);
-    chatLoaded();
-    chatsLoaded();
-    contactsLoaded();
-    contactEditLoaded();
+    $('#login-submit').click(loginSubmit);    
+}
+
+function documentReady() {
+    console.log('documentReady');
+    componentsLoaded();
     window.addEventListener("popstate", function(event) {
         windowState(event);
     });
