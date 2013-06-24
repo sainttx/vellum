@@ -47,7 +47,7 @@ b.event = {
         }
     },
 
-    eventLoaded: function() {
+    loaded: function() {
         b.event.eventValidatorConfig.highlight = b.event.highlight,
         b.event.eventValidatorConfig.success = b.event.success;
         b.event.eventValidator = $('#event-form').validate(b.event.eventValidatorConfig);
