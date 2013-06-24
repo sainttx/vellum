@@ -44,17 +44,50 @@ span.chat-lastMessage {
 
 textarea.banta-message-input {
     width: 100%;
+    font-family: 'Ubuntu Mono';
 }
 
 span.event-name {
-    font-weight: bold;        
+    font-style: italic;
+}
+
+span.event-time {
+    font-weight: normal;
+}
+
+span.event-day {
+    font-weight: bold;
+}
+
+span.event-date {
+    font-size: 95%;
+    font-style: italic;
+    color: #555;
+    padding-left: 4px;
+}
+
+tr.event-date {
+  background-color: #f9f9f9;
 }
 
 span.event-guests {
+    font-family: 'Ubuntu', 'Ubuntu Condensed';
     font-size: 90%;
     color: #777;
 }
 
+span.event-elaborate {
+    font-size: 95%;
+    font-style: normal;
+    color: #333;
+}
+
 span.event-host {
-    font-style: italic;
+    font-weight: bold;
+    font-style: normal;
+}
+
+span.event-venue {
+    font-weight: bold;
+    font-style: normal;
 }
