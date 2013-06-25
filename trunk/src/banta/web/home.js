@@ -123,22 +123,28 @@ function showLanding() {
 function loginSubmit() {
     var number = $('#login-id-input').val();
     console.log('loginSubmit', number);
-    if (!u.validate.validatePhoneNumber(number)) {
+    if (true && isEmpty(number)) {
+        loginNumber();
+    } else if (!u.validate.validatePhoneNumber(number)) {
         $('#login-alert-div').text('Invalid phone number');
         $('#login-alert-div').show();
         $('#login-id-input').val('');
         $('#login-id-input').focus();
     } else {
-        $('#login-alert-div').hide();
-        state.auth = 'number';
-        server.ajax({
-            type: 'POST',
-            url: '/loginNumber',
-            data: number,
-            success: loginRes,
-            error: loginError
-        });
+        loginNumber(number);
     }
+}
+
+function loginNumber(number) {
+    $('#login-alert-div').hide();
+    state.auth = 'number';
+    server.ajax({
+        type: 'POST',
+        url: '/loginNumber',
+        data: number,
+        success: loginRes,
+        error: loginError
+    });
 }
 
 function showLoggedOut() {
