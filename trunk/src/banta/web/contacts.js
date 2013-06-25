@@ -10,6 +10,9 @@ b.contacts = {
     },
     dom: {
         input: '#contacts-search-input',
+        form: '#contacts-search-form',
+        search: '#contacts-search-search',
+        clear: '#contacts-search-clear',
         tbody: '#contacts-tbody',
     },
 };

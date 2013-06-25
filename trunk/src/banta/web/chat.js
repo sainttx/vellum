@@ -45,7 +45,7 @@ function chatBuild() {
         } else {
             tr.find('span.chat-contact').text('');
         }
-        tr.find('span.chat-time').text(formatDate(state.chat.messages[i].time));
+        tr.find('span.chat-time').text(u.date.format(state.chat.messages[i].time));
         tr.find('span.chat-message').text(state.chat.messages[i].textMessage);
         console.log('chatBuild', state.chat.messages[i].textMessage);
         tr.click(state.chat.messages[i], chatsRowClick);

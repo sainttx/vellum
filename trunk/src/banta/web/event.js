@@ -142,7 +142,7 @@ b.event = {
 
     get: function() {
         return {
-            time: sanitize($('#event-time-input').val()),
+            time: u.string.sanitize($('#event-time-input').val()),
             day: $('#event-day-input').val(),
             duration: $('#event-duration-input').val()
         };

@@ -13,7 +13,7 @@ function locationLive() {
 }
 
 $(document).ready(function() {
-    utilInit();
+    u.init();
     documentLoad();
 });
 
@@ -125,7 +125,7 @@ function showLanding() {
 function loginSubmit() {
     var number = $('#login-id-input').val();
     console.log('loginSubmit', number);
-    if (!validatePhoneNumber(number)) {
+    if (!u.validate.validatePhoneNumber(number)) {
         $('#login-alert-div').text('Invalid phone number');
         $('#login-alert-div').show();
         $('#login-id-input').val('');

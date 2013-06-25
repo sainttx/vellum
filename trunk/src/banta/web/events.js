@@ -31,7 +31,7 @@ function eventsBuild() {
         dom.events.tbody.append(dom.events.trHtml);
         var tr = $("#events-tbody > tr:last-child");
         tr.find('span.event-contact').text(state.events[i].name);
-        tr.find('span.event-time').text(formatDate(arrayLast(state.events[i].messages).time));
+        tr.find('span.event-time').text(u.date.format(arrayLast(state.events[i].messages).time));
         tr.find('span.event-message').text(arrayLast(state.events[i].messages).textMessage);
         tr.click(state.events[i], eventsRowClick);
     }
