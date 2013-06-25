@@ -147,7 +147,7 @@ function contactEditSet(o) {
 
 function contactEditGet() {
     return {
-        name: sanitize($('#contactEdit-name-input').val()),
+        name: u.string.sanitize($('#contactEdit-name-input').val()),
         mobile: $('#contactEdit-mobile-input').val(),
         email: $('#contactEdit-email-input').val()
     };

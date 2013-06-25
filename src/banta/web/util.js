@@ -1,59 +1,95 @@
 
-function utilInit() {
-    utilInitString();
-    utilInitDate();
-    utilInitArray();
-    $.validator.addMethod("sanitary", validateSanitary, "Please enter valid characters only.");    
-}
-
-function utilInitString() {
-    String.prototype.startsWith = function(string) {
-        return this.indexOf(string) === 0;
-    };
-    String.prototype.contains = function(string) {
-        return this.indexOf(string) === 0 || this.indexOf(string) > 0;
-    };
-    if (!String.prototype.format) {
-        String.prototype.format = function() {
-            var args = arguments;
-            return this.replace(/{(\d+)}/g, function(match, number) {
-                return args[number];
-            });
-        };
+var u = {
+    init: function() {
+        u.string.init();
+        u.date.init();
+        u.array.init();
+        u.validate.init();
+    },
+    string: {
+        init: function() {
+            String.prototype.startsWith = function(string) {
+                return this.indexOf(string) === 0;
+            };
+            String.prototype.contains = function(string) {
+                return this.indexOf(string) === 0 || this.indexOf(string) > 0;
+            };
+            if (!String.prototype.format) {
+                String.prototype.format = function() {
+                    var args = arguments;
+                    return this.replace(/{(\d+)}/g, function(match, number) {
+                        return args[number];
+                    });
+                };
+            }
+            if (!String.prototype.isEmpty) {
+                String.prototype.isEmpty = function() {
+                    return isEmpty(this);
+                };
+            }
+        },
+        sanitize: function(text) {
+            return text.replace(/[<>]/gi, '');
+        },
+    },
+    array: {
+        init: function() {
+        },
+    },
+    date: {
+        init: function() {
+            if (!Date.prototype.formatPretty) {
+                Date.prototype.format = function() {
+                    return u.format.format(this);
+                }
+            }
+        },
+        format: function(date) {
+            if (moment().format('MMM Do') === moment(date).format('MMM Do')) {
+                return moment(date).format('h:mm a');
+            } else {
+                return moment(date).format('h:mm a MMM Do');
+            }
+        },
+    },
+    number: {
+        init: function() {
+        },
+    },
+    validate: {
+        init: function() {
+            $.validator.addMethod("sanitary", u.validate.validateSanitary, "Please enter valid characters only.");
+        },
+        validateSanitary: function(value, element) {
+            return !/[<>]/.test(value);
+        },
+        validateDigits: function(value) {
+            return /^\d+$/.test(value);
+        },
+        validateDigitsLength: function(value, minLength, maxLength) {
+            return value && u.validate.validateDigits(value) && value.length >= minLength && value.length <= maxLength;
+        },
+        validatePhoneNumber: function(value) {
+            if (state.env === 'test' && value === '111') {
+                return true;
+            }
+            if (value && value.length >= 10) {
+                if (value.charAt(0) === '+') {
+                }
+                return /^\+?\d+$/.test(value);
+            }
+            return false;
+        },
+        validatorHighlight: function(element) {
+            $(element).closest('.control-group').removeClass('success').addClass('error');
+        },
+        validatorSuccess: function(element) {
+            $(element).addClass('valid');
+            $(element).closest('.control-group').removeClass('error').addClass('success');
+        },
     }
-    if (!String.prototype.isEmpty) {
-        String.prototype.isEmpty = function() {
-            return isEmpty(this);
-        };
-    }
-}
+};
 
-function utilInitArray() {
-}
-
-function utilInitDate() {
-    if (!Date.prototype.formatPretty) {
-        Date.prototype.format = function() {
-            return formatDate(this);
-        }
-    }
-}
-
-function formatDate(date) {
-    if (moment().format('MMM Do') === moment(date).format('MMM Do')) {
-        return moment(date).format('h:mm a');
-    } else {
-        return moment(date).format('h:mm a MMM Do');
-    }
-}
-
-function validateSanitary(value, element){
-    return !/[<>]/.test(value);
-}
-
-function sanitize(text) {
-    return text.replace(/[<>]/gi, '');
-}
 
 function redirectDocument() {
     console.log("redirectDocument " + window.location.protocol);
@@ -94,7 +130,7 @@ function buildTable(tbody, arrayer, list) {
 }
 
 function arrayIndexOf(array, data, matcher) {
-    for (var i = 0 ; i < array.length; i++) {
+    for (var i = 0; i < array.length; i++) {
         if (matcher(array[i], data)) {
             return i;
         }
@@ -102,14 +138,6 @@ function arrayIndexOf(array, data, matcher) {
     return null;
 }
 
-function validatorHighlight(element) {
-    $(element).closest('.control-group').removeClass('success').addClass('error');
-}
-
-function validatorSuccess(element) {
-    $(element).addClass('valid');
-    $(element).closest('.control-group').removeClass('error').addClass('success');
-}
 
 function foreach(array, handler) {
     console.log('foreach', handler.length);
@@ -145,24 +173,4 @@ function assertTrue(message, value) {
     } else {
         return true;
     }
-}
-
-function validateDigits(value) {
-    return /^\d+$/.test(value);
-}
-
-function validateDigitsLength(value, minLength, maxLength) {
-    return value && validateDigits(value) && value.length >= minLength && value.length <= maxLength;
-}
-
-function validatePhoneNumber(value) {
-    if (state.env === 'test' && value === '111') {
-        return true;
-    }
-    if (value && value.length >= 10) {
-        if (value.charAt(0) === '+') {
-        }
-        return /^\+?\d+$/.test(value);
-    }
-    return false;
 }

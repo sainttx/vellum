@@ -27,7 +27,7 @@ function chatsBuild() {
         dom.chats.tbody.append(dom.chats.trHtml);
         var tr = $("#chats-tbody > tr:last-child");
         tr.find('span.chats-contact').text(state.chats[i].name);
-        tr.find('span.chats-time').text(formatDate(arrayLast(state.chats[i].messages).time));
+        tr.find('span.chats-time').text(u.date.format(arrayLast(state.chats[i].messages).time));
         tr.find('span.chats-message').text(arrayLast(state.chats[i].messages).textMessage);
         tr.click(state.chats[i], chatsRowClick);
     }
