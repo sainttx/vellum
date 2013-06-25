@@ -11,6 +11,9 @@ var u = {
             String.prototype.startsWith = function(string) {
                 return this.indexOf(string) === 0;
             };
+            String.prototype.endsWith = function(string) {
+                return this.indexOf(string) === (this.length - string.length);
+            };
             String.prototype.contains = function(string) {
                 return this.indexOf(string) === 0 || this.indexOf(string) > 0;
             };
