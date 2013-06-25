@@ -230,7 +230,7 @@ function Chat(contacts, messages) {
 
 function mockChatMessages(index, contact, time) {
     var chatMessages = [];
-    foreach(mockData.textMessages, function(i, textMessage) {
+    foreach(mockData.textMessages, function(textMessage, i) {
         if (index === 0 || i < index*2 + 4) {
             var chatMessage = null;
             if (i % 2 === 0) {
@@ -248,7 +248,7 @@ function mockChatMessages(index, contact, time) {
 
 function mockInit() {
     var time = new Date();
-    foreach(mockData.contacts, function(i, contact) {
+    foreach(mockData.contacts, function(contact, i) {
         server.log('mockReady', contact);
         time = new Date(time.getTime() - 1000 * 999 * i);
         mockData.chats.push(new Chat([contact], mockChatMessages(i, contact, time)));

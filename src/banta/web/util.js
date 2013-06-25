@@ -112,8 +112,17 @@ function validatorSuccess(element) {
 }
 
 function foreach(array, handler) {
+    console.log('foreach', handler.length);
     for (var i = 0; i < array.length; i++) {
-        handler(i, array[i]);
+        handler(array[i], i);
+    }
+}
+
+function foreachKey(object, handler) {
+    var keys = Object.keys(object);
+    for (var i = 0; i < keys.length; i++) {
+        var value = object[keys[i]];
+        handler(keys[i], value, i);
     }
 }
 
