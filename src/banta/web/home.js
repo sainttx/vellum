@@ -32,10 +32,9 @@ function documentLoad() {
 function componentsLoaded() {
     chatLoaded();
     chatsLoaded();
-    contactsLoaded();
     contactEditLoaded();
     eventsLoaded();
-    console.log('componentsLoaded', b.event);
+    b.contacts.loaded();
     b.event.loaded();    
     homeLoaded();
 }
@@ -65,7 +64,6 @@ function homeLoaded() {
     $('.reload-clickable').click(reloadClick);
     $('.about-clickable').click(aboutClick);
     $('.contact-clickable').click(contactClick);
-    $('.contacts-clickable').click(contactsClick);
     $('.logout-clickable').click(logoutClick);
     $('.chat-clickable').click(chatClick);
     $('.chats-clickable').click(chatsClick);

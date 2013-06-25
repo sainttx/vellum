@@ -11,17 +11,28 @@ b.contacts = {
     dom: {
         input: '#contacts-search-input',
         form: '#contacts-search-form',
-        search: '#contacts-search-search',
-        clear: '#contacts-search-clear',
+        search: '#contacts-search-clickable',
+        clear: '#contacts-search-clear-clickable',
         tbody: '#contacts-tbody',
     },
-};
+    clearClick: function() {
+        console.log('clearClick');
 
-function contactsLoaded() {
-    foreachKey(b.contacts.dom, function(key, value) {
-        b.contacts['$' + key] = $(value);
-    });
-}
+    },
+    searchClick: function() {
+        console.log('searchClick');
+
+    },
+    loaded: function() {
+        $('.contacts-clickable').click(contactsClick);
+        foreachKey(b.contacts.dom, function(key, value) {
+            b.contacts['$' + key] = $(value);
+            if (value.endsWith('-clickable')) {
+                b.contacts['$' + key].click(b.contacts[key + 'Click']);
+            }
+        });
+    },
+};
 
 function contactsClick() {
     console.log("contactsClick", state.purpose);

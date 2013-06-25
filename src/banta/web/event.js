@@ -1,27 +1,24 @@
 
-
 b.event = {
 
-    eventValidatorConfig: {
-        rules: {
-            time: {
-                minlength: 3,
-                required: false,
-                sanitary: true
-            },
-            day: {
-                required: false
-            },
-            duration: {
-                required: false,
-                sanitary: true
-            },
+    rules: {
+        time: {
+            minlength: 3,
+            required: false,
+            sanitary: true
+        },
+        day: {
+            required: false
+        },
+        duration: {
+            required: false,
+            sanitary: true
         },
     },
 
     errorElement: null,
 
-    eventValidator: null,
+    validator: null,
 
     highlight: function(element) {
         console.log("highlight", element);
@@ -48,9 +45,11 @@ b.event = {
     },
 
     loaded: function() {
-        b.event.eventValidatorConfig.highlight = b.event.highlight,
-        b.event.eventValidatorConfig.success = b.event.success;
-        b.event.eventValidator = $('#event-form').validate(b.event.eventValidatorConfig);
+        b.event.validator = $('#event-form').validate({
+            rules: b.event.rules,
+            highlight: b.event.highlight,
+            success: b.event.success
+        });
         $('.event-clickable').click(b.event.click);
         $('#event-save').click(b.event.save);
         $('#event-cancel').click(b.event.cancel);
@@ -58,7 +57,7 @@ b.event = {
     },
 
     cancelFocus: function() {
-        if (b.event.eventValidator.valid()) {
+        if (b.event.validator.valid()) {
             $('#event-save').focus();
         }
     },
@@ -121,7 +120,7 @@ b.event = {
 
     clear: function() {
         console.log("clear", $('#event-form > fieldset > .control-group').length);
-        b.event.eventValidator.resetForm();
+        b.event.validator.resetForm();
         $('#event-cancel').addClass('btn-primary');
         $('#event-save').removeClass('btn-primary');
         b.event.buttons(false);
