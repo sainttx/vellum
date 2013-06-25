@@ -1,16 +1,18 @@
-<p>
-    <a class="btn home-clickable"><i class="icon-home"></i>&nbsp; Home</a>
-    <a class="btn btn-primary contactNew-clickable"><i class="icon-plus-sign"></i>&nbsp; New contact</a>
-</p>
 <form id="contacts-search-form">
     <table>
         <tr style='vertical-align: top'>
+            <td><button type="button" class="btn home-clickable"><i class="icon-home"></i></button>
+            <td><button type="button" class="btn contacts-search-clear-clickable"><i class="icon-remove"></i></button>
             <td><input type="search" id="contacts-search-input"/>
-            <td><button type="button" class="btn" id="contacts-search-clickable"><i class="icon-search"></i>&nbsp; Search</button>
-            <td><button type="button" class="btn" id="contacts-search-clear-clickable"><i class="icon-remove"></i>&nbsp; Clear</button>
+            <td><button type="button" class="btn contacts-search-clickable"><i class="icon-search"></i></button>
+            <td><button type="button" class="btn contactNew-clickable"><i class="icon-plus-sign"></i></button>
     </table>
 </form>
 <table class="table table-striped">
     <tbody id="contacts-tbody">
     </tbody>
 </table>    
+<p>
+    <a class="btn home-clickable"><i class="icon-home"></i>&nbsp; Home</a>
+    <a class="btn contactNew-clickable"><i class="icon-plus-sign"></i>&nbsp; New contact</a>
+</p>

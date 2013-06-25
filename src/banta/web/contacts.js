@@ -11,53 +11,59 @@ b.contacts = {
     dom: {
         input: '#contacts-search-input',
         form: '#contacts-search-form',
-        search: '#contacts-search-clickable',
-        clear: '#contacts-search-clear-clickable',
+        search: '.contacts-search-clickable',
+        clear: '.contacts-search-clear-clickable',
         tbody: '#contacts-tbody',
     },
     clearClick: function() {
         console.log('clearClick');
-
+        event.preventDefault();
+        
+        b.contacts.$input.val('');
+        b.contacts.build(state.contacts, b.contacts.$input.val());
+        b.contacts.$input.focus();
     },
-    searchClick: function() {
+    searchClick: function(event) {
         console.log('searchClick');
-
+        event.preventDefault();
+        b.contacts.build(state.contacts, b.contacts.$input.val());
+        b.contacts.$input.val('');
+        b.contacts.$input.focus();
     },
     loaded: function() {
-        $('.contacts-clickable').click(contactsClick);
         foreachKey(b.contacts.dom, function(key, value) {
             b.contacts['$' + key] = $(value);
             if (value.endsWith('-clickable')) {
                 b.contacts['$' + key].click(b.contacts[key + 'Click']);
             }
         });
+        $('.contacts-clickable').click(contactsClick);
+        b.contacts.$form.submit(b.contacts.searchClick);
     },
+    build: function(contacts, filter) {
+        contacts.sort(compareName);
+        b.contacts.$tbody.empty();
+        for (var i = 0; i < contacts.length; i++) {
+            if (isEmpty(filter) || contacts[i].name.startsWith(filter)) {
+                b.contacts.$tbody.append('<tr><td>' + contacts[i].name + '</td></tr>');
+                b.contacts.$tbody.children('tr:last').click(contacts[i], contactsRowClick);
+            }
+        }
+    },
+
 };
 
 function contactsClick() {
     console.log("contactsClick", state.purpose);
     state.contact = null;
-    contactsBuild(state.contacts);
+    b.contacts.build(state.contacts, null);
     b.contacts.title = b.contacts.defaultTitle;
     if (!isEmpty(state.purpose)) {
         b.contacts.title = b.contacts.purposeTitle[state.purpose];
     }
     showPageObj(b.contacts, null);
     b.contacts.$input.focus();
-}
-
-function contactsIndexOf(name) {
-    return arrayIndexOf(state.contacts, name, matchName);
-}
-
-function contactsBuild(contacts) {
-    contacts.sort(compareName);
-    b.contacts.$tbody.empty();
-    for (var i = 0; i < contacts.length; i++) {
-        b.contacts.$tbody.append('<tr><td>' + contacts[i].name + '</td></tr>');
-        b.contacts.$tbody.children('tr:last').click(contacts[i], contactsRowClick);
-    }
-}
+};
 
 function contactsPut(contact) {
     if (state.contact) {
