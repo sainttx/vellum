@@ -70,7 +70,6 @@ function contactEditCancelFocus(event) {
 
 function contactEdit(contact) {
     state.contact = contact;
-    $('.home-clickable').hide();
     $('.chat-clickable').addClass('btn-primary');
     $('.chat-clickable').show();
     console.log("contactEdit", contact);
@@ -84,8 +83,6 @@ function contactNewClick() {
     setPath('contactNew');
     state.contact = null;
     contactEditClear();    
-    $('.home-clickable').hide();
-    //$('.chat-clickable').hide();
     $('#contactEdit-legend').text('New contact');
     showPage('New contact', 'contactEdit', 'contactNew', null);
     contactEditFocus();

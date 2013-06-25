@@ -238,6 +238,10 @@ function logoutError() {
     console.log("logoutError");
 }
 
+function showPageObj(object, id) {
+    showPage(object.title, object.page, object.path, id);
+}
+
 function showPage(title, page, path, id) {
     $('#title').text(title);
     $('.page-container').hide();

@@ -1,31 +1,47 @@
 
+b.contacts = {
+    page: 'contacts',
+    path: 'contacts',
+    defaultTitle: 'Contacts',
+    purposeTitle: {
+        chat: 'Contact to chat',
+        eventHost: 'Contact to host',
+        eventInvite: 'Contact to invite',
+    },
+    dom: {
+        input: '#contacts-search-input',
+        tbody: '#contacts-tbody',
+    },
+};
 
 function contactsLoaded() {
-    dom.contacts = {};
+    foreachKey(b.contacts.dom, function(key, value) {
+        b.contacts['$' + key] = $(value);
+    });
 }
 
 function contactsClick() {
     console.log("contactsClick", state.purpose);
     state.contact = null;
-    contactsBuild($('#contacts-tbody'), state.contacts);
-    var title = 'Contacts';
-    if (state.purpose && state.purpose === 'chat') {
-        title = 'Contact to chat';
+    contactsBuild(state.contacts);
+    b.contacts.title = b.contacts.defaultTitle;
+    if (!isEmpty(state.purpose)) {
+        b.contacts.title = b.contacts.purposeTitle[state.purpose];
     }
-    $('.home-clickable').show();    
-    showPage(title, 'contacts', 'contacts', null);
+    showPageObj(b.contacts, null);
+    b.contacts.$input.focus();
 }
 
 function contactsIndexOf(name) {
     return arrayIndexOf(state.contacts, name, matchName);
 }
 
-function contactsBuild(tbody, contacts) {
+function contactsBuild(contacts) {
     contacts.sort(compareName);
-    tbody.empty();
+    b.contacts.$tbody.empty();
     for (var i = 0; i < contacts.length; i++) {
-        $('#contacts-tbody').append('<tr><td>' + contacts[i].name + '</td></tr>');
-        $("#contacts-tbody > tr:last-child").click(contacts[i], contactsRowClick);
+        b.contacts.$tbody.append('<tr><td>' + contacts[i].name + '</td></tr>');
+        b.contacts.$tbody.children('tr:last').click(contacts[i], contactsRowClick);
     }
 }
 
