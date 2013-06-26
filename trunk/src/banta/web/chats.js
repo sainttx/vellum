@@ -2,19 +2,17 @@
 b.chats = {
     matcher: function(object, data) {
         return object.name === data;
-    }
+    },
+    loaded: function() {
+        $('#chats-tbody span').text('');
+        $('.chats-clickable').click(chatsClick);
+        $('.chat-new-clickable').click(b.chat.clickNew);
+        dom.chats = {};
+        dom.chats.tbody = $('#chats-tbody');
+        dom.chats.trHtml = dom.chats.tbody.html();
+    },
 };
 
-function chatsLoaded() {
-    $('#chats-tbody span').text('');
-    dom.chats = {};
-    dom.chats.tbody = $('#chats-tbody');
-    dom.chats.trHtml = dom.chats.tbody.html();
-}
-
-function chatsClickable() {
-    return !isEmpty(state.chats);
-}
 
 function chatsClick() {
     console.log('chatsClick');
@@ -58,6 +56,6 @@ function chatsPut(chat) {
 
 function chatsRowClick(event) {
     console.log('chatsRowClick', event.data);
-    chat(event.data);
+    b.chat.chat(event.data);
 }
 

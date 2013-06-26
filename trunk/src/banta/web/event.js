@@ -54,9 +54,7 @@ b.event = {
     },
     edit: function(event) {
         state.event = event;
-        $('.chat-clickable').addClass('btn-primary');
-        $('.chat-clickable').show();
-        console.log("event", event);
+        console.log("event.edit", event);
         b.event.clear();
         b.event.set(event);
         $('#event-legend').text('Edit event');
@@ -64,6 +62,7 @@ b.event = {
     },
     editNew: function() {
         setPath('event');
+        console.log("event.editNew");
         state.event = null;
         b.event.clear();
         $('#event-legend').text('New event');

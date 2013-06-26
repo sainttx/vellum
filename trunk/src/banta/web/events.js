@@ -20,7 +20,7 @@ b.events = {
         showPage('Events', 'events', 'events', null);
     },
     build: function() {
-        console.warn('eventsBuild', state.events.length);
+        console.warn('events.build', state.events.length);
         state.events.sort(compareName);
         b.events.tbody.empty();
         for (var i = 0; i < state.events.length; i++) {
@@ -29,14 +29,14 @@ b.events = {
             tr.find('span.event-contact').text(state.events[i].name);
             tr.find('span.event-time').text(u.date.format(arrayLast(state.events[i].messages).time));
             tr.find('span.event-message').text(arrayLast(state.events[i].messages).textMessage);
-            tr.click(state.events[i], b.events.rowClick);
+            tr.click(state.events[i], b.events.chosen);
         }
     },
     put: function(object) {
-        console.log('put', object);
+        console.log('events.put', object);
     },
-    rowClick: function(e) {
-        console.log('rowClick', e.data);
+    chosen: function(e) {
+        console.log('events.chosen', e.data);
         b.event.edit(e.data);
     },
 };
