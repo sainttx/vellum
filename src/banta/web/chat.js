@@ -5,8 +5,7 @@ function chatClick() {
     } else if (state.contact) {
         console.warn('chatClick', state.contact);
     } else {
-        state.purpose = 'chat';
-        contactsClick();
+        b.contacts.choose('chat', chatNew);
     }
 }
 

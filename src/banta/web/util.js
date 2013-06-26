@@ -6,6 +6,11 @@ var u = {
         u.array.init();
         u.validate.init();
     },
+    object: {
+        containsKey: function(object, key) {
+            return u.number.ge(u.array.indexOf(Object.keys(object), key), 0);
+        },
+    },
     string: {
         init: function() {
             String.prototype.startsWith = function(string) {
@@ -38,6 +43,32 @@ var u = {
     array: {
         init: function() {
         },
+        indexOf: function(array, data, matcher) {
+            if (matcher) {
+                return u.array.matchIndexOf(array, data, matcher);
+            }
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] === data) {
+                    return i;
+                }
+            }
+            return null;
+        },
+        matchIndexOf: function(array, data, matcher) {
+            for (var i = 0; i < array.length; i++) {
+                if (matcher) {
+                    if (matcher(array[i], data)) {
+                        return i;
+                    }
+                } else {
+
+                }
+            }
+            return null;
+        },
+        contains: function(array, data, matcher) {
+            return u.number.ge(u.array.indexOf(array, data, matcher), 0);
+        }
     },
     date: {
         init: function() {
@@ -58,21 +89,24 @@ var u = {
     number: {
         init: function() {
         },
+        ge: function(number, value) {
+            return number && number !== null && number >= value;
+        },
     },
     validate: {
         init: function() {
-            $.validator.addMethod("sanitary", u.validate.validateSanitary, "Please enter valid characters only.");
+            $.validator.addMethod("sanitary", u.validate.sanitary, "Please enter valid characters only.");
         },
-        validateSanitary: function(value, element) {
+        sanitary: function(value, element) {
             return !/[<>]/.test(value);
         },
-        validateDigits: function(value) {
+        digits: function(value) {
             return /^\d+$/.test(value);
         },
-        validateDigitsLength: function(value, minLength, maxLength) {
-            return value && u.validate.validateDigits(value) && value.length >= minLength && value.length <= maxLength;
+        digitsLength: function(value, minLength, maxLength) {
+            return value && u.validate.digits(value) && value.length >= minLength && value.length <= maxLength;
         },
-        validatePhoneNumber: function(value) {
+        phoneNumber: function(value) {
             if (state.env === 'test' && value === '111') {
                 return true;
             }
@@ -83,10 +117,10 @@ var u = {
             }
             return false;
         },
-        validatorHighlight: function(element) {
+        highlight: function(element) {
             $(element).closest('.control-group').removeClass('success').addClass('error');
         },
-        validatorSuccess: function(element) {
+        success: function(element) {
             $(element).addClass('valid');
             $(element).closest('.control-group').removeClass('error').addClass('success');
         },
@@ -131,16 +165,6 @@ function buildTable(tbody, arrayer, list) {
         tbody.append(buildTr(arrayer(list[i])));
     }
 }
-
-function arrayIndexOf(array, data, matcher) {
-    for (var i = 0; i < array.length; i++) {
-        if (matcher(array[i], data)) {
-            return i;
-        }
-    }
-    return null;
-}
-
 
 function foreach(array, handler) {
     console.log('foreach', handler.length);
