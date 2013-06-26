@@ -69,11 +69,12 @@ b.contacts = {
         b.contacts.click();
     },
     contactRowClick: function(event) {
-        console.log('contacts.contactRowClick', state.purpose);
+        state.contact = event.data;
+        console.log('contacts.contactRowClick', state.purpose, state.contact);
         if (!isEmpty(state.purpose) && !isEmpty(state.chosen)) {
-            state.chosen(event.data);
+            state.chosen(state.contact);
         } else {
-            contactEdit(event.data);
+            contactEdit(state.contact);
         }
     },
     put: function(contact) {
