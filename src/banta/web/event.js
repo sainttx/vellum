@@ -46,6 +46,20 @@ b.event = {
         $('#event-save').click(b.event.save);
         $('#event-cancel').click(b.event.cancel);
         $('#event-cancel').focus(b.event.cancelFocus);
+        $('#event-date-input').datepicker();
+        $('#event-date-input').datepicker("option", "dateFormat", "DD, d MM, yy");
+        $('#event-duration-input').autocomplete({
+            source: ['30m', '45m', '1h', '2h', '3h', '4h', '1d']
+        });        
+        $('#event-reminder-input').autocomplete({
+            source: ['15m', '45m', '1h', '2h', '1d', '2d']
+        });        
+    },
+    loggedIn: function() {
+        state.contactNames = u.array.extractValues(state.contacts, 'name');
+        $('#event-host-input').autocomplete({
+            source: state.contactNames
+        });        
     },
     cancelFocus: function() {
         if (b.event.validator.valid()) {
@@ -117,7 +131,7 @@ b.event = {
             time: '',
             date: '',
             day: '',
-            duration: ''
+            duration: '1h'
         });
     },
     set: function(o) {
