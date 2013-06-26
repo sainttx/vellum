@@ -1,4 +1,13 @@
 
+b.contactEdit = {
+    loaded: function() {
+        contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
+        $('.contactNew-clickable').click(contactNewClick);
+        $('#contactEdit-save').click(contactEditSave);
+        $('#contactEdit-cancel').click(contactEditCancel);
+        $('#contactEdit-cancel').focus(contactEditCancelFocus);
+    },
+};
 
 var contactEditValidatorConfig = {
     rules: {
@@ -50,14 +59,6 @@ function contactEditButtons(ok) {
 
 var contactEditValidator = null;
 
-function contactEditLoaded() {
-    contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
-    $('.contactNew-clickable').click(contactNewClick);
-    $('#contactEdit-save').click(contactEditSave);
-    $('#contactEdit-cancel').click(contactEditCancel);
-    $('#contactEdit-cancel').focus(contactEditCancelFocus);
-}
-
 function contactEditClickable() {
     return contactEditValidator !== null;
 }
@@ -70,8 +71,6 @@ function contactEditCancelFocus(event) {
 
 function contactEdit(contact) {
     state.contact = contact;
-    $('.chat-clickable').addClass('btn-primary');
-    $('.chat-clickable').show();
     console.log("contactEdit", contact);
     contactEditClear();
     contactEditSet(contact);

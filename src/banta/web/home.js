@@ -19,20 +19,19 @@ $(document).ready(function() {
 
 function documentLoad() {
     console.log('documentLoad', window.location.hostname);
-    state.loadedComponentsCount = 7;
+    state.loadedComponentsCount = 6;
     load('contacts');
     load('contactEdit');
     load('chats');
     load('chat');
-    load('chatContacts');
     load('events');
     load('event');
 }
 
 function componentsLoaded() {
-    chatLoaded();
-    chatsLoaded();
-    contactEditLoaded();
+    b.chat.loaded();
+    b.chats.loaded();
+    b.contactEdit.loaded();
     b.contacts.loaded();
     b.events.loaded();
     b.event.loaded();    
@@ -65,8 +64,6 @@ function homeLoaded() {
     $('.about-clickable').click(aboutClick);
     $('.contact-clickable').click(contactClick);
     $('.logout-clickable').click(logoutClick);
-    $('.chat-clickable').click(chatClick);
-    $('.chats-clickable').click(chatsClick);
     $('#login-submit').click(loginSubmit);    
 }
 
