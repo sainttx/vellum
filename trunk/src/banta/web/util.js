@@ -61,14 +61,20 @@ var u = {
                         return i;
                     }
                 } else {
-
                 }
             }
             return null;
         },
         contains: function(array, data, matcher) {
             return u.number.ge(u.array.indexOf(array, data, matcher), 0);
-        }
+        },
+        extractValues: function(array, key) {
+            var values = [];
+            for (var i = 0; i < array.length; i++) {
+                values.push(array[i][key]);
+            }
+            return values;
+        },
     },
     date: {
         init: function() {

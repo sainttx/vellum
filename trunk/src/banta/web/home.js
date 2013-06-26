@@ -196,6 +196,7 @@ function loginRes(res) {
         }
         var path = $.cookie('path');
         console.log('loginRes path', path);
+        b.event.loggedIn();
         if (!isEmpty(path)) {
             windowLocation(path);
         } else {
