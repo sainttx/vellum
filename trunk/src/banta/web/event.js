@@ -62,9 +62,12 @@ b.event = {
     },
     editNew: function() {
         setPath('event');
-        console.log("event.editNew");
+        console.log('event.editNew', state.contact);
         state.event = null;
         b.event.clear();
+        if (state.contact) {
+            $('#event-host-input').val(state.contact.name);
+        }
         $('#event-legend').text('New event');
         showPage('New event', 'event', 'event', null);
         b.event.focus();
@@ -109,16 +112,20 @@ b.event = {
         b.event.buttons(false);
         $('#event-form > fieldset > div.control-group').removeClass('error');
         $('#event-form > fieldset > div.control-group').removeClass('success');
-        b.event.set({
+       b.event.set({
+            host: '',
             time: '',
+            date: '',
             day: '',
             duration: ''
         });
     },
     set: function(o) {
-        $('#event-name-input').val(o.name);
-        $('#event-mobile-input').val(o.mobile);
-        $('#event-email-input').val(o.email);
+        $('#event-host-input').val(o.host);
+        $('#event-time-input').val(o.time);
+        $('#event-date-input').val(o.date);
+        $('#event-day-input').val(o.day);
+        $('#event-duration-input').val(o.duration);
     },
     get: function() {
         return {
