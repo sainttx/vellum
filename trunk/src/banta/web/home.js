@@ -33,8 +33,8 @@ function componentsLoaded() {
     chatLoaded();
     chatsLoaded();
     contactEditLoaded();
-    eventsLoaded();
     b.contacts.loaded();
+    b.events.loaded();
     b.event.loaded();    
     homeLoaded();
 }
@@ -92,15 +92,15 @@ function windowLocation(pathname) {
     } else if (pathname === '/#contactUs') {
         contactClick();
     } else if (pathname === '/#events') {
-        eventsClick();
+        b.events.click();
     } else if (pathname.startsWith('/#event')) {
-        eventsClick();
+        b.events.click();
     } else if (pathname === '/#aboutUs') {
         aboutClick();
     } else if (pathname === '/#contacts') {
-        contactsClick();
+        b.contacts.click();
     } else if (pathname.startsWith('/#contactEdit/')) {
-        contactsClick();
+        b.contacts.click();
     } else if (pathname === '/#contactNew') {
         contactNewClick();
     } else if (pathname === '/#chats') {
@@ -125,7 +125,7 @@ function loginSubmit() {
     console.log('loginSubmit', number);
     if (true && isEmpty(number)) {
         loginNumber();
-    } else if (!u.validate.validatePhoneNumber(number)) {
+    } else if (!u.validate.phoneNumber(number)) {
         $('#login-alert-div').text('Invalid phone number');
         $('#login-alert-div').show();
         $('#login-id-input').val('');

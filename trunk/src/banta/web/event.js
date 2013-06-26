@@ -1,6 +1,5 @@
 
 b.event = {
-
     rules: {
         time: {
             minlength: 3,
@@ -15,11 +14,8 @@ b.event = {
             sanitary: true
         },
     },
-
     errorElement: null,
-
     validator: null,
-
     highlight: function(element) {
         console.log("highlight", element);
         $(element).closest('.control-group').removeClass('success').addClass('error');
@@ -27,13 +23,11 @@ b.event = {
         $(element).focus();
         errorElement = element;
     },
-
     success: function(element) {
         console.log("success");
         $(element).closest('.control-group').removeClass('error').addClass('success');
         b.event.buttons(true);
     },
-
     buttons: function(ok) {
         if (ok) {
             $('#event-save').addClass('btn-primary');
@@ -43,26 +37,22 @@ b.event = {
             $('#event-cancel').addClass('btn-primary');
         }
     },
-
     loaded: function() {
         b.event.validator = $('#event-form').validate({
             rules: b.event.rules,
             highlight: b.event.highlight,
             success: b.event.success
         });
-        $('.event-clickable').click(b.event.click);
         $('#event-save').click(b.event.save);
         $('#event-cancel').click(b.event.cancel);
         $('#event-cancel').focus(b.event.cancelFocus);
     },
-
     cancelFocus: function() {
         if (b.event.validator.valid()) {
             $('#event-save').focus();
         }
     },
-
-    event: function(event) {
+    edit: function(event) {
         state.event = event;
         $('.chat-clickable').addClass('btn-primary');
         $('.chat-clickable').show();
@@ -72,8 +62,7 @@ b.event = {
         $('#event-legend').text('Edit event');
         showPage('Edit event', 'event', 'event', event.name);
     },
-
-    click: function() {
+    editNew: function() {
         setPath('event');
         state.event = null;
         b.event.clear();
@@ -81,7 +70,6 @@ b.event = {
         showPage('New event', 'event', 'event', null);
         b.event.focus();
     },
-
     save: function(event) {
         console.log("save");
         event.preventDefault();
@@ -101,23 +89,19 @@ b.event = {
             b.event.buttons(false);
         }
     },
-
     res: function(res) {
         console.log('res');
         console.log(res);
-        eventsClick();
+        b.events.click();
     },
-
     error: function() {
         console.log('error');
     },
-
     cancel: function() {
         console.log("cancel");
         b.event.clear();
-        eventsClick();
+        b.events.click();
     },
-
     clear: function() {
         console.log("clear", $('#event-form > fieldset > .control-group').length);
         b.event.validator.resetForm();
@@ -132,13 +116,11 @@ b.event = {
             duration: ''
         });
     },
-
     set: function(o) {
         $('#event-name-input').val(o.name);
         $('#event-mobile-input').val(o.mobile);
         $('#event-email-input').val(o.email);
     },
-
     get: function() {
         return {
             time: u.string.sanitize($('#event-time-input').val()),
@@ -146,9 +128,15 @@ b.event = {
             duration: $('#event-duration-input').val()
         };
     },
-
     focus: function() {
         $('#event-time-input').focus();
     },
-
+    clickNew: function() {
+        console.log('event.clickNew');
+        b.contacts.choose('eventHost', b.event.chosenContactHost);
+    },
+    chosenContactHost: function(contact) {
+        console.log('event.chosenContactHost', contact);
+        b.event.editNew();
+    },
 };

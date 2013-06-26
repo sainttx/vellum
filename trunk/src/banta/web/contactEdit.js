@@ -111,7 +111,7 @@ function contactEditSave(event) {
 function contactEditRes(res) {
     console.log('contactEditRes');
     console.log(res);
-    contactsClick();
+    b.contacts.click();
 }
 
 function contactEditError() {
@@ -121,7 +121,7 @@ function contactEditError() {
 function contactEditCancel() {
     console.log("contactEditCancel");
     contactEditClear();
-    contactsClick();
+    b.contacts.click();
 }
 
 function contactEditClear() {

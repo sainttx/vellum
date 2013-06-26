@@ -1,4 +1,10 @@
 
+b.chats = {
+    matcher: function(object, data) {
+        return object.name === data;
+    }
+};
+
 function chatsLoaded() {
     $('#chats-tbody span').text('');
     dom.chats = {};
@@ -35,12 +41,12 @@ function chatsBuild() {
 
 function chatsPut(chat) {
     if (state.chat) {
-        var index = chatsIndexOf(state.chat.name);
+        var index = u.array.indexOf(state.chats, state.chat.name, b.chats.matcher);
         if (index >= 0) {
             state.chats[index] = chat;
         }
     } else {
-        var index = chatsIndexOf(chat.name);
+        var index = u.array.indexOf(state.chats, chat.name, b.chats.matcher);
         if (index !== null && index >= 0) {
             console.log('chatsPut', chat.name, index);
             state.chats[index] = chat;

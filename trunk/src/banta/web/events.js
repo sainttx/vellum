@@ -1,64 +1,42 @@
 
-function eventsLoaded() {
-    $('.events-clickable').click(eventsClick);    
-    dom.events = {};
-    if (false) {
-        $('#events-tbody span').text('');
-    }
-    dom.events.tbody = $('#events-tbody');
-    dom.events.trHtml = dom.events.tbody.html();
-}
 
-function eventsClickable() {
-    return !isEmpty(state.events);
-}
-
-function eventsClick() {
-    console.log('eventsClick', state.events);
-    if (isEmpty(state.events)) {
-        console.warn('eventsClick no events');
-    } else {
-        eventsBuild();
-    }
-    showPage('Events', 'events', 'events', null);
-}
-
-function eventsBuild() {
-    console.warn('eventsBuild', state.events.length);
-    state.events.sort(compareName);
-    dom.events.tbody.empty();
-    for (var i = 0; i < state.events.length; i++) {
-        dom.events.tbody.append(dom.events.trHtml);
-        var tr = $("#events-tbody > tr:last-child");
-        tr.find('span.event-contact').text(state.events[i].name);
-        tr.find('span.event-time').text(u.date.format(arrayLast(state.events[i].messages).time));
-        tr.find('span.event-message').text(arrayLast(state.events[i].messages).textMessage);
-        tr.click(state.events[i], eventsRowClick);
-    }
-}
-
-function eventsPut(event) {
-    if (true) {
-        return;
-    }
-    if (state.chat) {
-        var index = eventsIndexOf(state.chat.name);
-        if (index >= 0) {
-            state.events[index] = event;
+b.events = {
+    loaded: function() {
+        $('.events-clickable').click(b.events.click);
+        $('.event-new-clickable').click(b.event.clickNew);
+        if (false) {
+            $('#events-tbody span').text('');
         }
-    } else {
-        var index = eventsIndexOf(event.name);
-        if (index !== null && index >= 0) {
-            console.log('eventsPut', event.name, index);
-            state.events[index] = event;
+        b.events.tbody = $('#events-tbody');
+        b.events.trHtml = b.events.tbody.html();
+    },
+    click: function() {
+        console.log('click', state.events);
+        if (isEmpty(state.events)) {
+            console.warn('click no events');
         } else {
-            state.events.push(event);
+            b.events.build();
         }
-    }
-}
-
-function eventsRowClick(event) {
-    console.log('eventsRowClick', event.data);
-    chat(event.data);
-}
-
+        showPage('Events', 'events', 'events', null);
+    },
+    build: function() {
+        console.warn('eventsBuild', state.events.length);
+        state.events.sort(compareName);
+        b.events.tbody.empty();
+        for (var i = 0; i < state.events.length; i++) {
+            b.events.tbody.append(b.events.trHtml);
+            var tr = $("#events-tbody > tr:last-child");
+            tr.find('span.event-contact').text(state.events[i].name);
+            tr.find('span.event-time').text(u.date.format(arrayLast(state.events[i].messages).time));
+            tr.find('span.event-message').text(arrayLast(state.events[i].messages).textMessage);
+            tr.click(state.events[i], b.events.rowClick);
+        }
+    },
+    put: function(object) {
+        console.log('put', object);
+    },
+    rowClick: function(e) {
+        console.log('rowClick', e.data);
+        b.event.edit(e.data);
+    },
+};
