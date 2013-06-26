@@ -38,12 +38,12 @@ b.chats = {
     },
     put: function(chat) {
         if (state.chat) {
-            var index = u.array.indexOf(state.chats, state.chat.name, b.chats.matcher);
+            var index = u.array.matchIndexOf(state.chats, state.chat.name, b.chats.matcher);
             if (index >= 0) {
                 state.chats[index] = chat;
             }
         } else {
-            var index = u.array.indexOf(state.chats, chat.name, b.chats.matcher);
+            var index = u.array.matchIndexOf(state.chats, chat.name, b.chats.matcher);
             if (index !== null && index >= 0) {
                 console.log('chatsPut', chat.name, index);
                 state.chats[index] = chat;

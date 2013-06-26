@@ -5,10 +5,21 @@ var u = {
         u.date.init();
         u.array.init();
         u.validate.init();
+        u.event.init();
     },
     object: {
         containsKey: function(object, key) {
             return u.number.ge(u.array.indexOf(Object.keys(object), key), 0);
+        },
+        makeCompare: function(property) {
+            return function(a, b) {
+                if (a[property] === b[property]) {
+                    return 0;
+                } else if (a[property].toLowerCase() > b[property].toLowerCase()) {
+                    return 1;
+                }
+                return -1;
+            }
         },
     },
     string: {
@@ -43,36 +54,65 @@ var u = {
     array: {
         init: function() {
         },
-        indexOf: function(array, data, matcher) {
-            if (matcher) {
-                return u.array.matchIndexOf(array, data, matcher);
-            }
+        indexOf: function(array, element) {
             for (var i = 0; i < array.length; i++) {
-                if (array[i] === data) {
+                if (array[i] === element) {
                     return i;
                 }
             }
-            return null;
+            return -1;
         },
         matchIndexOf: function(array, data, matcher) {
             for (var i = 0; i < array.length; i++) {
-                if (matcher) {
-                    if (matcher(array[i], data)) {
-                        return i;
-                    }
-                } else {
+                if (matcher(array[i], data)) {
+                    return i;
                 }
             }
-            return null;
+            return -1;
+        },
+        addAll: function(array, other) {
+            for (var i = 0; i < other.length; i++) {
+                array.push(other[i]);
+            }
+            return array;
         },
         contains: function(array, data, matcher) {
-            return u.number.ge(u.array.indexOf(array, data, matcher), 0);
+            return u.array.matchIndexOf(array, data, matcher) >= 0;
+        },
+        remove: function(array, element) {
+            var index = u.array.indexOf(array, element);
+            if (index >= 0) {
+                array.splice(index, 1);
+            }
+            return array;
+        },
+        removeAll: function(array, other) {
+            var arr = [];
+            for (var i = 0; i < array.length; i++) {
+                if (!u.array.contains(other, array[i])) {
+                    arr.push(array[i]);
+                }
+            }
+            array.length = 0;
+            u.array.addAll(array, arr);
+            return array;
+        },
+        newRemoveAll: function(array, other) {
+            var arr = [];
+            for (var i = 0; i < array.length; i++) {
+                if (!u.array.contains(other, array[i])) {
+                    arr.push(array[i]);
+                }
+            }
+            return arr;
         },
         extractValues: function(array, key) {
             var values = [];
             for (var i = 0; i < array.length; i++) {
+                //console.log('array.extractValues', i, array[i], array[i][key]);
                 values.push(array[i][key]);
             }
+            console.log('array.extractValues', array.length, key, values);
             return values;
         },
     },
@@ -98,6 +138,9 @@ var u = {
         ge: function(number, value) {
             return number && number !== null && number >= value;
         },
+        isIndex: function(number) {
+            return u.number.ge(number, 0);
+        }
     },
     validate: {
         init: function() {
@@ -130,7 +173,16 @@ var u = {
             $(element).addClass('valid');
             $(element).closest('.control-group').removeClass('error').addClass('success');
         },
-    }
+    },
+    event: {
+        init: function() {
+        },
+        makeGetData: function(handler) {
+            return function(event) {
+                handler(event.data);
+            };
+        },
+    },
 };
 
 
