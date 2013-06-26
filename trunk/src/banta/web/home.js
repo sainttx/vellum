@@ -62,7 +62,7 @@ function homeLoaded() {
     $('.home-clickable').click(homeClick);
     $('.reload-clickable').click(reloadClick);
     $('.about-clickable').click(aboutClick);
-    $('.contact-clickable').click(contactClick);
+    $('.contactus-clickable').click(contactUsClick);
     $('.logout-clickable').click(logoutClick);
     $('#login-submit').click(loginSubmit);    
 }
@@ -87,7 +87,7 @@ function windowLocation(pathname) {
     if (pathname === '/#home') {
         homeClick();
     } else if (pathname === '/#contactUs') {
-        contactClick();
+        contactUsClick();
     } else if (pathname === '/#events') {
         b.events.click();
     } else if (pathname.startsWith('/#event')) {
@@ -101,9 +101,9 @@ function windowLocation(pathname) {
     } else if (pathname === '/#contactNew') {
         contactNewClick();
     } else if (pathname === '/#chats') {
-        chatsClick();
+        b.chats.click();
     } else if (pathname.startsWith('/#chat/')) {
-        chatsClick();
+        b.chats.click();
     } else {
         homeClick();
     }
@@ -290,7 +290,7 @@ function homeClick() {
     }
 }
 
-function contactClick() {
+function contactUsClick() {
     setPath('cotactUs');
     $('#title').text('Contact us');
     $('.nav-item').removeClass("active");

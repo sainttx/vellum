@@ -38,8 +38,11 @@ b.chat = {
             tr.find('span.chat-time').text(u.date.format(state.chat.messages[i].time));
             tr.find('span.chat-message').text(state.chat.messages[i].textMessage);
             console.log('chatBuild', state.chat.messages[i].textMessage);
-            tr.click(state.chat.messages[i], chatsRowClick);
+            tr.click(state.chat.messages[i], b.chat.messageRowClick);
         }
+    },
+    messageRowClick: function(e) {
+        console.log('chat.messageRowClick', e.data);
     },
     chosenContact: function(contact) {
         console.log('chat.chosenContact', contact);
