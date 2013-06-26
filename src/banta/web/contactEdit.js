@@ -2,7 +2,6 @@
 b.contactEdit = {
     loaded: function() {
         contactEditValidator = $('#contactEdit-form').validate(contactEditValidatorConfig);
-        $('.contactNew-clickable').click(contactNewClick);
         $('#contactEdit-save').click(contactEditSave);
         $('#contactEdit-cancel').click(contactEditCancel);
         $('#contactEdit-cancel').focus(contactEditCancelFocus);
@@ -94,7 +93,7 @@ function contactEditSave(event) {
     if ($('#contactEdit-form').valid()) {
         var contact = contactEditGet();
         console.log("contactEditSave", contact);
-        contactsPut(contact);
+        db.contacts.put(contact);
         server.ajax({
             url: '/contactEdit',
             data: $('#contactEdit-form').serialize(),

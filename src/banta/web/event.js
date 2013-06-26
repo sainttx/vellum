@@ -42,7 +42,7 @@ b.event = {
             success: b.event.success
         });
         $('#event-save').click(b.event.save);
-        $('#event-add-invitee').click(b.event.addInvitee);
+        $('#event-add-invitee').click(b.event.addInviteeClick);
         $('#event-cancel').click(b.event.cancel);
         $('#event-cancel').focus(b.event.cancelFocus);
         $('#event-date-input').datepicker();
@@ -63,25 +63,41 @@ b.event = {
         $('#event-host-input').autocomplete({
             source: state.contactNames
         });
-        b.event.reset();
     },
-    reset: function() {
-        state.invitees = [];
-        state.availableInvitees = state.contacts.slice(0);
+    clickNew: function() {
+        console.log('event.clickNew');
+        state.event = null;
+        b.event.clear();
+        if (state.contact) {
+            $('#event-host-input').val(state.contact.name);
+        }
+        $('#event-legend').text('New event');
+        b.event.showPage();
+        b.event.focus();
     },
-    removeAvailableInvitee: function(contact) {
-        u.array.remove(state.availableInvitees, contact);
-        $('#event-invite-input').autocomplete({
-            source: state.availableInvitees
-        });
+    clickHost: function() {
+        console.log('event.clickHost');
+        b.contacts.choose('eventHost', b.event.hostChosen);
     },
-    addInvitee: function() {
-        b.contacts.choose('eventHost', b.event.inviteeChoosen);
+    hostChosen: function(contact) {
+        console.log('event.chosenContactHost', contact);
+        u.array.remove(state.invitees, contact);
+        b.event.setAvailableInvitees();
+        showPage();
     },
-    inviteeChoosen: function(contact) {
-        console.log('event.inviteeChoosen', contact);
-        state.invitees.push(contact);
-        b.event.removeAvailableInvitee(contact);
+    addInviteeClick: function() {
+        b.contacts.chooseMulti('eventInvitee', b.event.inviteesChosen, state.invitees);
+    },
+    inviteesChosen: function(contacts) {
+        console.log('event.inviteeChoosen', contacts.length);
+        state.invitees = contacts;
+        b.event.buildInvitees();
+        b.event.showPage();        
+    },
+    inviteeRemoveChosen: function(contact) {
+        console.log('event.removeInvitee', contact);
+        u.array.remove(state.invitees, contact);
+        b.event.buildInvitees();
     },
     cancelFocus: function() {
         if (b.event.validator.valid()) {
@@ -96,29 +112,18 @@ b.event = {
         $('#event-legend').text('Edit event');
         showPage('Edit event', 'event', 'event', event.name);
     },
-    editNew: function() {
-        setPath('event');
-        console.log('event.editNew', state.contact);
-        state.event = null;
-        b.event.clear();
-        if (state.contact) {
-            $('#event-host-input').val(state.contact.name);
-        }
-        $('#event-legend').text('New event');
+    showPage: function() {
         showPage('New event', 'event', 'event', null);
-        b.event.focus();
+
     },
-    build: function(contacts) {
-        contacts.sort(u.object.makeCompare('name'));
+    buildInvitees: function() {
+        state.invitees.sort(u.object.makeCompare('name'));
         b.event.$tbody.empty();
-        for (var i = 0; i < contacts.length; i++) {
-            tbody.append('<tr><td>' + contacts[i].name + '</td></tr>');
-            tbody.children('tr:last').click(contacts[i], u.event.makeGetData(b.event.removeInvitee));
+        for (var i = 0; i < state.invitees.length; i++) {
+            b.event.$tbody.append('<tr><td>' + state.invitees[i].name + '</td></tr>');
+            b.event.$tbody.children('tr:last').click(state.invitees[i], u.event.makeGetData(b.event.inviteeRemoveChosen));
         }
         b.event.$tbody.show();
-    },
-    removeInvitee: function(contact) {
-        console.log('event.r',e ceontact);
     },
     save: function(event) {
         console.log("save");
@@ -153,7 +158,8 @@ b.event = {
         b.events.click();
     },
     clear: function() {
-        console.log("clear", $('#event-form > fieldset > .control-group').length);
+        console.log("clear");
+        state.invitees = [];
         b.event.validator.resetForm();
         $('#event-cancel').addClass('btn-primary');
         $('#event-save').removeClass('btn-primary');
@@ -184,15 +190,5 @@ b.event = {
     },
     focus: function() {
         $('#event-time-input').focus();
-    },
-    clickNew: function() {
-        console.log('event.clickNew');
-        u.event.reset();
-        b.contacts.choose('eventHost', b.event.hostChosen);
-    },
-    hostChosen: function(contact) {
-        console.log('event.chosenContactHost', contact);
-        b.event.removeAvailableInvitee(contact);
-        b.event.editNew();
     },
 };

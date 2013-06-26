@@ -27,6 +27,16 @@ var u = {
             String.prototype.startsWith = function(string) {
                 return this.indexOf(string) === 0;
             };
+            String.prototype.indexOfIgnoreCase = function(string) {
+                var index = this.indexOf(string);
+                if (index >= 0) {
+                    return index;
+                }
+                return this.toLowerCase().indexOf(string.toLowerCase());
+            };
+            String.prototype.startsWithIgnoreCase = function(string) {
+                return this.indexOfIgnoreCase(string) === 0;
+            };
             String.prototype.endsWith = function(string) {
                 return this.indexOf(string) === (this.length - string.length);
             };
@@ -76,8 +86,8 @@ var u = {
             }
             return array;
         },
-        contains: function(array, data, matcher) {
-            return u.array.matchIndexOf(array, data, matcher) >= 0;
+        contains: function(array, element) {
+            return u.array.indexOf(array, element) >= 0;
         },
         remove: function(array, element) {
             var index = u.array.indexOf(array, element);
