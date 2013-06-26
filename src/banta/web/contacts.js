@@ -56,7 +56,7 @@ b.contacts = {
         for (var i = 0; i < contacts.length; i++) {
             if (isEmpty(filter) || contacts[i].name.startsWith(filter)) {
                 b.contacts.$tbody.append('<tr><td>' + contacts[i].name + '</td></tr>');
-                b.contacts.$tbody.children('tr:last').click(contacts[i], b.contacts.chosen);
+                b.contacts.$tbody.children('tr:last').click(contacts[i], b.contacts.contactRowClick);
             }
         }
     },
@@ -68,8 +68,8 @@ b.contacts = {
         }
         b.contacts.click();
     },
-    chosen: function(event) {
-        console.log('contacts.chosen', state.purpose);
+    contactRowClick: function(event) {
+        console.log('contacts.contactRowClick', state.purpose);
         if (!isEmpty(state.purpose) && !isEmpty(state.chosen)) {
             state.chosen(event.data);
         } else {
