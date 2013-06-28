@@ -91,20 +91,20 @@ b.contacts = {
     },
     reduceClick: function(event) {
         console.log('reduceClick');
-        render(event, state.selectedContacts);
+        b.contacts.render(event, state.selectedContacts);
     },
     expandClick: function(event) {
         console.log('expandClick');
-        render(event);
+        b.contacts.render(event);
     },
     clearClick: function(event) {
         console.log('clearClick');
         state.selectedContacts = [];
-        render(event);
+        b.contacts.render(event);
     },
     searchClick: function(event) {
         console.log('searchClick', event);
-        render(event);
+        b.contacts.render(event);
     },
     render: function(event, contacts) {
         event.preventDefault();
