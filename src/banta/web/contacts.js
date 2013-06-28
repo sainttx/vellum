@@ -31,11 +31,11 @@ b.contacts = {
         b.contacts.$form.submit(b.contacts.searchClick);
     },
     newClick: function() {
-        contactNewClick();
+        b.contactEdit.newClick();
     },
     editClick: function() {
         if (state.selectedContacts.length === 1) {
-            contactEdit(state.selectedContacts[0]);
+            b.contactEdit.edit(state.selectedContacts[0]);
         }
     },
     click: function() {
@@ -142,7 +142,7 @@ b.contacts = {
     contactRowClick: function(event) {
         state.contact = event.data;
         if (isEmpty(state.purpose)) {
-            contactEdit(state.contact);
+            b.contactEdit.edit(state.contact);
         } else if (!isEmpty(state.chosenContact)) {
             state.chosenContact(state.contact);
         } else {

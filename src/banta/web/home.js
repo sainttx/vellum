@@ -99,7 +99,7 @@ function windowLocation(pathname) {
     } else if (pathname.startsWith('/#contactEdit/')) {
         b.contacts.click();
     } else if (pathname === '/#contactNew') {
-        contactNewClick();
+        b.contactEdit.newClick();
     } else if (pathname === '/#chats') {
         b.chats.click();
     } else if (pathname.startsWith('/#chat/')) {
