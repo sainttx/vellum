@@ -1,7 +1,14 @@
 
 var db = {
+    chats: {
+        put: function(chat) {
+            console.log('db.chats.put', chat);
+            
+        },
+    },
     contacts: {
         put: function(contact) {
+            console.log('db.contacts.put', contacts);
             if (state.contact) {
                 var index = u.array.matchIndexOf(state.contacts, state.contact.name, matchName);
                 console.log('put', state.contact.name, index);
@@ -18,5 +25,11 @@ var db = {
                 }
             }
         },
+    },
+    events: {
+        put: function(event) {
+            console.log('db.events.put', event);
+            
+        },    
     },
 };

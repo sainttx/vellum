@@ -181,30 +181,37 @@ var mockData = {
     ],
     events: [
         {            
-            type: 'Poker',
-            placeType: 'Home',
+            name: 'Poker',
             host: 'Harry Potter',            
             invitees: [
-                {
-                    name: 'Joe Soap', 
-                },
-                {
-                    name: 'Ginger Bread',
-                },
-                {
-                    name: 'Harry Potter',
-                }
+                'Joe Soap',
+                'Ginger Bread',
+                'Harry Potter'
             ],
-            beginTimestamp: '2013-06-27 19:00',
-            endTimestamp: '2013-06-27 23:00',            
+            date: '2013-06-27',
+            time: '19:00',
+            duration: '4h',
+            day: 'Thursday',
+            repeat: 'Weekly',
+            reminder: '4h'
         },        
         { 
+            name: 'PCI update',
             type: 'Meeting',
-            place: 'Meeting Room 1',
-            hostOrg: 'Biz Company',
-            host: 'Joe Soap',
-            invitees: [                
-            ]
+            venue: 'Meeting Room 1',
+            org: 'Biz Company',
+            host: 'Harry Potter',
+            date: '2013-06-27',
+            time: '11:00',
+            duration: '1h',
+            day: 'Thursday',
+            repeat: 'Once',
+            reminder: '15m',
+            invitees: [
+                'Joe Soap',
+                'Ginger Bread',
+                'Harry Potter'
+            ],
         },
         {            
         },
