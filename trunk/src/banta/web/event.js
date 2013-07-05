@@ -1,6 +1,15 @@
 
 b.event = {
     rules: {
+        name: {
+            minlength: 1,            
+            required: false,
+            sanitary: true
+        },
+        description: {
+            required: false,
+            sanitary: true
+        },
         time: {
             minlength: 3,
             required: false,
@@ -9,9 +18,18 @@ b.event = {
         day: {
             required: false
         },
+        date: {
+            required: false
+        },
         duration: {
             required: false,
             sanitary: true
+        },
+        repeat: {
+            required: false
+        },
+        reminder: {
+            required: false
         },
     },
     highlight: function(element) {
@@ -64,8 +82,8 @@ b.event = {
             source: state.contactNames
         });
     },
-    clickNew: function() {
-        console.log('event.clickNew');
+    newClicked: function() {
+        console.log('event.newClicked');
         state.event = null;
         b.event.clear();
         if (state.contact) {
@@ -75,7 +93,7 @@ b.event = {
         b.event.showPage();
         b.event.focus();
     },
-    clickHost: function() {
+    hostClicked: function() {
         console.log('event.clickHost');
         b.contacts.choose('eventHost', b.event.hostChosen);
     },
@@ -125,16 +143,16 @@ b.event = {
         }
         b.event.$tbody.show();
     },
-    save: function(event) {
-        console.log("save");
-        event.preventDefault();
+    save: function(e) {
+        console.log("event.save invitees", state.invitees);
+        e.preventDefault();
         b.event.errorElement = null;
         if ($('#event-form').valid()) {
             var event = b.event.get();
-            console.log("save", event);
-            eventsPut(event);
+            console.log("event.save form", event);
+            db.events.put(event);
             server.ajax({
-                url: '/event',
+                url: '/SaveEvent',
                 data: $('#event-form').serialize(),
                 success: b.event.res,
                 error: b.event.error,
@@ -167,11 +185,15 @@ b.event = {
         $('#event-form > fieldset > div.control-group').removeClass('error');
         $('#event-form > fieldset > div.control-group').removeClass('success');
         b.event.set({
+            name: '',
+            description: '',
             host: '',
             time: '',
-            date: '',
             day: '',
-            duration: '1h'
+            repeat: '',
+            date: '',
+            duration: '1h',
+            reminder: '',
         });
     },
     set: function(o) {

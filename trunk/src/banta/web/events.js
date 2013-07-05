@@ -3,7 +3,7 @@
 b.events = {
     loaded: function() {
         $('.events-clickable').click(b.events.click);
-        $('.event-new-clickable').click(b.event.clickNew);
+        $('.event-new-clickable').click(b.event.newClicked);
         if (false) {
             $('#events-tbody span').text('');
         }
