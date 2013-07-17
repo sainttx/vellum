@@ -511,6 +511,16 @@ public class VPreparedStatement implements PreparedStatement {
     public void addBatch() throws SQLException {
         delegate.addBatch();
     }
+
+    @Override
+    public void closeOnCompletion() throws SQLException {
+        delegate.closeOnCompletion();
+    }
+
+    @Override
+    public boolean isCloseOnCompletion() throws SQLException {
+        return delegate.isCloseOnCompletion();
+    }
         
     
     
