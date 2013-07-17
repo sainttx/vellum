@@ -54,5 +54,4 @@ public abstract class VDriver implements Driver {
         return delegate.getParentLogger();
     }
     
-    
 }
