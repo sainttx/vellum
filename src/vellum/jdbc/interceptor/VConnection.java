@@ -7,6 +7,7 @@ package vellum.jdbc.interceptor;
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  *
@@ -262,6 +263,30 @@ public class VConnection implements Connection {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return delegate.isWrapperFor(iface);
+    }
+
+    @Override
+    public void setSchema(String schema) throws SQLException {
+        delegate.setSchema(schema);
+    }
+
+    @Override
+    public String getSchema() throws SQLException {
+        return delegate.getSchema();
+    }
+
+    @Override
+    public void abort(Executor executor) throws SQLException {
+    }
+
+    @Override
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        delegate.setNetworkTimeout(executor, milliseconds);
+    }
+
+    @Override
+    public int getNetworkTimeout() throws SQLException {
+        return delegate.getNetworkTimeout();
     }
 
     

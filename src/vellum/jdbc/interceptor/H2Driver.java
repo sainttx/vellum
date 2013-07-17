@@ -5,6 +5,8 @@
 package vellum.jdbc.interceptor;
 
 import java.sql.Driver;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,5 +21,5 @@ public class H2Driver extends VDriver {
             throw new RuntimeException(e);
         }
     }    
-    
+
 }
