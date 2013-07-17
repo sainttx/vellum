@@ -74,6 +74,5 @@ public class Mailer {
             multipart.addBodyPart(logoBodyPart);
         }
         Transport.send(message);
-    }
-    
+    }   
 }
