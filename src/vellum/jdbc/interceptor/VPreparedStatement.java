@@ -522,6 +522,5 @@ public class VPreparedStatement implements PreparedStatement {
         return delegate.isCloseOnCompletion();
     }
         
-    
-    
+      
 }
