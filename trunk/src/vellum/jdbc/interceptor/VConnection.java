@@ -265,6 +265,7 @@ public class VConnection implements Connection {
         return delegate.isWrapperFor(iface);
     }
 
+    /* java7 
     @Override
     public void setSchema(String schema) throws SQLException {
         delegate.setSchema(schema);
@@ -277,6 +278,7 @@ public class VConnection implements Connection {
 
     @Override
     public void abort(Executor executor) throws SQLException {
+        delegate.abort(executor);
     }
 
     @Override
@@ -288,7 +290,7 @@ public class VConnection implements Connection {
     public int getNetworkTimeout() throws SQLException {
         return delegate.getNetworkTimeout();
     }
-
+    */
     
     
 }
