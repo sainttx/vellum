@@ -49,9 +49,10 @@ public abstract class VDriver implements Driver {
         return delegate.jdbcCompliant();
     }
     
+    /* java7
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return delegate.getParentLogger();
     }
-    
+    */    
 }

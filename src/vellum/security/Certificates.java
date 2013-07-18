@@ -2,6 +2,7 @@
  */
 package vellum.security;
 
+import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import java.io.IOException;
 import java.security.Key;
 import java.security.PrivateKey;
@@ -16,7 +17,6 @@ import sun.misc.BASE64Encoder;
 import sun.security.pkcs.PKCS10;
 import sun.security.pkcs.PKCS10Attribute;
 import sun.security.pkcs.PKCS9Attribute;
-import sun.security.pkcs12.PKCS12KeyStore;
 import sun.security.provider.X509Factory;
 import sun.security.x509.AlgorithmId;
 import sun.security.x509.CertificateAlgorithmId;
@@ -28,6 +28,7 @@ import sun.security.x509.CertificateValidity;
 import sun.security.x509.CertificateVersion;
 import sun.security.x509.CertificateX509Key;
 import sun.security.x509.X500Name;
+import sun.security.x509.X500Signer;
 import sun.security.x509.X509CertImpl;
 import sun.security.x509.X509CertInfo;
 import vellum.exception.Exceptions;
@@ -159,7 +160,9 @@ public class Certificates {
         Signature signature = Signature.getInstance(sigAlgName);
         signature.initSign(privateKey);
         X500Name subject = new X500Name(cert.getSubjectDN().toString());
-        request.encodeAndSign(subject, signature);
+        X500Signer signer = new X500Signer(signature, subject);
+        request.encodeAndSign(signer);
+        //request.encodeAndSign(subject, signature);
         return request;
     }
 
