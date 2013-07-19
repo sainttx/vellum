@@ -4,7 +4,7 @@ package mobi.fb;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import java.io.IOException;
 import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FbLogin {
     Logr logr = LogrFactory.getLogger(getClass());
-    HtmlBuilder builder = new HtmlBuilder(Streams.readString(getClass(), "fblogin.html"));
+    HtmlBuilder builder = new HtmlBuilder(StreamsX.readString(getClass(), "fblogin.html"));
     HttpServletRequest req;
     HttpServletResponse res;
 

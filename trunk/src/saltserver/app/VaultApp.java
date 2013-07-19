@@ -19,7 +19,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrLevel;
 import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.security.DefaultKeyStores;
 
@@ -88,7 +88,7 @@ public class VaultApp {
         try {
             URL url = new URL(shutdownUrl);
             URLConnection connection = url.openConnection();
-            String response = Streams.readString(connection.getInputStream());
+            String response = StreamsX.readString(connection.getInputStream());
             connection.getInputStream().close();
             logger.info(response);
         } catch (Exception e) {

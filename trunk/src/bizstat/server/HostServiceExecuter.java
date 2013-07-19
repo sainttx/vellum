@@ -6,7 +6,7 @@ package bizstat.server;
 
 import bizstat.entity.*;
 import vellum.util.Lists;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import bizstat.enumtype.ServiceStatus;
 import java.io.InputStream;
 import vellum.logr.Logr;
@@ -44,8 +44,8 @@ public class HostServiceExecuter {
                 InputStream inputStream = process.getInputStream();
                 InputStream errorStream = process.getErrorStream();
                 serviceRecord.setExitCode(process.waitFor());
-                serviceRecord.setOutList(Streams.readLineList(inputStream, config.getOutputSize()));
-                serviceRecord.setErrText(Streams.readString(errorStream));
+                serviceRecord.setOutList(StreamsX.readLineList(inputStream, config.getOutputSize()));
+                serviceRecord.setErrText(StreamsX.readString(errorStream));
                 logger.verbose("exec", serviceRecord.getExitCode(), serviceRecord.getServiceStatus());
                 if (serviceRecord.getOutText().length() > 0) {
                 }

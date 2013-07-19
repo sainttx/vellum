@@ -5,7 +5,7 @@
 package vellum.query;
 
 import vellum.exception.Exceptions;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class QueryMap extends HashMap<String, String> {
     public QueryMap(Class parent, String name) {
         try {
             InputStream stream = parent.getResourceAsStream(parent.getSimpleName() + ".sql");
-            BufferedReader reader = Streams.newBufferedReader(stream);
+            BufferedReader reader = StreamsX.newBufferedReader(stream);
             StringBuilder builder = null;
             String key = null;
             while (true) {

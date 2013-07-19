@@ -18,7 +18,7 @@ import crocserver.storage.clientcert.Cert;
 import java.io.IOException;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import crocserver.storage.common.CrocStorage;
 import vellum.parameter.StringMap;
 
@@ -52,7 +52,7 @@ public class PostHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
-        serviceText = Streams.readString(httpExchange.getRequestBody());
+        serviceText = StreamsX.readString(httpExchange.getRequestBody());
         if (httpExchangeInfo.getPathLength() < 3) {
             httpExchangeInfo.handleError(new CrocError(CrocExceptionType.INVALID_ARGS, httpExchangeInfo.getPath()));
         } else {

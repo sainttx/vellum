@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.Socket;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import vellum.io.JsonSockets;
 import venigma.server.CipherRequest;
 import venigma.server.CipherRequestType;
@@ -30,7 +30,7 @@ public class CipherConnection {
     public void open() throws IOException {
         if (socket != null) {
             logger.warn("already open");
-            Streams.close(socket);
+            StreamsX.close(socket);
         }
         this.socket = clientContext.createSocket();
         logger.info("open", socket.getRemoteSocketAddress());
