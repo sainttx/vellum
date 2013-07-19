@@ -11,7 +11,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 
 /**
  *
@@ -46,12 +46,12 @@ public class CipherServer extends Thread implements Closeable {
                 logger.warn(e, null);
             }
         }              
-        StreamsX.close(serverSocket);
+        Files.close(serverSocket);
     }  
     
     @Override
     public void close() throws IOException {        
         accepting = false;
-        StreamsX.close(serverSocket);
+        Files.close(serverSocket);
     }
 }

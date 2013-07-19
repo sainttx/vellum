@@ -11,7 +11,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.printer.Printer;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import vellum.util.Strings;
 import vellum.util.Types;
 import java.io.ByteArrayOutputStream;
@@ -94,7 +94,7 @@ public abstract class AbstractPageHandler implements HttpHandler {
     }
 
     protected void printCss(Class parentClass, String resourceName) {
-        out.printf("<style>\n%s\n</style>\n", StreamsX.readString(parentClass, resourceName));
+        out.printf("<style>\n%s\n</style>\n", Files.readString(parentClass, resourceName));
     }
 
     protected void printPageHeader() throws IOException {

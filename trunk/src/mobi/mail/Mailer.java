@@ -4,7 +4,7 @@
  */
 package mobi.mail;
 
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import java.util.Date;
 import java.util.Properties;
 import javax.activation.DataHandler;
@@ -84,13 +84,13 @@ public class Mailer {
     }
     
     public void sendWelcomeEmail(Person person) throws Exception {
-        String html = StreamsX.readString(getClass().getResourceAsStream("welcome.html"));
+        String html = Files.readString(getClass().getResourceAsStream("welcome.html"));
         html = html.replace("${name}", person.getPersonName());
         sendEmail(person.getEmail(), "Welcome to GiftMe.mobi", html);
     }
 
     public void sendWelcomeEmail(String email, String personName) throws Exception {
-        String html = StreamsX.readString(getClass().getResourceAsStream("welcome.html"));
+        String html = Files.readString(getClass().getResourceAsStream("welcome.html"));
         html = html.replace("${name}", personName);
         sendEmail(email, "Welcome to GiftMe.mobi", html);
     }

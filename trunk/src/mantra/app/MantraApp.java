@@ -19,7 +19,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrLevel;
 import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.security.DefaultKeyStores;
 import vellum.util.Systems;
@@ -90,7 +90,7 @@ public class MantraApp {
         try {
             URL url = new URL(shutdownUrl);
             URLConnection connection = url.openConnection();
-            String response = StreamsX.readString(connection.getInputStream());
+            String response = Files.readString(connection.getInputStream());
             connection.getInputStream().close();
             logger.info(response);
         } catch (Exception e) {

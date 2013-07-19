@@ -20,7 +20,7 @@ import java.util.Date;
 import sun.security.pkcs.PKCS10;
 import vellum.security.Certificates;
 import vellum.security.DefaultKeyStores;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 
 /**
  *
@@ -51,7 +51,7 @@ public class SignCertHandler implements HttpHandler {
         this.httpExchange = httpExchange;
         httpExchangeInfo = new HttpExchangeInfo(httpExchange);
         httpExchange.getResponseHeaders().set("Content-type", "text/plain");
-        certReqPem = StreamsX.readString(httpExchange.getRequestBody());
+        certReqPem = Files.readString(httpExchange.getRequestBody());
         out = new PrintStream(httpExchange.getResponseBody());
         logger.info(getClass().getSimpleName(), httpExchangeInfo.getPathArgs().length);
         if (httpExchangeInfo.getPathArgs().length == 6) {

@@ -36,11 +36,10 @@ b.contactEdit = {
         },
     },
     buttons: function(ok) {
+        $('.contactEdit-button').removeClass('btn-primary');
         if (ok) {
             $('#contactEdit-save').addClass('btn-primary');
-            $('#contactEdit-cancel').removeClass('btn-primary');
         } else {
-            $('#contactEdit-save').removeClass('btn-primary');
             $('#contactEdit-cancel').addClass('btn-primary');
         }
     },

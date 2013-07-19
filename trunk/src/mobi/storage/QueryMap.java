@@ -5,7 +5,7 @@
 package mobi.storage;
 
 import vellum.exception.Exceptions;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class QueryMap extends HashMap<String, String> {
     public QueryMap(Class type) {
         try {
             InputStream stream = type.getResourceAsStream(type.getSimpleName() + ".sql");
-            BufferedReader reader = StreamsX.newBufferedReader(stream);
+            BufferedReader reader = Files.newBufferedReader(stream);
             StringBuilder builder = null;
             String key = null;
             while (true) {

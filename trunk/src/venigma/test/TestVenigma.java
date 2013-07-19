@@ -13,7 +13,7 @@ import javax.crypto.spec.IvParameterSpec;
 import sun.security.tools.KeyTool;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import venigma.data.AdminRole;
 import venigma.data.AdminUser;
 import venigma.provider.CipherConnection;
@@ -242,14 +242,14 @@ public class TestVenigma implements Runnable {
             if (true) {
                 new Thread(instance).start();
                 Thread.sleep(4000);
-                StreamsX.close(instance.server);
+                Files.close(instance.server);
             } else {
                 instance.process();
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
         } finally {
-            StreamsX.close(instance.server);
+            Files.close(instance.server);
         }
     }
 }

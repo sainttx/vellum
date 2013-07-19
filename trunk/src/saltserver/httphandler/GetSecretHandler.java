@@ -15,7 +15,7 @@ import saltserver.storage.secret.Secret;
 import vellum.crypto.Base64;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 
 /**
  *
@@ -47,7 +47,7 @@ public class GetSecretHandler implements HttpHandler {
         } else {
             group = httpExchangeInfo.getPathString(1);
             name = httpExchangeInfo.getPathString(2);
-            iv = StreamsX.readString(httpExchange.getRequestBody());            
+            iv = Files.readString(httpExchange.getRequestBody());            
             try {
                 handle();
             } catch (Exception e) {

@@ -4,7 +4,7 @@ package mobi.servlets;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import java.io.IOException;
 import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ public class Page {
     HtmlBuilder builder;
 
     public Page(String htmlFileName) {
-        builder = new HtmlBuilder(StreamsX.readString(getClass(), htmlFileName));
+        builder = new HtmlBuilder(Files.readString(getClass(), htmlFileName));
     }
                    
     protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {

@@ -4,7 +4,7 @@ package mobi.servlets;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import java.io.IOException;
 import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Login {
 
     Logr logr = LogrFactory.getLogger(getClass());
-    HtmlBuilder builder = new HtmlBuilder(StreamsX.readString(getClass(), "login.html"));
+    HtmlBuilder builder = new HtmlBuilder(Files.readString(getClass(), "login.html"));
     HttpServletRequest req;
     HttpServletResponse res;
 

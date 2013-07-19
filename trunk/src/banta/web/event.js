@@ -60,7 +60,7 @@ b.event = {
             success: b.event.success
         });
         $('#event-save').click(b.event.save);
-        $('#event-add-invitee').click(b.event.addInviteeClick);
+        $('#event-add-invitee').click(b.event.inviteClicked);
         $('#event-cancel').click(b.event.cancel);
         $('#event-cancel').focus(b.event.cancelFocus);
         $('#event-date-input').datepicker();
@@ -103,8 +103,9 @@ b.event = {
         b.event.setAvailableInvitees();
         showPage();
     },
-    addInviteeClick: function() {
-        b.contacts.chooseMulti('eventInvitee', b.event.inviteesChosen, state.invitees);
+    inviteClicked: function() {
+        console.log('event.inviteClicked');
+        b.contacts.chooseMulti('eventInvite', b.event.inviteesChosen, state.invitees);
     },
     inviteesChosen: function(contacts) {
         console.log('event.inviteeChoosen', contacts.length);

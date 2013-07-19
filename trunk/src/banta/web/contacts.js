@@ -60,14 +60,16 @@ b.contacts = {
         showPageObj(b.contacts, null);
         b.contacts.$input.focus();
     },
-    build: function(contacts, search) {
+    searchFilter: function(contact) {
+        return !u.array.contains(state.selectedContacts, contact) &&
+                contact.name.startsWithIgnoreCase(b.contacts.$input.val());
+    },
+    build: function(contacts, filter) {
         console.log('contacts.build', contacts.length, state.selectedContacts.length);
         contacts.sort(compareName);
         b.contacts.$tbody.empty();
         for (var i = 0; i < contacts.length; i++) {
-            console.log('contacts.build for', i, contacts[i].name);
-            if (u.array.contains(state.selectedContacts, contacts[i]) ||
-                    isEmpty(search) || contacts[i].name.startsWithIgnoreCase(search)) {
+            if (!filter || filter(contacts[i])) {
                 b.contacts.buildRow(contacts[i]);
             }
         }
@@ -95,23 +97,25 @@ b.contacts = {
     },
     expandClick: function(event) {
         console.log('expandClick');
+        b.contacts.$input.val('');
         b.contacts.render(event);
     },
     clearClick: function(event) {
         console.log('clearClick');
-        state.selectedContacts = [];
+        b.contacts.$input.val('');
         b.contacts.render(event);
     },
     searchClick: function(event) {
         console.log('searchClick', event);
-        b.contacts.render(event);
+        b.contacts.render(event, null, b.contacts.searchFilter);
     },
-    render: function(event, contacts) {
+    render: function(event, contacts, filter) {
         event.preventDefault();
         if (!contacts) {
             contacts = state.availableContacts;
         }
-        b.contacts.build(contacts, b.contacts.$input.val());
+        console.log('render', contacts.length, b.contacts.$input.val());
+        b.contacts.build(contacts, filter);
         b.contacts.$input.val('');
         b.contacts.$input.focus();
     },
@@ -138,6 +142,7 @@ b.contacts = {
             console.warn('chooseMulti', state.purpose);
         }
         b.contacts.showPage();
+        setPath(purpose);
     },
     contactRowClick: function(event) {
         state.contact = event.data;
@@ -155,7 +160,16 @@ b.contacts = {
                 state.selectedContacts.push(state.contact);
             }
         }
-        console.log('contacts.contactRowClick', state.purpose, state.contact, state.selectedContacts);
+        b.contacts.buttons();
+        console.log('contacts.contactRowClick', state.purpose, state.contact, state.selectedContacts.length);
+    },
+    buttons: function() {
+        var selected = (state.selectedContacts.length > 0);
+        console.log('contacts.buttons', selected);
+        u.ui.enableLink($('#contacts-reduce-link'), selected);
+        u.ui.enableLink($('#contacts-expand-link'), selected);
+        u.ui.enableLink($('#contacts-ok-link'), selected);
+        u.ui.enableLink($('#contacts-cancel-link'), selected);
     },
 };
 

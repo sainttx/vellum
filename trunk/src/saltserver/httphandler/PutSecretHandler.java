@@ -17,7 +17,7 @@ import vellum.crypto.Encrypted;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 
 /**
  *
@@ -48,7 +48,7 @@ public class PutSecretHandler implements HttpHandler {
         } else {
             group = httpExchangeInfo.getPathString(1);
             name = httpExchangeInfo.getPathString(2);
-            secretBytes = StreamsX.readBytesX(httpExchange.getRequestBody());
+            secretBytes = Files.readBytes(httpExchange.getRequestBody());
             try {
                 logger.info("handle", getClass().getSimpleName(), group, name);
                 handle();
