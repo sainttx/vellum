@@ -12,7 +12,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.security.DefaultKeyStores;
 import vellum.util.Args;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 
 /**
  *
@@ -44,7 +44,7 @@ public class FacebookApi {
         builder.append("&audience=").append(URLEncoder.encode(redirectUrl, "UTF-8"));
         logger.info("request", url, builder.toString());
         connection.getOutputStream().write(builder.toString().getBytes());
-        String responseText = Streams.readString(connection.getInputStream());
+        String responseText = StreamsX.readString(connection.getInputStream());
         logger.info("response", responseText);
         return responseText;
     }

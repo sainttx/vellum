@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import vellum.html.HtmlPrinter;
 import vellum.httpserver.HttpExchangeInfo;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import vellum.util.Types;
 
 /**
@@ -37,7 +37,7 @@ public class VaultPageHandler {
         out.println("<html>");
         out.println("<head>");
         out.printf("<title>%s</title>", title);
-        out.printf("<style>\n%s\n</style>\n", Streams.readString(getClass(), "style.css"));
+        out.printf("<style>\n%s\n</style>\n", StreamsX.readString(getClass(), "style.css"));
         out.println("</head>");
         out.println("<body>");
     }
@@ -48,7 +48,7 @@ public class VaultPageHandler {
             out.println("<html>");
             out.println("<head>");
             out.printf("<title>%s</title>", "Error");
-            out.printf("<style>\n%s\n</style>\n", Streams.readString(getClass(), "style.css"));
+            out.printf("<style>\n%s\n</style>\n", StreamsX.readString(getClass(), "style.css"));
             out.println("</head>");
             out.println("<body>");
             out.println("<pre>");

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 
 /**
  *
@@ -37,7 +37,7 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
             String path = httpExchange.getRequestURI().getPath();
             httpExchange.getResponseHeaders().add("Cache-Control", "no-cache, no-store, must-revalidate");
             if (path.endsWith("/log")) {
-                String message = Streams.readString(httpExchange.getRequestBody());
+                String message = StreamsX.readString(httpExchange.getRequestBody());
                 logger.info(message);
                 httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                 httpExchange.close();
@@ -76,7 +76,7 @@ public class VellumLocalHttpServerHandler implements HttpHandler {
                 }
             }
             FileInputStream inputStream = new FileInputStream(file);
-            byte[] bytes = Streams.readBytes(inputStream);
+            byte[] bytes = StreamsX.readBytesX(inputStream);
             logger.trace("path", path, bytes.length);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             httpExchange.getResponseBody().write(bytes);

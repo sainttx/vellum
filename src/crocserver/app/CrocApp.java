@@ -29,7 +29,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrLevel;
 import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import vellum.util.Threads;
 import crocserver.storage.schema.CrocSchema;
 import crocserver.storage.common.CrocStorage;
@@ -205,7 +205,7 @@ public class CrocApp {
         try {
             URL url = new URL(shutdownUrl);
             URLConnection connection = url.openConnection();
-            String response = Streams.readString(connection.getInputStream());
+            String response = StreamsX.readString(connection.getInputStream());
             connection.getInputStream().close();
             logger.info(response);
         } catch (Exception e) {
@@ -220,7 +220,7 @@ public class CrocApp {
         PrintWriter out = new PrintWriter(connection.getOutputStream());
         out.println("hello");
         out.close();
-        String response = Streams.readString(connection.getInputStream());
+        String response = StreamsX.readString(connection.getInputStream());
         logger.info(response);
     }
 

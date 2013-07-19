@@ -5,7 +5,16 @@
  */
 package vellum.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.exception.ArgsRuntimeException;
@@ -21,11 +30,11 @@ import vellum.exception.SizeRuntimeException;
  *
  * @author evanx
  */
-public class Streams {
+public class StreamsX {
 
     public static final String fileSeparator = System.getProperty("file.separator");
     public static final String userHomeDir = System.getProperty("user.home");
-    public static Logr logger = LogrFactory.getLogger(Streams.class);
+    public static Logr logger = LogrFactory.getLogger(StreamsX.class);
 
     public static BufferedReader newBufferedReader(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream));
@@ -113,7 +122,7 @@ public class Streams {
         return stream;
     }
 
-    public static byte[] readBytes(InputStream stream) {
+    public static byte[] readBytesX(InputStream stream) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             while (true) {
@@ -133,11 +142,11 @@ public class Streams {
     }
 
     public static String readString(InputStream stream) {
-        return new String(readBytes(stream));
+        return new String(readBytesX(stream));
     }
 
     public static char[] readChars(InputStream stream) {
-        return Bytes.toCharArray(readBytes(stream));
+        return Bytes.toCharArray(readBytesX(stream));
     }
     
     public static InputStream exec(String command) throws IOException {

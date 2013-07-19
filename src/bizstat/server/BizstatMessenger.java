@@ -7,7 +7,7 @@ package bizstat.server;
 import vellum.util.Lists;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Streams;
+import vellum.util.StreamsX;
 import bizstat.entity.*;
 import java.util.*;
 import vellum.config.PropertiesStringMap;
@@ -80,8 +80,8 @@ public class BizstatMessenger {
                 process.getOutputStream().write(text.getBytes());
                 process.getOutputStream().close();
                 int exitCode = process.waitFor();
-                String outText = Streams.readString(process.getInputStream());
-                String errText = Streams.readString(process.getErrorStream()).trim();
+                String outText = StreamsX.readString(process.getInputStream());
+                String errText = StreamsX.readString(process.getErrorStream()).trim();
                 if (errText.length() > 0) {
                     logger.warn(errText);
                 }
