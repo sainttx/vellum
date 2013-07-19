@@ -27,7 +27,7 @@
                 // Assign global variables  
                 hdrMainVar = $('#hdrMain');  
                 contentMainVar = $('#contentMain'); 
-                var deviceAgent = navigator.userAgent.toLowerCase();                
+                var deviceAgent = navigator.userAgent.toLowerCase();
                 var agentID = deviceAgent.match(/(iphone|ipod|ipad|android)/);
                 alert("agentID");
             }

@@ -30,11 +30,11 @@ import vellum.exception.SizeRuntimeException;
  *
  * @author evanx
  */
-public class StreamsX {
+public class Files {
 
     public static final String fileSeparator = System.getProperty("file.separator");
     public static final String userHomeDir = System.getProperty("user.home");
-    public static Logr logger = LogrFactory.getLogger(StreamsX.class);
+    public static Logr logger = LogrFactory.getLogger(Files.class);
 
     public static BufferedReader newBufferedReader(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream));
@@ -122,7 +122,23 @@ public class StreamsX {
         return stream;
     }
 
-    public static byte[] readBytesX(InputStream stream) {
+    public static byte[] readBytes(String filePath) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            FileInputStream stream = new FileInputStream(filePath);
+            while (true) {
+                int b = stream.read();
+                if (b < 0) {
+                    return outputStream.toByteArray();
+                }
+                outputStream.write(b);
+            }
+        } catch (Exception e) {
+            throw Exceptions.newRuntimeException(e);
+        }
+    }
+
+    public static byte[] readBytes(InputStream stream) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             while (true) {
@@ -142,13 +158,13 @@ public class StreamsX {
     }
 
     public static String readString(InputStream stream) {
-        return new String(readBytesX(stream));
+        return new String(readBytes(stream));
     }
 
     public static char[] readChars(InputStream stream) {
-        return Bytes.toCharArray(readBytesX(stream));
+        return Bytes.toCharArray(readBytes(stream));
     }
-    
+
     public static InputStream exec(String command) throws IOException {
         logger.info(command);
         Process process = Runtime.getRuntime().exec(command);
@@ -189,7 +205,7 @@ public class StreamsX {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static void close(Closeable closeable) {
         try {
             if (closeable != null) {
@@ -206,7 +222,7 @@ public class StreamsX {
         srcFile.renameTo(destFile);
         logger.info("replaceFile", srcFileName, destFileName);
     }
-    
+
     public static List<String> readLineList(InputStream stream, int capacity) {
         List<String> lineList = new ArrayList();
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -219,7 +235,7 @@ public class StreamsX {
                 lineList.add(line);
                 if (lineList.size() > capacity) {
                     throw new SizeRuntimeException(lineList.size());
-                }          
+                }
             } catch (Exception e) {
                 throw Exceptions.newRuntimeException(e);
             }
@@ -243,7 +259,7 @@ public class StreamsX {
             }
         }
     }
-    
+
     public static String readString(InputStream stream, long capacity) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         StringBuilder builder = new StringBuilder();
@@ -274,7 +290,7 @@ public class StreamsX {
         e.printStackTrace(System.err);
     }
 
-    public static PrintWriter newPrintWriter(OutputStream outputStream) {        
+    public static PrintWriter newPrintWriter(OutputStream outputStream) {
         return new PrintWriter(outputStream);
     }
 
@@ -288,7 +304,7 @@ public class StreamsX {
 
     public static String removeFileNameExtension(File file) {
         return removeExtension(file.getName());
-        
+
     }
 
     public static String removeExtension(String fileName) {
@@ -308,9 +324,10 @@ public class StreamsX {
     public static void transmit(InputStream inputStream, OutputStream outputStream) throws IOException {
         while (true) {
             int b = inputStream.read();
-            if (b < 0) return;
-            outputStream.write(b);    
-        }        
+            if (b < 0) {
+                return;
+            }
+            outputStream.write(b);
+        }
     }
-    
 }

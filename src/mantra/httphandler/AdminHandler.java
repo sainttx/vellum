@@ -84,9 +84,9 @@ public class AdminHandler implements HttpHandler {
         } else if (!Strings.isEmpty(keyStorePassword)) {
             keyStoreManager.loadKeyStore(keyStorePassword.toCharArray());
             KeyStore keyStore = keyStoreManager.getKeyStore();
-            out.printf("size %d<br>\n", keyStore.size());                
+            out.printf("size %d<br>\n", keyStore.size());
             for (String alias : Collections.list(keyStore.aliases())) {
-                out.printf("%s\n", alias);                
+                out.printf("%s\n", alias);
                 out.printf("<label for='deleteAlias-%s'>Delete alias</label>\n", alias);
                 out.printf("<input type='checkbox' name='deleteAlias-%s'><br>\n", alias);
             }

@@ -23,7 +23,7 @@ import vellum.parameter.StringMap;
 import vellum.parameter.Parameters;
 import vellum.util.Beans;
 import vellum.util.Lists;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import vellum.util.Strings;
 
 /**
@@ -73,7 +73,7 @@ public class HttpExchangeInfo {
 
     public String getRequestBody() {
         if (requestBody == null) {
-            requestBody = StreamsX.readString(httpExchange.getRequestBody());        
+            requestBody = Files.readString(httpExchange.getRequestBody());        
         }
         return requestBody;
     }
@@ -95,7 +95,7 @@ public class HttpExchangeInfo {
         parameterMap = new StringMap();
         urlQuery = httpExchange.getRequestURI().getQuery();
         if (httpExchange.getRequestMethod().equals("POST")) {
-            urlQuery = StreamsX.readString(httpExchange.getRequestBody());
+            urlQuery = Files.readString(httpExchange.getRequestBody());
         }
         logger.info("parseParameterMap", httpExchange.getRequestMethod());
         if (urlQuery == null) {
@@ -153,7 +153,7 @@ public class HttpExchangeInfo {
                 builder.append("; Path=").append(path);
             }
             if (version != null) {
-                builder.append("; Version=").append(version);                
+                builder.append("; Version=").append(version);
             }
             httpExchange.getResponseHeaders().add("Set-cookie", builder.toString());
         }
@@ -329,7 +329,7 @@ public class HttpExchangeInfo {
     }
     
     public String getInputString() {
-        return StreamsX.readString(httpExchange.getRequestBody());
+        return Files.readString(httpExchange.getRequestBody());
     }
 
 }

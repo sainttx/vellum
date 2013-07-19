@@ -8,7 +8,7 @@ import java.io.File;
 import sun.security.tools.KeyTool;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import vellum.util.Strings;
 
 /**
@@ -35,7 +35,7 @@ public class VKeyTool {
         dname = getProperty("dname");
         File keyStoreFile = new File(keyStorePath);
         File trustStoreFile = new File(trustStorePath);
-        String keyAlias = StreamsX.removeFileNameExtension(keyStoreFile);
+        String keyAlias = Files.removeFileNameExtension(keyStoreFile);
         String certFilePath = keyStoreFile.getParent() + File.separator + keyAlias + ".pem";
         File certFile = new File(certFilePath);
         logger.info("certFile", certFilePath);

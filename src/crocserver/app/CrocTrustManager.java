@@ -53,7 +53,7 @@ public class CrocTrustManager implements X509TrustManager {
             Cert cert = app.getStorage().getCertStorage().findName(cname);
             if (cert == null) {
                 logger.info("cert not found", cname);
-                throw new RuntimeException(dname);                
+                throw new RuntimeException(dname);
             }
             logger.info("cert", cert.getSubject());
             if (!cert.isEnabled()) {

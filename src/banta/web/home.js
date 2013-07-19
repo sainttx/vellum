@@ -88,6 +88,10 @@ function windowLocation(pathname) {
         homeClick();
     } else if (pathname === '/#contactUs') {
         contactUsClick();
+    } else if (pathname === '/#eventInvite') {
+        b.events.click();        
+        b.event.newClicked();
+        b.event.inviteClicked();
     } else if (pathname === '/#events') {
         b.events.click();
     } else if (pathname.startsWith('/#event')) {
@@ -99,7 +103,7 @@ function windowLocation(pathname) {
     } else if (pathname.startsWith('/#contactEdit/')) {
         b.contacts.click();
     } else if (pathname === '/#contactNew') {
-        b.contactEdit.newClick();
+        b.contactEdit.newClicked();
     } else if (pathname === '/#chats') {
         b.chats.click();
     } else if (pathname.startsWith('/#chat/')) {

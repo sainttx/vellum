@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import vellum.util.Strings;
 
 /**
@@ -41,7 +41,7 @@ public class WebHandler implements HttpHandler {
     
     public void loadReplace(String path) throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
-        StringBuilder text = StreamsX.readStringBuilder(resourceStream);
+        StringBuilder text = Files.readStringBuilder(resourceStream);
         replace(text);
         byte[] bytes = text.toString().getBytes();
         cache.put(path, bytes);
@@ -49,7 +49,7 @@ public class WebHandler implements HttpHandler {
 
     public void load(String path) throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
-        StringBuilder text = StreamsX.readStringBuilder(resourceStream);
+        StringBuilder text = Files.readStringBuilder(resourceStream);
         replace(text);
         byte[] bytes = text.toString().getBytes();
         cache.put(path, bytes);
@@ -89,7 +89,7 @@ public class WebHandler implements HttpHandler {
             byte[] bytes = cache.get(path);
             if (bytes == null) {
                 InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
-                bytes = StreamsX.readBytesX(resourceStream);
+                bytes = Files.readBytes(resourceStream);
                 cache.put(path, bytes);
             }
             logger.info("path", path, bytes.length);

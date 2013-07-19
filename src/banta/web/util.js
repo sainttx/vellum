@@ -193,6 +193,19 @@ var u = {
             };
         },
     },
+    xconsole: {
+        log: function() {        
+        },
+    },
+    ui: {
+        enableLink: function(component, enabled) {
+            if (enabled) {
+                component.removeClass('disabled');
+            } else {
+                component.addClass('disabled');
+            }            
+        }
+    }
 };
 
 

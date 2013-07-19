@@ -5,7 +5,7 @@ package vellum.hype;
 
 import vellum.util.Lists;
 import vellum.hype.java.JavaMeta;
-import vellum.util.StreamsX;
+import vellum.util.Files;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,8 +27,8 @@ public class HypeReader {
     boolean publicLine; 
     
     public void read(InputStream inputStream, OutputStream outputStream) throws Exception {
-        BufferedReader reader = StreamsX.newBufferedReader(inputStream);
-        PrintWriter printer = StreamsX.newPrintWriter(outputStream);
+        BufferedReader reader = Files.newBufferedReader(inputStream);
+        PrintWriter printer = Files.newPrintWriter(outputStream);
         while (true) {
             line = reader.readLine();
             if (line == null) {
