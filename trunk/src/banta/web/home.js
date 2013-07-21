@@ -200,7 +200,6 @@ function showLoggedIn() {
     $('#loggedin-info').show();
     $('#welcome-container').show();
     $('#notifications-container').show();
-    console.log('showLoggedIn', $('#notifications-container'));
 }
 
 function loginRes(res) {
@@ -209,6 +208,7 @@ function loginRes(res) {
         state.login = res;
         state.contacts = res.contacts;
         state.chats = res.chats;
+        state.events = res.events;
         showLoggedInRes();
         if (state.auth === 'google') {
             $.cookie("googleAuth", res.email);
@@ -291,7 +291,7 @@ function aboutClick() {
 function homeClick() {
     state.chat = null;
     state.contact = null;
-    state.activity = null;
+    state.purpose = null;
     setPath('home');
     $('.btn').removeClass('btn-primary');
     if (isEmpty(state.contacts)) {

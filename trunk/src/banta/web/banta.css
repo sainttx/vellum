@@ -47,48 +47,48 @@ textarea.banta-message-input {
     font-family: 'Ubuntu Mono';
 }
 
-span.event-name {
+span.events-name {
     font-style: italic;
 }
 
-span.event-time {
+span.events-time {
     font-weight: normal;
 }
 
-span.event-day {
+span.events-day {
     font-weight: bold;
 }
 
-span.event-date {
+span.events-date {
     font-size: 95%;
     font-style: italic;
     color: #555;
     padding-left: 4px;
 }
 
-tr.event-date {
+tr.events-date-row {
   background-color: #eee;
   border-color: #333;
 }
 
-span.event-guests {
+span.events-guests {
     font-family: 'Ubuntu', 'Ubuntu Condensed';
     font-size: 90%;
     color: #777;
 }
 
-span.event-elaborate {
+span.events-elaborate {
     font-size: 95%;
     font-style: normal;
     color: #333;
 }
 
-span.event-host {
+span.events-host {
     font-weight: bold;
     font-style: normal;
 }
 
-span.event-venue {
+span.events-venue {
     font-weight: bold;
     font-style: normal;
 }

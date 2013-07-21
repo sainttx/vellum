@@ -211,6 +211,8 @@ var u = {
     }
 };
 
+console.xlog = function() {    
+};
 
 function redirectDocument() {
     console.log("redirectDocument " + window.location.protocol);

@@ -9,7 +9,7 @@ b.chats = {
         $('.chat-new-clickable').click(b.chat.clickNew);
         dom.chats = {};
         dom.chats.tbody = $('#chats-tbody');
-        dom.chats.trHtml = dom.chats.tbody.html();
+        dom.chats.tbodyHtml = $('#chats-tbody').html();
     },
     click: function() {
         console.log('chats.click');
@@ -24,8 +24,8 @@ b.chats = {
         state.chats.sort(compareName);
         dom.chats.tbody.empty();
         for (var i = 0; i < state.chats.length; i++) {
-            dom.chats.tbody.append(dom.chats.trHtml);
-            var tr = $("#chats-tbody > tr:last-child");
+            dom.chats.tbody.append(dom.chats.tbodyHtml);
+            var tr = $("#chats-tbody > tr.:last-child");
             tr.find('span.chats-contact').text(state.chats[i].name);
             tr.find('span.chats-time').text(u.date.format(arrayLast(state.chats[i].messages).time));
             tr.find('span.chats-message').text(arrayLast(state.chats[i].messages).textMessage);
