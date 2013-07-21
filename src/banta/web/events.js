@@ -27,17 +27,16 @@ b.events = {
             b.events.$tbody.append(b.events.tbodyHtml);
             var event = new BEvent(state.events[i]);
             console.log('events.build', event.formatDate());
-            var dateRow = b.events.$tbody.find(".events-date-row").last();
+            var dateRow = b.events.$tbody.find("tr.events-date-row").last();
             dateRow.find('span.events-day').text(event.formatDay());
             dateRow.find('span.events-date').text(event.formatDate());
-            console.log("dateRow", dateRow.html());
-            var infoRow = b.events.$tbody.find(".events-info-row").last();
-            infoRow.find('span.events-name').text(event.name());
+            var infoRow = b.events.$tbody.find("tr.events-info-row").last();
+            infoRow.find('span.events-name').text(event.formatName());
             infoRow.find('span.events-time').text(event.formatTime());
-            infoRow.find('span.events-venue').text(event.venue());
-            infoRow.find('span.event-invitees').text(event.formatInvitees());
+            infoRow.find('span.events-venue').text(event.formatVenue());
+            infoRow.find('span.events-invitees').text(event.formatInvitees());
             infoRow.click(state.events[i], b.events.chosen);
-            console.log("infoRow", infoRow.html());
+            console.log('events.row', event.formatVenue(), event, state.events[i]);
         }
     },
     put: function(object) {
