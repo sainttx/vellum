@@ -204,6 +204,9 @@ var u = {
             } else {
                 component.addClass('disabled');
             }            
+        },
+        notify: function(data) {
+            console.log(data);
         }
     }
 };
@@ -222,10 +225,6 @@ function redirectDocument() {
         return true;
     }
     return false;
-}
-
-function notify(message) {
-    console.log(message);
 }
 
 function buildTr(array) {

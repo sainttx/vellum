@@ -31,15 +31,15 @@ b.contacts = {
         b.contacts.$form.submit(b.contacts.searchClick);
     },
     newClick: function() {
-        b.contactEdit.newClick();
+        b.contact.newClick();
     },
     editClick: function() {
         if (state.selectedContacts.length === 1) {
-            b.contactEdit.edit(state.selectedContacts[0]);
+            b.contact.edit(state.selectedContacts[0]);
         }
     },
     click: function() {
-        console.log("contacts.click", state.purpose);
+        console.log("contacts.click", state.activity);
         b.contacts.reset();
         b.contacts.showPage();
     },
@@ -50,15 +50,15 @@ b.contacts = {
         state.chosenContact = null;
     },
     showPage: function() {
-        console.log("contacts.click", state.purpose, state.availableContacts);
+        console.log("contacts.click", state.activity, state.availableContacts);
         state.contact = null;
         b.contacts.build(state.availableContacts, null);
         b.contacts.title = b.contacts.defaultTitle;
-        if (!isEmpty(state.purpose)) {
-            b.contacts.title = b.contacts.purposeTitle[state.purpose];
+        if (!isEmpty(state.activity)) {
+            b.contacts.title = b.contacts.purposeTitle[state.activity];
         }
         showPageObj(b.contacts, null);
-        b.contacts.$input.focus();
+        //b.contacts.$input.focus();
     },
     searchFilter: function(contact) {
         return !u.array.contains(state.selectedContacts, contact) &&
@@ -120,34 +120,34 @@ b.contacts = {
         b.contacts.$input.focus();
     },
     choose: function(purpose, chosenCallback, availableContacts) {
-        state.purpose = purpose;
+        state.activity = purpose;
         state.chosenContact = chosenCallback;
         state.chosenContacts = null;
         state.availableContacts = availableContacts;
         state.selectedContacts = [];
         if (!u.object.containsKey(b.contacts.purposeTitle, purpose)) {
-            console.warn('choose', state.purpose);
+            console.warn('choose', state.activity);
         }
         b.contacts.showPage();
     },
     chooseMulti: function(purpose, chosenCallback, selectedContacts, availableContacts) {
         b.contacts.reset();
-        state.purpose = purpose;
+        state.activity = purpose;
         state.chosenContacts = chosenCallback;
         state.selectedContacts = selectedContacts;
         if (availableContacts) {
             state.availableContacts = availableContacts;
         }
         if (!u.object.containsKey(b.contacts.purposeTitle, purpose)) {
-            console.warn('chooseMulti', state.purpose);
+            console.warn('chooseMulti', state.activity);
         }
         b.contacts.showPage();
         setPath(purpose);
     },
     contactRowClick: function(event) {
         state.contact = event.data;
-        if (isEmpty(state.purpose)) {
-            b.contactEdit.edit(state.contact);
+        if (isEmpty(state.activity)) {
+            b.contact.edit(state.contact);
         } else if (!isEmpty(state.chosenContact)) {
             state.chosenContact(state.contact);
         } else {
@@ -161,7 +161,7 @@ b.contacts = {
             }
         }
         b.contacts.buttons();
-        console.log('contacts.contactRowClick', state.purpose, state.contact, state.selectedContacts.length);
+        console.log('contacts.contactRowClick', state.activity, state.contact, state.selectedContacts.length);
     },
     buttons: function() {
         var selected = (state.selectedContacts.length > 0);

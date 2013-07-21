@@ -1,8 +1,22 @@
 
 var b = {};
 var dom = {};
-var state = { env: 'test' };
 var server = mockServer;
+var state = { 
+    env: 'test' 
+};
+var info = {
+    components: [
+        'contacts',
+        'contact',
+        'chat',
+        'chats',
+        'event',
+        'events',
+        'notifications'
+    ]
+};
+
 
 function locationDev() {
     return window.location.hostname.startsWith('localhost') || window.location.hostname.startsWith("192.168");
@@ -19,22 +33,20 @@ $(document).ready(function() {
 
 function documentLoad() {
     console.log('documentLoad', window.location.hostname);
-    state.loadedComponentsCount = 6;
-    load('contacts');
-    load('contactEdit');
-    load('chats');
-    load('chat');
-    load('events');
-    load('event');
+    state.loadedComponentsCount = info.components.length;
+    foreach(info.components, function(component) {
+        load(component);
+    });
 }
 
 function componentsLoaded() {
     b.chat.loaded();
     b.chats.loaded();
-    b.contactEdit.loaded();
+    b.contact.loaded();
     b.contacts.loaded();
     b.events.loaded();
     b.event.loaded();    
+    b.notifications.loaded();
     homeLoaded();
 }
 
@@ -100,10 +112,10 @@ function windowLocation(pathname) {
         aboutClick();
     } else if (pathname === '/#contacts') {
         b.contacts.click();
-    } else if (pathname.startsWith('/#contactEdit/')) {
+    } else if (pathname.startsWith('/#contact/')) {
         b.contacts.click();
     } else if (pathname === '/#contactNew') {
-        b.contactEdit.newClicked();
+        b.contact.newClicked();
     } else if (pathname === '/#chats') {
         b.chats.click();
     } else if (pathname.startsWith('/#chat/')) {
@@ -149,6 +161,7 @@ function loginNumber(number) {
 }
 
 function showLoggedOut() {
+    $('#notifications-container').hide();
     $('.loggedin-viewable').hide();
     $('.logout-clickable').hide();
     $('.loggedout-viewable').show();
@@ -168,7 +181,7 @@ function showLoggedInRes() {
         console.warn('no server auth');
         state.auth = 'unknown';
     }
-    notify('Welcome, ' + state.login.email);
+    u.ui.notify('Welcome, ' + state.login.email);
     $('#loggedin-message').text("Welcome, " + state.login.name);
     if (false) {
         $('#loggedin-username-clickable').text(state.login.email);
@@ -186,6 +199,8 @@ function showLoggedIn() {
     $('#loggedin-username').show();
     $('#loggedin-info').show();
     $('#welcome-container').show();
+    $('#notifications-container').show();
+    console.log('showLoggedIn', $('#notifications-container'));
 }
 
 function loginRes(res) {
@@ -276,7 +291,7 @@ function aboutClick() {
 function homeClick() {
     state.chat = null;
     state.contact = null;
-    state.purpose = null;
+    state.activity = null;
     setPath('home');
     $('.btn').removeClass('btn-primary');
     if (isEmpty(state.contacts)) {
@@ -292,6 +307,7 @@ function homeClick() {
         $('#login-id-input').focus();
     } else {
         $("#home-container").show();
+        $('#notifications-container').show();
     }
 }
 

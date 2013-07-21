@@ -278,7 +278,7 @@ function mockRes(req) {
         return chat;
     } else if (req.url === '/chatList') {
         return chatList;
-    } else if (req.url === '/contactEdit') {
+    } else if (req.url === '/contact') {
         return req.data;
     } else if (req.url === '/contactList') {
         return mock.contacts;
