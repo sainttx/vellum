@@ -7,25 +7,33 @@ function BEvent(event) {
 
 BEvent.prototype = {
     formatDay: function() {
-        return "Friday";
+        return u.date.formatWeekDay(this.event.date);
     },
     formatDate: function() {
-        return "24 July";
+        return u.date.formatTerse(this.event.date);
     },
     formatTime: function() {
-        return "11am";
+        return this.event.time;
     },
     formatInvitees: function() {
-        return "Harry, Julie, George";
+        return u.array.join(this.event.invitees, ', ', function(element) {
+            return element;
+        });
     },     
-    host: function() {
-        return "Mike";
+    formatHost: function() {
+        return this.event.host;
     },     
-    name: function() {
-        return "Poker";
+    formatName: function() {
+        return this.event.name;
     },
-    venue: function() {
-        return "Mike's house";
+    formatVenue: function() {
+         if (!isEmpty(this.event.venue)) {
+            return this.event.venue;
+         }
+         if (!isEmpty(this.event.host)) {
+            return this.event.host;
+         }
+         return '';
     },
 };
 

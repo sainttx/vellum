@@ -125,6 +125,16 @@ var u = {
             console.log('array.extractValues', array.length, key, values);
             return values;
         },
+        join: function(array, delimiter, f) {
+            var string = "";
+            for (var i = 0; i < array.length; i++) {
+                if (i > 0) {
+                    string = string + delimiter;
+                }
+                string = string + f(array[i]);
+            }
+            return string;        
+        },
     },
     date: {
         init: function() {
@@ -140,6 +150,12 @@ var u = {
             } else {
                 return moment(date).format('h:mm a MMM Do');
             }
+        },
+        formatTerse: function(date) {
+            return moment(date).format('MMM Do');
+        },
+        formatWeekDay: function(date) {
+            return moment(date).format('dddd');
         },
     },
     number: {

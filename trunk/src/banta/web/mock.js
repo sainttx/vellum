@@ -186,9 +186,8 @@ var mockData = {
             invitees: [
                 'Joe Soap',
                 'Ginger Bread',
-                'Harry Potter'
             ],
-            date: '2013-06-27',
+            date: '2013-08-27',
             time: '19:00',
             duration: '4h',
             day: 'Thursday',
@@ -201,7 +200,7 @@ var mockData = {
             venue: 'Meeting Room 1',
             org: 'Biz Company',
             host: 'Harry Potter',
-            date: '2013-06-27',
+            date: '2013-08-29',
             time: '11:00',
             duration: '1h',
             day: 'Thursday',
