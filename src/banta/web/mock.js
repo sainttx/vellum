@@ -213,10 +213,6 @@ var mockData = {
                 'Harry Potter'
             ],
         },
-        {            
-        },
-        {            
-        },
     ]
 };
 
@@ -262,6 +258,7 @@ function mockInit() {
     });
     mockData.login.contacts = mockData.contacts;
     mockData.login.chats = mockData.chats;
+    mockData.login.events = mockData.events;
     server.log('mockReady', mockData.chats.length, mockData.chats[0]);
 }
 
