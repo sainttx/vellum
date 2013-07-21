@@ -8,7 +8,7 @@ var db = {
     },
     contacts: {
         put: function(contact) {
-            console.log('db.contacts.put', contacts);
+            console.log('db.contacts.put', contact);
             if (state.contact) {
                 var index = u.array.matchIndexOf(state.contacts, state.contact.name, matchName);
                 console.log('put', state.contact.name, index);
