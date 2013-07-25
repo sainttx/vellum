@@ -155,10 +155,10 @@ b.event = {
         b.event.errorElement = null;
         if ($('#event-form').valid()) {
             var event = b.event.get();
-            console.log("event.save form", event);
+            console.log("event.save", event);
             db.events.put(event);
             server.ajax({
-                url: '/SaveEvent',
+                url: '/eventSave',
                 data: $('#event-form').serialize(),
                 success: b.event.res,
                 error: b.event.error,
@@ -203,6 +203,10 @@ b.event = {
         });
     },
     set: function(o) {
+        $('#event-name-input').val(o.name);
+        $('#event-description-input').val(o.description);
+        $('#event-reminder-input').val(o.reminder);
+        $('#event-repeat-input').val(o.repeat);
         $('#event-host-input').val(o.host);
         $('#event-time-input').val(o.time);
         $('#event-date-input').val(o.date);
@@ -211,7 +215,13 @@ b.event = {
     },
     get: function() {
         return {
+            name: $('#event-name-input').val(),
+            description: $('#event-description-input').val(),
+            host: $('#event-host-input').val(),
+            repeat: $('#event-repeat-input').val(),
+            reminder: $('#event-reminder-input').val(),
             time: u.string.sanitize($('#event-time-input').val()),
+            date: $('#event-day-input').val(),
             day: $('#event-day-input').val(),
             duration: $('#event-duration-input').val()
         };
