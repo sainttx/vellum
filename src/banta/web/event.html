@@ -7,12 +7,21 @@
         </ul>
     </div>
 </div>
+<div class="row hide" id="event-invitees-div">
+    <div class="span8">
+        <h4>Invitees</h4>
+        <table class="table table-striped">
+            <tbody id="event-invitees-tbody">
+            </tbody>
+        </table>    
+    </div>
+</div>
 <form class="form-horizontal" id="event-form">
     <fieldset>
         <div class="control-group" id="event-name-div">
-            <label class="control-label" for="name">Name</label>
+            <label class="control-label" for="name">Event name</label>
             <div class="controls">
-                <input type="text" class="input-xlarge" name="name" placeholder="Name" id="event-name-input"/>
+                <input type="text" class="input-xlarge" name="name" placeholder="Event name" id="event-name-input"/>
                 <p class="help-block"></p>
             </div>
         </div>
@@ -84,12 +93,6 @@
                 <input type="text" pattern="\d*[hmd]" class="input-xlarge" name="reminder" placeholder="Reminder" id="event-reminder-input"/>
                 <p class="help-block"></p>
             </div>
-        </div>
-        <div>        
-            <table class="table table-striped">
-                <tbody id="event-invitees-tbody">
-                </tbody>
-            </table>    
         </div>
     </fieldset>
 </form>
