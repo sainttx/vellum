@@ -111,7 +111,7 @@ b.event = {
         console.log('event.inviteeChoosen', contacts.length);
         state.invitees = contacts;
         b.event.buildInvitees();
-        b.event.showPage();        
+        b.event.showPage();                
     },
     inviteeRemoveChosen: function(contact) {
         console.log('event.removeInvitee', contact);
@@ -136,13 +136,18 @@ b.event = {
 
     },
     buildInvitees: function() {
-        state.invitees.sort(u.object.makeCompare('name'));
-        b.event.$tbody.empty();
-        for (var i = 0; i < state.invitees.length; i++) {
-            b.event.$tbody.append('<tr><td>' + state.invitees[i].name + '</td></tr>');
-            b.event.$tbody.children('tr:last').click(state.invitees[i], u.event.makeGetData(b.event.inviteeRemoveChosen));
+        if (state.invitees.length > 0) {
+            state.invitees.sort(u.object.makeCompare('name'));
+            b.event.$tbody.empty();            
+            for (var i = 0; i < state.invitees.length; i++) {
+                b.event.$tbody.append('<tr><td>' + state.invitees[i].name + '</td></tr>');
+                b.event.$tbody.children('tr:last').click(state.invitees[i], u.event.makeGetData(b.event.inviteeRemoveChosen));
+            }
+            b.event.$tbody.show();
+            $('#event-invitees-div').show();
+        } else {
+            $('#event-invitees-div').hide();
         }
-        b.event.$tbody.show();
     },
     save: function(e) {
         console.log("event.save invitees", state.invitees);
