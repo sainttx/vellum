@@ -182,6 +182,7 @@ var mockData = {
     events: [
         {            
             name: 'Poker',
+            description: '',
             host: 'Harry Potter',            
             invitees: [
                 'Joe Soap',
@@ -196,6 +197,7 @@ var mockData = {
         },        
         { 
             name: 'PCI update',
+            description: '',
             type: 'Meeting',
             venue: 'Meeting Room 1',
             org: 'Biz Company',
@@ -270,10 +272,12 @@ function mockRes(req) {
         return mockData.login;
     } else if (req.url === '/logout') {
         return mockData.logout;
+    } else if (req.url === '/eventSave') {
+        return req.data;
     } else if (req.url === '/chatGet') {
-        return chat;
+        return req.data;
     } else if (req.url === '/chatList') {
-        return chatList;
+        return mockData.chats;
     } else if (req.url === '/contact') {
         return req.data;
     } else if (req.url === '/contactList') {
