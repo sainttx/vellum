@@ -156,7 +156,6 @@ b.event = {
         if ($('#event-form').valid()) {
             var event = b.event.get();
             console.log("event.save", event);
-            db.events.put(event);
             server.ajax({
                 url: '/eventSave',
                 data: $('#event-form').serialize(),
@@ -169,8 +168,8 @@ b.event = {
         }
     },
     res: function(res) {
-        console.log('res');
-        console.log(res);
+        console.log('res', res);
+        db.events.put(res);
         b.events.click();
     },
     error: function() {
@@ -196,13 +195,14 @@ b.event = {
             host: '',
             time: '',
             day: '',
-            repeat: '',
+            repeat: 'Once',
             date: '',
             duration: '1h',
-            reminder: '',
+            reminder: '1h',
         });
     },
     set: function(o) {
+        $('#event-id-input').val(o.id);
         $('#event-name-input').val(o.name);
         $('#event-description-input').val(o.description);
         $('#event-reminder-input').val(o.reminder);
@@ -214,7 +214,9 @@ b.event = {
         $('#event-duration-input').val(o.duration);
     },
     get: function() {
+        console.log('get', state.event);
         return {
+            id: $('#event-id-input').val(),
             name: $('#event-name-input').val(),
             description: $('#event-description-input').val(),
             host: $('#event-host-input').val(),

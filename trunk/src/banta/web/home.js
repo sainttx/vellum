@@ -3,7 +3,10 @@ var b = {};
 var dom = {};
 var server = mockServer;
 var state = { 
-    env: 'test' 
+    env: 'test',
+    maps: {
+        events: {}
+    }
 };
 var info = {
     components: [
@@ -208,7 +211,7 @@ function loginRes(res) {
         state.login = res;
         state.contacts = res.contacts;
         state.chats = res.chats;
-        state.events = res.events;
+        db.events.populate(res.events);
         showLoggedInRes();
         if (state.auth === 'google') {
             $.cookie("googleAuth", res.email);
@@ -339,4 +342,8 @@ function compareName(a, b) {
 
 function matchName(object, name) {
     return object.name === name;
+}
+
+function matchId(object, id) {
+    return object.id === id;
 }

@@ -29,7 +29,22 @@ var db = {
     events: {
         put: function(event) {
             console.log('db.events.put', event);
-            
-        },    
+            var index = u.array.matchIndexOf(state.events, event.id, matchId);
+            if (index && index >= 0) {
+                console.log('db.events.put', event.id, index);
+                state.events[index] = event;
+            } else {
+                state.events.push(event);
+            }
+            state.maps.events[event.id] = event;
+        },
+        populate: function(events) {
+            state.events = events;
+            state.maps.events = {};
+            foreach(events, function(event) {
+                state.maps.events[event.id] = event;
+            });
+            console.log('db.events.populate', state.maps.events);
+        }
     },
 };

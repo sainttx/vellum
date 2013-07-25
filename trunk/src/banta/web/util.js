@@ -127,11 +127,13 @@ var u = {
         },
         join: function(array, delimiter, f) {
             var string = "";
-            for (var i = 0; i < array.length; i++) {
-                if (i > 0) {
-                    string = string + delimiter;
+            if (array) {
+                for (var i = 0; i < array.length; i++) {
+                    if (i > 0) {
+                        string = string + delimiter;
+                    }
+                    string = string + f(array[i]);
                 }
-                string = string + f(array[i]);
             }
             return string;        
         },
