@@ -4,9 +4,6 @@ var dom = {};
 var server = mockServer;
 var state = { 
     env: 'test',
-    maps: {
-        events: {}
-    }
 };
 var info = {
     components: [
@@ -208,10 +205,7 @@ function showLoggedIn() {
 function loginRes(res) {
     console.log("loginRes", window.location.pathname);
     if (res.email !== null) {
-        state.login = res;
-        state.contacts = res.contacts;
-        state.chats = res.chats;
-        db.events.populate(res.events);
+        db.loginRes(res);
         showLoggedInRes();
         if (state.auth === 'google') {
             $.cookie("googleAuth", res.email);
@@ -276,7 +270,7 @@ function showPage(title, page, path, id) {
 function setPath(path, id) {
     path = '/#' + path;
     if (id) {
-        path += '/' + id.replace(/\s+/g, '');
+        path += '/' + id.replace(/\s+/g, '_');
     }
     window.history.pushState(null, null, path);
     $.cookie('path', path);

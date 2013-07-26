@@ -181,7 +181,7 @@ var mockData = {
     ],
     events: [
         {            
-            id : 1001,
+            id : '1001',
             name: 'Poker',
             description: '',
             host: 'Harry Potter',            
@@ -197,7 +197,7 @@ var mockData = {
             reminder: '4h'
         },        
         { 
-            id : 1002,
+            id : '1002',
             name: 'PCI update',
             description: '',
             type: 'Meeting',
@@ -276,7 +276,7 @@ function mockRes(req) {
         return mockData.logout;
     } else if (req.url === '/eventSave') {
         if (isEmpty(req.memo.id)) {
-            req.memo.id = 2001;
+            req.memo.id = '2001';
         }
         return req.memo;
     } else if (req.url === '/chatGet') {

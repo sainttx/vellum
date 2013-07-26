@@ -130,14 +130,12 @@ b.contacts = {
         }
         b.contacts.showPage();
     },
-    chooseMulti: function(purpose, chosenCallback, selectedContacts, availableContacts) {
+    chooseMulti: function(purpose, chosenCallback, selectedContacts, excludeContact) {
         b.contacts.reset();
         state.purpose = purpose;
         state.chosenContacts = chosenCallback;
         state.selectedContacts = selectedContacts;
-        if (availableContacts) {
-            state.availableContacts = availableContacts;
-        }
+        state.availableContacts = u.array.newRemove(state.contacts, excludeContact);
         if (!u.object.containsKey(b.contacts.purposeTitle, purpose)) {
             console.warn('chooseMulti', state.purpose);
         }

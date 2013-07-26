@@ -3,8 +3,12 @@ b.event = {
     rules: {
         name: {
             minlength: 1,            
-            required: false,
-            sanitary: true
+            required: true,
+            sanitary: true,
+        },
+        host: {
+            required: true,            
+            contact: true
         },
         description: {
             required: false,
@@ -12,14 +16,15 @@ b.event = {
         },
         time: {
             minlength: 3,
-            required: false,
+            required: true,
             sanitary: true
         },
         day: {
             required: false
         },
         date: {
-            required: false
+            date: true,
+            required: true
         },
         duration: {
             required: false,
@@ -32,6 +37,9 @@ b.event = {
             required: false
         },
     },
+    messages: {
+        date: 'Enter day or date'
+    },
     highlight: function(element) {
         console.log("highlight", element);
         $(element).closest('.control-group').removeClass('success').addClass('error');
@@ -43,6 +51,47 @@ b.event = {
         console.log("success");
         $(element).closest('.control-group').removeClass('error').addClass('success');
         b.event.buttons(true);
+    },
+    valid: function() {
+        if (!$('#event-form').valid()) {
+            return false;
+        }
+        var event = b.event.get();
+        if (!isEmpty(event.date) && isEmpty(event.day) && event.repeat === 'Weekly') {
+            $('#event-day-input').val(u.date.formatWeekDay(event.date));
+            console.log('valid day', event.day);
+        }
+        return true;
+    },
+    save: function(e) {
+        console.log("event.save invitees", state.invitees);
+        e.preventDefault();
+        b.event.errorElement = null;
+        if (b.event.valid()) {
+            var event = b.event.get();
+            event.invitees = [];
+            foreach(state.invitees, function(invitee) {
+                event.invitees.push(invitee.name);
+            })
+            console.log("event.save", event);
+            server.ajax({
+                url: '/eventSave',
+                data: $('#event-form').serialize(),
+                success: b.event.res,
+                error: b.event.error,
+                memo: event
+            });
+        } else {
+            b.event.buttons(false);
+        }
+    },
+    res: function(res) {
+        console.log('res', res);
+        db.events.put(res);
+        b.events.click();
+    },
+    error: function() {
+        console.log('error');
     },
     buttons: function(ok) {
         if (ok) {
@@ -93,19 +142,18 @@ b.event = {
         b.event.showPage();
         b.event.focus();
     },
-    hostClicked: function() {
-        console.log('event.clickHost');
-        b.contacts.choose('eventHost', b.event.hostChosen);
-    },
-    hostChosen: function(contact) {
-        console.log('event.chosenContactHost', contact);
-        u.array.remove(state.invitees, contact);
-        b.event.setAvailableInvitees();
-        showPage();
-    },
     inviteClicked: function() {
         console.log('event.inviteClicked');
-        b.contacts.chooseMulti('eventInvite', b.event.inviteesChosen, state.invitees);
+        b.contacts.chooseMulti('eventInvite', b.event.inviteesChosen, state.invitees, b.event.findHost());
+    },
+    findHost: function() {
+        var hostName = $.trim($('#event-host-input').val());
+        if (!isEmpty(hostName)) {
+            var contact = db.contacts.get(hostName);
+            u.array.remove(state.invitees, contact);
+            return contact;
+        }
+        return null;
     },
     inviteesChosen: function(contacts) {
         console.log('event.inviteeChoosen', contacts.length);
@@ -114,8 +162,9 @@ b.event = {
         b.event.showPage();                
     },
     inviteeRemoveChosen: function(contact) {
-        console.log('event.removeInvitee', contact);
+        console.log('event.inviteeRemoveChosen', state.invitees);
         u.array.remove(state.invitees, contact);
+        console.log('event.inviteeRemoveChosen', contact, state.invitees);
         b.event.buildInvitees();
     },
     cancelFocus: function() {
@@ -124,16 +173,17 @@ b.event = {
         }
     },
     edit: function(event) {
-        state.event = event;
-        console.log("event.edit", event);
         b.event.clear();
+        state.event = event;
+        state.invitees = db.events.getInvitees(event);
+        b.event.buildInvitees();
+        console.log("event.edit", event, state.invitees);
         b.event.set(event);
         $('#event-legend').text('Edit event');
         showPage('Edit event', 'event', 'event', event.name);
     },
     showPage: function() {
         showPage('New event', 'event', 'event', null);
-
     },
     buildInvitees: function() {
         if (state.invitees.length > 0) {
@@ -148,32 +198,6 @@ b.event = {
         } else {
             $('#event-invitees-div').hide();
         }
-    },
-    save: function(e) {
-        console.log("event.save invitees", state.invitees);
-        e.preventDefault();
-        b.event.errorElement = null;
-        if ($('#event-form').valid()) {
-            var event = b.event.get();
-            console.log("event.save", event);
-            server.ajax({
-                url: '/eventSave',
-                data: $('#event-form').serialize(),
-                success: b.event.res,
-                error: b.event.error,
-                memo: event
-            });
-        } else {
-            b.event.buttons(false);
-        }
-    },
-    res: function(res) {
-        console.log('res', res);
-        db.events.put(res);
-        b.events.click();
-    },
-    error: function() {
-        console.log('error');
     },
     cancel: function() {
         console.log("cancel");
@@ -217,13 +241,13 @@ b.event = {
         console.log('get', state.event);
         return {
             id: $('#event-id-input').val(),
-            name: $('#event-name-input').val(),
+            name: $.trim($('#event-name-input').val()),
             description: $('#event-description-input').val(),
-            host: $('#event-host-input').val(),
+            host: $.trim($('#event-host-input').val()),
             repeat: $('#event-repeat-input').val(),
             reminder: $('#event-reminder-input').val(),
             time: u.string.sanitize($('#event-time-input').val()),
-            date: $('#event-day-input').val(),
+            date: $('#event-date-input').val(),
             day: $('#event-day-input').val(),
             duration: $('#event-duration-input').val()
         };
