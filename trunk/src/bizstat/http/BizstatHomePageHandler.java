@@ -16,7 +16,7 @@ import java.util.Iterator;
 import vellum.util.DefaultDateFormats;
 import vellum.util.Strings;
 import java.util.List;
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.html.HtmlPrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
@@ -59,7 +59,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
         for (ServiceRecord serviceRecord : serviceRecords) {
             out.printf("<tr class=row%d><td>%s<td>%s<td><b>%s</b><td>%s<td>%s\n",
                     ++index % 2,
-                    Millis.formatAsSeconds(serviceRecord.getTimestamp()),
+                    Milli.formatAsSeconds(serviceRecord.getTimestamp()),
                     serviceRecord.getHost(),
                     serviceRecord.getService(),
                     serviceRecord.getServiceStatus(),
@@ -139,7 +139,7 @@ public class BizstatHomePageHandler extends AbstractPageHandler {
        p.tbody();
        while (iterator.hasNext()) {
            LogrRecord record = iterator.next();
-           p.trd(Millis.formatAsSeconds(record.getTimestamp()), 
+           p.trd(Milli.formatAsSeconds(record.getTimestamp()), 
                    record.getContext().getName(),
                    record.getLevel(), record.getMessage(),
                    ListFormats.displayFormatter.formatArray(record.getArgs()));

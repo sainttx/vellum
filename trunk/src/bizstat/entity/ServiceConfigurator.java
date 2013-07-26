@@ -8,7 +8,7 @@ import bizstat.enumtype.NotifyType;
 import bizstat.enumtype.StatusChangeType;
 import bizstat.enumtype.MetricType;
 import bizstat.server.BizstatServer;
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import java.util.Date;
 import java.util.List;
 import vellum.config.PropertiesStringMap;
@@ -44,11 +44,11 @@ public class ServiceConfigurator {
             if (service.getNotifyType() == null) {
                 service.setNotifyType(NotifyType.ALWAYS);
             }
-            service.setIntervalMillis(properties.getMillis("interval", Millis.fromDays(1)));
+            service.setIntervalMillis(properties.getMillis("interval", Milli.fromDays(1)));
             if (false) {
                 long millis = System.currentTimeMillis(); 
-                millis -= millis % Millis.fromMinutes(10);
-                millis += Millis.fromMinutes(10);
+                millis -= millis % Milli.fromMinutes(10);
+                millis += Milli.fromMinutes(10);
                 service.setScheduleTime(new Date(millis));
             }
         } else {

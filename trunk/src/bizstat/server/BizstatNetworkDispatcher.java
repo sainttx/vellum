@@ -4,7 +4,7 @@
  */
 package bizstat.server;
 
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import bizstat.entity.*;
@@ -31,7 +31,7 @@ public class BizstatNetworkDispatcher implements Runnable {
 
     @Override
     public void run() {
-        logger.info("run", network, Millis.formatAsSeconds(server.dispatcherMillis));
+        logger.info("run", network, Milli.formatAsSeconds(server.dispatcherMillis));
         checkServicePaths(network.getServicePathList());
         checkHosts(network.getHostList());
     }

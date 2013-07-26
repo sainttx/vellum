@@ -12,7 +12,7 @@ import vellum.util.Args;
 import bizstat.enumtype.ServiceStatus;
 import java.util.Collection;
 import java.util.List;
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.entity.AbstractLongIdEntity;
 import vellum.datatype.Timestamped;
 import vellum.parameter.StringMap;

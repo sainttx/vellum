@@ -5,7 +5,7 @@
 
 package vellum.logr;
 
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.datatype.TimestampedDequer;
 
 /**
@@ -14,7 +14,7 @@ import vellum.datatype.TimestampedDequer;
  */
 public class DequerHandler implements LogrHandler {
     LogrContext context;
-    TimestampedDequer<LogrRecord> dequer = new TimestampedDequer(Millis.fromMinutes(5));
+    TimestampedDequer<LogrRecord> dequer = new TimestampedDequer(Milli.fromMinutes(5));
     DefaultFormatter formatter = new DefaultFormatter();
     
     public DequerHandler() {

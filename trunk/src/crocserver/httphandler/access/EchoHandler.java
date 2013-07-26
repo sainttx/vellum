@@ -10,7 +10,7 @@ import crocserver.app.CrocApp;
 import vellum.httpserver.HttpExchangeInfo;
 import java.io.IOException;
 import java.io.PrintStream;
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
@@ -44,7 +44,7 @@ public class EchoHandler implements HttpHandler {
             cookieMap.put(cookieKey, "testValue");
             cookieMap.put("testCookieKey1", "testValue1");
             cookieMap.put("testCookieKey2", "testValue2");
-            httpExchangeInfo.setCookie(cookieMap, Millis.fromHours(24));
+            httpExchangeInfo.setCookie(cookieMap, Milli.fromHours(24));
             httpExchangeInfo.sendResponse("text/plain", true);
             out.println(httpExchange.getRequestURI().toString());
             out.printf("cookie %s: %s\n", cookieKey, httpExchangeInfo.getCookie(cookieKey));
