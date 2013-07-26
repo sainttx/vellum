@@ -79,7 +79,7 @@ public class PasswordCipherTest {
         assertTrue(passwordHash.getIv().length == 0);
         byte[] hash = passwordHash.getHash();
         byte[] salt = passwordHash.getSalt();
-        PBECipher cipher = new PBECipher(PBE_PASSWORD, SALT, ITERATION_COUNT, KEY_SIZE);                
+        PBECipher cipher = new PBECipher(PBE_PASSWORD, SALT, ITERATION_COUNT, KEY_SIZE);
         passwordHash.encryptSalt(cipher);
         assertTrue(passwordHash.getIv().length != 0);
         assertTrue(!Arrays.equals(salt, passwordHash.getSalt()));
