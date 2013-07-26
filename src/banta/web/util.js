@@ -96,6 +96,16 @@ var u = {
             }
             return array;
         },
+        newRemove: function(array, element) {
+            var index = u.array.indexOf(array, element);
+            if (index >= 0) {
+                var arr = [];
+                u.array.addAll(arr, array);
+                arr.splice(index, 1);
+                return arr;
+            }
+            return array;
+        },
         removeAll: function(array, other) {
             var arr = [];
             for (var i = 0; i < array.length; i++) {
@@ -147,6 +157,9 @@ var u = {
             }
         },
         format: function(date) {
+            if (!date) {
+                return '';
+            }
             if (moment().format('MMM Do') === moment(date).format('MMM Do')) {
                 return moment(date).format('h:mm a');
             } else {
@@ -154,9 +167,15 @@ var u = {
             }
         },
         formatTerse: function(date) {
+            if (!date) {
+                return '';
+            }
             return moment(date).format('MMM Do');
         },
         formatWeekDay: function(date) {
+            if (!date) {
+                return '';
+            }
             return moment(date).format('dddd');
         },
     },
@@ -173,6 +192,10 @@ var u = {
     validate: {
         init: function() {
             $.validator.addMethod("sanitary", u.validate.sanitary, "Please enter valid characters only.");
+            $.validator.addMethod("contact", u.validate.contactName, "Please enter valid contact.");
+        },
+        contactName: function(value, element) {
+            return db.validateContactName(value);
         },
         sanitary: function(value, element) {
             return !/[<>]/.test(value);

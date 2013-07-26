@@ -46,19 +46,17 @@
                 <p class="help-block"></p>
             </div>
         </div>
-        <div class="control-group" id="event-day-div">
-            <label class="control-label" for="day">Day</label>
+        <div class="control-group" id="event-duration-div">
+            <label class="control-label" for="duration">Duration</label>
             <div class="controls">
-                <select type="text" class="input-xlarge" name="day" placeholder="Day" id="event-day-input">
-                    <option></option>
-                    <option>Monday</option>
-                    <option>Tuesday</option>
-                    <option>Wednesday</option>
-                    <option>Thursday</option>
-                    <option>Friday</option>
-                    <option>Saturday</option>
-                    <option>Sunday</option>
-                </select>
+                <input type="text" pattern="\d*[hmd]" class="input-xlarge" name="duration" placeholder="Duration" id="event-duration-input"/>
+                <p class="help-block"></p>
+            </div>
+        </div>
+        <div class="control-group" id="event-date-div">
+            <label class="control-label" for="date">Date</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge validate[groupRequired[date]]" name="date" placeholder="Date" id="event-date-input"/>
                 <p class="help-block"></p>
             </div>
         </div>
@@ -74,17 +72,19 @@
                 <p class="help-block"></p>
             </div>
         </div>
-        <div class="control-group" id="event-date-div">
-            <label class="control-label" for="date">Date</label>
+        <div class="control-group" id="event-day-div">
+            <label class="control-label" for="day">Day</label>
             <div class="controls">
-                <input type="text" class="input-xlarge" name="date" placeholder="Date" id="event-date-input"/>
-                <p class="help-block"></p>
-            </div>
-        </div>
-        <div class="control-group" id="event-duration-div">
-            <label class="control-label" for="duration">Duration</label>
-            <div class="controls">
-                <input type="text" pattern="\d*[hmd]" class="input-xlarge" name="duration" placeholder="Duration" id="event-duration-input"/>
+                <select type="text" class="input-xlarge validate[groupRequired[date]]" name="day" placeholder="Day" id="event-day-input">
+                    <option></option>
+                    <option>Monday</option>
+                    <option>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option>Friday</option>
+                    <option>Saturday</option>
+                    <option>Sunday</option>
+                </select>
                 <p class="help-block"></p>
             </div>
         </div>
