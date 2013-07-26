@@ -5,7 +5,7 @@ package crocserver.httphandler.access;
 
 import crocserver.storage.servicerecord.ServiceRecord;
 import crocserver.httphandler.common.AbstractPageHandler;
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.html.HtmlPrinter;
 import crocserver.storage.common.CrocStorage;
 
@@ -37,7 +37,7 @@ public class ViewServiceRecordHandler extends AbstractPageHandler {
        p.trhd("Id", serviceRecord.getId());
        p.trhd("Host", serviceRecord.getCertName());
        p.trhd("Service", serviceRecord.getServiceName());
-       p.trhd("Timestamp", Millis.format(serviceRecord.getTimestamp()));
+       p.trhd("Timestamp", Milli.format(serviceRecord.getTimestamp()));
        p.trhd("Status", serviceRecord.getServiceStatus());
        p.tbodyClose();
        p.tableDivClose();

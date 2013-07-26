@@ -15,12 +15,12 @@ public class TimeOfDay {
     int millisecond;
 
     public TimeOfDay(int offsetHours, long millis) {
-        millis += Millis.fromHours(offsetHours);
-        millis %= Millis.fromDays(1);
-        hour = (int) (millis/Millis.fromHours(1));
-        minute = (int) ((millis % Millis.fromHours(1))/Millis.fromMinutes(1));
-        second = (int) ((millis % Millis.fromMinutes(1))/Millis.fromSeconds(1));
-        millisecond = (int) (millis % Millis.fromSeconds(1));
+        millis += Milli.fromHours(offsetHours);
+        millis %= Milli.fromDays(1);
+        hour = (int) (millis/Milli.fromHours(1));
+        minute = (int) ((millis % Milli.fromHours(1))/Milli.fromMinutes(1));
+        second = (int) ((millis % Milli.fromMinutes(1))/Milli.fromSeconds(1));
+        millisecond = (int) (millis % Milli.fromSeconds(1));
     }
     
     public TimeOfDay(int hour, int minute, int second, int millisecond) {
@@ -62,9 +62,9 @@ public class TimeOfDay {
     }
 
     public long toMillis() {
-        long millis = Millis.fromHours(hour);
-        millis += Millis.fromMinutes(minute);
-        millis += Millis.fromMinutes(second);
+        long millis = Milli.fromHours(hour);
+        millis += Milli.fromMinutes(minute);
+        millis += Milli.fromMinutes(second);
         millis += millisecond;
         return millis;
     }

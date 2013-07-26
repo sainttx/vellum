@@ -11,7 +11,7 @@ import crocserver.storage.clientcert.Cert;
 import crocserver.storage.common.CrocStorage;
 import java.util.Collection;
 import java.util.Iterator;
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.html.HtmlPrinter;
 import vellum.logr.LogrFactory;
 import vellum.logr.LogrRecord;
@@ -125,7 +125,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
         for (ServiceRecord serviceRecord : serviceRecords) {
             h.trd(
                     String.format("<a href='/viewServiceRecord/%d'>%d</a>", serviceRecord.getId(), serviceRecord.getId()),
-                    Millis.format(serviceRecord.getTimestamp()),
+                    Milli.format(serviceRecord.getTimestamp()),
                     serviceRecord.getCertName(),
                     serviceRecord.getServiceName(),
                     serviceRecord.getServiceStatus());
@@ -146,7 +146,7 @@ public class SecureHomeHandler extends AbstractPageHandler {
         p.tbody();
         while (iterator.hasNext()) {
             LogrRecord record = iterator.next();
-            p.trd(Millis.formatAsSeconds(record.getTimestamp()),
+            p.trd(Milli.formatAsSeconds(record.getTimestamp()),
                     record.getContext().getName(),
                     record.getLevel(), record.getMessage(),
                     ListFormats.displayFormatter.formatArray(record.getArgs()));

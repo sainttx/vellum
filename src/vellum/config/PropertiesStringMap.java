@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import vellum.datatype.Millis;
+import vellum.datatype.Milli;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.util.Bytes;
@@ -105,7 +105,7 @@ public class PropertiesStringMap extends HashMap<String, String> {
 
     public Long getMillis(String name, Long defaultMillis) {
         if (!containsKey(name)) return defaultMillis;
-        return Millis.parse(get(name));
+        return Milli.parse(get(name));
     }
 
     public long getMillis(String name) {
@@ -113,7 +113,7 @@ public class PropertiesStringMap extends HashMap<String, String> {
         if (string == null) {
             throw new ConfigException(ConfigExceptionType.NOT_FOUND, name);
         }
-        return Millis.parse(string);
+        return Milli.parse(string);
     }
 
     public Date getTime(String name, Date defaultTime) {
