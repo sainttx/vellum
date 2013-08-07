@@ -39,4 +39,5 @@ public class JsonStrings {
     public static String buildJson(StringMap map) {
         return new Gson().toJson(map);
     }
+        
 }
