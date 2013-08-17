@@ -96,7 +96,7 @@ cryptoclient() {
   jc "evanx:eeee" 
   jc "henty:hhhh"
   sleep 1
-  data=`javaks dualcontrol.CryptoClient 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:pq7ZjIcIK9A=:111122223333444"`
+  data=`javaks dualcontrol.CryptoClient 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:111122223333444"`
   javaks dualcontrol.CryptoClient 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
 }
 
@@ -121,8 +121,8 @@ command0_client() {
 }
 
 command0_testgenseckey
-#command0_testkeystoreserver
-#command0_testcryptoserver
+command0_testkeystoreserver
+command0_testcryptoserver
 #command0_client
 
 #sh /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
