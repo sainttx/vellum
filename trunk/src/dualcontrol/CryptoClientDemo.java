@@ -23,7 +23,6 @@ public class CryptoClientDemo {
     }
 
     private void run(String hostAddress, int port, byte[] data) throws Exception {
-        System.err.printf("hostAddress %s, port %d, %d bytes: %s\n", hostAddress, port, data.length, new String(data));
         Socket socket = DualControl.createSSLContext().getSocketFactory().
                 createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
@@ -35,8 +34,6 @@ public class CryptoClientDemo {
         dis.readFully(ivBytes);
         byte[] bytes = new byte[dis.readShort()];
         dis.readFully(bytes);
-        System.err.printf("iv %d: %s\n", ivBytes.length, Base64.encodeBase64String(ivBytes));
-        System.err.printf("bytes %d: %s\n", bytes.length, Base64.encodeBase64String(bytes));
         if (new String(data).contains("ENCRYPT")) {
             System.out.printf("%s:%s", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));
         }
