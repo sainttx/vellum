@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -18,8 +17,6 @@ import java.util.TreeMap;
 import javax.crypto.SecretKey;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 import org.apache.log4j.Logger;
 
@@ -27,7 +24,7 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public abstract class DualControl {
+public class DualControl {
     static final String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
     static final char[] keyStorePassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
     static final char[] keyPassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
@@ -86,7 +83,7 @@ public abstract class DualControl {
                 createServerSocket(PORT), n);
     }
     
-    public static Map<String, String> mapInputs(int n) throws Exception {
+    public static Map<String, String> inputMap(int n) throws Exception {
         Map<String, String> map = new TreeMap();
         for (byte[] bytes : readInputs(n)) {
             String string = new String(bytes).trim();
@@ -97,9 +94,9 @@ public abstract class DualControl {
         return map;
     }
     
-    public static Map<String, String> mapCombinations(int n) throws Exception {
+    public static Map<String, String> dualMap(int n) throws Exception {
         Map<String, String> map = new TreeMap();
-        Map<String, String> inputs = mapInputs(n);
+        Map<String, String> inputs = inputMap(n);
         for (String name : inputs.keySet()) {
             for (String otherName : inputs.keySet()) {
                 if (name.compareTo(otherName) < 0) {
@@ -112,7 +109,7 @@ public abstract class DualControl {
     }
     
     public static Map.Entry<String, String> dualEntry() throws Exception {
-        return DualControl.mapCombinations(2).entrySet().iterator().next();
+        return DualControl.dualMap(2).entrySet().iterator().next();
     }
     
     public static byte[] readBytes(InputStream inputStream) throws IOException {
