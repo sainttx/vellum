@@ -101,7 +101,7 @@ public class KeyStores {
         ks.load(null, password);
         FileOutputStream fos = new FileOutputStream(fileName);
         ks.store(fos, password);
-        fos.close();        
+        fos.close();
     }
     
     public static X509Certificate findRootCert(KeyStore keyStore, String alias) throws Exception {

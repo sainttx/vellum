@@ -34,7 +34,7 @@ public class StringMap extends HashMap<String, String> {
         if (object == null) {
             return super.put(key, null);
         } else {
-            return super.put(key, object.toString());            
+            return super.put(key, object.toString());    
         }
     }
 
@@ -63,7 +63,7 @@ public class StringMap extends HashMap<String, String> {
         if (string == null) {
             return defaultValue;
         }
-        return Long.parseLong(string);        
+        return Long.parseLong(string);
     }
 
     public String toJson() {

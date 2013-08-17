@@ -63,4 +63,13 @@ public class Bytes {
     public static char[] toCharArray(byte[] bytes) {
         return Charset.forName(Strings.UTF8).decode(ByteBuffer.wrap(bytes)).array();
     }
+    
+    public static byte[] getBytes(char[] chars) {
+        byte[] array = new byte[chars.length];
+        for (int i = 0; i < chars.length; i++) {
+            array[i] = (byte) chars[i];    
+        }
+        return array;
+    }       
+    
 }

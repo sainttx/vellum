@@ -23,7 +23,7 @@ import vellum.parameter.StringMap;
 import vellum.parameter.Parameters;
 import vellum.util.Beans;
 import vellum.util.Lists;
-import vellum.util.Files;
+import vellum.util.Streams;
 import vellum.util.Strings;
 
 /**
@@ -73,7 +73,7 @@ public class HttpExchangeInfo {
 
     public String getRequestBody() {
         if (requestBody == null) {
-            requestBody = Files.readString(httpExchange.getRequestBody());        
+            requestBody = Streams.readString(httpExchange.getRequestBody());
         }
         return requestBody;
     }
@@ -95,7 +95,7 @@ public class HttpExchangeInfo {
         parameterMap = new StringMap();
         urlQuery = httpExchange.getRequestURI().getQuery();
         if (httpExchange.getRequestMethod().equals("POST")) {
-            urlQuery = Files.readString(httpExchange.getRequestBody());
+            urlQuery = Streams.readString(httpExchange.getRequestBody());
         }
         logger.info("parseParameterMap", httpExchange.getRequestMethod());
         if (urlQuery == null) {
@@ -329,7 +329,7 @@ public class HttpExchangeInfo {
     }
     
     public String getInputString() {
-        return Files.readString(httpExchange.getRequestBody());
+        return Streams.readString(httpExchange.getRequestBody());
     }
 
 }

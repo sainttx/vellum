@@ -49,7 +49,7 @@ public final class Org extends AbstractIdEntity<Long> {
         displayName = map.get("displayName");
         region = map.get("region");
         locality = map.get("locality");
-        country = map.get("country");        
+        country = map.get("country");
         if (orgName == null) {
             orgName = url;
         }

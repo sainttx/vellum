@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Files;
+import vellum.util.Streams;
 import vellum.util.Strings;
 
 /**
@@ -41,7 +41,7 @@ public class WebHandler implements HttpHandler {
     
     public void loadReplace(String path) throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
-        StringBuilder text = Files.readStringBuilder(resourceStream);
+        StringBuilder text = Streams.readStringBuilder(resourceStream);
         replace(text);
         byte[] bytes = text.toString().getBytes();
         cache.put(path, bytes);
@@ -49,7 +49,7 @@ public class WebHandler implements HttpHandler {
 
     public void load(String path) throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
-        StringBuilder text = Files.readStringBuilder(resourceStream);
+        StringBuilder text = Streams.readStringBuilder(resourceStream);
         replace(text);
         byte[] bytes = text.toString().getBytes();
         cache.put(path, bytes);
@@ -89,12 +89,12 @@ public class WebHandler implements HttpHandler {
             byte[] bytes = cache.get(path);
             if (bytes == null) {
                 InputStream resourceStream = getClass().getResourceAsStream(resourceNamePrefix + path);
-                bytes = Files.readBytes(resourceStream);
+                bytes = Streams.readBytes(resourceStream);
                 cache.put(path, bytes);
             }
             logger.info("path", path, bytes.length);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-            httpExchange.getResponseBody().write(bytes);        
+            httpExchange.getResponseBody().write(bytes);
         } catch (Exception e) {
             logger.warn(e);
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);

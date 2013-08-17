@@ -4,7 +4,7 @@ package mobi.fb;
 
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import vellum.util.Files;
+import vellum.util.Streams;
 import java.io.IOException;
 import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ public class Page {
     HtmlBuilder builder;
 
     public Page(String htmlFileName) {
-        builder = new HtmlBuilder(Files.readString(getClass(), htmlFileName));
+        builder = new HtmlBuilder(Streams.readResourceString(getClass(), htmlFileName));
     }
                    
     public void handle(HttpServletRequest req, HttpServletResponse res) throws IOException {

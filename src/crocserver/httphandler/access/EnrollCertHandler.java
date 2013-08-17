@@ -74,7 +74,7 @@ public class EnrollCertHandler implements HttpHandler {
         String dname = org.formatDname(certName, userName);
         keyPair.generate(dname, new Date(), 999);
         String alias = app.getServerKeyAlias();
-        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));        
+        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), DefaultKeyStores.getCert(alias));
         Cert cert = app.getStorage().getCertStorage().findName(certName);
         if (cert == null) {
             cert = new Cert();

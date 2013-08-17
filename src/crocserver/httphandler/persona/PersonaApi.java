@@ -13,7 +13,7 @@ import vellum.logr.LogrFactory;
 import vellum.parameter.StringMap;
 import vellum.security.DefaultKeyStores;
 import vellum.util.Args;
-import vellum.util.Files;
+import vellum.util.Streams;
 
 /**
  *
@@ -40,7 +40,7 @@ public class PersonaApi {
         builder.append("&audience=").append(URLEncoder.encode(serverUrl, "UTF-8"));
         logger.info("request", url, builder.toString());
         connection.getOutputStream().write(builder.toString().getBytes());
-        String json = Files.readString(connection.getInputStream());
+        String json = Streams.readString(connection.getInputStream());
         logger.info("json", json);
         StringMap map = JsonStrings.getStringMap(json);
         String status = map.get("status");

@@ -13,7 +13,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.security.DefaultKeyStores;
 import vellum.util.Args;
-import vellum.util.Files;
+import vellum.util.Streams;
 import vellum.util.Strings;
 
 /**
@@ -68,7 +68,7 @@ public class GoogleApi {
         builder.append("&code=").append(URLEncoder.encode(code, "UTF-8"));
         logger.info("request", url, builder.toString());
         connection.getOutputStream().write(builder.toString().getBytes());
-        String responseText = Files.readString(connection.getInputStream());
+        String responseText = Streams.readString(connection.getInputStream());
         String accessToken = JsonStrings.get(responseText, "access_token");
         logger.info("response", responseText);
         logger.info("accessToken", accessToken);
@@ -91,7 +91,7 @@ public class GoogleApi {
         URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken);
         logger.info("request", url.toString());
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        String res = Files.readString(connection.getInputStream());
+        String res = Streams.readString(connection.getInputStream());
         logger.info("response", connection.getResponseCode(), res);
         return res;
     }
@@ -111,7 +111,7 @@ public class GoogleApi {
         URL url = new URL("https://www.googleapis.com/plus/v1/people/" + userId + "?access_token=" + accessToken);
         logger.info("request", url.toString());
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        return Files.readString(connection.getInputStream());
+        return Streams.readString(connection.getInputStream());
     }
 
     public String getClientId() {
