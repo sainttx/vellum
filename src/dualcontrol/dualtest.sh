@@ -15,7 +15,7 @@ echo CLASSPATH=$CLASSPATH
 set -x
 
 secstore=~/tmp/dual.sec.jceks
-secalias=dek-2013
+secalias=powerstate-2013
 privatestore=~/tmp/dual.private.jks
 truststore=~/tmp/dual.public.jks
 cert=~/tmp/dual.pem
