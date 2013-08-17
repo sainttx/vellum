@@ -34,7 +34,7 @@ public class FileServer {
         stream.read(bytes);
         while (true) {
             Socket socket = serverSocket.accept();
-            logger.debug(socket.getInetAddress().getHostAddress());
+            logger.info("hostAddress " + socket.getInetAddress().getHostAddress());
             if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
                 socket.getOutputStream().write(bytes);
             }
