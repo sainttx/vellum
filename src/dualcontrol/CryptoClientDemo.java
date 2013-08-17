@@ -9,13 +9,13 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author evans
  */
-public class CryptoClient {
+public class CryptoClientDemo {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {
             System.err.println("usage: hostAddress port text");
         } else {
-            new CryptoClient().run(args[0], Integer.parseInt(args[1]), args[2].getBytes());
+            new CryptoClientDemo().run(args[0], Integer.parseInt(args[1]), args[2].getBytes());
         }
     }
 

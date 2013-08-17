@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import javax.net.ssl.SSLServerSocketFactory;
 import org.apache.log4j.Logger;
 
 /**

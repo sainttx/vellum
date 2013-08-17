@@ -70,7 +70,7 @@ command1_genseckey() {
 }
 
 command0_app() {
-  javaks -Ddualcontrol.inputs=2 dualcontrol.TestApp $secstore $pass $secalias
+  javaks -Ddualcontrol.inputs=2 dualcontrol.AppDemo $secstore $pass $secalias
 }
 
 command0_keystoreserver() {
@@ -79,7 +79,7 @@ command0_keystoreserver() {
 
 keystoreclient() {
   sleep 1
-  javaks dualcontrol.FileClient 127.0.0.1 4445
+  javaks dualcontrol.FileClientDemo 127.0.0.1 4445
 }
 
 command0_testkeystoreserver() {
@@ -100,8 +100,8 @@ cryptoclient() {
   jc "evanx:eeee" 
   jc "henty:hhhh"
   sleep 1
-  data=`javaks dualcontrol.CryptoClient 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:111122223333444"`
-  javaks dualcontrol.CryptoClient 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
+  data=`javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:111122223333444"`
+  javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
 }
 
 command0_testcryptoserver() {
@@ -125,8 +125,8 @@ command0_client() {
   javaks dualcontrol.DualControlClient
 }
 
-#command0_testgenseckey
-#command0_testkeystoreserver
+command0_testgenseckey
+command0_testkeystoreserver
 command0_testcryptoserver
 #command0_client
 
