@@ -19,10 +19,12 @@ import org.apache.log4j.Logger;
  */
 public class CryptoHandler {
     static Logger logger = Logger.getLogger(CryptoHandler.class);
+    DualControl dualControl;
     KeyStore keyStore;
     DataOutputStream dos;
     
-    public void handle(KeyStore keyStore, Socket socket) throws Exception {        
+    public void handle(DualControl dualControl, KeyStore keyStore, Socket socket) throws Exception {        
+        this.dualControl = dualControl;
         this.keyStore = keyStore;
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         int length = dis.readShort();
@@ -39,7 +41,7 @@ public class CryptoHandler {
     
     private void cipher(String alias, String transformation, String mode,
             String ivString, String dataString) throws Exception {
-        SecretKey key = DualControl.loadKey(keyStore, alias);
+        SecretKey key = dualControl.loadKey(keyStore, alias);
         logger.debug("keyalg " + key.getAlgorithm());
         Cipher cipher = Cipher.getInstance(transformation);
         logger.debug("mode " + mode);

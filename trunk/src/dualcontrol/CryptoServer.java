@@ -42,14 +42,15 @@ public class CryptoServer {
         } else {
             keyStore.load(new FileInputStream(keyStorePath), storePass);
         }
-        DualControl.init();
+        DualControl dualControl = new DualControl();
+        dualControl.init();
         ServerSocket serverSocket = DualControl.createSSLContext().getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = serverSocket.accept();
             logger.debug("remote " + socket.getInetAddress().getHostAddress());
             if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
-                new CryptoHandler().handle(keyStore, socket);
+                new CryptoHandler().handle(dualControl, keyStore, socket);
             }
             socket.close();
             if (count > 0 && --count == 0) break;

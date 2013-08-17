@@ -23,8 +23,9 @@ public class AppDemo {
     }    
     
     private void run(String keyStorePath, char[] storePass, String alias) throws Exception {
-        DualControl.init();
-        dek = DualControl.loadKey(keyStorePath, storePass, alias);
+        DualControl dualControl = new DualControl();
+        dualControl.init();
+        dek = dualControl.loadKey(keyStorePath, storePass, alias);
         logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
