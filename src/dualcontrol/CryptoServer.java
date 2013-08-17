@@ -44,7 +44,7 @@ public class CryptoServer {
         keyStore.load(new FileInputStream(keyStoreName), storepass);
         DualControl.init();
         SSLServerSocketFactory ssf = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        ServerSocket serverSocket = ssf.createServerSocket(port);
+        ServerSocket serverSocket = ssf.createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = serverSocket.accept();
             logger.debug(socket.getInetAddress().getHostAddress());
