@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public class TestApp {
-    private static final Logger logger = Logger.getLogger(TestApp.class);
+public class AppDemo {
+    private static final Logger logger = Logger.getLogger(AppDemo.class);
     private SecretKey dek; 
     
     public static void main(String[] args) throws Exception {
@@ -18,7 +18,7 @@ public class TestApp {
         if (args.length != 3) {
             System.err.println("usage: keyStorePath storePass alias");
         } else {
-            new TestApp().run(args[0], args[1].toCharArray(), args[2]);
+            new AppDemo().run(args[0], args[1].toCharArray(), args[2]);
         }
     }    
     
