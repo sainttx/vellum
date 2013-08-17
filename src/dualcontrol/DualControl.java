@@ -32,32 +32,32 @@ public class DualControl {
     static final char[] trustStorePassword = System.getProperty("dualcontrol.ssl.trustStorePassword").toCharArray();    
     private final static int PORT = 4444;
     private final static Logger logger = Logger.getLogger(DualControl.class);
-    private static char[] keyPass;
-    private static String keyAlias;
+    private char[] keyPass;
+    private String keyAlias;
     
-    public static void init() throws Exception {
-        Map.Entry<String, String> entry = DualControl.dualEntry();
+    public void init() throws Exception {
+        Map.Entry<String, String> entry = dualEntry();
         keyAlias = entry.getKey();
         keyPass = entry.getValue().toCharArray();
         logger.debug(String.format("init keyAlias %s, keyPass %s", keyAlias, new String(keyPass)));
     }
 
-    public static String getKeyAlias() {
+    public String getKeyAlias() {
         return keyAlias;
     }
         
-    public static void clear() {
+    public void clear() {
         Arrays.fill(keyPass, (char) 0);
     }
     
-    public static SecretKey loadKey(String keystore, char[] storepass, String alias) throws Exception {
+    public SecretKey loadKey(String keystore, char[] storepass, String alias) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         keyStore.load(new FileInputStream(keystore), storepass);
         logger.info(String.format("loading key %s %s", keystore, alias));
         return loadKey(keyStore, alias);
     }
     
-    public static SecretKey loadKey(KeyStore keyStore, String alias) throws Exception {
+    public SecretKey loadKey(KeyStore keyStore, String alias) throws Exception {
         alias += "-" + keyAlias;
         logger.debug(String.format("alias %s, keypass %s", alias, new String(keyPass)));
         return (SecretKey) keyStore.getKey(alias, keyPass);
@@ -77,13 +77,13 @@ public class DualControl {
         return list;
     }
 
-    public static List<byte[]> readInputs(int n) throws Exception {
+    private static List<byte[]> readInputs(int n) throws Exception {
         logger.info("waiting for info on SSL port " + PORT);
         return readInputs(createSSLContext().getServerSocketFactory().
                 createServerSocket(PORT), n);
     }
     
-    public static Map<String, String> inputMap(int n) throws Exception {
+    private static Map<String, String> inputMap(int n) throws Exception {
         Map<String, String> map = new TreeMap();
         for (byte[] bytes : readInputs(n)) {
             String string = new String(bytes).trim();
@@ -94,7 +94,7 @@ public class DualControl {
         return map;
     }
     
-    public static Map<String, String> dualMap(int n) throws Exception {
+    public Map<String, String> dualMap(int n) throws Exception {
         Map<String, String> map = new TreeMap();
         Map<String, String> inputs = inputMap(n);
         for (String name : inputs.keySet()) {
@@ -108,8 +108,8 @@ public class DualControl {
         return map;
     }
     
-    public static Map.Entry<String, String> dualEntry() throws Exception {
-        return DualControl.dualMap(2).entrySet().iterator().next();
+    private Map.Entry<String, String> dualEntry() throws Exception {
+        return dualMap(2).entrySet().iterator().next();
     }
     
     public static byte[] readBytes(InputStream inputStream) throws IOException {
