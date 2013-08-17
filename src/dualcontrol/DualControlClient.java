@@ -24,7 +24,7 @@ public abstract class DualControlClient {
     }
 
     public static void write(String data) throws Exception {
-        Socket socket = DualControl.createSSLContext().getSocketFactory().
+        Socket socket = DualControlContext.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         socket.getOutputStream().write(data.getBytes());
         socket.close();
