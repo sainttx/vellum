@@ -84,7 +84,7 @@ initks() {
 command1_genseckey() {
   javaks -DDualControl.alias=$1 -DDualControl.inputs=3 dualcontrol.DualControlKeyTool \
      -keystore $secstore -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
-  keytool -keystore $secstore -storetype JCEKS -storepass $pass -list
+  keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
 command0_app() {
