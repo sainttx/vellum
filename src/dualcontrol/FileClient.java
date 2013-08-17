@@ -20,10 +20,16 @@ public class FileClient {
     
     private void run(String hostAddress, int port) throws Exception {
         System.err.printf("FileClient %s:%d\n", hostAddress, port);
+        byte[] bytes = readRemote(hostAddress, port);
+        System.err.printf("FileClient read %d bytes\n", bytes.length);
+    }
+    
+    public static byte[] readRemote(String hostAddress, int port) throws Exception {
         Socket socket = DualControl.createSSLContext().getSocketFactory().
                 createSocket(hostAddress, port);
         byte[] bytes = DualControl.readBytes(socket.getInputStream());
         socket.close();
-        System.err.printf("FileClient read %d bytes\n", bytes.length);
-    }
+        return bytes;
+    }    
+    
 }

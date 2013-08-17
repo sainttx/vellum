@@ -38,9 +38,17 @@ public class CryptoServer {
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String keyStoreName, char[] storepass) 
             throws Exception {
-        logger.info(String.format("loading keysore %s", keyStoreName));
+        logger.info(String.format("loading keystore %s", keyStoreName));
         keyStore = KeyStore.getInstance("JCEKS");
-        keyStore.load(new FileInputStream(keyStoreName), storepass);
+        if (keyStoreName.contains(":")) {
+            String[] array = keyStoreName.split(":");
+            Socket socket = DualControl.createSSLContext().getSocketFactory().
+                createSocket(array[0], Integer.parseInt(array[1]));
+            keyStore.load(socket.getInputStream(), storepass);
+            socket.close();
+        } else {
+            keyStore.load(new FileInputStream(keyStoreName), storepass);
+        }
         DualControl.init();
         ServerSocket serverSocket = DualControl.createSSLContext().getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);

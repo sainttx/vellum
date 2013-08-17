@@ -91,6 +91,10 @@ command0_cryptoserver() {
   javaks dualcontrol.CryptoServer 127.0.0.1 4446 1 2 127.0.0.1 $secstore $pass
 }
 
+command0_cryptoserverremote() {
+  javaks dualcontrol.CryptoServer 127.0.0.1 4446 1 2 127.0.0.1 "127.0.0.1:4445:secstore:" $pass
+}
+
 cryptoclient() {
   sleep 1
   jc "evanx:eeee" 
@@ -101,7 +105,8 @@ cryptoclient() {
 }
 
 command0_testcryptoserver() {
-  cryptoclient & command0_cryptoserver
+  command0_keystoreserver &
+  cryptoclient & command0_cryptoserverremote
   sleep 2
 }
 
@@ -120,8 +125,8 @@ command0_client() {
   javaks dualcontrol.DualControlClient
 }
 
-command0_testgenseckey
-command0_testkeystoreserver
+#command0_testgenseckey
+#command0_testkeystoreserver
 command0_testcryptoserver
 #command0_client
 
