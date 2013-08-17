@@ -20,7 +20,7 @@ public class CryptoServer {
     public static void main(String[] args) throws Exception {
         logger.info("args: " + Arrays.toString(args));
         if (args.length != 7) {
-            System.err.println("usage: localAddress port backlog count remoteAddress keystore storepass");
+            System.err.println("usage: localAddress port backlog count remoteAddress keyStorePath storePass");
         } else {
             new CryptoServer().run(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
                     Integer.parseInt(args[2]), Integer.parseInt(args[3]), 
@@ -29,18 +29,18 @@ public class CryptoServer {
     }    
     
     private void run(InetAddress localAddress, int port, int backlog, int count, 
-            String remoteHostAddress, String keyStoreName, char[] storepass) 
+            String remoteHostAddress, String keyStorePath, char[] storePass) 
             throws Exception {
-        logger.info(String.format("loading keystore %s", keyStoreName));
+        logger.info(String.format("loading keystore %s", keyStorePath));
         keyStore = KeyStore.getInstance("JCEKS");
-        if (keyStoreName.contains(":")) {
-            String[] array = keyStoreName.split(":");
+        if (keyStorePath.contains(":")) {
+            String[] array = keyStorePath.split(":");
             Socket socket = DualControl.createSSLContext().getSocketFactory().
                 createSocket(array[0], Integer.parseInt(array[1]));
-            keyStore.load(socket.getInputStream(), storepass);
+            keyStore.load(socket.getInputStream(), storePass);
             socket.close();
         } else {
-            keyStore.load(new FileInputStream(keyStoreName), storepass);
+            keyStore.load(new FileInputStream(keyStorePath), storePass);
         }
         DualControl.init();
         ServerSocket serverSocket = DualControl.createSSLContext().getServerSocketFactory().
