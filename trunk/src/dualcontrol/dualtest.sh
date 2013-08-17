@@ -1,8 +1,10 @@
 
 set -u
 
-CLASSPATH=/home/evanx/NetBeansProjects/vellum/build/classes
-for jar in /home/evanx/NetBeansProjects/vellum/dist/lib/*.jar
+cd
+
+CLASSPATH=NetBeansProjects/vellum/build/classes
+for jar in NetBeansProjects/vellum/dist/lib/*.jar
 do
   echo $jar
   CLASSPATH=$CLASSPATH:$jar
@@ -141,5 +143,5 @@ command0_testkeystoreserver
 command0_testcryptoserver
 command0_client
 
-#sh /home/evanx/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evanx/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
+#sh /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
 

@@ -64,7 +64,7 @@ public abstract class DualControl {
             String string = new String(bytes).trim();
             String[] array = string.split(":");
             map.put(array[0], array[1]);
-            logger.debug("DualControl input %s" + array[0]);
+            logger.debug("DualControl input" + array[0]);
         }
         return map;
     }
