@@ -1,8 +1,8 @@
 
 set -u
 
-CLASSPATH=/home/evans/NetBeansProjects/vellum/build/classes
-for jar in /home/evans/NetBeansProjects/vellum/dist/lib/*.jar
+CLASSPATH=/home/evanx/NetBeansProjects/vellum/build/classes
+for jar in /home/evanx/NetBeansProjects/vellum/dist/lib/*.jar
 do
   echo $jar
   CLASSPATH=$CLASSPATH:$jar
@@ -31,15 +31,15 @@ javaks() {
 
 nc3() {
     sleep 1 
-    echo "evans:eeee" | nc -v localhost 4444
-    echo "hentyw:hhhh" | nc -v localhost 4444
-    echo "brandonh:bbb" | nc -v localhost 4444
+    echo "evanx:eeee" | nc -v localhost 4444
+    echo "henty:hhhh" | nc -v localhost 4444
+    echo "bran:bbbb" | nc -v localhost 4444
 }
 
 nc2() {
     sleep 1 
-    echo "evans:eeee" | nc -v localhost 4444
-    echo "hentyw:hhhh" | nc -v localhost 4444
+    echo "evanx:eeee" | nc -v localhost 4444
+    echo "henty:hhhh" | nc -v localhost 4444
 }
 
 jc() {
@@ -48,20 +48,20 @@ jc() {
 
 jc1() {
     sleep 1 
-    jc "evans:eeee" 
+    jc "evanx:eeee" 
 }
 
 jc2() {
     sleep 1 
-    jc "evans:eeee" 
-    jc "hentyw:hhhh"
+    jc "evanx:eeee" 
+    jc "henty:hhhh"
 }
 
 jc3() {
     sleep 1 
-    jc "evans:eeee" 
-    jc "hentyw:hhhh"
-    jc "brandonh:bbbb"
+    jc "evanx:eeee" 
+    jc "henty:hhhh"
+    jc "bran:bbbb"
 }
  
 initks() {
@@ -109,8 +109,8 @@ command0_cryptoserver() {
 
 cryptoclient() {
   sleep 1
-  jc "evans:eeee" 
-  jc "hentyw:hhhh"
+  jc "evanx:eeee" 
+  jc "henty:hhhh"
   sleep 1
   data=`javaks dualcontrol.CryptoClient 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:pq7ZjIcIK9A=:111122223333444"`
   javaks dualcontrol.CryptoClient 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
@@ -141,5 +141,5 @@ command0_testkeystoreserver
 command0_testcryptoserver
 command0_client
 
-#sh /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
+#sh /home/evanx/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evanx/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
 
