@@ -48,15 +48,15 @@ public class CryptoHandler {
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
             cipher.init(Cipher.DECRYPT_MODE, key, iv);
             byte[] bytes = cipher.doFinal(Base64.decodeBase64(dataString));
-            logger.info("decrypted " + new String(bytes));
+            logger.debug("decrypted " + new String(bytes));
             write(ivBytes, bytes);
         } else if (mode.equals("ENCRYPT")) {
             byte[] ivBytes = getIv(ivString);
-            logger.info("iv " + Base64.encodeBase64String(ivBytes));
+            logger.debug("iv " + Base64.encodeBase64String(ivBytes));
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
             cipher.init(Cipher.ENCRYPT_MODE, key, iv);    
             byte[] bytes = cipher.doFinal(dataString.getBytes());
-            logger.info("encrypted " + Base64.encodeBase64String(bytes));
+            logger.debug("encrypted " + Base64.encodeBase64String(bytes));
             write(ivBytes, bytes);
         }
     }
