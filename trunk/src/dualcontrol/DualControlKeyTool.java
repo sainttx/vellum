@@ -30,7 +30,7 @@ public class DualControlKeyTool extends DualControl {
     }
 
     public void keyTool(String alias, String keypass) throws Exception {
-        logger.info(String.format("DualControlKeyTool %s %s", alias, keypass));
+        logger.debug(String.format("DualControlKeyTool %s %s", alias, keypass));
         List<String> argList = new ArrayList(Arrays.asList(args));
         argList.add("-alias");
         argList.add(alias);

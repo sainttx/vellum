@@ -22,7 +22,7 @@ public class CryptoClientDemo {
     }
 
     private void run(String hostAddress, int port, byte[] data) throws Exception {
-        logger.info(String.format("hostAddress %s, port %d, %d bytes: %s", hostAddress, port, data.length, new String(data)));
+        logger.debug(String.format("hostAddress %s, port %d, %d bytes: %s", hostAddress, port, data.length, new String(data)));
         Socket socket = DualControl.createSSLContext().getSocketFactory().
                 createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
@@ -34,10 +34,10 @@ public class CryptoClientDemo {
         dis.readFully(ivBytes);
         byte[] bytes = new byte[dis.readShort()];
         dis.readFully(bytes);
-        logger.info(String.format("iv %d: %s", ivBytes.length, Base64.encodeBase64String(ivBytes)));
-        logger.info(String.format("bytes %d: %s", bytes.length, Base64.encodeBase64String(bytes)));
+        logger.debug(String.format("iv %d: %s", ivBytes.length, Base64.encodeBase64String(ivBytes)));
+        logger.debug(String.format("bytes %d: %s", bytes.length, Base64.encodeBase64String(bytes)));
         if (new String(data).contains("ENCRYPT")) {
-            logger.info(String.format("%s:%s", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes)));
+            logger.debug(String.format("%s:%s", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes)));
         }
         socket.close();
     }
