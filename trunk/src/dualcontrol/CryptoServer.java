@@ -95,7 +95,7 @@ public class CryptoServer {
     }
     
     private static byte[] getIv(String string) {
-        if (string.length() > 2) {
+        if (string.length() == 0 || string.length() > 2) {
             return Base64.decodeBase64(string);
         }
         int length = Integer.parseInt(string);
