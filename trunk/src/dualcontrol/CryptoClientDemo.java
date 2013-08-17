@@ -23,7 +23,7 @@ public class CryptoClientDemo {
     }
 
     private void run(String hostAddress, int port, byte[] data) throws Exception {
-        Socket socket = DualControl.createSSLContext().getSocketFactory().
+        Socket socket = DualControlContext.createSSLContext().getSocketFactory().
                 createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeShort(data.length);

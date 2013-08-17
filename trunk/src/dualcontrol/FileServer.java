@@ -26,7 +26,7 @@ public class FileServer {
 
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String fileName) throws Exception {
-        ServerSocket serverSocket = DualControl.createSSLContext().getServerSocketFactory().
+        ServerSocket serverSocket = DualControlContext.createSSLContext().getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         FileInputStream stream = new FileInputStream(fileName);
         int length = (int) new File(fileName).length();

@@ -35,7 +35,7 @@ public class CryptoServer {
         keyStore = KeyStore.getInstance("JCEKS");
         if (keyStorePath.contains(":")) {
             String[] array = keyStorePath.split(":");
-            Socket socket = DualControl.createSSLContext().getSocketFactory().
+            Socket socket = DualControlContext.createSSLContext().getSocketFactory().
                 createSocket(array[0], Integer.parseInt(array[1]));
             keyStore.load(socket.getInputStream(), storePass);
             socket.close();
@@ -44,7 +44,7 @@ public class CryptoServer {
         }
         DualControl dualControl = new DualControl();
         dualControl.init();
-        ServerSocket serverSocket = DualControl.createSSLContext().getServerSocketFactory().
+        ServerSocket serverSocket = DualControlContext.createSSLContext().getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = serverSocket.accept();

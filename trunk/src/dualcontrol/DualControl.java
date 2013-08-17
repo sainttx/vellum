@@ -8,16 +8,12 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.crypto.SecretKey;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -25,11 +21,6 @@ import org.apache.log4j.Logger;
  * @author evans
  */
 public class DualControl {
-    static final String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
-    static final char[] keyStorePassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
-    static final char[] keyPassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
-    static final String trustStorePath = System.getProperty("dualcontrol.ssl.trustStore");
-    static final char[] trustStorePassword = System.getProperty("dualcontrol.ssl.trustStorePassword").toCharArray();    
     private final static int PORT = 4444;
     private final static Logger logger = Logger.getLogger(DualControl.class);
     private char[] keyPass;
@@ -79,7 +70,7 @@ public class DualControl {
 
     private static List<byte[]> readInputs(int n) throws Exception {
         logger.info("waiting for info on SSL port " + PORT);
-        return readInputs(createSSLContext().getServerSocketFactory().
+        return readInputs(DualControlContext.createSSLContext().getServerSocketFactory().
                 createServerSocket(PORT), n);
     }
     
@@ -122,27 +113,4 @@ public class DualControl {
             baos.write(b);
         }
     }    
-
-    public static SSLContext createSSLContext() throws Exception {
-        return createSSLContext(keyStorePath, keyStorePassword, keyPassword,
-                trustStorePath, trustStorePassword);
-    }
-
-    public static SSLContext createSSLContext(String keyStorePath, 
-            char[] keyStorePassword, char[] keyPassword,
-            String trustStorePath, char[] trustStorePassword) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
-        KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(new FileInputStream(trustStorePath), trustStorePassword);
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(trustStore);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(keyManagerFactory.getKeyManagers(), 
-                trustManagerFactory.getTrustManagers(), new SecureRandom());
-        return sslContext;
-    }
-    
 }
