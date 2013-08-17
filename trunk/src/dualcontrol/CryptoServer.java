@@ -31,7 +31,7 @@ public class CryptoServer {
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String keyStorePath, char[] storePass) 
             throws Exception {
-        logger.info(String.format("loading keystore %s", keyStorePath));
+        logger.info("loading keystore " + keyStorePath);
         keyStore = KeyStore.getInstance("JCEKS");
         if (keyStorePath.contains(":")) {
             String[] array = keyStorePath.split(":");
@@ -47,7 +47,7 @@ public class CryptoServer {
                 createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = serverSocket.accept();
-            logger.debug(socket.getInetAddress().getHostAddress());
+            logger.debug("remote " + socket.getInetAddress().getHostAddress());
             if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
                 new CryptoHandler().handle(keyStore, socket);
             }
