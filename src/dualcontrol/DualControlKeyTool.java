@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import org.apache.log4j.Logger;
 import sun.security.tools.KeyTool;
 
 /**
@@ -13,7 +13,8 @@ import sun.security.tools.KeyTool;
  * @author evans
  */
 public class DualControlKeyTool extends DualControl {    
-    static String aliasPrefix = System.getProperty("dualcontrol.alias");
+    private final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
+    private static String aliasPrefix = System.getProperty("dualcontrol.alias");
     String[] args; 
     
     public static void main(String[] args) throws Exception {        
@@ -29,7 +30,7 @@ public class DualControlKeyTool extends DualControl {
     }
 
     public void keyTool(String alias, String keypass) throws Exception {
-        System.err.printf("DualControlKeyTool %s %s\n", alias, keypass);
+        logger.info(String.format("DualControlKeyTool %s %s", alias, keypass));
         List<String> argList = new ArrayList(Arrays.asList(args));
         argList.add("-alias");
         argList.add(alias);
