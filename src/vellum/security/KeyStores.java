@@ -15,7 +15,6 @@ import javax.net.ssl.*;
 import vellum.exception.Exceptions;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
-import static vellum.security.Certificates.findRootCert;
 
 /**
  *
@@ -26,6 +25,7 @@ import static vellum.security.Certificates.findRootCert;
 public class KeyStores {
 
     static Logr logger = LogrFactory.getLogger(KeyStores.class);
+
     public static X509TrustManager loadTrustManager(TrustManagerFactory trustManagerFactory) throws Exception {
         for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
             if (trustManager instanceof X509TrustManager) {
@@ -34,10 +34,21 @@ public class KeyStores {
         }
         throw new RuntimeException();
     }
-
-    public static SSLSocketFactory createSSLSocketFactory(KeyManagerFactory keyManagerFactory, 
-            TrustManagerFactory trustManagerFactory) throws Exception {
-        return createSSLContext(keyManagerFactory, trustManagerFactory).getSocketFactory();
+    
+    public static SSLSocketFactory createSSLSocketFactory(String keyStorePath, 
+            String keyStoreType, char[] keyStorePassword, char[] keyPassword,
+            String trustStorePath, char[] trustStorePassword) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
+        KeyStore trustStore = loadKeyStore("JKS", trustStorePath, trustStorePassword);
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPassword);
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(trustStore);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), 
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
+        return sslContext.getSocketFactory();
     }
     
     public static SSLContext createSSLContext(KeyManagerFactory keyManagerFactory, 

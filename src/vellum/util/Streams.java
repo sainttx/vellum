@@ -330,4 +330,9 @@ public class Streams {
             outputStream.write(b);
         }
     }
+    
+    public static void println(OutputStream outputStream, Object data) {
+        new PrintWriter(outputStream).println(data);
+    }
+    
 }

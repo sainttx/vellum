@@ -22,7 +22,7 @@ public class DualControlKeyTool extends DualControl {
     
     void start(String[] args) throws Exception {
         this.args = args;
-        Map<String, String> dualMap = DualControl.mapCombinations(Integer.getInteger("dualcontrol.inputs", 3));
+        Map<String, String> dualMap = DualControl.dualMap(Integer.getInteger("dualcontrol.inputs", 3));
         for (String alias : dualMap.keySet()) {
             keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
         }
