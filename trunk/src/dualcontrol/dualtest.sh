@@ -126,4 +126,3 @@ command0_testgenseckey
 #command0_client
 
 #sh /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
-
