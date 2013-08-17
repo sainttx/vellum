@@ -60,7 +60,7 @@ public class OrgStorage extends AbstractEntityStorage<Long, Org> {
             if (!resultSet.next()) {
                 throw new SQLException();    
             }
-            long id = resultSet.getLong(1);            
+            long id = resultSet.getLong(1);    
             org.setId(id);
             org.setStored(true);
             connection.setOk(true);

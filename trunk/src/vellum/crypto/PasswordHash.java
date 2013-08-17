@@ -101,7 +101,7 @@ public class PasswordHash {
         assert iv.length == 0;
         Encrypted encryptedSalt = cipher.encrypt(salt);
         salt = encryptedSalt.getEncryptedBytes();
-        iv = encryptedSalt.getIv();        
+        iv = encryptedSalt.getIv();
     }
 
     public void decryptSalt(PBECipher cipher) throws GeneralSecurityException {

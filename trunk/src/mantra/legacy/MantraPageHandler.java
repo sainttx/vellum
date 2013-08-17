@@ -2,7 +2,7 @@
  * Apache Software License 2.0, (c) Copyright 2012 Evan Summers
  * 
  */
-package mantra.app;
+package mantra.legacy;
 
 import saltserver.app.*;
 import com.sun.net.httpserver.HttpExchange;
@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import vellum.html.HtmlPrinter;
 import vellum.httpserver.HttpExchangeInfo;
-import vellum.util.Files;
+import vellum.util.Streams;
 import vellum.util.Types;
 
 /**
@@ -38,7 +38,7 @@ public class MantraPageHandler {
         out.println("<html>");
         out.println("<head>");
         out.printf("<title>%s</title>", title);
-        out.printf("<style>\n%s\n</style>\n", Files.readString(getClass(), "style.css"));
+        out.printf("<style>\n%s\n</style>\n", Streams.readResourceString(getClass(), "style.css"));
         out.println("</head>");
         out.println("<body>");
     }
@@ -49,7 +49,7 @@ public class MantraPageHandler {
             out.println("<html>");
             out.println("<head>");
             out.printf("<title>%s</title>", "Error");
-            out.printf("<style>\n%s\n</style>\n", Files.readString(getClass(), "style.css"));
+            out.printf("<style>\n%s\n</style>\n", Streams.readResourceString(getClass(), "style.css"));
             out.println("</head>");
             out.println("<body>");
             out.println("<pre>");

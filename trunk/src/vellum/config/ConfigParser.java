@@ -113,7 +113,7 @@ public class ConfigParser {
     public static ConfigMap parseConfFile(String path) throws Exception {
         String confFileName = Systems.getPath(path);
         File confFile = new File(confFileName);
-        return parse(new FileInputStream(confFile));        
+        return parse(new FileInputStream(confFile));
     }
     
     public static ConfigMap parse(InputStream stream) throws Exception {

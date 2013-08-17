@@ -73,7 +73,7 @@ public class Milli {
         long minute = (millis % Milli.fromHours(1))/Milli.fromMinutes(1);
         long second = (millis % Milli.fromMinutes(1))/Milli.fromSeconds(1);
         long millisecond = millis % Milli.fromSeconds(1);
-        return String.format("%02d:%02d:%02d,%03d", hour, minute, second, millisecond);        
+        return String.format("%02d:%02d:%02d,%03d", hour, minute, second, millisecond);
     }
     
     public static long parse(String string) {

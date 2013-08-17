@@ -7,8 +7,6 @@ package mantra.app;
 import vellum.httpserver.HttpServerConfig;
 import java.net.URL;
 import java.net.URLConnection;
-import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
 import org.h2.tools.Server;
 import saltserver.crypto.AESCipher;
 import vellum.config.ConfigMap;
@@ -19,7 +17,7 @@ import vellum.logr.LogrFactory;
 import vellum.logr.LogrLevel;
 import vellum.storage.DataSourceConfig;
 import vellum.storage.SimpleConnectionPool;
-import vellum.util.Files;
+import vellum.util.Streams;
 import vellum.httpserver.VellumHttpsServer;
 import vellum.security.DefaultKeyStores;
 import vellum.util.Systems;
@@ -90,7 +88,7 @@ public class MantraApp {
         try {
             URL url = new URL(shutdownUrl);
             URLConnection connection = url.openConnection();
-            String response = Files.readString(connection.getInputStream());
+            String response = Streams.readString(connection.getInputStream());
             connection.getInputStream().close();
             logger.info(response);
         } catch (Exception e) {

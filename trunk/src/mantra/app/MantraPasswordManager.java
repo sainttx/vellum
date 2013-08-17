@@ -33,6 +33,6 @@ public class MantraPasswordManager {
     }
 
     public void put(String principalName, char[] password) {
-        passwordMap.put(principalName, password);        
+        passwordMap.put(principalName, password);
     }
 }

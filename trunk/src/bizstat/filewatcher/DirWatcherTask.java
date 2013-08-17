@@ -4,7 +4,7 @@
  */
 package bizstat.filewatcher;
 
-import vellum.util.Files;
+import vellum.util.Streams;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class DirWatcherTask implements Runnable {
         this.directory = directory;
         for (String fileName : directory.list()) {
             if (fileName.endsWith(extension)) {
-                fileCheckerMap.put(fileName, new FileChecker(new File(directory, Files.baseName(fileName))));
+                fileCheckerMap.put(fileName, new FileChecker(new File(directory, Streams.baseName(fileName))));
             }
         }
         this.listener = listener;

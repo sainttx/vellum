@@ -30,11 +30,11 @@ import vellum.exception.SizeRuntimeException;
  *
  * @author evanx
  */
-public class Files {
+public class Streams {
 
     public static final String fileSeparator = System.getProperty("file.separator");
     public static final String userHomeDir = System.getProperty("user.home");
-    public static Logr logger = LogrFactory.getLogger(Files.class);
+    public static Logr logger = LogrFactory.getLogger(Streams.class);
 
     public static BufferedReader newBufferedReader(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream));
@@ -110,7 +110,7 @@ public class Files {
         }
     }
 
-    public static String readString(Class parent, String resourceName) {
+    public static String readResourceString(Class parent, String resourceName) {
         return readString(getResourceAsStream(parent, resourceName));
     }
 

@@ -1,4 +1,4 @@
-package mantra.httphandler;
+package mantra.legacy;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -8,7 +8,7 @@ import java.security.KeyStore;
 import java.util.Collections;
 import mantra.app.MantraApp;
 import mantra.app.MantraKeyStoreManager;
-import mantra.app.MantraPageHandler;
+import mantra.legacy.MantraPageHandler;
 import vellum.httpserver.HttpExchangeInfo;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -27,7 +27,6 @@ public class AdminHandler implements HttpHandler {
     MantraApp app;
     PrintStream out;
     MantraKeyStoreManager keyStoreManager = new MantraKeyStoreManager(null);
-    
 
     public AdminHandler(MantraApp app) {
         super();

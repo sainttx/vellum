@@ -40,7 +40,7 @@ public class AdminUserStorage {
             List<String> columnNameList = RowSets.getColumnNameList(resultSet.getMetaData());
             for (Enum columnNameEnum : AdminUserMeta.values()) {
                 String columnName = columnNameEnum.name().toUpperCase();
-                logger.info("validate", columnName);        
+                logger.info("validate", columnName);
                 if (!columnNameList.contains(columnName)) {
                     throw new SQLException(columnName);
                 }                

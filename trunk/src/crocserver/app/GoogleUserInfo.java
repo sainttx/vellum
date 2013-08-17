@@ -38,7 +38,7 @@ public class GoogleUserInfo {
         setEmail(JsonStrings.get(json, "email"));
         setDisplayName(JsonStrings.get(json, "name"));
         setGivenName(JsonStrings.get(json, "given_name"));
-        setFamilyName(JsonStrings.get(json, "family_name"));        
+        setFamilyName(JsonStrings.get(json, "family_name"));
         setPicture(JsonStrings.get(json, "picture"));
     }
 
