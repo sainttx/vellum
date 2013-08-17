@@ -31,26 +31,8 @@ javaks() {
     $@
 }
 
-nc3() {
-    sleep 1 
-    echo "evanx:eeee" | nc -v localhost 4444
-    echo "henty:hhhh" | nc -v localhost 4444
-    echo "bran:bbbb" | nc -v localhost 4444
-}
-
-nc2() {
-    sleep 1 
-    echo "evanx:eeee" | nc -v localhost 4444
-    echo "henty:hhhh" | nc -v localhost 4444
-}
-
 jc() {
   javaks dualcontrol.DualControlClient "$1"
-}
-
-jc1() {
-    sleep 1 
-    jc "evanx:eeee" 
 }
 
 jc2() {
@@ -63,21 +45,21 @@ jc3() {
     sleep 1 
     jc "evanx:eeee" 
     jc "henty:hhhh"
-    jc "bran:bbbb"
+    jc "brand:bbbb"
 }
  
 initks() {
-  dualalias="dualserver"
-  dname="CN=server, OU=dualcontrol, O=test, L=ct, S=wp, C=za"
+  serveralias="cryptoserver"
+  dname="CN=cryptoserver, OU=test, O=test, L=ct, S=wp, C=za"
   rm -f $privatestore
   rm -f $truststore
   rm -f $secstore
-  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$dualalias" -genkeypair -dname "$dname"
+  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$serveralias" -genkeypair -dname "$dname"
   keytool -keystore $privatestore -storepass "$pass" -list | grep Entry
-  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$dualalias" -exportcert -rfc | 
+  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$serveralias" -exportcert -rfc | 
     openssl x509 -text | grep "Subject:"
-  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$dualalias" -exportcert -rfc > $cert
-  keytool -keystore $truststore -storepass "$pass" -alias "$dualalias" -importcert -noprompt -file $cert
+  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$serveralias" -exportcert -rfc > $cert
+  keytool -keystore $truststore -storepass "$pass" -alias "$serveralias" -importcert -noprompt -file $cert
   keytool -keystore $truststore -storepass "$pass" -list | grep Entry
 }
 
@@ -125,11 +107,11 @@ command0_testcryptoserver() {
 
 command0_testgenseckey() {
   initks 
-  jc3 | command1_genseckey $secalias
+  jc3 & command1_genseckey $secalias
   sleep 2
   if ! nc -z localhost 4444
   then
-    jc2 | command0_app
+    jc2 & command0_app
     sleep 2
   fi
 }
@@ -139,9 +121,9 @@ command0_client() {
 }
 
 command0_testgenseckey
-command0_testkeystoreserver
-command0_testcryptoserver
-command0_client
+#command0_testkeystoreserver
+#command0_testcryptoserver
+#command0_client
 
 #sh /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
 
