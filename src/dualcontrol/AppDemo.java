@@ -14,7 +14,7 @@ public class AppDemo {
     private SecretKey dek; 
     
     public static void main(String[] args) throws Exception {
-        logger.info("main invoked with args: " + Arrays.toString(args));
+        logger.debug("main invoked with args: " + Arrays.toString(args));
         if (args.length != 3) {
             System.err.println("usage: keyStorePath storePass alias");
         } else {
@@ -25,6 +25,6 @@ public class AppDemo {
     private void run(String keyStorePath, char[] storePass, String alias) throws Exception {
         DualControl.init();
         dek = DualControl.loadKey(keyStorePath, storePass, alias);
-        logger.info("loaded key " + dek.getAlgorithm());
+        logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
