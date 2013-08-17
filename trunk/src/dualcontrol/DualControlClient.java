@@ -2,13 +2,14 @@
 package dualcontrol;
 
 import java.net.Socket;
-import javax.net.ssl.SSLSocketFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author evans
  */
 public abstract class DualControlClient {
+    private final static Logger logger = Logger.getLogger(DualControlClient.class);
     private static int PORT = 4444;
     private static String HOST = "127.0.0.1";
 
@@ -23,7 +24,7 @@ public abstract class DualControlClient {
     }
 
     public static void write(String data) throws Exception {
-        System.err.println("DualControlClient write " + data);
+        logger.info("DualControlClient write " + data);
         Socket socket = DualControl.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         socket.getOutputStream().write(data.getBytes());
