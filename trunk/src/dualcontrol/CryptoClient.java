@@ -3,7 +3,6 @@ package dualcontrol;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import javax.net.ssl.SSLSocketFactory;
 import org.apache.commons.codec.binary.Base64;
 
 /**

@@ -13,7 +13,6 @@ import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import javax.net.ssl.SSLServerSocketFactory;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 

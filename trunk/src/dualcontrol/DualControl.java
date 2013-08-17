@@ -124,7 +124,7 @@ public class DualControl {
     }    
 
     public static SSLContext createSSLContext() throws Exception {
-        return createSSLContext(keyStorePath, keyStorePassword, keyPassword, 
+        return createSSLContext(keyStorePath, keyStorePassword, keyPassword,
                 trustStorePath, trustStorePassword);
     }
 
