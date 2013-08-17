@@ -20,8 +20,8 @@ public class FileClient {
     
     private void run(String hostAddress, int port) throws Exception {
         System.err.printf("FileClient %s:%d\n", hostAddress, port);
-        SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        Socket socket = sf.createSocket(hostAddress, port);
+        Socket socket = DualControl.createSSLContext().getSocketFactory().
+                createSocket(hostAddress, port);
         byte[] bytes = DualControl.readBytes(socket.getInputStream());
         socket.close();
         System.err.printf("FileClient read %d bytes\n", bytes.length);

@@ -23,11 +23,11 @@ pass=test1234
 
 javaks() {
   java \
-    -Djavax.net.ssl.keyStore=$privatestore \
-    -Djavax.net.ssl.keyStorePassword=$pass \
-    -Djavax.net.ssl.keyPassword=$pass \
-    -Djavax.net.ssl.trustStore=$truststore \
-    -Djavax.net.ssl.trustStorePassword=$pass \
+    -Ddualcontrol.ssl.keyStore=$privatestore \
+    -Ddualcontrol.ssl.keyStorePassword=$pass \
+    -Ddualcontrol.ssl.keyPassword=$pass \
+    -Ddualcontrol.ssl.trustStore=$truststore \
+    -Ddualcontrol.ssl.trustStorePassword=$pass \
     $@
 }
 
@@ -64,13 +64,13 @@ initks() {
 }
 
 command1_genseckey() {
-  javaks -DDualControl.alias=$1 -DDualControl.inputs=3 dualcontrol.DualControlKeyTool \
+  javaks -Ddualcontrol.alias=$1 -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
      -keystore $secstore -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
   keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
 command0_app() {
-  javaks -DDualControl.inputs=2 dualcontrol.TestApp $secstore $pass $secalias
+  javaks -Ddualcontrol.inputs=2 dualcontrol.TestApp $secstore $pass $secalias
 }
 
 command0_keystoreserver() {

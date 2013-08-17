@@ -13,9 +13,8 @@ import sun.security.tools.KeyTool;
  * @author evans
  */
 public class DualControlKeyTool extends DualControl {    
-    static String aliasPrefix = System.getProperty("DualControl.alias");
+    static String aliasPrefix = System.getProperty("dualcontrol.alias");
     String[] args; 
-    Map<String, String> map = new TreeMap();
     
     public static void main(String[] args) throws Exception {        
         new DualControlKeyTool().start(args);
@@ -23,9 +22,9 @@ public class DualControlKeyTool extends DualControl {
     
     void start(String[] args) throws Exception {
         this.args = args;
-        Map<String, String> map = DualControl.mapCombinations(Integer.getInteger("DualControl.inputs", 3));
-        for (String alias : map.keySet()) {
-            keyTool(String.format("%s-%s", aliasPrefix, alias), map.get(alias));
+        Map<String, String> dualMap = DualControl.mapCombinations(Integer.getInteger("dualcontrol.inputs", 3));
+        for (String alias : dualMap.keySet()) {
+            keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
         }
     }
 
