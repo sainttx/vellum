@@ -1,7 +1,6 @@
 
 package dualcontrol;
 
-import java.io.ByteArrayOutputStream;
 import java.net.Socket;
 import javax.net.ssl.SSLSocketFactory;
 
