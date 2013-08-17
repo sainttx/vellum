@@ -22,8 +22,8 @@ public class CryptoClient {
 
     private void run(String hostAddress, int port, byte[] data) throws Exception {
         System.err.printf("CryptoClient %s:%d, %d bytes: %s\n", hostAddress, port, data.length, new String(data));
-        SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        Socket socket = sf.createSocket(hostAddress, port);
+        Socket socket = DualControl.createSSLContext().getSocketFactory().
+                createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeShort(data.length);
         dos.write(data);

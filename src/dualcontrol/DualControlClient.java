@@ -24,8 +24,8 @@ public abstract class DualControlClient {
 
     public static void write(String data) throws Exception {
         System.err.println("DualControlClient write " + data);
-        SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        Socket socket = sf.createSocket(HOST, PORT);
+        Socket socket = DualControl.createSSLContext().getSocketFactory().
+                createSocket(HOST, PORT);
         socket.getOutputStream().write(data.getBytes());
         socket.close();
     }
