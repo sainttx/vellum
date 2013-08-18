@@ -62,7 +62,7 @@ public class CryptoHandler {
     }
     
     private byte[] getIvBytes(String ivString) {
-        if (ivString.length() > 2) {
+        if (ivString.length() < 3) {
             return Base64.decodeBase64(ivString);
         } 
         int ivLength = Integer.parseInt(ivString);
