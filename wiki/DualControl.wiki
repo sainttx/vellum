@@ -122,7 +122,7 @@ where we use a `JCEKS`-type keystore for a secret key e.g. triple-DES in this ca
   keyTool alias powerstate-2013-evanx-henty
 }}}
 
-Low and behold, these keys do seem to be have been created.
+Low and behalfed, these keys do seem to be have been created.
 
 {{{
   keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
@@ -134,7 +134,7 @@ powerstate2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 powerstate2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these keys, are one and the same. However, for each dual-alias, that copy is password-protected using a so-called dual-password i.e. an combination of two passwords, known to no one. 
+Actually these keys, are one and the same. However, for each so-called dual-alias, that copy is password-protected using a so-called dual-password i.e. an combination of two passwords, known to no one.
 
 == DualControlClient == 
 
@@ -160,9 +160,46 @@ public abstract class DualControlClient {
     }
 }
 }}}
-where we concatenate the username and password into a string and send those bytes out the SSL socket to our supposed listening dual-controlled app on port 4444. 
+where we concatenate the username and password into a string and send those bytes out the SSL socket to our supposed dual-controlled app listening on port 4444. 
 
-A known-bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port!
+A known bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port!
+
+== `DualControlSession` == 
+
+We re-engineer our application to similarly get a dual-password, in order to load the key.
+
+{{{
+public class AppDemo {
+    private SecretKey dek;     
+...
+    private void loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
+        dek = new DualControlSession().loadKey(keyStorePath, storePass, alias);
+    }
+}
+}}}
+
+where the application loads keys as if it's too easy, but the caveat is that execution is blocked whilst we are waiting for two admins to submit info via their `DualControlClient`.
+
+{{{
+public class DualControlSession {
+    private KeyStore dualKeyStore;
+    private char[] dualPass;
+    private String dualAlias;
+
+    public SecretKey loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
+        try {
+            this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
+            Map.Entry<String, String> entry = DualControlReader.readDualEntry();
+            this.dualAlias = entry.getKey();
+            this.dualPass = entry.getValue().toCharArray();
+            return (SecretKey) dualKeyStore.getKey(alias + "-" + dualAlias, dualPass);
+        } finally {
+            Arrays.fill(dualPass, (char) 0);            
+        }        
+    }
+}}}
+
+where we read the dual info using the afore-mentioned `DualControlReader`.
 
 == Conclusion ==
 
