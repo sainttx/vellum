@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
  */
 public class AppDemo {
     private static final Logger logger = Logger.getLogger(AppDemo.class);
-    private DualControlSession dualControlSession = new DualControlSession();
     private SecretKey dek; 
     
     public static void main(String[] args) throws Exception {
@@ -19,13 +18,12 @@ public class AppDemo {
         if (args.length != 3) {
             System.err.println("usage: keyStorePath storePass alias");
         } else {
-            new AppDemo().run(args[0], args[1].toCharArray(), args[2]);
+            new AppDemo().loadKey(args[0], args[1].toCharArray(), args[2]);
         }
     }    
     
-    private void run(String keyStorePath, char[] storePass, String alias) throws Exception {
-        dualControlSession.configure(keyStorePath, storePass);
-        dek = dualControlSession.loadKey(alias);
+    private void loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
+        dek = new DualControlSession().loadKey(keyStorePath, storePass, alias);
         logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
