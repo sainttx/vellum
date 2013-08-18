@@ -1,6 +1,8 @@
 
 = Dual Control =
 
+Revision 1, 2013-08-18
+
 Keywords: Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
 
 == Introduction ==
