@@ -216,7 +216,7 @@ We'll implement the crypto server in part 2.
 
 The problem with encryption is secure key management. It's like we lock the door but leave the key under the mat.
 
-PCI requires that "dual control" and "split knowledge" be used to protect the secret data so no single person can extract it, not even your most trustworthy employee. 
+PCI requires that "dual control" and "split knowledge" be used to protect our sensitive data so that no single person can extract it, not even your most trustworthy employee. 
 
 Naturally, <tt>keytool</tt>, is tailored for a single root admin, rather than "dual control." 
 
