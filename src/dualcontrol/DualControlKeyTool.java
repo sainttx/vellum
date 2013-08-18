@@ -12,10 +12,11 @@ import sun.security.tools.KeyTool;
  *
  * @author evans
  */
-public class DualControlKeyTool {
+public class DualControlKeyTool { 
     private final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
     private static String aliasPrefix = System.getProperty("dualcontrol.alias");
     private static int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
+    String[] args; 
     
     public static void main(String[] args) throws Exception {        
         new DualControlKeyTool().start(args);
