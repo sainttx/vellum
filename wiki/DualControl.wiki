@@ -200,7 +200,7 @@ We re-engineer our application to similarly get a dual-password, in order to loa
 {{{
 public class AppDemo {
     private SecretKey dek;     
-...
+    ...
     private void loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
         dek = new DualControlSession().loadKey(keyStorePath, storePass, alias);
     }
