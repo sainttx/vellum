@@ -104,9 +104,16 @@ cryptoclient() {
   jc "henty:hhhh"
   sleep 1
   data=`javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
-     "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:111122223333444"`
-  javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
-     "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
+     "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:1111222233334444"`
+  exitCode=$?  
+  echo "CryptoClientDemo ENCRYPT exitCode $exitCode"
+  if [ $exitCode -eq 0 ]
+  then 
+    javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
+       "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
+    exitCode=$?  
+    echo "CryptoClientDemo DECRYPT exitCode $exitCode"
+  fi
 }
 
 command0_testcryptoserver() {
@@ -130,8 +137,8 @@ command0_client() {
   javaks dualcontrol.DualControlClient
 }
 
-command0_testgenseckey
-command0_testkeystoreserver
+#command0_testgenseckey
+#command0_testkeystoreserver
 command0_testcryptoserver
 #command0_client
 
