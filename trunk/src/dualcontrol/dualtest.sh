@@ -84,13 +84,13 @@ initks() {
 }
 
 command1_genseckey() {
-  javaks -Ddualcontrol.alias=$1 -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
+  javaks -Ddualcontrol.alias=$1 -Ddualcontrol.submissions=3 dualcontrol.DualControlKeyTool \
      -keystore $secstore -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
   keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
 command0_app() {
-  javaks -Ddualcontrol.inputs=2 dualcontrol.AppDemo $secstore $pass $secalias
+  javaks -Ddualcontrol.submissions=2 dualcontrol.AppDemo $secstore $pass $secalias
 }
 
 command0_keystoreserver() {
