@@ -18,7 +18,8 @@ public class CryptoServer {
     public static void main(String[] args) throws Exception {
         logger.info("args: " + Arrays.toString(args));
         if (args.length != 7) {
-            System.err.println("usage: localAddress port backlog count remoteAddress keyStorePath storePass");
+            System.err.println(
+                    "usage: localAddress port backlog count remoteAddress keyStore storePass");
         } else {
             new CryptoServer().run(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
                     Integer.parseInt(args[2]), Integer.parseInt(args[3]), 
