@@ -23,9 +23,8 @@ public class CryptoHandler {
     KeyStore keyStore;
     DataOutputStream dos;
     
-    public void handle(DualControlSession dualControl, KeyStore keyStore, Socket socket) throws Exception {        
+    public void handle(DualControlSession dualControl, Socket socket) throws Exception {        
         this.dualControl = dualControl;
-        this.keyStore = keyStore;
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         int length = dis.readShort();
         byte[] bytes = new byte[length];
@@ -41,7 +40,7 @@ public class CryptoHandler {
     
     private void cipher(String alias, String transformation, String mode,
             String ivString, String dataString) throws Exception {
-        SecretKey key = dualControl.loadKey(keyStore, alias);
+        SecretKey key = dualControl.loadKey(alias);
         logger.debug("keyalg " + key.getAlgorithm());
         Cipher cipher = Cipher.getInstance(transformation);
         logger.debug("mode " + mode);

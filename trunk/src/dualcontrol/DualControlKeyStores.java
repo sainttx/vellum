@@ -2,6 +2,7 @@
 package dualcontrol;
 
 import java.io.FileInputStream;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import javax.net.ssl.KeyManagerFactory;
@@ -12,7 +13,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author evans
  */
-public class DualControlContext {    
+public class DualControlKeyStores {    
     static final String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
     static final char[] keyStorePassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
     static final char[] keyPassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
@@ -39,5 +40,19 @@ public class DualControlContext {
         sslContext.init(keyManagerFactory.getKeyManagers(), 
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         return sslContext;
-    }    
+    }
+    
+    public static KeyStore loadKeyStore(String keyStorePath, char[] storePass) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        if (keyStorePath.contains(":")) {
+            String[] array = keyStorePath.split(":");
+            Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
+                createSocket(array[0], Integer.parseInt(array[1]));
+            keyStore.load(socket.getInputStream(), storePass);
+            socket.close();
+        } else {
+            keyStore.load(new FileInputStream(keyStorePath), storePass);
+        }
+        return keyStore;
+    }
 }

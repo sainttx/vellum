@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
  */
 public class AppDemo {
     private static final Logger logger = Logger.getLogger(AppDemo.class);
+    private DualControlSession dualControlSession = new DualControlSession();
     private SecretKey dek; 
     
     public static void main(String[] args) throws Exception {
@@ -23,9 +24,8 @@ public class AppDemo {
     }    
     
     private void run(String keyStorePath, char[] storePass, String alias) throws Exception {
-        DualControlSession dualControlSession = new DualControlSession();
-        dualControlSession.readDual();
-        dek = dualControlSession.loadKey(keyStorePath, storePass, alias);
+        dualControlSession.configure(keyStorePath, storePass);
+        dek = dualControlSession.loadKey(alias);
         logger.debug("loaded key " + dek.getAlgorithm());
     }
 }

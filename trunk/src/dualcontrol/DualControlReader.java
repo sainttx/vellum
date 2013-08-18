@@ -52,7 +52,7 @@ public class DualControlReader {
 
     static List<byte[]> readInputs(int inputCount) throws Exception {
         logger.info("waiting for info on SSL port " + PORT);
-        return readInputs(DualControlContext.createSSLContext().getServerSocketFactory().
+        return readInputs(DualControlKeyStores.createSSLContext().getServerSocketFactory().
                 createServerSocket(PORT), inputCount);
     }
 

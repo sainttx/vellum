@@ -1,11 +1,9 @@
 
 package dualcontrol;
 
-import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyStore;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
 
@@ -15,7 +13,7 @@ import org.apache.log4j.Logger;
  */
 public class CryptoServer {
     static Logger logger = Logger.getLogger(CryptoServer.class);
-    KeyStore keyStore;
+    DualControlSession dualControlSession = new DualControlSession();
     
     public static void main(String[] args) throws Exception {
         logger.info("args: " + Arrays.toString(args));
@@ -31,26 +29,14 @@ public class CryptoServer {
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String keyStorePath, char[] storePass) 
             throws Exception {
-        logger.info("loading keystore " + keyStorePath);
-        keyStore = KeyStore.getInstance("JCEKS");
-        if (keyStorePath.contains(":")) {
-            String[] array = keyStorePath.split(":");
-            Socket socket = DualControlContext.createSSLContext().getSocketFactory().
-                createSocket(array[0], Integer.parseInt(array[1]));
-            keyStore.load(socket.getInputStream(), storePass);
-            socket.close();
-        } else {
-            keyStore.load(new FileInputStream(keyStorePath), storePass);
-        }
-        DualControlSession dualControl = new DualControlSession();
-        dualControl.readDual();
-        ServerSocket serverSocket = DualControlContext.createSSLContext().getServerSocketFactory().
+        dualControlSession.configure(keyStorePath, storePass);
+        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = serverSocket.accept();
             logger.debug("remote " + socket.getInetAddress().getHostAddress());
             if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
-                new CryptoHandler().handle(dualControl, keyStore, socket);
+                new CryptoHandler().handle(dualControlSession, socket);
             }
             socket.close();
             if (count > 0 && --count == 0) break;

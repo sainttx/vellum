@@ -1,6 +1,7 @@
 package dualcontrol;
 
 import java.io.FileInputStream;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Map;
@@ -13,31 +14,26 @@ import org.apache.log4j.Logger;
  */
 public class DualControlSession {
     private final static Logger logger = Logger.getLogger(DualControlSession.class);
-    
+
+    private KeyStore dualKeyStore;
     private char[] dualPass;
     private String dualAlias;
 
-    public void readDual() throws Exception {
+    public void configure(String keyStorePath, char[] storePass) throws Exception {
+        this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
         Map.Entry<String, String> entry = DualControlReader.readDualEntry();
-        dualAlias = entry.getKey();
-        dualPass = entry.getValue().toCharArray();
-        logger.debug(String.format("init keyAlias %s, keyPass %s", dualAlias, new String(dualPass)));
+        this.dualAlias = entry.getKey();
+        this.dualPass = entry.getValue().toCharArray();
+        logger.debug("configure alias " + dualAlias);
     }
 
     public void clear() {
         Arrays.fill(dualPass, (char) 0);
     }
 
-    public SecretKey loadKey(String keystore, char[] storepass, String alias) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        keyStore.load(new FileInputStream(keystore), storepass);
-        logger.info(String.format("loadKey keystore %s, alias %s", keystore, alias));
-        return loadKey(keyStore, alias);
-    }
-
-    public SecretKey loadKey(KeyStore keyStore, String alias) throws Exception {
+    public SecretKey loadKey(String alias) throws Exception {
         alias += "-" + dualAlias;
-        logger.debug(String.format("alias %s, keypass %s", alias, new String(dualPass))); // TODO
-        return (SecretKey) keyStore.getKey(alias, dualPass);
+        logger.debug("loadKey " + alias);
+        return (SecretKey) dualKeyStore.getKey(alias, dualPass);
     }
 }
