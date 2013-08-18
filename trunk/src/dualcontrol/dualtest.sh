@@ -41,6 +41,11 @@ javaks() {
     -Ddualcontrol.ssl.trustStore=$truststore \
     -Ddualcontrol.ssl.trustStorePassword=$pass \
     $@
+  exitCode=$?
+  if [ $exitCode -ne 0 ]
+  then
+    echo WARN javaks exitCode $exitCode $@
+  fi
 }
 
 jc() {
@@ -136,9 +141,10 @@ cryptoclient1() {
   sleep 1
   jc "evanx:eeee" 
   jc "henty:hhhh"
+  sleep 1
   for iter in `seq $1`
   do
-    sleep 1
+    #sleep 1
     echo "cryptoclient $iter"
     cryptoclient_cipher
   done
@@ -167,9 +173,45 @@ command0_client() {
   javaks dualcontrol.DualControlClient
 }
 
-#command0_testgenseckey
-#command0_testkeystoreserver
-command1_testcryptoserver 100
+command0_longtest() {
+  command0_testgenseckey
+  command0_testkeystoreserver
+  command1_testcryptoserver 1
+  command1_testcryptoserver 100
+  command1_testcryptoserver 1
+}
+
+command0_testcryptoserver() {
+  command1_testcryptoserver 1
+  command1_testcryptoserver 2
+  command1_testcryptoserver 1
+}
+
+command0_shorttest() {
+  command0_testgenseckey
+  command0_testkeystoreserver
+  command0_testcryptoserver
+}
+
+command0_singletest() {
+  command0_testgenseckey
+  command0_testkeystoreserver
+  command1_testcryptoserver 1
+}
+
+#command0_singletest
+#command0_shorttest
+#command0_longtest
+#command0_testcryptoserver
 #command0_client
 
-#sh /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
+if [ $# -gt 0 ]
+then
+  command=$1
+  shift
+  command$#_$command
+else
+  command0_shorttest
+fi
+
+#sh NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh 2>&1 | grep -i '^WARN\|ERROR\|^INFO' | uniq -c
