@@ -152,6 +152,8 @@ public class DualControlReader {
 
 where we invoke `readMap()` to read split knowledge from multiple admins.
 
+A known bug is that we create <tt>String</tt>'s containing clear-text passwords, rather than adamantly sticking to `char` arrays. (The reason is that arrays can cleared deterministically, without consideration of the garbage collector, whereas strings are immutable and so hang around until garbage-collected.)
+
 {{{
     Map<String, char[]> readMap() throws Exception {
         Map<String, char[]> map = new TreeMap();
