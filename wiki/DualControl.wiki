@@ -120,7 +120,7 @@ public abstract class DualControlClient {
     }
 }
 }}}
-where we concatenate the username and password into a string and send those bytes out the SSL socket to our supposed dual-controlled app listening on port 4444. 
+where we format the username and their plain-text password into a string, and send those bytes out the SSL socket to our supposed dual-controlled app listening on port 4444. 
 
 A known bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port!
 
