@@ -42,7 +42,7 @@ public class CryptoServer {
                     new CryptoServerRequestHandler().handle(dualControlSession, socket);
                 }
             } catch (Exception e) {
-                logger.error("error with socket", e);
+                logger.error("request handling error", e);
             } finally {
                 close(socket);
             }
