@@ -189,7 +189,7 @@ which reads a `List` of submissions from admins as below, and then extracts the 
 
 where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`.
 
-== `DualControlSession` == 
+== `DualControlSessions` == 
 
 We re-engineer our application to similarly get a dual-password, in order to load the key.
 
@@ -208,13 +208,14 @@ where the application loads keys as if it's too easy, but the caveat is that exe
 {{{
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
+    public static SecretKey loadKey(String keyStorePath, char[] storePass, String alias) 
+            throws Exception {
         char[] dualPass = null;
         try {
             KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
-            Map.Entry<String, String> entry = DualControlReader.readDualEntry();
+            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry();
             String dualAlias = entry.getKey();
-            dualPass = entry.getValue().toCharArray();
+            dualPass = entry.getValue();
             return (SecretKey) dualKeyStore.getKey(alias + "-" + dualAlias, dualPass);
         } finally {
             if (dualPass != null) {
