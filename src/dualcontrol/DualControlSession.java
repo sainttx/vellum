@@ -14,30 +14,30 @@ import org.apache.log4j.Logger;
 public class DualControlSession {
     private final static Logger logger = Logger.getLogger(DualControlSession.class);
     
-    private char[] keyPass;
-    private String keyAlias;
+    private char[] dualPass;
+    private String dualAlias;
 
     public void readDual() throws Exception {
         Map.Entry<String, String> entry = DualControlReader.readDualEntry();
-        keyAlias = entry.getKey();
-        keyPass = entry.getValue().toCharArray();
-        logger.debug(String.format("init keyAlias %s, keyPass %s", keyAlias, new String(keyPass)));
+        dualAlias = entry.getKey();
+        dualPass = entry.getValue().toCharArray();
+        logger.debug(String.format("init keyAlias %s, keyPass %s", dualAlias, new String(dualPass)));
     }
 
     public void clear() {
-        Arrays.fill(keyPass, (char) 0);
+        Arrays.fill(dualPass, (char) 0);
     }
 
-    public SecretKey loadKey(String keystore, char[] storepass, String aliasPrefix) throws Exception {
+    public SecretKey loadKey(String keystore, char[] storepass, String alias) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         keyStore.load(new FileInputStream(keystore), storepass);
-        logger.info(String.format("loadKey keystore %s, alias %s", keystore, aliasPrefix));
-        return loadKey(keyStore, aliasPrefix);
+        logger.info(String.format("loadKey keystore %s, alias %s", keystore, alias));
+        return loadKey(keyStore, alias);
     }
 
     public SecretKey loadKey(KeyStore keyStore, String alias) throws Exception {
-        alias += "-" + keyAlias;
-        logger.debug(String.format("alias %s, keypass %s", alias, new String(keyPass))); // TODO
-        return (SecretKey) keyStore.getKey(alias, keyPass);
+        alias += "-" + dualAlias;
+        logger.debug(String.format("alias %s, keypass %s", alias, new String(dualPass))); // TODO
+        return (SecretKey) keyStore.getKey(alias, dualPass);
     }
 }
