@@ -9,7 +9,7 @@ Encryption is great for information security and all that, but the problem with 
 
 <img align=left src="http://jroller.com/evanx/resource/gnome-keys-250.png">
 
-So the Payment Card industry (PCI) has their "Data Storage Standard" called "PCI DSS," which has general best practices that every industry should follow, actually. It's the best thing we got. It's only one we got, too :)
+So the Payment Card industry (PCI) has their "Data Storage Standard" called "PCI DSS," which has general best practices that every industry should follow, actually. It's the only and best thing we got :)
 
 The PCI DSS mandates that "PAN's" aka credit card numbers, must be "rendered unreadable" e.g. encrypted. But it goes without saying that other industries store their own sensitive data, governments even ;)
 
