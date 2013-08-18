@@ -80,18 +80,15 @@ where we use a `JCEKS`-type keystore for a secret key e.g. for triple-DES or AES
 When three admins have submitted their passwords, we see that `DualControlKeyTool` invokes `KeyTool` thrice with the following differentiated aliases.
 
 {{{
-  keyTool alias powerstate2013-brand-evanx
-  keyTool alias powerstate2013-brand-henty
-  keyTool alias powerstate2013-evanx-henty
+DEBUG keyTool alias powerstate2013-brand-evanx
+DEBUG keyTool alias powerstate2013-brand-henty
+DEBUG keyTool alias powerstate2013-evanx-henty
 }}}
 
 Low and behalved, these keys do seem to be have been created.
 
 {{{
-  keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
-}}}
-
-{{{
+$ keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
 powerstate2013-brand-henty, 18 Aug 2013, SecretKeyEntry, 
 powerstate2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
 powerstate2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
