@@ -3,6 +3,18 @@ set -u
 
 cd
 
+if pgrep -f dualcontrol.FileServer
+then
+  echo WARN killing FileServer
+  kill `pgrep -f dualcontrol.FileServer`
+fi
+
+if pgrep -f dualcontrol.CryptoServer
+then
+  echo WARN killing CryptoServer
+  kill `pgrep -f dualcontrol.CryptoServer`
+fi
+
 CLASSPATH=NetBeansProjects/vellum/build/classes
 for jar in NetBeansProjects/vellum/dist/lib/*.jar
 do
@@ -91,34 +103,52 @@ command0_testkeystoreserver() {
 }
 
 command0_cryptoserver() {
-  javaks dualcontrol.CryptoServer 127.0.0.1 4446 1 2 127.0.0.1 $secstore $pass
+  javaks dualcontrol.CryptoServer 127.0.0.1 4446 4 2 127.0.0.1 $secstore $pass
 }
 
-command0_cryptoserverremote() {
-  javaks dualcontrol.CryptoServer 127.0.0.1 4446 1 2 127.0.0.1 "127.0.0.1:4445:secstore:" $pass
+command1_cryptoserver_remote() {
+  echo "cryptoserver_remote $1"
+  javaks dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:secstore:" $pass
 }
 
-cryptoclient() {
-  sleep 1
-  jc "evanx:eeee" 
-  jc "henty:hhhh"
-  sleep 1
+cryptoclient_cipher() {
   data=`javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
      "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:1111222233334444"`
   exitCode=$?  
   echo "CryptoClientDemo ENCRYPT exitCode $exitCode"
-  if [ $exitCode -eq 0 ]
+  if [ $exitCode -ne 0 ]
   then 
+    echo "ERROR CryptoClientDemo ENCRYPT exitCode $exitCode"
+  else 
     javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
        "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
-    exitCode=$?  
-    echo "CryptoClientDemo DECRYPT exitCode $exitCode"
+    exitCode=$? 
+    if [ $exitCode -ne 0 ]
+    then
+      echo "ERROR CryptoClientDemo DECRYPT exitCode $exitCode"
+     else 
+      echo "INFO CryptoClientDemo OK"   
+    fi
   fi
 }
 
-command0_testcryptoserver() {
+cryptoclient1() {
+  sleep 1
+  jc "evanx:eeee" 
+  jc "henty:hhhh"
+  for iter in `seq $1`
+  do
+    sleep 1
+    echo "cryptoclient $iter"
+    cryptoclient_cipher
+  done
+}
+
+command1_testcryptoserver() {
   command0_keystoreserver &
-  cryptoclient & command0_cryptoserverremote
+  count=$1  
+  echo "command1_testcryptoserver $# $@"
+  cryptoclient1 $count & command1_cryptoserver_remote `echo 2*$count | bc`
   sleep 2
 }
 
@@ -139,7 +169,7 @@ command0_client() {
 
 #command0_testgenseckey
 #command0_testkeystoreserver
-command0_testcryptoserver
+command1_testcryptoserver 100
 #command0_client
 
 #sh /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh > /home/evans/NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.out 2>&1
