@@ -39,7 +39,7 @@ public class CryptoServer {
                 socket = serverSocket.accept();
                 logger.debug("remote " + socket.getInetAddress().getHostAddress());
                 if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
-                    new CryptoServerRequestHandler().handle(dualControlSession, socket);
+                    new CryptoHandler().handle(dualControlSession, socket);
                 }
             } catch (Exception e) {
                 logger.error("request handling error", e);

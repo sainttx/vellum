@@ -16,9 +16,9 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public class CryptoServerRequestHandler {
+public class CryptoHandler {
     static final int DEFAULT_IV_LENGTH = 8;
-    static final Logger logger = Logger.getLogger(CryptoServerRequestHandler.class);
+    static final Logger logger = Logger.getLogger(CryptoHandler.class);
     DualControlSession dualControl;
     byte[] ivBytes;
     byte[] dataBytes;
