@@ -1,5 +1,6 @@
 package dualcontrol;
 
+import static dualcontrol.DualControlKeyStores.logger;
 import java.io.FileInputStream;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -20,6 +21,7 @@ public class DualControlSession {
     private String dualAlias;
 
     public void configure(String keyStorePath, char[] storePass) throws Exception {
+        logger.debug("configure keyStore " + keyStorePath);
         this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
         Map.Entry<String, String> entry = DualControlReader.readDualEntry();
         this.dualAlias = entry.getKey();
