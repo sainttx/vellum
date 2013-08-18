@@ -150,6 +150,20 @@ public class DualControlReader {
 where we invoke `readInputMap()` to read split knowledge from multiple admins.
 
 {{{
+    static Map<String, String> readInputMap(int inputCount) throws Exception {
+        Map<String, String> map = new TreeMap();
+        for (byte[] bytes : readInputs(inputCount)) {
+            String string = new String(bytes).trim();
+            String[] array = string.split(":");
+            map.put(array[0], array[1]);
+        }
+        return map;
+    }
+}}}
+
+which reads a `List` of submissions from admins as below, and then extracts the username and password from each, and puts them into a `Map`.
+
+{{{
     private final static int PORT = 4444;
 
     static List<byte[]> readInputs(int inputCount) throws Exception {
