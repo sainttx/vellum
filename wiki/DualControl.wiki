@@ -135,7 +135,7 @@ powerstate2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
 
 Actually these keys, are one and the same. However, for each so-called dual-alias, that copy is password-protected using a so-called dual-password i.e. an combination of two passwords, known to no one.
 
-== DualControlClient == 
+== `DualControlClient` == 
 
 In order for admins to submit their secrets to our `DualControlReader` e.g. from a ssh session on the `localhost`, we provide a minimal SSL client as follows.
 
