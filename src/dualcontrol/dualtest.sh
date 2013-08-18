@@ -47,19 +47,22 @@ jc3() {
     jc "henty:hhhh"
     jc "brand:bbbb"
 }
- 
+
 initks() {
-  serveralias="cryptoserver"
-  dname="CN=cryptoserver, OU=test, O=test, L=ct, S=wp, C=za"
+  serveralias="dualcontrol"
+  dname="CN=dualcontrol, OU=test, O=test, L=ct, S=wp, C=za"
   rm -f $privatestore
   rm -f $truststore
   rm -f $secstore
-  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$serveralias" -genkeypair -dname "$dname"
+  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" \
+     -alias "$serveralias" -genkeypair -dname "$dname"
   keytool -keystore $privatestore -storepass "$pass" -list | grep Entry
-  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$serveralias" -exportcert -rfc | 
-    openssl x509 -text | grep "Subject:"
-  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" -alias "$serveralias" -exportcert -rfc > $cert
-  keytool -keystore $truststore -storepass "$pass" -alias "$serveralias" -importcert -noprompt -file $cert
+  keytool -keystore $privatestore -storepass "$pass" -alias $serveralias \
+     -exportcert -rfc | openssl x509 -text | grep "Subject:"
+  keytool -keystore $privatestore -storepass "$pass" -alias $serveralias \
+     -exportcert -rfc > $cert
+  keytool -keystore $truststore -storepass "$pass" -alias $serveralias \
+     -importcert -noprompt -file $cert
   keytool -keystore $truststore -storepass "$pass" -list | grep Entry
 }
 
@@ -100,8 +103,10 @@ cryptoclient() {
   jc "evanx:eeee" 
   jc "henty:hhhh"
   sleep 1
-  data=`javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:111122223333444"`
-  javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
+  data=`javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
+     "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:111122223333444"`
+  javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
+     "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
 }
 
 command0_testcryptoserver() {
