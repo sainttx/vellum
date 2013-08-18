@@ -40,7 +40,7 @@ public class DualControlKeyTool {
     
     void start(String[] args) throws Exception {
         this.args = args;
-        Map<String, String> dualMap = DualControlReader.readDualMap(inputCount);
+        Map<String, String> dualMap = new DualControlReader().readDualMap(inputCount);
         for (String alias : dualMap.keySet()) {
             keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
         }
@@ -133,14 +133,15 @@ Our `DualControlReader` utility class handles reading split knowledge submission
 {{{
 public class DualControlReader {
     ...
-    public static Map<String, String> readDualMap(int inputCount) throws Exception {
+    public Map<String, String> readDualMap(int submissionCount) throws Exception {
+        this.submissionCount = submissionCount;
         Map<String, String> map = new TreeMap();
-        Map<String, String> inputs = readInputMap(inputCount);
-        for (String name : inputs.keySet()) {
-            for (String otherName : inputs.keySet()) {
+        Map<String, String> submissions = readMap();
+        for (String name : submissions.keySet()) {
+            for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     map.put(String.format("%s-%s", name, otherName),
-                            String.format("%s-%s", inputs.get(name), inputs.get(otherName)));
+                            String.format("%s-%s", submissions.get(name), submissions.get(otherName)));
                 }
             }
         }
@@ -148,14 +149,14 @@ public class DualControlReader {
     }
 }}}
 
-where we invoke `readInputMap()` to read split knowledge from multiple admins.
+where we invoke `readMap()` to read split knowledge from multiple admins.
 
 {{{
-    static Map<String, String> readInputMap(int inputCount) throws Exception {
+    Map<String, String> readMap() throws Exception {
         Map<String, String> map = new TreeMap();
-        for (byte[] bytes : readInputs(inputCount)) {
-            String string = new String(bytes).trim();
-            String[] array = string.split(":");
+        for (byte[] bytes : readSubmissionList()) {
+            String submissionString = new String(bytes).trim();
+            String[] array = submissionString.split(":");
             map.put(array[0], array[1]);
         }
         return map;
@@ -167,19 +168,19 @@ which reads a `List` of submissions from admins as below, and then extracts the 
 {{{
     private final static int PORT = 4444;
 
-    static List<byte[]> readInputs(int inputCount) throws Exception {
+    List<byte[]> readSubmissionList() throws Exception {
         logger.info("waiting for info on SSL port " + PORT);
-        return readInputs(DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(PORT), inputCount);
+        return readSubmissionList(DualControlKeyStores.createSSLContext().getServerSocketFactory().
+                createServerSocket(PORT));
     }
 }}}
 
 where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`.
 
 {{{
-    static List<byte[]> readInputs(ServerSocket serverSocket, int inputCount) throws Exception {
+    List<byte[]> readSubmissionList(ServerSocket serverSocket) throws Exception {
         List<byte[]> list = new ArrayList();
-        for (int i = 0; i < inputCount; i++) {
+        for (int i = 0; i < submissionCount; i++) {
             Socket socket = serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
                 throw new RuntimeException();
