@@ -11,15 +11,15 @@ So the Payment Card industry (PCI) has their "Data Storage Standard" called "PCI
 
 The PCI DSS mandates that "PAN's" aka credit card numbers, must be "rendered unreadable" e.g. encrypted. But it goes without saying that other industries store their own sensitive data, governments even ;)
 
-The PCI DSS standard suggests encrypting the key. In our effort to secure the key, we end up with another key, d'oh! But now this is a "key-encrypting-key" (KEK). Woohoo, the keys to the kindgom! Erm, d'oh!
+The PCI DSS standard suggests encrypting the key. In our effort to secure the key, we end up with another key. D'oh! But now this is a "key-encrypting-key" (KEK). Woohoo, the keys to the kindgom! Erm, d'oh!
 
 PCI requires that "dual control" and "split knowledge" be used to protect the PAN, i.e. our most secret data. The intent is that no single person can extract the secret data. The disconnect problem here is that sysadmins are a single person, with God-like access to secret data, and custodian of the proverbial keys to the kindgom. Consequently sysadmins have root access ;)
 
-Naturally, <tt>keytool</tt> is tailored for a single root admin, not for "dual control" by two half-baked admins. No problem, we present some tricks for implementing "dual control" for generating keys so that no one can access them, not even "root," woohoo! 
+Naturally, <tt>keytool</tt> is tailored for a single root admin, not for "dual control" by two half-baked admins. No problem, we present some tricks for implementing "dual control" for generating keys so that no one can access them, not even "root." <i>Woohoo!</i>
 
-But then our application can't access them either, d'oh! No problem, we'll use the same tricks for dual-control of our application, woohoo! But then starting our application needs two people, d'oh! No problem, we'll implement a companion crypto server then. 
+But then our application can't access them either. No problem, we'll use the same tricks for dual-control of our application. <i>Woohoo!</i> But then starting our application needs two people. <i>D'oh!</i> No problem, we'll implement a companion crypto server then. 
 
-Actually, we'll implement the crypto server next week only, in part 2. 
+Actually, we'll implement the crypto server next monthly only, in part 2. 
 
 == `DualControlKeyTool` ==
 
