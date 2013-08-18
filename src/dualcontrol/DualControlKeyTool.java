@@ -13,9 +13,9 @@ import sun.security.tools.KeyTool;
  * @author evans
  */
 public class DualControlKeyTool { 
-    private final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
-    private static String aliasPrefix = System.getProperty("dualcontrol.alias");
-    private static int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
+    final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
+    String aliasPrefix = System.getProperty("dualcontrol.alias");
+    int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
     String[] args; 
     
     public static void main(String[] args) throws Exception {        
