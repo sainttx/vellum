@@ -29,9 +29,8 @@ Step 1 for any data security procedure is to generate an encryption key, which i
 
 {{{
 public class DualControlKeyTool { 
-    final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
     String aliasPrefix = System.getProperty("dualcontrol.alias");
-    int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
+    int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
     String[] args; 
     
     public static void main(String[] args) throws Exception {        
@@ -40,7 +39,7 @@ public class DualControlKeyTool {
     
     void start(String[] args) throws Exception {
         this.args = args;
-        Map<String, char[]> dualMap = new DualControlReader().readDualMap(inputCount);
+        Map<String, char[]> dualMap = new DualControlReader().readDualMap(submissionCount);
         for (String alias : dualMap.keySet()) {
             keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
         }
@@ -71,7 +70,8 @@ For each combination of two admins, we combine their two usernames into a "dual-
 Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments and what-not. 
 
 {{{
-  javaks -Ddualcontrol.alias=powerstate2013 -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
+  javaks -Ddualcontrol.alias=powerstate2013 -Ddualcontrol.submissions=3 \
+     dualcontrol.DualControlKeyTool \
      -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
 }}}
 
@@ -248,7 +248,7 @@ If we have three admins, then naturally we have three combinations of pairs of a
 
 We introduce a utility to generate keys, by first collating passwords from multiple admins via SSL, combining those into new "dual-passwords" known to no one, and invoking the JRE's `KeyTool` with the appropriate parameters.
 
-We presented sample code to read input from multiple admins over an SSL connection, each providing their secret. This is used to invoke the JRE's `KeyTool` e.g. to generate "absolutely" secret keys, and also in our app to load the key. 
+We presented sample code to read password submissions from multiple admins via SSL TCP/IP socket, each providing their secret. This is used to invoke the JRE's `KeyTool` e.g. to generate "really secret" keys, and also in our app to load the key. 
 
 == See also ==
 
