@@ -28,7 +28,7 @@ public class DualControl {
     private String keyAlias;
 
     public void init() throws Exception {
-        Map.Entry<String, String> entry = DualControls.dualEntry();
+        Map.Entry<String, String> entry = DualControlReader.readDualEntry();
         keyAlias = entry.getKey();
         keyPass = entry.getValue().toCharArray();
         logger.debug(String.format("init keyAlias %s, keyPass %s", keyAlias, new String(keyPass)));
