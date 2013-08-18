@@ -15,7 +15,7 @@ The PCI DSS mandates that "PAN's" aka credit card numbers, must be "rendered unr
 
 The PCI DSS standard suggests encrypting the key used to encrypt our data. So in our effort to secure the key, we end up with another key. <i>D'oh!</i> But now this is a "key-encrypting-key" (KEK). <i>Woohoo, the keys to the kindgom!</i>
 
-PCI requires that "dual control" and "split knowledge" be used to protect the PAN, i.e. our most secret data. The intent is that no single person can extract the secret data. The disconnect problem here is that sysadmins are a single person, with God-like access to secret data, and custodian of the proverbial keys to the kindgom. Consequently sysadmins have root access ;)
+PCI requires that "dual control" and "split knowledge" be used to protect the PAN, i.e. our most secret data. The intent is that no single person can extract the secret data. The disconnect problem here is that sysadmins are a single person, with God-like access to secret data, and custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
 Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked admins. No problem, we present some tricks for implementing "dual control" for generating keys that are not accessible to anyone, not even "root." <i>Woohoo!</i>
 
