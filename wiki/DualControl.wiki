@@ -94,7 +94,7 @@ powerstate2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 powerstate2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these keys, are one and the same. However, for each so-called dual-alias, that copy is password-protected using a so-called dual-password i.e. an combination of two passwords, known to no one.
+Actually these three keys are one and the same. However, for each so-called dual-alias, that copy is password-protected using a so-called dual-password i.e. an combination of two passwords, known to no one.
 
 == `DualControlClient` == 
 
