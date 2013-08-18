@@ -68,7 +68,7 @@ For each combination of two admins, we combine their two usernames into a "dual-
 
 === Demo ===
 
-Let's test `DualControlKeyTool` from the command-line, using <tt>keytool</tt> arguments 
+Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments 
 
 {{{
   javaks -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
@@ -147,7 +147,7 @@ public class DualControlReader {
     }
 }}}
 
-where we invoke <tt>readInputMap()</tt> to read split knowledge from multiple admins.
+where we invoke `readInputMap()` to read split knowledge from multiple admins.
 
 {{{
     private final static int PORT = 4444;
