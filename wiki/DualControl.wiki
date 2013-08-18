@@ -17,16 +17,16 @@ PCI requires that "dual control" and "split knowledge" be used to protect the PA
 
 Naturally, <tt>keytool</tt> is tailored for a single root admin, not for "dual control" by two half-baked admins. No problem, we present some tricks for implementing "dual control" for generating keys so that no one can access them, not even "root," woohoo! 
 
-But then our application can't access them either, d'oh! No problem, we'll use the same tricks for dual-control of our application, woohoo! But then starting our application needs two people, d'oh! No problem, we'll implement a companion crypto server that is dual-controlled.
+But then our application can't access them either, d'oh! No problem, we'll use the same tricks for dual-control of our application, woohoo! But then starting our application needs two people, d'oh! No problem, we'll implement a companion crypto server then. 
 
-Actually, we'll implement the crypto server next week or so, in part 2. 
+Actually, we'll implement the crypto server next week only, in part 2. 
 
 == `DualControlKeyTool` ==
 
 Step 1 for any organisation's data security operation is to generate some master key such that no single root can access. For this purpose, their shall be <tt>!DualControlKeyTool</tt>, as follows.
 
 {{{
-public class DualControlKeyTool {    
+public class DualControlKeyTool {
     private final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
     private static String aliasPrefix = System.getProperty("dualcontrol.alias");
     private static int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
