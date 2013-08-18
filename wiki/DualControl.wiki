@@ -3,7 +3,7 @@
 
 == Introduction ==
 
-The problem with encryption is... secure key management. The analogy often espoused, is that we lock our doors but leave the key in the door, or under the mat, or in the pot plant under a stone, but that's my personal favourite so ssh-ssh. 
+Encryption is great for information security and all that, but the problem with encryption is... secure key management. The analogy often espoused, is that we lock our doors but leave the key in the door, or under the mat, or in the pot plant under a stone, but that's my personal favourite so ssh-ssh. 
 
 So the Payment Card industry (PCI) has their "Data Storage Standard" called "PCI DSS," which has general best practices that every industry should follow, actually. It's the best thing we got. It's only one we got, too :)
 
