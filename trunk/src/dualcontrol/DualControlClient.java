@@ -29,5 +29,4 @@ public abstract class DualControlClient {
         socket.getOutputStream().write(data.getBytes());
         socket.close();
     }
-    
 }
