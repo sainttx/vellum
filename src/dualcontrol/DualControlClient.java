@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
  * @author evans
  */
 public abstract class DualControlClient {
-    private final static Logger logger = Logger.getLogger(DualControlClient.class);
-    private static int PORT = 4444;
-    private static String HOST = "127.0.0.1";
+    final static Logger logger = Logger.getLogger(DualControlClient.class);
+    final static int PORT = 4444;
+    final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
         if (args.length > 0) {
