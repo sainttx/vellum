@@ -79,7 +79,7 @@ public class CryptoServerRequestHandler {
         dos.write(ivBytes);
         dos.writeShort(dataBytes.length);
         dos.write(dataBytes);
-        logger.debug("ivBytes " + dataBytes.length);
+        logger.debug("ivBytes " + ivBytes.length);
         logger.debug("dataBytes " + dataBytes.length);
     }    
 }
