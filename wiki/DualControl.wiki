@@ -47,7 +47,7 @@ public class DualControlKeyTool {
     }
 }}}
 
-where this class will invoke Java's `KeyTool`, in a loop of some nature. 
+where `DualControlReader` provides a map of multiple key aliases and their secret passwords, and we invoke Java's `KeyTool` for each. 
 
 {{{
     public void keyTool(String alias, String keypass) throws Exception {
@@ -62,55 +62,9 @@ where this class will invoke Java's `KeyTool`, in a loop of some nature.
 }
 }}}
 
-We specify the same arguments as we would to `keytool`, but `DualControlReader` will provide a map of multiple key aliases and their secret passwords, for invoking `keytool` for each.
+where we add `alias` and `keypass` arguments, and otherwise pass through the command-line arguments as-is to `KeyTool`
 
-{{{
-public class DualControlReader {
-    ...
-    public static Map<String, String> readDualMap(int inputCount) throws Exception {
-        Map<String, String> map = new TreeMap();
-        Map<String, String> inputs = readInputMap(inputCount);
-        for (String name : inputs.keySet()) {
-            for (String otherName : inputs.keySet()) {
-                if (name.compareTo(otherName) < 0) {
-                    map.put(String.format("%s-%s", name, otherName),
-                            String.format("%s-%s", inputs.get(name), inputs.get(otherName)));
-                }
-            }
-        }
-        return map;
-    }
-}}}
-
-where we read input via SSL presumably from multiple admins, each providing a secret, as below. In the above method, for each combination of two admins, we combine their two usernames into a "dual-alias," and similary, the secrets into a "dual-key-password."
-
-{{{
-    private final static int PORT = 4444;
-
-    static List<byte[]> readInputs(int inputCount) throws Exception {
-        logger.info("waiting for info on SSL port " + PORT);
-        return readInputs(DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(PORT), inputCount);
-    }
-}}}
-
-where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`.
-
-{{{
-    static List<byte[]> readInputs(ServerSocket serverSocket, int inputCount) throws Exception {
-        List<byte[]> list = new ArrayList();
-        for (int i = 0; i < inputCount; i++) {
-            Socket socket = serverSocket.accept();
-            if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                throw new RuntimeException();
-            }
-            list.add(readBytes(socket.getInputStream()));
-            socket.close();
-        }
-        serverSocket.close();
-        return list;
-    }
-}}}
+For each combination of two admins, we combine their two usernames into a "dual-alias," and similary, the secrets into a "dual-key-password."
 
 === Demo ===
 
@@ -168,6 +122,58 @@ public abstract class DualControlClient {
 where we concatenate the username and password into a string and send those bytes out the SSL socket to our supposed dual-controlled app listening on port 4444. 
 
 A known bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port!
+
+== `DualControlReader` ==
+
+Our `DualControlReader` utility class handles reading split knowledge submissions.
+
+{{{
+public class DualControlReader {
+    ...
+    public static Map<String, String> readDualMap(int inputCount) throws Exception {
+        Map<String, String> map = new TreeMap();
+        Map<String, String> inputs = readInputMap(inputCount);
+        for (String name : inputs.keySet()) {
+            for (String otherName : inputs.keySet()) {
+                if (name.compareTo(otherName) < 0) {
+                    map.put(String.format("%s-%s", name, otherName),
+                            String.format("%s-%s", inputs.get(name), inputs.get(otherName)));
+                }
+            }
+        }
+        return map;
+    }
+}}}
+
+where we invoke <tt>readInputMap()</tt> to read split knowledge from multiple admins.
+
+{{{
+    private final static int PORT = 4444;
+
+    static List<byte[]> readInputs(int inputCount) throws Exception {
+        logger.info("waiting for info on SSL port " + PORT);
+        return readInputs(DualControlKeyStores.createSSLContext().getServerSocketFactory().
+                createServerSocket(PORT), inputCount);
+    }
+}}}
+
+where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`.
+
+{{{
+    static List<byte[]> readInputs(ServerSocket serverSocket, int inputCount) throws Exception {
+        List<byte[]> list = new ArrayList();
+        for (int i = 0; i < inputCount; i++) {
+            Socket socket = serverSocket.accept();
+            if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
+                throw new RuntimeException();
+            }
+            list.add(readBytes(socket.getInputStream()));
+            socket.close();
+        }
+        serverSocket.close();
+        return list;
+    }
+}}}
 
 == `DualControlSession` == 
 
