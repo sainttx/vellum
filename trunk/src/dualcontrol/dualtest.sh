@@ -173,12 +173,16 @@ command0_client() {
   javaks dualcontrol.DualControlClient
 }
 
-command0_longtest() {
+command1_longtest() {
   command0_testgenseckey
   command0_testkeystoreserver
   command1_testcryptoserver 1
-  command1_testcryptoserver 100
+  command1_testcryptoserver $1
   command1_testcryptoserver 1
+}
+
+command0_longtest() {
+  command1_longtest 100
 }
 
 command0_testcryptoserver() {
@@ -209,7 +213,7 @@ if [ $# -gt 0 ]
 then
   command=$1
   shift
-  command$#_$command
+  command$#_$command $@
 else
   command0_shorttest
 fi
