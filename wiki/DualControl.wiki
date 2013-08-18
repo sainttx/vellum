@@ -21,7 +21,7 @@ PCI requires that "dual control" and "split knowledge" be used to protect the PA
 
 Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>keytool</tt> invoker for generating keys that are not "accessible" to anyone, not even "root" ;)
 
-But then our application can't access them either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load any keys it requires. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll implement a companion crypto server, in part 2.
+But then our application can't access them either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load any keys it requires. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server, in a follow-up article.
 
 == `DualControlKeyTool` ==
 
