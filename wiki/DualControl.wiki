@@ -28,10 +28,10 @@ But then our application can't access them either. <i>D'oh!</i> Actually, we can
 Step 1 for any data security procedure is to generate an encryption key, which ideally no single rogue root user can access. For this purpose, there shall be `DualControlKeyTool`, as follows.
 
 {{{
-public class DualControlKeyTool {
-    private final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
-    private static String aliasPrefix = System.getProperty("dualcontrol.alias");
-    private static int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
+public class DualControlKeyTool { 
+    final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
+    String aliasPrefix = System.getProperty("dualcontrol.alias");
+    int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
     String[] args; 
     
     public static void main(String[] args) throws Exception {        
@@ -40,26 +40,26 @@ public class DualControlKeyTool {
     
     void start(String[] args) throws Exception {
         this.args = args;
-        Map<String, String> dualMap = new DualControlReader().readDualMap(inputCount);
+        Map<String, char[]> dualMap = new DualControlReader().readDualMap(inputCount);
         for (String alias : dualMap.keySet()) {
             keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
         }
     }
+    ...
 }}}
 
 where `DualControlReader` provides a map of multiple key aliases and their secret passwords, and we invoke Java's `KeyTool` for each. 
 
 {{{
-    public void keyTool(String alias, String keypass) throws Exception {
+    public void keyTool(String alias, char[] keypass) throws Exception {
         logger.debug("keyTool alias " + alias);
         List<String> argList = new ArrayList(Arrays.asList(args));
         argList.add("-alias");
         argList.add(alias);
         argList.add("-keypass");
-        argList.add(keypass);
+        argList.add(new String(keypass));
         KeyTool.main(argList.toArray(new String[argList.size()]));
     }            
-}
 }}}
 
 where we add `alias` and `keypass` arguments, and otherwise pass through the command-line arguments as-is to `KeyTool`
@@ -133,15 +133,16 @@ Our `DualControlReader` utility class handles reading split knowledge submission
 {{{
 public class DualControlReader {
     ...
-    public Map<String, String> readDualMap(int submissionCount) throws Exception {
+    public Map<String, char[]> readDualMap(int submissionCount) throws Exception {
         this.submissionCount = submissionCount;
-        Map<String, String> map = new TreeMap();
-        Map<String, String> submissions = readMap();
+        Map<String, char[]> map = new TreeMap();
+        Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     map.put(String.format("%s-%s", name, otherName),
-                            String.format("%s-%s", submissions.get(name), submissions.get(otherName)));
+                            String.format("%s-%s", submissions.get(name), 
+                            submissions.get(otherName)).toCharArray());
                 }
             }
         }
@@ -152,12 +153,12 @@ public class DualControlReader {
 where we invoke `readMap()` to read split knowledge from multiple admins.
 
 {{{
-    Map<String, String> readMap() throws Exception {
-        Map<String, String> map = new TreeMap();
-        for (byte[] bytes : readSubmissionList()) {
-            String submissionString = new String(bytes).trim();
-            String[] array = submissionString.split(":");
-            map.put(array[0], array[1]);
+    Map<String, char[]> readMap() throws Exception {
+        Map<String, char[]> map = new TreeMap();
+        for (byte[] bytes : readList()) {
+            String string = new String(bytes).trim();
+            String[] array = string.split(":");
+            map.put(array[0], array[1].toCharArray());
         }
         return map;
     }
@@ -168,17 +169,10 @@ which reads a `List` of submissions from admins as below, and then extracts the 
 {{{
     private final static int PORT = 4444;
 
-    List<byte[]> readSubmissionList() throws Exception {
+    List<byte[]> readList() throws Exception {
         logger.info("waiting for info on SSL port " + PORT);
-        return readSubmissionList(DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(PORT));
-    }
-}}}
-
-where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`.
-
-{{{
-    List<byte[]> readSubmissionList(ServerSocket serverSocket) throws Exception {
+        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().getServerSocketFactory().
+                createServerSocket(PORT);
         List<byte[]> list = new ArrayList();
         for (int i = 0; i < submissionCount; i++) {
             Socket socket = serverSocket.accept();
@@ -193,6 +187,8 @@ where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple sub
     }
 }}}
 
+where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`.
+
 == `DualControlSession` == 
 
 We re-engineer our application to similarly get a dual-password, in order to load the key.
@@ -202,7 +198,7 @@ public class AppDemo {
     private SecretKey dek;     
     ...
     private void loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
-        dek = new DualControlSession().loadKey(keyStorePath, storePass, alias);
+        dek = DualControlSessions.loadKey(keyStorePath, storePass, alias);
     }
 }
 }}}
@@ -210,22 +206,23 @@ public class AppDemo {
 where the application loads keys as if it's too easy, but the caveat is that execution is blocked whilst we are waiting for two admins to submit info via their `DualControlClient`.
 
 {{{
-public class DualControlSession {
-    private KeyStore dualKeyStore;
-    private char[] dualPass;
-    private String dualAlias;
+public class DualControlSessions {
 
-    public SecretKey loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
+    public static SecretKey loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
+        char[] dualPass = null;
         try {
-            this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
+            KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
             Map.Entry<String, String> entry = DualControlReader.readDualEntry();
-            this.dualAlias = entry.getKey();
-            this.dualPass = entry.getValue().toCharArray();
+            String dualAlias = entry.getKey();
+            dualPass = entry.getValue().toCharArray();
             return (SecretKey) dualKeyStore.getKey(alias + "-" + dualAlias, dualPass);
         } finally {
-            Arrays.fill(dualPass, (char) 0);            
+            if (dualPass != null) {
+                Arrays.fill(dualPass, (char) 0);            
+            }
         }        
     }
+}
 }}}
 
 where we read the dual info using the afore-mentioned `DualControlReader,` which creates an `SSLServerSocket` on a well-known port, listens for connections and reads their submission e.g. using our `DualControlClient` utility.
