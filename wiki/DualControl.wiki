@@ -71,7 +71,7 @@ here test script which simulates the key gen using 3 admins submitting their "ha
 
 this script also exercises <tt>!AppDemo</tt> (requiring dual control of two admins when starting), FileServer/FileClient (for remote keystore loading), and <tt>!CryptoServer</tt> which does remote ciphering, and requires dual control to start as well of course :)
 
-<pre>
+{{{
 set -u
 
 set -x
@@ -204,7 +204,7 @@ command0_testgenseckey
 command0_testkeystoreserver
 command0_testcryptoserver
 command0_client
-</pre>
+}}}
 
 and here output from the above script just to prove it does work ;)
 
