@@ -47,7 +47,7 @@ public class DualControlKeyTool {
     }
 }}}
 
-where this class will invoke the JDK's <tt>KeyTool</tt>, in a loop of some nature. 
+where this class will invoke Java's <tt>KeyTool</tt>, in a loop of some nature. 
 
 {{{
     public void keyTool(String alias, String keypass) throws Exception {
@@ -224,7 +224,7 @@ If we have three admins, then naturally we have three combinations of pairs of a
 
 We introduce a utility to generate keys, by first collating "half-passwords" from multiple admins via SSL, combining those into a new "dual-password" known to no one, and invoking <tt>KeyTool</tt> with the appropriate parameters.
 
-We presented sample code to read input from multiple admins over an SSL connection, each providing their secret. This is used to invoke <tt>KeyTool</tt>, and also in our app to load the key. 
+We presented sample code to read input from multiple admins over an SSL connection, each providing their secret. This is used to invoke the JRE's `KeyTool`, and also in our app to load the key. 
 
 == See also ==
 
