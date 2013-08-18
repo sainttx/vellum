@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
  * @author evans
  */
 public class DualControlKeyStores {    
-    static final Logger logger = Logger.getLogger(DualControlKeyStores.class);
     static final String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
     static final char[] keyStorePassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
     static final char[] keyPassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
