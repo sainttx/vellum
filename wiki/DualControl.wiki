@@ -244,9 +244,9 @@ PCI requires that "dual control" and "split knowledge" be used to protect our se
 
 Naturally, `keytool` is tailored for a single root admin, rather than "dual-control." 
 
-If we have three admins, then naturally we have three combinations of pairs of admins. In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a "dual-password," i.e. which has two complements of "split knowledge" from a pair of admins as referenced in the "dual-alias."
+If we have three admins, then naturally we have three combinations of pairs of admins. In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a "dual-password," i.e. a combination of two passwords.
 
-We introduce a utility to generate keys, by first collating "half-passwords" from multiple admins via SSL, combining those into a new "dual-password" known to no one, and invoking the JRE's `KeyTool` with the appropriate parameters.
+We introduce a utility to generate keys, by first collating passwords from multiple admins via SSL, combining those into a new "dual-password" known to no one, and invoking the JRE's `KeyTool` with the appropriate parameters.
 
 We presented sample code to read input from multiple admins over an SSL connection, each providing their secret. This is used to invoke the JRE's `KeyTool` e.g. to generate "absolutely" secret keys, and also in our app to load the key. 
 
