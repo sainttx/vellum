@@ -16,26 +16,29 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public class CryptoHandler {
+public class CryptoServerRequestHandler {
     static final int DEFAULT_IV_LENGTH = 8;
-    static final Logger logger = Logger.getLogger(CryptoHandler.class);
+    static final Logger logger = Logger.getLogger(CryptoServerRequestHandler.class);
     DualControlSession dualControl;
     byte[] ivBytes;
     byte[] dataBytes;
     DataOutputStream dos;
     
-    public void handle(DualControlSession dualControl, Socket socket) throws Exception {        
-        this.dualControl = dualControl;
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-        int length = dis.readShort();
-        byte[] bytes = new byte[length];
-        dis.readFully(bytes);
-        String data = new String(bytes);
-        String[] fields = data.split(":");
-        logger.debug("handle fields: " + Arrays.toString(fields));
-        this.dos = new DataOutputStream(socket.getOutputStream());
-        cipher(fields[0], fields[1], fields[2], fields[3], fields[4]);
-        dos.close();
+    public void handle(DualControlSession dualControl, Socket socket) throws Exception {
+        try {
+            this.dualControl = dualControl;
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            int length = dis.readShort();
+            byte[] bytes = new byte[length];
+            dis.readFully(bytes);
+            String data = new String(bytes);
+            String[] fields = data.split(":");
+            logger.debug("handle fields: " + Arrays.toString(fields));
+            this.dos = new DataOutputStream(socket.getOutputStream());
+            cipher(fields[0], fields[1], fields[2], fields[3], fields[4]);
+        } finally {
+            dos.close();
+        }
     }
     
     private void cipher(String alias, String transformation, String mode,
@@ -71,11 +74,13 @@ public class CryptoHandler {
         return ivBytes;
     }
 
-    private void write(byte[] ivBytes, byte[] bytes) throws Exception {
+    private void write(byte[] ivBytes, byte[] dataBytes) throws Exception {
         dos.writeShort(ivBytes.length);
         dos.write(ivBytes);
-            dos.writeShort(bytes.length);
-        dos.write(bytes);
+        dos.writeShort(dataBytes.length);
+        dos.write(dataBytes);
+        logger.debug("ivBytes " + dataBytes.length);
+        logger.debug("dataBytes " + dataBytes.length);
     }    
 }
 
