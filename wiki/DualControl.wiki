@@ -126,7 +126,7 @@ A known bug is that more Godly sysadmins can socially-engineer other less Godly 
 
 The workaround for said bugs, in plain management-speak, is that our controls should prevent or at least detect such attacks, and we should take measures to mitigate risk, etc.
 
-Disclaimer: a known bug in the above code is that we create <tt>String</tt>'s containing clear-text password, rather than adamantly sticking to `char` arrays, because arrays can cleared deterministically, without consideration of the garbage collector, whereas strings are immutable and so hang around until garbage-collected.
+Disclaimer: a known bug in the above code is that we create <tt>String</tt>'s containing a clear-text password, rather than adamantly sticking to `char` arrays, because arrays can cleared deterministically, without consideration of the garbage collector, whereas strings are immutable and so hang around until garbage-collected.
 
 == `DualControlReader` ==
 
