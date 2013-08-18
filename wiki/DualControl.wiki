@@ -3,7 +3,6 @@
 
 == Introduction ==
 
-
 i think i've solved the dual control for PCI compliance in the simplest possible way, including keytool management functions e.g. key rotation, etc - by invoking keytool once password combinations have been gathered e.g. from 3 admins
 
 the code is online as follows - and cut and pasted further below for your review :)
@@ -12,13 +11,13 @@ https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol
 
 it's 20 odd lines of util code in DualControl that enables it - these are used by DualControlKeyTool invocator (of KeyTool, to effectively add dual control to keytool in terms of combinations of key passwords), and of course by our application to get two admins to provide together a key password which can be used to load DEK from java keystore
 
-rather than using HTTPS, i just using raw SSL sockets e.g. there is DualControlClient which is just minimal SSL client socket for sending username and password to DualControlKeyTool, or BizSwitch, or CryptoServer - a remote key management server !
+rather than using HTTPS, i just using raw SSL sockets e.g. there is DualControlClient which is just minimal SSL client socket for sending username and password to <tt>!DualControlKeyTool</tt>, or our application, or <tt>!CryptoServer</tt> - a remote key management server !
 
 the DEK-containing keystore can be on the app server (BizSwitch server), or at a crypto server (running on different VM e.g. outside DMZ), and in fact the keystore can be trivially loaded remotely via SSL into the app, or the remote crypto server 
 
-so one could have a BizSwitch server which doesn't do encryption, talking to a crypto server in another VM, which doesn't store the keys, which loads the keystore from a keystore file server on yet another VM - or one can could store keys and cipher all in the app server, but still with dual control - so quite flexible :)
+so one could have an application server which doesn't do encryption, talking to a crypto server in another VM, which doesn't store the keys, which loads the keystore from a keystore file server on yet another VM - or one can could store keys and cipher all in the app server, but still with dual control - so quite flexible :)
 
-all comms are via client-auth SSL and using raw sockets as i said, and the protocol mininal e.g. "usere:userepasswd" or "powertime:ENCRYPT:1111222233334444" - and the in case of the remote keystore file server it just "netcats" the keystore in response to an empty request 
+all comms are via client-auth SSL and using raw sockets as i said, and the protocol mininal e.g. "usere:userepasswd" or "powerstate-2013:ENCRYPT:1111222233334444" - and the in case of the remote keystore file server it just "netcats" the keystore in response to an empty request 
 
 disclaimer: the code below does things like logging and System.err of secrets as still in debug mode :)
 
