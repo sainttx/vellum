@@ -75,7 +75,7 @@ Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments
      -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
 }}}
 
-where we use a `JCEKS`-type keystore for a secret key e.g. triple-DES in this case, and "powerstate2013" is our desired alias.  
+where we use a `JCEKS`-type keystore for a secret key e.g. triple-DES or AES, and "powerstate2013" is our desired alias.  
 
 {{{
   keyTool alias powerstate-2013-brand-evanx
