@@ -33,7 +33,6 @@ public class CryptoServerRequestHandler {
             dis.readFully(bytes);
             String data = new String(bytes);
             String[] fields = data.split(":");
-            logger.debug("handle fields: " + Arrays.toString(fields));
             this.dos = new DataOutputStream(socket.getOutputStream());
             cipher(fields[0], fields[1], fields[2], fields[3], fields[4]);
         } finally {
@@ -43,6 +42,7 @@ public class CryptoServerRequestHandler {
     
     private void cipher(String alias, String transformation, String mode,
             String ivString, String dataString) throws Exception {
+        logger.debug("cipher " + Arrays.toString(new Object[] {alias, transformation, mode}));
         SecretKey key = dualControl.loadKey(alias);
         logger.debug("keyalg " + key.getAlgorithm());
         Cipher cipher = Cipher.getInstance(transformation);
