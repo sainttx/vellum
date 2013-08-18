@@ -19,11 +19,11 @@ import org.apache.log4j.Logger;
  */
 public class CryptoHandler {
     static Logger logger = Logger.getLogger(CryptoHandler.class);
-    DualControl dualControl;
+    DualControlSession dualControl;
     KeyStore keyStore;
     DataOutputStream dos;
     
-    public void handle(DualControl dualControl, KeyStore keyStore, Socket socket) throws Exception {        
+    public void handle(DualControlSession dualControl, KeyStore keyStore, Socket socket) throws Exception {        
         this.dualControl = dualControl;
         this.keyStore = keyStore;
         DataInputStream dis = new DataInputStream(socket.getInputStream());

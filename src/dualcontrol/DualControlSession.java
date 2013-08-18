@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public class DualControl {
-    private final static Logger logger = Logger.getLogger(DualControl.class);
+public class DualControlSession {
+    private final static Logger logger = Logger.getLogger(DualControlSession.class);
     
     private char[] keyPass;
     private String keyAlias;
