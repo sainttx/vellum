@@ -85,7 +85,7 @@ When three admins have submitted their passwords, we see that `DualControlKeyToo
   keyTool alias powerstate2013-evanx-henty
 }}}
 
-Low and behalfed, these keys do seem to be have been created.
+Low and behalved, these keys do seem to be have been created.
 
 {{{
   keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
