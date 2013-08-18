@@ -1,8 +1,5 @@
 package dualcontrol;
 
-import static dualcontrol.DualControlKeyStores.logger;
-import java.io.FileInputStream;
-import java.net.Socket;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Map;
