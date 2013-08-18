@@ -242,9 +242,9 @@ The problem with encryption is secure key management. It's like we lock the door
 
 PCI requires that "dual control" and "split knowledge" be used to protect our sensitive data so that no single person can extract it, not even your most trustworthy employee. 
 
-Naturally, `keytool`, is tailored for a single root admin, rather than "dual control." 
+Naturally, `keytool` is tailored for a single root admin, rather than "dual-control." 
 
-If we have three admins, then naturally we have three combinations of pairs of admins. In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with two bits of "split knowledge" between a specific pair of admins.
+If we have three admins, then naturally we have three combinations of pairs of admins. In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a "dual-password," i.e. which has two complements of "split knowledge" from a pair of admins as referenced in the "dual-alias."
 
 We introduce a utility to generate keys, by first collating "half-passwords" from multiple admins via SSL, combining those into a new "dual-password" known to no one, and invoking the JRE's `KeyTool` with the appropriate parameters.
 
