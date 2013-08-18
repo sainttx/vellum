@@ -12,7 +12,7 @@ import sun.security.tools.KeyTool;
  *
  * @author evans
  */
-public class DualControlKeyTool extends DualControl {    
+public class DualControlKeyTool extends DualControlSession {    
     private final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
     private static String aliasPrefix = System.getProperty("dualcontrol.alias");
     private static int inputCount = Integer.getInteger("dualcontrol.inputs", 3);

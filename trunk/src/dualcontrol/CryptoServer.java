@@ -42,7 +42,7 @@ public class CryptoServer {
         } else {
             keyStore.load(new FileInputStream(keyStorePath), storePass);
         }
-        DualControl dualControl = new DualControl();
+        DualControlSession dualControl = new DualControlSession();
         dualControl.readDual();
         ServerSocket serverSocket = DualControlContext.createSSLContext().getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
