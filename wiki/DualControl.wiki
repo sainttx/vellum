@@ -68,7 +68,7 @@ For each combination of two admins, we combine their two usernames into a "dual-
 
 === Demo ===
 
-Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments 
+Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments and what-not. 
 
 {{{
   javaks -Ddualcontrol.alias=powerstate2013 -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
