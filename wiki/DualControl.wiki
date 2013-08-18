@@ -17,8 +17,7 @@ Naturally, <tt>keytool</tt>, is tailored for a single root admin, not for "dual 
 
 But then our application can't access them either, d'oh! No problem, we'll use the same tricks for dual-control of our application, woohoo! But then starting our application needs two people, d'oh! No problem, we'll implement a companion crypto server that is dual-controlled.
 
-
-== DualControlKeyTool ==
+== `DualControlKeyTool` ==
 
 Step 1 for any data security operation is to generate some master key such that no single root can access. For this purpose, their shall be <tt>!DualControlKeyTool</tt>, as follows.
 
