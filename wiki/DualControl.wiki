@@ -7,7 +7,7 @@ Keywords: Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
 
 == Introduction ==
 
-Encryption is great for information security and all that. The problem with encryption is... secure key management. The analogy often espoused, is that we lock our doors but leave the key in the door, or under the mat, or in the pot plant under a stone, but that's my personal favourite so ssh-ssh. 
+Encryption is great for information security and all that. But the problem with encryption is... secure key management. The analogy often espoused, is that we lock our doors but leave the key in the door, or under the mat, or in the pot plant under a stone, but that's my personal favourite so ssh-ssh. 
 
 <img align=left src="http://jroller.com/evanx/resource/gnome-keys-250.png">
 
