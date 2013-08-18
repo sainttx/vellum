@@ -30,17 +30,33 @@ public class CryptoServer {
             String remoteHostAddress, String keyStorePath, char[] storePass) 
             throws Exception {
         dualControlSession.configure(keyStorePath, storePass);
-        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(port, backlog, localAddress);
+        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
+                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
         while (true) {
-            Socket socket = serverSocket.accept();
-            logger.debug("remote " + socket.getInetAddress().getHostAddress());
-            if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
-                new CryptoHandler().handle(dualControlSession, socket);
+            Socket socket = null;
+            try {
+                socket = serverSocket.accept();
+                logger.debug("remote " + socket.getInetAddress().getHostAddress());
+                if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
+                    new CryptoServerRequestHandler().handle(dualControlSession, socket);
+                }
+            } catch (Exception e) {
+                logger.error("error with socket", e);
+            } finally {
+                close(socket);
             }
-            socket.close();
             if (count > 0 && --count == 0) break;
         }        
+    }
+    
+    private static void close(Socket socket) {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (Exception e) {
+                logger.warn("close socket", e);                
+            }
+        }
     }
 }
 
