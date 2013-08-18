@@ -43,7 +43,7 @@ public class PasswordCipherTest {
         byte[] decryptedHash = cipher.decrypt(encrypted.getEncryptedBytes(), encrypted.getIv());
         assertTrue(Arrays.equals(decryptedHash, passwordHash.getBytes()));
         assertTrue(new PasswordHash(decryptedHash).matches(USER_PASSWORD));
-        assertFalse(new PasswordHash(decryptedHash).matches("wrong".toCharArray()));        
+        assertFalse(new PasswordHash(decryptedHash).matches("wrong".toCharArray()));
         passwordHash = new PasswordHash(passwordHash.getBytes());
         assertTrue(passwordHash.matches(USER_PASSWORD));
     }
@@ -59,7 +59,7 @@ public class PasswordCipherTest {
         passwordHash = new PasswordHash(passwordHash.getBytes());
         passwordHash.decryptSalt(cipher);
         assertTrue(passwordHash.matches(USER_PASSWORD));
-        assertTrue(!passwordHash.matches("wrong".toCharArray()));        
+        assertTrue(!passwordHash.matches("wrong".toCharArray()));
     }
 
     @Test(expected = AssertionError.class)
