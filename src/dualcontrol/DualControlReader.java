@@ -21,44 +21,45 @@ public class DualControlReader {
     private final static int PORT = 4444;
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     
-    static Map.Entry<String, String> readDualEntry() throws Exception {
-        return readDualMap(2).entrySet().iterator().next();
+    int submissionCount;
+    
+    static Map.Entry<String, char[]> readDualEntry() throws Exception {
+        return new DualControlReader().readDualMap(2).entrySet().iterator().next();
     }
 
-    public static Map<String, String> readDualMap(int inputCount) throws Exception {
-        Map<String, String> map = new TreeMap();
-        Map<String, String> inputs = readInputMap(inputCount);
-        for (String name : inputs.keySet()) {
-            for (String otherName : inputs.keySet()) {
+    public Map<String, char[]> readDualMap(int submissionCount) throws Exception {
+        this.submissionCount = submissionCount;
+        Map<String, char[]> map = new TreeMap();
+        Map<String, char[]> submissions = readMap();
+        for (String name : submissions.keySet()) {
+            for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     map.put(String.format("%s-%s", name, otherName),
-                            String.format("%s-%s", inputs.get(name), inputs.get(otherName)));
+                            String.format("%s-%s", submissions.get(name), 
+                            submissions.get(otherName)).toCharArray());
                 }
             }
         }
         return map;
     }
 
-    static Map<String, String> readInputMap(int inputCount) throws Exception {
-        Map<String, String> map = new TreeMap();
-        for (byte[] bytes : readInputs(inputCount)) {
+    Map<String, char[]> readMap() throws Exception {
+        Map<String, char[]> map = new TreeMap();
+        for (byte[] bytes : readList()) {
             String string = new String(bytes).trim();
             String[] array = string.split(":");
-            map.put(array[0], array[1]);
-            logger.debug("input " + array[0]);
+            map.put(array[0], array[1].toCharArray());
+            logger.debug("readMap " + array[0]);
         }
         return map;
     }
 
-    static List<byte[]> readInputs(int inputCount) throws Exception {
+    List<byte[]> readList() throws Exception {
         logger.info("waiting for info on SSL port " + PORT);
-        return readInputs(DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(PORT), inputCount);
-    }
-
-    static List<byte[]> readInputs(ServerSocket serverSocket, int inputCount) throws Exception {
+        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().getServerSocketFactory().
+                createServerSocket(PORT);
         List<byte[]> list = new ArrayList();
-        for (int i = 0; i < inputCount; i++) {
+        for (int i = 0; i < submissionCount; i++) {
             Socket socket = serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
                 throw new RuntimeException();

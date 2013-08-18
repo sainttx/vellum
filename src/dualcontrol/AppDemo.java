@@ -23,7 +23,7 @@ public class AppDemo {
     }    
     
     private void loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
-        dek = new DualControlSession().loadKey(keyStorePath, storePass, alias);
+        dek = DualControlSessions.loadKey(keyStorePath, storePass, alias);
         logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
