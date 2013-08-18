@@ -19,7 +19,7 @@ The PCI DSS standard suggests encrypting the key used to encrypt our data. Darn,
 
 PCI requires that "dual control" and "split knowledge" be used to protect the PAN, i.e. our most secret data, i.e. the key used to cipher this data. The intent is that no single person can decrypt the data. The disconnect problem here is that sysadmins are a single person, with God-like access to secret data, and custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
-Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>keytool</tt> invoker for generating keys that are not "accessible" to any one person, not even "root" ;)
+Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>keytool</tt> invoker for generating keys that are not "accessible" to anyone, not even "root" ;)
 
 But then our application can't access them either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load any keys it requires. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll implement a companion crypto server, in part 2.
 
