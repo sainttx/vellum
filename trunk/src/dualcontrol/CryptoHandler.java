@@ -32,7 +32,7 @@ public class CryptoHandler {
         dis.readFully(bytes);
         String data = new String(bytes);
         String[] fields = data.split(":");
-        logger.debug("handlefields: " + Arrays.toString(fields));
+        logger.debug("handle fields: " + Arrays.toString(fields));
         this.dos = new DataOutputStream(socket.getOutputStream());
         cipher(fields[0], fields[1], fields[2], fields[3], fields[4]);
         dos.close();
