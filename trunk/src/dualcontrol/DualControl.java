@@ -28,7 +28,7 @@ public class DualControl {
     private String keyAlias;
 
     public void init() throws Exception {
-        Map.Entry<String, String> entry = dualEntry();
+        Map.Entry<String, String> entry = DualControls.dualEntry();
         keyAlias = entry.getKey();
         keyPass = entry.getValue().toCharArray();
         logger.debug(String.format("init keyAlias %s, keyPass %s", keyAlias, new String(keyPass)));
@@ -53,65 +53,5 @@ public class DualControl {
         alias += "-" + keyAlias;
         logger.debug(String.format("alias %s, keypass %s", alias, new String(keyPass))); // TODO
         return (SecretKey) keyStore.getKey(alias, keyPass);
-    }
-
-    private Map.Entry<String, String> dualEntry() throws Exception {
-        return dualMap(2).entrySet().iterator().next();
-    }
-
-    public Map<String, String> dualMap(int inputCount) throws Exception {
-        Map<String, String> map = new TreeMap();
-        Map<String, String> inputs = inputMap(inputCount);
-        for (String name : inputs.keySet()) {
-            for (String otherName : inputs.keySet()) {
-                if (name.compareTo(otherName) < 0) {
-                    map.put(String.format("%s-%s", name, otherName),
-                            String.format("%s-%s", inputs.get(name), inputs.get(otherName)));
-                }
-            }
-        }
-        return map;
-    }
-
-    private static Map<String, String> inputMap(int inputCount) throws Exception {
-        Map<String, String> map = new TreeMap();
-        for (byte[] bytes : readInputs(inputCount)) {
-            String string = new String(bytes).trim();
-            String[] array = string.split(":");
-            map.put(array[0], array[1]);
-            logger.debug("input " + array[0]);
-        }
-        return map;
-    }
-
-    private static List<byte[]> readInputs(int inputCount) throws Exception {
-        logger.info("waiting for info on SSL port " + PORT);
-        return readInputs(DualControlContext.createSSLContext().getServerSocketFactory().
-                createServerSocket(PORT), inputCount);
-    }
-
-    private static List<byte[]> readInputs(ServerSocket serverSocket, int inputCount) throws Exception {
-        List<byte[]> list = new ArrayList();
-        for (int i = 0; i < inputCount; i++) {
-            Socket socket = serverSocket.accept();
-            if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                throw new RuntimeException();
-            }
-            list.add(readBytes(socket.getInputStream()));
-            socket.close();
-        }
-        serverSocket.close();
-        return list;
-    }
-
-    public static byte[] readBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while (true) {
-            int b = inputStream.read();
-            if (b < 0) {
-                return baos.toByteArray();
-            }
-            baos.write(b);
-        }
     }
 }
