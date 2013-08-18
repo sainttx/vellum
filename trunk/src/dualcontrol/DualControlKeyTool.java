@@ -15,6 +15,7 @@ import sun.security.tools.KeyTool;
 public class DualControlKeyTool extends DualControl {    
     private final static Logger logger = Logger.getLogger(DualControlKeyTool.class);
     private static String aliasPrefix = System.getProperty("dualcontrol.alias");
+    private static int inputCount = Integer.getInteger("dualcontrol.inputs", 3);
     String[] args; 
     
     public static void main(String[] args) throws Exception {        
@@ -23,7 +24,7 @@ public class DualControlKeyTool extends DualControl {
     
     void start(String[] args) throws Exception {
         this.args = args;
-        Map<String, String> dualMap = new DualControl().dualMap(Integer.getInteger("dualcontrol.inputs", 3));
+        Map<String, String> dualMap = new DualControl().dualMap(inputCount);
         for (String alias : dualMap.keySet()) {
             keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
         }
