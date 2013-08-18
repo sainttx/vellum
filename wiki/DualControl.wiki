@@ -64,7 +64,7 @@ where `DualControlReader` provides a map of multiple key aliases and their secre
 
 where we add `alias` and `keypass` arguments, and otherwise pass through the command-line arguments as-is to `KeyTool`
 
-For each combination of two admins, we combine their two usernames into a "dual-alias," and similary, the secrets into a "dual-key-password."
+For each combination of two admins, we combine their two usernames into a "dual-alias," and similary, their secrets into a "dual-key-password."
 
 === Demo ===
 
