@@ -3,20 +3,17 @@ package dualcontrol;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.Arrays;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author evans
  */
 public class CryptoClientDemo {
-    private static Logger logger = Logger.getLogger(CryptoClientDemo.class);
 
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {
-            System.err.println("usage: hostAddress port text");
+            System.err.println("CryptoClientDemo usage: hostAddress port text");
         } else {
             new CryptoClientDemo().run(args[0], Integer.parseInt(args[1]), args[2].getBytes());
         }
@@ -34,7 +31,11 @@ public class CryptoClientDemo {
         dis.readFully(ivBytes);
         byte[] bytes = new byte[dis.readShort()];
         dis.readFully(bytes);
-        System.out.printf("%s:%s\n", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));
+        if (new String(data).contains("DECRYPT")) {
+            System.err.printf("CryptoClientDemo decrypted %s\n", new String(bytes)); 
+        } else {
+            System.out.printf("%s:%s\n", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));            
+        }
         socket.close();
     }
 }
