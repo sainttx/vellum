@@ -47,22 +47,22 @@ public class CryptoHandler {
         if (mode.equals("DECRYPT")) {
             this.ivBytes = Base64.decodeBase64(ivString);
             logger.debug("iv " + Base64.encodeBase64String(ivBytes));
-            IvParameterSpec iv = new IvParameterSpec(ivBytes);
-            cipher.init(Cipher.DECRYPT_MODE, key, iv);
+            IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+            cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
             this.dataBytes = cipher.doFinal(Base64.decodeBase64(dataString));
             write(ivBytes, dataBytes);
         } else if (mode.equals("ENCRYPT")) {
             this.ivBytes = getIvBytes(ivString);
             logger.debug("iv " + Base64.encodeBase64String(ivBytes));
-            IvParameterSpec iv = new IvParameterSpec(ivBytes);
-            cipher.init(Cipher.ENCRYPT_MODE, key, iv);    
+            IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+            cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);    
             this.dataBytes = cipher.doFinal(dataString.getBytes());
             write(ivBytes, dataBytes);
         }
     }
     
     private byte[] getIvBytes(String ivString) {
-        if (ivString.length() < 3) {
+        if (ivString.length() > 2) {
             return Base64.decodeBase64(ivString);
         } 
         int ivLength = Integer.parseInt(ivString);
@@ -74,7 +74,7 @@ public class CryptoHandler {
     private void write(byte[] ivBytes, byte[] bytes) throws Exception {
         dos.writeShort(ivBytes.length);
         dos.write(ivBytes);
-        dos.writeShort(bytes.length);
+            dos.writeShort(bytes.length);
         dos.write(bytes);
     }    
 }
