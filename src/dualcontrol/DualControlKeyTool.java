@@ -24,7 +24,7 @@ public class DualControlKeyTool extends DualControl {
     
     void start(String[] args) throws Exception {
         this.args = args;
-        Map<String, String> dualMap = DualControls.dualMap(inputCount);
+        Map<String, String> dualMap = DualControlReader.readDualMap(inputCount);
         for (String alias : dualMap.keySet()) {
             keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
         }

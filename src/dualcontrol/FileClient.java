@@ -12,7 +12,7 @@ public class FileClient {
     public static byte[] read(String hostAddress, int port) throws Exception {
         Socket socket = DualControlContext.createSSLContext().getSocketFactory().
                 createSocket(hostAddress, port);
-        byte[] bytes = DualControls.readBytes(socket.getInputStream());
+        byte[] bytes = DualControlReader.readBytes(socket.getInputStream());
         socket.close();
         return bytes;
     }    

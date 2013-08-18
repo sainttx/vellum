@@ -15,19 +15,19 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public class DualControls {
-    private final static Logger logger = Logger.getLogger(DualControls.class);
+public class DualControlReader {
+    private final static Logger logger = Logger.getLogger(DualControlReader.class);
     
     private final static int PORT = 4444;
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     
-    static Map.Entry<String, String> dualEntry() throws Exception {
-        return dualMap(2).entrySet().iterator().next();
+    static Map.Entry<String, String> readDualEntry() throws Exception {
+        return readDualMap(2).entrySet().iterator().next();
     }
 
-    public static Map<String, String> dualMap(int inputCount) throws Exception {
+    public static Map<String, String> readDualMap(int inputCount) throws Exception {
         Map<String, String> map = new TreeMap();
-        Map<String, String> inputs = inputMap(inputCount);
+        Map<String, String> inputs = readInputMap(inputCount);
         for (String name : inputs.keySet()) {
             for (String otherName : inputs.keySet()) {
                 if (name.compareTo(otherName) < 0) {
@@ -39,7 +39,7 @@ public class DualControls {
         return map;
     }
 
-    static Map<String, String> inputMap(int inputCount) throws Exception {
+    static Map<String, String> readInputMap(int inputCount) throws Exception {
         Map<String, String> map = new TreeMap();
         for (byte[] bytes : readInputs(inputCount)) {
             String string = new String(bytes).trim();
