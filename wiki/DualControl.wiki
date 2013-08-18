@@ -55,7 +55,7 @@ for storing the keystore remotely and loading via SSL
 
 == !FileClientDemo == 
 
-example loading remote KeyStore from <tt>!FileServer</tt>
+example loading remote <tt>!KeyStore</tt> from <tt>!FileServer</tt>
 
 <pre>
 </pre>
