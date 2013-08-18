@@ -11,7 +11,7 @@ https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol
 
 it's 20 odd lines of util code in DualControl that enables it - these are used by <tt>!DualControlKeyTool</tt> invocator (of KeyTool, to effectively add dual control to keytool in terms of combinations of key passwords), and of course by our application to get two admins to provide together a key password which can be used to load DEK from java keystore
 
-rather than using HTTPS, i just using raw SSL sockets e.g. there is DualControlClient which is just minimal SSL client socket for sending username and password to <tt>!DualControlKeyTool</tt>, or our application, or <tt>!CryptoServer</tt> - a remote key management server !
+rather than using HTTPS, i just using raw SSL sockets e.g. there is <tt>!DualControlClient</tt> which is just minimal SSL client socket for sending username and password to <tt>!DualControlKeyTool</tt>, or our application, or <tt>!CryptoServer</tt> - a remote key management server !
 
 the DEK-containing keystore can be on the app server, or on a crypto server running on different VM e.g. outside DMZ), and in fact the keystore can be trivially loaded remotely via SSL into the app, or the remote crypto server 
 
