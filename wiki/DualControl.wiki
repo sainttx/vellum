@@ -72,6 +72,7 @@ here test script which simulates the key gen using 3 admins submitting their "ha
 this script also exercises <tt>!AppDemo</tt> (requiring dual control of two admins when starting), FileServer/FileClient (for remote keystore loading), and <tt>!CryptoServer</tt> which does remote ciphering, and requires dual control to start as well of course :)
 
 {{{
+
 set -u
 
 set -x
@@ -208,5 +209,13 @@ command0_client
 
 and here output from the above script just to prove it does work ;)
 
-<pre>
-</pre>
+{{{
+}}}
+
+== Conclusion ==
+
+We consider both symmetric and asymmetric ciphers by way of implementing a trivial client and server that mimic how SSL might work. The client uses the server's public key to asymmetrically encrypt and transfer a secret key, which is then used by both sides to encrypt messages using a symmetric cipher. 
+
+== Resources ==
+
+You can browse the code for this exercise at [http://code.google.com/p/vellum/source/browse/#svn/trunk/src/vellumdemo/cryptonomicaldemo here].
