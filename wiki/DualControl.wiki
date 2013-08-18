@@ -71,8 +71,8 @@ For each combination of two admins, we combine their two usernames into a "dual-
 Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments 
 
 {{{
-  javaks -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
-     -alias powerstate2013 -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
+  javaks -Ddualcontrol.alias=powerstate2013 -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
+     -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
 }}}
 
 where we use a `JCEKS`-type keystore for a secret key e.g. triple-DES in this case, and "powerstate2013" is our desired alias.  
