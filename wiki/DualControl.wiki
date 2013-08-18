@@ -1,5 +1,7 @@
 
-= DualControl =
+= Dual Control =
+
+Keywords: Dual Control, Split Knowledge, Key Management, Encryption, PCI
 
 == Introduction ==
 
