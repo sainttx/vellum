@@ -47,7 +47,7 @@ public class DualControlKeyTool {
     }
 }}}
 
-where this class will invoke <tt>keyTool()</tt> in a loop of some nature. 
+where this class will invoke the JDK's <tt>KeyTool</tt>, in a loop of some nature. 
 
 {{{
     public void keyTool(String alias, String keypass) throws Exception {
