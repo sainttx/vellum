@@ -25,7 +25,7 @@ But then our application can't access them either. <i>D'oh!</i> Actually, we can
 
 == `DualControlKeyTool` ==
 
-Step 1 for any data security procedure is to generate an encryption key, which ideally no single rogue user can access, even with root. For this purpose, their shall be `DualControlKeyTool`, as follows.
+Step 1 for any data security procedure is to generate an encryption key, which ideally no single rogue user can access, even with "root" priviledges. For this purpose, their shall be `DualControlKeyTool`, as follows.
 
 {{{
 public class DualControlKeyTool {
