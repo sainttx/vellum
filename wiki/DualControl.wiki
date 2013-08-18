@@ -68,6 +68,8 @@ For each combination of two admins, we combine their two usernames into a "dual-
 
 === Demo ===
 
+Let's test `DualControlKeyTool` from the command-line, using <tt>keytool</tt> arguments 
+
 {{{
   javaks -Ddualcontrol.inputs=3 dualcontrol.DualControlKeyTool \
      -alias powerstate2013 -storetype JCEKS -storepass $pass -genseckey -keyalg DESede
