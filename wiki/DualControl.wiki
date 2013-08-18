@@ -77,7 +77,7 @@ Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments
 
 where we use a `JCEKS`-type keystore for a secret key e.g. for triple-DES or AES symmetric encryption, and "powerstate2013" is our desired alias to reference this key.  
 
-When three admins have submitted their passwords, e.g. claiming to be "evanx," "henty" and "brand," we see that `DualControlKeyTool` invokes `KeyTool` thrice with the following differentiated aliases.
+When three admins e.g. claiming to be "evanx," "henty" and "brand," have submitted their passwords via SSL, we see that `DualControlKeyTool` invokes `KeyTool` thrice with the following differentiated aliases.
 
 {{{
 DEBUG keyTool alias powerstate2013-brand-evanx
