@@ -34,9 +34,7 @@ public class CryptoClientDemo {
         dis.readFully(ivBytes);
         byte[] bytes = new byte[dis.readShort()];
         dis.readFully(bytes);
-        if (new String(data).contains("ENCRYPT")) {
-            System.out.printf("%s:%s", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));
-        }
+        System.out.printf("%s:%s\n", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));
         socket.close();
     }
 }
