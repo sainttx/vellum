@@ -23,7 +23,7 @@ Actually, we'll implement the crypto server next week or so, in part 2.
 
 == `DualControlKeyTool` ==
 
-Step 1 for any data security operation is to generate some master key such that no single root can access. For this purpose, their shall be <tt>!DualControlKeyTool</tt>, as follows.
+Step 1 for any organisation's data security operation is to generate some master key such that no single root can access. For this purpose, their shall be <tt>!DualControlKeyTool</tt>, as follows.
 
 {{{
 public class DualControlKeyTool {    
