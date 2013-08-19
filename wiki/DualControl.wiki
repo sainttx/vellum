@@ -198,7 +198,7 @@ In order to supporting loading the key store either off the file system, or from
     }
 }}}
 
-where if the keystore name is delimited with a colon e.g. `localhost:4446`, then we will load the keystore via SSL e.g. to satisfy some PCI requirement regarding storing keys on our secure network and not in the same place as the data that these keys are used to encrypt.
+where if the keystore "path" is delimited with a colon e.g. `localhost:4446`, then we will interpret this a remote hostname and port, rather than a local file path, e.g. to satisfy some PCI requirement regarding storing keys on our secure internal network i.e. not in our DMZ, and not on the same server as the data that these keys are used to encrypt.
 
 For remote storage of the keystore e.g. , we implement a trival file server as follows.
 
