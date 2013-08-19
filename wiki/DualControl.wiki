@@ -135,6 +135,11 @@ A known "bug" is that more Godly sysadmins can socially-engineer other less Godl
 
 The workaround for above "bugs," in plain management-speak, is that our "controls" as per our "policies and procedures" should prevent or at least detect such attacks, and we take all necessary measures to mitigate associated risks, <i>blah blah</i>.
 
+== `DualControlKeyStores` ==
+
+{{{
+}}}
+
 == `DualControlReader` ==
 
 Our `DualControlReader` utility class handles reading split knowledge submissions.
@@ -143,6 +148,7 @@ Our `DualControlReader` utility class handles reading split knowledge submission
 public class DualControlReader {
     ...
     public Map<String, char[]> readDualMap(int submissionCount) throws Exception {
+        logger.info("Waiting for submissions on SSL port " + PORT);
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
