@@ -120,7 +120,7 @@ public abstract class DualControlClient {
     }
 }
 }}}
-where we format the username and their plain-text password into a string, and send those bytes out the SSL socket to our supposed dual-controlled app listening on port 4444. 
+where we format the username and their plain-text password into a string, and send those bytes out the SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`. 
 
 A known bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port! Another bug is the creation of ghost admins, and yet another is the impersonation of other admins e.g. during a key generation procedure. 
 
@@ -193,7 +193,7 @@ which reads a `List` of submissions from admins as below, and then extracts the 
     }
 }}}
 
-where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`. Note that we have hard-wired this to `localhost` i.e. via local `ssh` sessions.
+where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`. Note that we have hard-wired this to `localhost` i.e. via the loopback interface, e.g. `DualControlClient` invoked in local `ssh` sessions.
 
 Note that we 
 
