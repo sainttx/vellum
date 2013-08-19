@@ -49,7 +49,7 @@ javaks() {
 }
 
 jc() {
-  javaks dualcontrol.DualControlClient "$1"
+  javaks dualcontrol.DualControlClientDummy "$1"
 }
 
 jc2() {
@@ -85,7 +85,7 @@ initks() {
 
 command1_genseckey() {
   javaks -Ddualcontrol.alias=$1 -Ddualcontrol.submissions=3 dualcontrol.DualControlKeyTool \
-     -keystore $secstore -storetype JCEKS -storepass $pass -genseckey -keyalg DESede -keysize 128
+     -keystore $secstore -storetype JCEKS -storepass $pass -genseckey -keyalg DESede -keysize 168
   keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
@@ -169,11 +169,11 @@ command0_testgenseckey() {
   fi
 }
 
-command0_client() {
+command0_testclient() {
   javaks dualcontrol.DualControlClient
 }
 
-command1_longtest() {
+command1_testlong() {
   command0_testgenseckey
   command0_testkeystoreserver
   command1_testcryptoserver 1
@@ -181,8 +181,8 @@ command1_longtest() {
   command1_testcryptoserver 1
 }
 
-command0_longtest() {
-  command1_longtest 100
+command0_testlong() {
+  command1_testlong 100
 }
 
 command0_testcryptoserver() {
@@ -191,23 +191,23 @@ command0_testcryptoserver() {
   command1_testcryptoserver 1
 }
 
-command0_shorttest() {
+command0_testshort() {
   command0_testgenseckey
   command0_testkeystoreserver
   command0_testcryptoserver
 }
 
-command0_singletest() {
+command0_testsingle() {
   command0_testgenseckey
   command0_testkeystoreserver
   command1_testcryptoserver 1
 }
 
-#command0_singletest
-#command0_shorttest
-#command0_longtest
+#command0_testsingle
+#command0_testshort
+#command0_testlong
 #command0_testcryptoserver
-#command0_client
+#command0_testclient
 
 if [ $# -gt 0 ]
 then
@@ -215,7 +215,7 @@ then
   shift
   command$#_$command $@
 else
-  command0_shorttest
+  command0_testshort
 fi
 
 #sh NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh 2>&1 | grep -i '^WARN\|ERROR\|^INFO' | uniq -c
