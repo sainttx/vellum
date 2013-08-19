@@ -1,16 +1,15 @@
 package dualcontrol;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.CharBuffer;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 import org.apache.log4j.Logger;
+import sun.security.x509.X500Name;
 
 /**
  *
@@ -46,42 +45,42 @@ public class DualControlReader {
     }
 
     Map<String, char[]> readMap() throws Exception {
+        logger.info("Waiting for submissions on SSL port " + PORT);
         Map<String, char[]> map = new TreeMap();
-        for (byte[] bytes : readList()) {
-            String string = new String(bytes).trim();
-            String[] array = string.split(":");
-            map.put(array[0], array[1].toCharArray());
-            logger.debug("readMap " + array[0]);
-        }
-        return map;
-    }
-
-    List<byte[]> readList() throws Exception {
-        logger.info("waiting for submissions on SSL port " + PORT);
-        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
+        SSLServerSocket serverSocket = (SSLServerSocket) DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
-        List<byte[]> list = new ArrayList();
+        serverSocket.setNeedClientAuth(true);
         for (int i = 0; i < submissionCount; i++) {
-            Socket socket = serverSocket.accept();
+            SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
                 throw new RuntimeException();
             }
-            list.add(readBytes(socket.getInputStream()));
+            String username = new X500Name(socket.getSession().getPeerPrincipal().
+                    getName()).getCommonName();
+            char[] chars = readChars(socket.getInputStream(), 64);
+            if (true) { // TODO remove
+                String[] fields = new String(chars).split(":");
+                if (fields.length > 1) {
+                    username = fields[0];
+                    chars = fields[0].toCharArray();
+                }
+            }
+            map.put(username, chars);
             socket.close();
         }
         serverSocket.close();
-        return list;
+        return map;
     }
 
-    public static byte[] readBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public static char[] readChars(InputStream inputStream, int capacity) throws IOException {
+        CharBuffer buffer = CharBuffer.allocate(capacity);
         while (true) {
             int b = inputStream.read();
             if (b < 0) {
-                return baos.toByteArray();
+                return buffer.array();
             }
-            baos.write(b);
+            buffer.append((char) b);
         }
-    }
+    }   
 }
