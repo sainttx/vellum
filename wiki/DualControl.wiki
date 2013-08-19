@@ -202,7 +202,7 @@ In order to load a key store either off the local file system, or alternatively 
 
 where if the key store "path" is delimited with a colon e.g. "192.168.10.181:4446," then we will interpret this a remote host address and port, rather than a local file path. 
 
-This trick might satisfy the PCI requirement to store such keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted i.e. so the proverbial door key is not left under the mat, so to speak.
+This trick might satisfy the PCI requirement to store such keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted i.e. so the door key is not left under the mat, so to speak.
 
 We implement a trival key store file server as follows.
 
