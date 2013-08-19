@@ -3,6 +3,7 @@ package dualcontrol;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class DualControlReader {
     private final static Logger logger = Logger.getLogger(DualControlReader.class);
     
     private final static int PORT = 4444;
+    private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     
     int submissionCount;
@@ -55,9 +57,10 @@ public class DualControlReader {
     }
 
     List<byte[]> readList() throws Exception {
-        logger.info("waiting for info on SSL port " + PORT);
-        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(PORT);
+        logger.info("waiting for submissions on SSL port " + PORT);
+        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
+                getServerSocketFactory().createServerSocket(PORT, submissionCount, 
+                InetAddress.getByName(LOCAL_ADDRESS));
         List<byte[]> list = new ArrayList();
         for (int i = 0; i < submissionCount; i++) {
             Socket socket = serverSocket.accept();
