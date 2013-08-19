@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public abstract class DualControlClient {
+public class DualControlClient {
     final static Logger logger = Logger.getLogger(DualControlClient.class);
     final static int PORT = 4444;
     final static String HOST = "127.0.0.1";
@@ -21,8 +21,8 @@ public abstract class DualControlClient {
         byte[] bytes = getBytes(passwd);
         Arrays.fill(passwd, (char) 0);
         socket.getOutputStream().write(bytes);
-        socket.close();
         Arrays.fill(bytes, (byte) 0);
+        socket.close();
     }
         
     public static byte[] getBytes(char[] chars) {

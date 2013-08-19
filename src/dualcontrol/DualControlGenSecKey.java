@@ -47,6 +47,7 @@ public class DualControlGenSecKey {
             char[] dualPassword = dualMap.get(dualAlias);
             KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(dualPassword);
             String alias = String.format("%s-%s", keyAlias, dualAlias);
+System.err.printf("DualControlGenSecKey %s %s\n", alias, new String(dualPassword));
             keyStore.setEntry(alias, entry, prot);
         }
         keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);

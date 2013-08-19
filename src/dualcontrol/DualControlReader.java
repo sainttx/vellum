@@ -2,8 +2,11 @@ package dualcontrol;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.String;
 import java.net.InetAddress;
 import java.nio.CharBuffer;
+import java.nio.CharBuffer;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.net.ssl.SSLServerSocket;
@@ -36,14 +39,20 @@ public class DualControlReader {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     map.put(String.format("%s-%s", name, otherName),
-                            String.format("%s-%s", submissions.get(name), 
-                            submissions.get(otherName)).toCharArray());
+                            combineDualPassword(submissions.get(name), submissions.get(otherName)));
                 }
             }
         }
         return map;
     }
 
+    static char[] combineDualPassword(char[] password, char[] other) {
+        CharBuffer buffer = CharBuffer.allocate(password.length + other.length);
+        buffer.put(password);
+        buffer.put(other);
+        return buffer.array();
+    }
+    
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
         Map<String, char[]> map = new TreeMap();

@@ -4,7 +4,6 @@ import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Map;
 import javax.crypto.SecretKey;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -12,15 +11,17 @@ import org.apache.log4j.Logger;
  */
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStorePath, char[] storePass, String alias) 
+    public static SecretKey loadKey(String keyStorePath, char[] keyStorePass, String alias) 
             throws Exception {
         char[] dualPass = null;
         try {
-            KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
+            KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, keyStorePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry();
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
-            return (SecretKey) dualKeyStore.getKey(alias + "-" + dualAlias, dualPass);
+            alias = alias + "-" + dualAlias;
+            System.err.println("DualControlSessions " + alias);
+            return (SecretKey) dualKeyStore.getKey(alias, dualPass);
         } finally {
             if (dualPass != null) {
                 Arrays.fill(dualPass, (char) 0);            

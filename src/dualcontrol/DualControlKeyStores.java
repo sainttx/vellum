@@ -1,6 +1,7 @@
 
 package dualcontrol;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -55,8 +56,12 @@ public class DualControlKeyStores {
                 createSocket(array[0], Integer.parseInt(array[1]));
             keyStore.load(socket.getInputStream(), storePass);
             socket.close();
+        } else if (new File(keyStorePath).exists()) {
+            FileInputStream fis = new FileInputStream(keyStorePath);
+            keyStore.load(fis, storePass);
+            fis.close();
         } else {
-            keyStore.load(new FileInputStream(keyStorePath), storePass);
+            keyStore.load(null, storePass);            
         }
         return keyStore;
     }
