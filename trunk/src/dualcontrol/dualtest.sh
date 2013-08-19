@@ -114,7 +114,7 @@ command0_initks() {
 command1_genseckey() {
   javaks server -Ddualcontrol.submissions=3 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
-     -Dalias=$1 -Dkeyalg=AES -Dkeysize=256 \
+     -Dalias=$1 -Dkeyalg=AES -Dkeysize=128 \
      dualcontrol.DualControlGenSecKey
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
 }
