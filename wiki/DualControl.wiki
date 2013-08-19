@@ -197,8 +197,6 @@ which reads a `List` of submissions from admins as below, and then extracts the 
 
 where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`. Note that we have hard-wired this to `localhost` i.e. via the loopback interface, e.g. `DualControlClient` invoked in local `ssh` sessions.
 
-Note that we 
-
 == `DualControlSessions` == 
 
 We re-engineer our application to similarly get a dual-password, in order to load the key.
