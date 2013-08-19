@@ -159,7 +159,7 @@ public class DualControlKeyStores {
     ...
 }}}
 
-where we create an `SSLContext` using those settings, as follows.
+where we create an `SSLContext` using these settings, as follows.
 
 {{{
     public static SSLContext createSSLContext(String keyStorePath, 
