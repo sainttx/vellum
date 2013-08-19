@@ -9,7 +9,7 @@ Keywords: Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
 
 Encryption is great for information security and all that. But the problem with encryption is... secure key management. An analogy often bandied about is that we lock our doors but leave the key in the lock. <i>Or in the pot plant under a stone, but that's my personal favourite so ssh-ssh.</i>
 
-<img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250.png">
+<img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 So the Payment Card industry (PCI) has their "Data Storage Standard" called "PCI DSS," which has general best practices that every industry should follow, actually. It's the only and best thing we got :)
 
