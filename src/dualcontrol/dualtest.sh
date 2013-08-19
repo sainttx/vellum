@@ -26,16 +26,21 @@ echo CLASSPATH=$CLASSPATH
 
 set -x
 
-secstore=~/tmp/dual.sec.jceks
-secalias=powerstate-2013
-privatestore=~/tmp/dual.private.jks
-truststore=~/tmp/dual.public.jks
-cert=~/tmp/dual.pem
+tmp=~/tmp/`basename $0`
+mkdir -p $tmp
+
+seckeystore=$tmp/seckeystore.jceks
+privatekeystore=$tmp/server.jks
+truststore=$tmp/truststore.jks
+cert=$tmp/dual.pem
 pass=test1234
+secalias=powerstate-2013
 
 javaks() {
+  keystore=$tmp/test.$1.jks
+  shift
   java \
-    -Ddualcontrol.ssl.keyStore=$privatestore \
+    -Ddualcontrol.ssl.keyStore=$keystore \
     -Ddualcontrol.ssl.keyStorePassword=$pass \
     -Ddualcontrol.ssl.keyPassword=$pass \
     -Ddualcontrol.ssl.trustStore=$truststore \
@@ -44,62 +49,78 @@ javaks() {
   exitCode=$?
   if [ $exitCode -ne 0 ]
   then
-    echo WARN javaks exitCode $exitCode $@
+    echo WARN javaks $keystore exitCode $exitCode $@
   fi
 }
 
 jc() {
-  javaks dualcontrol.DualControlClientDummy "$1"
+  javaks $tmp/$1.jks dualcontrol.DualControlClientDummy "$2"
 }
 
 jc2() {
     sleep 1 
-    jc "evanx:eeee" 
-    jc "henty:hhhh"
+    jc evanx eeee
+    jc henty hhhh
 }
 
 jc3() {
     sleep 1 
-    jc "evanx:eeee" 
-    jc "henty:hhhh"
-    jc "brand:bbbb"
+    jc evanx eeee
+    jc henty hhhh
+    jc brand bbbb
+}
+
+keytool1() {
+  keystore=$tmp/$1.jks
+  alias=$1
+  rm -f $keystore
+  keytool -keystore $keystore -storepass "$pass" -keypass "$pass" -alias $alias \
+     -genkeypair -dname "CN=$alias, OU=test, O=test, L=ct, S=wp, C=za"
+  keytool -keystore $keystore -storepass "$pass" -alias $alias \
+     -exportcert -rfc | openssl x509 -text | grep "Subject:"
+  keytool -keystore $privatekeystore -storepass "$pass" -alias $alias \
+     -exportcert -rfc > $cert
+  keytool -keystore $truststore -storepass "$pass" -alias $alias \
+     -importcert -noprompt -file $cert
 }
 
 initks() {
   serveralias="dualcontrol"
   dname="CN=dualcontrol, OU=test, O=test, L=ct, S=wp, C=za"
-  rm -f $privatestore
-  rm -f $truststore
-  rm -f $secstore
-  keytool -keystore $privatestore -storepass "$pass" -keypass "$pass" \
+  rm -f $seckeystore
+  rm -f $privatekeystore
+  keytool -keystore $privatekeystore -storepass "$pass" -keypass "$pass" \
      -alias "$serveralias" -genkeypair -dname "$dname"
-  keytool -keystore $privatestore -storepass "$pass" -list | grep Entry
-  keytool -keystore $privatestore -storepass "$pass" -alias $serveralias \
+  keytool -keystore $privatekeystore -storepass "$pass" -list | grep Entry
+  keytool -keystore $privatekeystore -storepass "$pass" -alias $serveralias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
-  keytool -keystore $privatestore -storepass "$pass" -alias $serveralias \
+  keytool -keystore $privatekeystore -storepass "$pass" -alias $serveralias \
      -exportcert -rfc > $cert
   keytool -keystore $truststore -storepass "$pass" -alias $serveralias \
      -importcert -noprompt -file $cert
   keytool -keystore $truststore -storepass "$pass" -list | grep Entry
+  keytool1 evanx
+  keytool1 henty
+  keytool1 brand
 }
 
 command1_genseckey() {
-  javaks -Ddualcontrol.alias=$1 -Ddualcontrol.submissions=3 dualcontrol.DualControlKeyTool \
-     -keystore $secstore -storetype JCEKS -storepass $pass -genseckey -keyalg DESede -keysize 168
-  keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
+  javaks server -Ddualcontrol.alias=$1 -Ddualcontrol.submissions=3 dualcontrol.DualControlKeyTool \
+     -keystore $seckeystore -storetype JCEKS -storepass $pass -genseckey -keyalg DESede -keysize 168
+  keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
 command0_app() {
-  javaks -Ddualcontrol.submissions=2 dualcontrol.AppDemo $secstore $pass $secalias
+  javaks server -Ddualcontrol.submissions=2 dualcontrol.AppDemo $seckeystore $pass $secalias
 }
 
 command0_keystoreserver() {
-  javaks dualcontrol.FileServer 127.0.0.1 4445 1 1 127.0.0.1 $secstore
+  javaks server dualcontrol.FileServer 127.0.0.1 4445 1 1 127.0.0.1 $seckeystore
 }
 
 keystoreclient() {
   sleep 1
-  javaks dualcontrol.FileClientDemo 127.0.0.1 4445
+  javaks server dualcontrol.FileClientDemo 127.0.0.1 4445
 }
 
 command0_testkeystoreserver() {
@@ -108,16 +129,16 @@ command0_testkeystoreserver() {
 }
 
 command0_cryptoserver() {
-  javaks dualcontrol.CryptoServer 127.0.0.1 4446 4 2 127.0.0.1 $secstore $pass
+  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 2 127.0.0.1 $seckeystore $pass
 }
 
 command1_cryptoserver_remote() {
   echo "cryptoserver_remote $1"
-  javaks dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:secstore:" $pass
+  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:seckeystore:" $pass
 }
 
 cryptoclient_cipher() {
-  data=`javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
+  data=`javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
      "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:1111222233334444"`
   exitCode=$?  
   echo "CryptoClientDemo ENCRYPT exitCode $exitCode"
@@ -125,7 +146,7 @@ cryptoclient_cipher() {
   then 
     echo "ERROR CryptoClientDemo ENCRYPT exitCode $exitCode"
   else 
-    javaks dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
+    javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
        "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
     exitCode=$? 
     if [ $exitCode -ne 0 ]
@@ -139,8 +160,8 @@ cryptoclient_cipher() {
 
 cryptoclient1() {
   sleep 1
-  jc "evanx:eeee" 
-  jc "henty:hhhh"
+  jc evanx eeee
+  jc henty hhhh
   sleep 1
   for iter in `seq $1`
   do
@@ -170,7 +191,7 @@ command0_testgenseckey() {
 }
 
 command0_testclient() {
-  javaks dualcontrol.DualControlClient
+  javaks evanx dualcontrol.DualControlClient
 }
 
 command1_testlong() {
