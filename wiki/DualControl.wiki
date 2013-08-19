@@ -242,7 +242,7 @@ One might wish to create a central crypto server which is dualled-controlled, ra
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-We'll implement the crypto server in part 2. So we can say, "We have an app for that." ;)
+We'll implement the crypto server in part 2. So we can say, "Dual control? We have an app for that." ;)
 
 == Conclusion ==
 
