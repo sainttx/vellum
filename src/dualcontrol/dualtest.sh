@@ -36,7 +36,7 @@ privatekeystore=$tmp/server.jks
 truststore=$tmp/truststore.jks
 cert=$tmp/dual.pem
 pass=test1234
-secalias=powerstate-2013
+secalias=dek2013
 
 javaks() {
   keystore=$tmp/$1.jks
@@ -52,6 +52,7 @@ javaks() {
   if [ $exitCode -ne 0 ]
   then
     echo WARN javaks $keystore exitCode $exitCode $@
+    exit 1
   fi
 }
 
@@ -68,7 +69,6 @@ jc2() {
 jc3() {
     sleep 1 
     jc evanx eeee
-exit 1
     jc henty hhhh
     jc brand bbbb
 }

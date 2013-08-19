@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public abstract class DualControlClientDummy {
-    final static Logger logger = Logger.getLogger(DualControlClientDummy.class);
+public abstract class DummyDualControlClient {
+    final static Logger logger = Logger.getLogger(DummyDualControlClient.class);
     final static int PORT = 4444;
     final static String HOST = "127.0.0.1";
 
