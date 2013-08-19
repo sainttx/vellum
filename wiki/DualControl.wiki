@@ -86,7 +86,7 @@ DEBUG keyTool alias powerstate2013-brand-henty
 DEBUG keyTool alias powerstate2013-evanx-henty
 }}}
 
-Low and behalved, these keys do seem to be have been created.
+Low and behold, these keys do seem to be have been created.
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
