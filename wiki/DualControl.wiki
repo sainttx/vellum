@@ -137,7 +137,7 @@ The workaround for above "bugs," in plain management-speak, is that our "control
 
 == `DualControlKeyStores` ==
 
-We will use `-Ddualcontrol.ssl` command-line options to configure the keystore and truststore to use for SSL Socket connections. 
+Similarly to the standard `-Dnet.javax.ssl.*` command-line options that can be used to specify the default keystore and truststore for SSL sockets, we use `-Ddualcontrol.ssl.keyStore` et al, as follows.
  
 {{{
 public class DualControlKeyStores {    
