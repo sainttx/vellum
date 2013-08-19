@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.lang.String;
 import java.net.InetAddress;
 import java.nio.CharBuffer;
-import java.nio.CharBuffer;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.net.ssl.SSLServerSocket;
@@ -38,8 +36,10 @@ public class DualControlReader {
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
-                    map.put(String.format("%s-%s", name, otherName),
-                            combineDualPassword(submissions.get(name), submissions.get(otherName)));
+                    String dualAlias = String.format("%s-%s", name, otherName);
+                    char[] dualPassword = combineDualPassword(submissions.get(name), submissions.get(otherName));
+System.err.printf("readDualMap %s %s\n", dualAlias, new String(dualPassword));
+                    map.put(dualAlias, dualPassword);
                 }
             }
         }
