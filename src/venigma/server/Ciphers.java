@@ -34,8 +34,8 @@ public class Ciphers {
         return key;
     }
         
-    public static void generateAESKey(KeyStore keyStore, String keyAlias, char[] secretKeyPassword, 
-            int keySize, SecureRandom sr) throws Exception {
+    public static void generateAESKey(KeyStore keyStore, String keyAlias, 
+            char[] secretKeyPassword, int keySize, SecureRandom sr) throws Exception {
         KeyGenerator aes = KeyGenerator.getInstance("AES");
         aes.init(keySize, sr);
         SecretKey key = aes.generateKey();
