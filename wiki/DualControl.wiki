@@ -1,5 +1,5 @@
 
-= Dual Control =
+= Dual Control Key Tool =
 
 rev 0.1, 2013-08-18
 
