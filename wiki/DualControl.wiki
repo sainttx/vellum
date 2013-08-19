@@ -200,9 +200,9 @@ In order to load a key store either off the local file system, or alternatively 
     }
 }}}
 
-where if the keystore "path" is delimited with a colon e.g. "192.168.10.181:4446," then we will interpret this a remote host address and port, rather than a local file path. This might be in order to satisfy some PCI requirement regarding storing keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted i.e. so the key is not left under the mat, so to speak.
+where if the key store "path" is delimited with a colon e.g. "192.168.10.181:4446," then we will interpret this a remote host address and port, rather than a local file path. This might be in order to satisfy some PCI requirement regarding storing keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted i.e. so the key is not left under the mat, so to speak.
 
-For remote storage of the keystore, we implement a trival file server as follows.
+We implement a trival key store file server as follows.
 
 {{{
 public class FileServer {
