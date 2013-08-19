@@ -242,11 +242,11 @@ One might wish to create a central crypto server which is dualled-controlled, ra
 
 We'll implement the crypto server in part 2. So we can say, "Dual control? We have an app for that." ;)
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 == Conclusion ==
 
 The problem with encryption is secure key management. It's like we lock the door but leave the key under the mat.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 PCI requires that "dual control" and "split knowledge" be used to protect our sensitive data so that no single person can extract it, not even your most trustworthy employee. 
 
