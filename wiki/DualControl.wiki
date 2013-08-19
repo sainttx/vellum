@@ -248,7 +248,7 @@ The problem with encryption is secure key management. It's like we lock the door
 
 PCI requires that "dual control" and "split knowledge" be used to protect our sensitive data so that no single person can extract it, not even your most trustworthy employee. 
 
-<img align="left" style="margin-left: 4px" src="<http://jroller.com/evanx/resource/gnome-keys-250.png" />
+<img align="right" style="margin-left: 4px" src="<http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 Naturally, `keytool` is tailored for a single root admin, rather than "dual-control." 
 
