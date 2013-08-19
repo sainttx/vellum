@@ -3,6 +3,7 @@ package dualcontrol;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.util.Map;
 import javax.crypto.KeyGenerator;
@@ -37,12 +38,14 @@ public class DualControlGenSecKey {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
-        keyStore = DualControlKeyStores.loadKeyStore(keyStorePath, keyStorePassword);
+        //keyStore = DualControlKeyStores.loadKeyStore(keyStorePath, keyStorePassword);
+        keyStore = KeyStore.getInstance("JCEKS");
+        keyStore.load(null, keyStorePassword);                    
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
             if (true) {
-                System.err.printf("DualControlGenSecKey %s %s %s %s\n",
+                System.err.printf("DualControlGenSecKey %s %s %s [%s]\n",
                         new String(keyStorePassword), dualAlias, alias, new String(dualPassword));
             }
             KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(dualPassword);
