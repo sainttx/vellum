@@ -139,7 +139,7 @@ The workaround for above "bugs," in plain management-speak, is that our "control
 
 Similarly to the standard `-Dnet.javax.ssl.*` command-line options that can be used to specify the default "keyStore" and "trustStore" for SSL sockets, we use `-Ddualcontrol.ssl.keyStore` et al, as below. 
 
-Note that the "keyStore" parameter is our "private keystore: contains the private key used for SSL e.g. DSA assymmetric encryption, and should not be confused with our "secret key store" e.g. which contains an AES key for symmetric encryption of our secret data. 
+Note that the "keyStore" parameter is our "private keystore" which contains the private key used for SSL e.g. for DSA assymmetric encryption. This should not be confused with our "secret key store" e.g. which contains an AES key for symmetric encryption of our secret data. 
  
 {{{
 public class DualControlKeyStores {    
@@ -200,7 +200,9 @@ In order to load a key store either off the local file system, or alternatively 
     }
 }}}
 
-where if the key store "path" is delimited with a colon e.g. "192.168.10.181:4446," then we will interpret this a remote host address and port, rather than a local file path. This might be in order to satisfy some PCI requirement regarding storing keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted i.e. so the key is not left under the mat, so to speak.
+where if the key store "path" is delimited with a colon e.g. "192.168.10.181:4446," then we will interpret this a remote host address and port, rather than a local file path. 
+
+This trick might satisfy the PCI requirement to store such keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted i.e. so the proverbial door key is not left under the mat, so to speak.
 
 We implement a trival key store file server as follows.
 
@@ -238,7 +240,7 @@ public class FileServer {
 }
 }}}
 
-where we create an `SSLServerSocket` to which we write the specified file's contents in response to any connection, which is client-authenticated i.e. we trust its cert e.g. that cert is imported into our truststore. 
+where we create an `SSLServerSocket` to which we write the specified file's contents in response to any connection, which is client-authenticated i.e. we trust its cert i.e. that cert is imported into its truststore. 
 
 == `DualControlReader` ==
 
