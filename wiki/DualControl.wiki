@@ -180,7 +180,7 @@ where we create an `SSLContext` using these settings, as follows.
     }
 }}}
 
-For the purpose of loading the key store off the file system, or from a remote server, we provide the following method.
+In order to supporting loading the key store either off the file system, or from a remote SSL socket file server, we provide the following method.
 
 {{{    
     public static KeyStore loadKeyStore(String keyStorePath, char[] storePass) throws Exception {
@@ -196,10 +196,43 @@ For the purpose of loading the key store off the file system, or from a remote s
         }
         return keyStore;
     }
-}
 }}}
 
-where if the keystore name is delimited with a colon e.g. `localhost:4446`, then we will load the key store via SSL e.g. from a more secure server. 
+where if the keystore name is delimited with a colon e.g. `localhost:4446`, then we will load the keystore via SSL e.g. to satisfy some PCI requirement regarding storing keys on our secure network and not in the same place as the data that these keys are used to encrypt.
+
+For remote storage of the keystore e.g. , we implement a trival file server as follows.
+
+{{{
+public class FileServer {
+    
+    public static void main(String[] args) throws Exception {
+        if (args.length != 6) {
+            System.err.println("usage: localAddress port backlog count remoteAddress file");
+        } else {
+            new FileServer().run(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
+                    Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[4], args[5]);
+        }        
+    }        
+
+    private void run(InetAddress localAddress, int port, int backlog, int count, 
+            String remoteHostAddress, String fileName) throws Exception {
+        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
+            getServerSocketFactory().createServerSocket(port, backlog, localAddress);
+        FileInputStream stream = new FileInputStream(fileName);
+        int length = (int) new File(fileName).length();
+        byte[] bytes = new byte[length];
+        stream.read(bytes);
+        while (true) {
+            Socket socket = serverSocket.accept();
+            if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
+                socket.getOutputStream().write(bytes);
+            }
+            socket.close();
+            if (count > 0 && --count == 0) break;
+        }        
+    }    
+}
+}}}
 
 == `DualControlReader` ==
 
