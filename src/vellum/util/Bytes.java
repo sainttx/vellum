@@ -4,7 +4,6 @@
  */
 package vellum.util;
 
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import vellum.exception.ParseRuntimeException;
@@ -63,7 +62,7 @@ public class Bytes {
     public static char[] toCharArray(byte[] bytes) {
         return Charset.forName(Strings.UTF8).decode(ByteBuffer.wrap(bytes)).array();
     }
-    
+
     public static byte[] getBytes(char[] chars) {
         byte[] array = new byte[chars.length];
         for (int i = 0; i < chars.length; i++) {
