@@ -60,32 +60,9 @@ public class DualControlGenSecKey {
         keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);
     }    
     ...
+}
 }}}
 where `DualControlReader` provides a map of "dual key" aliases and their secret passwords, and we create a secret entry for each. 
-
-The keystore password should be read from the console, or specified on the command-line.
-{{{
-    char[] getStorePass() {
-        String storePasswordString = System.getProperty("storepass");
-        if (storePasswordString != null) {
-            return storePasswordString.toCharArray();
-        } else {
-            return System.console().readPassword("storepass: ");
-        }
-    }
-    
-}}}
-
-We load the key store if its file exists.
-{{{
-    void loadKeyStore() throws Exception {
-        if (new File(keyStorePath).exists()) {
-            keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
-        } else {
-            keyStore.load(null, keyStorePassword);
-        }
-    }
-}}}
 
 === Demo ===
 
