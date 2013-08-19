@@ -22,11 +22,13 @@ do
   CLASSPATH=$CLASSPATH:$jar
 done
 
+export CLASSPATH=$CLASSPATH
+
 echo CLASSPATH=$CLASSPATH
 
 set -x
 
-tmp=~/tmp/`basename $0`
+tmp=tmp/`basename $0 .sh`
 mkdir -p $tmp
 
 seckeystore=$tmp/seckeystore.jceks
@@ -37,7 +39,7 @@ pass=test1234
 secalias=powerstate-2013
 
 javaks() {
-  keystore=$tmp/test.$1.jks
+  keystore=$tmp/$1.jks
   shift
   java \
     -Ddualcontrol.ssl.keyStore=$keystore \
@@ -54,7 +56,7 @@ javaks() {
 }
 
 jc() {
-  javaks $tmp/$1.jks dualcontrol.DualControlClientDummy "$2"
+  javaks $1 dualcontrol.DummyDualControlClient "$2"
 }
 
 jc2() {
@@ -66,29 +68,34 @@ jc2() {
 jc3() {
     sleep 1 
     jc evanx eeee
+exit 1
     jc henty hhhh
     jc brand bbbb
 }
 
-keytool1() {
+command1_keytool() {
   keystore=$tmp/$1.jks
   alias=$1
   rm -f $keystore
   keytool -keystore $keystore -storepass "$pass" -keypass "$pass" -alias $alias \
      -genkeypair -dname "CN=$alias, OU=test, O=test, L=ct, S=wp, C=za"
+  keytool -keystore $keystore -storepass "$pass" -list | grep Entry
   keytool -keystore $keystore -storepass "$pass" -alias $alias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
-  keytool -keystore $privatekeystore -storepass "$pass" -alias $alias \
+  keytool -keystore $keystore -storepass "$pass" -alias $alias \
      -exportcert -rfc > $cert
   keytool -keystore $truststore -storepass "$pass" -alias $alias \
      -importcert -noprompt -file $cert
+  keytool -keystore $truststore -storepass "$pass" -alias $alias \
+     -exportcert -rfc | openssl x509 -text | grep 'CN='
 }
 
-initks() {
+command0_initks() {
   serveralias="dualcontrol"
   dname="CN=dualcontrol, OU=test, O=test, L=ct, S=wp, C=za"
   rm -f $seckeystore
   rm -f $privatekeystore
+  rm -f $truststore
   keytool -keystore $privatekeystore -storepass "$pass" -keypass "$pass" \
      -alias "$serveralias" -genkeypair -dname "$dname"
   keytool -keystore $privatekeystore -storepass "$pass" -list | grep Entry
@@ -99,9 +106,9 @@ initks() {
   keytool -keystore $truststore -storepass "$pass" -alias $serveralias \
      -importcert -noprompt -file $cert
   keytool -keystore $truststore -storepass "$pass" -list | grep Entry
-  keytool1 evanx
-  keytool1 henty
-  keytool1 brand
+  command1_keytool evanx
+  command1_keytool henty
+  command1_keytool brand
 }
 
 command1_genseckey() {
@@ -182,7 +189,7 @@ command1_testcryptoserver() {
 }
 
 command0_testgenseckey() {
-  initks 
+  command0_initks 
   jc3 & command1_genseckey $secalias
   sleep 2
   if ! nc -z localhost 4444
