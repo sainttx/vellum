@@ -4,8 +4,8 @@ package dualcontrol;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
+import javax.net.ssl.SSLServerSocket;
 import org.apache.log4j.Logger;
 
 /**
@@ -26,8 +26,9 @@ public class FileServer {
 
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String fileName) throws Exception {
-        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(port, backlog, localAddress);
+        SSLServerSocket serverSocket = (SSLServerSocket) DualControlKeyStores.createSSLContext().
+                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
+        serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);
         int length = (int) new File(fileName).length();
         byte[] bytes = new byte[length];
