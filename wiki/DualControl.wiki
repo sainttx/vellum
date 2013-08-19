@@ -21,78 +21,100 @@ PCI requires that "dual control" and "split knowledge" be used to protect the PA
 
 The glaring problem is that sysadmins are a single person, with God-like access to secret data, and custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
-Naturally, `keytool` is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a `keytool` invoker for generating keys that are not "accessible" to anyone, not even "root" ;)
+Naturally, `keytool` is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a `DualControlGenSecKey` utility for generating secret keys that are really secret, i.e. they are not "accessible" to anyone, not even "root" ;)
 
 But then our application can't access them either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load any keys it requires. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server with the dual-control, in a follow-up article.
 
-== `DualControlKeyTool` ==
+== `DualControlGenSecKey` ==
 
-Step 1 for any data security procedure is to generate an encryption key, which ideally no single rogue root user can access. For this purpose, there shall be `DualControlKeyTool`, as follows.
+Step 1 for any data security procedure is to generate an encryption key, which ideally no single rogue root user can access. For this purpose, there shall be `DualControlGenSecKey`, as follows.
 
 {{{
-public class DualControlKeyTool { 
-    String aliasPrefix = System.getProperty("dualcontrol.alias");
+public class DualControlGenSecKey { 
     int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
-    String[] args; 
+    String keyAlias = System.getProperty("alias"); 
+    String keyStorePath = System.getProperty("keystore"); 
+    String keyStoreType = System.getProperty("storetype");
+    String keyAlg = System.getProperty("keyalg");
+    int keySize = Integer.getInteger("keysize");
     
     public static void main(String[] args) throws Exception {        
-        new DualControlKeyTool().start(args);
+        new DualControlGenSecKey().start(args);
     }
-    
-    void start(String[] args) throws Exception {
-        this.args = args;
-        Map<String, char[]> dualMap = new DualControlReader().readDualMap(submissionCount);
-        for (String alias : dualMap.keySet()) {
-            keyTool(String.format("%s-%s", aliasPrefix, alias), dualMap.get(alias));
+
+    void start() throws Exception {
+        dualMap = new DualControlReader().readDualMap(submissionCount);
+        keyStorePassword = getStorePass();        
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
+        keyGenerator.init(keySize);
+        secretKey = keyGenerator.generateKey();
+        keyStore = KeyStore.getInstance(keyStoreType);
+        loadKeyStore();
+        KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
+        for (String dualAlias : dualMap.keySet()) {
+            char[] dualPassword = dualMap.get(dualAlias);
+            KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(dualPassword);
+            String alias = String.format("%s-%s", keyAlias, dualAlias);
+            keyStore.setEntry(alias, entry, prot);
         }
-    }
+        keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);
+    }    
     ...
 }}}
+where `DualControlReader` provides a map of "dual key" aliases and their secret passwords, and we create a secret entry for each. 
 
-where `DualControlReader` provides a map of multiple key aliases and their secret passwords, and we invoke Java's `KeyTool` for each. 
-
+The keystore password should be read from the console, or specified on the command-line.
 {{{
-    public void keyTool(String alias, char[] keypass) throws Exception {
-        List<String> argList = new ArrayList(Arrays.asList(args));
-        argList.add("-alias");
-        argList.add(alias);
-        argList.add("-keypass");
-        argList.add(new String(keypass));
-        KeyTool.main(argList.toArray(new String[argList.size()]));
-    }            
+    char[] getStorePass() {
+        String storePasswordString = System.getProperty("storepass");
+        if (storePasswordString != null) {
+            return storePasswordString.toCharArray();
+        } else {
+            return System.console().readPassword("storepass: ");
+        }
+    }
+    
 }}}
 
-where we add computed `-alias` and `-keypass` arguments, and otherwise pass through the command-line arguments as-is to `KeyTool`
-
-For each combination of two admins, we combine their two usernames into a "dual-alias," and also their secrets into a "dual-password."
+We load the key store if its file exists.
+{{{
+    void loadKeyStore() throws Exception {
+        if (new File(keyStorePath).exists()) {
+            keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
+        } else {
+            keyStore.load(null, keyStorePassword);
+        }
+    }
+}}}
 
 === Demo ===
 
-Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments and what-not. 
+Let's test `DualControlGenSecKey`.
 
 {{{
-  javaks -Ddualcontrol.alias=powerstate2013 -Ddualcontrol.submissions=3 \
-     dualcontrol.DualControlKeyTool \
-     -keystore $keystore -storetype JCEKS -storepass $storepass -genseckey -keyalg AES -keysize 256
+  java -Ddualcontrol.submissions=3 \
+     -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
+     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
+     dualcontrol.DualControlGenSecKey
 }}}
 
-where we use a `JCEKS`-type keystore for our symmetric secret key, which is specified as 256bit AES, and "powerstate2013" is our desired alias to reference this key.  
+where we use a `JCEKS`-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
-"When three admins e.g. claiming to be `evanx`, `henty` and `brand`, have submitted their passwords via SSL TCP/IP socket, we see that `DualControlKeyTool` invokes `KeyTool` thrice with the following "dual-aliases."
+"When three admins e.g. claiming to be `evanx`, `henty` and `brand`, have submitted their passwords via SSL TCP/IP socket, we see that `DualControlGenSecKey` invokes `KeyTool` thrice with the following "dual-aliases."
 
 {{{
-DEBUG keyTool alias powerstate2013-brand-evanx
-DEBUG keyTool alias powerstate2013-brand-henty
-DEBUG keyTool alias powerstate2013-evanx-henty
+DEBUG dek2013-brand-evanx
+DEBUG dek2013-brand-henty
+DEBUG dek2013-evanx-henty
 }}}
 
 Lo and behold, these keys do seem to be have been created.
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
-powerstate2013-brand-henty, 18 Aug 2013, SecretKeyEntry, 
-powerstate2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
-powerstate2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
+dek2013-brand-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
 Actually these three keys are one and the same. However for each dual-alias that copy is password-protected using a different "dual-password" combination, known to no one.
@@ -161,86 +183,7 @@ public class DualControlKeyStores {
     ...
 }}}
 
-where we create an `SSLContext` using these settings, as follows.
-
-{{{
-    public static SSLContext createSSLContext(String keyStorePath, 
-            char[] keyStorePassword, char[] keyPassword,
-            String trustStorePath, char[] trustStorePassword) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
-        KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(new FileInputStream(trustStorePath), trustStorePassword);
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(trustStore);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(keyManagerFactory.getKeyManagers(), 
-                trustManagerFactory.getTrustManagers(), new SecureRandom());
-        return sslContext;
-    }
-}}}
-
-In order to load a key store either off the local file system, or alternatively from a remote server, we provide the following method.
-
-{{{    
-    public static KeyStore loadKeyStore(String keyStorePath, char[] storePass) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        if (keyStorePath.contains(":")) {
-            String[] array = keyStorePath.split(":");
-            Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
-                createSocket(array[0], Integer.parseInt(array[1]));
-            keyStore.load(socket.getInputStream(), storePass);
-            socket.close();
-        } else {
-            keyStore.load(new FileInputStream(keyStorePath), storePass);
-        }
-        return keyStore;
-    }
-}}}
-
-where if the key store "path" is delimited with a colon e.g. "192.168.10.181:4446," then we will interpret this a remote host address and port, rather than a local file path. 
-
-This trick might satisfy the PCI requirement to store such keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted i.e. so the door key is not left under the mat, so to speak.
-
-We implement a trival key store file server as follows.
-
-{{{
-public class FileServer {
-    
-    public static void main(String[] args) throws Exception {
-        if (args.length != 6) {
-            System.err.println("usage: localAddress port backlog count remoteAddress file");
-        } else {
-            new FileServer().run(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
-                    Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[4], args[5]);
-        }        
-    }        
-
-    private void run(InetAddress localAddress, int port, int backlog, int count, 
-            String remoteHostAddress, String fileName) throws Exception {
-        SSLServerSocket serverSocket = (SSLServerSocket) DualControlKeyStores.createSSLContext().
-                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
-        serverSocket.setNeedClientAuth(true);
-        FileInputStream stream = new FileInputStream(fileName);
-        int length = (int) new File(fileName).length();
-        byte[] bytes = new byte[length];
-        stream.read(bytes);
-        while (true) {
-            Socket socket = serverSocket.accept();
-            logger.info("hostAddress " + socket.getInetAddress().getHostAddress());
-            if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
-                socket.getOutputStream().write(bytes);
-            }
-            socket.close();
-            if (count > 0 && --count == 0) break;
-        }        
-    }    
-}
-}}}
-
-where we create an `SSLServerSocket` to which we write the specified file's contents in response to any connection, which is client-authenticated i.e. we trust its cert i.e. that cert is imported into its truststore. 
+where we create an `SSLContext` using these settings.
 
 == `DualControlReader` ==
 
@@ -370,13 +313,13 @@ PCI requires that "dual control" and "split knowledge" be used to protect our se
 
 Naturally, `keytool` is tailored for a single root admin, rather than "dual-control." 
 
-If we have three admins e.g. A, B and C, then naturally we have three combinations of pairs of admins, namely A-B, B-C and A-C. In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a "dual-password," i.e. a combination of two passwords.
+If we have three admins e.g. A, B and C, then naturally we have three combinations of pairs of admins, namely A-B, B-C and A-C. In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins.
 
-We present sample code to read password submissions from multiple admins via SSL TCP/IP socket, and provide a `DualControlClient` utility for admins to use to submit passwords
+We introduce `DualControlGenSecKey` to generate a secret key in a JCEKS key store. This collates passwords from multiple admins using `DualControlReader`, which combines those into new "dual passwords" known to no one.
 
-We introduce a utility to generate keys, by first collating passwords from multiple admins via SSL, then combining those into new "dual-passwords" known to no one, and finally invoking the JRE's `KeyTool` with the appropriate parameters.
+To complete the picture, we provide a trivial `DualControlClient` console utility for admins to submit their passwords via SSL sockets.
 
-Finally, we demonstrate how our app can be dual-controlled, to load a key from the store i.e. for ciphering data. 
+Finally, we demonstrate how our app can be dual-controlled to load a key from the store i.e. for ciphering data.
 
 In a follow-up article, we'll implement a dual-controlled crypto server, so we avoid the burden of dual-control in our apps, isolate our keys on the crypto server, and thereby improve security and simplify key management. 
 
