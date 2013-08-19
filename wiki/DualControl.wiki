@@ -162,7 +162,6 @@ Our `DualControlReader` utility class handles reading split knowledge submission
 public class DualControlReader {
     ...
     public Map<String, char[]> readDualMap(int submissionCount) throws Exception {
-        logger.info("Waiting for submissions on SSL port " + PORT);
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
@@ -170,8 +169,7 @@ public class DualControlReader {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     map.put(String.format("%s-%s", name, otherName),
-                            String.format("%s-%s", submissions.get(name), 
-                            submissions.get(otherName)).toCharArray());
+                            combineDualPassword(submissions.get(name), submissions.get(otherName)));
                 }
             }
         }
@@ -179,12 +177,7 @@ public class DualControlReader {
     }
 }}}
 
-where we invoke `readMap()` to read split knowledge from multiple admins.
-
-Disclaimer: a known bug in the above code is that we create <tt>String</tt>'s containing clear-text passwords, rather than adamantly sticking to `char` arrays, because arrays can cleared, whereas `String`'s are immutable and so hang around until garbage-collected.
-
-
-which read and map password submissions from multiple admins, where their username is taken from their SSL cert. 
+where we invoke `readMap()` to read split knowledge submissions from multiple admins.
 
 {{{
     private final static int PORT = 4444;
@@ -214,25 +207,14 @@ which read and map password submissions from multiple admins, where their userna
 
 where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired this to `localhost` i.e. via the loopback interface, where `DualControlClient` invoked in local `ssh` sessions.
 
-{{{
-    public static char[] readChars(InputStream inputStream, int capacity) throws IOException {
-        CharBuffer buffer = CharBuffer.allocate(capacity);
-        while (true) {
-            int b = inputStream.read();
-            if (b < 0) {
-                return buffer.array();
-            }
-            buffer.append((char) b);
-        }
-    }   
-}}}
+Note that the admin's username is determined from their SSL cert, namely the `CN` field.
 
 == `DualControlSessions` == 
 
 We re-engineer our application to similarly get a dual-password, in order to load the key.
 
 {{{
-public class AppDemo {
+public class DemoApp {
     private SecretKey dek;     
     ...
     private void loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
