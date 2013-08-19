@@ -122,9 +122,9 @@ public abstract class DualControlClient {
 }}}
 where we format the username and their plain-text password into a string, and send those bytes out the SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`. 
 
-A known bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port! Another bug is the creation of ghost admins, and yet another is the impersonation of other admins e.g. during a key generation procedure. 
-
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
+
+A known bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port! Another bug is the creation of ghost admins, and yet another is the impersonation of other admins e.g. during a key generation procedure. 
 
 The workaround for said bugs, in plain management-speak, is that our controls should prevent or at least detect such attacks, and we should take measures to mitigate risk, etc.
 
