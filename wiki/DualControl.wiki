@@ -238,7 +238,7 @@ where we read the dual info using the afore-mentioned `DualControlReader,` which
 
 == Cryto server == 
 
-One might wish to create a central crypto server which is dualled-controlled, rather than have dual-control on your app, in order the load the secret key. In this case, you can restart your application without dual-control, and indeed have any number of apps using this server. Furthermore it simplifies key management. 
+One might wish to create a central crypto server which is dualled-controlled, rather than burden your app. In that case, you can restart your application without dual-control, and indeed have any number of apps using this server. Furthermore it simplifies key management. 
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
