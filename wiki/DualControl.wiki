@@ -172,11 +172,13 @@ which reads a `List` of submissions from admins as below, and then extracts the 
 
 {{{
     private final static int PORT = 4444;
+    private final static String LOCAL_ADDRESS = "127.0.0.1";
+    private final static String REMOTE_ADDRESS = "127.0.0.1";
 
     List<byte[]> readList() throws Exception {
-        logger.info("waiting for info on SSL port " + PORT);
-        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().getServerSocketFactory().
-                createServerSocket(PORT);
+        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
+                getServerSocketFactory().createServerSocket(PORT, submissionCount, 
+                InetAddress.getByName(LOCAL_ADDRESS));
         List<byte[]> list = new ArrayList();
         for (int i = 0; i < submissionCount; i++) {
             Socket socket = serverSocket.accept();
@@ -191,7 +193,9 @@ which reads a `List` of submissions from admins as below, and then extracts the 
     }
 }}}
 
-where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`.
+where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`. Note that we have hard-wired this to `localhost` i.e. via local ssh sessions.
+
+Note that we 
 
 == `DualControlSessions` == 
 
