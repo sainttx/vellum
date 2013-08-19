@@ -137,7 +137,9 @@ The workaround for above "bugs," in plain management-speak, is that our "control
 
 == `DualControlKeyStores` ==
 
-Similarly to the standard `-Dnet.javax.ssl.*` command-line options that can be used to specify the default keystore and truststore for SSL sockets, we use `-Ddualcontrol.ssl.keyStore` et al, as follows.
+Similarly to the standard `-Dnet.javax.ssl.*` command-line options that can be used to specify the default "keyStore" and "trustStore" for SSL sockets, we use `-Ddualcontrol.ssl.keyStore` et al, as below. 
+
+Note that the "keyStore" parameter is our "private keystore: contains the private key used for SSL e.g. DSA assymmetric encryption, and should not be confused with our "secret key store" e.g. which contains an AES key for symmetric encryption of our secret data. 
  
 {{{
 public class DualControlKeyStores {    
@@ -146,7 +148,7 @@ public class DualControlKeyStores {
     static final char[] keyStorePassword = 
             System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
     static final char[] keyPassword = 
-            System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
+            System.getProperty("dualcontrol.ssl.keyPassword").toCharArray();
     static final String trustStorePath = 
             System.getProperty("dualcontrol.ssl.trustStore");
     static final char[] trustStorePassword = 
@@ -180,7 +182,7 @@ where we create an `SSLContext` using these settings, as follows.
     }
 }}}
 
-In order to supporting loading the key store either off the file system, or from a remote SSL socket file server, we provide the following method.
+In order to load a key store either off the file system, or from a remote SSL socket file server, we provide the following method.
 
 {{{    
     public static KeyStore loadKeyStore(String keyStorePath, char[] storePass) throws Exception {
