@@ -182,7 +182,7 @@ where we create an `SSLContext` using these settings, as follows.
     }
 }}}
 
-In order to load a key store either off the file system, or from a remote SSL socket file server, we provide the following method.
+In order to load a key store either off the local file system, or alternatively from a remote server, we provide the following method.
 
 {{{    
     public static KeyStore loadKeyStore(String keyStorePath, char[] storePass) throws Exception {
@@ -200,7 +200,7 @@ In order to load a key store either off the file system, or from a remote SSL so
     }
 }}}
 
-where if the keystore "path" is delimited with a colon e.g. `192.168.10.181:4446`, then we will interpret this a remote host address and port, rather than a local file path. This might be in order to satisfy some PCI requirement regarding storing keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted. In this case, we are hopefully not leaving the proverbial door key in the lock, or under the mat, so to speak.
+where if the keystore "path" is delimited with a colon e.g. `192.168.10.181:4446`, then we will interpret this a remote host address and port, rather than a local file path. This might be in order to satisfy some PCI requirement regarding storing keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted.
 
 For remote storage of the keystore e.g. , we implement a trival file server as follows.
 
