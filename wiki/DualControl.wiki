@@ -127,15 +127,13 @@ public abstract class DualControlClient {
     }               
 }
 }}}
-where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`. 
+where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`. The server socket will take our username from the `CN` field of our client cert. 
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known bug is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port! Another bug is the creation of ghost admins, and yet another is the impersonation of other admins e.g. during a key generation procedure. 
+A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port! Another bug is the creation of phantom admins, and yet another is the impersonation of other admins e.g. during a key generation procedure. 
 
-The workaround for said bugs, in plain management-speak, is that our controls should prevent or at least detect such attacks, and we should take measures to mitigate risk, etc.
-
-Disclaimer: a known bug in the above code is that we create <tt>String</tt>'s containing a clear-text password, rather than adamantly sticking to `char` arrays, because arrays can cleared deterministically, without consideration of the garbage collector, whereas strings are immutable and so hang around until garbage-collected.
+The workaround for above "bugs," in plain management-speak, is that our "controls" as per our "policies and procedures" should prevent or at least detect such attacks, and we take all necessary measures to mitigate associated risks, <i>blah blah</i>.
 
 == `DualControlReader` ==
 
@@ -163,46 +161,51 @@ public class DualControlReader {
 
 where we invoke `readMap()` to read split knowledge from multiple admins.
 
-A known bug here is that we create <tt>String</tt>'s containing clear-text passwords, rather than adamantly sticking to `char` arrays.
+Disclaimer: a known bug in the above code is that we create <tt>String</tt>'s containing clear-text passwords, rather than adamantly sticking to `char` arrays, because arrays can cleared, whereas `String`'s are immutable and so hang around until garbage-collected.
 
-{{{
-    Map<String, char[]> readMap() throws Exception {
-        Map<String, char[]> map = new TreeMap();
-        for (byte[] bytes : readList()) {
-            String string = new String(bytes).trim();
-            String[] array = string.split(":");
-            map.put(array[0], array[1].toCharArray());
-        }
-        return map;
-    }
-}}}
 
-which reads a `List` of submissions from admins as below, and then extracts the username and password from each, and puts them into a `Map`.
+which read and map password submissions from multiple admins, where their username is taken from their SSL cert. 
 
 {{{
     private final static int PORT = 4444;
     private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
 
-    List<byte[]> readList() throws Exception {
-        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
+    Map<String, char[]> readMap() throws Exception {
+        Map<String, char[]> map = new TreeMap();
+        SSLServerSocket serverSocket = (SSLServerSocket) DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
-        List<byte[]> list = new ArrayList();
+        serverSocket.setNeedClientAuth(true);
         for (int i = 0; i < submissionCount; i++) {
-            Socket socket = serverSocket.accept();
+            SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
                 throw new RuntimeException();
             }
-            list.add(readBytes(socket.getInputStream()));
+            String username = new X500Name(socket.getSession().getPeerPrincipal().
+                    getName()).getCommonName();
+            map.put(username, readChars(socket.getInputStream(), 64));
             socket.close();
         }
         serverSocket.close();
-        return list;
+        return map;
     }
 }}}
 
-where we listen on a SSL port i.e. a `ServerSocket` and collate the multiple submissions into a `List`. Note that we have hard-wired this to `localhost` i.e. via the loopback interface, e.g. `DualControlClient` invoked in local `ssh` sessions.
+where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired this to `localhost` i.e. via the loopback interface, where `DualControlClient` invoked in local `ssh` sessions.
+
+{{{
+    public static char[] readChars(InputStream inputStream, int capacity) throws IOException {
+        CharBuffer buffer = CharBuffer.allocate(capacity);
+        while (true) {
+            int b = inputStream.read();
+            if (b < 0) {
+                return buffer.array();
+            }
+            buffer.append((char) b);
+        }
+    }   
+}}}
 
 == `DualControlSessions` == 
 
