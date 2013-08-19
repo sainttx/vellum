@@ -51,7 +51,6 @@ where `DualControlReader` provides a map of multiple key aliases and their secre
 
 {{{
     public void keyTool(String alias, char[] keypass) throws Exception {
-        logger.debug("keyTool alias " + alias);
         List<String> argList = new ArrayList(Arrays.asList(args));
         argList.add("-alias");
         argList.add(alias);
@@ -102,7 +101,6 @@ In order for admins to submit their secrets to our `DualControlReader` e.g. from
 
 {{{
 public abstract class DualControlClient {
-    final static Logger logger = Logger.getLogger(DualControlClient.class);
     final static int PORT = 4444;
     final static String HOST = "127.0.0.1";
 
