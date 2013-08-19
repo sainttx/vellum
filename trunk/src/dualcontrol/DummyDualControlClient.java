@@ -2,6 +2,7 @@
 package dualcontrol;
 
 import java.net.Socket;
+import java.util.Arrays;
 import org.apache.log4j.Logger;
 
 /**
@@ -25,6 +26,7 @@ public abstract class DummyDualControlClient {
         Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         socket.getOutputStream().write(bytes);
+        Arrays.fill(bytes, (byte) 0);        
         socket.close();
     }
 }
