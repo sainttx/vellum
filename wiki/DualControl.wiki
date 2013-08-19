@@ -137,8 +137,69 @@ The workaround for above "bugs," in plain management-speak, is that our "control
 
 == `DualControlKeyStores` ==
 
+We will use `-Ddualcontrol.ssl` command-line options to configure the keystore and truststore to use for SSL Socket connections. 
+ 
 {{{
+public class DualControlKeyStores {    
+    static final String keyStorePath = 
+            System.getProperty("dualcontrol.ssl.keyStore");
+    static final char[] keyStorePassword = 
+            System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
+    static final char[] keyPassword = 
+            System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
+    static final String trustStorePath = 
+            System.getProperty("dualcontrol.ssl.trustStore");
+    static final char[] trustStorePassword = 
+            System.getProperty("dualcontrol.ssl.trustStorePassword").toCharArray();    
+    
+    public static SSLContext createSSLContext() throws Exception {
+        return createSSLContext(keyStorePath, keyStorePassword, keyPassword,
+                trustStorePath, trustStorePassword);
+    }
+    ...
 }}}
+
+where we create an `SSLContext` using those settings, as follows.
+
+{{{
+    public static SSLContext createSSLContext(String keyStorePath, 
+            char[] keyStorePassword, char[] keyPassword,
+            String trustStorePath, char[] trustStorePassword) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(new FileInputStream(trustStorePath), trustStorePassword);
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPassword);
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(trustStore);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), 
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
+        return sslContext;
+    }
+}}}
+
+For the purpose of loading the key store off the file system, or from a remote server, we provide the following method.
+
+{{{    
+    public static KeyStore loadKeyStore(String keyStorePath, char[] storePass) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        if (keyStorePath.contains(":")) {
+            String[] array = keyStorePath.split(":");
+            Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
+                createSocket(array[0], Integer.parseInt(array[1]));
+            keyStore.load(socket.getInputStream(), storePass);
+            socket.close();
+        } else {
+            keyStore.load(new FileInputStream(keyStorePath), storePass);
+        }
+        return keyStore;
+    }
+}
+}}}
+
+where if the keystore name is delimited with a colon e.g. `localhost:4446`, then we will load the key store via SSL e.g. from a more secure server. 
 
 == `DualControlReader` ==
 
