@@ -77,12 +77,12 @@ Let's test `DualControlGenSecKey`.
 
 where we use a `JCEKS`-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
-"When three admins e.g. claiming to be `evanx`, `henty` and `brand`, have submitted their passwords via SSL TCP/IP socket, we see that `DualControlGenSecKey` invokes `KeyTool` thrice with the following "dual-aliases."
+When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's `CN` identifies them as `evanx`, `henty` and `brand`, we see that `DualControlGenSecKey` saves the secret key under the following "dual-aliases."
 
 {{{
-DEBUG dek2013-brand-evanx
-DEBUG dek2013-brand-henty
-DEBUG dek2013-evanx-henty
+dek2013-brand-evanx
+dek2013-brand-henty
+dek2013-evanx-henty
 }}}
 
 Lo and behold, these keys do seem to be have been created.
@@ -94,15 +94,14 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these three keys are one and the same. However for each dual-alias that copy is password-protected using a different "dual-password" combination, known to no one.
+Actually these three keys are one and the same. However each copy is password-protected using a different "dual-password" combination, known to no one.
 
 == `DualControlClient` == 
 
 In order for admins to submit their secrets to our `DualControlReader` e.g. from a ssh session on the `localhost`, we provide a minimal SSL client as follows.
 
 {{{
-public abstract class DualControlClient {
-    final static Logger logger = Logger.getLogger(DualControlClient.class);
+public class DualControlClient {
     final static int PORT = 4444;
     final static String HOST = "127.0.0.1";
 
@@ -113,17 +112,10 @@ public abstract class DualControlClient {
         byte[] bytes = getBytes(passwd);
         Arrays.fill(passwd, (char) 0);
         socket.getOutputStream().write(bytes);
-        socket.close();
         Arrays.fill(bytes, (byte) 0);
+        socket.close();
     }
-        
-    public static byte[] getBytes(char[] chars) {
-        byte[] array = new byte[chars.length];
-        for (int i = 0; i < chars.length; i++) {
-            array[i] = (byte) chars[i];    
-        }
-        return array;
-    }               
+    ...
 }
 }}}
 where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`. The server socket will take our username from the `CN` field of our client cert. 
