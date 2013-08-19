@@ -262,8 +262,6 @@ We presented sample code to read password submissions from multiple admins via S
 
 == See also ==
 
-We'll implement the crypto server in part 2. 
-
-== Resources ==
-
 You can browse the code for this exercise at [http://code.google.com/p/vellum/source/browse/#svn/trunk/src/vellum/dualcontrol code.google.com].
+
+We'll implement the crypto server in part 2. 
