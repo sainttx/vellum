@@ -202,7 +202,7 @@ In order to load a key store either off the local file system, or alternatively 
 
 where if the keystore "path" is delimited with a colon e.g. `192.168.10.181:4446`, then we will interpret this a remote host address and port, rather than a local file path. This might be in order to satisfy some PCI requirement regarding storing keys on our secure internal network i.e. not in our DMZ, and not on the same server where data is stored that these keys have encrypted.
 
-For remote storage of the keystore e.g. , we implement a trival file server as follows.
+For remote storage of the keystore, we implement a trival file server as follows.
 
 {{{
 public class FileServer {
@@ -218,14 +218,16 @@ public class FileServer {
 
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String fileName) throws Exception {
-        ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
-            getServerSocketFactory().createServerSocket(port, backlog, localAddress);
+        SSLServerSocket serverSocket = (SSLServerSocket) DualControlKeyStores.createSSLContext().
+                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
+        serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);
         int length = (int) new File(fileName).length();
         byte[] bytes = new byte[length];
         stream.read(bytes);
         while (true) {
             Socket socket = serverSocket.accept();
+            logger.info("hostAddress " + socket.getInetAddress().getHostAddress());
             if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
                 socket.getOutputStream().write(bytes);
             }
@@ -235,6 +237,8 @@ public class FileServer {
     }    
 }
 }}}
+
+where we create an `SSLServerSocket` to which we write the specified file's contents in response to any connection, which is client-authenticated i.e. we trust its cert e.g. that cert is imported into our truststore. 
 
 == `DualControlReader` ==
 
