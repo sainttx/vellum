@@ -15,7 +15,7 @@ So the Payment Card industry (PCI) has their "Data Security Standard" called "PC
 
 The PCI DSS mandates that "PAN's" aka credit card numbers, must be "rendered unreadable" e.g. encrypted. But it goes without saying that other industries store their own sensitive data; governments too ;)
 
-The PCI DSS standard suggests encrypting the key used to encrypt our data. Darn, we secure the data-encrypting-key (DEK), but now we're lumbered with another key, i.e. a "key-encrypting-key" (KEK). <i>Woohoo, the keys to the kindgom!</i>
+The PCI DSS standard suggests encrypting the key used to encrypt our data. Darn, we secure the data-encrypting-key (DEK), but now we're lumbered with another key, i.e. a "key-encrypting-key" (KEK). <i>The keys to the kindgom, woohoo!</i>
 
 PCI requires that "dual control" and "split knowledge" be used to protect the PAN, i.e. our most secret data, i.e. the key used to cipher this data. The intent is that no single person can decrypt the data. 
 
