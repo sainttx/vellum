@@ -73,7 +73,7 @@ Let's test `DualControlKeyTool` from the command-line, using `keytool` arguments
 {{{
   javaks -Ddualcontrol.alias=powerstate2013 -Ddualcontrol.submissions=3 \
      dualcontrol.DualControlKeyTool \
-     -storetype JCEKS -storepass $pass -genseckey -keyalg DESede -keysize 168
+     -keystore $keystore -storetype JCEKS -storepass $storepass -genseckey -keyalg DESede -keysize 168
 }}}
 
 where we use a `JCEKS`-type keystore for a Triple DES secret key, and "powerstate2013" is our desired alias to reference this key.  
@@ -89,7 +89,7 @@ DEBUG keyTool alias powerstate2013-evanx-henty
 Low and behalved, these keys do seem to be have been created.
 
 {{{
-$ keytool -keystore $secstore -storetype JCEKS -storepass $pass -list | grep Entry
+$ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
 powerstate2013-brand-henty, 18 Aug 2013, SecretKeyEntry, 
 powerstate2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
 powerstate2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
