@@ -1,6 +1,9 @@
 package dualcontrol;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.util.Map;
 import javax.crypto.KeyGenerator;
@@ -35,7 +38,7 @@ public class DualControlGenSecKey {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
-        keyStore = DualControlKeyStores.loadKeyStore(keyStorePath, keyStorePassword);
+        keyStore = loadKeyStore(keyStorePath, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
@@ -50,6 +53,18 @@ public class DualControlGenSecKey {
         keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);
     }
 
+    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        if (new File(keyStorePath).exists()) {
+            FileInputStream fis = new FileInputStream(keyStorePath);
+            keyStore.load(fis, keyStorePassword);
+            fis.close();
+        } else {
+            keyStore.load(null, keyStorePassword);            
+        }
+        return keyStore;
+    }
+    
     char[] getKeyStorePassword() {
         String storePasswordString = System.getProperty("storepass");
         if (storePasswordString != null) {
