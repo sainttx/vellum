@@ -48,20 +48,20 @@ public class DualControlKeyStores {
         return sslContext;
     }
     
-    public static KeyStore loadKeyStore(String keyStorePath, char[] storePass) throws Exception {
+    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         if (keyStorePath.contains(":")) {
             String[] array = keyStorePath.split(":");
             Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
                 createSocket(array[0], Integer.parseInt(array[1]));
-            keyStore.load(socket.getInputStream(), storePass);
+            keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();
         } else if (new File(keyStorePath).exists()) {
             FileInputStream fis = new FileInputStream(keyStorePath);
-            keyStore.load(fis, storePass);
+            keyStore.load(fis, keyStorePassword);
             fis.close();
         } else {
-            keyStore.load(null, storePass);            
+            keyStore.load(null, keyStorePassword);            
         }
         return keyStore;
     }

@@ -1,8 +1,8 @@
 
 package dualcontrol;
 
+import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.Arrays;
 import org.apache.log4j.Logger;
 
 /**
@@ -18,15 +18,15 @@ public abstract class DummyDualControlClient {
         if (args.length != 1) {
             logger.error("usage: passwd");
         } else {
-            write(args[0].getBytes());
+            write(args[0].toCharArray());
         }
     }
 
-    public static void write(byte[] bytes) throws Exception {
+    public static void write(char[] chars) throws Exception {
         Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
-        socket.getOutputStream().write(bytes);
-        Arrays.fill(bytes, (byte) 0);        
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF(new String(chars));
         socket.close();
     }
 }
