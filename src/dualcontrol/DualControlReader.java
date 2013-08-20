@@ -1,10 +1,10 @@
 package dualcontrol;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.String;
 import java.net.InetAddress;
-import java.nio.CharBuffer;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.net.ssl.SSLServerSocket;
@@ -38,7 +38,7 @@ public class DualControlReader {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
                     char[] dualPassword = combineDualPassword(submissions.get(name), submissions.get(otherName));
-System.err.printf("readDualMap %s %s\n", dualAlias, new String(dualPassword));
+System.err.printf("readDualMap %s [%s]\n", dualAlias, new String(dualPassword));
                     map.put(dualAlias, dualPassword);
                 }
             }
@@ -47,10 +47,18 @@ System.err.printf("readDualMap %s %s\n", dualAlias, new String(dualPassword));
     }
 
     static char[] combineDualPassword(char[] password, char[] other) {
-        CharBuffer buffer = CharBuffer.allocate(password.length + other.length);
-        buffer.put(password);
-        buffer.put(other);
-        return buffer.array();
+        char[] buffer = new char[password.length + other.length];
+        int i = 0;
+        for (char ch : password) {
+            buffer[i++] = ch;
+        }
+        for (char ch : other) {
+            buffer[i++] = ch;
+        }
+        for (i = 0; i < buffer.length; i++) {
+            System.err.println("combined " + (int) buffer[i]);
+        }
+        return buffer;
     }
     
     Map<String, char[]> readMap() throws Exception {
@@ -67,7 +75,8 @@ System.err.printf("readDualMap %s %s\n", dualAlias, new String(dualPassword));
             }
             String username = new X500Name(socket.getSession().getPeerPrincipal().
                     getName()).getCommonName();
-            char[] chars = readChars(socket.getInputStream(), 64);
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            char[] chars = dis.readUTF().toCharArray();
             if (true) { // TODO remove
                 String[] fields = new String(chars).split(":");
                 if (fields.length > 1) {
@@ -81,15 +90,4 @@ System.err.printf("readDualMap %s %s\n", dualAlias, new String(dualPassword));
         serverSocket.close();
         return map;
     }
-
-    public static char[] readChars(InputStream inputStream, int capacity) throws IOException {
-        CharBuffer buffer = CharBuffer.allocate(capacity);
-        while (true) {
-            int b = inputStream.read();
-            if (b < 0) {
-                return buffer.array();
-            }
-            buffer.append((char) b);
-        }
-    }   
 }
