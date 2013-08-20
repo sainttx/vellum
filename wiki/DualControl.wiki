@@ -121,9 +121,9 @@ where we submit our password via SSL socket to our supposed dual-controlled app 
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious server has been implanted by the most Godly one onto that frikking port! Another bug is the creation of phantom admins, and yet another is the impersonation of other admins e.g. during a key generation procedure. 
+A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been implanted by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure. 
 
-The workaround for above "bugs," in plain management-speak, is that our "controls" as per our "policies and procedures" should prevent or at least detect such attacks, and we take all necessary measures to mitigate associated risks, <i>blah blah</i>.
+The workaround for above "bugs," in plain management-speak, is that our "controls" as per our "policies and procedures" should prevent or at least detect such attacks, and we take all necessary measures to mitigate associated risks. A follow-up article will offer some improvements to give admins some confidence that they are not having the wool pulled over their eyes.
 
 == `DualControlKeyStores` ==
 
