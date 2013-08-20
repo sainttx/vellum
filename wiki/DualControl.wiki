@@ -2,6 +2,7 @@
 = Dual Control Key Management =
 
 rev 0.1, 2013-08-18
+rev 0.2, 2013-08-19, DualControlGenSecKey
 
 Keywords: Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
 
