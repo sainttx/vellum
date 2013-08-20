@@ -44,7 +44,7 @@ public class DualControlGenSecKey {
 
     void start() throws Exception {
         dualMap = new DualControlReader().readDualMap(submissionCount);
-        keyStorePassword = getStorePass();        
+        keyStorePassword = getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
@@ -52,12 +52,12 @@ public class DualControlGenSecKey {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
+            String alias = keyAlias + "-" + dualAlias;
             KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(dualPassword);
-            String alias = String.format("%s-%s", keyAlias, dualAlias);
             keyStore.setEntry(alias, entry, prot);
         }
         keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);
-    }    
+    }
     ...
 }
 }}}
