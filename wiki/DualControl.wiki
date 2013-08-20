@@ -202,6 +202,8 @@ where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired
 
 Note that the admin's username is determined from their SSL cert, namely the `CN` field.
 
+Incidently, a known bug in the above code, and similarly in `DualControlClient`, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
+
 == `DualControlSessions` == 
 
 We re-engineer our application to similarly get a dual-password, in order to load the key.
