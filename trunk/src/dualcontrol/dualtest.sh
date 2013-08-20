@@ -18,15 +18,12 @@ fi
 CLASSPATH=NetBeansProjects/vellum/build/classes
 for jar in NetBeansProjects/vellum/dist/lib/*.jar
 do
-  echo $jar
   CLASSPATH=$CLASSPATH:$jar
 done
 
 export CLASSPATH=$CLASSPATH
 
-echo CLASSPATH=$CLASSPATH
-
-set -x
+#echo CLASSPATH=$CLASSPATH
 
 tmp=tmp/`basename $0 .sh`
 mkdir -p $tmp
@@ -135,6 +132,12 @@ command1_genseckey() {
      -Dalias=$1 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
      dualcontrol.DualControlGenSecKey
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
+  if [ `keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry | wc -l` -eq 3 ]
+  then
+    echo "OK genseckey"
+  else
+    echo "WARN genseckey"
+  fi
 }
 
 command0_app() {
@@ -165,24 +168,11 @@ command1_cryptoserver_remote() {
 }
 
 cryptoclient_cipher() {
+  datum=1111222233334444
   data=`javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
-     "$secalias:$cipherTrans:ENCRYPT:8:1111222233334444"`
-  exitCode=$?  
-  echo "CryptoClientDemo ENCRYPT exitCode $exitCode"
-  if [ $exitCode -ne 0 ]
-  then 
-    echo "ERROR CryptoClientDemo ENCRYPT exitCode $exitCode"
-  else 
+     "$secalias:$cipherTrans:ENCRYPT:8:$datum"`
     javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
        "$secalias:$cipherTrans:DECRYPT:$data"
-    exitCode=$? 
-    if [ $exitCode -ne 0 ]
-    then
-      echo "ERROR CryptoClientDemo DECRYPT exitCode $exitCode"
-     else 
-      echo "INFO CryptoClientDemo OK"   
-    fi
-  fi
 }
 
 cryptoclient1() {
@@ -251,7 +241,13 @@ command0_testsingle() {
   command1_testcryptoserver 1
 }
 
+command1_checklong() {
+  command1_testlong $1 2>&1 | grep -i '^INFO\|^WARN\|error\|^OK' | uniq -c 
+}
+
 des3
+
+#set -x
 
 #command0_testsingle
 #command0_testshort
