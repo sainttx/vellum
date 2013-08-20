@@ -3,6 +3,7 @@ package dualcontrol;
 import java.io.DataInputStream;
 import java.lang.String;
 import java.net.InetAddress;
+import java.nio.CharBuffer;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.net.ssl.SSLServerSocket;
@@ -45,18 +46,10 @@ System.err.printf("readDualMap %s [%s]\n", dualAlias, new String(dualPassword));
     }
 
     static char[] combineDualPassword(char[] password, char[] other) {
-        char[] buffer = new char[password.length + other.length];
-        int i = 0;
-        for (char ch : password) {
-            buffer[i++] = ch;
-        }
-        for (char ch : other) {
-            buffer[i++] = ch;
-        }
-        for (i = 0; i < buffer.length; i++) {
-            System.err.println("combined " + (int) buffer[i]);
-        }
-        return buffer;
+        StringBuilder builder = new StringBuilder();
+        builder.append(password);
+        builder.append(other);
+        return builder.toString().toCharArray();
     }
     
     Map<String, char[]> readMap() throws Exception {
