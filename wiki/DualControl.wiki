@@ -48,8 +48,7 @@ public class DualControlGenSecKey {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
-        keyStore = KeyStore.getInstance(keyStoreType);
-        loadKeyStore();
+        keyStore = DualControlKeyStores.loadKeyStore(keyStorePath, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
@@ -197,7 +196,7 @@ where we invoke `readMap()` to read split knowledge submissions from multiple ad
             }
             String username = new X500Name(socket.getSession().getPeerPrincipal().
                     getName()).getCommonName();
-            map.put(username, readChars(socket.getInputStream(), 64));
+            map.put(username, readChars(socket.getInputStream()));
             socket.close();
         }
         serverSocket.close();
