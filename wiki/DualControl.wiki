@@ -48,7 +48,7 @@ public class DualControlGenSecKey {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
-        keyStore = DualControlKeyStores.loadKeyStore(keyStorePath, keyStorePassword);
+        keyStore = loadKeyStore(keyStorePath, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
