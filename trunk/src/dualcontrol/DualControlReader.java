@@ -62,7 +62,7 @@ System.err.printf("readDualMap %s [%s]\n", dualAlias, new String(dualPassword));
         for (int i = 0; i < submissionCount; i++) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                throw new RuntimeException();
+                throw new RuntimeException("Remote host address excluded");
             }
             String username = new X500Name(socket.getSession().getPeerPrincipal().
                     getName()).getCommonName();
