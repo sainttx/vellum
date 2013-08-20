@@ -32,7 +32,7 @@ public class CryptoClientDemo {
         byte[] bytes = new byte[dis.readShort()];
         dis.readFully(bytes);
         if (new String(data).contains("DECRYPT")) {
-            System.err.printf("CryptoClientDemo decrypted %s\n", new String(bytes)); 
+            System.err.printf("INFO CryptoClientDemo decrypted %s\n", new String(bytes)); 
         } else {
             System.out.printf("%s:%s\n", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));            
         }
