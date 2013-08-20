@@ -38,6 +38,24 @@ cert=$tmp/dual.pem
 pass=test1234
 secalias=dek2013
 
+aes() {
+  keyAlg=AES
+  keySize=256
+  cipherTrans=AES/CBC/PKCS5Padding
+}
+
+des() {
+  keyAlg=DES
+  keySize=56
+  cipherTrans=DES/CBC/PKCS5Padding
+}
+
+des3() {
+  keyAlg=DESede
+  keySize=168
+  cipherTrans=DESede/CBC/PKCS5Padding
+}
+
 javaks() {
   keystore=$tmp/$1.jks
   shift
@@ -114,13 +132,13 @@ command0_initks() {
 command1_genseckey() {
   javaks server -Ddualcontrol.submissions=3 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
-     -Dalias=$1 -Dkeyalg=AES -Dkeysize=128 \
+     -Dalias=$1 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
      dualcontrol.DualControlGenSecKey
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
 command0_app() {
-  javaks server -Ddualcontrol.submissions=2 dualcontrol.AppDemo $seckeystore $pass $secalias
+  javaks server -Ddualcontrol.submissions=2 dualcontrol.DemoApp $seckeystore $pass $secalias
 }
 
 command0_keystoreserver() {
@@ -148,7 +166,7 @@ command1_cryptoserver_remote() {
 
 cryptoclient_cipher() {
   data=`javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
-     "$secalias:DESede/CBC/PKCS5Padding:ENCRYPT:8:1111222233334444"`
+     "$secalias:$cipherTrans:ENCRYPT:8:1111222233334444"`
   exitCode=$?  
   echo "CryptoClientDemo ENCRYPT exitCode $exitCode"
   if [ $exitCode -ne 0 ]
@@ -156,7 +174,7 @@ cryptoclient_cipher() {
     echo "ERROR CryptoClientDemo ENCRYPT exitCode $exitCode"
   else 
     javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
-       "$secalias:DESede/CBC/PKCS5Padding:DECRYPT:$data"
+       "$secalias:$cipherTrans:DECRYPT:$data"
     exitCode=$? 
     if [ $exitCode -ne 0 ]
     then
@@ -232,6 +250,8 @@ command0_testsingle() {
   command0_testkeystoreserver
   command1_testcryptoserver 1
 }
+
+des3
 
 #command0_testsingle
 #command0_testshort
