@@ -1,4 +1,4 @@
-
+#labels Encryption,PCI
 = Dual Control Key Management =
 
 <pre>
@@ -275,4 +275,3 @@ In a follow-up article, we'll implement a dual-controlled crypto server, so we a
 == See also ==
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
-
