@@ -1,8 +1,6 @@
 package dualcontrol;
 
 import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.String;
 import java.net.InetAddress;
 import java.util.Map;

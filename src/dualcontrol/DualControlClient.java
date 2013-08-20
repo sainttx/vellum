@@ -1,8 +1,8 @@
 
 package dualcontrol;
 
+import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.Arrays;
 import org.apache.log4j.Logger;
 
 /**
@@ -18,18 +18,8 @@ public class DualControlClient {
         char[] passwd = System.console().readPassword("DualControl password: ");
         Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
-        byte[] bytes = getBytes(passwd);
-        Arrays.fill(passwd, (char) 0);
-        socket.getOutputStream().write(bytes);
-        Arrays.fill(bytes, (byte) 0);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF(new String(passwd));
         socket.close();
     }
-        
-    public static byte[] getBytes(char[] chars) {
-        byte[] array = new byte[chars.length];
-        for (int i = 0; i < chars.length; i++) {
-            array[i] = (byte) chars[i];    
-        }
-        return array;
-    }               
 }
