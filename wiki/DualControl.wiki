@@ -285,7 +285,7 @@ To complete the picture, we provide a trivial `DualControlConsole` utility for a
 
 Finally, we demonstrate how our app can be dual-controlled to load a key from the store at startup, for ciphering data thereafter.
 
-In a follow-up article, we'll implement a dual-controlled crypto server, so we avoid the burden of dual-control in our apps, isolate our keys on the crypto server, and thereby improve security and simplify key management. 
+In a follow-up article, we'll implement a dual-controlled crypto server, to unburden our apps, improve convenience, but more importantly, to isolate our keys on the crypto server, to simplify key management, to enhance security. 
 
 == See also ==
 
