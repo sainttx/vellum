@@ -12,9 +12,9 @@ The Payment Card industry (PCI) has their "Data Security Standard" called "PCI D
 
 The PCI DSS mandates that PAN's aka <i>Primary Account Numbers</i> aka credit card numbers, must be "rendered unreadable" e.g. encrypted. It goes without saying that other industries also have sensitive data that people might want to steal, governments even ;)
 
-PCI DSS suggests encrypting the key used to encrypt our data. Darn, we thereby secure the data-encrypting-key (DEK), but now we're lumbered with another key, namely a "key-encrypting-key" (KEK). <i>The keys to the kindgom, woohoo!</i>
+PCI DSS suggests encrypting the key used to encrypt our data. Darn, we try to secure the data-encrypting-key (DEK), but now we're lumbered with another key, namely a "key-encrypting-key" (KEK).
 
-PCI requires that "dual control" and "split knowledge" be used to protect the PAN, i.e. our data that we just know bad people gonna try steal, i.e. the key used to cipher this data. The intent is that no single person can decrypt the data. 
+PCI requires that "dual control" and "split knowledge" be used to protect the PAN, i.e. the key used to cipher this data. The intent is that no single person can steal the data. 
 
 The glaring problem is that sysadmins are a single person, with God-like access to secret data, and custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
