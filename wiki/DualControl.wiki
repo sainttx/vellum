@@ -280,7 +280,7 @@ However your run-of-the-mill `keytool` is tailored for a single admin rather tha
 
 If we have three admins e.g. A, B and C, then naturally we have three combinations of pairs of admins, namely A-B, B-C and A-C. 
 
-In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins, e.g. via the console. 
+In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. 
 
 We introduce `DualControlGenSecKey` to generate a secret key in a JCEKS key store. This collates passwords from multiple admins using `DualControlReader`, which combines those into new "dual passwords" known to no <i>one</i> i.e. no single person. 
 
