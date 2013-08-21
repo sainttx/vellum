@@ -17,10 +17,10 @@ public class DualControlSession {
     private char[] dualPass;
     private String dualAlias;
 
-    public void configure(String keyStorePath, char[] storePass) throws Exception {
+    public void configure(String keyStorePath, char[] storePass, String prompt) throws Exception {
         logger.debug("configure keyStore " + keyStorePath);
         this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
-        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry();
+        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(prompt);
         this.dualAlias = entry.getKey();
         this.dualPass = entry.getValue();
         logger.debug("configure alias " + dualAlias);

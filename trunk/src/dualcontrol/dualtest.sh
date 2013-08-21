@@ -242,7 +242,7 @@ command0_testsingle() {
 }
 
 command1_checklong() {
-  command1_testlong $1 2>&1 | grep -i '^INFO\|^WARN\|error\|^OK' | uniq -c 
+  command1_testlong $1 2>&1 | grep -i '^INFO\|^WARN\|^OK\|error\|Exception' | uniq -c 
 }
 
 des3

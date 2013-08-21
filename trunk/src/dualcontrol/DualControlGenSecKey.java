@@ -33,7 +33,7 @@ public class DualControlGenSecKey {
     }
 
     void start() throws Exception {
-        dualMap = new DualControlReader().readDualMap(submissionCount);
+        dualMap = new DualControlReader().readDualMap(keyAlias, submissionCount);
         keyStorePassword = getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
