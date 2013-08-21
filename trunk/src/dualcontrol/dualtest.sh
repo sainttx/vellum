@@ -241,8 +241,16 @@ command0_testsingle() {
   command1_testcryptoserver 1
 }
 
+greplog() {
+  grep -i '^INFO\|^WARN\|^OK\|error\|Exception' 
+}
+
 command1_checklong() {
-  command1_testlong $1 2>&1 | grep -i '^INFO\|^WARN\|^OK\|error\|Exception' | uniq -c 
+  command1_testlong $1 2>&1 | greplog | sort | uniq -c 
+}
+
+command0_checksingle() {
+  command0_testsingle 2>&1 | greplog
 }
 
 des3

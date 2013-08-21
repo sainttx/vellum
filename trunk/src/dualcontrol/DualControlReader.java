@@ -41,8 +41,8 @@ public class DualControlReader {
                     char[] dualPassword = combineDualPassword(
                             submissions.get(name), submissions.get(otherName));
                     if (true) {
-                        System.err.printf("OK readDualMap %s: %s\n", dualAlias, 
-                                new String(dualPassword));
+                        System.err.printf("INFO DualControlReader.readDualMap: %s, %s\n", 
+                                dualAlias, new String(dualPassword));
                     }
                     map.put(dualAlias, dualPassword);
                 }
