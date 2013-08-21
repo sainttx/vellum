@@ -4,11 +4,11 @@
 
 == Introduction ==
 
-Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock our doors but leave the key in the lock. <i>Or under the mat but that's my personal favourite, so ssh-ssh.</i>
+Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock our doors but leave the key in the lock. <i>Or under the mat, but that's my personal favourite so ssh-ssh.</i>
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-So the Payment Card industry (PCI) has their "Data Security Standard" called "PCI DSS," which outlines best practices, that probably every industry should follow, in my opinion, because it's the only and best thing we got :)
+The Payment Card industry (PCI) has their "Data Security Standard" called "PCI DSS," which outlines best practices, that probably every industry should follow, in my opinion, because it's the only and best thing we got :)
 
 The PCI DSS mandates that "PAN's" aka credit card numbers, must be "rendered unreadable" e.g. encrypted. But it goes without saying that other industries store their own sensitive data; governments too ;)
 
