@@ -71,11 +71,11 @@ Let's test <tt>DualControlGenSecKey</tt>.
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
-When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brand</tt>, we see that <tt>DualControlGenSecKey</tt> saves the secret key under the following "dual-aliases."
+When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>, we see that <tt>DualControlGenSecKey</tt> saves the secret key under the following "dual-aliases."
 
 <pre>
-dek2013-brand-evanx
-dek2013-brand-henty
+dek2013-brent-evanx
+dek2013-brent-henty
 dek2013-evanx-henty
 </pre>
 
@@ -83,9 +83,9 @@ We check that the keys are created in the <tt>KeyStore</tt>.
 
 <pre>
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
-dek2013-brand-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
 dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
-dek2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
+dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 </pre>
 
 Actually these three keys are one and the same. However each copy is password-protected using a different "dual-password" combination, known to no single person.
@@ -175,7 +175,7 @@ public class DualControlReader {
     }
 </pre>
 
-If we have three admins e.g. <tt>evanx</tt>, <tt>henty</tt> and <tt>brand</tt>, then naturally we have three combinations of pairs of admins, namely <tt>brand-evanx</tt>, <tt>brand-henty</tt> and <tt>evanx-henty</tt>. The <tt>compareTo()</tt> in the nested loop ensures we exclude the likes of <tt>evanx-evanx</tt> and <tt>evanx-brand</tt>, since we already have <tt>brand-evanx</tt>, and <tt>evanx-evanx</tt> is just silly.
+If we have three admins e.g. Brent, Evan, and Henty, then we have three combinations of pairs of admins, namely Brent-Evan, Brent-Henty and Evan-Henty (ordered alphabetically). The <tt>compareTo()</tt> in the nested loop ensures we exclude the likes of <tt>Evan-Evan</tt> and <tt>Evan-Brent</tt>, since we already have <tt>Brent-Evan</tt>, and <tt>Evan-Evan</tt> is just silly.
 
 We invoke <tt>readMap()</tt> to read split knowledge submissions from multiple admins.
 
@@ -261,7 +261,7 @@ where we read the dual info using the afore-mentioned <tt>DualControlReader,</tt
 
 One might wish to create a central crypto server which is dualled-controlled, rather than burden your app. In that case, you can restart your application without dual-control, and indeed have any number of apps using this server. Furthermore it simplifies key management. 
 
-We'll implement the crypto server in part 2. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
+We'll implement the crypto server in a follow-up article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
 
 <h4>Conclusion</h4>
 
@@ -275,7 +275,7 @@ PCI requires that "dual control" and "split knowledge" be used to protect our se
 
 However your run-of-the-mill <tt>keytool</tt> is tailored for a single admin rather than dual-control. 
 
-If we have three admins e.g. A, B and C, then naturally we have three combinations of pairs of admins, namely A-B, B-C and A-C. 
+If we have three admins e.g. Tom, Dick and Harry, then naturally we have three combinations of pairs of admins, namely Dick-Harry, Dick-Tom and Harry-Tom. 
 
 In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. 
 
