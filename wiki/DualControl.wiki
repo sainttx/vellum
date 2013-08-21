@@ -20,7 +20,7 @@ The glaring problem is that sysadmins are a single person, with God-like access 
 
 Naturally, `keytool` is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a `DualControlGenSecKey` utility for generating secret keys that are really secret, i.e. they are not "accessible" to anyone, not even "root" ;)
 
-But then our application can't access them either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load the keys it requires to cipher our crown jewels using the keys to the kindgom. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server with the dual-control, in a follow-up article.
+But then our application can't access them either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load the keys it requires to cipher our crown jewels using the keys to the kindgom. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server with the dual-control in a follow-up article.
 
 == `DualControlGenSecKey` ==
 
@@ -119,7 +119,7 @@ where we submit our password via SSL socket to our supposed dual-controlled app 
 
 A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been implanted by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure. 
 
-The workaround for above "bugs," in plain management-speak, is that our "controls" as per our "policies and procedures" prevent or at least detect such attacks, and mitigate consequential risks. A follow-up article will offer some improvements to give admins some confidence that they are not having the wool pulled over their eyes.
+The workaround for above "bugs" in plain management-speak, is that our "controls" as documented in our in our "policies and procedures," prevent or at least detect such attacks, and mitigate consequential risks. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
 
 == `DualControlKeyStores` ==
 
