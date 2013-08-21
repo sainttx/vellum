@@ -72,7 +72,7 @@ javaks() {
 }
 
 jc() {
-  javaks $1 dualcontrol.DummyDualControlClient $@
+  javaks $1 dualcontrol.DummyDualControlConsole $@
 }
 
 jc2() {
@@ -207,8 +207,8 @@ command0_testgenseckey() {
   fi
 }
 
-command0_testclient() {
-  javaks evanx dualcontrol.DualControlClient
+command0_testconsole() {
+  javaks evanx dualcontrol.DualControlConsole
 }
 
 command1_testlong() {
