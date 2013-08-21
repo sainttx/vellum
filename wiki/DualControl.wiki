@@ -82,7 +82,7 @@ dek2013-brand-henty
 dek2013-evanx-henty
 }}}
 
-We check that the keys are created in the <tt>KeyStore</tt>.
+We check that the keys are created in the <tt>!KeyStore</tt>.
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
