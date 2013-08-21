@@ -281,6 +281,8 @@ In order to generate a dual-controlled key, we propose keeping three copies of t
 
 We introduce <tt>DualControlGenSecKey</tt> to generate a secret key in a JCEKS key store. This collates passwords from multiple admins using <tt>DualControlReader</tt>, which combines those into paired "dual passwords" known to no single person. 
 
+We require at least three admins, since one admin might be on leave or otherwise indisposed, without such an eventuality being a show-stopper.
+
 To complete the picture, we provide a trivial <tt>DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket.
 
 Finally, we demonstrate how our app can be dual-controlled to load a key from the store at startup, for ciphering our sensitive data for the duration of its execution.
