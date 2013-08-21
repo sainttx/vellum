@@ -15,13 +15,13 @@ PCI requires that "dual control" and "split knowledge" be used to protect PAN's,
 
 The glaring problem is that sysadmins are a single person, with God-like access to all our data, and custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
-Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret, i.e. they are not "accessible" to anyone, not even <i>root</i> ;)
+Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>DualControlGenSecKey</tt> utility for generating secret keys that are really secret, i.e. they are not "accessible" to anyone, not even <i>root</i> ;)
 
 But then our application can't access those keys either. <i>D'oh!</i> Actually, we must support dual-control of our application in order to load these keys, which it uses to protect our crown jewels. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server in a follow-up article.
 
-<h4><tt>!DualControlGenSecKey</tt></h4>
+<h4><tt>DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key, which ideally no single rogue root user can access. For this purpose, there shall be <tt>!DualControlGenSecKey</tt>, as follows.
+Step 1 for any data security endeavour is to generate an encryption key, which ideally no single rogue root user can access. For this purpose, there shall be <tt>DualControlGenSecKey</tt>, as follows.
 
 <pre>
 public class DualControlGenSecKey { 
@@ -56,11 +56,11 @@ public class DualControlGenSecKey {
     ...
 }
 </pre>
-where <tt>!DualControlReader</tt> provides a map of "dual key" aliases and their secret passwords, and we create a entry for each. 
+where <tt>DualControlReader</tt> provides a map of "dual key" aliases and their secret passwords, and we create a entry for each. 
 
 <h4>Demo</h4>
 
-Let's test <tt>!DualControlGenSecKey</tt>.
+Let's test <tt>DualControlGenSecKey</tt>.
 
 <pre>
   java -Ddualcontrol.submissions=3 \
@@ -71,7 +71,7 @@ Let's test <tt>!DualControlGenSecKey</tt>.
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
-When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brand</tt>, we see that <tt>!DualControlGenSecKey</tt> saves the secret key under the following "dual-aliases."
+When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brand</tt>, we see that <tt>DualControlGenSecKey</tt> saves the secret key under the following "dual-aliases."
 
 <pre>
 dek2013-brand-evanx
@@ -79,7 +79,7 @@ dek2013-brand-henty
 dek2013-evanx-henty
 </pre>
 
-We check that the keys are created in the <tt>!KeyStore</tt>.
+We check that the keys are created in the <tt>KeyStore</tt>.
 
 <pre>
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
@@ -90,7 +90,7 @@ dek2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
 
 Actually these three keys are one and the same. However each copy is password-protected using a different "dual-password" combination, known to no single person.
 
-<h4><tt>!DualControlConsole</tt></h4>
+<h4><tt>DualControlConsole</tt></h4>
 
 In order for admins to submit their secrets e.g. from a ssh session on the <tt>localhost</tt>, we provide a minimal SSL client as follows.
 
@@ -121,7 +121,7 @@ A follow-up article might propose some measures to improve admins' level of conf
 
 The workaround for above "bugs" in plain management-speak, is that our "controls" as documented in in our "policies and procedures," prevent or at least detect such attacks and have words.
 
-<h4><tt>!DualControlKeyStores</tt></h4>
+<h4><tt>DualControlKeyStores</tt></h4>
 
 Similarly to the standard </tt>-Dnet.javax.ssl.*</tt> command-line options that can be used to specify the default "keyStore" and "trustStore" for SSL sockets, we use </tt>-Ddualcontrol.ssl.keyStore</tt> et al, as below. 
 
@@ -147,11 +147,11 @@ public class DualControlKeyStores {
 }
 </pre>
 
-where we create an <tt>!SSLContext</tt> using these settings.
+where we create an <tt>SSLContext</tt> using these settings.
 
-<h4><tt>!DualControlReader</tt></h4>
+<h4><tt>DualControlReader</tt></h4>
 
-Our <tt>!DualControlReader</tt> utility class handles reading split knowledge submissions.
+Our <tt>DualControlReader</tt> utility class handles reading split knowledge submissions.
 
 <pre>
 public class DualControlReader {
@@ -211,13 +211,13 @@ We invoke <tt>readMap()</tt> to read split knowledge submissions from multiple a
     }
 </pre>
 
-where we listen on a SSL port i.e. an <tt>!SSLServerSocket</tt> which we have hard-wired this to <tt>localhost</tt> i.e. via the loopback interface, where <tt>!DualControlConsole</tt> is invariably invoked in a local <tt>ssh</tt> sessions.
+where we listen on a SSL port i.e. an <tt>SSLServerSocket</tt> which we have hard-wired this to <tt>localhost</tt> i.e. via the loopback interface, where <tt>DualControlConsole</tt> is invariably invoked in a local <tt>ssh</tt> sessions.
 
-Note that the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field, where we get the <tt>peer</tt> certificate from the <tt>!SSLSession</tt>.
+Note that the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field, where we get the <tt>peer</tt> certificate from the <tt>SSLSession</tt>.
 
-Incidently, a known bug in the above code, and similarly in <tt>!DualControlConsole</tt>, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
+Incidently, a known bug in the above code, and similarly in <tt>DualControlConsole</tt>, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
 
-<h4><tt>!DualControlSessions</tt></h4>
+<h4><tt>DualControlSessions</tt></h4>
 
 We re-engineer our application to similarly get a dual-password, in order to load the key.
 
@@ -232,7 +232,7 @@ public class DualControlDemoApp {
 }
 </pre>
 
-where the application loads keys as if it's too easy, but the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>!DualControlConsole</tt>.
+where the application loads keys as if it's too easy, but the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>DualControlConsole</tt>.
 
 <pre>
 public class DualControlSessions {
@@ -255,7 +255,7 @@ public class DualControlSessions {
 }
 </pre>
 
-where we read the dual info using the afore-mentioned <tt>!DualControlReader,</tt> which creates an <tt>!SSLServerSocket</tt> on a well-known port e.g. 4444.
+where we read the dual info using the afore-mentioned <tt>DualControlReader,</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
 
 <h4>Cryto server</h4>
 
@@ -279,9 +279,9 @@ If we have three admins e.g. A, B and C, then naturally we have three combinatio
 
 In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. 
 
-We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS key store. This collates passwords from multiple admins using <tt>!DualControlReader</tt>, which combines those into paired "dual passwords" known to no single person. 
+We introduce <tt>DualControlGenSecKey</tt> to generate a secret key in a JCEKS key store. This collates passwords from multiple admins using <tt>DualControlReader</tt>, which combines those into paired "dual passwords" known to no single person. 
 
-To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket.
+To complete the picture, we provide a trivial <tt>DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket.
 
 Finally, we demonstrate how our app can be dual-controlled to load a key from the store at startup, for ciphering our sensitive data for the duration of its execution.
 
