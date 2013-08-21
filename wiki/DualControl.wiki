@@ -95,7 +95,7 @@ Actually these three keys are one and the same. However each copy is password-pr
 
 == `DualControlConsole` == 
 
-In order for admins to submit their secrets to our `DualControlReader` e.g. from a ssh session on the `localhost`, we provide a minimal SSL client as follows.
+In order for admins to submit their secrets e.g. from a ssh session on the `localhost`, we provide a minimal SSL client as follows.
 
 {{{
 public class DualControlConsole {
