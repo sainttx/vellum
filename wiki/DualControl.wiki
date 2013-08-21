@@ -16,7 +16,7 @@ PCI DSS suggests encrypting the key used to encrypt our data. Darn, we try to se
 
 PCI requires that "dual control" and "split knowledge" be used to protect PAN's, i.e. the key used to cipher this data. The intent is that no single person can steal the data. 
 
-The glaring problem is that sysadmins are a single person, with God-like access to secret data, and custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
+The glaring problem is that sysadmins are a single person, with God-like access to all our data, and custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
 Naturally, `keytool` is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a `DualControlGenSecKey` utility for generating secret keys that are really secret, i.e. they are not "accessible" to anyone, not even "root" ;)
 
