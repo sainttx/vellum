@@ -258,7 +258,7 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using the afore-mentioned `DualControlReader,` which creates an `SSLServerSocket` on a well-known port, listens for connections and reads their submission e.g. using our `DualControlConsole` utility.
+where we read the dual info using the afore-mentioned `DualControlReader,` which creates an `SSLServerSocket` on a well-known port e.g. 4444.
 
 == Cryto server == 
 
