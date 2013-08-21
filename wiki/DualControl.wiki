@@ -114,7 +114,7 @@ public class DualControlConsole {
     }    
 }
 }}}
-where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`. The server socket will take our username from the `CN` field of our client cert. 
+where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`, and are identified by our SSL client cert.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
