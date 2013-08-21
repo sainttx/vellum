@@ -108,13 +108,15 @@ public class DualControlConsole {
     final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        char[] passwd = System.console().readPassword("DualControl password: ");
         Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        String prompt = dis.readUTF();
+        char[] passwd = System.console().readPassword(prompt);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeUTF(new String(passwd));
         socket.close();
-    }
+    }    
 }
 }}}
 where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on the `localhost`. The server socket will take our username from the `CN` field of our client cert. 
