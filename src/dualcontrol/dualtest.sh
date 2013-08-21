@@ -72,17 +72,16 @@ javaks() {
 }
 
 jc() {
+  sleep 1 
   javaks $1 dualcontrol.DummyDualControlConsole $@
 }
 
 jc2() {
-    sleep 1 
     jc evanx eeee
     jc henty hhhh
 }
 
 jc3() {
-    sleep 1 
     jc evanx eeee
     jc henty hhhh
     jc brand bbbb
@@ -134,9 +133,9 @@ command1_genseckey() {
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
   if [ `keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry | wc -l` -eq 3 ]
   then
-    echo "OK genseckey"
+    echo "INFO DualControlGenSecKey $1 $keyAlg"
   else
-    echo "WARN genseckey"
+    echo "WARN DualControlGenSecKey "
   fi
 }
 
@@ -169,10 +168,13 @@ command1_cryptoserver_remote() {
 
 cryptoclient_cipher() {
   datum=1111222233334444
-  data=`javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
-     "$secalias:$cipherTrans:ENCRYPT:8:$datum"`
-    javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 \
-       "$secalias:$cipherTrans:DECRYPT:$data"
+  request="ENCRYPT:$secalias:$cipherTrans:8:$datum"
+  echo "TRACE CryptoClientDemo request $request"
+  data=`javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$request"`
+  echo "TRACE CryptoClientDemo response $data"
+  request="DECRYPT:$secalias:$cipherTrans:$data"
+  echo "TRACE CryptoClientDemo request $request"
+  javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$request"
 }
 
 cryptoclient1() {
