@@ -24,7 +24,7 @@ But then our application can't access those keys either. <i>D'oh!</i> Actually, 
 
 == `DualControlGenSecKey` ==
 
-Step 1 for any data security procedure is to generate an encryption key, which ideally no single rogue root user can access. For this purpose, there shall be `DualControlGenSecKey`, as follows.
+Step 1 for any data security endeavour is to generate an encryption key, which ideally no single rogue root user can access. For this purpose, there shall be `DualControlGenSecKey`, as follows.
 
 {{{
 public class DualControlGenSecKey { 
