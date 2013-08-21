@@ -61,7 +61,8 @@ public class DualControlReader {
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
         Map<String, char[]> map = new TreeMap();
-        SSLServerSocket serverSocket = (SSLServerSocket) DualControlKeyStores.createSSLContext().
+        SSLServerSocket serverSocket = (SSLServerSocket) 
+                DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);

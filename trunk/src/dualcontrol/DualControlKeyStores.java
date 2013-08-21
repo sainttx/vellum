@@ -16,10 +16,14 @@ import javax.net.ssl.TrustManagerFactory;
  */
 public class DualControlKeyStores {    
     static final String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
-    static final char[] keyStorePassword = System.getProperty("dualcontrol.ssl.keyStorePassword").toCharArray();
-    static final char[] keyPassword = System.getProperty("dualcontrol.ssl.keyPassword").toCharArray();
+    static final char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword");
+    static final char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword");
     static final String trustStorePath = System.getProperty("dualcontrol.ssl.trustStore");
-    static final char[] trustStorePassword = System.getProperty("dualcontrol.ssl.trustStorePassword").toCharArray();    
+    static final char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
+    
+    public static char[] getPassword(String propertyName) {
+        return System.getProperty(propertyName).toCharArray();
+    }
     
     public static SSLContext createSSLContext() throws Exception {
         return createSSLContext(keyStorePath, keyStorePassword, keyPassword,
@@ -43,7 +47,8 @@ public class DualControlKeyStores {
         return sslContext;
     }
     
-    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) throws Exception {
+    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) 
+            throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         if (keyStorePath.contains(":")) {
             String[] array = keyStorePath.split(":");
