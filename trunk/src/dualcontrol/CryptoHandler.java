@@ -33,16 +33,28 @@ public class CryptoHandler {
             dis.readFully(bytes);
             String data = new String(bytes);
             String[] fields = data.split(":");
+            String mode = fields[0];
+            String alias = fields[1];
             this.dos = new DataOutputStream(socket.getOutputStream());
-            cipher(fields[0], fields[1], fields[2], fields[3], fields[4]);
+            if (mode.equals("GETKEY")) {
+                SecretKey key = dualControl.loadKey(alias);
+                dos.writeUTF(key.getAlgorithm());
+                write(key.getEncoded());                
+            } else {            
+                cipher(mode, alias, fields[2], fields[3], fields[4]);
+            }
         } finally {
             dos.close();
         }
     }
+
+    public static String join(Object ... args) {
+        return Arrays.toString(args);
+    }
     
-    private void cipher(String alias, String transformation, String mode,
+    private void cipher(String mode, String alias, String transformation, 
             String ivString, String dataString) throws Exception {
-        logger.debug("cipher " + Arrays.toString(new Object[] {alias, transformation, mode}));
+        logger.debug(join("cipher", alias, transformation, mode));
         SecretKey key = dualControl.loadKey(alias);
         logger.debug("keyalg " + key.getAlgorithm());
         Cipher cipher = Cipher.getInstance(transformation);
@@ -75,12 +87,16 @@ public class CryptoHandler {
     }
 
     private void write(byte[] ivBytes, byte[] dataBytes) throws Exception {
-        dos.writeShort(ivBytes.length);
-        dos.write(ivBytes);
-        dos.writeShort(dataBytes.length);
-        dos.write(dataBytes);
+        write(ivBytes);
+        write(dataBytes);
         logger.debug("ivBytes " + ivBytes.length);
         logger.debug("dataBytes " + dataBytes.length);
     }    
+    
+    private void write(byte[] bytes) throws Exception {
+        dos.writeShort(bytes.length);
+        dos.write(bytes);
+    }    
+    
 }
 
