@@ -214,7 +214,7 @@ We invoke `readMap()` to read split knowledge submissions from multiple admins.
     }
 }}}
 
-where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired this to `localhost` i.e. via the loopback interface, where `DualControlConsole` invoked in local `ssh` sessions.
+where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired this to `localhost` i.e. via the loopback interface, where `DualControlConsole` is invariably invoked in a local `ssh` sessions.
 
 Note that the admin's username is determined from their SSL cert, namely the `CN` field.
 
