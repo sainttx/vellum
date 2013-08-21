@@ -126,7 +126,7 @@ The workaround for above "bugs" in plain management-speak, is that our "controls
 
 <h4><tt>!DualControlKeyStores</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.*</tt> command-line options that can be used to specify the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> et al, as below. 
+Similarly to the standard <tt>-Dnet.javax.ssl</tt> command-line options that can be used to specify the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> et al, as below. 
 
 Note that the "keyStore" parameter is our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for DSA assymmetric encryption. This should not be confused with our "secret key store" e.g. which contains a AES <i>secret</i> key for symmetric encryption of our secret data. 
  
@@ -150,7 +150,7 @@ public class DualControlKeyStores {
 }
 }}}
 
-where we create an <tt>!SSLContext</tt> using these settings.
+where we create an <tt>SSLContext</tt> using these settings.
 
 <h4><tt>!DualControlReader</tt></h4>
 
@@ -214,9 +214,9 @@ We invoke <tt>readMap()</tt> to read split knowledge submissions from multiple a
     }
 }}}
 
-where we listen on a SSL port i.e. an <tt>!SSLServerSocket</tt> which we have hard-wired this to <tt>localhost</tt> i.e. via the loopback interface, where <tt>!DualControlConsole</tt> is invariably invoked in a local <tt>ssh</tt> sessions.
+where we listen on a SSL port i.e. an <tt>SSLServerSocket</tt> which we have hard-wired this to <tt>localhost</tt> i.e. via the loopback interface, where <tt>!DualControlConsole</tt> is invariably invoked in a local <tt>ssh</tt> sessions.
 
-Note that the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field, where we get the <tt>peer</tt> certificate from the <tt>!SSLSession</tt>.
+Note that the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field, where we get the <tt>peer</tt> certificate from the <tt>SSLSession</tt>.
 
 Incidently, a known bug in the above code, and similarly in <tt>!DualControlConsole</tt>, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
 
@@ -258,7 +258,7 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using the afore-mentioned <tt>!DualControlReader,</tt> which creates an <tt>!SSLServerSocket</tt> on a well-known port e.g. 4444.
+where we read the dual info using the afore-mentioned <tt>!DualControlReader,</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
 
 <h4>Cryto server</h4>
 
