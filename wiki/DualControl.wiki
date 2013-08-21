@@ -235,7 +235,7 @@ public class DualControlDemoApp {
 }
 }}}
 
-where the application loads keys as if it's too easy to be right, but the caveat is that execution is blocked whilst we are waiting for two admins to submit info via their `DualControlConsole`.
+where the application loads keys as if it's too easy, but the caveat is that execution is blocked whilst we are waiting for two admins to submit info via their `DualControlConsole`.
 
 {{{
 public class DualControlSessions {
