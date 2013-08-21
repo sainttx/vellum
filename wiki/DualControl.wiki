@@ -286,10 +286,10 @@ We introduce `DualControlGenSecKey` to generate a secret key in a JCEKS key stor
 
 To complete the picture, we provide a trivial `DualControlConsole` utility for admins to submit their password from their `ssh` console via a client-authenticated SSL socket.
 
-Finally, we demonstrate how our app can be dual-controlled to load a key from the store at startup, for ciphering our sensitive data for the duration of its natural life.
-
-In a follow-up article, we'll implement a dual-controlled crypto server, to unburden our apps, improve convenience, but more importantly, to isolate our keys on the crypto server, to simplify key management, to enhance security. 
+Finally, we demonstrate how our app can be dual-controlled to load a key from the store at startup, for ciphering our sensitive data for the duration of its execution.
 
 == See also ==
+
+In a follow-up article, we'll implement a dual-controlled crypto server, to unburden our apps, improve convenience, but more importantly, to isolate our keys on the crypto server, to simplify key management, to enhance security. 
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
