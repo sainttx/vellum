@@ -20,7 +20,7 @@ The glaring problem is that sysadmins are a single person, with God-like access 
 
 Naturally, `keytool` is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a `DualControlGenSecKey` utility for generating secret keys that are really secret, i.e. they are not "accessible" to anyone, not even <i>root</i> ;)
 
-But then our application can't access them either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load the keys it requires to cipher our crown jewels using the keys to the kindgom. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server with the dual-control in a follow-up article.
+But then our application can't access those keys either. <i>D'oh!</i> Actually, we can use the same tricks for dual-control of our application to load the keys it requires to cipher our crown jewels using the keys to the kindgom. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server with the dual-control in a follow-up article.
 
 == `DualControlGenSecKey` ==
 
