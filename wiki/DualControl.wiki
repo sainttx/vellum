@@ -178,7 +178,7 @@ public class DualControlReader {
     }
 }}}
 
-If we have three admins e.g. A, B and C, then naturally we have three combinations of pairs of admins, namely A-B, B-C and A-C. The <tt>compareTo()</tt> in the nested loop ensures we exclude the likes of A-A and B-A.
+If we have three admins e.g. `evanx`, `henty` and `brand`, then naturally we have three combinations of pairs of admins, namely `brand-evanx`, `brand-henty` and `evanx-henty`. The <tt>compareTo()</tt> in the nested loop ensures we exclude the likes of `evanx-evans` and `evanx-brand`, since we already have `brand-evanx`, and `evanx-evanx` is just silly.
 
 We invoke `readMap()` to read split knowledge submissions from multiple admins.
 
