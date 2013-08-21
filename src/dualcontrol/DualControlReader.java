@@ -1,6 +1,7 @@
 package dualcontrol;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.lang.String;
 import java.net.InetAddress;
 import java.nio.CharBuffer;
@@ -22,13 +23,15 @@ public class DualControlReader {
     private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     
+    String prompt;
     int submissionCount;
     
-    static Map.Entry<String, char[]> readDualEntry() throws Exception {
-        return new DualControlReader().readDualMap(2).entrySet().iterator().next();
+    static Map.Entry<String, char[]> readDualEntry(String prompt) throws Exception {
+        return new DualControlReader().readDualMap(prompt, 2).entrySet().iterator().next();
     }
 
-    public Map<String, char[]> readDualMap(int submissionCount) throws Exception {
+    public Map<String, char[]> readDualMap(String prompt, int submissionCount) throws Exception {
+        this.prompt = prompt;
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
@@ -36,8 +39,12 @@ public class DualControlReader {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
-                    char[] dualPassword = combineDualPassword(submissions.get(name), submissions.get(otherName));
-System.err.printf("readDualMap %s [%s]\n", dualAlias, new String(dualPassword));
+                    char[] dualPassword = combineDualPassword(
+                            submissions.get(name), submissions.get(otherName));
+                    if (true) {
+                        System.err.printf("OK readDualMap %s: %s\n", dualAlias, 
+                                new String(dualPassword));
+                    }
                     map.put(dualAlias, dualPassword);
                 }
             }
@@ -66,6 +73,8 @@ System.err.printf("readDualMap %s [%s]\n", dualAlias, new String(dualPassword));
             }
             String username = new X500Name(socket.getSession().getPeerPrincipal().
                     getName()).getCommonName();
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] chars = dis.readUTF().toCharArray();
             if (true) { // TODO remove

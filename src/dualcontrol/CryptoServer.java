@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
  */
 public class CryptoServer {
     static Logger logger = Logger.getLogger(CryptoServer.class);
+    static final String prompt = "CryptoServer";
     DualControlSession dualControlSession = new DualControlSession();
     
     public static void main(String[] args) throws Exception {
@@ -30,7 +31,7 @@ public class CryptoServer {
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String keyStorePath, char[] storePass) 
             throws Exception {
-        dualControlSession.configure(keyStorePath, storePass);
+        dualControlSession.configure(keyStorePath, storePass, prompt);
         ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(port, backlog, localAddress);
         while (true) {
