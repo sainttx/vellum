@@ -1,12 +1,6 @@
-#labels Encryption,PCI
+#labels Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
+
 = Dual Control Key Management =
-
-<pre>
-Draft 1, 2013-08-18
-Draft 2, 2013-08-19, DualControlGenSecKey
-</pre>
-
-Keywords: Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
 
 == Introduction ==
 
