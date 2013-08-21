@@ -130,11 +130,11 @@ Note that the "keyStore" parameter is our "private keystore" which contains the 
  
 {{{
 public class DualControlKeyStores {    
-    static final String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
-    static final char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword");
-    static final char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword");
-    static final String trustStorePath = System.getProperty("dualcontrol.ssl.trustStore");
-    static final char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
+    static String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
+    static char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword");
+    static char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword");
+    static String trustStorePath = System.getProperty("dualcontrol.ssl.trustStore");
+    static char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
     
     public static char[] getPassword(String propertyName) {
         return System.getProperty(propertyName).toCharArray();
@@ -204,13 +204,6 @@ We invoke `readMap()` to read split knowledge submissions from multiple admins.
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] chars = dis.readUTF().toCharArray();
-            if (true) { // TODO remove
-                String[] fields = new String(chars).split(":");
-                if (fields.length > 1) {
-                    username = fields[0];
-                    chars = fields[0].toCharArray();
-                }
-            }
             map.put(username, chars);
             socket.close();
         }
