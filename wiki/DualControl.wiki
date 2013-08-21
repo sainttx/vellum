@@ -98,12 +98,12 @@ dek2013-brand-evanx, 18 Aug 2013, SecretKeyEntry,
 
 Actually these three keys are one and the same. However each copy is password-protected using a different "dual-password" combination, known to no one.
 
-== `DualControlClient` == 
+== `DualControlConsole` == 
 
 In order for admins to submit their secrets to our `DualControlReader` e.g. from a ssh session on the `localhost`, we provide a minimal SSL client as follows.
 
 {{{
-public class DualControlClient {
+public class DualControlConsole {
     final static int PORT = 4444;
     final static String HOST = "127.0.0.1";
 
@@ -214,18 +214,18 @@ where we invoke `readMap()` to read split knowledge submissions from multiple ad
     }
 }}}
 
-where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired this to `localhost` i.e. via the loopback interface, where `DualControlClient` invoked in local `ssh` sessions.
+where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired this to `localhost` i.e. via the loopback interface, where `DualControlConsole` invoked in local `ssh` sessions.
 
 Note that the admin's username is determined from their SSL cert, namely the `CN` field.
 
-Incidently, a known bug in the above code, and similarly in `DualControlClient`, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
+Incidently, a known bug in the above code, and similarly in `DualControlConsole`, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
 
 == `DualControlSessions` == 
 
 We re-engineer our application to similarly get a dual-password, in order to load the key.
 
 {{{
-public class DemoApp {
+public class DualControlDemoApp {
     private SecretKey dek;     
     ...
     private void loadKey(String keyStorePath, char[] storePass, String alias) throws Exception {
@@ -234,7 +234,7 @@ public class DemoApp {
 }
 }}}
 
-where the application loads keys as if it's too easy to be right, but the caveat is that execution is blocked whilst we are waiting for two admins to submit info via their `DualControlClient`.
+where the application loads keys as if it's too easy to be right, but the caveat is that execution is blocked whilst we are waiting for two admins to submit info via their `DualControlConsole`.
 
 {{{
 public class DualControlSessions {
@@ -257,7 +257,7 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using the afore-mentioned `DualControlReader,` which creates an `SSLServerSocket` on a well-known port, listens for connections and reads their submission e.g. using our `DualControlClient` utility.
+where we read the dual info using the afore-mentioned `DualControlReader,` which creates an `SSLServerSocket` on a well-known port, listens for connections and reads their submission e.g. using our `DualControlConsole` utility.
 
 == Cryto server == 
 
@@ -279,7 +279,7 @@ If we have three admins e.g. A, B and C, then naturally we have three combinatio
 
 We introduce `DualControlGenSecKey` to generate a secret key in a JCEKS key store. This collates passwords from multiple admins using `DualControlReader`, which combines those into new "dual passwords" known to no one.
 
-To complete the picture, we provide a trivial `DualControlClient` console utility for admins to submit their passwords via SSL sockets.
+To complete the picture, we provide a trivial `DualControlConsole` console utility for admins to submit their passwords via SSL sockets.
 
 Finally, we demonstrate how our app can be dual-controlled to load a key from the store i.e. for ciphering data.
 
