@@ -72,7 +72,7 @@ javaks() {
 }
 
 jc() {
-  javaks $1 dualcontrol.DummyDualControlClient "$2"
+  javaks $1 dualcontrol.DummyDualControlClient $@
 }
 
 jc2() {
