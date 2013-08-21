@@ -10,11 +10,11 @@ Keywords: Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
 
 == Introduction ==
 
-Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock our doors but leave the key in the lock. <i>Or in the pot plant under a stone, but that's my personal favourite so ssh-ssh.</i>
+Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock our doors but leave the key in the lock. <i>Or under the mat but that's my personal favourite, so ssh-ssh.</i>
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-So the Payment Card industry (PCI) has their "Data Security Standard" called "PCI DSS," which has general best practices that every industry should follow, actually. It's the only and best thing we got :)
+So the Payment Card industry (PCI) has their "Data Security Standard" called "PCI DSS," which outlines best practices, that probably every industry should follow, in my opinion, because it's the only and best thing we got :)
 
 The PCI DSS mandates that "PAN's" aka credit card numbers, must be "rendered unreadable" e.g. encrypted. But it goes without saying that other industries store their own sensitive data; governments too ;)
 
@@ -46,7 +46,7 @@ public class DualControlGenSecKey {
     }
 
     void start() throws Exception {
-        dualMap = new DualControlReader().readDualMap(submissionCount);
+        dualMap = new DualControlReader().readDualMap(keyAlias, submissionCount);
         keyStorePassword = getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
@@ -155,15 +155,18 @@ Our `DualControlReader` utility class handles reading split knowledge submission
 {{{
 public class DualControlReader {
     ...
-    public Map<String, char[]> readDualMap(int submissionCount) throws Exception {
+    public Map<String, char[]> readDualMap(String prompt, int submissionCount) throws Exception {
+        this.prompt = prompt;
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
-                    map.put(String.format("%s-%s", name, otherName),
-                            combineDualPassword(submissions.get(name), submissions.get(otherName)));
+                    String dualAlias = String.format("%s-%s", name, otherName);
+                    char[] dualPassword = combineDualPassword(
+                            submissions.get(name), submissions.get(otherName));
+                    map.put(dualAlias, dualPassword);
                 }
             }
         }
@@ -177,8 +180,9 @@ where we invoke `readMap()` to read split knowledge submissions from multiple ad
     private final static int PORT = 4444;
     private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
-
+    ...
     Map<String, char[]> readMap() throws Exception {
+        logger.info("Waiting for submissions on SSL port " + PORT);
         Map<String, char[]> map = new TreeMap();
         SSLServerSocket serverSocket = (SSLServerSocket) DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
@@ -191,8 +195,17 @@ where we invoke `readMap()` to read split knowledge submissions from multiple ad
             }
             String username = new X500Name(socket.getSession().getPeerPrincipal().
                     getName()).getCommonName();
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] chars = dis.readUTF().toCharArray();
+            if (true) { // TODO remove
+                String[] fields = new String(chars).split(":");
+                if (fields.length > 1) {
+                    username = fields[0];
+                    chars = fields[0].toCharArray();
+                }
+            }
             map.put(username, chars);
             socket.close();
         }
@@ -231,7 +244,7 @@ public class DualControlSessions {
         char[] dualPass = null;
         try {
             KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
-            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry();
+            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(alias);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
             return (SecretKey) dualKeyStore.getKey(alias + "-" + dualAlias, dualPass);
