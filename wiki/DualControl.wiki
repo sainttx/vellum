@@ -82,7 +82,7 @@ dek2013-brand-henty
 dek2013-evanx-henty
 }}}
 
-Lo and behold, these keys do seem to be have been created.
+We check that the keys are created in the <tt>KeyStore</tt>.
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
