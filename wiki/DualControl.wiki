@@ -216,7 +216,7 @@ We invoke `readMap()` to read split knowledge submissions from multiple admins.
 
 where we listen on a SSL port i.e. an `SSLServerSocket` which we have hard-wired this to `localhost` i.e. via the loopback interface, where `DualControlConsole` is invariably invoked in a local `ssh` sessions.
 
-Note that the admin's username is determined from their SSL cert, namely the `CN` field.
+Note that the admin's username is determined from their SSL cert, namely the `CN` field, where we get the `peer` certificate from the `SSLSession`.
 
 Incidently, a known bug in the above code, and similarly in `DualControlConsole`, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
 
