@@ -170,7 +170,9 @@ public class DualControlReader {
     }
 }}}
 
-where we invoke `readMap()` to read split knowledge submissions from multiple admins.
+If we have three admins e.g. A, B and C, then naturally we have three combinations of pairs of admins, namely A-B, B-C and A-C. The <tt>compareTo()</tt> in the nested loop ensures we exclude the likes of A-A and B-A.
+
+We invoke `readMap()` to read split knowledge submissions from multiple admins.
 
 {{{
     private final static int PORT = 4444;
@@ -263,13 +265,13 @@ We'll implement the crypto server in part 2. So we can say, "Dual control? We ha
 
 == Conclusion ==
 
-The problem with encryption is secure key management. It's like we lock the door but leave the key under the mat.
+The problem with encryption is secure key management. We shouldn't leave the key under the mat.
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 PCI requires that "dual control" and "split knowledge" be used to protect our sensitive data so that no single person can extract it, not even your most trustworthy employee today, rogue tomorrow.
 
-Naturally, `keytool` is tailored for a single root admin, rather than "dual-control." 
+However your run-of-the-mill `keytool` is tailored for a single admin rather than dual-control. 
 
 If we have three admins e.g. A, B and C, then naturally we have three combinations of pairs of admins, namely A-B, B-C and A-C. In order to generate a dual-controlled key, we propose keeping three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins.
 
