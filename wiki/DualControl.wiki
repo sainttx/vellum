@@ -265,7 +265,9 @@ We'll implement the crypto server in part 2. <i>Then we can say, "Dual control? 
 
 == Conclusion ==
 
-The problem with encryption is secure key management. We shouldn't leave the key under the mat. <i>Aint got no time for that</i>.
+The problem with encryption is secure key management. <i>Aint got no time for that</i>.
+
+We probably shouldn't leave the key under the mat, where network intruders and rogue admins alike can just pick it up and steal our sensitive data. 
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
