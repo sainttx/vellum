@@ -10,7 +10,7 @@ Encryption is great for information security and all that. But the problem with 
 
 The Payment Card industry (PCI) has their "Data Security Standard" called "PCI DSS," which outlines best practices, that probably every industry should follow because it's the only and best thing we got :)
 
-The PCI DSS mandates that PAN's aka <i>Primary Account Numbers</i> aka credit card numbers, must be "rendered unreadable" e.g. encrypted. But it goes without saying that other industries store their own sensitive data; governments too ;)
+The PCI DSS mandates that PAN's aka <i>Primary Account Numbers</i> aka credit card numbers, must be "rendered unreadable" e.g. encrypted. It goes without saying that other industries also have sensitive data that people might want to steal, governments even ;)
 
 PCI DSS suggests encrypting the key used to encrypt our data. Darn, we thereby secure the data-encrypting-key (DEK), but now we're lumbered with another key, namely a "key-encrypting-key" (KEK). <i>The keys to the kindgom, woohoo!</i>
 
