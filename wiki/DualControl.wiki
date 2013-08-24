@@ -272,7 +272,7 @@ So we might want an even stronger <tt>!KeyStore</tt> implementation than offered
 
 <h4><tt>!DualControlSessions</tt></h4>
 
-We re-engineer our application to similarly get a dual-password, in order to load the key.
+On the downside, we have to re-engineer our application to be dual-controlled, in order to load the key it so desperately needs to decrypt our precious data.
 
 {{{
 public class DualControlDemoApp {
