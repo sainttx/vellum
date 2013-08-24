@@ -182,7 +182,7 @@ public class DualControlReader {
 
 If we have three admins e.g. Brent, Evan, and Henty, then we have three combinations of pairs of admins, namely Brent-Evan, Brent-Henty and Evan-Henty, ordered alphabetically. The <tt>compareTo()</tt> in the nested loop above ensures we exclude the likes of <tt>Evan-Brent</tt> in favour of <tt>Brent-Evan</tt>, and <tt>Evan-Evan</tt>, which is just silly.
 
-We invoke <tt>readMap()</tt> to accumulate submissions via an <tt>SSLServerSocket</tt>.
+We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
 
 {{{
     private final static int PORT = 4444;
@@ -191,12 +191,20 @@ We invoke <tt>readMap()</tt> to accumulate submissions via an <tt>SSLServerSocke
     ...
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
-        Map<String, char[]> map = new TreeMap();
         SSLServerSocket serverSocket = (SSLServerSocket) 
                 DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);
+        return readMap(serverSocket);
+    }
+}}}
+
+We accumulate the required number of submissions as follows.
+
+{{{    
+    Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {        
+        Map<String, char[]> map = new TreeMap();
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
