@@ -334,15 +334,15 @@ In order to generate a dual-controlled key, we propose keeping at least three co
 
 We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-type keystore. This collates passwords from multiple admins using <tt>!DualControlReader</tt>, which combines those into paired "dual passwords" known to no single person. 
+We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-type keystore. This protects keys using "dual passwords" known to no single person. 
 
-We require at least three admins, since one admin might be on vacation or otherwise indisposed. Hopefully we can always find two admins to come to the party when we need to restart our app.
+We demonstrate how our app can be dual-controlled to load a key from the store at startup.
+
+In practice, we require at least three authorised admins, so that when one admin might be on vacation or otherwise indisposed, hopefully we can always find two admins to come to the party to restart our app. Consequently <tt>!DualControlGenSecKey</tt> requires at least three admins to generate a key, but thereafter we require only any two of the admins e.g. to provide passwords to our app to load the key. 
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket.
 
 We can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection.
-
-We demonstrate how our app can be dual-controlled to load a key from the store at startup.
 
 We note that we want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
