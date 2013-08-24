@@ -12,7 +12,7 @@ import vellum.exception.ParseRuntimeException;
  *
  * @author evan
  */
-public class Milli {
+public class Millis {
     
     public static long toSeconds(long millis) {
         return millis/1000;
@@ -61,18 +61,18 @@ public class Milli {
         
     public static String formatAsSeconds(long millis) {
         if (millis == 0) return "00:00:00";
-        long hour = millis/Milli.fromHours(1);
-        long minute = (millis % Milli.fromHours(1))/Milli.fromMinutes(1);
-        long second = (millis % Milli.fromMinutes(1))/Milli.fromSeconds(1);
+        long hour = millis/Millis.fromHours(1);
+        long minute = (millis % Millis.fromHours(1))/Millis.fromMinutes(1);
+        long second = (millis % Millis.fromMinutes(1))/Millis.fromSeconds(1);
         return String.format("%02d:%02d:%02d", hour, minute, second);
     }
 
     public static String format(long millis) {
         if (millis == 0) return "00:00:00,000";
-        long hour = millis/Milli.fromHours(1);
-        long minute = (millis % Milli.fromHours(1))/Milli.fromMinutes(1);
-        long second = (millis % Milli.fromMinutes(1))/Milli.fromSeconds(1);
-        long millisecond = millis % Milli.fromSeconds(1);
+        long hour = millis/Millis.fromHours(1);
+        long minute = (millis % Millis.fromHours(1))/Millis.fromMinutes(1);
+        long second = (millis % Millis.fromMinutes(1))/Millis.fromSeconds(1);
+        long millisecond = millis % Millis.fromSeconds(1);
         return String.format("%02d:%02d:%02d,%03d", hour, minute, second, millisecond);
     }
     

@@ -16,13 +16,29 @@ public class DualControlConsole {
     final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
+        new DualControlConsole().run();
+        
+    }
+    public void run() throws Exception {
         Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
-                createSocket(HOST, PORT);
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-        String prompt = dis.readUTF();
-        char[] passwd = System.console().readPassword(prompt);
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        dos.writeUTF(new String(passwd));
-        socket.close();
+                    createSocket(HOST, PORT);
+        try {
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            String prompt = dis.readUTF();
+            char[] password = readPassword(prompt);
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(new String(password));
+            String message = dis.readUTF();
+            System.console().writer().println(message);
+        } finally {
+            socket.close();
+        }
     }    
+
+    char[] readPassword(String prompt) throws Exception {
+        char[] password = System.console().readPassword(prompt);
+        DualControlPasswords.verifyPassword(password);
+        return password;
+    }
+
 }

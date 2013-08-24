@@ -5,7 +5,7 @@
 package crocserver.app;
 
 import java.util.Map;
-import vellum.datatype.Milli;
+import vellum.datatype.Millis;
 import vellum.exception.EnumException;
 import vellum.parameter.StringMap;
 
@@ -14,7 +14,7 @@ import vellum.parameter.StringMap;
  * @author evan
  */
 public class CrocCookie {
-    public static final long MAX_AGE_MILLIS = Milli.fromHours(16);
+    public static final long MAX_AGE_MILLIS = Millis.fromHours(16);
     
     String email;
     String displayName;

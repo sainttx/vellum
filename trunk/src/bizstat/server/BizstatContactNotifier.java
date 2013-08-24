@@ -4,7 +4,7 @@
  */
 package bizstat.server;
 
-import vellum.datatype.Milli;
+import vellum.datatype.Millis;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import bizstat.entity.*;
@@ -36,7 +36,7 @@ public class BizstatContactNotifier implements Runnable {
     @Override
     public void run() {
         if (!contact.isEnabled()) {
-        } else if (!Milli.isElapsed(notifyTime, server.config.notifyMillis)) {
+        } else if (!Millis.isElapsed(notifyTime, server.config.notifyMillis)) {
             logger.warn("notify ignore", notifyTime);
         } else {
             notifyTime = new Date();

@@ -7,7 +7,7 @@ package bizstat.enumtype;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import vellum.datatype.Milli;
+import vellum.datatype.Millis;
 
 /**
  *
@@ -24,12 +24,12 @@ public enum StatusChangeType {
 
     public static Map<StatusChangeType, Long> newIntervalMap(List<String> list) {
         Map<StatusChangeType, Long> map = new HashMap();
-        map.put(OK_WARNING, Milli.parse(list.get(0)));
-        map.put(WARNING_CRITICAL, Milli.parse(list.get(1)));
-        map.put(OK_CRITICAL, Milli.parse(list.get(0)) + Milli.parse(list.get(1)));
-        map.put(CRITICAL_WARNING, Milli.parse(list.get(2)));
-        map.put(WARNING_OK, Milli.parse(list.get(3)));
-        map.put(CRITICAL_OK, Milli.parse(list.get(2)) + Milli.parse(list.get(3)));
+        map.put(OK_WARNING, Millis.parse(list.get(0)));
+        map.put(WARNING_CRITICAL, Millis.parse(list.get(1)));
+        map.put(OK_CRITICAL, Millis.parse(list.get(0)) + Millis.parse(list.get(1)));
+        map.put(CRITICAL_WARNING, Millis.parse(list.get(2)));
+        map.put(WARNING_OK, Millis.parse(list.get(3)));
+        map.put(CRITICAL_OK, Millis.parse(list.get(2)) + Millis.parse(list.get(3)));
         return map;
     }
     
