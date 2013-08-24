@@ -324,7 +324,7 @@ We probably shouldn't leave the key down the garden path, where tresspassers and
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-PCI requires that "split knowledge and dual controls" be used to protect our encryption keys so that no single person can acquire them, not even your most trustworthy employee today, rogue tomorrow.
+PCI requires that "split knowledge and dual controls" be used to protect our encryption keys so that no single person can acquire them, not even our most trustworthy employee today, rogue tomorrow.
 
 Your grandaddy's <tt>keytool</tt> is tailored for a single admin rather than dual-control. 
 
