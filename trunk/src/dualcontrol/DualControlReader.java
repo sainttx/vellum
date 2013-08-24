@@ -84,8 +84,13 @@ public class DualControlReader {
                     password = fields[0].toCharArray();
                 }
             }
-            DualControlPasswords.verifyPassword(password);
-            map.put(username, password);
+            String errorMessage = DualControlPasswords.getErrorMessage(password);
+            if (errorMessage == null) {
+                map.put(username, password);
+                dos.writeUTF("OK");
+            } else {
+                dos.writeUTF(errorMessage);
+            }
             socket.close();
         }
         serverSocket.close();

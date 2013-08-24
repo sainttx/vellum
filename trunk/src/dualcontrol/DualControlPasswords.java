@@ -6,41 +6,39 @@ package dualcontrol;
  * @author evans
  */
 public class DualControlPasswords {
+    final static boolean verifyPassword = 
+            getBoolean("dualcontrol.verifyPassword", true);
+    final static boolean verifyPasswordComplexity = 
+            getBoolean("dualcontrol.verifyPasswordComplexity", true);
     final static int minPasswordLength = 
             Integer.getInteger("dualcontrol.minPasswordLength", 9);
 
-    public static void verifyPassword(char[] password) throws Exception {
-        if (password.length < minPasswordLength) {
-            throw new Exception("Password too short");
+    public static void assertValid(char[] password) throws Exception {
+        String errorMessage = getErrorMessage(password);
+        if (errorMessage != null) {
+            throw new Exception(errorMessage);
         }
-        if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password) || 
-                !isDigit(password) || !isPunctuation(password)) {
-            throw new Exception("Insufficient password complexity");            
-        } 
     }
 
-    public static String getPasswordInvalidMessage(char[] password) throws Exception {
-        if (password.length < minPasswordLength) {
-            return "Password too short";
+    public static boolean isValid(char[] password) throws Exception {
+        return getErrorMessage(password) == null;
+    }
+    
+    public static String getErrorMessage(char[] password) throws Exception {
+        if (verifyPassword) {
+            if (password.length < minPasswordLength) {
+                return "Password too short";
+            }
+            if (verifyPasswordComplexity) {
+                if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
+                        || !isDigit(password) || !isPunctuation(password)) {
+                    return "Insufficient password complexity";
+                }
+            }
         }
-        if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password) || 
-                !isDigit(password) || !isPunctuation(password)) {
-            return "Insufficient password complexity";
-        } 
         return null;
     }
 
-    public static boolean isValidPassword(char[] password) throws Exception {
-        if (password.length < minPasswordLength) {
-            return false;
-        }
-        if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password) || 
-                !isDigit(password) || !isPunctuation(password)) {
-            return false;
-        } 
-        return true;
-    }
-    
     public static boolean isDigit(char[] array) {
         for (char ch : array) {
             if (Character.isDigit(ch)) {
@@ -86,4 +84,12 @@ public class DualControlPasswords {
         }
         return false;
     }   
+    
+    public static boolean getBoolean(String name, boolean defaultValue) {
+        String string = System.getProperty("dualcontrol.verifyPassword");
+        if (string == null) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(string);
+    }    
 }
