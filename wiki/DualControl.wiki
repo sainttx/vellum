@@ -76,7 +76,7 @@ Let's test <tt>!DualControlGenSecKey</tt>.
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
-When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>, we see that <tt>DualControlGenSecKey</tt> saves the secret key under the following "dual-aliases."
+When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>, we see that <tt>!DualControlGenSecKey</tt> saves the secret key under the following "dual-aliases."
 
 {{{
 dek2013-brent-evanx
@@ -348,7 +348,7 @@ Finally, we demonstrate how our app can be dual-controlled to load a key from th
 
 In a follow-up article, we'll implement a dual-controlled crypto server, to unburden our apps, improve convenience, but more importantly, to isolate our keys on the crypto server, to simplify key management, to enhance security. 
 
-We will also need other tools similar to <tt>DualControlGenSec</tt>, to enroll and revoke admins i.e. to handle staff turnover.  We'll present <tt>DualControlEnroll</tt> and <tt>DualControlRevoke</tt> in a yet another sequel. 
+We will also need other tools similar to <tt>!DualControlGenSec</tt>, to enroll and revoke admins i.e. to handle staff turnover.  We'll present <tt>!DualControlEnroll</tt> and <tt>!DualControlRevoke</tt> in a yet another sequel. 
 
 Finally we will work through "key rotation" e.g. migrating from a "dek2013" to fresh new "dek2014."
 
