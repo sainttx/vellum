@@ -32,7 +32,7 @@ Step 1 for any data security endeavour is to generate an encryption key, which p
 public class DualControlGenSecKey { 
     int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
     String keyAlias = System.getProperty("alias"); 
-    String keyStorePath = System.getProperty("keystore"); 
+    String keyStoreLocation = System.getProperty("keystore"); 
     String keyStoreType = System.getProperty("storetype");
     String keyAlg = System.getProperty("keyalg");
     int keySize = Integer.getInteger("keysize");
@@ -47,7 +47,7 @@ public class DualControlGenSecKey {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
-        keyStore = loadKeyStore(keyStorePath, keyStorePassword);
+        keyStore = loadKeyStore(keyStoreLocation, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
@@ -56,7 +56,7 @@ public class DualControlGenSecKey {
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
         }
-        keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
     }
     ...
 }
@@ -134,10 +134,10 @@ Note that the <tt>dualcontrol.ssl.keyStore</tt> option is our "private keystore"
  
 {{{
 public class DualControlKeyStores {    
-    static String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
+    static String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
     static char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword");
     static char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword");
-    static String trustStorePath = System.getProperty("dualcontrol.ssl.trustStore");
+    static String trustStoreLocation = System.getProperty("dualcontrol.ssl.trustStore");
     static char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
     
     public static char[] getPassword(String propertyName) {
@@ -145,8 +145,8 @@ public class DualControlKeyStores {
     }
     
     public static SSLContext createSSLContext() throws Exception {
-        return createSSLContext(keyStorePath, keyStorePassword, keyPassword,
-                trustStorePath, trustStorePassword);
+        return createSSLContext(keyStoreLocation, keyStorePassword, keyPassword,
+                trustStoreLocation, trustStorePassword);
     }
     ...
 }
@@ -270,9 +270,9 @@ We re-engineer our application to similarly get a dual-password, in order to loa
 public class DualControlDemoApp {
     private SecretKey dek;     
     ...
-    private void loadKey(String keyStorePath, char[] storePass, String alias) 
+    private void loadKey(String keyStoreLocation, char[] storePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStorePath, storePass, alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, storePass, alias);
     }
 }
 }}}
@@ -282,11 +282,11 @@ where the application loads keys as if it's too easy, but the caveat is that exe
 {{{
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStorePath, char[] storePass, String alias) 
+    public static SecretKey loadKey(String keyStoreLocation, char[] storePass, String alias) 
             throws Exception {
         char[] dualPass = null;
         try {
-            KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
+            KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, storePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(alias);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
