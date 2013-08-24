@@ -340,7 +340,9 @@ We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket.
 
-Finally, we demonstrate how our app can be dual-controlled to load a key from the store at startup, for ciphering our sensitive data for the duration of its execution.
+We demonstrate how our app can be dual-controlled to load a key from the store at startup, for ciphering our sensitive data for the duration of its execution.
+
+Finally, we might want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
 <h4>See also</h4>
 
