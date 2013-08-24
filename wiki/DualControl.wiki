@@ -270,7 +270,7 @@ But surely <tt>PBKDF2</tt> with high number of iterations, would be way better a
 
 So we might want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
-Otherwise if we assume that someone can try a 1000 guesses per millisecond on 1000 machines, of a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum password length of 13, for which more than a 1000 years is required to try all possible passwords ;)
+Otherwise if we assume that someone can try a 1000 guesses per millisecond on each of 1000 parallel machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum password length of 13, for which more than a 1000 years is required to try all possible passwords ;)
 
 <h4><tt>!DualControlSessions</tt></h4>
 
