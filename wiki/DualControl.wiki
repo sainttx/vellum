@@ -326,23 +326,17 @@ We probably shouldn't leave the key down the garden path, where tresspassers and
 
 PCI requires that "split knowledge and dual controls" be used to protect our encryption keys so that no single person can acquire them, not even the most trustworthy employee today, rogue tomorrow.
 
-Your grandaddy's <tt>keytool</tt> is tailored for a single admin rather than dual-control. 
-
-If we have three admins e.g. Tom, Dick and Harry, then naturally we have three combinations of pairs of admins, namely Dick-Harry, Dick-Tom and Harry-Tom, when ordered alphabetically.
-
-In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins, Harry-Tom.
+In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins.
 
 We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-type keystore. This protects copies of the same key using "dual passwords" known to no single person. 
+Our omnipresent <tt>keytool</tt> is tailored for a single admin. We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-type keystore. This protects copies of the same key using "dual passwords" known to no single person. 
 
 We demonstrate how our app can be dual-controlled to load a key from the store at startup.
 
 Naturally, we require at least three authorised admins, so that when any one admin is on vacation or otherwise indisposed, we still have two other admins available to start our app. Indeed, <tt>!DualControlGenSecKey</tt> requires at least three admins to generate a key, but it takes only two to start our app i.e. to load the key :)
 
-To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket.
-
-We can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection.
+To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket. We can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection.
 
 We note that we want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
