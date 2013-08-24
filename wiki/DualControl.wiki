@@ -264,7 +264,7 @@ Importantly, passphrases are easier to remember, so we don't have to write them 
 
 <h4>Brutish Key Protector</h4>
 
-Our keystore is forever vulnerable to theft and/or brute-force attacks. We see that the <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> as used by <tt>JCEKeyStore</tt> for JCEKS-type keystores, uses a PBE cipher for the key protection, namely <tt>PBEWithMD5AndTripleDES</tt>; whereas the default <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, just hashes it with <tt>SHA</tt>.
+Our keystore is forever vulnerable to theft and/or brute-force attacks. We see that the <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> as used by <tt>JCEKeyStore</tt> for JCEKS-type keystores, uses a PBE cipher for the key protection, namely <tt>PBEWithMD5AndTripleDES</tt>; whereas the default <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, hashes it with <tt>SHA</tt>.
 
 But surely <tt>PBKDF2</tt> with high number of iterations, would be way better at combating brute-force attacks on keystores, i.e. using a computationally-expensive algorithm where the key recovery might take seconds rather than microseconds? Or <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> which is also memory-expensive.
 
