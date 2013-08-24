@@ -332,7 +332,7 @@ In order to generate a dual-controlled key, we propose keeping at least three co
 
 Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCE keystore. This protects copies of the same key using "dual passwords" known to no single person. 
 
-We demonstrate how our app can be dual-controlled to load a key from the store at startup, after collating passwords via an <tt>SSLServerSocket</tt>.
+We demonstrate how our app can be dual-controlled to load a key from the store at startup, having read two admins' passwords via an <tt>SSLServerSocket</tt>.
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket. We can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection.
 
