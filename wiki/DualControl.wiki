@@ -334,7 +334,7 @@ Our omnipresent <tt>keytool</tt> is tailored for a single admin. We introduce <t
 
 We demonstrate how our app can be dual-controlled to load a key from the store at startup.
 
-Naturally, we require at least three authorised admins, so that when any one admin is on vacation or otherwise indisposed, we still have two other admins available to start our app. Indeed, <tt>!DualControlGenSecKey</tt> requires at least three admins to generate a key, but it takes only two to start our app i.e. to load the key :)
+Naturally, we require at least three authorised admins, so that when any one admin is on vacation or otherwise indisposed, we still have two other admins available to start our app. Indeed, <tt>!DualControlGenSecKey</tt> requires at least three admins to generate a key, but thereafter it takes only two to load the key when we restart app :)
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket. We can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection.
 
