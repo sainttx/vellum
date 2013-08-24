@@ -3,18 +3,6 @@ set -u
 
 cd
 
-if pgrep -f dualcontrol.FileServer
-then
-  echo WARN killing FileServer
-  kill `pgrep -f dualcontrol.FileServer`
-fi
-
-if pgrep -f dualcontrol.CryptoServer
-then
-  echo WARN killing CryptoServer
-  kill `pgrep -f dualcontrol.CryptoServer`
-fi
-
 CLASSPATH=NetBeansProjects/vellum/build/classes
 for jar in NetBeansProjects/vellum/dist/lib/*.jar
 do
@@ -51,6 +39,19 @@ des3() {
   keyAlg=DESede
   keySize=168
   cipherTrans=DESede/CBC/PKCS5Padding
+}
+
+killservers() {
+  if pgrep -f dualcontrol.FileServer
+  then
+    echo WARN killing FileServer
+    kill `pgrep -f dualcontrol.FileServer`
+  fi  
+  if pgrep -f dualcontrol.CryptoServer
+  then
+    echo WARN killing CryptoServer
+    kill `pgrep -f dualcontrol.CryptoServer`
+  fi
 }
 
 javaks() {
@@ -105,6 +106,7 @@ command1_keytool() {
 }
 
 command0_initks() {
+  killservers
   serveralias="dualcontrol"
   dname="CN=dualcontrol, OU=test, O=test, L=ct, S=wp, C=za"
   rm -f $seckeystore

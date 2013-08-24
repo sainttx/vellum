@@ -1,6 +1,5 @@
 package dualcontrol;
 
-import static dualcontrol.DualControlConsole.minPasswordLength;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,7 +17,6 @@ public class DualControlGenSecKey {
 
     final static Logger logger = Logger.getLogger(DualControlGenSecKey.class);
     int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
-    int minLength = Integer.getInteger("dualcontrol.minPasswordLength", 9);
     String keyAlias = System.getProperty("alias");
     String keyStorePath = System.getProperty("keystore");
     String keyStoreType = System.getProperty("storetype");
@@ -46,7 +44,8 @@ public class DualControlGenSecKey {
             String alias = keyAlias + "-" + dualAlias;
             if (true) {
                 System.err.printf("DualControlGenSecKey %s %s %s %d [%s]\n",
-                        new String(keyStorePassword), dualAlias, alias, dualPassword.length, new String(dualPassword));
+                        new String(keyStorePassword), dualAlias, alias, 
+                        dualPassword.length, new String(dualPassword));
             }
             KeyStore.ProtectionParameter prot = 
                     new KeyStore.PasswordProtection(dualPassword);
