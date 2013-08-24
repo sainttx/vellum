@@ -274,7 +274,7 @@ Our keystore is unfortunately forever vulnerable to theft and/or brute-force att
 
 But surely <tt>PBKDF2</tt> with high number of iterations, would be way better at combating brute-force attacks on keystores? One wants a computationally-expensive algorithm so that key recovery takes a second rather than a millisecond. We note that <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> is also memory-expensive.
 
-So we might want an even stronger <tt>!KeyStore</tt> implementation than the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
+So we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
 Otherwise if we assume that someone can try 1000 guesses per millisecond on a JCE keystore, on each of 1000 parallel machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 13, for which more than a 1000 years is required to try all possible passwords ;)
 
