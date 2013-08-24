@@ -22,13 +22,13 @@ public class CrocConfig {
             "croc.conf", "conf/croc.conf");
     String serverKeyAlias = SystemProperties.getString(
             "serverKeyAlias", "crocserver");
-    String keyStorePath = SystemProperties.getString(
+    String keyStoreLocation = SystemProperties.getString(
             "javax.net.ssl.keyStore", "security/croc.jks");
     char[] keyStorePassword = SystemProperties.getString(
             "javax.net.ssl.keyStorePassword", "crocserver").toCharArray();
     char[] keyPassword = SystemProperties.getString(
             "javax.net.ssl.keyPassword", "crocserver").toCharArray();
-    String trustStorePath = SystemProperties.getString(
+    String trustStoreLocation = SystemProperties.getString(
             "javax.net.ssl.trustStore", "security/croc.jks");
     char[] trustStorePassword = SystemProperties.getString(
             "javax.net.ssl.trustStorePassword", "crocserver").toCharArray();

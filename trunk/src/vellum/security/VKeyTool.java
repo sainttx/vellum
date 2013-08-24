@@ -22,19 +22,19 @@ public class VKeyTool {
     String providerName = null;
     String keyAlgName = "RSA";
     String dname = Certificates.LOCAL_DNAME;
-    String keyStorePath;
-    String trustStorePath;
+    String keyStoreLocation;
+    String trustStoreLocation;
     String keyStorePassword;
     String trustStorePassword;
 
     private void main() throws Exception {
-        keyStorePath = getProperty("javax.net.ssl.keyStore");
-        trustStorePath = getProperty("javax.net.ssl.trustStore");
+        keyStoreLocation = getProperty("javax.net.ssl.keyStore");
+        trustStoreLocation = getProperty("javax.net.ssl.trustStore");
         keyStorePassword = getProperty("javax.net.ssl.keyStorePassword");
         trustStorePassword = getProperty("javax.net.ssl.trustStorePassword");
         dname = getProperty("dname");
-        File keyStoreFile = new File(keyStorePath);
-        File trustStoreFile = new File(trustStorePath);
+        File keyStoreFile = new File(keyStoreLocation);
+        File trustStoreFile = new File(trustStoreLocation);
         String keyAlias = Streams.removeFileNameExtension(keyStoreFile);
         String certFilePath = keyStoreFile.getParent() + File.separator + keyAlias + ".pem";
         File certFile = new File(certFilePath);
@@ -50,13 +50,13 @@ public class VKeyTool {
             certFile.delete();
         }
         logger.info("keyStoreFile", keyStoreFile.getPath(), keyStoreFile.exists());
-        genKeyPair(keyStorePath, keyAlias);
-        exportCert(keyStorePath, keyAlias, certFilePath);
+        genKeyPair(keyStoreLocation, keyAlias);
+        exportCert(keyStoreLocation, keyAlias, certFilePath);
         if (false) {
-            importCert(trustStorePath, keyAlias, certFilePath);
-            list(trustStorePath);
+            importCert(trustStoreLocation, keyAlias, certFilePath);
+            list(trustStoreLocation);
         }
-        list(keyStorePath);
+        list(keyStoreLocation);
     }
 
     String getProperty(String name) {

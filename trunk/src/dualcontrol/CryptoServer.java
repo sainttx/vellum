@@ -29,9 +29,9 @@ public class CryptoServer {
     }    
     
     private void run(InetAddress localAddress, int port, int backlog, int count, 
-            String remoteHostAddress, String keyStorePath, char[] storePass) 
+            String remoteHostAddress, String keyStoreLocation, char[] storePass) 
             throws Exception {
-        dualControlSession.configure(keyStorePath, storePass, prompt);
+        dualControlSession.configure(keyStoreLocation, storePass, prompt);
         ServerSocket serverSocket = DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(port, backlog, localAddress);
         while (true) {

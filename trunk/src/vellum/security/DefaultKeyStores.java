@@ -15,13 +15,13 @@ import javax.net.ssl.*;
  * @author evan
  */
 public class DefaultKeyStores {
-    static final String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
+    static final String keyStoreLocation = System.getProperty("javax.net.ssl.keyStore");
     static final char[] keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
     static final char[] keyPassword = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
-    static final String trustStorePath = System.getProperty("javax.net.ssl.trustStore");
+    static final String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
     static final char[] trustStorePassword = System.getProperty("javax.net.ssl.trustStorePassword").toCharArray();
-    public static final KeyStore keyStore = KeyStores.loadKeyStore("JKS", keyStorePath, keyStorePassword);
-    public static final KeyStore trustStore = KeyStores.loadKeyStore("JKS", trustStorePath, trustStorePassword);
+    public static final KeyStore keyStore = KeyStores.loadKeyStore("JKS", keyStoreLocation, keyStorePassword);
+    public static final KeyStore trustStore = KeyStores.loadKeyStore("JKS", trustStoreLocation, trustStorePassword);
     public static final KeyManagerFactory keyManagerFactory = KeyStores.loadKeyManagerFactory(keyStore, keyStorePassword);
     public static final TrustManagerFactory trustManagerFactory = KeyStores.loadTrustManagerFactory(trustStore);
 

@@ -15,10 +15,10 @@ import javax.net.ssl.TrustManagerFactory;
  * @author evans
  */
 public class DualControlKeyStores {    
-    static String keyStorePath = System.getProperty("dualcontrol.ssl.keyStore");
+    static String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
     static char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword");
     static char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword");
-    static String trustStorePath = System.getProperty("dualcontrol.ssl.trustStore");
+    static String trustStoreLocation = System.getProperty("dualcontrol.ssl.trustStore");
     static char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
     
     public static char[] getPassword(String propertyName) {
@@ -26,17 +26,17 @@ public class DualControlKeyStores {
     }
     
     public static SSLContext createSSLContext() throws Exception {
-        return createSSLContext(keyStorePath, keyStorePassword, keyPassword,
-                trustStorePath, trustStorePassword);
+        return createSSLContext(keyStoreLocation, keyStorePassword, keyPassword,
+                trustStoreLocation, trustStorePassword);
     }
 
-    public static SSLContext createSSLContext(String keyStorePath, 
+    public static SSLContext createSSLContext(String keyStoreLocation, 
             char[] keyStorePassword, char[] keyPassword,
-            String trustStorePath, char[] trustStorePassword) throws Exception {
+            String trustStoreLocation, char[] trustStorePassword) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
+        keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
         KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(new FileInputStream(trustStorePath), trustStorePassword);
+        trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
@@ -47,17 +47,17 @@ public class DualControlKeyStores {
         return sslContext;
     }
     
-    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) 
+    public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
             throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        if (keyStorePath.contains(":")) {
-            String[] array = keyStorePath.split(":");
+        if (keyStoreLocation.contains(":")) {
+            String[] array = keyStoreLocation.split(":");
             Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
                 createSocket(array[0], Integer.parseInt(array[1]));
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();
-        } else if (new File(keyStorePath).exists()) {
-            FileInputStream fis = new FileInputStream(keyStorePath);
+        } else if (new File(keyStoreLocation).exists()) {
+            FileInputStream fis = new FileInputStream(keyStoreLocation);
             keyStore.load(fis, keyStorePassword);
             fis.close();
         } else {

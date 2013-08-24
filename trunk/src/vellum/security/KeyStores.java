@@ -35,12 +35,12 @@ public class KeyStores {
         throw new RuntimeException();
     }
     
-    public static SSLSocketFactory createSSLSocketFactory(String keyStorePath, 
+    public static SSLSocketFactory createSSLSocketFactory(String keyStoreLocation, 
             String keyStoreType, char[] keyStorePassword, char[] keyPassword,
-            String trustStorePath, char[] trustStorePassword) throws Exception {
+            String trustStoreLocation, char[] trustStorePassword) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(new FileInputStream(keyStorePath), keyStorePassword);
-        KeyStore trustStore = loadKeyStore("JKS", trustStorePath, trustStorePassword);
+        keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
+        KeyStore trustStore = loadKeyStore("JKS", trustStoreLocation, trustStorePassword);
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");

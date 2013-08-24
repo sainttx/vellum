@@ -31,7 +31,7 @@ public class AdminHandler implements HttpHandler {
     public AdminHandler(MantraApp app) {
         super();
         this.app = app;
-        keyStoreManager = new MantraKeyStoreManager(app.getKeyStorePath());
+        keyStoreManager = new MantraKeyStoreManager(app.getKeyStoreLocation());
     }
 
     @Override
@@ -62,20 +62,20 @@ public class AdminHandler implements HttpHandler {
                 keyStorePassword = "password";
             }
         }
-        logger.info("handle", keyStoreManager.getKeyStorePath());
+        logger.info("handle", keyStoreManager.getKeyStoreLocation());
         out.printf("<h3>%s %s</h3>\n", getClass().getSimpleName(),
-                keyStoreManager.getKeyStorePath());
+                keyStoreManager.getKeyStoreLocation());
         out.printf("<form action='/admin' method='POST'>\n");
         logger.info("username", username);
         if (username != null && password != null) {
             app.getPasswordManager().put(username, password.toCharArray());
         }
         out.printf("<input type='password' name='keyStorePassword' width='40' placeholder='Key store password'><br>\n");
-        if (!new File(keyStoreManager.getKeyStorePath()).exists()) {
+        if (!new File(keyStoreManager.getKeyStoreLocation()).exists()) {
             logger.info("createKeyStore", httpExchangeInfo.isParameter("createKeyStore"), Strings.isEmpty(keyStorePassword));
             if (!Strings.isEmpty(keyStorePassword) && httpExchangeInfo.isParameter("createKeyStore")) {
                 keyStoreManager.create(password.toCharArray());
-                logger.info("create", new File(keyStoreManager.getKeyStorePath()));
+                logger.info("create", new File(keyStoreManager.getKeyStoreLocation()));
             } else {
                 out.printf("<label for='createKeyStore'>Create key store</label>\n");
                 out.printf("<input type='checkbox' name='createKeyStore'><br>\n");

@@ -18,7 +18,7 @@ public class DualControlGenSecKey {
     final static Logger logger = Logger.getLogger(DualControlGenSecKey.class);
     int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
     String keyAlias = System.getProperty("alias");
-    String keyStorePath = System.getProperty("keystore");
+    String keyStoreLocation = System.getProperty("keystore");
     String keyStoreType = System.getProperty("storetype");
     String keyAlg = System.getProperty("keyalg");
     int keySize = Integer.getInteger("keysize");
@@ -37,7 +37,7 @@ public class DualControlGenSecKey {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
-        keyStore = loadKeyStore(keyStorePath, keyStorePassword);
+        keyStore = loadKeyStore(keyStoreLocation, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
@@ -51,14 +51,14 @@ public class DualControlGenSecKey {
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
         }
-        keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
     }
 
-    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) 
+    public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
             throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        if (new File(keyStorePath).exists()) {
-            FileInputStream fis = new FileInputStream(keyStorePath);
+        if (new File(keyStoreLocation).exists()) {
+            FileInputStream fis = new FileInputStream(keyStoreLocation);
             keyStore.load(fis, keyStorePassword);
             fis.close();
         } else {
