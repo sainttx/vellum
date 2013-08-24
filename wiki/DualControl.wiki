@@ -182,7 +182,7 @@ public class DualControlReader {
 
 If we have three admins e.g. Brent, Evan, and Henty, then we have three combinations of pairs of admins, namely Brent-Evan, Brent-Henty and Evan-Henty, ordered alphabetically. The <tt>compareTo()</tt> in the nested loop above ensures we exclude the likes of <tt>Evan-Brent</tt> in favour of <tt>Brent-Evan</tt>, and <tt>Evan-Evan</tt>, which is just silly.
 
-We invoke <tt>readMap()</tt> to read split knowledge submissions from multiple admins.
+We invoke <tt>readMap()</tt> to accumulate submissions via an <tt>SSLServerSocket</tt>.
 
 {{{
     private final static int PORT = 4444;
