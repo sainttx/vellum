@@ -89,7 +89,7 @@ Actually these three keys are one and the same. However each copy is password-pr
 
 <h4><tt>!DualControlConsole</tt></h4>
 
-In order for admins to submit their password via TCP/IP port e.g. which has been forwarded using <tt>ssh</tt> from <tt>localhost</tt>, we provide a minimal SSL client as follows.
+In order for admins to submit their password via TCP/IP port, we provide a minimal SSL client as follows.
 
 {{{
 public class DualControlConsole {
