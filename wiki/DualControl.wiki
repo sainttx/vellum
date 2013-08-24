@@ -152,7 +152,7 @@ public class DualControlKeyStores {
 }
 }}}
 
-where we create an <tt>SSLContext</tt> using these settings.
+where we create an <tt>SSLContext</tt> using these settings e.g. for opening an <tt>SSLSocket</tt>.
 
 <h4><tt>!DualControlReader</tt></h4>
 
