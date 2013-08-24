@@ -258,7 +258,7 @@ public class DualControlPasswords {
     ...
 }}}
 
-We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password that includes with uppercase, lowercase and digits. Typically most password characters are a subset of lowercase characters anyway, so brute-force attacks can favour those to crack passwords sooner. 
+We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits.
 
 Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longish passphrases.
 
