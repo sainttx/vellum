@@ -17,9 +17,9 @@ public class DualControlSession {
     private char[] dualPass;
     private String dualAlias;
 
-    public void configure(String keyStorePath, char[] storePass, String prompt) throws Exception {
-        logger.debug("keyStore " + keyStorePath);
-        this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStorePath, storePass);
+    public void configure(String keyStoreLocation, char[] storePass, String prompt) throws Exception {
+        logger.debug("keyStore " + keyStoreLocation);
+        this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, storePass);
         Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(prompt);
         this.dualAlias = entry.getKey();
         this.dualPass = entry.getValue();

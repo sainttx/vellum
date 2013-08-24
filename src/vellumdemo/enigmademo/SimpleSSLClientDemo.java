@@ -24,10 +24,10 @@ public class SimpleSSLClientDemo {
     static Logr logger = LogrFactory.getLogger(SimpleSSLClientDemo.class);
     static final String server = System.getProperty("server");
     static final int port = Integer.getInteger("port");
-    static final String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
+    static final String keyStoreLocation = System.getProperty("javax.net.ssl.keyStore");
     static final char[] keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
     static final char[] keyPassword = System.getProperty("javax.net.ssl.keyPassword").toCharArray();
-    static final String trustStorePath = System.getProperty("javax.net.ssl.trustStore");
+    static final String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
     static final char[] trustStorePassword = System.getProperty("javax.net.ssl.trustStorePassword").toCharArray();
     
     KeyManager[] keyManagers;
@@ -63,7 +63,7 @@ public class SimpleSSLClientDemo {
 
     protected void initKeyManagers() throws Exception {
         this.keyStore = KeyStore.getInstance("JKS");
-        InputStream inputStream = new FileInputStream(keyStorePath);
+        InputStream inputStream = new FileInputStream(keyStoreLocation);
         keyStore.load(inputStream, keyStorePassword);
         KeyManagerFactory keyManagerFactory = 
                 KeyManagerFactory.getInstance("SunX509");

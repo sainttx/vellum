@@ -11,12 +11,12 @@ import javax.crypto.SecretKey;
  */
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStorePath, char[] keyStorePass, 
+    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
             String alias) throws Exception {
         char[] dualPass = null;
         try {
             KeyStore dualKeyStore = 
-                    DualControlKeyStores.loadKeyStore(keyStorePath, keyStorePass);
+                    DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(alias);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();

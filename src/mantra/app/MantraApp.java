@@ -40,7 +40,7 @@ public class MantraApp {
     AESCipher cipher; 
     MantraPasswordManager passwordManager = new MantraPasswordManager();
     String keyAlias;
-    String keyStorePath;
+    String keyStoreLocation;
 
     public void init() throws Exception {
         initConfig();
@@ -62,7 +62,7 @@ public class MantraApp {
             }
         }
         keyAlias = configProperties.getString("keyAlias");
-        keyStorePath = Systems.getPath(configProperties.getString("keyStore"));
+        keyStoreLocation = Systems.getPath(configProperties.getString("keyStore"));
     }
 
     private void initConfig() throws Exception {
@@ -121,8 +121,8 @@ public class MantraApp {
         return keyAlias;
     }
 
-    public String getKeyStorePath() {
-        return keyStorePath;
+    public String getKeyStoreLocation() {
+        return keyStoreLocation;
     }
         
     public MantraPasswordManager getPasswordManager() {

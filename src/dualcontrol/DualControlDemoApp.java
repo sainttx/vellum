@@ -16,15 +16,15 @@ public class DualControlDemoApp {
     public static void main(String[] args) throws Exception {
         logger.debug("main invoked with args: " + Arrays.toString(args));
         if (args.length != 3) {
-            System.err.println("usage: keyStorePath storePass alias");
+            System.err.println("usage: keyStoreLocation storePass alias");
         } else {
             new DualControlDemoApp().loadKey(args[0], args[1].toCharArray(), args[2]);
         }
     }    
     
-    private void loadKey(String keyStorePath, char[] storePass, String alias) 
+    private void loadKey(String keyStoreLocation, char[] storePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStorePath, storePass, alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, storePass, alias);
         logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
