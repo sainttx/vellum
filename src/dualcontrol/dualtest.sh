@@ -140,7 +140,7 @@ command1_genseckey() {
 }
 
 command0_app() {
-  javaks server -Ddualcontrol.submissions=2 dualcontrol.DemoApp $seckeystore $pass $secalias
+  javaks server -Ddualcontrol.submissions=2 dualcontrol.DualControlDemoApp $seckeystore $pass $secalias
 }
 
 command0_keystoreserver() {
@@ -161,6 +161,10 @@ command0_cryptoserver() {
   javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 2 127.0.0.1 $seckeystore $pass
 }
 
+command1_cryptoserver() {
+  javaks server dualcontrol.CryptoServer 127.0.0.1 $1 4 2 127.0.0.1 $seckeystore $pass
+}
+
 command1_cryptoserver_remote() {
   echo "cryptoserver_remote $1"
   javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:seckeystore:" $pass
@@ -178,13 +182,10 @@ cryptoclient_cipher() {
 }
 
 cryptoclient1() {
-  sleep 1
   jc evanx eeee
   jc henty hhhh
-  sleep 1
   for iter in `seq $1`
   do
-    #sleep 1
     echo "cryptoclient $iter"
     cryptoclient_cipher
   done

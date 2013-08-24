@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import vellum.datatype.Nanos;
 
 /**
  *
@@ -70,8 +71,10 @@ public class CryptoHandler {
             this.ivBytes = getIvBytes(ivString);
             logger.debug("iv " + Base64.encodeBase64String(ivBytes));
             IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+            long startTime = System.nanoTime();
             cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);    
             this.dataBytes = cipher.doFinal(dataString.getBytes());
+            logger.info("encrypt time nanos " + Nanos.elapsed(startTime));
             write(ivBytes, dataBytes);
         }
     }

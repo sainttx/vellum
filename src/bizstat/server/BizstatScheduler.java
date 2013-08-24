@@ -4,7 +4,7 @@
  */
 package bizstat.server;
 
-import vellum.datatype.Milli;
+import vellum.datatype.Millis;
 import vellum.util.Calendars;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
@@ -56,9 +56,9 @@ public class BizstatScheduler implements Runnable {
         Calendars.setTime(calendar, service.getScheduleTime());
         long currentMillis = System.currentTimeMillis();
         long scheduleMillis = calendar.getTimeInMillis();
-        if (scheduleMillis < currentMillis) scheduleMillis += Milli.fromDays(1);
+        if (scheduleMillis < currentMillis) scheduleMillis += Millis.fromDays(1);
         long initialDelay =  scheduleMillis - currentMillis;
-        if (initialDelay < 0) initialDelay += Milli.fromDays(1);
+        if (initialDelay < 0) initialDelay += Millis.fromDays(1);
         long period = service.getIntervalMillis();
         logger.info("schedule", host, service, 
                 DefaultDateFormats.timeSecondsFormat.format(service.getScheduleTime()), 

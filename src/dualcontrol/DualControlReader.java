@@ -66,7 +66,7 @@ public class DualControlReader {
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);
-        for (int i = 0; i < submissionCount; i++) {
+        while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
                 throw new RuntimeException("Remote host address excluded");
@@ -76,15 +76,16 @@ public class DualControlReader {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
-            char[] chars = dis.readUTF().toCharArray();
+            char[] password = dis.readUTF().toCharArray();
             if (true) { // TODO remove
-                String[] fields = new String(chars).split(":");
+                String[] fields = new String(password).split(":");
                 if (fields.length > 1) {
                     username = fields[0];
-                    chars = fields[0].toCharArray();
+                    password = fields[0].toCharArray();
                 }
             }
-            map.put(username, chars);
+            DualControlPasswords.verifyPassword(password);
+            map.put(username, password);
             socket.close();
         }
         serverSocket.close();

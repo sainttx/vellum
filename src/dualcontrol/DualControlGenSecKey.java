@@ -1,9 +1,9 @@
 package dualcontrol;
 
+import static dualcontrol.DualControlConsole.minPasswordLength;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.net.Socket;
 import java.security.KeyStore;
 import java.util.Map;
 import javax.crypto.KeyGenerator;
@@ -18,6 +18,7 @@ public class DualControlGenSecKey {
 
     final static Logger logger = Logger.getLogger(DualControlGenSecKey.class);
     int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
+    int minLength = Integer.getInteger("dualcontrol.minPasswordLength", 9);
     String keyAlias = System.getProperty("alias");
     String keyStorePath = System.getProperty("keystore");
     String keyStoreType = System.getProperty("storetype");
@@ -54,7 +55,8 @@ public class DualControlGenSecKey {
         keyStore.store(new FileOutputStream(keyStorePath), keyStorePassword);
     }
 
-    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) throws Exception {
+    public static KeyStore loadKeyStore(String keyStorePath, char[] keyStorePassword) 
+            throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         if (new File(keyStorePath).exists()) {
             FileInputStream fis = new FileInputStream(keyStorePath);
@@ -73,5 +75,5 @@ public class DualControlGenSecKey {
         } else {
             return System.console().readPassword("storepass: ");
         }
-    }
+    }    
 }
