@@ -338,7 +338,7 @@ We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-
 
 We demonstrate how our app can be dual-controlled to load a key from the store at startup.
 
-In practice, we require at least three authorised admins, so that when one admin might be on vacation or otherwise indisposed, hopefully we can always find two admins to come to the party to restart our app. Consequently <tt>!DualControlGenSecKey</tt> requires at least three admins to generate a key, but thereafter we require only any two of the admins e.g. to provide passwords to our app to load the key. 
+In practice, we require at least three authorised admins, so that when any one admin is on vacation or otherwise indisposed, we still have two other admins available to start our app. Consequently <tt>!DualControlGenSecKey</tt> requires at least three admins to generate a key, but our app only takes two to load the key. 
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console via a client-authenticated SSL socket.
 
