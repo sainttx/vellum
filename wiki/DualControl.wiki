@@ -61,7 +61,7 @@ public class DualControlGenSecKey {
     ...
 }
 }}}
-where <tt>!DualControlReader</tt> provides a map of "dual key" aliases and their secret passwords, and we create a entry for each. 
+where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their secret "dual passwords," and we create a <tt>!KeyStore</tt> entry for each. 
 
 <h4>Demo</h4>
 
