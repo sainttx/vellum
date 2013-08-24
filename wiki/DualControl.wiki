@@ -10,11 +10,11 @@ Encryption is great for information security and all that. But the problem with 
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-The Payment Card industry (PCI) has their "Data Security Standard" called <a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>, which advocates common-sense policies for building a secure network and protecting your data. Actually every industry should adopt PCI DSS because it's the only and best thing we got :)
+The Payment Card Industry (PCI) has their "Data Security Standard" called <a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>, which advocates common-sense policies for building a secure network and protecting your data. Actually every industry should adopt PCI DSS because it's the only and best thing we got :)
 
 The PCI DSS mandates that PAN's aka <i>Primary Account Numbers</i> aka credit card numbers, must be "rendered unreadable" e.g. encrypted. It goes without saying that other industries also have sensitive data that people might want to steal, governments even ;)
 
-PCI DSS suggests encrypting the key used to encrypt our data. Darn, we try to secure the data-encrypting-key (DEK), but now we're lumbered with another key, namely a "key-encrypting-key" (KEK).
+PCI DSS suggests encrypting the key used to encrypt our data. Darn, we try to secure the data-encryption key (DEK), but now we're lumbered with another key, namely a "key-encryption key" (KEK).
 
 PCI requires that "dual control" and "split knowledge" be used to protect PAN's, i.e. the key used to cipher this data. The intent is that no single person can steal the data. 
 
@@ -334,7 +334,7 @@ If we have three admins e.g. Tom, Dick and Harry, then naturally we have three c
 
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. 
 
-We take the approach of protecting the data-encrypting key using password-based encryption. We have split knowledge of the password, which is effectively a key-encrypting key.
+We take the approach of protecting the data-encryption key using password-based encryption. We have split knowledge of the password, which is effectively a key-encryption key.
 
 We require at least three admins, since one admin might be on vacation or otherwise indisposed. Hopefully we can always find two admins to come to the party when we need to restart our app. 
 
