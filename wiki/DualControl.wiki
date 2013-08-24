@@ -332,7 +332,7 @@ If we have three admins e.g. Tom, Dick and Harry, then naturally we have three c
 
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. 
 
-We take the approach of protecting the data-encryption key using password-based encryption. We have split knowledge of the password, which is effectively a key-encryption key.
+We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
 We require at least three admins, since one admin might be on vacation or otherwise indisposed. Hopefully we can always find two admins to come to the party when we need to restart our app. 
 
