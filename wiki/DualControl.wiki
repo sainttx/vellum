@@ -130,7 +130,7 @@ On a positive note, we can setup "<i>double</i>-two-factor" authentication where
 
 Similarly to the standard <tt>!-Dnet.javax.ssl.KeyStore</tt> <i>et al</i> command-line options for the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl</tt> as below. 
 
-Note that the <tt>dualcontrol.ssl.keyStore</tt> option is our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for DSA assymmetric encryption. This should not be confused with our "secret key store" e.g. which contains a AES <i>secret</i> key for symmetric encryption of our secret data. 
+Note that the <tt>dualcontrol.ssl.keyStore</tt> option is our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for DSA assymmetric encryption. This should not be confused with our "secret key store" e.g. which contains a AES <i>secret</i> key for symmetric encryption of our data. 
  
 {{{
 public class DualControlKeyStores {    
