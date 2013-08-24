@@ -2,7 +2,6 @@ package dualcontrol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.lang.String;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.TreeMap;
@@ -60,12 +59,16 @@ public class DualControlReader {
     
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
-        Map<String, char[]> map = new TreeMap();
         SSLServerSocket serverSocket = (SSLServerSocket) 
                 DualControlKeyStores.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);
+        return readMap(serverSocket);
+    }
+    
+    Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {        
+        Map<String, char[]> map = new TreeMap();
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
