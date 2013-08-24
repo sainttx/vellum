@@ -76,7 +76,7 @@ Let's test <tt>!DualControlGenSecKey</tt>.
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
-When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>, we see that <tt>!DualControlGenSecKey</tt> saves the secret key under the following "dual-aliases."
+When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>, we see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual-aliases."
 
 {{{
 dek2013-brent-evanx
