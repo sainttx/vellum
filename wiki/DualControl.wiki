@@ -258,9 +258,9 @@ public class DualControlPasswords {
     ...
 }}}
 
-We argue that password length is more important than complexity, e.g. that a passphrase of 10 lower-case characters, is better than an 8 character password that includes with uppercase, lowercase, digits and punctuation. Furthermore, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor.
+We argue that password length is more important than complexity, e.g. that a passphrase of 10 lower-case characters, is better than an 8 character password that includes with uppercase, lowercase and digits. In practice most password characters are going to be from a subset of lowercase characters anyway. Furthermore, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor.
 
-In practice most password characters are going to be from a subset of lowercase characters anyway, and so we might choose not to enforce password complexity, but rather require longish passphrases.
+Consequently, we might choose not to enforce password complexity, but rather require longish passphrases.
 
 <h4>Brutish <tt>!KeyProtector</tt></h4>
 
