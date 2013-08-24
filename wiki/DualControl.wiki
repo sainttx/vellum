@@ -200,6 +200,8 @@ We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocke
     }
 }}}
 
+where we listen on a SSL port i.e. an <tt>SSLServerSocket</tt> which we have hard-wired this to <tt>localhost</tt> i.e. via the loopback interface, where <tt>!DualControlConsole</tt> is invariably invoked in a local <tt>ssh</tt> sessions.
+
 We accumulate the required number of submissions as follows.
 
 {{{    
@@ -230,9 +232,7 @@ We accumulate the required number of submissions as follows.
     }
 }}}
 
-where we listen on a SSL port i.e. an <tt>SSLServerSocket</tt> which we have hard-wired this to <tt>localhost</tt> i.e. via the loopback interface, where <tt>!DualControlConsole</tt> is invariably invoked in a local <tt>ssh</tt> sessions.
-
-Note that the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field, where we get the <tt>peer</tt> certificate from the <tt>SSLSession</tt>.
+where the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field, where we get the <tt>peer</tt> certificate from the <tt>SSLSession</tt>.
 
 Incidently, a known bug in the above code, and similarly in <tt>!DualControlConsole</tt>, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
 
