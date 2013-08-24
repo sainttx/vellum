@@ -68,7 +68,7 @@ where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their sec
 Let's test <tt>!DualControlGenSecKey</tt>.
 
 {{{
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
+  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassLength=13 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
@@ -246,8 +246,8 @@ public class DualControlPasswords {
             getBoolean("dualcontrol.verifyPassword", true);
     final static boolean verifyPasswordComplexity = 
             getBoolean("dualcontrol.verifyPasswordComplexity", false);
-    final static int minPasswordLength = 
-            Integer.getInteger("dualcontrol.minPasswordLength", 12);
+    final static int minPassLength = 
+            Integer.getInteger("dualcontrol.minPassLength", 12);
 
     public static void assertValid(char[] password) throws Exception {
         String errorMessage = getErrorMessage(password);
