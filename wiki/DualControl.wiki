@@ -68,7 +68,7 @@ where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their sec
 Let's test <tt>!DualControlGenSecKey</tt>.
 
 {{{
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minLength=9 \
+  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
@@ -349,5 +349,7 @@ Finally, we demonstrate how our app can be dual-controlled to load a key from th
 In a follow-up article, we'll implement a dual-controlled crypto server, to unburden our apps, improve convenience, but more importantly, to isolate our keys on the crypto server, to simplify key management, to enhance security. 
 
 We will also need other tools similar to <tt>DualControlGenSec</tt>, to enroll and revoke admins i.e. to handle staff turnover.  We'll present <tt>DualControlEnroll</tt> and <tt>DualControlRevoke</tt> in a yet another sequel. 
+
+Finally we will work through "key rotation" e.g. migrating from a "dek2013" to fresh new "dek2014."
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
