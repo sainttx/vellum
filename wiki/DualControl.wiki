@@ -336,7 +336,7 @@ We demonstrate how our app can be dual-controlled to load a key from the store a
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>. We can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection.
 
-We note that we want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
+We note that we might want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
 <h4>See also</h4>
 
