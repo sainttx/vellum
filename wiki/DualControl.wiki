@@ -262,7 +262,7 @@ We argue that password length is more practical than complexity, e.g. that a pas
 
 Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longish passphrases.
 
-<h4>Brutish Key Protector</tt></h4>
+<h4>Brutish Key Protector</h4>
 
 Our keystore is always vulnerable to theft and/or brute-force attacks. The <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> used by <tt>JCEKeyStore</tt> at least uses a PBE cipher for the key protection, namely <tt>PBEWithMD5AndTripleDES</tt>. 
 
