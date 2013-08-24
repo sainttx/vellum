@@ -8,7 +8,8 @@ Encryption is great for information security and all that. But the problem with 
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-The Payment Card industry (PCI) has their "Data Security Standard" called "PCI DSS," which outlines best practices, that actually every industry should follow because it's the only and best thing we got :) A follow-up article will give an overview of PCI DSS.
+The Payment Card industry (PCI) has their "Data Security Standard" called "PCI DSS," which advocates common-sense policies for building a secure network and protecting your data. Actually every industry should adopt PCI DSS because it's the only and best thing we got :)
+
 
 The PCI DSS mandates that PAN's aka <i>Primary Account Numbers</i> aka credit card numbers, must be "rendered unreadable" e.g. encrypted. It goes without saying that other industries also have sensitive data that people might want to steal, governments even ;)
 
