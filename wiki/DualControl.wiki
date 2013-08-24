@@ -334,7 +334,7 @@ In order to generate a dual-controlled key, we propose keeping at least three co
 
 We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-In particular, we introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-type keystore. This collates passwords from multiple admins using <tt>!DualControlReader</tt>, which combines those into paired "dual passwords" known to no single person. 
+We introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCEKS-type keystore. This collates passwords from multiple admins using <tt>!DualControlReader</tt>, which combines those into paired "dual passwords" known to no single person. 
 
 We require at least three admins, since one admin might be on vacation or otherwise indisposed. Hopefully we can always find two admins to come to the party when we need to restart our app.
 
