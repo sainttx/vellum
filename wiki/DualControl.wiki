@@ -2,6 +2,8 @@
 
 = Dual Control Key Management =
 
+See the source article at <a href="https://code.google.com/p/vellum/wiki/DualControl">code.google.com/p/vellum/wiki/DualControl</a>, which has probably been updated since this posting.
+
 <h4>Introduction</h4>
 
 Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock our doors but leave the key in the lock. <i>Or under the mat, but that's my personal favourite so ssh-ssh.</i>
@@ -132,7 +134,7 @@ A follow-up article might propose some measures to improve admins' level of conf
 
 The workaround for above "bugs" in plain management-speak, is that our "controls" as documented in in our "policies and procedures," prevent or at least detect such attacks and have words.
 
-On the upside, we can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key (to port forward), and a password-protected SSL <tt>KeyStore</tt>. In both <tt>ssh</tt> and <tt>SSL</tt>, the admin needs to have the private key, and know the password that is protecting it.
+On the upside, we can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, so each is <a href="">multi-factor</a>. 
 
 <h4><tt>!DualControlKeyStores</tt></h4>
 
