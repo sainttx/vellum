@@ -22,7 +22,11 @@ public class DualControlKeyStores {
     static char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
     
     public static char[] getPassword(String propertyName) {
-        return System.getProperty(propertyName).toCharArray();
+        String string = System.getProperty(propertyName);
+        if (string == null) {
+            return System.console().readPassword(propertyName + ": ");
+        }
+        return string.toCharArray();
     }
     
     public static SSLContext createSSLContext() throws Exception {
