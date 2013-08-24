@@ -66,7 +66,7 @@ where <tt>!DualControlReader</tt> provides a map of "dual key" aliases and their
 Let's test <tt>!DualControlGenSecKey</tt>.
 
 {{{
-  java -Ddualcontrol.submissions=3 \
+  java -Ddualcontrol.submissions=3 -Ddualcontrol.minLength=9 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
@@ -104,14 +104,25 @@ public class DualControlConsole {
 
     public static void main(String[] args) throws Exception {
         Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
-                createSocket(HOST, PORT);
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-        String prompt = dis.readUTF();
-        char[] passwd = System.console().readPassword(prompt);
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        dos.writeUTF(new String(passwd));
-        socket.close();
+                    createSocket(HOST, PORT);
+        try {
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            String prompt = dis.readUTF();
+            char[] password = readPassword(prompt);
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(new String(password));
+            String message = dis.readUTF();
+            System.console().writer().println(message);
+        } finally {
+            socket.close();
+        }
     }    
+
+    static char[] readPassword(String prompt) throws Exception {
+        char[] password = System.console().readPassword(prompt + ": ");
+        DualControlPasswords.assertValid(password);
+        return password;
+    }
 }
 }}}
 where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on the <tt>localhost</tt>, and are identified by our SSL client cert.
@@ -206,7 +217,13 @@ We invoke <tt>readMap()</tt> to read split knowledge submissions from multiple a
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] chars = dis.readUTF().toCharArray();
-            map.put(username, chars);
+            String errorMessage = DualControlPasswords.getErrorMessage(password);
+            if (errorMessage == null) {
+                map.put(username, password);
+                dos.writeUTF("OK");
+            } else {
+                dos.writeUTF(errorMessage);
+            }
             socket.close();
         }
         serverSocket.close();
@@ -219,6 +236,40 @@ where we listen on a SSL port i.e. an <tt>SSLServerSocket</tt> which we have har
 Note that the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field, where we get the <tt>peer</tt> certificate from the <tt>SSLSession</tt>.
 
 Incidently, a known bug in the above code, and similarly in <tt>!DualControlConsole</tt>, is that we sometimes create strings containing passwords. These will be cleared by the garbage collector at some stage, whereas a better practice is to exclusively use arrays, and clear these soonest.
+
+<h4>Complexity and length</h4>
+
+We ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
+
+{{{
+public class DualControlPasswords {
+    final static boolean verifyPassword = 
+            getBoolean("dualcontrol.verifyPassword", true);
+    final static boolean verifyPasswordComplexity = 
+            getBoolean("dualcontrol.verifyPasswordComplexity", false);
+    final static int minPasswordLength = 
+            Integer.getInteger("dualcontrol.minPasswordLength", 12);
+
+    public static void assertValid(char[] password) throws Exception {
+        String errorMessage = getErrorMessage(password);
+        if (errorMessage != null) {
+            throw new Exception(errorMessage);
+        }
+    }
+    ...
+}}}
+
+There is an argument that password length is more important that complexity, e.g. a passphrase of 10 lower-case characters, is better than an 8 character password that includes with uppercase, lowercase, digits and punctuation. Furthermore, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor.
+
+In practice most password characters are going to be from a subset of lowercase characters anyway, and so we might choose not to enforce password complexity, but rather require longish passphrases.
+
+<h4>Brute-force</h4>
+
+Our keystore is always vulnerable to theft and/or brute-force attacks. The <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>KeyProtector</tt></a> used by <tt>JCEKeyStore</tt> at least uses a PBE cipher for the key protection, namely <tt>PBEWithMD5AndTripleDES</tt>. 
+
+But surely <tt>PBKDF2</tt>, with high number of iterations, would be way better at combating brute-force attacks on stolen keystores? We want a computationally-expensive algorithm where the key recovery might take seconds rather than microseconds? Or even <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> which is also memory-intensive.
+
+So we might an even stronger <tt>KeyStore</tt> implementation that that offered by the Sun JCE Provider. 
 
 <h4><tt>!DualControlSessions</tt></h4>
 
@@ -260,7 +311,7 @@ public class DualControlSessions {
 
 where we read the dual info using the afore-mentioned <tt>!DualControlReader,</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
 
-<h4>Cryto server</h4>
+<h4>Crypto server</h4>
 
 One might wish to create a central crypto server which is dualled-controlled, rather than burden your app. In that case, you can restart your application without dual-control, and indeed have any number of apps using this server. Furthermore it simplifies key management. 
 
