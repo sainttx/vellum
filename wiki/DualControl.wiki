@@ -330,7 +330,7 @@ We take the approach of protecting the data-encryption keys using password-based
 
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, we won't mind because anyway we only require two admins to load a copy of the key when we restart our app :)
 
-We note that we might want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt>, configurable with the largest number of iterations such that the key recovery time is still an acceptable delay, e.g. a number of seconds.
+We note that we might want an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt>, configurable with the largest number of iterations such that the average key recovery time is an acceptable delay for our production environment.
 
 Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCE keystore. This protects copies of the same key using "dual passwords" known to no single person. 
 
