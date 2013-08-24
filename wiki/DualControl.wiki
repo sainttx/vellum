@@ -345,6 +345,6 @@ In a follow-up article, we'll implement a dual-controlled crypto server, to unbu
 
 We will also need other tools similar to <tt>!DualControlGenSec</tt>, to enroll and revoke admins i.e. to handle staff changes.  We'll present <tt>!DualControlEnroll</tt> and <tt>!DualControlRevoke</tt> in a yet another sequel. 
 
-Finally we will work through "key rotation" e.g. migrating from a "dek2013" to fresh new "dek2014."
+Finally we will work through "key rotation" e.g. migrating from a dated "dek2013" key a to revised "dek2014" key.
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
