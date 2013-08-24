@@ -10,8 +10,8 @@ public class DualControlPasswords {
             getBoolean("dualcontrol.verifyPassword", true);
     final static boolean verifyPasswordComplexity = 
             getBoolean("dualcontrol.verifyPasswordComplexity", true);
-    final static int minPasswordLength = 
-            Integer.getInteger("dualcontrol.minPasswordLength", 9);
+    final static int minPassLength = 
+            Integer.getInteger("dualcontrol.minPassLength", 9);
 
     public static void assertValid(char[] password) throws Exception {
         String errorMessage = getErrorMessage(password);
@@ -26,7 +26,7 @@ public class DualControlPasswords {
     
     public static String getErrorMessage(char[] password) throws Exception {
         if (verifyPassword) {
-            if (password.length < minPasswordLength) {
+            if (password.length < minPassLength) {
                 return "Password too short";
             }
             if (verifyPasswordComplexity) {
