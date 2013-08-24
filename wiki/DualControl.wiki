@@ -136,7 +136,7 @@ The workaround for above "bugs" in plain management-speak, is that our "controls
 
 <h5>Double two-factor authentication</h5>
 
-On the upside, we can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, so each is <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor</a>. 
+On the upside, we can setup "double-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, so each is <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor</a>. 
 
 <h4><tt>!DualControlKeyStores</tt></h4>
 
