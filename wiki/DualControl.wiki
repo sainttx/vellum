@@ -328,7 +328,7 @@ PCI requires that "split knowledge and dual controls" be used to protect our enc
 
 Your grandaddy's <tt>keytool</tt> is tailored for a single admin rather than dual-control. 
 
-If we have three admins e.g. Tom, Dick and Harry, then naturally we have three combinations of pairs of admins, namely Dick-Harry, Dick-Tom and Harry-Tom. 
+If we have three admins e.g. Tom, Dick and Harry, then naturally we have three combinations of pairs of admins, namely Dick-Harry, Dick-Tom and Harry-Tom, when ordered alphabetically.
 
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. 
 
