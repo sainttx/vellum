@@ -64,6 +64,7 @@ javaks() {
     -Ddualcontrol.ssl.trustStore=$truststore \
     -Ddualcontrol.ssl.trustStorePassword=$pass \
     -Ddualcontrol.minPassLength=4 \
+    -Ddualcontrol.minPassLength=4 \
     $@
   exitCode=$?
   if [ $exitCode -ne 0 ]
@@ -86,7 +87,7 @@ jc2() {
 jc3() {
     jc evanx eeee
     jc henty hhhh
-    jc brand bbbb
+    jc brent bbbb
 }
 
 command1_keytool() {
@@ -125,7 +126,7 @@ command0_initks() {
   keytool -keystore $truststore -storepass "$pass" -list | grep Entry
   command1_keytool evanx
   command1_keytool henty
-  command1_keytool brand
+  command1_keytool brent
 }
 
 command1_genseckey() {

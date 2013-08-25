@@ -6,10 +6,8 @@ package dualcontrol;
  * @author evans
  */
 public class DualControlPasswords {
-    final static boolean verifyPassword = 
-            getBoolean("dualcontrol.verifyPassword", true);
     final static boolean verifyPasswordComplexity = 
-            getBoolean("dualcontrol.verifyPasswordComplexity", true);
+            getBoolean("dualcontrol.verifyPasswordComplexity", false);
     final static int minPassLength = 
             Integer.getInteger("dualcontrol.minPassLength", 13);
 
@@ -25,15 +23,13 @@ public class DualControlPasswords {
     }
     
     public static String getErrorMessage(char[] password) throws Exception {
-        if (verifyPassword) {
-            if (password.length < minPassLength) {
-                return "Password too short";
-            }
-            if (verifyPasswordComplexity) {
-                if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
-                        || !isDigit(password) || !isPunctuation(password)) {
-                    return "Insufficient password complexity";
-                }
+        if (password.length < minPassLength) {
+            return "Password too short";
+        }
+        if (verifyPasswordComplexity) {
+            if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
+                    || !isDigit(password) || !isPunctuation(password)) {
+                return "Insufficient password complexity";
             }
         }
         return null;

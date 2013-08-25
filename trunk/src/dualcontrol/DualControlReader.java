@@ -9,6 +9,8 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import org.apache.log4j.Logger;
 import sun.security.x509.X500Name;
+import vellum.security.Digests;
+import vellum.util.Bytes;
 
 /**
  *
@@ -76,23 +78,19 @@ public class DualControlReader {
             }
             String username = new X500Name(socket.getSession().getPeerPrincipal().
                     getName()).getCommonName();
+            logger.info("accepting " + username);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] password = dis.readUTF().toCharArray();
-            if (true) { // TODO remove
-                String[] fields = new String(password).split(":");
-                if (fields.length > 1) {
-                    username = fields[0];
-                    password = fields[0].toCharArray();
-                }
-            }
             String errorMessage = DualControlPasswords.getErrorMessage(password);
-            if (errorMessage == null) {
+            if (errorMessage == null) {                
                 map.put(username, password);
-                dos.writeUTF("OK");
+                dos.writeUTF("OK " + new String(Digests.sha1(Bytes.getBytes(password))));
+                logger.info("OK " + new String(password));
             } else {
                 dos.writeUTF(errorMessage);
+                logger.warn(errorMessage);
             }
             socket.close();
         }

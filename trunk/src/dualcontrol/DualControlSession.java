@@ -17,7 +17,8 @@ public class DualControlSession {
     private char[] dualPass;
     private String dualAlias;
 
-    public void configure(String keyStoreLocation, char[] storePass, String prompt) throws Exception {
+    public void configure(String keyStoreLocation, char[] storePass, String prompt) 
+            throws Exception {
         logger.debug("keyStore " + keyStoreLocation);
         this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, storePass);
         Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(prompt);
@@ -25,7 +26,7 @@ public class DualControlSession {
         this.dualPass = entry.getValue();
         logger.debug("alias " + dualAlias);
     }
-
+    
     public void clear() {
         Arrays.fill(dualPass, (char) 0);
     }
@@ -33,6 +34,7 @@ public class DualControlSession {
     public SecretKey loadKey(String alias) throws Exception {
         alias += "-" + dualAlias;
         logger.debug("loadKey " + alias);
+        new BruteForceTimer().test(1000000, dualKeyStore, alias, dualPass);
         return (SecretKey) dualKeyStore.getKey(alias, dualPass);
     }
 }
