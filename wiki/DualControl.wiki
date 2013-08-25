@@ -317,7 +317,7 @@ We observe that a quad-core Intel i5 can try about 30 guesses per millisecond, u
 evans@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
   $seckeystore $pass DEK2013-evanx-henty eeeehhhh
 
-threads 4, count 1000000, time 34s, avg 0.035ms
+threads 4, count 1000000, avg 0.035ms
 28 guesses per millisecond
 }}}
 
