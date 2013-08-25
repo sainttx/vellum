@@ -36,6 +36,8 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
 
     void start(int threadCount) throws Exception {
         logger.info("keyStoreLocation " + keyStoreLocation);
+        logger.info("alias " + alias);
+        logger.info("keyPass " + new String(keyPass));
         logger.info("generatePassword " + new String(generatePassword()));
         List<JCEKSBruteForceTimer> threadList = new ArrayList();
         long nanos = System.nanoTime();
@@ -53,11 +55,11 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
             }
         }
         nanos = Nanos.elapsed(nanos);
-        long averagePerSecond = nanos/maximumCount/threadCount/1000;
-        logger.info(String.format("threads %d, count %d, time %dms, avg %d/s\n",
-                threadCount, maximumCount, nanos/1000/1000, averagePerSecond));
-        if (averagePerSecond > 0) {
-            logger.info("guesses per second " + 1000/averagePerSecond);
+        long average = nanos/maximumCount/threadCount;
+        logger.info(String.format("threads %d, count %d, avg %s\n",
+                threadCount, maximumCount, nanos/1000/1000, Nanos.formatMillis(average)));
+        if (average > 0) {
+            logger.info("guesses per millisecond " + 1000*1000/average);
         }
     }
     
@@ -72,27 +74,27 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
     
     void call() throws Exception {
         KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, keyStorePass);
-        long correctTime = System.nanoTime();
+        long correctNanos = System.nanoTime();
         keyStore.getKey(alias, keyPass);
-        correctTime = Nanos.elapsed(correctTime);
+        correctNanos = Nanos.elapsed(correctNanos);
         long nanos = System.nanoTime();
         int exceptionCount = 0;
         for (int i = 0; i < maximumCount; i++) {
             try {
                 char[] password = generatePassword();
                 if (i%500 == 0) password = keyPass;                        
-                keyStore.getKey(alias, password);
+                logger.trace("key " + keyStore.getKey(alias, password).getAlgorithm());
             } catch (Exception e) {
                 errorMessageSet.add(e.getMessage());
                 exceptionCount++;
             }
         }
         nanos = Nanos.elapsed(nanos);
-        long averagerPerSecond = nanos/maximumCount/1000;
+        long average = nanos/maximumCount;
         result = String.format(
-                "alias %s, count %d, exceptions %d (set %d), correct time %dus, avg %d/s\n", 
+                "%s %d, exceptions %d (%d), correct, avg %s\n", 
                 alias, maximumCount, exceptionCount, errorMessageSet.size(), 
-                correctTime/1000, averagerPerSecond);       
+                correctNanos/1000, nanos/1000, Nanos.formatMillis(average));
         
     }
     char[] generatePassword() {
@@ -108,4 +110,14 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         char last = 'z';
         return (char) (first + (random.nextInt(last - first)));
     }
+    
+    public static void main(String[] args) throws Exception {
+        if (args.length != 6) {
+            System.err.println("usage: threads count keystore storepass alias keypass"); 
+        } else {
+            new JCEKSBruteForceTimer(Integer.parseInt(args[1]), args[2], args[3].toCharArray(),
+                    args[4], args[5].toCharArray()).start(Integer.parseInt(args[0]));
+        }
+    }
+    
 }

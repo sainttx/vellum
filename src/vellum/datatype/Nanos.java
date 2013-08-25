@@ -46,11 +46,15 @@ public class Nanos {
         return TimeUnit.DAYS.toNanos(days);
     }
     
-    public static boolean isElapsed(long startNanos, long nanos) {
-        return elapsed(startNanos) > nanos;
+    public static boolean isElapsed(long nanos, long duration) {
+        return elapsed(nanos) > duration;
     }
 
-    public static long elapsed(long startNanos) {
-        return System.nanoTime() - startNanos;
+    public static long elapsed(long nanos) {
+        return System.nanoTime() - nanos;
+    }
+    
+    public static String formatMillis(long nanos) {
+        return String.format("%.3fms", 1.*nanos/1000/1000);
     }
 }
