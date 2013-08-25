@@ -127,6 +127,7 @@ evans@beethoven:~$ keytool -keystore dualcontrol/evanx.jks -alias evanx -exportc
         Subject: C=za, ST=wp, L=ct, O=test, OU=test, CN=evanx
 
 evans@beethoven:~$ sh scripts/dualconsole.sh 
+Enter keystore password:
 DEK2013: 
 OK
 }}}
