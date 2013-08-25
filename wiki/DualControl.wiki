@@ -311,7 +311,7 @@ Importantly, passphrases are easier to remember, so we don't have to write them 
 
 <h4>Brutish Key Protector</h4>
 
-We observe that a quad-core Intel i5 can try 25 guesses per millisecond, using threads to utilise multiple cores.
+We observe that a quad-core Intel i5 can try about 30 guesses per millisecond, using 4 threads to its cores.
 
 Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
 
