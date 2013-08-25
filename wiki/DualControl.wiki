@@ -307,8 +307,6 @@ We argue that password length is more practical than complexity, e.g. that a pas
 
 Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longish passphrases.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
-
 <h4>Brutish Key Protector</h4>
 
 We observe that a quad-core Intel i5 can try about 30 guesses per millisecond, using 4 threads to utilise its cores.
@@ -322,6 +320,8 @@ evans@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
 The default <a href="http://www.docjar.com/html/api/sun/security/provider/JavaKeyStore.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, uses a <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> which hashes the password using <tt>SHA</tt> and XOR's the digest with the key material.
 
