@@ -126,7 +126,7 @@ evans@beethoven:~$ keytool -keystore dualcontrol/evanx.jks -alias evanx -exportc
   openssl x509 -text | grep 'Subject:' 
         Subject: C=za, ST=wp, L=ct, O=test, OU=test, CN=evanx
 
-evans@beethoven:~$ sh scripts/dualconsole.sh 
+evans@beethoven:~$ sh dualcontrol/console.sh 
 Enter keystore password:
 DEK2013: 
 OK
