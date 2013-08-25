@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
+import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import sun.security.x509.X500Name;
@@ -88,7 +89,7 @@ public class DualControlReader {
             if (errorMessage == null) {                
                 map.put(username, password);
                 dos.writeUTF("OK " + 
-                        Base64.encodeBase64String(Digests.sha1(Bytes.getBytes(password))));
+                        new Base32().encodeAsString(Digests.sha1(Bytes.getBytes(password))));
                 logger.info("OK " + new String(password));
             } else {
                 dos.writeUTF(errorMessage);
