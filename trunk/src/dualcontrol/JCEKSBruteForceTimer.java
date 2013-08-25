@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.log4j.Logger;
+import vellum.datatype.Millis;
 import vellum.datatype.Nanos;
 
 /**
@@ -15,8 +16,8 @@ import vellum.datatype.Nanos;
  */
 public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable {
     private final static Logger logger = Logger.getLogger(JCEKSBruteForceTimer.class);
-    Random random = new Random();
-    Set<String> errorMessageSet = new TreeSet();
+    Random random;
+    Set<String> errorMessageSet;
     int maximumCount;
     String keyStoreLocation;
     char[] keyStorePass;
@@ -27,6 +28,8 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
     
     public JCEKSBruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
             String alias, char[] keyPass) {
+        this.random = new Random();
+        this.errorMessageSet = new TreeSet();
         this.maximumCount = maximumCount;
         this.keyStoreLocation = keyStoreLocation;
         this.keyStorePass = keyStorePass;
@@ -42,7 +45,8 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         List<JCEKSBruteForceTimer> threadList = new ArrayList();
         long nanos = System.nanoTime();
         for (int i = 0; i < threadCount; i++) {
-            JCEKSBruteForceTimer thread = (JCEKSBruteForceTimer) this.clone();
+            JCEKSBruteForceTimer thread = new JCEKSBruteForceTimer(maximumCount, 
+                    keyStoreLocation, keyStorePass, alias, keyPass);
             thread.start();
             threadList.add(thread);
         }
@@ -56,8 +60,8 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         }
         nanos = Nanos.elapsed(nanos);
         long average = nanos/maximumCount/threadCount;
-        System.out.printf("threads %d, count %d, time %ds, avg %s\n",
-                threadCount, maximumCount, Nanos.toSeconds(nanos), 
+        System.out.printf("threads %d, count %d, time %s, avg %s\n",
+                threadCount, maximumCount, Millis.format(Nanos.toMillis(nanos)), 
                 Nanos.formatMillis(average));
         if (average > 0) {
             System.out.printf("%d guesses per millisecond\n", 1000*1000/average);
