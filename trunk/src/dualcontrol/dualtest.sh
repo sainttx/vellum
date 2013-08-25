@@ -156,8 +156,8 @@ keystoreclient() {
   javaks server dualcontrol.FileClientDemo 127.0.0.1 4445
 }
 
-command0_bruteforcetimer() {
-  javaks server dualcontrol.JCEKSBruteForceTimer $seckeystore $pass DEK2013-evanx-henty eeeehhhh
+command2_bruteforcetimer() {
+  java dualcontrol.JCEKSBruteForceTimer $1 $2 $seckeystore $pass DEK2013-evanx-henty eeeehhhh
 }
 
 command0_testkeystoreserver() {
