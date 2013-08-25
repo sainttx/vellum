@@ -246,20 +246,25 @@ We ensure that the default required complexity and/or length of the password is 
 
 {{{
 public class DualControlPasswords {
-    final static boolean verifyPassword = 
-            getBoolean("dualcontrol.verifyPassword", true);
     final static boolean verifyPasswordComplexity = 
             getBoolean("dualcontrol.verifyPasswordComplexity", false);
     final static int minPassLength = 
             Integer.getInteger("dualcontrol.minPassLength", 18);
 
-    public static void assertValid(char[] password) throws Exception {
-        String errorMessage = getErrorMessage(password);
-        if (errorMessage != null) {
-            throw new Exception(errorMessage);
+    public static String getErrorMessage(char[] password) throws Exception {
+        if (password.length < minPassLength) {
+            return "Password too short";
         }
+        if (verifyPasswordComplexity) {
+            if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
+                    || !isDigit(password) || !isPunctuation(password)) {
+                return "Insufficient password complexity";
+            }
+        }
+        return null;
     }
     ...
+}
 }}}
 
 We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits.
