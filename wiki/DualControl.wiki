@@ -26,7 +26,7 @@ But then our application can't access those keys either. <i>D'oh!</i> So we must
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can grok. For this purpose, there shall be <tt>!DualControlGenSecKey</tt>, as follows.
+Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. For this purpose, there shall be <tt>!DualControlGenSecKey</tt>, as follows.
 
 {{{
 public class DualControlGenSecKey { 
