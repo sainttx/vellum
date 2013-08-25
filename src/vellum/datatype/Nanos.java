@@ -4,18 +4,24 @@
  */
 package vellum.datatype;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import vellum.exception.ParseRuntimeException;
 
 /**
  *
  * @author evan
  */
 public class Nanos {
+
+    public static long toMicos(long nanos) {
+        return nanos/1000;
+    }
+    
+    public static long toMillis(long nanos) {
+        return nanos/1000/1000;
+    }
     
     public static long toSeconds(long nanos) {
-        return nanos/1000/1000;
+        return nanos/1000/1000/1000;
     }
 
     public static long toMinutes(long nanos) {
@@ -56,5 +62,9 @@ public class Nanos {
     
     public static String formatMillis(long nanos) {
         return String.format("%.3fms", 1.*nanos/1000/1000);
+    }
+    
+    public static String formatSeconds(long nanos) {
+        return String.format("%.3fs", 1.*nanos/1000/1000/1000);
     }
 }
