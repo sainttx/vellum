@@ -56,10 +56,11 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         }
         nanos = Nanos.elapsed(nanos);
         long average = nanos/maximumCount/threadCount;
-        logger.info(String.format("threads %d, count %d, avg %s\n",
-                threadCount, maximumCount, nanos/1000/1000, Nanos.formatMillis(average)));
+        System.out.printf("threads %d, count %d, time %ds, avg %s\n",
+                threadCount, maximumCount, Nanos.toSeconds(nanos), 
+                Nanos.formatMillis(average));
         if (average > 0) {
-            logger.info("guesses per millisecond " + 1000*1000/average);
+            System.out.printf("%d guesses per millisecond\n", 1000*1000/average);
         }
     }
     
@@ -92,9 +93,10 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         nanos = Nanos.elapsed(nanos);
         long average = nanos/maximumCount;
         result = String.format(
-                "%s %d, exceptions %d (%d), correct, avg %s\n", 
+                "%s %d, exceptions %d (%d), correct %s, time %s, avg %s\n", 
                 alias, maximumCount, exceptionCount, errorMessageSet.size(), 
-                correctNanos/1000, nanos/1000, Nanos.formatMillis(average));
+                Nanos.formatMillis(correctNanos), Nanos.formatMillis(nanos), 
+                Nanos.formatMillis(average));
         
     }
     char[] generatePassword() {
