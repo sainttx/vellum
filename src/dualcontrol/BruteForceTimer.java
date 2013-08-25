@@ -27,6 +27,7 @@ public class BruteForceTimer {
                 if (i%500 == 0) password = correctPassword;                        
                 keyStore.getKey(alias, password);
             } catch (Exception e) {
+                logger.debug(e.getMessage());
                 exceptionCount++;
             }
         }
