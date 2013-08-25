@@ -102,7 +102,7 @@ public class DualControlConsole {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String prompt = dis.readUTF();
         char[] password = System.console().readPassword(
-                "Enter password for remote key " + prompt + ": ");
+                "Enter passphrase for remote key " + prompt + ": ");
         String errorMessage = DualControlPasswords.getErrorMessage(password);
         if (errorMessage != null) {
             System.err.println(errorMessage);
@@ -119,19 +119,13 @@ public class DualControlConsole {
 where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the prompt for the password e.g. the key alias "DEK2013," submit our password, and finally display a response message e.g. "OK," or otherwise an error message.
 
 {{{
-evans@beethoven:~$ keytool -keystore dualcontrol/evanx.jks -list | grep Entry
-Enter keystore password:
-evanx, 25 Aug 2013, PrivateKeyEntry, 
-
-evans@beethoven:~$ keytool -keystore dualcontrol/evanx.jks -alias evanx -exportcert -rfc | 
-  openssl x509 -text | grep 'Subject:' 
-        Subject: C=za, ST=wp, L=ct, O=test, OU=test, CN=evanx
-
 evans@beethoven:~$ sh dualcontrol/console.sh 
-Enter keystore password:
-Enter password for remote key DEK2013: 
+Enter passphrase for dual control SSL connection:
+Enter passphrase for remote key DEK2013: 
 OK
 }}}
+
+where `!DualControlKeyStores` will prompt for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
