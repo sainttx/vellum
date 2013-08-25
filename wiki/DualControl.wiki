@@ -2,7 +2,7 @@
 
 = Dual Control Key Management =
 
-See the source article at <a href="https://code.google.com/p/vellum/wiki/DualControl">code.google.com/p/vellum/wiki/DualControl</a>, which has probably been updated since this posting.
+See the source article at <a href="https://code.google.com/p/vellum/wiki/DualControl">code.google.com/p/vellum/wiki/DualControl</a> which might have been updated since this posting.
 
 <h4>Introduction</h4>
 
