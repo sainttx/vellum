@@ -35,6 +35,8 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
     }
 
     void start(int threadCount) throws Exception {
+        logger.info("keyStoreLocation " + keyStoreLocation);
+        logger.info("generatePassword " + new String(generatePassword()));
         List<JCEKSBruteForceTimer> threadList = new ArrayList();
         long nanos = System.nanoTime();
         for (int i = 0; i < threadCount; i++) {
@@ -42,8 +44,7 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
             thread.start();
             threadList.add(thread);
         }
-        for (int i = 0; i < threadCount; i++) {
-            JCEKSBruteForceTimer thread = threadList.get(i);
+        for (JCEKSBruteForceTimer thread : threadList) {
             thread.join();
             if (thread.exception != null) {
                 logger.error(thread.exception);
@@ -70,8 +71,7 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
     }
     
     void call() throws Exception {
-        KeyStore keyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
-        logger.info("generatePassword " + new String(generatePassword()));
+        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, keyStorePass);
         long correctTime = System.nanoTime();
         keyStore.getKey(alias, keyPass);
         correctTime = Nanos.elapsed(correctTime);
