@@ -97,7 +97,7 @@ public class DualControlConsole {
     final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
+        Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String prompt = dis.readUTF();
@@ -125,7 +125,7 @@ Enter passphrase for remote key DEK2013:
 OK
 }}}
 
-where <tt>!DualControlKeyStores</tt> will prompt for the SSL keystore password first.
+where <tt>!DualControlSSLContextFactory</tt> will prompt for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
@@ -135,14 +135,14 @@ The workaround for above "bugs" in plain management-speak, is that our "controls
 
 On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, i.e. requires <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
 
-<h4><tt>!DualControlKeyStores</tt></h4>
+<h4><tt>!DualControlSSLContextFactory</tt></h4>
 
 Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options for the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> as below. 
 
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> option is our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for DSA assymmetric encryption. This should not be confused with our "secret keystore" e.g. which contains a AES <i>secret</i> key for symmetric encryption of our data. 
  
 {{{
-public class DualControlKeyStores {    
+public class DualControlSSLContextFactory {    
 
     public static SSLContext createSSLContext() throws Exception {
         char[] keyStorePassword = null;
@@ -232,7 +232,7 @@ We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocke
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlKeyStores.createSSLContext().
+                DualControlSSLContextFactory.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);
@@ -311,17 +311,19 @@ Importantly, passphrases are easier to remember, so we don't have to write them 
 
 <h4>Brutish Key Protector</h4>
 
+We observe that a quad-core Intel i5 can try 25 guesses per millisecond, using threads to utilise multiple cores.
+
 Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
 
 The default <a href="http://www.docjar.com/html/api/sun/security/provider/JavaKeyStore.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, uses a <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> which hashes the password using <tt>SHA</tt> and XOR's the digest with the key material.
 
 We see that the JCE Provider's <a href="http://www.docjar.com/docs/api/com/sun/crypto/provider/JceKeyStore.html"><tt>JCEKeyStore</tt></a> i.e. for JCEKS-type keystores, uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> with a PBE cipher, namely <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html"><tt>PBEWithMD5AndTripleDESCipher</tt></a> with a <a href="http://www.docjar.com/html/api/javax/crypto/spec/PBEKeySpec.java.html"><tt>PBEKeySpec</tt></a> with the default iteration count of zero. 
-
+ 
 But surely <tt>PBKDF2</tt> with high number of iterations, would be way better at combating brute-force attacks on keystores? One wants a computationally-expensive algorithm so that key recovery takes a second rather than a millisecond. We note that <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> is also memory-expensive.
 
 So we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
-Otherwise if we assume that someone can try 1000 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than 80 years is required to try all possible passwords. (For example, my laptop can try 25 guesses per millisecond, using threads to utilise multiple cores.) Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack.
+Otherwise if we assume that someone can try 1000 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than 80 years is required to try all possible passwords. Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack.
 
 In order to use passphrases shorter than 18 characters with absolute confidence, perhaps we'll implement PBKDF2 to password-protect our keys, in a follow-up article. A trick that comes to mind is to use a separate JCEKS for each dual key, and encrypt the entire keystore using PBE with PBKDF2. The unencrypted <tt>!KeyStore</tt> bytes can be put into <tt>!ByteArrayInputStream</tt> to be passed to <tt>!KeyStore.load()</tt>. On the flip side, we pass a <tt>!ByteArrayOutputStream</tt> to <tt>!KeyStore.store()</tt>, encrypt the resulting <tt>!KeyStore</tt> bytes using the dual password, and save encrypted bytes to the filesystem. In this case, we are unable to use <tt>keytool</tt>, but in any event we require replacements such as <tt>!DualControlGenSecKey</tt>, with more to come.
 
