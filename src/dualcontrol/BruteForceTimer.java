@@ -24,15 +24,17 @@ public class BruteForceTimer {
         for (int i = 0; i < count; i++) {
             try {
                 char[] password = generatePassword();
-                if (i%200 == 0) password = correctPassword;                        
+                if (i%500 == 0) password = correctPassword;                        
                 keyStore.getKey(alias, password);
             } catch (Exception e) {
                 exceptionCount++;
             }
         }
+        time = Nanos.elapsed(time);
+        long avg = time/count/1000;
         logger.info(String.format(
-                "alias %s, count %d, exceptions %d, correct time %d us, average time %d us\n", 
-                alias, count, exceptionCount, correctTime/1000, Nanos.elapsed(time)/count/1000));
+                "alias %s, count %d, exceptions %d, correct time %du, avg %du\n", 
+                alias, count, exceptionCount, correctTime/1000, avg, 1000/avg));
     }
 
     char[] generatePassword() {
