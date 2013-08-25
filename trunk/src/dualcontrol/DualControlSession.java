@@ -34,7 +34,7 @@ public class DualControlSession {
     public SecretKey loadKey(String alias) throws Exception {
         alias += "-" + dualAlias;
         logger.debug("loadKey " + alias);
-        new BruteForceTimer().test(1000000, dualKeyStore, alias, dualPass);
+        new BruteForceTimer(1000, dualKeyStore, alias, dualPass).start(4);
         return (SecretKey) dualKeyStore.getKey(alias, dualPass);
     }
 }
