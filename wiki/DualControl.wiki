@@ -22,7 +22,7 @@ The glaring problem is that sysadmins are a single person, with God-like access 
 
 Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret, i.e. they are unattainable, even to <i>root</i> ;)
 
-But then our application can't access those keys either. <i>D'oh!</i> So we must implement dual-control of our application in order to load these keys. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server in a follow-up article.
+But then our application can't access those keys either. <i>D'oh!</i> So we must implement dual control of our application in order to load these keys. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server in a follow-up article.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
@@ -76,7 +76,7 @@ Let's test <tt>!DualControlGenSecKey</tt>.
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
-When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>, we see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual-aliases."
+When three admins have submitted their passwords via SSL TCP/IP socket e.g. where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>, we see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
@@ -85,7 +85,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these three keys are one and the same. However each copy is password-protected using a different "dual-password" combination, known to no single person.
+Actually these three keys are one and the same. However each copy is password-protected using a different "dual password" combination, known to no single person.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
@@ -276,7 +276,9 @@ But surely <tt>PBKDF2</tt> with high number of iterations, would be way better a
 
 So we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a huge number of iterations. 
 
-Otherwise if we assume improbably that someone can try 1000 guesses per millisecond on a JCE keystore, on 1000 incredibly powerful parallel machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 13, for which more than a 1000 years is required to try all possible passwords ;)
+Otherwise if we assume that someone can try 1000 guesses per millisecond on a JCE keystore (whereas my laptop can bearly manage 15 per millisecond), using a botnet of a 100M machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than 80 years is required to try all possible passwords. Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters. 
+
+In order to allow passphrases shorter than 18 characters, perhaps we'll implement PBKDF2 to password-protect our keys, in a follow-up article. A trick that comes to mind is to use a separate JCEKS for each dual key, and encrypt the entire keystore using PBE with PBKDF2. The unencrypted bytes can be put into <tt>!ByteArrayInputStream</tt> to be passed to <tt>KeyStore.load()</tt>. On the flip side, we pass a <tt>ByteArrayOutputStream</tt> to <tt>KeyStore.store()</tt>, encrypt the resulting <tt>!KeyStore</tt> bytes using the dual password, and save encrypted bytes to the filesystem. In this case, we are unable to use <tt>keytool</tt>, but in any event we require replacements such as <tt>DualControlGenSecKey</tt>, with more to come.
 
 <h4><tt>!DualControlSessions</tt></h4>
 
@@ -319,7 +321,7 @@ where we read the dual info using the afore-mentioned <tt>!DualControlReader</tt
 
 <h4>Crypto server</h4>
 
-One might wish to create a central crypto server which is dualled-controlled, rather than burden your app. In that case, you can restart your application without dual-control, and indeed have any number of apps using this server. Furthermore it simplifies key management. 
+One might wish to create a central crypto server which is dual-controlled, rather than burden your app. In that case, you can restart your application without dual control, and indeed have any number of apps using this server. Furthermore it simplifies key management. 
 
 We'll implement the crypto server in a follow-up article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
 
@@ -333,7 +335,7 @@ PCI requires that "split knowledge and dual control" be used to protect our encr
 
 We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual-password" to be provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, we don't mind because we only require two admins to load a copy of the key when we restart our app :)
+In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual password" to be provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, we don't mind because we only require two admins to load a copy of the key when we restart our app :)
 
 For increased protection against brute-force attacks, we might wish for an even stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt>, configurable with the largest number of iterations such that the average key recovery time is still an acceptable delay for startup in our production environment e.g. a number of seconds. But as things stand, we use the standard <tt>JCE</tt> keystore, for which we suggest a minimum passphrase length of 13 characters, by a somewhat arbitrary calculation. 
 
