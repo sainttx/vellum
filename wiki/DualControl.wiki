@@ -327,7 +327,7 @@ We'll implement the crypto server in a follow-up article. <i>Then we can say, "D
 
 The problem with encryption is secure key management. <i>Aint got no time for that</i>.
 
-We probably shouldn't leave the key down the garden path, where tresspassers and rogues can just pick it up and thereby enter our house. 
+We probably shouldn't leave the key down the garden path, where tresspassers and rogues can just pick it up and let themselves into our house like they own the place.
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
