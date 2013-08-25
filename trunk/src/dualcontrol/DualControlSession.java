@@ -24,7 +24,7 @@ public class DualControlSession {
         Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(prompt);
         this.dualAlias = entry.getKey();
         this.dualPass = entry.getValue();
-        new BruteForceTimer(1000*1000, keyStoreLocation, storePass, dualAlias, dualPass).start(4);
+        new JCEKSBruteForceTimer(1000*1000, keyStoreLocation, storePass, dualAlias, dualPass).start(4);
         logger.debug("alias " + dualAlias);
     }
     
