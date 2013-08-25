@@ -278,7 +278,7 @@ Incidently, a known bug in the above code, and similarly in <tt>!DualControlCons
 
 <h4>Complexity and length</h4>
 
-We must ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
+We ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
 
 {{{
 public class DualControlPasswords {
