@@ -15,7 +15,7 @@ public class DualControlConsole {
     final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
+        Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String prompt = dis.readUTF();

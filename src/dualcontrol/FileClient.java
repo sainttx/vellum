@@ -13,7 +13,7 @@ import java.net.Socket;
 public class FileClient {
 
     public static byte[] read(String hostAddress, int port) throws Exception {
-        Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
+        Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                 createSocket(hostAddress, port);
         byte[] bytes = readBytes(socket.getInputStream());
         socket.close();
