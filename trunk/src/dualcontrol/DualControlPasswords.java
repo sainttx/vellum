@@ -9,7 +9,7 @@ public class DualControlPasswords {
     final static boolean verifyPasswordComplexity = 
             getBoolean("dualcontrol.verifyPasswordComplexity", false);
     final static int minPassLength = 
-            Integer.getInteger("dualcontrol.minPassLength", 13);
+            Integer.getInteger("dualcontrol.minPassLength", 18);
 
     public static void assertValid(char[] password) throws Exception {
         String errorMessage = getErrorMessage(password);
