@@ -125,7 +125,7 @@ Enter passphrase for remote key DEK2013:
 OK
 }}}
 
-where `!DualControlKeyStores` will prompt for the SSL keystore password first.
+where <tt>!DualControlKeyStores</tt> will prompt for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
