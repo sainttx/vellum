@@ -13,8 +13,8 @@ import vellum.datatype.Nanos;
  *
  * @author evans
  */
-public class BruteForceTimer extends Thread implements Cloneable, Runnable {
-    private final static Logger logger = Logger.getLogger(BruteForceTimer.class);
+public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable {
+    private final static Logger logger = Logger.getLogger(JCEKSBruteForceTimer.class);
     Random random = new Random();
     Set<String> errorMessageSet = new TreeSet();
     int maximumCount;
@@ -25,7 +25,7 @@ public class BruteForceTimer extends Thread implements Cloneable, Runnable {
     Exception exception;
     String result; 
     
-    public BruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
+    public JCEKSBruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
             String alias, char[] keyPass) {
         this.maximumCount = maximumCount;
         this.keyStoreLocation = keyStoreLocation;
@@ -35,15 +35,15 @@ public class BruteForceTimer extends Thread implements Cloneable, Runnable {
     }
 
     void start(int threadCount) throws Exception {
-        List<BruteForceTimer> threadList = new ArrayList();
+        List<JCEKSBruteForceTimer> threadList = new ArrayList();
         long nanos = System.nanoTime();
         for (int i = 0; i < threadCount; i++) {
-            BruteForceTimer thread = (BruteForceTimer) this.clone();
+            JCEKSBruteForceTimer thread = (JCEKSBruteForceTimer) this.clone();
             thread.start();
             threadList.add(thread);
         }
         for (int i = 0; i < threadCount; i++) {
-            BruteForceTimer thread = threadList.get(i);
+            JCEKSBruteForceTimer thread = threadList.get(i);
             thread.join();
             if (thread.exception != null) {
                 logger.error(thread.exception);
