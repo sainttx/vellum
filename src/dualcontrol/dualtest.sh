@@ -21,7 +21,7 @@ privatekeystore=$tmp/server.jks
 truststore=$tmp/truststore.jks
 cert=$tmp/dual.pem
 pass=test1234
-secalias=dek2013
+secalias=DEK2013
 
 aes() {
   keyAlg=AES
