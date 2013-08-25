@@ -119,8 +119,8 @@ where we open an SSL socket to our supposed dual-controlled app listening on por
 
 {{{
 evans@beethoven:~$ sh scripts/dualconsole.sh 
-dek2013: 
-OK
+DEK2013: 
+Password too short
 }}}
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
