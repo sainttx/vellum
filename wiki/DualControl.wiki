@@ -98,22 +98,21 @@ public class DualControlConsole {
 
     public static void main(String[] args) throws Exception {
         Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
-                    createSocket(HOST, PORT);
-        try {
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-            String prompt = dis.readUTF();
-            char[] password = System.console().readPassword(prompt + ": ");
-            DualControlPasswords.assertValid(password);
+                createSocket(HOST, PORT);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        String prompt = dis.readUTF();
+        char[] password = System.console().readPassword(prompt + ": ");
+        String errorMessage = DualControlPasswords.getErrorMessage(password);
+        if (errorMessage != null) {
+            System.err.println(errorMessage);
+        } else {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF(new String(password));
             String message = dis.readUTF();
             System.console().writer().println(message);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        } finally {
-            socket.close();
         }
-    }    
+        socket.close();
+    }
 }
 }}}
 where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>, and are identified by our SSL client cert.
