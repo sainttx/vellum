@@ -177,15 +177,6 @@ public class DualControlSSLContextFactory {
             }
         }
     }
-   
-    public static char[] getPassword(String propertyName, char[] defaultValue) {
-        String passwordString = System.getProperty(propertyName);
-        if (passwordString == null) {
-            return defaultValue;
-        }
-        logger.warn("Dual control password via command-line: " + propertyName);
-        return passwordString.toCharArray();
-    }
     ...
 }
 }}}
