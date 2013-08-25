@@ -172,6 +172,8 @@ public class DualControlKeyStores {
 }
 }}}
 
+where we enable passwords to be specified on the command-line for testing purposes, but actually we should always prompt for passwords to be entered on the console.
+
 We use the <tt>SSLContext</tt> created above for opening an <tt>SSLServerSocket</tt> or client <tt>SSLSocket</tt>.
 
 <h4><tt>!DualControlReader</tt></h4>
