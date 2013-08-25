@@ -27,7 +27,7 @@ public class DualControlKeyStores {
         if (string == null) {
             if (password == null) {
                 password = System.console().readPassword(
-                        "Enter password for dual control SSL connection: ");
+                        "Dual control SSL connection password: ");
             }
             return password;
         }
