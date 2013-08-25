@@ -38,7 +38,7 @@ public class DualControlKeyStores {
         try {
             String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
             if (keyStoreLocation == null) {
-                throw new Exception("Missing property -Ddualcontrol.ssl.keyStore");
+                throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
             }
             keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
             if (keyStorePassword == null) {
