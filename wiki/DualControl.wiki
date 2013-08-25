@@ -158,8 +158,7 @@ public class DualControlKeyStores {
                 keyStorePassword = System.console().readPassword(
                         "Enter passphrase for dual control SSL connection: ");
             }
-            keyPassword =
-                    getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
+            keyPassword = getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
             String trustStoreLocation =
                     System.getProperty("dualcontrol.ssl.trustStore", keyStoreLocation);
             trustStorePassword =
