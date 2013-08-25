@@ -143,29 +143,36 @@ Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> option is our "private keystor
  
 {{{
 public class DualControlKeyStores {    
-    static String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
-    static char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword");
-    static char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword");
-    static String trustStoreLocation = System.getProperty("dualcontrol.ssl.trustStore");
-    static char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
-    
-    public static char[] getPassword(String propertyName) {
-        String string = System.getProperty(propertyName);
-        if (string == null) {
-            return System.console().readPassword(propertyName + ": ");
-        }
-        return string.toCharArray();
-    }
-        
+
     public static SSLContext createSSLContext() throws Exception {
+        String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
+        char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
+        if (keyStorePassword == null) {
+            keyStorePassword = System.console().readPassword(
+                    "Enter passphrase for dual control SSL connection: ");            
+        }
+        char[] keyPassword = 
+                getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
+        String trustStoreLocation = 
+                System.getProperty("dualcontrol.ssl.trustStore", keyStoreLocation);
+        char[] trustStorePassword = 
+                getPassword("dualcontrol.ssl.trustStorePassword",  keyStorePassword);
         return createSSLContext(keyStoreLocation, keyStorePassword, keyPassword,
                 trustStoreLocation, trustStorePassword);
+    }
+
+    public static char[] getPassword(String propertyName, char[] defaultValue) {
+        String passwordString = System.getProperty(propertyName);
+        if (passwordString == null) {
+            return defaultValue;
+        }
+        return passwordString.toCharArray();
     }
     ...
 }
 }}}
 
-where we create an <tt>SSLContext</tt> using these settings e.g. for opening an <tt>SSLSocket</tt>.
+We use the <tt>SSLContext</tt> created above for opening an <tt>SSLServerSocket</tt> or client <tt>SSLSocket</tt>.
 
 <h4><tt>!DualControlReader</tt></h4>
 
