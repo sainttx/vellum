@@ -280,7 +280,7 @@ Otherwise if we assume improbably that someone can try 1000 guesses per millisec
 
 <h4><tt>!DualControlSessions</tt></h4>
 
-On the downside, we have to re-engineer our application to be dual-controlled, to load the key it so desperately needs to cipher our data, as follows.
+On the downside, we have to re-engineer our application to be dual-controlled, to load the key it so desperately needs to cipher our data.
 
 {{{
 public class DualControlDemoApp {
