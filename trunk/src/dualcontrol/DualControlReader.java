@@ -8,7 +8,6 @@ import java.util.TreeMap;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import sun.security.x509.X500Name;
 import vellum.security.Digests;
@@ -64,7 +63,7 @@ public class DualControlReader {
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlKeyStores.createSSLContext().
+                DualControlSSLContextFactory.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);

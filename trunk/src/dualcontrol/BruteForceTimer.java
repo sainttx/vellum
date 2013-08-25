@@ -20,15 +20,14 @@ public class BruteForceTimer extends Thread implements Cloneable, Runnable {
     int maximumCount;
     String keyStoreLocation;
     char[] keyStorePass;
-    KeyStore keyStore;
     String alias;
     char[] keyPass;
     Exception exception;
     String result; 
     
-    public BruteForceTimer(int count, String keyStoreLocation, char[] keyStorePass, 
+    public BruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
             String alias, char[] keyPass) {
-        this.maximumCount = count;
+        this.maximumCount = maximumCount;
         this.keyStoreLocation = keyStoreLocation;
         this.keyStorePass = keyStorePass;
         this.alias = alias;
@@ -37,8 +36,11 @@ public class BruteForceTimer extends Thread implements Cloneable, Runnable {
 
     void start(int threadCount) throws Exception {
         List<BruteForceTimer> threadList = new ArrayList();
+        long nanos = System.nanoTime();
         for (int i = 0; i < threadCount; i++) {
-            threadList.add((BruteForceTimer) this.clone());
+            BruteForceTimer thread = (BruteForceTimer) this.clone();
+            thread.start();
+            threadList.add(thread);
         }
         for (int i = 0; i < threadCount; i++) {
             BruteForceTimer thread = threadList.get(i);
@@ -48,6 +50,13 @@ public class BruteForceTimer extends Thread implements Cloneable, Runnable {
             } else {
                 logger.info(thread.result);
             }
+        }
+        nanos = Nanos.elapsed(nanos);
+        long averagePerSecond = nanos/maximumCount/threadCount/1000;
+        logger.info(String.format("threads %d, count %d, time %dms, avg %d/s\n",
+                threadCount, maximumCount, nanos/1000/1000, averagePerSecond));
+        if (averagePerSecond > 0) {
+            logger.info("guesses per second " + 1000/averagePerSecond);
         }
     }
     
@@ -61,11 +70,12 @@ public class BruteForceTimer extends Thread implements Cloneable, Runnable {
     }
     
     void call() throws Exception {
+        KeyStore keyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
         logger.info("generatePassword " + new String(generatePassword()));
         long correctTime = System.nanoTime();
         keyStore.getKey(alias, keyPass);
         correctTime = Nanos.elapsed(correctTime);
-        long time = System.nanoTime();
+        long nanos = System.nanoTime();
         int exceptionCount = 0;
         for (int i = 0; i < maximumCount; i++) {
             try {
@@ -77,12 +87,13 @@ public class BruteForceTimer extends Thread implements Cloneable, Runnable {
                 exceptionCount++;
             }
         }
-        time = Nanos.elapsed(time);
-        long avg = time/maximumCount/1000;
+        nanos = Nanos.elapsed(nanos);
+        long averagerPerSecond = nanos/maximumCount/1000;
         result = String.format(
-                "alias %s, count %d, exceptions %d (set %d), correct time %du, avg %du\n", 
+                "alias %s, count %d, exceptions %d (set %d), correct time %dus, avg %d/s\n", 
                 alias, maximumCount, exceptionCount, errorMessageSet.size(), 
-                correctTime/1000, avg, 1000/avg);        
+                correctTime/1000, averagerPerSecond);       
+        
     }
     char[] generatePassword() {
         StringBuilder builder = new StringBuilder();

@@ -20,7 +20,7 @@ public class CryptoClientDemo {
     }
 
     private void run(String hostAddress, int port, byte[] data) throws Exception {
-        Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
+        Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                 createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeShort(data.length);

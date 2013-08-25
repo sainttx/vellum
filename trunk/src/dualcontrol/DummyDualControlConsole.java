@@ -23,7 +23,7 @@ public abstract class DummyDualControlConsole {
             String username = args[0];
             char[] password = args[1].toCharArray();
             try {
-                Socket socket = DualControlKeyStores.createSSLContext().getSocketFactory().
+                Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                         createSocket(HOST, PORT);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 String prompt = dis.readUTF();
