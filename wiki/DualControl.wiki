@@ -146,6 +146,9 @@ public class DualControlKeyStores {
 
     public static SSLContext createSSLContext() throws Exception {
         String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
+        if (keyStoreLocation == null) {
+            throw new Exception("Missing property -Ddualcontrol.ssl.keyStore");
+        }
         char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
@@ -172,7 +175,7 @@ public class DualControlKeyStores {
 }
 }}}
 
-where we enable passwords to be specified on the command-line for testing purposes, but actually we should always prompt for passwords to be entered on the console.
+where we enable keystore passwords to be specified on the command-line e.g. for test scripts, but otherwise we prompt for a password to be entered on the console.
 
 We use the <tt>SSLContext</tt> created above for opening an <tt>SSLServerSocket</tt> or client <tt>SSLSocket</tt>.
 
