@@ -15,16 +15,21 @@ import javax.net.ssl.TrustManagerFactory;
  * @author evans
  */
 public class DualControlKeyStores {    
+    static char[] password;
     static String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
     static char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword");
     static char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword");
     static String trustStoreLocation = System.getProperty("dualcontrol.ssl.trustStore");
     static char[] trustStorePassword = getPassword("dualcontrol.ssl.trustStorePassword");    
-    
+
     public static char[] getPassword(String propertyName) {
         String string = System.getProperty(propertyName);
         if (string == null) {
-            return System.console().readPassword(propertyName + ": ");
+            if (password == null) {
+                password = System.console().readPassword(
+                        "Enter password for dual control SSL connection: ");
+            }
+            return password;
         }
         return string.toCharArray();
     }
