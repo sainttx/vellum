@@ -115,7 +115,13 @@ public class DualControlConsole {
     }
 }
 }}}
-where we submit our password via SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert.
+where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the prompt for the password e.g. the key alias "DEK2013," submit our password, and finally display a response message e.g. "OK," or otherwise an error message.
+
+{{{
+evans@beethoven:~$ sh scripts/dualconsole.sh 
+dek2013: 
+OK
+}}}
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
