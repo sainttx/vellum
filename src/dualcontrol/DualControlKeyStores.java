@@ -32,4 +32,18 @@ public class DualControlKeyStores {
         }
         return keyStore;
     }
+    
+    public static KeyStore loadLocalKeyStore(String keyStoreLocation, char[] keyStorePassword) 
+            throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        if (new File(keyStoreLocation).exists()) {
+            FileInputStream fis = new FileInputStream(keyStoreLocation);
+            keyStore.load(fis, keyStorePassword);
+            fis.close();
+        } else {
+            keyStore.load(null, keyStorePassword);            
+        }
+        return keyStore;
+    }
+    
 }

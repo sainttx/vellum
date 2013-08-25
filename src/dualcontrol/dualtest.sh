@@ -161,17 +161,13 @@ command0_testkeystoreserver() {
   sleep 2
 }
 
-command0_cryptoserver() {
-  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 2 127.0.0.1 $seckeystore $pass
-}
-
 command1_cryptoserver() {
-  javaks server dualcontrol.CryptoServer 127.0.0.1 $1 4 2 127.0.0.1 $seckeystore $pass
+  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 $seckeystore $pass
 }
 
 command1_cryptoserver_remote() {
   echo "cryptoserver_remote $1"
-  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:seckeystore:" $pass
+  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:seckeystore" $pass
 }
 
 cryptoclient_cipher() {
@@ -196,6 +192,13 @@ cryptoclient1() {
 }
 
 command1_testcryptoserver() {
+  count=$1  
+  echo "command1_testcryptoserver $# $@"
+  cryptoclient1 $count & command1_cryptoserver `echo 2*$count | bc`
+  sleep 2
+}
+
+command1_testcryptoserver_remote() {
   command0_keystoreserver &
   count=$1  
   echo "command1_testcryptoserver $# $@"
