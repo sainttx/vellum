@@ -118,6 +118,14 @@ public class DualControlConsole {
 where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the prompt for the password e.g. the key alias "DEK2013," submit our password, and finally display a response message e.g. "OK," or otherwise an error message.
 
 {{{
+evans@beethoven:~$ keytool -keystore dualcontrol/evanx.jks -list | grep Entry
+Enter keystore password:
+evanx, 25 Aug 2013, PrivateKeyEntry, 
+
+evans@beethoven:~$ keytool -keystore dualcontrol/evanx.jks -alias evanx -exportcert -rfc | 
+  openssl x509 -text | grep 'Subject:' 
+        Subject: C=za, ST=wp, L=ct, O=test, OU=test, CN=evanx
+
 evans@beethoven:~$ sh scripts/dualconsole.sh 
 DEK2013: 
 OK
