@@ -238,7 +238,7 @@ We accumulate the required number of submissions as follows.
 
 where the admin's username is determined from their SSL cert, namely the <tt>CN</tt> field.
 
-Incidently, a known bug in the above code, and similarly in <tt>!DualControlConsole</tt>, is that we sometimes create strings containing passwords e.g. by <tt>readUTF()</tt> above. These will be cleared by the garbage collector at some stage, whereas a better practice is to use <tt>char</tt> arrays exclusively, and clear these soonest i.e. in a more deterministic fashion.
+Incidently, a known bug in the above code, and similarly in <tt>!DualControlConsole</tt>, is that we sometimes create strings containing passwords e.g. by <tt>readUTF()</tt> above. These will be cleared by the garbage collector at some stage, whereas a better practice is to use <tt>char[]</tt> arrays exclusively, and clear these soonest i.e. in a more deterministic fashion.
 
 <h4>Complexity and length</h4>
 
