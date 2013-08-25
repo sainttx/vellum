@@ -313,6 +313,8 @@ Importantly, passphrases are easier to remember, so we don't have to write them 
 
 We observe that a quad-core Intel i5 can try about 30 guesses per millisecond, using 4 threads to utilise its cores.
 
+Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
+
 {{{
 evans@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
   $seckeystore $pass DEK2013-evanx-henty eeeehhhh
@@ -320,8 +322,6 @@ evans@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
-
-Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
 
 The default <a href="http://www.docjar.com/html/api/sun/security/provider/JavaKeyStore.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, uses a <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> which hashes the password using <tt>SHA</tt> and XOR's the digest with the key material.
 
