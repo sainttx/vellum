@@ -183,6 +183,7 @@ public class DualControlKeyStores {
         if (passwordString == null) {
             return defaultValue;
         }
+        logger.warn("Dual control password via command-line: " + propertyName);
         return passwordString.toCharArray();
     }
     ...
