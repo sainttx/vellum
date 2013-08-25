@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.net.Socket;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -31,40 +32,60 @@ public class DualControlKeyStores {
     }
         
     public static SSLContext createSSLContext() throws Exception {
-        String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
-        if (keyStoreLocation == null) {
-            throw new Exception("Missing property -Ddualcontrol.ssl.keyStore");
+        char[] keyStorePassword = null;
+        char[] keyPassword = null;
+        char[] trustStorePassword = null;
+        try {
+            String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
+            if (keyStoreLocation == null) {
+                throw new Exception("Missing property -Ddualcontrol.ssl.keyStore");
+            }
+            keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
+            if (keyStorePassword == null) {
+                keyStorePassword = System.console().readPassword(
+                        "Enter passphrase for dual control SSL connection: ");
+            }
+            keyPassword = getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
+            String trustStoreLocation =
+                    System.getProperty("dualcontrol.ssl.trustStore", keyStoreLocation);
+            trustStorePassword =
+                    getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+            return createSSLContext(keyStoreLocation, keyStorePassword, keyPassword,
+                    trustStoreLocation, trustStorePassword);
+        } finally {
+            if (keyStorePassword != null) {
+                Arrays.fill(keyStorePassword, (char) 0);
+            }
+            if (keyPassword != null) {
+                Arrays.fill(keyPassword, (char) 0);
+            }
+            if (trustStorePassword != null) {
+                Arrays.fill(trustStorePassword, (char) 0);
+            }
         }
-        char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
-        if (keyStorePassword == null) {
-            keyStorePassword = System.console().readPassword(
-                    "Enter passphrase for dual control SSL connection: ");            
+    }
+    
+    public static void clearPassword(char[] password) {
+        if (password != null) {
+            Arrays.fill(password, (char) 0);
         }
-        char[] keyPassword = 
-                getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
-        String trustStoreLocation = 
-                System.getProperty("dualcontrol.ssl.trustStore", keyStoreLocation);
-        char[] trustStorePassword = 
-                getPassword("dualcontrol.ssl.trustStorePassword",  keyStorePassword);
-        return createSSLContext(keyStoreLocation, keyStorePassword, keyPassword,
-                trustStoreLocation, trustStorePassword);
     }
 
-    public static SSLContext createSSLContext(String keyStoreLocation, 
+    public static SSLContext createSSLContext(String keyStoreLocation,
             char[] keyStorePassword, char[] keyPassword,
             String trustStoreLocation, char[] trustStorePassword) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
-        KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(trustStore);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(keyManagerFactory.getKeyManagers(), 
-                trustManagerFactory.getTrustManagers(), new SecureRandom());
-        return sslContext;
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+            trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+            keyManagerFactory.init(keyStore, keyPassword);
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+            trustManagerFactory.init(trustStore);
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(keyManagerFactory.getKeyManagers(),
+                    trustManagerFactory.getTrustManagers(), new SecureRandom());
+            return sslContext;
     }
     
     public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
