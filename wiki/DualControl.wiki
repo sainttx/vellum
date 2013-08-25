@@ -321,9 +321,9 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
-
 The default <a href="http://www.docjar.com/html/api/sun/security/provider/JavaKeyStore.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, uses a <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> which hashes the password using <tt>SHA</tt> and XOR's the digest with the key material.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
 We see that the JCE Provider's <a href="http://www.docjar.com/docs/api/com/sun/crypto/provider/JceKeyStore.html"><tt>JCEKeyStore</tt></a> i.e. for JCEKS-type keystores, uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> with a PBE cipher, namely <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html"><tt>PBEWithMD5AndTripleDESCipher</tt></a> with a <a href="http://www.docjar.com/html/api/javax/crypto/spec/PBEKeySpec.java.html"><tt>PBEKeySpec</tt></a> with the default iteration count of zero. 
  
