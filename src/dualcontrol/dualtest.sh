@@ -156,6 +156,10 @@ keystoreclient() {
   javaks server dualcontrol.FileClientDemo 127.0.0.1 4445
 }
 
+command0_bruteforcetimer() {
+  javaks server dualcontrol.JCEKSBruteForceTimer $seckeystore $pass DEK2013-evanx-henty eeeehhhh
+}
+
 command0_testkeystoreserver() {
   keystoreclient & command0_keystoreserver
   sleep 2
@@ -170,7 +174,7 @@ command1_cryptoserver_remote() {
   javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:seckeystore" $pass
 }
 
-cryptoclient_cipher() {
+command0_cryptoclient_cipher() {
   datum=1111222233334444
   request="ENCRYPT:$secalias:$cipherTrans:8:$datum"
   echo "TRACE CryptoClientDemo request $request"
@@ -181,20 +185,20 @@ cryptoclient_cipher() {
   javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$request"
 }
 
-cryptoclient1() {
+command1_cryptoclient() {
   jc evanx eeee
   jc henty hhhh
   for iter in `seq $1`
   do
     echo "cryptoclient $iter"
-    cryptoclient_cipher
+    command0_cryptoclient_cipher
   done
 }
 
 command1_testcryptoserver() {
   count=$1  
   echo "command1_testcryptoserver $# $@"
-  cryptoclient1 $count & command1_cryptoserver `echo 2*$count | bc`
+  command1_cryptoclient $count & command1_cryptoserver `echo 2*$count | bc`
   sleep 2
 }
 
@@ -202,7 +206,7 @@ command1_testcryptoserver_remote() {
   command0_keystoreserver &
   count=$1  
   echo "command1_testcryptoserver $# $@"
-  cryptoclient1 $count & command1_cryptoserver_remote `echo 2*$count | bc`
+  command1_cryptoclient $count & command1_cryptoserver_remote `echo 2*$count | bc`
   sleep 2
 }
 
