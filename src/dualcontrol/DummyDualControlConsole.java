@@ -27,7 +27,7 @@ public abstract class DummyDualControlConsole {
                         createSocket(HOST, PORT);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 String alias = dis.readUTF();
-                info("received prompt %s, sending %s %s",
+                info("received alias %s, sending %s %s",
                         alias, username, new String(password));
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 DualControlConsole.writeChars(dos, password);
