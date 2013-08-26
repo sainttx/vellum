@@ -86,14 +86,11 @@ public class DualControlReader {
                 dos.writeUTF(alias);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 char[] password = readChars(dis);
-                String invalidMessage = 
+                String responseMessage = 
                         DualControlPasswordVerifier.getInvalidMessage(password);
-                if (invalidMessage != null) {
-                    dos.writeUTF(invalidMessage);
-                    logger.warn(invalidMessage);
-                } else {
+                if (responseMessage == null) {
+                    responseMessage = "OK " + username;
                     map.put(username, password);
-                    String responseMessage = "OK " + username;
                     if (true) {
                         responseMessage += " " + new Base32().encodeAsString(
                                 Digests.sha1(Bytes.getBytes(password)));
@@ -102,6 +99,8 @@ public class DualControlReader {
                     dos.writeUTF(responseMessage);
                     logger.info(responseMessage);
                 }
+                dos.writeUTF(responseMessage);
+                logger.warn(responseMessage);
             }
             socket.close();
         }
