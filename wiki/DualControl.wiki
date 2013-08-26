@@ -180,6 +180,8 @@ public class DualControlSSLContextFactory {
 
 where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for a password to be entered on the console.
 
+Note that we use <tt>char</tt> arrays for passwords, and clear these soonest. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is a bit too indeterminate to suppress our paranoia. 
+
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> option is our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA or DSA assymmetric encryption. This should not be confused with our "secret keystore" e.g. which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
 We use the <tt>SSLContext</tt> created above for opening a <tt>SSLSocket</tt> in <tt>!DualControlConsole</tt>, and also for creating an <tt>SSLServerSocket</tt> in <tt>!DualControlReader</tt> as illustrated below.
@@ -268,8 +270,6 @@ We accumulate the required number of submissions in a loop.
 }}}
 
 where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
-
-Incidently, a known bug in the above code is that we create a string containing the password via <tt>readUTF()</tt>. This will be garbage-collected at some stage, whereas we should use <tt>char</tt> arrays exclusively, and clear these soonest.
 
 <h4>Complexity and length</h4>
 
