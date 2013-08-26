@@ -4,12 +4,11 @@
  */
 package dualcontrol;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
 
@@ -17,44 +16,56 @@ import org.apache.log4j.Logger;
  *
  * @author evans
  */
-public class DualControlGenSecKey {
+public class DualControlEnroll {
 
-    final static Logger logger = Logger.getLogger(DualControlGenSecKey.class);
+    final static Logger logger = Logger.getLogger(DualControlEnroll.class);
     private int submissionCount = SystemProperties.getInt("dualcontrol.submissions", 3);
     private String keyAlias = SystemProperties.getString("alias");
     private String keyStoreLocation = SystemProperties.getString("keystore");
     private String keyStoreType = SystemProperties.getString("storetype");
-    private String keyAlg = SystemProperties.getString("keyalg");
-    private int keySize = SystemProperties.getInt("keysize");
     private char[] keyStorePassword;
     private Map<String, char[]> dualMap;
     private KeyStore keyStore;
     private SecretKey secretKey;
 
+    public static String getStringProperty(String propertyName) {
+        String propertyValue = System.getProperty("alias");
+        if (propertyValue == null) {
+            throw new RuntimeException("Missing -D property: " + propertyName);
+        }
+        return propertyValue;
+    } 
+
     public static void main(String[] args) throws Exception {
-        new DualControlGenSecKey().start();
+        new DualControlEnroll().start();
     }
 
     void start() throws Exception {
         dualMap = new DualControlReader().readDualMap(keyAlias, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
-        keyGenerator.init(keySize);
-        secretKey = keyGenerator.generateKey();
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
+        List<String> aliasList = Collections.list(keyStore.aliases());
+        for (String alias : aliasList) {
+            System.err.println("existing alias " + alias);
+        }
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
-            if (true) {
-                System.err.printf("DualControlGenSecKey %s %s %s %d [%s]\n",
-                        new String(keyStorePassword), dualAlias, alias, 
-                        dualPassword.length, new String(dualPassword));
+            if (aliasList.contains(alias)) {
+                secretKey = (SecretKey) keyStore.getKey(alias, dualPassword);
+                break;
             }
-            KeyStore.ProtectionParameter prot = 
-                    new KeyStore.PasswordProtection(dualPassword);
-            keyStore.setEntry(alias, entry, prot);
+        }
+        for (String dualAlias : dualMap.keySet()) {
+            char[] dualPassword = dualMap.get(dualAlias);
+            String alias = keyAlias + "-" + dualAlias;
+            if (!aliasList.contains(alias)) {
+                KeyStore.ProtectionParameter prot = 
+                        new KeyStore.PasswordProtection(dualPassword);
+                keyStore.setEntry(alias, entry, prot);
+            }
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
     }

@@ -82,7 +82,8 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
     }
     
     void call() throws Exception {
-        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, keyStorePass);
+        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
+                "JCEKS", keyStorePass);
         long correctNanos = System.nanoTime();
         keyStore.getKey(alias, keyPass);
         correctNanos = Nanos.elapsed(correctNanos);
