@@ -282,7 +282,7 @@ public class DualControlPasswordVerifier {
     final static int minPassLength = 
             Integer.getInteger("dualcontrol.minPassLength", 18);
 
-    public static String getErrorMessage(char[] password) throws Exception {
+    public static String getInvalidMessage(char[] password) throws Exception {
         if (password.length < minPassLength) {
             return "Passphrase too short";
         }
