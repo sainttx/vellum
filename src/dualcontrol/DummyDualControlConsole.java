@@ -26,11 +26,11 @@ public abstract class DummyDualControlConsole {
                 Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                         createSocket(HOST, PORT);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
-                String prompt = dis.readUTF();
+                String alias = dis.readUTF();
                 info("received prompt %s, sending %s %s",
-                        prompt, username, new String(password));
+                        alias, username, new String(password));
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(new String(password));
+                DualControlConsole.writeChars(dos, password);
                 socket.close();
             } catch (Exception e) {
                 System.out.println("ERROR send " + new String(password));
