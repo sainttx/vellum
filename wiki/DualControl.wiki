@@ -263,6 +263,7 @@ We accumulate the required number of submissions in a loop.
                     logger.warn(invalidMessage);
                 } else {
                     map.put(username, password);
+                    String responseMessage = "OK " + username;
                     dos.writeUTF(responseMessage);
                     logger.info(responseMessage);
                 }
