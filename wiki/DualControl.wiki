@@ -330,7 +330,7 @@ Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE
 
 Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
-<h4><tt>!DualControlSessions</tt></h4>
+<h4><tt>!DualControlDemoApp</tt></h4>
 
 On the downside, we have to re-engineer our application to be dual-controlled, to load the key it so desperately needs to cipher our data.
 
@@ -360,11 +360,10 @@ INFO [DualControlSessions] DEK2013-evanx-henty
 INFO [DualControlDemoApp] loadedKey DEK2013 alg DESede
 }}}
 
-Our two simulated <tt>!DualControlConsole</tt> sessions are as follows. 
+where the two <tt>!DualControlConsole</tt> sessions are as follows. 
 
 {{{
-$ sh testconsole.sh evanx
-testconsole evanx
+$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key DEK2013 for DualControlDemoApp: 
 Re-enter password for key DEK2013 for DualControlDemoApp: 
@@ -372,14 +371,16 @@ OK evanx WLCO4XPIFBTNWOHXTRWUVENGEZEGW4HJ
 }}}
 
 {{{
-$ sh testconsole.sh henty
+$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key DEK2013 for DualControlDemoApp: 
 Re-enter password for key DEK2013 for DualControlDemoApp: 
 OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
 }}}
 
-Our app has used the <tt>loadKey()</tt> method below.
+<h4><tt>!DualControlSessions</tt></h4>
+
+Our app users the <tt>loadKey()</tt> method below.
 
 {{{
 public class DualControlSessions {
