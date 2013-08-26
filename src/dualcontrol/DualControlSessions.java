@@ -1,3 +1,7 @@
+/*
+ * Apache Software License 2.0, (c) Copyright 2013, Evan Summers
+ * 
+ */
 package dualcontrol;
 
 import java.security.KeyStore;

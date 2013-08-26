@@ -1,5 +1,6 @@
 /*
- * Copyright Evan Summers
+ * 
+ * Copyright 2013, Evan Summers
  * 
  */
 package crocserver.app;
