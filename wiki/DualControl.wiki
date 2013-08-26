@@ -342,15 +342,44 @@ public class DualControlDemoApp {
             throws Exception {
         dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
                 "DualControlDemoApp");
-        logger.debug("loaded key " + dek.getAlgorithm());
+        logger.info("loadKey " + alias + " alg " + dek.getAlgorithm());
     }
 }
 }}}
 
+The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
+
 {{{
+$ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 DEK2013
+INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, DEK2013]
+INFO [DualControlReader] Waiting for submissions on SSL port 4444
+INFO [DualControlReader] Accepting evanx
+INFO [DualControlReader] Accepting henty
+INFO [DualControlReader] readDualMap: evanx-henty
+INFO [DualControlSessions] DEK2013-evanx-henty
+INFO [DualControlDemoApp] loadedKey DEK2013 alg DESede
 }}}
 
-The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
+Our two simulated <tt>!DualControlConsole</tt> sessions are as follows. 
+
+{{{
+$ sh testconsole.sh evanx
+testconsole evanx
+Enter passphrase for dual control SSL connection: 
+Enter password for key DEK2013 for DualControlDemoApp: 
+Re-enter password for key DEK2013 for DualControlDemoApp: 
+OK evanx WLCO4XPIFBTNWOHXTRWUVENGEZEGW4HJ
+}}}
+
+{{{
+$ sh testconsole.sh henty
+Enter passphrase for dual control SSL connection: 
+Enter password for key DEK2013 for DualControlDemoApp: 
+Re-enter password for key DEK2013 for DualControlDemoApp: 
+OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
+}}}
+
+Our app has used the <tt>loadKey()</tt> method below.
 
 {{{
 public class DualControlSessions {
@@ -362,7 +391,7 @@ public class DualControlSessions {
             KeyStore dualKeyStore = 
                     DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
-                "load key " + alias + " for " + purpose);
+                "key " + alias + " for " + purpose);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
             alias = alias + "-" + dualAlias;
