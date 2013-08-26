@@ -338,9 +338,10 @@ On the downside, we have to re-engineer our application to be dual-controlled, t
 public class DualControlDemoApp {
     private SecretKey dek;     
     ...
-    private void loadKey(String keyStoreLocation, char[] storePass, String alias) 
+    private void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStoreLocation, storePass, alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias);
+        logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
 }}}
@@ -349,15 +350,17 @@ where the application loads keys as if it's too easy. But the caveat is that exe
 {{{
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStoreLocation, char[] storePass, String alias) 
-            throws Exception {
+    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
+            String alias) throws Exception {
         char[] dualPass = null;
         try {
-            KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, storePass);
+            KeyStore dualKeyStore = 
+                    DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(alias);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
-            return (SecretKey) dualKeyStore.getKey(alias + "-" + dualAlias, dualPass);
+            alias = alias + "-" + dualAlias;
+            return (SecretKey) dualKeyStore.getKey(alias, dualPass);
         } finally {
             if (dualPass != null) {
                 Arrays.fill(dualPass, (char) 0);            
