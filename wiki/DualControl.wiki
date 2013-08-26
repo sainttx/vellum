@@ -340,24 +340,29 @@ public class DualControlDemoApp {
     ...
     private void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
+                "DualControlDemoApp");
         logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
 }}}
 
-where the application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
+{{{
+}}}
+
+The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
+
 {{{
 public class DualControlSessions {
 
     public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
-            String alias) throws Exception {
+            String alias, String purpose) throws Exception {
         char[] dualPass = null;
         try {
             KeyStore dualKeyStore = 
                     DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
-                "Password for key " + alias);
+                "load key " + alias + " for " + purpose);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
             alias = alias + "-" + dualAlias;
