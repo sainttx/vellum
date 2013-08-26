@@ -89,7 +89,7 @@ Actually these three keys are one and the same. However each copy is password-pr
 
 <h4><tt>!DualControlConsole</tt></h4>
 
-In order for admins to submit their password via TCP/IP port, there shall be <tt>!DualControlConsole</tt> as follows.
+In order for admins to submit their password via SSL, there shall be <tt>!DualControlConsole</tt> as follows.
 
 {{{
 public class DualControlConsole {
