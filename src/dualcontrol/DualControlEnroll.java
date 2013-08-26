@@ -31,17 +31,13 @@ public class DualControlEnroll {
     private SecretKey secretKey;
     List<String> aliasList;
 
-    public static String getStringProperty(String propertyName) {
-        String propertyValue = System.getProperty("alias");
-        if (propertyValue == null) {
-            throw new RuntimeException("Missing -D property: " + propertyName);
-        }
-        return propertyValue;
-    } 
-
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
-        new DualControlEnroll().start();
+        try {
+            new DualControlEnroll().start();
+        } catch (DualControlException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     void start() throws Exception {
@@ -67,9 +63,9 @@ public class DualControlEnroll {
     
     SecretKey getKey() throws Exception {
         for (String alias : aliasList) {
-            logger.debug("existing alias " + alias);
+            logger.debug("alias " + alias);
             if (alias.contains(username)) {
-                throw new RuntimeException("Copy already exists " + alias);
+                throw new DualControlException("Copy already exists " + alias);
             }
         }
         for (String dualAlias : dualMap.keySet()) {
@@ -80,6 +76,6 @@ public class DualControlEnroll {
                 return (SecretKey) keyStore.getKey(alias, dualPassword);
             }
         }      
-        throw new Exception("Key not found");
+        throw new DualControlException("Key not found");
     }
 }
