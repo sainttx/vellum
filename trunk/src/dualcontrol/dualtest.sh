@@ -173,17 +173,19 @@ command1_genseckey() {
 command2_enroll() {
   echo "enroll username $1, alias $2"
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
-  javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 \
-     -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
-     -Dalias=$2 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
+  javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 -Dalias=$2 \
+     -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \     
      dualcontrol.DualControlEnroll
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
-  if [ `keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry | wc -l` -eq 3 ]
-  then
-    echo "INFO DualControlEnroll $@ $keyAlg"
-  else
-    echo "WARN DualControlEnroll $@ $keyAlg"
-  fi
+}
+
+command2_revoke() {
+  echo "revoke username $1, alias $2"
+  keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
+  javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 -Dalias=$2 \
+     -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \     
+     dualcontrol.DualControlRevoke
+  keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
 command0_app() {

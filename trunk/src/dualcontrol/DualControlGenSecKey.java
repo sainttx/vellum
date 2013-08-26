@@ -4,14 +4,13 @@
  */
 package dualcontrol;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.util.Map;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
+import vellum.util.Args;
 
 /**
  *
@@ -49,9 +48,9 @@ public class DualControlGenSecKey {
             char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
             if (true) {
-                System.err.printf("DualControlGenSecKey %s %s %s %d [%s]\n",
+                logger.info(Args.format(
                         new String(keyStorePassword), dualAlias, alias, 
-                        dualPassword.length, new String(dualPassword));
+                        dualPassword.length, new String(dualPassword)));
             }
             KeyStore.ProtectionParameter prot = 
                     new KeyStore.PasswordProtection(dualPassword);
