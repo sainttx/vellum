@@ -28,15 +28,15 @@ public class DualControlReader {
     private final static int PORT = 4444;
     private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
-    String alias;
+    String prompt;
     int submissionCount;
 
-    static Map.Entry<String, char[]> readDualEntry(String alias) throws Exception {
-        return new DualControlReader().readDualMap(alias, 2).entrySet().iterator().next();
+    static Map.Entry<String, char[]> readDualEntry(String prompt) throws Exception {
+        return new DualControlReader().readDualMap(prompt, 2).entrySet().iterator().next();
     }
 
-    public Map<String, char[]> readDualMap(String alias, int submissionCount) throws Exception {
-        this.alias = alias;
+    public Map<String, char[]> readDualMap(String prompt, int submissionCount) throws Exception {
+        this.prompt = prompt;
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
@@ -66,7 +66,8 @@ public class DualControlReader {
 
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
-        SSLServerSocket serverSocket = (SSLServerSocket) DualControlSSLContextFactory.createSSLContext().
+        SSLServerSocket serverSocket = (SSLServerSocket) 
+                DualControlSSLContextFactory.createSSLContext().
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);
@@ -85,7 +86,7 @@ public class DualControlReader {
                         getName()).getCommonName();
                 logger.info("accepting " + username);
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(alias);
+                dos.writeUTF(prompt);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 char[] password = readChars(dis);
                 String responseMessage =

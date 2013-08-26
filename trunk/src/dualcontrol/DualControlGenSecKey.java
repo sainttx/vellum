@@ -36,7 +36,8 @@ public class DualControlGenSecKey {
     }
 
     void start() throws Exception {
-        dualMap = new DualControlReader().readDualMap(keyAlias, submissionCount);
+        String purpose = "new key " + keyAlias;
+        dualMap = new DualControlReader().readDualMap(purpose, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
