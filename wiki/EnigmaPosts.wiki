@@ -17,10 +17,11 @@ Password Cipher - preview [https://code.google.com/p/vellum/source/browse/trunk/
 
 [DualControl Dual Control] (August 2013)
 
-Dual Control Revoke and Enroll - planned
+Dual Control Revoke and Enroll - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>.
+
+Dual Control Crypto Server - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java"><tt>!CryptoServer.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java"><tt>!CryptoHandler.java</tt></a>.
+
+Dual Control Key Protection - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JCEKSBruteForceTimer.java">JCEKSBruteForceTimer.java</a>.
 
 Dual Control Key Rotation - planned
 
-Dual Control Crypto Server - preview [https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java CryptServer.java]
-
-Dual Control Key Protection - planned 
