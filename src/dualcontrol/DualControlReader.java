@@ -9,7 +9,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import org.apache.commons.codec.binary.Base32;
@@ -28,15 +30,16 @@ public class DualControlReader {
     private final static int PORT = 4444;
     private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
-    String prompt;
+    String purpose;
     int submissionCount;
-
-    static Map.Entry<String, char[]> readDualEntry(String prompt) throws Exception {
-        return new DualControlReader().readDualMap(prompt, 2).entrySet().iterator().next();
+    Set<String> names = new TreeSet();
+    
+    static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
+        return new DualControlReader().readDualMap(purpose, 2).entrySet().iterator().next();
     }
 
-    public Map<String, char[]> readDualMap(String prompt, int submissionCount) throws Exception {
-        this.prompt = prompt;
+    public Map<String, char[]> readDualMap(String purpose, int submissionCount) throws Exception {
+        this.purpose = purpose;
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
@@ -84,32 +87,41 @@ public class DualControlReader {
             } else {
                 String username = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
-                logger.info("accepting " + username);
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(prompt);
-                DataInputStream dis = new DataInputStream(socket.getInputStream());
-                char[] password = readChars(dis);
-                String responseMessage =
-                        DualControlPasswordVerifier.getInvalidMessage(password);
-                if (responseMessage == null) {
-                    responseMessage = "OK " + username;
-                    map.put(username, password);
-                    logger.info(responseMessage);
-                    if (true) {
-                        responseMessage += " " + new Base32().encodeAsString(
-                                Digests.sha1(Bytes.getBytes(password)));
-                        responseMessage += " " + new String(password);
-                    }
+                if (names.contains(username)) {
+                    logger.warn("Ignore duplicate " + username);
                 } else {
-                    logger.warn(responseMessage);
+                    names.add(username);
+                    logger.info("Accepting " + username);
+                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                    dos.writeUTF(purpose);
+                    DataInputStream dis = new DataInputStream(socket.getInputStream());
+                    char[] password = readChars(dis);
+                    String responseMessage =
+                            DualControlPasswordVerifier.getInvalidMessage(password);
+                    if (responseMessage == null) {
+                        responseMessage = "Received " + username;
+                        map.put(username, password);
+                        logger.info(responseMessage);
+                        if (true) {
+                            responseMessage += " " + new Base32().encodeAsString(
+                                    Digests.sha1(Bytes.getBytes(password)));
+                            responseMessage += " " + new String(password);
+                        }
+                    } else {
+                        logger.warn(responseMessage);
+                    }
+                    dos.writeUTF(responseMessage);
                 }
-                dos.writeUTF(responseMessage);
             }
             socket.close();
         }
         serverSocket.close();
         return map;
     }
+
+    public Set<String> getNames() {
+        return names;
+    }        
 
     public static char[] readChars(DataInputStream dis) throws IOException {
         char[] chars = new char[dis.readShort()];
