@@ -6,7 +6,7 @@ package dualcontrol;
 
 import java.io.FileOutputStream;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +40,7 @@ public class DualControlEnroll {
     } 
 
     public static void main(String[] args) throws Exception {
+        logger.info("main " + Arrays.toString(args));
         new DualControlEnroll().start();
     }
 
