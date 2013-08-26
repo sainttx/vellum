@@ -132,7 +132,7 @@ evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualCon
 Enter passphrase for dual control SSL connection:
 Enter passphrase for remote key DEK2013: 
 Re-enter password: 
-OK
+OK evanx
 }}}
 
 where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore password first.
