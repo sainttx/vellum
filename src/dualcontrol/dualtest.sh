@@ -99,10 +99,21 @@ jc2() {
     jc henty hhhh
 }
 
+jc2t() {
+    jc evanx eeee
+    jc travs tttt
+}
+
 jc3() {
     jc evanx eeee
     jc henty hhhh
     jc brent bbbb
+}
+
+jc3t() {
+    jc evanx eeee
+    jc henty hhhh
+    jc travs tttt
 }
 
 command1_keytool() {
@@ -142,6 +153,7 @@ command0_initks() {
   command1_keytool evanx
   command1_keytool henty
   command1_keytool brent
+  command1_keytool travs
 }
 
 command1_genseckey() {
@@ -160,7 +172,7 @@ command1_genseckey() {
 
 command2_enroll() {
   javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 \
-     -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \     
+     -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
      -Dalias=$2 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
      dualcontrol.DualControlEnroll
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
@@ -246,6 +258,16 @@ command0_testgenseckey() {
   if ! nc -z localhost 4444
   then
     jc2 & command0_app
+    sleep 2
+  fi
+}
+
+command0_testenroll() {
+  jc3t & command2_enroll $secalias travs
+  sleep 2
+  if ! nc -z localhost 4444
+  then
+    jc2t & command0_app
     sleep 2
   fi
 }
