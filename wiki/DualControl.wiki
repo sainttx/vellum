@@ -73,19 +73,19 @@ So let's test <tt>!DualControlGenSecKey</tt>.
 {{{
   java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=18 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
-     -Dalias=DEK2013 -Dkeyalg=AES -Dkeysize=256 \
+     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
 }}}
 
-where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "DEK2013" is our desired alias to reference this key.  
+where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
 For example, three admins submit their passwords via SSL socket where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
-DEK2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
-DEK2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
-DEK2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
+dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
 Actually these three keys are one and the same. However each copy is password-protected using a different "dual password" combination, known to no single person.
@@ -129,12 +129,12 @@ public class DualControlConsole {
     ...
 }
 }}}
-where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the intended alias for the password e.g. "DEK2013," submit our password, and finally display a response message e.g. hopefully "OK."
+where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the intended alias for the password e.g. "dek2013," submit our password, and finally display a response message e.g. hopefully "OK."
 
 {{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter password for dual control SSL connection:
-Enter password for key DEK2013: 
+Enter password for key dek2013: 
 Re-enter password: 
 OK evanx
 }}}
@@ -317,7 +317,7 @@ We observe that a run-of-the-mill Intel i5 can manage about 30 guesses per milli
 
 {{{
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
-  $seckeystore $pass DEK2013-evanx-henty eeeehhhh
+  $seckeystore $pass dek2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
@@ -350,14 +350,14 @@ public class DualControlDemoApp {
 The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
 
 {{{
-$ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 DEK2013
-INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, DEK2013]
+$ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
+INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
 INFO [DualControlReader] Waiting for submissions on SSL port 4444
 INFO [DualControlReader] Accepting evanx
 INFO [DualControlReader] Accepting henty
 INFO [DualControlReader] readDualMap: evanx-henty
-INFO [DualControlSessions] DEK2013-evanx-henty
-INFO [DualControlDemoApp] loadedKey DEK2013 alg DESede
+INFO [DualControlSessions] dek2013-evanx-henty
+INFO [DualControlDemoApp] loadedKey dek2013 alg DESede
 }}}
 
 where the two <tt>!DualControlConsole</tt> sessions are as follows. 
@@ -365,16 +365,16 @@ where the two <tt>!DualControlConsole</tt> sessions are as follows.
 {{{
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
-Enter password for key DEK2013 for DualControlDemoApp: 
-Re-enter password for key DEK2013 for DualControlDemoApp: 
+Enter password for key dek2013 for DualControlDemoApp: 
+Re-enter password for key dek2013 for DualControlDemoApp: 
 OK evanx WLCO4XPIFBTNWOHXTRWUVENGEZEGW4HJ
 }}}
 
 {{{
 $ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
-Enter password for key DEK2013 for DualControlDemoApp: 
-Re-enter password for key DEK2013 for DualControlDemoApp: 
+Enter password for key dek2013 for DualControlDemoApp: 
+Re-enter password for key dek2013 for DualControlDemoApp: 
 OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
 }}}
 
@@ -443,6 +443,6 @@ In "Dual Control Crypto Server" we implement a dual-controlled crypto server to 
 
 In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a large number of iterations, so that the key takes a second or two to decrypt and load, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JCEKSBruteForceTimer.java">JCEKSBruteForceTimer.java</a>.
 
-In "Dual Control Key Rotation" we work through "key rotation" e.g. migrating from a dated "DEK2013" key a to revised "DEK2014" key.
+In "Dual Control Key Rotation" we work through "key rotation" e.g. migrating from a dated "dek2013" key a to revised "DEK2014" key.
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
