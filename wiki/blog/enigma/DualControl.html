@@ -339,6 +339,7 @@ Since our admins already have their half the "dual password," each admin's passp
 
 in a follow-up article, in order to use passphrases shorter than 18 characters with absolute confidence, we will implement PBKDF2 to password-protect our keys. A trick that comes to mind is to use a separate JCEKS for each dual key, and decrypt the entire keystore using PBE with PBKDF2 into a <tt>ByteArrayInputStream</tt> to pass to <tt>KeyStore.load()</tt>.
 
+
 <h4><tt>DualControlSessions</tt></h4>
 
 On the downside, we have to re-engineer our application to be dual-controlled, to load the key it so desperately needs to cipher our data.
