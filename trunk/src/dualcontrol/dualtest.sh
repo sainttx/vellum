@@ -182,7 +182,7 @@ command2_enroll() {
 command2_revoke() {
   echo "revoke username $1, alias $2"
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
-  javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 -Dalias=$2 \
+  javaks server -Ddualcontrol.username=$1 -Dalias=$2 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \     
      dualcontrol.DualControlRevoke
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
