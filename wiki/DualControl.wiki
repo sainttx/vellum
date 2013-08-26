@@ -2,6 +2,8 @@
 
 = Dual Control Key Management =
 
+We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="http://code.google.com/p/vellum">code.google.com/vellum">Enigma Posts</a>.
+
 See the source article at <a href="https://code.google.com/p/vellum/wiki/DualControl">code.google.com/p/vellum/wiki/DualControl</a> which might have been updated since this posting.
 
 <h4>Introduction</h4>
