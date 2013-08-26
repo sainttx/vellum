@@ -30,9 +30,9 @@ public abstract class DummyDualControlConsole {
                 Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                         createSocket(HOST, PORT);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
-                String alias = dis.readUTF();
-                info("received alias %s, sending %s %s",
-                        alias, username, new String(password));
+                String purpose = dis.readUTF();
+                info(logger, "require password for %s, sending %s %s",
+                        purpose, username, new String(password));
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 DualControlConsole.writeChars(dos, password);
                 socket.close();
@@ -43,8 +43,8 @@ public abstract class DummyDualControlConsole {
         }
     }
     
-    static void info(String format, Object ... args) {        
-        System.err.println("INFO DummyDualControlClient: " + String.format(format, args));
+    static void info(Logger logger, String format, Object ... args) {        
+        logger.info(String.format(format, args));
         System.err.flush();
     }
         
