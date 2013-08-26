@@ -71,29 +71,37 @@ public class DualControlReader {
         return readMap(serverSocket);
     }
     
-    Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {        
+    Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
         Map<String, char[]> map = new TreeMap();
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                throw new RuntimeException("Remote host address excluded");
-            }
-            String username = new X500Name(socket.getSession().getPeerPrincipal().
-                    getName()).getCommonName();
-            logger.info("accepting " + username);
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            dos.writeUTF(alias);
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-            char[] password = readChars(dis);
-            String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
-            if (invalidMessage == null) {                
-                map.put(username, password);
-                dos.writeUTF("OK " + 
-                        new Base32().encodeAsString(Digests.sha1(Bytes.getBytes(password))));
-                logger.info("OK " + new String(password));
+                logger.warn("Ignoring remote address " + 
+                        socket.getInetAddress().getHostAddress());
             } else {
-                dos.writeUTF(invalidMessage);
-                logger.warn(invalidMessage);
+                String username = new X500Name(socket.getSession().getPeerPrincipal().
+                        getName()).getCommonName();
+                logger.info("accepting " + username);
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                dos.writeUTF(alias);
+                DataInputStream dis = new DataInputStream(socket.getInputStream());
+                char[] password = readChars(dis);
+                String invalidMessage = 
+                        DualControlPasswordVerifier.getInvalidMessage(password);
+                if (invalidMessage != null) {
+                    dos.writeUTF(invalidMessage);
+                    logger.warn(invalidMessage);
+                } else {
+                    map.put(username, password);
+                    String responseMessage = "OK " + username;
+                    if (true) {
+                        responseMessage += " " + new Base32().encodeAsString(
+                                Digests.sha1(Bytes.getBytes(password)));
+                        responseMessage += " " +  new String(password);
+                    }
+                    dos.writeUTF(responseMessage);
+                    logger.info(responseMessage);
+                }
             }
             socket.close();
         }
