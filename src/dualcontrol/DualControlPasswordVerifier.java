@@ -10,10 +10,10 @@ package dualcontrol;
  * @author evans
  */
 public class DualControlPasswordVerifier {
-    final static boolean verifyPassComplexity = 
-            getBoolean("dualcontrol.verifyPassComplexity", false);
-    final static int minPassLength = 
-            Integer.getInteger("dualcontrol.minPassLength", 18);
+    final static boolean verifyPasswordComplexity = 
+            getBoolean("dualcontrol.verifyPasswordComplexity", false);
+    final static int minPasswordLength = 
+            Integer.getInteger("dualcontrol.minPasswordLength", 18);
 
     public static void assertValid(char[] password) throws Exception {
         String errorMessage = getInvalidMessage(password);
@@ -27,10 +27,10 @@ public class DualControlPasswordVerifier {
     }
     
     public static String getInvalidMessage(char[] password) throws Exception {
-        if (password.length < minPassLength) {
+        if (password.length < minPasswordLength) {
             return "Password too short";
         }
-        if (verifyPassComplexity) {
+        if (verifyPasswordComplexity) {
             if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
                     || !isDigit(password) || !isPunctuation(password)) {
                 return "Insufficient password complexity";
@@ -86,7 +86,7 @@ public class DualControlPasswordVerifier {
     }   
     
     public static boolean getBoolean(String name, boolean defaultValue) {
-        String string = System.getProperty("dualcontrol.verifyPassword");
+        String string = System.getProperty("dualcontrol.verifyPasswordword");
         if (string == null) {
             return defaultValue;
         }
