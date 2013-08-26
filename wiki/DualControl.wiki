@@ -382,9 +382,9 @@ We'll implement the crypto server in a follow-up article. <i>Then we can say, "D
 
 The problem with encryption is secure key management. We shouldn't leave the key under the mat.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 PCI requires that "split knowledge and dual control" be used to protect our encryption keys so that no single person can acquire them, not even the most trustworthy employee today, rogue tomorrow.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
