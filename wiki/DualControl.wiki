@@ -392,7 +392,7 @@ We demonstrate how our app can be dual-controlled to load a key from the store a
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>. We can setup "double-two-factor" remote authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding (for the prerequisite <tt>localhost</tt> access), in addition to the password-protected <tt>!KeyStore</tt> for the client SSL connection.
 
-A follow-up article article with address increased protection against brute-force attacks, via a stronger <tt>!KeyStore</tt> implementation than offered by the Oracle JCE Provider, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt>. But as things stand, we use the standard <tt>JCE</tt> keystore, for which we suggest a minimum passphrase length of 18 characters for each admin's half of the split password. Having said that, this number was arrived at by somewhat arbitrary calculation.
+A follow-up article article with address increased protection against brute-force password attacks e.g. PBE of the keystore using <tt>PBKDF2</tt> with a large number of iterations, so that the key takes a second or two to decrypt and load, rather than half a millisecond. But as things stand with JCEKS, by a somewhat arbitrary and probably overly-conservative calculation, we suggest a minimum passphrase length of 18 characters for each admin's half of the split password.
 
 <h4>See also</h4>
 
