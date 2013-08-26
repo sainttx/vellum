@@ -12,17 +12,17 @@ public class DualControlPasswordVerifier {
             Integer.getInteger("dualcontrol.minPassLength", 18);
 
     public static void assertValid(char[] password) throws Exception {
-        String errorMessage = getErrorMessage(password);
+        String errorMessage = getInvalidMessage(password);
         if (errorMessage != null) {
             throw new Exception(errorMessage);
         }
     }
 
     public static boolean isValid(char[] password) throws Exception {
-        return getErrorMessage(password) == null;
+        return getInvalidMessage(password) == null;
     }
     
-    public static String getErrorMessage(char[] password) throws Exception {
+    public static String getInvalidMessage(char[] password) throws Exception {
         if (password.length < minPassLength) {
             return "Password too short";
         }
