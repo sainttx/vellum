@@ -24,15 +24,15 @@ public class DualControlConsole {
         String alias = dis.readUTF();
         char[] password = System.console().readPassword(
                 "Enter password for remote key " + alias + ": ");
-        String hash = Digests.sha1String(Chars.getBytes(password));
-        Arrays.fill(password, (char) 0);
-        password = System.console().readPassword("Re-enter password: ");
-        if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
-            System.err.println("Passwords don't match.");
+        String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
+        if (invalidMessage != null) {
+            System.err.println(invalidMessage);
         } else {
-            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
-            if (errorMessage != null) {
-                System.err.println(errorMessage);
+            String hash = Digests.sha1String(Chars.getBytes(password));
+            Arrays.fill(password, (char) 0);
+            password = System.console().readPassword("Re-enter password: ");
+            if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
+                System.err.println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 dos.writeUTF(new String(password));

@@ -84,15 +84,15 @@ public class DualControlReader {
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] password = dis.readUTF().toCharArray();
-            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
-            if (errorMessage == null) {                
+            String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
+            if (invalidMessage == null) {                
                 map.put(username, password);
                 dos.writeUTF("OK " + 
                         new Base32().encodeAsString(Digests.sha1(Bytes.getBytes(password))));
                 logger.info("OK " + new String(password));
             } else {
-                dos.writeUTF(errorMessage);
-                logger.warn(errorMessage);
+                dos.writeUTF(invalidMessage);
+                logger.warn(invalidMessage);
             }
             socket.close();
         }
