@@ -380,7 +380,7 @@ OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
 
 <h4><tt>!DualControlSessions</tt></h4>
 
-Our app users the <tt>loadKey()</tt> method below.
+Our app above invokes the <tt>loadKey()</tt> method below to do the legwork. 
 
 {{{
 public class DualControlSessions {
