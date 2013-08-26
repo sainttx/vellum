@@ -402,7 +402,7 @@ For increased protection against brute-force attacks, we want a stronger <tt>!Ke
 
 In a follow-up article, we'll implement a dual-controlled crypto server to unburden our apps of this responsibility. Moreover this simplifies key management and enhances security by virtue of centralising and isolating our keys on a dedicated VM.
 
-We will also present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlEnroll</tt> and <tt>!DualControlRevoke</tt> to handle admin staff reshuffles. 
+We will also present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlEnroll</tt> and <tt>!DualControlRevoke</tt> to reshuffle admin staff. 
 
 A further sequel will work through "key rotation" e.g. migrating from a dated "DEK2013" key a to revised "DEK2014" key.
 
