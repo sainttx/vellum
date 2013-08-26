@@ -18,9 +18,9 @@ public class DualControlConsole {
         Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        String prompt = dis.readUTF();
+        String alias = dis.readUTF();
         char[] password = System.console().readPassword(
-                "Enter password for remote key " + prompt + ": ");
+                "Enter password for remote key " + alias + ": ");
         String errorMessage = DualControlPasswords.getErrorMessage(password);
         if (errorMessage != null) {
             System.err.println(errorMessage);
