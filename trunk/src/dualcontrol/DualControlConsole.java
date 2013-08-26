@@ -3,6 +3,7 @@ package dualcontrol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import vellum.security.Digests;
@@ -35,7 +36,7 @@ public class DualControlConsole {
                 System.err.println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(new String(password));
+                writeChars(dos, password);
                 String message = dis.readUTF();
                 System.console().writer().println(message);
             }
@@ -43,4 +44,13 @@ public class DualControlConsole {
         Arrays.fill(password, (char) 0);
         socket.close();        
     }
+    
+    public static char[] writeChars(DataOutputStream dos, char[] chars) throws IOException {
+        dos.writeShort(chars.length);
+        for (int i = 0; i < chars.length; i++) {
+            dos.writeChar(chars[i]);
+        }
+        return chars;
+    }
+    
 }

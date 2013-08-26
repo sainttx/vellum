@@ -6,8 +6,8 @@ package dualcontrol;
  * @author evans
  */
 public class DualControlPasswordVerifier {
-    final static boolean verifyPasswordComplexity = 
-            getBoolean("dualcontrol.verifyPasswordComplexity", false);
+    final static boolean verifyPassComplexity = 
+            getBoolean("dualcontrol.verifyPassComplexity", false);
     final static int minPassLength = 
             Integer.getInteger("dualcontrol.minPassLength", 18);
 
@@ -26,7 +26,7 @@ public class DualControlPasswordVerifier {
         if (password.length < minPassLength) {
             return "Password too short";
         }
-        if (verifyPasswordComplexity) {
+        if (verifyPassComplexity) {
             if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
                     || !isDigit(password) || !isPunctuation(password)) {
                 return "Insufficient password complexity";
