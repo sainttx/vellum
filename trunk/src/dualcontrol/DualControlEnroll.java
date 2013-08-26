@@ -6,6 +6,7 @@ package dualcontrol;
 
 import java.io.FileOutputStream;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class DualControlEnroll {
     private Map<String, char[]> dualMap;
     private KeyStore keyStore;
     private SecretKey secretKey;
+    List<String> aliasList;
 
     public static String getStringProperty(String propertyName) {
         String propertyValue = System.getProperty("alias");
@@ -47,19 +49,9 @@ public class DualControlEnroll {
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
+        aliasList = Collections.list(keyStore.aliases());
+        secretKey = getKey();
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
-        List<String> aliasList = Collections.list(keyStore.aliases());
-        for (String alias : aliasList) {
-            System.err.println("existing alias " + alias);
-        }
-        for (String dualAlias : dualMap.keySet()) {
-            char[] dualPassword = dualMap.get(dualAlias);
-            String alias = keyAlias + "-" + dualAlias;
-            if (aliasList.contains(alias)) {
-                secretKey = (SecretKey) keyStore.getKey(alias, dualPassword);
-                break;
-            }
-        }
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
@@ -70,5 +62,20 @@ public class DualControlEnroll {
             }
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+    
+    SecretKey getKey() throws Exception {
+        for (String alias : aliasList) {
+            logger.debug("existing alias " + alias);
+        }
+        for (String dualAlias : dualMap.keySet()) {
+            char[] dualPassword = dualMap.get(dualAlias);
+            String alias = keyAlias + "-" + dualAlias;
+            logger.debug("try " + alias);
+            if (aliasList.contains(alias)) {
+                return (SecretKey) keyStore.getKey(alias, dualPassword);
+            }
+        }      
+        throw new Exception("Key not found");
     }
 }
