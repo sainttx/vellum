@@ -397,7 +397,7 @@ In order to generate a dual-controlled key, we propose keeping at least three co
 
 Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce <tt>DualControlGenSecKey</tt> to generate a secret key in a JCE keystore. This protects copies of the same key using "dual passwords" known to no single person. 
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We demonstrate how our app can be dual-controlled to load a key from the store at startup, having read two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
 
