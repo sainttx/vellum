@@ -16,13 +16,13 @@ import javax.crypto.SecretKey;
 public class DualControlSessions {
 
     public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
-            String alias) throws Exception {
+            String alias, String purpose) throws Exception {
         char[] dualPass = null;
         try {
             KeyStore dualKeyStore = 
                     DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
-                "Password for key " + alias);
+                "   key " + alias + " for " + purpose);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
             alias = alias + "-" + dualAlias;
