@@ -251,21 +251,21 @@ We accumulate the required number of submissions in a loop.
             } else {
                 String username = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
+                logger.info("accepting " + username);
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 dos.writeUTF(alias);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 char[] password = readChars(dis);
-                String invalidMessage = 
+                String responseMessage = 
                         DualControlPasswordVerifier.getInvalidMessage(password);
-                if (invalidMessage != null) {
-                    dos.writeUTF(invalidMessage);
-                    logger.warn(invalidMessage);
-                } else {
+                if (responseMessage == null) {
+                    responseMessage = "OK " + username;
                     map.put(username, password);
-                    String responseMessage = "OK " + username;
                     dos.writeUTF(responseMessage);
                     logger.info(responseMessage);
                 }
+                dos.writeUTF(responseMessage);
+                logger.warn(responseMessage);
             }
             socket.close();
         }
