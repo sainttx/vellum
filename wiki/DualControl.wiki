@@ -44,7 +44,8 @@ public class DualControlGenSecKey {
     }
 
     void start() throws Exception {
-        dualMap = new DualControlReader().readDualMap(keyAlias, submissionCount);
+        String prompt = "Password for new key " + keyAlias;
+        dualMap = new DualControlReader().readDualMap(prompt, submissionCount);
         keyStorePassword = getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
@@ -102,16 +103,15 @@ public class DualControlConsole {
         Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        String alias = dis.readUTF();
-        char[] password = System.console().readPassword(
-                "Enter password for remote key " + alias + ": ");
+        String prompt = dis.readUTF();
+        char[] password = System.console().readPassword("Enter " + prompt + ": ");
         String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
         if (invalidMessage != null) {
             System.err.println(invalidMessage);
         } else {
             String hash = Digests.sha1String(Chars.getBytes(password));
             Arrays.fill(password, (char) 0);
-            password = System.console().readPassword("Re-enter password: ");
+            password = System.console().readPassword("Re-enter " + prompt + ": ");
             if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
                 System.err.println("Passwords don't match.");
             } else {
@@ -131,8 +131,8 @@ where we open an SSL socket to our supposed dual-controlled app listening on por
 
 {{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection:
-Enter passphrase for remote key DEK2013: 
+Enter password for dual control SSL connection:
+Enter password for key DEK2013: 
 Re-enter password: 
 OK evanx
 }}}
@@ -195,11 +195,11 @@ Our <tt>!DualControlReader</tt> utility class handles reading split knowledge su
 {{{
 public class DualControlReader {
     ...
-    String alias;
+    String prompt;
     int submissionCount;
 
-    public Map<String, char[]> readDualMap(String alias, int submissionCount) throws Exception {
-        this.alias = alias;
+    public Map<String, char[]> readDualMap(String prompt, int submissionCount) throws Exception {
+        this.prompt = prompt;
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
@@ -255,7 +255,7 @@ We accumulate the required number of submissions in a loop.
                         getName()).getCommonName();
                 logger.info("accepting " + username);
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(alias);
+                dos.writeUTF(prompt);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 char[] password = readChars(dis);
                 String responseMessage = 
@@ -354,7 +354,8 @@ public class DualControlSessions {
         try {
             KeyStore dualKeyStore = 
                     DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
-            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(alias);
+            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
+                "Password for key " + alias);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
             alias = alias + "-" + dualAlias;
