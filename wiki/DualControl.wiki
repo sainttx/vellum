@@ -170,7 +170,7 @@ public class DualControlSSLContextFactory {
 }
 }}}
 
-where we enable keystore passwords to be specified on the command-line e.g. for test scripts, but otherwise we prompt for a password to be entered on the console.
+where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for a password to be entered on the console.
 
 We use the <tt>SSLContext</tt> created above for opening a <tt>SSLSocket</tt> in <tt>!DualControlConsole</tt>, and also for creating an <tt>SSLServerSocket</tt> in <tt>!DualControlReader</tt> as illustrated below.
 
