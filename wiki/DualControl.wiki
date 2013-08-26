@@ -128,7 +128,7 @@ public class DualControlConsole {
 where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the intended alias for the password e.g. "DEK2013," submit our password, and finally display a response message e.g. hopefully "OK."
 
 {{{
-evans@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
+evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection:
 Enter passphrase for remote key DEK2013: 
 Re-enter password: 
@@ -309,7 +309,7 @@ Our keystore is unfortunately forever vulnerable to theft and/or brute-force att
 We observe that a quad-core Intel i5 can try about 30 guesses per millisecond, using 4 threads to utilise its cores.
 
 {{{
-evans@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
+evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
   $seckeystore $pass DEK2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
