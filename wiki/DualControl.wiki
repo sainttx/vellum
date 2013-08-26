@@ -277,16 +277,16 @@ We ensure that the default required complexity and/or length of the password is 
 
 {{{
 public class DualControlPasswordVerifier {
-    final static boolean verifyPasswordComplexity = 
-            getBoolean("dualcontrol.verifyPasswordComplexity", false);
+    final static boolean verifyPassComplexity = 
+            getBoolean("dualcontrol.verifyPassComplexity", false);
     final static int minPassLength = 
             Integer.getInteger("dualcontrol.minPassLength", 18);
 
     public static String getErrorMessage(char[] password) throws Exception {
         if (password.length < minPassLength) {
-            return "Password too short";
+            return "Passphrase too short";
         }
-        if (verifyPasswordComplexity) {
+        if (verifyPassComplexity) {
             if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
                     || !isDigit(password) || !isPunctuation(password)) {
                 return "Insufficient password complexity";
