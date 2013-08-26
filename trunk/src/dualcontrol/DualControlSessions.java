@@ -22,7 +22,7 @@ public class DualControlSessions {
             KeyStore dualKeyStore = 
                     DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
             Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
-                "   key " + alias + " for " + purpose);
+                "key " + alias + " for " + purpose);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
             alias = alias + "-" + dualAlias;
