@@ -68,6 +68,9 @@ public class DualControlEnroll {
     SecretKey getKey() throws Exception {
         for (String alias : aliasList) {
             logger.debug("existing alias " + alias);
+            if (alias.contains(username)) {
+                throw new RuntimeException("Copy already exists " + alias);
+            }
         }
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
