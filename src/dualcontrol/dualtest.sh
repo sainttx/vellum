@@ -21,7 +21,7 @@ privatekeystore=$tmp/server.jks
 truststore=$tmp/truststore.jks
 cert=$tmp/dual.pem
 pass=test1234
-secalias=DEK2013
+secalias=dek2013
 
 aes() {
   keyAlg=AES
@@ -171,6 +171,8 @@ command1_genseckey() {
 }
 
 command2_enroll() {
+  echo "enroll username $1, alias $2"
+  keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
   javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
      -Dalias=$2 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
@@ -198,7 +200,7 @@ keystoreclient() {
 }
 
 command2_bruteforcetimer() {
-  java dualcontrol.JCEKSBruteForceTimer $1 $2 $seckeystore $pass DEK2013-evanx-henty eeeehhhh
+  java dualcontrol.JCEKSBruteForceTimer $1 $2 $seckeystore $pass dek2013-evanx-henty eeeehhhh
 }
 
 command0_testkeystoreserver() {
@@ -263,7 +265,7 @@ command0_testgenseckey() {
 }
 
 command0_testenroll() {
-  jc3t & command2_enroll $secalias travs
+  jc3t & command2_enroll travs $secalias
   sleep 2
   if ! nc -z localhost 4444
   then
