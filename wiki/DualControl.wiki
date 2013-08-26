@@ -44,8 +44,8 @@ public class DualControlGenSecKey {
     }
 
     void start() throws Exception {
-        String prompt = "Password for new key " + keyAlias;
-        dualMap = new DualControlReader().readDualMap(prompt, submissionCount);
+        String purpose = "new key " + keyAlias;
+        dualMap = new DualControlReader().readDualMap(purpose, submissionCount);
         keyStorePassword = getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
@@ -402,7 +402,7 @@ by a somewhat arbitrary and probably overly-conservative calculation, which we w
 
 <h4>See also</h4>
 
-In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles.
+In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a>.
 
 In "Dual Control Key Rotation" we work through "key rotation" e.g. migrating from a dated "DEK2013" key a to revised "DEK2014" key.
 
