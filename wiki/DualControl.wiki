@@ -306,7 +306,7 @@ Importantly, passphrases are easier to remember, so we don't have to write them 
 
 Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
 
-We observe that a quad-core Intel i5 can try about 30 guesses per millisecond, using 4 threads to utilise its cores.
+We observe that a run-of-the-mill Intel i5 can manage about 30 guesses per millisecond on a JCE keystore, using 4 threads to utilise its quad-cores.
 
 {{{
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
