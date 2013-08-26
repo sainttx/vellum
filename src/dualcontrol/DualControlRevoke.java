@@ -30,7 +30,7 @@ public class DualControlRevoke {
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         try {
-            new DualControlEnroll().start();
+            new DualControlRevoke().start();
         } catch (DualControlException e) {
             logger.error(e.getMessage());
         }
