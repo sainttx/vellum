@@ -23,15 +23,14 @@ import vellum.util.Bytes;
  * @author evans
  */
 public class DualControlReader {
+
     private final static Logger logger = Logger.getLogger(DualControlReader.class);
-    
     private final static int PORT = 4444;
     private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
-    
     String alias;
     int submissionCount;
-    
+
     static Map.Entry<String, char[]> readDualEntry(String alias) throws Exception {
         return new DualControlReader().readDualMap(alias, 2).entrySet().iterator().next();
     }
@@ -48,7 +47,7 @@ public class DualControlReader {
                     char[] dualPassword = combineDualPassword(
                             submissions.get(name), submissions.get(otherName));
                     if (true) {
-                        System.err.printf("INFO DualControlReader.readDualMap: %s, %s\n", 
+                        System.err.printf("INFO DualControlReader.readDualMap: %s, %s\n",
                                 dualAlias, new String(dualPassword));
                     }
                     map.put(dualAlias, dualPassword);
@@ -64,24 +63,23 @@ public class DualControlReader {
         builder.append(other);
         return builder.toString().toCharArray();
     }
-    
+
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
-        SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext().
-                getServerSocketFactory().createServerSocket(PORT, submissionCount, 
+        SSLServerSocket serverSocket = (SSLServerSocket) DualControlSSLContextFactory.createSSLContext().
+                getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(LOCAL_ADDRESS));
         serverSocket.setNeedClientAuth(true);
         return readMap(serverSocket);
     }
-    
+
     Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
         Map<String, char[]> map = new TreeMap();
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                logger.warn("Ignoring remote address " + 
-                        socket.getInetAddress().getHostAddress());
+                logger.warn("Ignoring remote address "
+                        + socket.getInetAddress().getHostAddress());
             } else {
                 String username = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
@@ -90,28 +88,28 @@ public class DualControlReader {
                 dos.writeUTF(alias);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 char[] password = readChars(dis);
-                String responseMessage = 
+                String responseMessage =
                         DualControlPasswordVerifier.getInvalidMessage(password);
                 if (responseMessage == null) {
                     responseMessage = "OK " + username;
                     map.put(username, password);
+                    logger.info(responseMessage);
                     if (true) {
                         responseMessage += " " + new Base32().encodeAsString(
                                 Digests.sha1(Bytes.getBytes(password)));
-                        responseMessage += " " +  new String(password);
+                        responseMessage += " " + new String(password);
                     }
-                    dos.writeUTF(responseMessage);
-                    logger.info(responseMessage);
+                } else {
+                    logger.warn(responseMessage);
                 }
                 dos.writeUTF(responseMessage);
-                logger.warn(responseMessage);
             }
             socket.close();
         }
         serverSocket.close();
         return map;
     }
-    
+
     public static char[] readChars(DataInputStream dis) throws IOException {
         char[] chars = new char[dis.readShort()];
         for (int i = 0; i < chars.length; i++) {
