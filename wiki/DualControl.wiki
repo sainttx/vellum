@@ -147,7 +147,7 @@ On a positive note, we can setup "<i>double</i>-two-factor" authentication where
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options for the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> as below. 
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and friends.
 
 {{{
 public class DualControlSSLContextFactory {    
