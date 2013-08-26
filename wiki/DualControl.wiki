@@ -261,8 +261,6 @@ We accumulate the required number of submissions in a loop.
                 if (responseMessage == null) {
                     responseMessage = "OK " + username;
                     map.put(username, password);
-                    dos.writeUTF(responseMessage);
-                    logger.info(responseMessage);
                 }
                 dos.writeUTF(responseMessage);
                 logger.warn(responseMessage);
