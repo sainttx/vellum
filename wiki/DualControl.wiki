@@ -322,7 +322,7 @@ We see that the JCE Provider's <a href="http://www.docjar.com/docs/api/com/sun/c
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
  
-But surely <tt>PBKDF2</tt> with high number of iterations, would be way better at combating brute-force attacks on keystores? One wants a computationally-expensive algorithm so that key recovery takes a second rather than a millisecond. We note that <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> is also memory-expensive.
+But surely <a href="http://en.wikipedia.org/wiki/PBKDF2"><tt>PBKDF2</tt></a> with high number of iterations, would be way better at combating brute-force attacks on keystores? One wants a computationally-expensive algorithm so that key recovery takes a second rather than a millisecond. We note that <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> is also memory-expensive.
 
 So we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 
