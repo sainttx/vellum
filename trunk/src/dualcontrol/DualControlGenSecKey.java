@@ -4,8 +4,10 @@
  */
 package dualcontrol;
 
+import static dualcontrol.DualControlRevoke.logger;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
+import java.util.Arrays;
 import java.util.Map;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -31,7 +33,12 @@ public class DualControlGenSecKey {
     private SecretKey secretKey;
 
     public static void main(String[] args) throws Exception {
-        new DualControlGenSecKey().start();
+        logger.info("main " + Arrays.toString(args));
+        try {
+            new DualControlGenSecKey().start();
+        } catch (DualControlException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     void start() throws Exception {
