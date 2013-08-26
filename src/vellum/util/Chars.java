@@ -4,8 +4,11 @@
  */
 package vellum.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.CharBuffer;
 
 /**
@@ -24,5 +27,12 @@ public class Chars {
             buffer.append((char) b);
         }
     }   
-    
+
+    public static byte[] getBytes(char[] chars) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Writer writer = new OutputStreamWriter(baos);
+        writer.write(chars);
+        writer.close();
+        return baos.toByteArray();
+    }    
 }

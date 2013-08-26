@@ -84,7 +84,7 @@ public class DualControlReader {
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] password = dis.readUTF().toCharArray();
-            String errorMessage = DualControlPasswords.getErrorMessage(password);
+            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
             if (errorMessage == null) {                
                 map.put(username, password);
                 dos.writeUTF("OK " + 

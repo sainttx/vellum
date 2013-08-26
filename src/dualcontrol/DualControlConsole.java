@@ -4,6 +4,9 @@ package dualcontrol;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
+import vellum.security.Digests;
+import vellum.util.Chars;
 
 /**
  *
@@ -21,15 +24,23 @@ public class DualControlConsole {
         String alias = dis.readUTF();
         char[] password = System.console().readPassword(
                 "Enter password for remote key " + alias + ": ");
-        String errorMessage = DualControlPasswords.getErrorMessage(password);
-        if (errorMessage != null) {
-            System.err.println(errorMessage);
+        String hash = Digests.sha1String(Chars.getBytes(password));
+        Arrays.fill(password, (char) 0);
+        password = System.console().readPassword("Re-enter password: ");
+        if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
+            System.err.println("Passwords don't match.");
         } else {
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            dos.writeUTF(new String(password));
-            String message = dis.readUTF();
-            System.console().writer().println(message);
+            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
+            if (errorMessage != null) {
+                System.err.println(errorMessage);
+            } else {
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                dos.writeUTF(new String(password));
+                String message = dis.readUTF();
+                System.console().writer().println(message);
+            }
         }
-        socket.close();
+        Arrays.fill(password, (char) 0);
+        socket.close();        
     }
 }
