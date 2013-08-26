@@ -2,6 +2,7 @@ package dualcontrol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,15 +25,15 @@ public class DualControlReader {
     private final static String LOCAL_ADDRESS = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     
-    String prompt;
+    String alias;
     int submissionCount;
     
-    static Map.Entry<String, char[]> readDualEntry(String prompt) throws Exception {
-        return new DualControlReader().readDualMap(prompt, 2).entrySet().iterator().next();
+    static Map.Entry<String, char[]> readDualEntry(String alias) throws Exception {
+        return new DualControlReader().readDualMap(alias, 2).entrySet().iterator().next();
     }
 
-    public Map<String, char[]> readDualMap(String prompt, int submissionCount) throws Exception {
-        this.prompt = prompt;
+    public Map<String, char[]> readDualMap(String alias, int submissionCount) throws Exception {
+        this.alias = alias;
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
@@ -81,9 +82,9 @@ public class DualControlReader {
                     getName()).getCommonName();
             logger.info("accepting " + username);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            dos.writeUTF(prompt);
+            dos.writeUTF(alias);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
-            char[] password = dis.readUTF().toCharArray();
+            char[] password = readChars(dis);
             String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
             if (invalidMessage == null) {                
                 map.put(username, password);
@@ -98,5 +99,13 @@ public class DualControlReader {
         }
         serverSocket.close();
         return map;
+    }
+    
+    public static char[] readChars(DataInputStream dis) throws IOException {
+        char[] chars = new char[dis.readShort()];
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] = dis.readChar();
+        }
+        return chars;
     }
 }
