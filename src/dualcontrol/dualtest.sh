@@ -63,8 +63,23 @@ javaks() {
     -Ddualcontrol.ssl.keyPassword=$pass \
     -Ddualcontrol.ssl.trustStore=$truststore \
     -Ddualcontrol.ssl.trustStorePassword=$pass \
-    -Ddualcontrol.minPassLength=4 \
-    -Ddualcontrol.minPassLength=4 \
+    -Ddualcontrol.minPassLength=4
+    $@
+  exitCode=$?
+  if [ $exitCode -ne 0 ]
+  then
+    echo WARN javaks $keystore exitCode $exitCode $@
+    exit 1
+  fi
+}
+
+javaksc() {
+  keystore=$tmp/$1.jks
+  shift
+  java \
+    -Ddualcontrol.ssl.keyStore=$keystore \
+    -Ddualcontrol.ssl.trustStore=$truststore \
+    -Ddualcontrol.minPassLength=4
     $@
   exitCode=$?
   if [ $exitCode -ne 0 ]
@@ -222,7 +237,7 @@ command0_testgenseckey() {
 }
 
 command0_testconsole() {
-  javaks evanx dualcontrol.DualControlConsole
+  javaksc evanx dualcontrol.DualControlConsole
 }
 
 command1_testlong() {
