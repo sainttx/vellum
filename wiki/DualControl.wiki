@@ -68,7 +68,7 @@ where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their sec
 So let's test <tt>!DualControlGenSecKey</tt>.
 
 {{{
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassLength=18 \
+  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=18 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=DEK2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
@@ -280,16 +280,16 @@ We ensure that the default required complexity and/or length of the password is 
 
 {{{
 public class DualControlPasswordVerifier {
-    final static boolean verifyPassComplexity = 
-            getBoolean("dualcontrol.verifyPassComplexity", false);
-    final static int minPassLength = 
-            Integer.getInteger("dualcontrol.minPassLength", 18);
+    final static boolean verifyPasswordwordComplexity = 
+            getBoolean("dualcontrol.verifyPasswordwordComplexity", false);
+    final static int minPasswordLength = 
+            Integer.getInteger("dualcontrol.minPasswordLength", 18);
 
     public static String getInvalidMessage(char[] password) throws Exception {
-        if (password.length < minPassLength) {
+        if (password.length < minPasswordLength) {
             return "Passphrase too short";
         }
-        if (verifyPassComplexity) {
+        if (verifyPasswordwordComplexity) {
             if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
                     || !isDigit(password) || !isPunctuation(password)) {
                 return "Insufficient password complexity";
@@ -319,21 +319,10 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
 
-The default <a href="http://www.docjar.com/html/api/sun/security/provider/JavaKeyStore.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, uses a <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> which hashes the password using <tt>SHA</tt> and XOR's the digest with the key material.
-
-We see that the JCE Provider's <a href="http://www.docjar.com/docs/api/com/sun/crypto/provider/JceKeyStore.html"><tt>JCEKeyStore</tt></a> i.e. for JCEKS-type keystores, uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> with a PBE cipher, namely <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html"><tt>PBEWithMD5AndTripleDESCipher</tt></a> with a <a href="http://www.docjar.com/html/api/javax/crypto/spec/PBEKeySpec.java.html"><tt>PBEKeySpec</tt></a> with the default iteration count of zero. 
-
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
- 
-But surely <a href="http://en.wikipedia.org/wiki/PBKDF2"><tt>PBKDF2</tt></a> with high number of iterations, would be way better at combating brute-force attacks on keystores? One wants a computationally-expensive algorithm so that key recovery takes a second rather than a millisecond. We note that <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> is also memory-expensive.
-
-So we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
-
+A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
 
 Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
-
-In order to use passphrases shorter than 18 characters with absolute confidence, perhaps we'll implement PBKDF2 to password-protect our keys, in a follow-up article. A trick that comes to mind is to use a separate JCEKS for each dual key, and decrypt the entire keystore using PBE with PBKDF2 into a <tt>!ByteArrayInputStream</tt> to pass to <tt>!KeyStore.load()</tt>.
 
 <h4><tt>!DualControlSessions</tt></h4>
 
