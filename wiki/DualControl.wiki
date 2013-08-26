@@ -326,7 +326,7 @@ But surely <a href="http://en.wikipedia.org/wiki/PBKDF2"><tt>PBKDF2</tt></a> wit
 
 So we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 
-Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time presumably that data is no longer sensitive. 
+Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
 
 Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
