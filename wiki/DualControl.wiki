@@ -32,25 +32,26 @@ Step 1 for any data security endeavour is to generate an encryption key, which p
 
 {{{
 public class DualControlGenSecKey { 
-    int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
-    String keyAlias = System.getProperty("alias"); 
-    String keyStoreLocation = System.getProperty("keystore"); 
-    String keyStoreType = System.getProperty("storetype");
-    String keyAlg = System.getProperty("keyalg");
-    int keySize = Integer.getInteger("keysize");
-    
-    public static void main(String[] args) throws Exception {        
-        new DualControlGenSecKey().start(args);
-    }
-
+    private int submissionCount = SystemProperties.getInt("dualcontrol.submissions", 3);
+    private String keyAlias = SystemProperties.getString("alias");
+    private String keyStoreLocation = SystemProperties.getString("keystore");
+    private String keyStoreType = SystemProperties.getString("storetype");
+    private String keyAlg = SystemProperties.getString("keyalg");
+    private int keySize = SystemProperties.getInt("keysize");
+    private char[] keyStorePassword;
+    private Map<String, char[]> dualMap;
+    private KeyStore keyStore;
+    private SecretKey secretKey;
+    ...
     void start() throws Exception {
         String purpose = "new key " + keyAlias;
         dualMap = new DualControlReader().readDualMap(purpose, submissionCount);
-        keyStorePassword = getKeyStorePassword();
+        keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         secretKey = keyGenerator.generateKey();
-        keyStore = loadKeyStore(keyStoreLocation, keyStorePassword);
+        keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
+                keyStoreType, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
