@@ -26,16 +26,17 @@ public class DualControlConsole {
         Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        String alias = dis.readUTF();
+        String purpose = dis.readUTF();
         char[] password = System.console().readPassword(
-                "Enter password for remote key " + alias + ": ");
+                "Enter password for " + purpose + ": ");
         String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
         if (invalidMessage != null) {
             System.err.println(invalidMessage);
         } else {
             String hash = Digests.sha1String(Chars.getBytes(password));
             Arrays.fill(password, (char) 0);
-            password = System.console().readPassword("Re-enter password: ");
+            password = System.console().readPassword(
+                    "Re-enter password for " + purpose + ": ");
             if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
                 System.err.println("Passwords don't match.");
             } else {

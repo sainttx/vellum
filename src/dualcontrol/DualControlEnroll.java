@@ -20,6 +20,7 @@ public class DualControlEnroll {
 
     final static Logger logger = Logger.getLogger(DualControlEnroll.class);
     private int submissionCount = SystemProperties.getInt("dualcontrol.submissions", 3);
+    private String username = SystemProperties.getString("dualcontrol.username");
     private String keyAlias = SystemProperties.getString("alias");
     private String keyStoreLocation = SystemProperties.getString("keystore");
     private String keyStoreType = SystemProperties.getString("storetype");
@@ -41,7 +42,8 @@ public class DualControlEnroll {
     }
 
     void start() throws Exception {
-        dualMap = new DualControlReader().readDualMap(keyAlias, submissionCount);
+        String purpose = String.format("key %s to enroll %s", keyAlias, username);
+        dualMap = new DualControlReader().readDualMap(purpose, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);

@@ -11,7 +11,7 @@ package dualcontrol;
 public class SystemProperties {
 
     public static String getString(String propertyName) {
-        String propertyValue = System.getProperty("alias");
+        String propertyValue = System.getProperty(propertyName);
         if (propertyValue == null) {
             throw new RuntimeException("Missing -D property: " + propertyName);
         }
@@ -19,7 +19,7 @@ public class SystemProperties {
     } 
     
     public static int getInt(String propertyName) {
-        String propertyString = System.getProperty("alias");
+        String propertyString = System.getProperty(propertyName);
         if (propertyString == null) {
             throw new RuntimeException("Missing -D property: " + propertyName);
         }
