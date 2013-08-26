@@ -401,10 +401,10 @@ by a somewhat arbitrary and probably overly-conservative calculation, which we w
 
 In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles.
 
-In "Dual Control Key Rotation" we'll work through "key rotation" e.g. migrating from a dated "DEK2013" key a to revised "DEK2014" key.
+In "Dual Control Key Rotation" we work through "key rotation" e.g. migrating from a dated "DEK2013" key a to revised "DEK2014" key.
 
-In "Dual Control Crypto Server" we'll implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security.
+In "Dual Control Crypto Server" we implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security.
 
-In "Dual Control Key Protection" we will address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a large number of iterations, so that the key takes a second or two to decrypt and load, rather than half a millisecond.
+In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a large number of iterations, so that the key takes a second or two to decrypt and load, rather than half a millisecond.
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
