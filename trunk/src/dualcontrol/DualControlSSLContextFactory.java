@@ -1,9 +1,11 @@
+/*
+ * Apache Software License 2.0, (c) Copyright 2013, Evan Summers
+ * 
+ */
 
 package dualcontrol;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.net.Socket;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Arrays;
