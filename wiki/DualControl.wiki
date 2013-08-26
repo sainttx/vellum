@@ -326,7 +326,9 @@ But surely <tt>PBKDF2</tt> with high number of iterations, would be way better a
 
 So we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 
-Otherwise if we assume that someone can try 1000 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 20 years is required to try all possible passwords. Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
+Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time presumably that data is no longer sensitive. 
+
+Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
 In order to use passphrases shorter than 18 characters with absolute confidence, perhaps we'll implement PBKDF2 to password-protect our keys, in a follow-up article. A trick that comes to mind is to use a separate JCEKS for each dual key, and decrypt the entire keystore using PBE with PBKDF2 into a <tt>!ByteArrayInputStream</tt> to pass to <tt>!KeyStore.load()</tt>.
 
@@ -386,9 +388,9 @@ PCI requires that "split knowledge and dual control" be used to protect our encr
 
 We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual password" to be provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, we don't mind because we only require two admins to load a copy of the key when we restart our app :)
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCE keystore. This protects copies of the same key using "dual passwords" known to no single person. 
 
