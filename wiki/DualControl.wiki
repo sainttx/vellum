@@ -318,9 +318,9 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 
 The default <a href="http://www.docjar.com/html/api/sun/security/provider/JavaKeyStore.java.html"><tt>!JavaKeyStore</tt></a> i.e. for JKS-type keystores, uses a <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> which hashes the password using <tt>SHA</tt> and XOR's the digest with the key material.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
-
 We see that the JCE Provider's <a href="http://www.docjar.com/docs/api/com/sun/crypto/provider/JceKeyStore.html"><tt>JCEKeyStore</tt></a> i.e. for JCEKS-type keystores, uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> with a PBE cipher, namely <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html"><tt>PBEWithMD5AndTripleDESCipher</tt></a> with a <a href="http://www.docjar.com/html/api/javax/crypto/spec/PBEKeySpec.java.html"><tt>PBEKeySpec</tt></a> with the default iteration count of zero. 
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
  
 But surely <tt>PBKDF2</tt> with high number of iterations, would be way better at combating brute-force attacks on keystores? One wants a computationally-expensive algorithm so that key recovery takes a second rather than a millisecond. We note that <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> is also memory-expensive.
 
@@ -386,7 +386,7 @@ PCI requires that "split knowledge and dual control" be used to protect our encr
 
 We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual password" to be provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, we don't mind because we only require two admins to load a copy of the key when we restart our app :)
 
