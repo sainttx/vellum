@@ -22,9 +22,9 @@ public class DualControlDemoApp {
         }
     }    
     
-    private void loadKey(String keyStoreLocation, char[] storePass, String alias) 
+    private void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStoreLocation, storePass, alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias);
         logger.debug("loaded key " + dek.getAlgorithm());
     }
 }
