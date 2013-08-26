@@ -236,8 +236,8 @@ command0_testgenseckey() {
   fi
 }
 
-command0_testconsole() {
-  javaksc evanx dualcontrol.DualControlConsole
+command1_testconsole() {
+  javaksc $1 dualcontrol.DualControlConsole
 }
 
 command1_testlong() {
