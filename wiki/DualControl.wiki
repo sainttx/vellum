@@ -197,11 +197,11 @@ Our <tt>!DualControlReader</tt> utility class handles reading split knowledge su
 {{{
 public class DualControlReader {
     ...
-    String prompt;
+    String purpose;
     int submissionCount;
 
-    public Map<String, char[]> readDualMap(String prompt, int submissionCount) throws Exception {
-        this.prompt = prompt;
+    public Map<String, char[]> readDualMap(String purpose, int submissionCount) throws Exception {
+        this.purpose = purpose;
         this.submissionCount = submissionCount;
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
@@ -257,7 +257,7 @@ We accumulate the required number of submissions in a loop.
                         getName()).getCommonName();
                 logger.info("accepting " + username);
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(prompt);
+                dos.writeUTF(purpose);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 char[] password = readChars(dis);
                 String responseMessage = 
