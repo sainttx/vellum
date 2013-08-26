@@ -263,7 +263,7 @@ We accumulate the required number of submissions in a loop.
                     map.put(username, password);
                 }
                 dos.writeUTF(responseMessage);
-                logger.warn(responseMessage);
+                logger.info(responseMessage);
             }
             socket.close();
         }
