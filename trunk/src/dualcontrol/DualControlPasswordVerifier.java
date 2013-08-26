@@ -5,7 +5,7 @@ package dualcontrol;
  *
  * @author evans
  */
-public class DualControlPasswords {
+public class DualControlPasswordVerifier {
     final static boolean verifyPasswordComplexity = 
             getBoolean("dualcontrol.verifyPasswordComplexity", false);
     final static int minPassLength = 
