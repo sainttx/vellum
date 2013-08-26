@@ -106,18 +106,16 @@ public class DualControlConsole {
         String hash = Digests.sha1String(Chars.getBytes(password));
         Arrays.fill(password, (char) 0);
         password = System.console().readPassword("Re-enter password: ");
+        String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
         if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
-            System.err.println("Passwords don't match!");
+            System.err.println("Passwords don't match.");
+        } else if (invalidMessage != null) {
+            System.err.println(invalidMessage);
         } else {
-            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
-            if (errorMessage != null) {
-                System.err.println(errorMessage);
-            } else {
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(new String(password));
-                String message = dis.readUTF();
-                System.console().writer().println(message);
-            }
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(new String(password));
+            String message = dis.readUTF();
+            System.console().writer().println(message);
         }
         Arrays.fill(password, (char) 0);
         socket.close();        
@@ -247,12 +245,13 @@ We accumulate the required number of submissions as follows.
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] password = dis.readUTF().toCharArray();
-            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
-            if (errorMessage == null) {
+            String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
+            if (invalidMessage == null) {                
                 map.put(username, password);
                 dos.writeUTF("OK");
             } else {
-                dos.writeUTF(errorMessage);
+                dos.writeUTF(invalidMessage);
+                logger.warn(invalidMessage);
             }
             socket.close();
         }
