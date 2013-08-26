@@ -63,7 +63,7 @@ javaks() {
     -Ddualcontrol.ssl.keyPassword=$pass \
     -Ddualcontrol.ssl.trustStore=$truststore \
     -Ddualcontrol.ssl.trustStorePassword=$pass \
-    -Ddualcontrol.minPassLength=4
+    -Ddualcontrol.minPassLength=4 \
     $@
   exitCode=$?
   if [ $exitCode -ne 0 ]
@@ -79,7 +79,7 @@ javaksc() {
   java \
     -Ddualcontrol.ssl.keyStore=$keystore \
     -Ddualcontrol.ssl.trustStore=$truststore \
-    -Ddualcontrol.minPassLength=4
+    -Ddualcontrol.minPassLength=4 \
     $@
   exitCode=$?
   if [ $exitCode -ne 0 ]
