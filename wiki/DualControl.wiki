@@ -190,6 +190,9 @@ Our <tt>!DualControlReader</tt> utility class handles reading split knowledge su
 {{{
 public class DualControlReader {
     ...
+    String alias;
+    int submissionCount;
+
     public Map<String, char[]> readDualMap(String alias, int submissionCount) throws Exception {
         this.alias = alias;
         this.submissionCount = submissionCount;
@@ -207,6 +210,7 @@ public class DualControlReader {
         }
         return map;
     }
+    ...
 }}}
 
 If we have three admins e.g. Brent, Evan, and Henty, then we have three combinations of pairs of admins, namely Brent/Evan, Brent/Henty and Evan/Henty, when ordered alphabetically. The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>Evan/Brent</tt> in favour of <tt>Brent/Evan</tt>, and the likes of <tt>Evan/Evan</tt>, which is just silly.
