@@ -158,6 +158,20 @@ command1_genseckey() {
   fi
 }
 
+command2_enroll() {
+  javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 \
+     -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \     
+     -Dalias=$2 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
+     dualcontrol.DualControlEnroll
+  keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
+  if [ `keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry | wc -l` -eq 3 ]
+  then
+    echo "INFO DualControlEnroll $@ $keyAlg"
+  else
+    echo "WARN DualControlEnroll $@ $keyAlg"
+  fi
+}
+
 command0_app() {
   javaks server -Ddualcontrol.submissions=2 dualcontrol.DualControlDemoApp $seckeystore $pass $secalias
 }
