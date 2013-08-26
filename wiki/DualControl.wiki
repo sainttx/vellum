@@ -65,7 +65,7 @@ where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their sec
 
 <h4>Demo</h4>
 
-Let's test <tt>!DualControlGenSecKey</tt>.
+So let's test <tt>!DualControlGenSecKey</tt>.
 
 {{{
   java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassLength=18 \
