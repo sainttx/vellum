@@ -109,7 +109,7 @@ public class DualControlConsole {
         if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
             System.err.println("Passwords don't match!");
         } else {
-            String errorMessage = DualControlPasswords.getErrorMessage(password);
+            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
             if (errorMessage != null) {
                 System.err.println(errorMessage);
             } else {
@@ -247,7 +247,7 @@ We accumulate the required number of submissions as follows.
             dos.writeUTF(prompt);
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             char[] password = dis.readUTF().toCharArray();
-            String errorMessage = DualControlPasswords.getErrorMessage(password);
+            String errorMessage = DualControlPasswordVerifier.getErrorMessage(password);
             if (errorMessage == null) {
                 map.put(username, password);
                 dos.writeUTF("OK");
@@ -270,7 +270,7 @@ Incidently, a known bug in the above code, and similarly in <tt>!DualControlCons
 We ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
 
 {{{
-public class DualControlPasswords {
+public class DualControlPasswordVerifier {
     final static boolean verifyPasswordComplexity = 
             getBoolean("dualcontrol.verifyPasswordComplexity", false);
     final static int minPassLength = 
