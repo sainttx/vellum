@@ -143,9 +143,10 @@ OK
 
 where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore password first.
 
+A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
+
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
 
 The workaround for above "bugs" in plain management-speak, is that our "controls" as documented in in our "policies and procedures," prevent or detect such attacks, and dictate the immediate inauguration of appropriate remediation measures. 
 
@@ -324,10 +325,10 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 
 The default <a href="http://www.docjar.com/html/api/sun/security/provider/JavaKeyStore.java.html"><tt>JavaKeyStore</tt></a> i.e. for JKS-type keystores, uses a <a href="http://www.docjar.com/html/api/sun/security/provider/KeyProtector.java.html"><tt>KeyProtector</tt></a> which hashes the password using <tt>SHA</tt> and XOR's the digest with the key material.
 
+We see that the JCE Provider's <a href="http://www.docjar.com/docs/api/com/sun/crypto/provider/JceKeyStore.html"><tt>JCEKeyStore</tt></a> i.e. for JCEKS-type keystores, uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>KeyProtector</tt></a> with a PBE cipher, namely <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html"><tt>PBEWithMD5AndTripleDESCipher</tt></a> with a <a href="http://www.docjar.com/html/api/javax/crypto/spec/PBEKeySpec.java.html"><tt>PBEKeySpec</tt></a> with the default iteration count of zero. 
+
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
-We see that the JCE Provider's <a href="http://www.docjar.com/docs/api/com/sun/crypto/provider/JceKeyStore.html"><tt>JCEKeyStore</tt></a> i.e. for JCEKS-type keystores, uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>KeyProtector</tt></a> with a PBE cipher, namely <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html"><tt>PBEWithMD5AndTripleDESCipher</tt></a> with a <a href="http://www.docjar.com/html/api/javax/crypto/spec/PBEKeySpec.java.html"><tt>PBEKeySpec</tt></a> with the default iteration count of zero. 
- 
 But surely <tt>PBKDF2</tt> with high number of iterations, would be way better at combating brute-force attacks on keystores? One wants a computationally-expensive algorithm so that key recovery takes a second rather than a millisecond. We note that <a href="http://en.wikipedia.org/wiki/Scrypt"><tt>scrypt</tt></a> is also memory-expensive.
 
 So we might want an even stronger <tt>KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
@@ -394,9 +395,9 @@ We take the approach of protecting the data-encryption keys using password-based
 
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual password" to be provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, we don't mind because we only require two admins to load a copy of the key when we restart our app :)
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce <tt>DualControlGenSecKey</tt> to generate a secret key in a JCE keystore. This protects copies of the same key using "dual passwords" known to no single person. 
+
+<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We demonstrate how our app can be dual-controlled to load a key from the store at startup, having read two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
 
