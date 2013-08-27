@@ -312,17 +312,17 @@ We ensure that the default required complexity and/or length of the password is 
 
 {{{
 public class DualControlPasswordVerifier {
-    final static boolean verifyPasswordwordComplexity = 
-            getBoolean("dualcontrol.verifyPasswordwordComplexity", false);
-
-    final static int minPasswordLength = 
-            Integer.getInteger("dualcontrol.minPasswordLength", 18);
+    final static private VellumProperties properties = VellumProperties.systemProperties;
+    final static private boolean verifyPasswordComplexity = 
+            properties.getBoolean("dualcontrol.verifyPasswordComplexity", false);
+    final static private int minPasswordLength = 
+            properties.getInt("dualcontrol.minPasswordLength", 18);
 
     public static String getInvalidMessage(char[] password) throws Exception {
         if (password.length < minPasswordLength) {
             return "Passphrase too short";
         }
-        if (verifyPasswordwordComplexity) {
+        if (verifyPasswordComplexity) {
             if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
                     || !isDigit(password) || !isPunctuation(password)) {
                 return "Insufficient password complexity";
