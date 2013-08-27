@@ -28,9 +28,10 @@ import vellum.util.Chars;
 public class DualControlReader {
 
     private final static Logger logger = Logger.getLogger(DualControlReader.class);
-    public final static int PORT = 4444;
-    public final static String HOST = "127.0.0.1";
+    private final static int PORT = 4444;
+    private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
+    
     SSLContext sslContext;
     String purpose;
     int submissionCount;
@@ -48,6 +49,7 @@ public class DualControlReader {
     public Map<String, char[]> readDualMap(String purpose, int submissionCount) throws Exception {
         this.purpose = purpose;
         this.submissionCount = submissionCount;
+        Log.infof(logger, "readDualMap submissionCount %d, purpose: %s", submissionCount, purpose);
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
@@ -56,9 +58,7 @@ public class DualControlReader {
                     String dualAlias = String.format("%s-%s", name, otherName);
                     char[] dualPassword = combineDualPassword(
                             submissions.get(name), submissions.get(otherName));
-                    if (true) {
-                        Log.info(logger, "readDualMap", dualAlias, new String(dualPassword));
-                    }
+                    logger.info("readDualMap dualAlias: " + dualAlias);
                     map.put(dualAlias, dualPassword);
                 }
             }
@@ -74,7 +74,7 @@ public class DualControlReader {
     }
 
     private Map<String, char[]> readMap() throws Exception {
-        logger.info("Waiting for submissions on SSL port " + PORT);
+        logger.info("readMap SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
@@ -96,7 +96,6 @@ public class DualControlReader {
                     logger.warn("Ignore duplicate " + username);
                 } else {
                     names.add(username);
-                    logger.info("Accepting " + username);
                     DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
