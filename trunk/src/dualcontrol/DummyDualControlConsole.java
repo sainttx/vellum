@@ -26,7 +26,8 @@ public abstract class DummyDualControlConsole {
             System.err.println("usage: username passwd");
         } else {
             try {
-                submit(DualControlSSLContextFactory.createSSLContext(), 
+                submit(DualControlSSLContextFactory.createSSLContext(
+                        VellumProperties.systemProperties), 
                         args[0], args[1].toCharArray());
             } catch (Exception e) {
                 logger.error(e.getMessage());
@@ -37,7 +38,7 @@ public abstract class DummyDualControlConsole {
     public static void submit(SSLContext sslContext, 
             String username, char[] password) throws Exception {
         Socket socket = sslContext.getSocketFactory().
-                createSocket(DualControlReader.HOST, DualControlReader.PORT);
+                createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
         Log.info(logger, "require password for %s, sending %s %s",

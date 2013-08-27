@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class CryptoServer {
     static Logger logger = Logger.getLogger(CryptoServer.class);
-    static final String prompt = "CryptoServer";
+    static final String purpose = "CryptoServer";
     DualControlSession dualControlSession = new DualControlSession();
     
     public static void main(String[] args) throws Exception {
@@ -35,9 +35,10 @@ public class CryptoServer {
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String keyStoreLocation, char[] storePass) 
             throws Exception {
-        dualControlSession.configure(keyStoreLocation, storePass, prompt);
-        ServerSocket serverSocket = DualControlSSLContextFactory.createSSLContext().
-                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
+        dualControlSession.configure(keyStoreLocation, storePass, purpose);
+        ServerSocket serverSocket = DualControlSSLContextFactory.createSSLContext(
+                VellumProperties.systemProperties).getServerSocketFactory().
+                createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = null;
             try {

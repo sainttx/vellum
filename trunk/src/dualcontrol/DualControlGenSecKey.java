@@ -20,12 +20,13 @@ import vellum.util.Args;
 public class DualControlGenSecKey {
 
     final static Logger logger = Logger.getLogger(DualControlGenSecKey.class);
-    private int submissionCount = SystemProperties.getInt("dualcontrol.submissions", 3);
-    private String keyAlias = SystemProperties.getString("alias");
-    private String keyStoreLocation = SystemProperties.getString("keystore");
-    private String keyStoreType = SystemProperties.getString("storetype");
-    private String keyAlg = SystemProperties.getString("keyalg");
-    private int keySize = SystemProperties.getInt("keysize");
+    private VellumProperties properties = VellumProperties.systemProperties;
+    private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
+    private String keyAlias = properties.getString("alias");
+    private String keyStoreLocation = properties.getString("keystore");
+    private String keyStoreType = properties.getString("storetype");
+    private String keyAlg = properties.getString("keyalg");
+    private int keySize = properties.getInt("keysize");
     private char[] keyStorePassword;
     private Map<String, char[]> dualMap;
     private KeyStore keyStore;
@@ -40,10 +41,10 @@ public class DualControlGenSecKey {
         }
     }
 
-    void start() throws Exception {
+    public void start() throws Exception {
         String purpose = "new key " + keyAlias;
-        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext()).
-                readDualMap(purpose, submissionCount);
+        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext(
+                properties)).readDualMap(purpose, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);

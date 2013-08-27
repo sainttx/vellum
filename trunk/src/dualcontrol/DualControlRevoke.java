@@ -4,7 +4,6 @@
  */
 package dualcontrol;
 
-import static dualcontrol.DualControlEnroll.logger;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.util.Arrays;
@@ -19,10 +18,11 @@ import org.apache.log4j.Logger;
 public class DualControlRevoke {
 
     final static Logger logger = Logger.getLogger(DualControlRevoke.class);
-    private String username = SystemProperties.getString("dualcontrol.username");
-    private String keyAlias = SystemProperties.getString("alias");
-    private String keyStoreLocation = SystemProperties.getString("keystore");
-    private String keyStoreType = SystemProperties.getString("storetype");
+    private VellumProperties properties = VellumProperties.systemProperties;
+    private String username = properties.getString("dualcontrol.username");
+    private String keyAlias = properties.getString("alias");
+    private String keyStoreLocation = properties.getString("keystore");
+    private String keyStoreType = properties.getString("storetype");
     private char[] keyStorePassword;
     private KeyStore keyStore;
     List<String> aliasList;

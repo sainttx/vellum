@@ -23,7 +23,8 @@ public class DualControlKeyStores {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
-            Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
+            Socket socket = DualControlSSLContextFactory.createSSLContext(
+                    VellumProperties.systemProperties).getSocketFactory().
                 createSocket(array[0], Integer.parseInt(array[1]));
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();

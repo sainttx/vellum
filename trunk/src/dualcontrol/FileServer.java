@@ -30,7 +30,8 @@ public class FileServer {
 
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String fileName) throws Exception {
-        SSLServerSocket serverSocket = (SSLServerSocket) DualControlSSLContextFactory.createSSLContext().
+        SSLServerSocket serverSocket = (SSLServerSocket) 
+                DualControlSSLContextFactory.createSSLContext(VellumProperties.systemProperties).
                 getServerSocketFactory().createServerSocket(port, backlog, localAddress);
         serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);

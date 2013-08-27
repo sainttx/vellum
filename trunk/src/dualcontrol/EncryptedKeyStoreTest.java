@@ -36,7 +36,7 @@ public class EncryptedKeyStoreTest {
         }
     }    
     
-    private void start(String keyStoreLocation, String alias, char[] keyPass,
+    public void start(String keyStoreLocation, String alias, char[] keyPass,
             int iterationCount, int repeat) throws Exception {
         this.keyStoreLocation = keyStoreLocation;
         this.keyAlias = alias;

@@ -12,7 +12,8 @@ import org.apache.log4j.Logger;
  * @author evans
  */
 public class Log {
-
+    public static boolean test = true;
+    
     public static void trace(Logger logger, Object ... args) {
         logger.trace(Arrays.toString(args));
     }
@@ -25,6 +26,12 @@ public class Log {
         logger.info(Arrays.toString(args));        
     }
 
+    public static void test(Logger logger, Object ... args) {
+        if (test) {
+            logger.info("TEST " + Arrays.toString(args));        
+        }
+    }
+    
     public static void infof(Logger logger, String format, Object ... args) {
         logger.info(String.format(format, args));        
     }
