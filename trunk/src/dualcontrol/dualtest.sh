@@ -211,7 +211,8 @@ command0_testkeystoreserver() {
 }
 
 command0_teststore() {
-  javaksc server dualcontrol.EncryptedKeyStoreTest $seckeystore.enc $storetype dek2013-evanx-henty eeeehhhh AES 256
+  rm -f $seckeystore.enc
+  javaksc server dualcontrol.EncryptedKeyStoreTest $seckeystore.enc JCEKS dek2013-evanx-henty eeeehhhh
 }
 
 command1_cryptoserver() {

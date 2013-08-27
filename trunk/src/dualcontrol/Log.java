@@ -24,6 +24,10 @@ public class Log {
     public static void info(Logger logger, Object ... args) {
         logger.info(Arrays.toString(args));        
     }
+
+    public static void infof(Logger logger, String format, Object ... args) {
+        logger.info(String.format(format, args));        
+    }
     
     public static void warn(Logger logger, Object ... args) {
         logger.warn(Arrays.toString(args));
