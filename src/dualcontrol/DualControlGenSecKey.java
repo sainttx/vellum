@@ -4,7 +4,6 @@
  */
 package dualcontrol;
 
-import static dualcontrol.DualControlRevoke.logger;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.util.Arrays;

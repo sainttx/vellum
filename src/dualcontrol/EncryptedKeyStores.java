@@ -16,12 +16,9 @@ import javax.crypto.SecretKey;
  *
  * @author evans
  */
-public class EncryptedKeyStore {
+public class EncryptedKeyStores {
     
-    public EncryptedKeyStore() {
-    }
-    
-    public void storeKey(SecretKey secretKey, String keyStoreLocation, String keyStoreType, 
+    public static void storeKey(SecretKey secretKey, String keyStoreLocation, String keyStoreType, 
             String alias, char[] password) throws Exception {
         File file = new File(keyStoreLocation);
         if (!file.exists()) {
@@ -37,7 +34,7 @@ public class EncryptedKeyStore {
                 alias, baos.toByteArray(), password);
     }
     
-    public SecretKey loadKey(String keyStoreLocation, String keyStoreType, 
+    public static SecretKey loadKey(String keyStoreLocation, String keyStoreType, 
             String alias, char[] password) throws Exception {
         File file = new File(keyStoreLocation);
         if (!file.exists()) {
