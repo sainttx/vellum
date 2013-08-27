@@ -42,7 +42,8 @@ public class DualControlEnroll {
 
     void start() throws Exception {
         String purpose = String.format("key %s to enroll %s", keyAlias, username);
-        dualMap = new DualControlReader().readDualMap(purpose, submissionCount);
+        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext()).
+                readDualMap(purpose, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);

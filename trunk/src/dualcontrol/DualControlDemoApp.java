@@ -25,7 +25,7 @@ public class DualControlDemoApp {
         }
     }    
     
-    private void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
+    public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
         dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
                 "DualControlDemoApp");

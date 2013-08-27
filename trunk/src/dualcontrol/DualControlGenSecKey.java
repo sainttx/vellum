@@ -42,7 +42,8 @@ public class DualControlGenSecKey {
 
     void start() throws Exception {
         String purpose = "new key " + keyAlias;
-        dualMap = new DualControlReader().readDualMap(purpose, submissionCount);
+        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext()).
+                readDualMap(purpose, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
