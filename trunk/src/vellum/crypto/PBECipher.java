@@ -18,8 +18,12 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @author evan
  */
-public final class PBECipher {
-    private final SecretKey key;
+public final class PBECipher implements VellumCipher {
+    private final String KEY_FACTORY = "PBKDF2WithHmacSHA1";
+    private final String KEY_ALG = "AES";
+    private final String CIPHER_TRANS = "AES/CBC/PKCS5Padding";
+    
+    private final SecretKey pbeKey;
 
     public PBECipher(char[] password, PasswordHash hash) throws GeneralSecurityException  {
         this(password, hash.getSalt(), hash.getIterationCount(), hash.getKeySize());
@@ -29,28 +33,31 @@ public final class PBECipher {
     public PBECipher(char[] password, byte[] salt, int iterationCount, int keySize) 
             throws GeneralSecurityException  {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(KEY_FACTORY);
         SecretKey secret = factory.generateSecret(spec);
-        key = new SecretKeySpec(secret.getEncoded(), "AES");
+        pbeKey = new SecretKeySpec(secret.getEncoded(), KEY_ALG);
     }
 
+    @Override
     public Encrypted encrypt(byte[] bytes) throws GeneralSecurityException  {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
+        Cipher cipher = Cipher.getInstance(CIPHER_TRANS);
+        cipher.init(Cipher.ENCRYPT_MODE, pbeKey);
         AlgorithmParameters params = cipher.getParameters();
         byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
         return new Encrypted(iv, cipher.doFinal(bytes));
     }
 
+    @Override
     public byte[] decrypt(byte[] bytes, byte[] iv) throws GeneralSecurityException {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+        Cipher cipher = Cipher.getInstance(CIPHER_TRANS);
+        cipher.init(Cipher.DECRYPT_MODE, pbeKey, new IvParameterSpec(iv));
         return cipher.doFinal(bytes);
     }
     
+    @Override
     public byte[] encrypt(byte[] bytes, byte[] iv) throws GeneralSecurityException  {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
+        Cipher cipher = Cipher.getInstance(CIPHER_TRANS);
+        cipher.init(Cipher.ENCRYPT_MODE, pbeKey, new IvParameterSpec(iv));
         return cipher.doFinal(bytes);
     }            
 }

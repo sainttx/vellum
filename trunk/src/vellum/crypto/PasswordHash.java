@@ -114,7 +114,8 @@ public class PasswordHash {
         assert iv.length == 0;
         millis = System.currentTimeMillis();
         try {
-            return Arrays.equals(hash, Passwords.hashPassword(password, salt, iterationCount, keySize));
+            return Arrays.equals(hash, 
+                    Passwords.hashPassword(password, salt, iterationCount, keySize));
         } finally {
             millis = Millis.elapsed(millis);
         }
