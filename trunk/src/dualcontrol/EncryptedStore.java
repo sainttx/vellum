@@ -40,6 +40,10 @@ public class EncryptedStore {
     
     public EncryptedStore() {
     }
+
+    public EncryptedStore(int iterationCount) {
+        this.iterationCount = iterationCount;
+    }
     
     public void store(OutputStream stream, String type, String alias, 
             byte[] bytes, char[] password) throws Exception { 
