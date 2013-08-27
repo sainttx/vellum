@@ -33,7 +33,7 @@ public class EncryptedStore {
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
     private int saltLength = 8;        
     private int iterationCount = 99999;
-    private int keySize = 128;
+    private int keySize = 192;
     private SecretKey pbeKey;
     byte[] salt;
     byte[] iv = null;
