@@ -358,7 +358,7 @@ INFO [DualControlReader] Accepting evanx
 INFO [DualControlReader] Accepting henty
 INFO [DualControlReader] readDualMap: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
-INFO [DualControlDemoApp] loadedKey dek2013 alg DESede
+INFO [DualControlDemoApp] loadedKey dek2013 alg AES
 }}}
 
 where the two <tt>!DualControlConsole</tt> sessions are as follows. 
