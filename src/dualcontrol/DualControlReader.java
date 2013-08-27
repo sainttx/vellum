@@ -42,14 +42,17 @@ public class DualControlReader {
     }
         
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        return new DualControlReader(DualControlSSLContextFactory.createSSLContext()).
+        return new DualControlReader(DualControlSSLContextFactory.createSSLContext(
+                VellumProperties.systemProperties)).
                 readDualMap(purpose, 2).entrySet().iterator().next();
     }
 
-    public Map<String, char[]> readDualMap(String purpose, int submissionCount) throws Exception {
+    public Map<String, char[]> readDualMap(String purpose, int submissionCount) 
+            throws Exception {
         this.purpose = purpose;
         this.submissionCount = submissionCount;
-        Log.infof(logger, "readDualMap submissionCount %d, purpose: %s", submissionCount, purpose);
+        logger.info("readDualMap submissionCount: " + submissionCount);
+        logger.info("readDualMap purpose: " + purpose);
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {

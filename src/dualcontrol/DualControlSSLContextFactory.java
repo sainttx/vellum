@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Properties;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -19,16 +20,7 @@ import org.apache.log4j.Logger;
  * @author evans
  */
 public class DualControlSSLContextFactory {    
-    static Logger logger = Logger.getLogger(DualControlSSLContextFactory.class);
-    
-    public static char[] getPassword(String propertyName, char[] defaultValue) {
-        String passwordString = System.getProperty(propertyName);
-        if (passwordString == null) {
-            return defaultValue;
-        }
-        logger.trace("Dual control password via command-line: " + propertyName);
-        return passwordString.toCharArray();
-    }
+    private static final Logger logger = Logger.getLogger(DualControlSSLContextFactory.class);
 
     public static SSLContext createSSLContext(String keyStoreLocation, char[] keyStorePassword)
             throws Exception {    
@@ -36,21 +28,23 @@ public class DualControlSSLContextFactory {
                 keyStorePassword, keyStoreLocation, keyStorePassword);
     }
         
-    public static SSLContext createSSLContext() throws Exception {
-        String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
+    public static SSLContext createSSLContext(VellumProperties properties) throws Exception {
+        String keyStoreLocation = properties.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
+        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", 
+                null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
         }
-        char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
+        char[] keyPassword = properties.getPassword("dualcontrol.ssl.keyPassword", 
+                keyStorePassword);
         String trustStoreLocation =
-                System.getProperty("dualcontrol.ssl.trustStore", keyStoreLocation);
+                properties.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
         char[] trustStorePassword =
-                getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+                properties.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);

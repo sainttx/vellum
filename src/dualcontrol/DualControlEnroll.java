@@ -20,11 +20,12 @@ import org.apache.log4j.Logger;
 public class DualControlEnroll {
 
     final static Logger logger = Logger.getLogger(DualControlEnroll.class);
-    private int submissionCount = SystemProperties.getInt("dualcontrol.submissions", 3);
-    private String username = SystemProperties.getString("dualcontrol.username");
-    private String keyAlias = SystemProperties.getString("alias");
-    private String keyStoreLocation = SystemProperties.getString("keystore");
-    private String keyStoreType = SystemProperties.getString("storetype");
+    private VellumProperties properties = VellumProperties.systemProperties;
+    private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
+    private String username = properties.getString("dualcontrol.username");
+    private String keyAlias = properties.getString("alias");
+    private String keyStoreLocation = properties.getString("keystore");
+    private String keyStoreType = properties.getString("storetype");
     private char[] keyStorePassword;
     private Map<String, char[]> dualMap;
     private KeyStore keyStore;
@@ -42,8 +43,8 @@ public class DualControlEnroll {
 
     void start() throws Exception {
         String purpose = String.format("key %s to enroll %s", keyAlias, username);
-        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext()).
-                readDualMap(purpose, submissionCount);
+        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext(
+                properties)).readDualMap(purpose, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
