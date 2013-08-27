@@ -20,6 +20,7 @@ import vellum.datatype.Nanos;
  */
 public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable {
     private final static Logger logger = Logger.getLogger(JCEKSBruteForceTimer.class);
+    static int passwordLength = Integer.getInteger("passwordLength", 8);
     Random random;
     Set<String> errorMessageSet;
     int maximumCount;
@@ -54,7 +55,7 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         logger.info("keyStoreLocation " + keyStoreLocation);
         logger.info("alias " + alias);
         logger.info("keyPass " + new String(keyPass));
-        logger.info("generatePassword " + new String(generatePassword()));
+        logger.info("generatePassword " + new String(generateRandomPassword(passwordLength)));
         List<JCEKSBruteForceTimer> threadList = new ArrayList();
         long nanos = System.nanoTime();
         for (int i = 0; i < threadCount; i++) {
