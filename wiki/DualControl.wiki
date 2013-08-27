@@ -31,7 +31,7 @@ But then our application can't access those keys either. <i>D'oh!</i> So we must
 Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. For this purpose, there shall be <tt>!DualControlGenSecKey</tt>, as follows.
 
 {{{
-public class DualControlGenSecKey { 
+public class DualControlGenSecKey {
     private VellumProperties properties = VellumProperties.systemProperties;
     private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
     private String keyAlias = properties.getString("alias");
@@ -39,20 +39,17 @@ public class DualControlGenSecKey {
     private String keyStoreType = properties.getString("storetype");
     private String keyAlg = properties.getString("keyalg");
     private int keySize = properties.getInt("keysize");
-    private char[] keyStorePassword;
-    private Map<String, char[]> dualMap;
-    private KeyStore keyStore;
-    private SecretKey secretKey;
-    ...
-    public void start() throws Exception {
+    ...    
+    public KeyStore call() throws Exception {
         String purpose = "new key " + keyAlias;
-        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext(
+        Map<String, char[]> dualMap = new DualControlReader(
+                DualControlSSLContextFactory.createSSLContext(
                 properties)).readDualMap(purpose, submissionCount);
-        keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
+        char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
-        secretKey = keyGenerator.generateKey();
-        keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
+        SecretKey secretKey = keyGenerator.generateKey();
+        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
@@ -63,8 +60,8 @@ public class DualControlGenSecKey {
             keyStore.setEntry(alias, entry, prot);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        return keyStore;
     }
-    ...
 }
 }}}
 where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their secret "dual passwords," and we create a <tt>!KeyStore</tt> entry for each. 
@@ -336,7 +333,7 @@ public class DualControlPasswordVerifier {
 
 We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits.
 
-Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longish passphrases.
+Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longer passphrases.
 
 <h4>Brutish Key Protector</h4>
 
