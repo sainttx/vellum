@@ -211,7 +211,7 @@ INFO [DualControlReader] readDualMap dualAlias: brent-henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
 }}}
 
-Our <tt>!DualControlReader</tt> utility class handles reading split knowledge submissions.
+So our <tt>!DualControlReader</tt> utility class handles reading split knowledge submissions.
 
 {{{
 public class DualControlReader {
@@ -220,7 +220,7 @@ public class DualControlReader {
     int submissionCount;
 
     public Map<String, char[]> readDualMap(String purpose, int submissionCount) 
-               throws Exception {
+            throws Exception {
         this.purpose = purpose;
         this.submissionCount = submissionCount;
         logger.info("readDualMap submissionCount: " + submissionCount);
@@ -234,6 +234,7 @@ public class DualControlReader {
                     char[] dualPassword = combineDualPassword(
                             submissions.get(name), submissions.get(otherName));
                     map.put(dualAlias, dualPassword);
+                    logger.info("readDualMap dualAlias: " + dualAlias);
                 }
             }
         }
@@ -251,11 +252,10 @@ We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocke
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
-    Map<String, char[]> readMap() throws Exception {
-        logger.info("Waiting for submissions on SSL port " + PORT);
-        SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext(properties).
-                getServerSocketFactory().createServerSocket(PORT, submissionCount, 
+    private Map<String, char[]> readMap() throws Exception {
+        logger.info("readMap SSL port " + PORT);
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
         serverSocket.setNeedClientAuth(true);
         return readMap(serverSocket);
