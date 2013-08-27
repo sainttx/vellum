@@ -32,20 +32,22 @@ Step 1 for any data security endeavour is to generate an encryption key, which p
 
 {{{
 public class DualControlGenSecKey { 
-    private int submissionCount = SystemProperties.getInt("dualcontrol.submissions", 3);
-    private String keyAlias = SystemProperties.getString("alias");
-    private String keyStoreLocation = SystemProperties.getString("keystore");
-    private String keyStoreType = SystemProperties.getString("storetype");
-    private String keyAlg = SystemProperties.getString("keyalg");
-    private int keySize = SystemProperties.getInt("keysize");
+    private VellumProperties properties = VellumProperties.systemProperties;
+    private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
+    private String keyAlias = properties.getString("alias");
+    private String keyStoreLocation = properties.getString("keystore");
+    private String keyStoreType = properties.getString("storetype");
+    private String keyAlg = properties.getString("keyalg");
+    private int keySize = properties.getInt("keysize");
     private char[] keyStorePassword;
     private Map<String, char[]> dualMap;
     private KeyStore keyStore;
     private SecretKey secretKey;
     ...
-    void start() throws Exception {
+    public void start() throws Exception {
         String purpose = "new key " + keyAlias;
-        dualMap = new DualControlReader().readDualMap(purpose, submissionCount);
+        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext(
+                properties)).readDualMap(purpose, submissionCount);
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
@@ -101,7 +103,8 @@ public class DualControlConsole {
     final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
+        Socket socket = DualControlSSLContextFactory.createSSLContext(
+                VellumProperties.systemProperties).getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
@@ -157,21 +160,23 @@ Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command
 {{{
 public class DualControlSSLContextFactory {    
 
-    public static SSLContext createSSLContext() throws Exception {
-        String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
+    public static SSLContext createSSLContext(VellumProperties properties) throws Exception {
+        String keyStoreLocation = properties.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
+        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", 
+                null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
         }
-        char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
+        char[] keyPassword = properties.getPassword("dualcontrol.ssl.keyPassword", 
+                keyStorePassword);
         String trustStoreLocation =
-                System.getProperty("dualcontrol.ssl.trustStore", keyStoreLocation);
+                properties.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
         char[] trustStorePassword =
-                getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+                properties.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
@@ -243,15 +248,15 @@ We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocke
 
 {{{
     private final static int PORT = 4444;
-    private final static String LOCAL_ADDRESS = "127.0.0.1";
+    private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
     Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext().
+                DualControlSSLContextFactory.createSSLContext(properties).
                 getServerSocketFactory().createServerSocket(PORT, submissionCount, 
-                InetAddress.getByName(LOCAL_ADDRESS));
+                InetAddress.getByName(HOST));
         serverSocket.setNeedClientAuth(true);
         return readMap(serverSocket);
     }
@@ -309,6 +314,7 @@ We ensure that the default required complexity and/or length of the password is 
 public class DualControlPasswordVerifier {
     final static boolean verifyPasswordwordComplexity = 
             getBoolean("dualcontrol.verifyPasswordwordComplexity", false);
+
     final static int minPasswordLength = 
             Integer.getInteger("dualcontrol.minPasswordLength", 18);
 
@@ -375,10 +381,12 @@ The application loads keys as if it's too easy. But the caveat is that execution
 {{{
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
-INFO [DualControlReader] Waiting for submissions on SSL port 4444
-INFO [DualControlReader] Accepting evanx
-INFO [DualControlReader] Accepting henty
-INFO [DualControlReader] readDualMap: evanx-henty
+INFO [DualControlReader] readDualMap submissionCount: 2
+INFO [DualControlReader] readDualMap purpose: key dek2013 for DualControlDemoApp
+INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] Received evanx
+INFO [DualControlReader] Received henty
+INFO [DualControlReader] readDualMap dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] loadedKey dek2013 alg AES
 }}}
