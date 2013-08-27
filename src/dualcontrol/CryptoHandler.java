@@ -22,7 +22,8 @@ import vellum.datatype.Nanos;
  * @author evans
  */
 public class CryptoHandler {
-    static final int DEFAULT_IV_LENGTH = 8;
+    static final int ivLength = 8;
+    static final boolean enableGetKey = Boolean.getBoolean("enableGetKey");
     static final Logger logger = Logger.getLogger(CryptoHandler.class);
     DualControlSession dualControl;
     byte[] ivBytes;
@@ -41,7 +42,7 @@ public class CryptoHandler {
             String mode = fields[0];
             String alias = fields[1];
             this.dos = new DataOutputStream(socket.getOutputStream());
-            if (mode.equals("GETKEY")) {
+            if (enableGetKey && mode.equals("GETKEY")) {
                 SecretKey key = dualControl.loadKey(alias);
                 dos.writeUTF(key.getAlgorithm());
                 write(key.getEncoded());                
