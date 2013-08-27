@@ -122,12 +122,12 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
     char[] generateRandomPassword(int length) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            builder.append(randomChar());
+            builder.append(nextChar());
         }
         return builder.toString().toCharArray();
     }
     
-    char randomChar() {
+    char nextChar() {
         char first = ' ';
         char last = 'z';
         return (char) (first + (random.nextInt(last - first)));
