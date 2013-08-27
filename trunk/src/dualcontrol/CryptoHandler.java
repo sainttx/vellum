@@ -42,10 +42,12 @@ public class CryptoHandler {
             String mode = fields[0];
             String alias = fields[1];
             this.dos = new DataOutputStream(socket.getOutputStream());
-            if (enableGetKey && mode.equals("GETKEY")) {
-                SecretKey key = dualControl.loadKey(alias);
-                dos.writeUTF(key.getAlgorithm());
-                write(key.getEncoded());                
+            if (mode.equals("GETKEY")) {
+                if (enableGetKey) {
+                    SecretKey key = dualControl.loadKey(alias);
+                    dos.writeUTF(key.getAlgorithm());
+                    write(key.getEncoded());
+                }
             } else {            
                 cipher(mode, alias, fields[2], fields[3], fields[4]);
             }
