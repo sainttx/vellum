@@ -52,9 +52,13 @@ public class EncryptedKeyStoreTest {
         String data = "4000555500001111";
         SecretKey dek = KeyGenerators.generateKey(keyAlg, keySize);
         VellumCipher cipher = AESCiphers.getCipher(dek);
-        Encrypted encrypted = cipher.encrypt(data.getBytes());
-        Log.info(logger, Bytes.toString(cipher.decrypt(encrypted)));
         long millis = System.currentTimeMillis();
+        Encrypted encrypted = cipher.encrypt(data.getBytes());
+        Log.infof(logger, "encrypt %dms", Millis.elapsed(millis));
+        millis = System.currentTimeMillis();
+        Log.info(logger, Bytes.toString(cipher.decrypt(encrypted)));
+        Log.infof(logger, "decrypt %dms", Millis.elapsed(millis));
+        millis = System.currentTimeMillis();
         EncryptedKeyStores.storeKeyForce(dek, keyStoreLocation, 
                 keyStoreType, keyAlias, keyPass);
         Log.infof(logger, "store %dms", Millis.elapsed(millis));
