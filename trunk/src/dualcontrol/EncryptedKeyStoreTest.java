@@ -19,7 +19,7 @@ import vellum.util.Bytes;
 public class EncryptedKeyStoreTest {
     private final static Logger logger = Logger.getLogger(EncryptedKeyStoreTest.class);
     private final String keyAlg = "AES";
-    private final int keySize = 128;
+    private final int keySize = 256;
     private final String keyStoreType = "JCEKS";
     private String keyStoreLocation;
     private String keyAlias;
