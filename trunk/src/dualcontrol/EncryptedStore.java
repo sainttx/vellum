@@ -18,6 +18,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.log4j.Logger;
 import static vellum.crypto.Passwords.ALGORITHM;
 
 /**
@@ -25,15 +26,17 @@ import static vellum.crypto.Passwords.ALGORITHM;
  * @author evans
  */
 public class EncryptedStore {
+    private final static Logger logger = Logger.getLogger(EncryptedStore.class);
+
     private final int MIN_VERSION = 1;
     private final int CURRENT_VERSION = 1;
     private int version = 1;
     private String pbeFactory = "PBKDF2WithHmacSHA1";
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
-    private int saltLength = 8;        
+    private int saltLength = 32;
     private int iterationCount = 99999;
-    private int keySize = 192;
+    private int keySize = 256;
     private SecretKey pbeKey;
     byte[] salt;
     byte[] iv = null;
@@ -105,6 +108,7 @@ public class EncryptedStore {
         dis.read(encryptedBytes);
         dis.close();
         init(password, salt);
+        Log.debug(logger, salt.length, iterationCount, keySize);
         byte[] hash = decrypt(encryptedHash);
         if (!Arrays.equals(hash(password), hash)) {
             throw new Exception("Invalid password");            
