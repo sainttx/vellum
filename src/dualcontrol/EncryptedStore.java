@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import javax.crypto.Cipher;
@@ -31,9 +32,9 @@ public class EncryptedStore {
     private String pbeFactory = "PBKDF2WithHmacSHA1";
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
-    private int saltLength = 16;        
-    private int iterationCount = 300000;
-    private int keySize = 512;    
+    private int saltLength = 8;        
+    private int iterationCount = 9999;
+    private int keySize = 128;
     private SecretKey pbeKey;
     byte[] salt;
     byte[] iv = null;
@@ -123,7 +124,7 @@ public class EncryptedStore {
     
     private byte[] encrypt(byte[] bytes) throws GeneralSecurityException  {
         Cipher cipher = Cipher.getInstance(cipherTransform);
-        if (iv == null) {
+        if (iv != null) {
             cipher.init(Cipher.ENCRYPT_MODE, pbeKey, new IvParameterSpec(iv));
         } else {
             cipher.init(Cipher.ENCRYPT_MODE, pbeKey);            
@@ -138,5 +139,4 @@ public class EncryptedStore {
         cipher.init(Cipher.DECRYPT_MODE, pbeKey, new IvParameterSpec(iv));
         return cipher.doFinal(bytes);
     }
-    
 }
