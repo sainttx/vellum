@@ -34,7 +34,7 @@ public class DualControlReader {
     int submissionCount;
     Set<String> names = new TreeSet();
     
-    static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
+    public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         return new DualControlReader().readDualMap(purpose, 2).entrySet().iterator().next();
     }
 
@@ -59,14 +59,14 @@ public class DualControlReader {
         return map;
     }
 
-    static char[] combineDualPassword(char[] password, char[] other) {
+    private static char[] combineDualPassword(char[] password, char[] other) {
         StringBuilder builder = new StringBuilder();
         builder.append(password);
         builder.append(other);
         return builder.toString().toCharArray();
     }
 
-    Map<String, char[]> readMap() throws Exception {
+    private Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) 
                 DualControlSSLContextFactory.createSSLContext().
@@ -76,7 +76,7 @@ public class DualControlReader {
         return readMap(serverSocket);
     }
 
-    Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
+    private Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
         Map<String, char[]> map = new TreeMap();
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
