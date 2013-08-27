@@ -20,16 +20,16 @@ import vellum.datatype.Nanos;
  */
 public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable {
     private final static Logger logger = Logger.getLogger(JCEKSBruteForceTimer.class);
-    static int passwordLength = Integer.getInteger("passwordLength", 8);
-    Random random;
-    Set<String> errorMessageSet;
-    int maximumCount;
-    String keyStoreLocation;
-    char[] keyStorePass;
-    String alias;
-    char[] keyPass;
-    Exception exception;
-    String result; 
+    private static int passwordLength = Integer.getInteger("passwordLength", 8);
+    private Random random;
+    private Set<String> errorMessageSet;
+    private int maximumCount;
+    private String keyStoreLocation;
+    private char[] keyStorePass;
+    private String alias;
+    private char[] keyPass;
+    private Exception exception;
+    private String result; 
     
     public static void main(String[] args) throws Exception {
         if (args.length != 6) {
