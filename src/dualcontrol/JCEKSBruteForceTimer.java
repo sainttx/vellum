@@ -30,6 +30,15 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
     Exception exception;
     String result; 
     
+    public static void main(String[] args) throws Exception {
+        if (args.length != 6) {
+            System.err.println("usage: threads count keystore storepass alias keypass"); 
+        } else {
+            new JCEKSBruteForceTimer(Integer.parseInt(args[1]), args[2], args[3].toCharArray(),
+                    args[4], args[5].toCharArray()).start(Integer.parseInt(args[0]));
+        }
+    }    
+
     public JCEKSBruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
             String alias, char[] keyPass) {
         this.random = new Random();
@@ -108,6 +117,7 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
                 Nanos.formatMillis(average));
         
     }
+    
     char[] generatePassword() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 8; i++) {
@@ -120,15 +130,5 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         char first = 'a';
         char last = 'z';
         return (char) (first + (random.nextInt(last - first)));
-    }
-    
-    public static void main(String[] args) throws Exception {
-        if (args.length != 6) {
-            System.err.println("usage: threads count keystore storepass alias keypass"); 
-        } else {
-            new JCEKSBruteForceTimer(Integer.parseInt(args[1]), args[2], args[3].toCharArray(),
-                    args[4], args[5].toCharArray()).start(Integer.parseInt(args[0]));
-        }
-    }
-    
+    }    
 }
