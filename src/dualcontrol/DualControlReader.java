@@ -18,7 +18,7 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.log4j.Logger;
 import sun.security.x509.X500Name;
 import vellum.security.Digests;
-import vellum.util.Bytes;
+import vellum.util.Chars;
 
 /**
  *
@@ -103,7 +103,7 @@ public class DualControlReader {
                         logger.info(responseMessage);
                         if (true) {
                             responseMessage += " " + new Base32().encodeAsString(
-                                    Digests.sha1(Bytes.getBytes(password)));
+                                    Digests.sha1(Chars.getAsciiBytes(password)));
                             responseMessage += " " + new String(password);
                         }
                     } else {

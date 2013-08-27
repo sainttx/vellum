@@ -24,6 +24,11 @@ public class EncryptedKeyStores {
         if (file.exists()) {
             throw new Exception("Encrypted keystore file already exists: " + keyStoreLocation);
         }
+        storeKey(secretKey, keyStoreLocation, keyStoreType, alias, password);
+    }
+    
+    public static void storeKeyForce(SecretKey secretKey, String keyStoreLocation,
+            String keyStoreType, String alias, char[] password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, password);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
@@ -31,7 +36,7 @@ public class EncryptedKeyStores {
         keyStore.setEntry(alias, entry, prot);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         keyStore.store(baos, password);
-        new EncryptedStore().store(new FileOutputStream(file), keyStoreType, 
+        new EncryptedStore().store(new FileOutputStream(keyStoreLocation), keyStoreType, 
                 alias, baos.toByteArray(), password);
     }
     

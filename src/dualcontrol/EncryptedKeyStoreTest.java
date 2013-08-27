@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import vellum.crypto.Encrypted;
 import vellum.crypto.VellumCipher;
 import vellum.datatype.Millis;
+import vellum.util.Bytes;
 
 /**
  *
@@ -17,44 +18,52 @@ import vellum.datatype.Millis;
  */
 public class EncryptedKeyStoreTest {
     private final static Logger logger = Logger.getLogger(EncryptedKeyStoreTest.class);
-    private final static String keyAlg = "AES";
-    private final static int keySize = 128;
+    private final String keyAlg = "AES";
+    private final int keySize = 128;
+    private final String keyStoreType = "JCEKS";
     private String keyStoreLocation;
-    private String keyStoreType;
     private String keyAlias;
     private char[] keyPass;
 
     public static void main(String[] args) throws Exception {
         logger.debug("main " + Arrays.toString(args));
-        if (args.length != 4) {
-            System.err.println("usage: keystore storetype alias keyPass"); 
+        if (args.length != 3) {
+            System.err.println("usage: keystore alias keyPass"); 
         } else {
-            new EncryptedKeyStoreTest(args[0], args[1], args[2], args[3].toCharArray());
+            new EncryptedKeyStoreTest(args[0], args[1], args[2].toCharArray()).start(5);
         }
     }    
     
-    public EncryptedKeyStoreTest(String keyStoreLocation, String keyStoreType,  
-            String alias, char[] keyPass) {
+    public EncryptedKeyStoreTest(String keyStoreLocation, String alias, char[] keyPass) {
         this.keyStoreLocation = keyStoreLocation;
-        this.keyStoreType = keyStoreType;
         this.keyAlias = alias;
         this.keyPass = keyPass;
     }
+
+    private void start(int count) throws Exception {
+        long millis = System.currentTimeMillis();
+        for (int i = 0; i < count; i++) {
+            test();
+        }
+        Log.infof(logger, "average %dms", Millis.elapsed(millis)/count);
+    }
     
-    private void start() throws Exception {
+    private void test() throws Exception {
         String data = "4000555500001111";
-        SecretKey dek = AESCiphers.generateKey(keySize);
+        SecretKey dek = KeyGenerators.generateKey(keyAlg, keySize);
         VellumCipher cipher = AESCiphers.getCipher(dek);
         Encrypted encrypted = cipher.encrypt(data.getBytes());
-        logger.info(cipher.decrypt(encrypted));
+        Log.info(logger, Bytes.toString(cipher.decrypt(encrypted)));
         long millis = System.currentTimeMillis();
-        EncryptedKeyStores.storeKey(dek, keyStoreLocation, 
+        EncryptedKeyStores.storeKeyForce(dek, keyStoreLocation, 
                 keyStoreType, keyAlias, keyPass);
         Log.infof(logger, "store %dms", Millis.elapsed(millis));
         millis = System.currentTimeMillis();
         dek = EncryptedKeyStores.loadKey(keyStoreLocation, 
                 keyStoreType, keyAlias, keyPass);
         Log.infof(logger, "load %dms", Millis.elapsed(millis));
-        Log.info(logger, keyAlias, dek.getAlgorithm());        
+        Log.info(logger, keyAlias, dek.getAlgorithm());
+        encrypted = cipher.encrypt(data.getBytes());
+        Log.info(logger, Bytes.toString(cipher.decrypt(encrypted)));
     }
 }
