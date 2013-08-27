@@ -19,8 +19,8 @@ import vellum.util.Chars;
  */
 public class DualControlConsole {
 
-    final static int PORT = 4444;
-    final static String HOST = "127.0.0.1";
+    private final static int PORT = 4444;
+    private final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
         Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().

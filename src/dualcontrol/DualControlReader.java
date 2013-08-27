@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import org.apache.commons.codec.binary.Base32;
@@ -27,15 +28,21 @@ import vellum.util.Chars;
 public class DualControlReader {
 
     private final static Logger logger = Logger.getLogger(DualControlReader.class);
-    private final static int PORT = 4444;
-    private final static String LOCAL_ADDRESS = "127.0.0.1";
+    public final static int PORT = 4444;
+    public final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
+    SSLContext sslContext;
     String purpose;
     int submissionCount;
     Set<String> names = new TreeSet();
-    
+
+    public DualControlReader(SSLContext sslContext) {
+        this.sslContext = sslContext;
+    }
+        
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        return new DualControlReader().readDualMap(purpose, 2).entrySet().iterator().next();
+        return new DualControlReader(DualControlSSLContextFactory.createSSLContext()).
+                readDualMap(purpose, 2).entrySet().iterator().next();
     }
 
     public Map<String, char[]> readDualMap(String purpose, int submissionCount) throws Exception {
@@ -68,10 +75,9 @@ public class DualControlReader {
 
     private Map<String, char[]> readMap() throws Exception {
         logger.info("Waiting for submissions on SSL port " + PORT);
-        SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext().
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
-                InetAddress.getByName(LOCAL_ADDRESS));
+                InetAddress.getByName(HOST));
         serverSocket.setNeedClientAuth(true);
         return readMap(serverSocket);
     }

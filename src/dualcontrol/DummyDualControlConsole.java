@@ -8,6 +8,7 @@ package dualcontrol;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 
 /**
@@ -24,28 +25,25 @@ public abstract class DummyDualControlConsole {
         if (args.length != 2) {
             System.err.println("usage: username passwd");
         } else {
-            String username = args[0];
-            char[] password = args[1].toCharArray();
             try {
-                Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
-                        createSocket(HOST, PORT);
-                DataInputStream dis = new DataInputStream(socket.getInputStream());
-                String purpose = dis.readUTF();
-                info(logger, "require password for %s, sending %s %s",
-                        purpose, username, new String(password));
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                DualControlConsole.writeChars(dos, password);
-                socket.close();
+                submit(DualControlSSLContextFactory.createSSLContext(), 
+                        args[0], args[1].toCharArray());
             } catch (Exception e) {
-                System.out.println("ERROR send " + new String(password));
-                throw e;
+                logger.error(e.getMessage());
             }
         }
     }
     
-    static void info(Logger logger, String format, Object ... args) {        
-        logger.info(String.format(format, args));
-        System.err.flush();
-    }
-        
+    public static void submit(SSLContext sslContext, 
+            String username, char[] password) throws Exception {
+        Socket socket = sslContext.getSocketFactory().
+                createSocket(DualControlReader.HOST, DualControlReader.PORT);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        String purpose = dis.readUTF();
+        Log.info(logger, "require password for %s, sending %s %s",
+                purpose, username, new String(password));
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        DualControlConsole.writeChars(dos, password);
+        socket.close();
+    }    
 }

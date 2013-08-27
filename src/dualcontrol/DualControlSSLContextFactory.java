@@ -68,17 +68,17 @@ public class DualControlSSLContextFactory {
     public static SSLContext createSSLContext(String keyStoreLocation,
             char[] keyStorePassword, char[] keyPassword,
             String trustStoreLocation, char[] trustStorePassword) throws Exception {
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
-            KeyStore trustStore = KeyStore.getInstance("JKS");
-            trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-            keyManagerFactory.init(keyStore, keyPassword);
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-            trustManagerFactory.init(trustStore);
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(keyManagerFactory.getKeyManagers(),
-                    trustManagerFactory.getTrustManagers(), new SecureRandom());
-            return sslContext;
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPassword);
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(trustStore);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
+        return sslContext;
     }
 }
