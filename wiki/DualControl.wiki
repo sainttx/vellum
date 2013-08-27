@@ -58,6 +58,7 @@ public class DualControlGenSecKey {
             KeyStore.ProtectionParameter prot = 
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
+            logger.info("alias " + alias);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
         return keyStore;
