@@ -22,7 +22,7 @@ import vellum.datatype.Nanos;
  * @author evans
  */
 public class CryptoHandler {
-    static final int ivLength = 8;
+    static final int ivLength = Integer.getInteger("ivLength", 8);
     static final boolean enableGetKey = Boolean.getBoolean("enableGetKey");
     static final Logger logger = Logger.getLogger(CryptoHandler.class);
     DualControlSession dualControl;
