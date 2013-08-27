@@ -27,7 +27,8 @@ public class EncryptedKeyStores {
         storeKey(secretKey, keyStoreLocation, keyStoreType, alias, password);
     }
     
-    public static void storeKeyForce(SecretKey secretKey, String keyStoreLocation,
+    public static void storeKeyForce(int iterationCount, 
+            SecretKey secretKey, String keyStoreLocation,
             String keyStoreType, String alias, char[] password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, password);
@@ -36,7 +37,8 @@ public class EncryptedKeyStores {
         keyStore.setEntry(alias, entry, prot);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         keyStore.store(baos, password);
-        new EncryptedStore().store(new FileOutputStream(keyStoreLocation), keyStoreType, 
+        new EncryptedStore(iterationCount).
+                store(new FileOutputStream(keyStoreLocation), keyStoreType, 
                 alias, baos.toByteArray(), password);
     }
     
