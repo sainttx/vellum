@@ -100,7 +100,7 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         int exceptionCount = 0;
         for (int i = 0; i < maximumCount; i++) {
             try {
-                char[] password = generatePassword();
+                char[] password = generateRandomPassword(8);
                 if (i%500 == 0) password = keyPass;                        
                 logger.trace("key " + keyStore.getKey(alias, password).getAlgorithm());
             } catch (Exception e) {
@@ -118,16 +118,16 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         
     }
     
-    char[] generatePassword() {
+    char[] generateRandomPassword(int length) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < length; i++) {
             builder.append(randomChar());
         }
         return builder.toString().toCharArray();
     }
     
     char randomChar() {
-        char first = 'a';
+        char first = ' ';
         char last = 'z';
         return (char) (first + (random.nextInt(last - first)));
     }    
