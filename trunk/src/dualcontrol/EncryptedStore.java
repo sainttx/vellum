@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
-import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import javax.crypto.Cipher;
@@ -33,7 +32,7 @@ public class EncryptedStore {
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
     private int saltLength = 8;        
-    private int iterationCount = 9999;
+    private int iterationCount = 99999;
     private int keySize = 128;
     private SecretKey pbeKey;
     byte[] salt;
