@@ -210,6 +210,10 @@ command0_testkeystoreserver() {
   sleep 2
 }
 
+command0_teststore() {
+  javaksc server dualcontrol.EncryptedKeyStoreTest $seckeystore.enc $storetype dek2013-evanx-henty eeeehhhh AES 256
+}
+
 command1_cryptoserver() {
   javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 $seckeystore $pass
 }
