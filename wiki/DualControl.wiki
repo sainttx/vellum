@@ -193,6 +193,19 @@ So we use the <tt>SSLContext</tt> created above for opening a <tt>SSLSocket</tt>
 
 <h4><tt>!DualControlReader</tt></h4>
 
+For example, we observe the following logs when testing <tt>!DualControlGenSecKey</tt>
+{{{
+INFO [DualControlReader] readDualMap submissionCount: 3
+INFO [DualControlReader] readDualMap purpose: new key dek2013
+INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] Received evanx
+INFO [DualControlReader] Received henty
+INFO [DualControlReader] Received brent
+INFO [DualControlReader] readDualMap dualAlias: brent-evanx
+INFO [DualControlReader] readDualMap dualAlias: brent-henty
+INFO [DualControlReader] readDualMap dualAlias: evanx-henty
+}}}
+
 Our <tt>!DualControlReader</tt> utility class handles reading split knowledge submissions.
 
 {{{
@@ -201,9 +214,12 @@ public class DualControlReader {
     String purpose;
     int submissionCount;
 
-    public Map<String, char[]> readDualMap(String purpose, int submissionCount) throws Exception {
+    public Map<String, char[]> readDualMap(String purpose, int submissionCount) 
+               throws Exception {
         this.purpose = purpose;
         this.submissionCount = submissionCount;
+        logger.info("readDualMap submissionCount: " + submissionCount);
+        logger.info("readDualMap purpose: " + purpose);
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
@@ -221,7 +237,7 @@ public class DualControlReader {
     ...
 }}}
 
-If we have three admins e.g. Brent, Evan, and Henty, then we have three combinations of pairs of admins, namely Brent/Evan, Brent/Henty and Evan/Henty, when ordered alphabetically. The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>Evan/Brent</tt> in favour of <tt>Brent/Evan</tt>, and the likes of <tt>Evan/Evan</tt>, which is just silly.
+The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt> which is just silly.
 
 We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
 
@@ -246,29 +262,35 @@ where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e.
 We accumulate the required number of submissions in a loop.
 
 {{{    
-    Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
+    private Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
         Map<String, char[]> map = new TreeMap();
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                logger.warn("Ignoring remote address " + 
-                        socket.getInetAddress().getHostAddress());
+                logger.warn("Ignoring remote address "
+                        + socket.getInetAddress().getHostAddress());
             } else {
                 String username = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
-                logger.info("accepting " + username);
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(purpose);
-                DataInputStream dis = new DataInputStream(socket.getInputStream());
-                char[] password = readChars(dis);
-                String responseMessage = 
-                        DualControlPasswordVerifier.getInvalidMessage(password);
-                if (responseMessage == null) {
-                    responseMessage = "OK " + username;
-                    map.put(username, password);
+                if (names.contains(username)) {
+                    logger.warn("Ignore duplicate " + username);
+                } else {
+                    names.add(username);
+                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                    dos.writeUTF(purpose);
+                    DataInputStream dis = new DataInputStream(socket.getInputStream());
+                    char[] password = readChars(dis);
+                    String responseMessage =
+                            DualControlPasswordVerifier.getInvalidMessage(password);
+                    if (responseMessage == null) {
+                        responseMessage = "Received " + username;
+                        map.put(username, password);
+                        logger.info(responseMessage);
+                    } else {
+                        logger.warn(responseMessage);
+                    }
+                    dos.writeUTF(responseMessage);
                 }
-                dos.writeUTF(responseMessage);
-                logger.info(responseMessage);
             }
             socket.close();
         }
@@ -339,7 +361,7 @@ On the downside, we have to re-engineer our application to be dual-controlled, t
 public class DualControlDemoApp {
     private SecretKey dek;     
     ...
-    private void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
+    public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
         dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
                 "DualControlDemoApp");
