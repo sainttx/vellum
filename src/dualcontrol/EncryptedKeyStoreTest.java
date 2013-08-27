@@ -27,7 +27,7 @@ public class EncryptedKeyStoreTest {
         if (args.length != 6) {
             System.err.println("usage: keystore storetype alias keyPass alg kz"); 
         } else {
-            new EncryptedKeyStoreTest(args[0], args[1], args[3], args[2].toCharArray(),
+            new EncryptedKeyStoreTest(args[0], args[1], args[2], args[3].toCharArray(),
                     args[4], Integer.parseInt(args[5])).start();
         }
     }    
