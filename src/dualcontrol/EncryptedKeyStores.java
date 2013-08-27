@@ -21,7 +21,7 @@ public class EncryptedKeyStores {
     public static void storeKey(SecretKey secretKey, String keyStoreLocation, String keyStoreType, 
             String alias, char[] password) throws Exception {
         File file = new File(keyStoreLocation);
-        if (!file.exists()) {
+        if (file.exists()) {
             throw new Exception("Encrypted keystore file already exists: " + keyStoreLocation);
         }
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
