@@ -25,6 +25,7 @@ public class EncryptedKeyStores {
             throw new Exception("Encrypted keystore file already exists: " + keyStoreLocation);
         }
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, password);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         KeyStore.ProtectionParameter prot = new KeyStore.PasswordProtection(password);
         keyStore.setEntry(alias, entry, prot);
