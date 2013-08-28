@@ -199,7 +199,7 @@ So we use the <tt>SSLContext</tt> created above for opening a <tt>SSLSocket</tt>
 
 <h4><tt>!DualControlReader</tt></h4>
 
-For example, we observe the following logs when testing <tt>!DualControlGenSecKey</tt>
+For example, we observe the following logs when testing <tt>!DualControlGenSecKey</tt>.
 {{{
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
