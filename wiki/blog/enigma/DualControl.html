@@ -6,7 +6,7 @@ Encryption is great for information security and all that. But the problem with 
 <p>   
 <a style='{text-decoration: none;} :visited{color: black;}' href="https://code.google.com/p/vellum">
 <div style="border-bottom: solid 1px; background-color: #ccff00;">
-<span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Dual Control:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;The first part of a new cryptrilogy of "The Enigma Posts"</span>
+<img src="http://upload.wikimedia.org/wikipedia/commons/5/55/Gnome-security-medium.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Dual Control:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;The first part of a new quad-cryptology of the "Enigma Posts"</span>
 </div>
 </a>
 
@@ -37,25 +37,26 @@ But then our application can't access those keys either. <i>D'oh!</i> So we must
 Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. For this purpose, there shall be <tt>DualControlGenSecKey</tt>, as follows.
 
 <pre>
-public class DualControlGenSecKey { 
-    int submissionCount = Integer.getInteger("dualcontrol.submissions", 3);
-    String keyAlias = System.getProperty("alias"); 
-    String keyStoreLocation = System.getProperty("keystore"); 
-    String keyStoreType = System.getProperty("storetype");
-    String keyAlg = System.getProperty("keyalg");
-    int keySize = Integer.getInteger("keysize");
-    
-    public static void main(String[] args) throws Exception {        
-        new DualControlGenSecKey().start(args);
-    }
-
-    void start() throws Exception {
-        dualMap = new DualControlReader().readDualMap(keyAlias, submissionCount);
-        keyStorePassword = getKeyStorePassword();
+public class DualControlGenSecKey {
+    private VellumProperties properties = VellumProperties.systemProperties;
+    private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
+    private String keyAlias = properties.getString("alias");
+    private String keyStoreLocation = properties.getString("keystore");
+    private String keyStoreType = properties.getString("storetype");
+    private String keyAlg = properties.getString("keyalg");
+    private int keySize = properties.getInt("keysize");
+    ...    
+    public KeyStore call() throws Exception {
+        String purpose = "new key " + keyAlias;
+        Map<String, char[]> dualMap = new DualControlReader(
+                DualControlSSLContextFactory.createSSLContext(
+                properties)).readDualMap(purpose, submissionCount);
+        char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
-        secretKey = keyGenerator.generateKey();
-        keyStore = loadKeyStore(keyStoreLocation, keyStorePassword);
+        SecretKey secretKey = keyGenerator.generateKey();
+        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
+                keyStoreType, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
@@ -65,8 +66,8 @@ public class DualControlGenSecKey {
             keyStore.setEntry(alias, entry, prot);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        return keyStore;
     }
-    ...
 }
 </pre>
 where <tt>DualControlReader</tt> provides a map of "dual aliases" and their secret "dual passwords," and we create a <tt>KeyStore</tt> entry for each. 
@@ -78,19 +79,19 @@ So let's test <tt>DualControlGenSecKey</tt>.
 <pre>
   java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=18 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
-     -Dalias=DEK2013 -Dkeyalg=AES -Dkeysize=256 \
+     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
 </pre>
 
-where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "DEK2013" is our desired alias to reference this key.  
+where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
 
 For example, three admins submit their passwords via SSL socket where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. We see that <tt>DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 <pre>
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
-DEK2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
-DEK2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
-DEK2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
+dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 </pre>
 
 Actually these three keys are one and the same. However each copy is password-protected using a different "dual password" combination, known to no single person.
@@ -105,19 +106,21 @@ public class DualControlConsole {
     final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        Socket socket = DualControlSSLContextFactory.createSSLContext().getSocketFactory().
+        Socket socket = DualControlSSLContextFactory.createSSLContext(
+                VellumProperties.systemProperties).getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        String alias = dis.readUTF();
+        String purpose = dis.readUTF();
         char[] password = System.console().readPassword(
-                "Enter password for remote key " + alias + ": ");
+                "Enter password for " + purpose + ": ");
         String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
         if (invalidMessage != null) {
             System.err.println(invalidMessage);
         } else {
             String hash = Digests.sha1String(Chars.getBytes(password));
             Arrays.fill(password, (char) 0);
-            password = System.console().readPassword("Re-enter password: ");
+            password = System.console().readPassword(
+                    "Re-enter password for " + purpose + ": ");
             if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
                 System.err.println("Passwords don't match.");
             } else {
@@ -133,12 +136,12 @@ public class DualControlConsole {
     ...
 }
 </pre>
-where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the intended alias for the password e.g. "DEK2013," submit our password, and finally display a response message e.g. hopefully "OK."
+where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the intended alias for the password e.g. "dek2013," submit our password, and finally display a response message e.g. hopefully "OK."
 
 <pre>
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection:
-Enter passphrase for remote key DEK2013: 
+Enter password for dual control SSL connection:
+Enter password for key dek2013: 
 Re-enter password: 
 OK evanx
 </pre>
@@ -160,21 +163,23 @@ Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command
 <pre>
 public class DualControlSSLContextFactory {    
 
-    public static SSLContext createSSLContext() throws Exception {
-        String keyStoreLocation = System.getProperty("dualcontrol.ssl.keyStore");
+    public static SSLContext createSSLContext(VellumProperties properties) throws Exception {
+        String keyStoreLocation = properties.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = getPassword("dualcontrol.ssl.keyStorePassword", null);
+        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", 
+                null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
         }
-        char[] keyPassword = getPassword("dualcontrol.ssl.keyPassword", keyStorePassword);
+        char[] keyPassword = properties.getPassword("dualcontrol.ssl.keyPassword", 
+                keyStorePassword);
         String trustStoreLocation =
-                System.getProperty("dualcontrol.ssl.trustStore", keyStoreLocation);
+                properties.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
         char[] trustStorePassword =
-                getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+                properties.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
@@ -196,17 +201,33 @@ So we use the <tt>SSLContext</tt> created above for opening a <tt>SSLSocket</tt>
 
 <h4><tt>DualControlReader</tt></h4>
 
-Our <tt>DualControlReader</tt> utility class handles reading split knowledge submissions.
+For example, we observe the following logs when testing <tt>DualControlGenSecKey</tt>
+<pre>
+INFO [DualControlReader] readDualMap submissionCount: 3
+INFO [DualControlReader] readDualMap purpose: new key dek2013
+INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] Received evanx
+INFO [DualControlReader] Received henty
+INFO [DualControlReader] Received brent
+INFO [DualControlReader] readDualMap dualAlias: brent-evanx
+INFO [DualControlReader] readDualMap dualAlias: brent-henty
+INFO [DualControlReader] readDualMap dualAlias: evanx-henty
+</pre>
+
+So our <tt>DualControlReader</tt> utility class handles reading split knowledge submissions.
 
 <pre>
 public class DualControlReader {
     ...
-    String alias;
+    String purpose;
     int submissionCount;
 
-    public Map<String, char[]> readDualMap(String alias, int submissionCount) throws Exception {
-        this.alias = alias;
+    public Map<String, char[]> readDualMap(String purpose, int submissionCount) 
+            throws Exception {
+        this.purpose = purpose;
         this.submissionCount = submissionCount;
+        logger.info("readDualMap submissionCount: " + submissionCount);
+        logger.info("readDualMap purpose: " + purpose);
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
@@ -216,6 +237,7 @@ public class DualControlReader {
                     char[] dualPassword = combineDualPassword(
                             submissions.get(name), submissions.get(otherName));
                     map.put(dualAlias, dualPassword);
+                    logger.info("readDualMap dualAlias: " + dualAlias);
                 }
             }
         }
@@ -224,21 +246,20 @@ public class DualControlReader {
     ...
 </pre>
 
-If we have three admins e.g. Brent, Evan, and Henty, then we have three combinations of pairs of admins, namely Brent/Evan, Brent/Henty and Evan/Henty, when ordered alphabetically. The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>Evan/Brent</tt> in favour of <tt>Brent/Evan</tt>, and the likes of <tt>Evan/Evan</tt>, which is just silly.
+The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt> which is just silly.
 
 We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
 
 <pre>
     private final static int PORT = 4444;
-    private final static String LOCAL_ADDRESS = "127.0.0.1";
+    private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
-    Map<String, char[]> readMap() throws Exception {
-        logger.info("Waiting for submissions on SSL port " + PORT);
-        SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext().
-                getServerSocketFactory().createServerSocket(PORT, submissionCount, 
-                InetAddress.getByName(LOCAL_ADDRESS));
+    private Map<String, char[]> readMap() throws Exception {
+        logger.info("readMap SSL port " + PORT);
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(PORT, submissionCount,
+                InetAddress.getByName(HOST));
         serverSocket.setNeedClientAuth(true);
         return readMap(serverSocket);
     }
@@ -249,29 +270,35 @@ where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e.
 We accumulate the required number of submissions in a loop.
 
 <pre>    
-    Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
+    private Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
         Map<String, char[]> map = new TreeMap();
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                logger.warn("Ignoring remote address " + 
-                        socket.getInetAddress().getHostAddress());
+                logger.warn("Ignoring remote address "
+                        + socket.getInetAddress().getHostAddress());
             } else {
                 String username = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
-                logger.info("accepting " + username);
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                dos.writeUTF(alias);
-                DataInputStream dis = new DataInputStream(socket.getInputStream());
-                char[] password = readChars(dis);
-                String responseMessage = 
-                        DualControlPasswordVerifier.getInvalidMessage(password);
-                if (responseMessage == null) {
-                    responseMessage = "OK " + username;
-                    map.put(username, password);
+                if (names.contains(username)) {
+                    logger.warn("Ignore duplicate " + username);
+                } else {
+                    names.add(username);
+                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                    dos.writeUTF(purpose);
+                    DataInputStream dis = new DataInputStream(socket.getInputStream());
+                    char[] password = readChars(dis);
+                    String responseMessage =
+                            DualControlPasswordVerifier.getInvalidMessage(password);
+                    if (responseMessage == null) {
+                        responseMessage = "Received " + username;
+                        map.put(username, password);
+                        logger.info(responseMessage);
+                    } else {
+                        logger.warn(responseMessage);
+                    }
+                    dos.writeUTF(responseMessage);
                 }
-                dos.writeUTF(responseMessage);
-                logger.info(responseMessage);
             }
             socket.close();
         }
@@ -288,16 +315,17 @@ We ensure that the default required complexity and/or length of the password is 
 
 <pre>
 public class DualControlPasswordVerifier {
-    final static boolean verifyPasswordwordComplexity = 
-            getBoolean("dualcontrol.verifyPasswordwordComplexity", false);
-    final static int minPasswordLength = 
-            Integer.getInteger("dualcontrol.minPasswordLength", 18);
+    final static private VellumProperties properties = VellumProperties.systemProperties;
+    final static private boolean verifyPasswordComplexity = 
+            properties.getBoolean("dualcontrol.verifyPasswordComplexity", false);
+    final static private int minPasswordLength = 
+            properties.getInt("dualcontrol.minPasswordLength", 18);
 
     public static String getInvalidMessage(char[] password) throws Exception {
         if (password.length < minPasswordLength) {
             return "Passphrase too short";
         }
-        if (verifyPasswordwordComplexity) {
+        if (verifyPasswordComplexity) {
             if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
                     || !isDigit(password) || !isPunctuation(password)) {
                 return "Insufficient password complexity";
@@ -311,7 +339,7 @@ public class DualControlPasswordVerifier {
 
 We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits.
 
-Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longish passphrases.
+Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longer passphrases.
 
 <h4>Brutish Key Protector</h4>
 
@@ -321,7 +349,7 @@ We observe that a run-of-the-mill Intel i5 can manage about 30 guesses per milli
 
 <pre>
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
-  $seckeystore $pass DEK2013-evanx-henty eeeehhhh
+  $seckeystore $pass dek2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
@@ -334,7 +362,7 @@ Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE
 
 Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
-<h4><tt>DualControlSessions</tt></h4>
+<h4><tt>DualControlDemoApp</tt></h4>
 
 On the downside, we have to re-engineer our application to be dual-controlled, to load the key it so desperately needs to cipher our data.
 
@@ -342,25 +370,63 @@ On the downside, we have to re-engineer our application to be dual-controlled, t
 public class DualControlDemoApp {
     private SecretKey dek;     
     ...
-    private void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
+    public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias);
-        logger.debug("loaded key " + dek.getAlgorithm());
+        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
+                "DualControlDemoApp");
+        logger.info("loadKey " + alias + " alg " + dek.getAlgorithm());
     }
 }
 </pre>
 
-where the application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>DualControlConsole</tt>'s.
+The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>DualControlConsole</tt>'s.
+
+<pre>
+$ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
+INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
+INFO [DualControlReader] readDualMap submissionCount: 2
+INFO [DualControlReader] readDualMap purpose: key dek2013 for DualControlDemoApp
+INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] Received evanx
+INFO [DualControlReader] Received henty
+INFO [DualControlReader] readDualMap dualAlias: evanx-henty
+INFO [DualControlSessions] dek2013-evanx-henty
+INFO [DualControlDemoApp] loadedKey dek2013 alg AES
+</pre>
+
+where the two <tt>DualControlConsole</tt> sessions are as follows. 
+
+<pre>
+$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
+Enter passphrase for dual control SSL connection: 
+Enter password for key dek2013 for DualControlDemoApp: 
+Re-enter password for key dek2013 for DualControlDemoApp: 
+OK evanx WLCO4XPIFBTNWOHXTRWUVENGEZEGW4HJ
+</pre>
+
+<pre>
+$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
+Enter passphrase for dual control SSL connection: 
+Enter password for key dek2013 for DualControlDemoApp: 
+Re-enter password for key dek2013 for DualControlDemoApp: 
+OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
+</pre>
+
+<h4><tt>DualControlSessions</tt></h4>
+
+Our app above invokes the <tt>loadKey()</tt> method below to do the legwork. 
+
 <pre>
 public class DualControlSessions {
 
     public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
-            String alias) throws Exception {
+            String alias, String purpose) throws Exception {
         char[] dualPass = null;
         try {
             KeyStore dualKeyStore = 
                     DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
-            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(alias);
+            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
+                "key " + alias + " for " + purpose);
             String dualAlias = entry.getKey();
             dualPass = entry.getValue();
             alias = alias + "-" + dualAlias;
@@ -405,12 +471,13 @@ by a somewhat arbitrary and probably overly-conservative calculation, which we w
 
 <h4>See also</h4>
 
-In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles.
+In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>DualControlGenSec</tt>, namely <tt>DualControlRevoke</tt> and <tt>DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>DualControlRevoke.java</tt></a>
 
-In "Dual Control Key Rotation" we'll work through "key rotation" e.g. migrating from a dated "DEK2013" key a to revised "DEK2014" key.
+In "Dual Control Crypto Server" we implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java"><tt>CryptoServer.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java"><tt>CryptoHandler.java</tt></a>
 
-In "Dual Control Crypto Server" we'll implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security.
+In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a large number of iterations, so that the key takes a second or two to decrypt and load, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JCEKSBruteForceTimer.java"><tt>JCEKSBruteForceTimer.java</tt></a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/EncryptedKeyStore.java"><tt>EncryptedKeyStore.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/EncryptedStore.java"><tt>EncryptedStore.java</tt></a>
 
-In "Dual Control Key Protection" we will address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a large number of iterations, so that the key takes a second or two to decrypt and load, rather than half a millisecond.
+In "Dual Control Key Rotation" we work through "key rotation" e.g. migrating from a dated "dek2013" key a to revised "DEK2014" key.
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
+
