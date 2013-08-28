@@ -41,8 +41,7 @@ public abstract class DummyDualControlConsole {
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
-        Log.info(logger, "require password for %s, sending %s %s",
-                purpose, username, new String(password));
+        Log.infof(logger, "submit password for %s from %s", purpose, username);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         DualControlConsole.writeChars(dos, password);
         socket.close();

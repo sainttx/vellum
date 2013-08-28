@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Map;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
-import vellum.util.Args;
 
 /**
  *
@@ -19,28 +19,38 @@ import vellum.util.Args;
  */
 public class DualControlGenSecKey {
     final static Logger logger = Logger.getLogger(DualControlGenSecKey.class);
-    private VellumProperties properties = VellumProperties.systemProperties;
-    private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
-    private String keyAlias = properties.getString("alias");
-    private String keyStoreLocation = properties.getString("keystore");
-    private String keyStoreType = properties.getString("storetype");
-    private String keyAlg = properties.getString("keyalg");
-    private int keySize = properties.getInt("keysize");
-    
+    private int submissionCount;
+    private String keyAlias;
+    private String keyStoreLocation;
+    private String keyStoreType;
+    private String keyAlg;
+    private int keySize;
+    private SSLContext sslContext;
+
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         try {
-            new DualControlGenSecKey().call();
+            new DualControlGenSecKey().call(VellumProperties.systemProperties);
         } catch (DualControlException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public KeyStore call() throws Exception {
+    private void init(VellumProperties properties) throws Exception {
+        submissionCount = properties.getInt("dualcontrol.submissions", 3);
+        keyAlias = properties.getString("alias");
+        keyStoreLocation = properties.getString("keystore");
+        keyStoreType = properties.getString("storetype");
+        keyAlg = properties.getString("keyalg");
+        keySize = properties.getInt("keysize");
+        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
+    }
+    
+    public KeyStore call(VellumProperties properties) throws Exception {
+        init(properties);
         String purpose = "new key " + keyAlias;
-        Map<String, char[]> dualMap = new DualControlReader(
-                DualControlSSLContextFactory.createSSLContext(
-                properties)).readDualMap(purpose, submissionCount);
+        Map<String, char[]> dualMap = new DualControlReader(sslContext).
+                readDualMap(purpose, submissionCount);
         char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
