@@ -294,7 +294,6 @@ public class DualControlReader {
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
-            names.add(name);
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
@@ -342,17 +341,22 @@ We accumulate the required number of submissions in a loop.
                 logger.warn("Ignoring remote address "
                         + socket.getInetAddress().getHostAddress());
             } else {
-                String username = new X500Name(socket.getSession().getPeerPrincipal().
+                String name = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
-                if (names.contains(username)) {
-                    logger.warn("Ignore duplicate " + username);
+                names.add(name);
+                if (names.contains(name)) {
+                    logger.warn("Ignore duplicate " + name);
                 } else {
                     DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
-                    String responseMessage = "Received " + username;
-                    map.put(username, password);
+                    String responseMessage = "Received " + name;
+                    map.put(name, password);
+                    if (true) {
+                        responseMessage += " " + new Base32().encodeAsString(
+                                Digests.sha1(Chars.getAsciiBytes(password)));
+                    }
                     dos.writeUTF(responseMessage);
                     logger.info(responseMessage);
                 }
