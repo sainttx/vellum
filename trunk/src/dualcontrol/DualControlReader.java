@@ -31,7 +31,6 @@ public class DualControlReader {
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
-    
     String purpose;
     int submissionCount;
     SSLContext sslContext;
@@ -90,18 +89,18 @@ public class DualControlReader {
                 logger.warn("Ignoring remote address "
                         + socket.getInetAddress().getHostAddress());
             } else {
-                String username = new X500Name(socket.getSession().getPeerPrincipal().
+                String name = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
-                if (names.contains(username)) {
-                    logger.warn("Ignore duplicate " + username);
+                names.add(name);
+                if (names.contains(name)) {
+                    logger.warn("Ignore duplicate " + name);
                 } else {
-                    names.add(username);
                     DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
-                    String responseMessage = "Received " + username;
-                    map.put(username, password);
+                    String responseMessage = "Received " + name;
+                    map.put(name, password);
                     if (true) {
                         responseMessage += " " + new Base32().encodeAsString(
                                 Digests.sha1(Chars.getAsciiBytes(password)));
@@ -118,7 +117,7 @@ public class DualControlReader {
 
     public Set<String> getNames() {
         return names;
-    }        
+    }
 
     public static char[] readChars(DataInputStream dis) throws IOException {
         char[] chars = new char[dis.readShort()];
