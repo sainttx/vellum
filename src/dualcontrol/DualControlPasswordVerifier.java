@@ -10,10 +10,11 @@ package dualcontrol;
  * @author evans
  */
 public class DualControlPasswordVerifier {
-    final static boolean verifyPasswordComplexity = 
-            getBoolean("dualcontrol.verifyPasswordComplexity", false);
-    final static int minPasswordLength = 
-            Integer.getInteger("dualcontrol.minPasswordLength", 18);
+    final static private VellumProperties properties = VellumProperties.systemProperties;
+    final static private boolean verifyPasswordComplexity = 
+            properties.getBoolean("dualcontrol.verifyPasswordComplexity", false);
+    final static private int minPasswordLength = 
+            properties.getInt("dualcontrol.minPasswordLength", 18);
 
     public static void assertValid(char[] password) throws Exception {
         String errorMessage = getInvalidMessage(password);
@@ -83,13 +84,5 @@ public class DualControlPasswordVerifier {
             }
         }
         return false;
-    }   
-    
-    public static boolean getBoolean(String name, boolean defaultValue) {
-        String string = System.getProperty("dualcontrol.verifyPasswordword");
-        if (string == null) {
-            return defaultValue;
-        }
-        return Boolean.parseBoolean(string);
-    }    
+    }       
 }
