@@ -30,7 +30,8 @@ public class DualControlConsole {
         String purpose = dis.readUTF();
         char[] password = System.console().readPassword(
                 "Enter password for " + purpose + ": ");
-        String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
+        String invalidMessage = new DualControlPasswordVerifier(
+                VellumProperties.systemProperties).getInvalidMessage(password);
         if (invalidMessage != null) {
             System.err.println(invalidMessage);
         } else {
