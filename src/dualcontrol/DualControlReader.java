@@ -103,8 +103,8 @@ public class DualControlReader {
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
-                    String responseMessage =
-                            DualControlPasswordVerifier.getInvalidMessage(password);
+                    String responseMessage = new DualControlPasswordVerifier(
+                            VellumProperties.systemProperties).getInvalidMessage(password);
                     if (responseMessage == null) {
                         responseMessage = "Received " + username;
                         map.put(username, password);
