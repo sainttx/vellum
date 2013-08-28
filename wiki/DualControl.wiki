@@ -128,8 +128,8 @@ public class DualControlConsole {
                 String message = dis.readUTF();
                 System.console().writer().println(message);
             }
+            Arrays.fill(password, (char) 0);
         }
-        Arrays.fill(password, (char) 0);
         socket.close();        
     }
     ...
