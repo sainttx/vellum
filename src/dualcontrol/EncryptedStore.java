@@ -35,7 +35,7 @@ public class EncryptedStore {
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
     private int saltLength = 32;
-    private int iterationCount = 99999;
+    private int iterationCount = 999999;
     private int keySize = 256;
     private SecretKey pbeKey;
     byte[] salt;
