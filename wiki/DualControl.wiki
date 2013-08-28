@@ -107,7 +107,8 @@ public class DualControlConsole {
         String purpose = dis.readUTF();
         char[] password = System.console().readPassword(
                 "Enter password for " + purpose + ": ");
-        String invalidMessage = DualControlPasswordVerifier.getInvalidMessage(password);
+        String invalidMessage = new DualControlPasswordVerifier(
+                VellumProperties.systemProperties).getInvalidMessage(password);
         if (invalidMessage != null) {
             System.err.println(invalidMessage);
         } else {
@@ -282,8 +283,8 @@ We accumulate the required number of submissions in a loop.
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
-                    String responseMessage =
-                            DualControlPasswordVerifier.getInvalidMessage(password);
+                    String responseMessage = new DualControlPasswordVerifier(
+                            VellumProperties.systemProperties).getInvalidMessage(password);
                     if (responseMessage == null) {
                         responseMessage = "Received " + username;
                         map.put(username, password);
@@ -309,19 +310,24 @@ We ensure that the default required complexity and/or length of the password is 
 
 {{{
 public class DualControlPasswordVerifier {
-    final static private VellumProperties properties = VellumProperties.systemProperties;
-    final static private boolean verifyPasswordComplexity = 
-            properties.getBoolean("dualcontrol.verifyPasswordComplexity", false);
-    final static private int minPasswordLength = 
-            properties.getInt("dualcontrol.minPasswordLength", 18);
+    final boolean verifyPasswordComplexity;
+    final int minPasswordLength;
 
-    public static String getInvalidMessage(char[] password) throws Exception {
+    public DualControlPasswordVerifier(VellumProperties properties) {
+        verifyPasswordComplexity = properties.getBoolean(
+                "dualcontrol.verifyPasswordComplexity", false);
+        minPasswordLength = properties.getInt(
+                "dualcontrol.minPasswordLength", 18);
+    }
+    
+    public String getInvalidMessage(char[] password) throws Exception {
         if (password.length < minPasswordLength) {
-            return "Passphrase too short";
+            return "Password too short";
         }
         if (verifyPasswordComplexity) {
-            if (!isLetter(password) || !isUpperCase(password) || !isLowerCase(password)
-                    || !isDigit(password) || !isPunctuation(password)) {
+            if (!containsLetter(password) || !containsUpperCase(password) || 
+                    !containsLowerCase(password) || !containsDigit(password) || 
+                    !containsPunctuation(password)) {
                 return "Insufficient password complexity";
             }
         }
@@ -474,3 +480,4 @@ In "Dual Control Key Protection" we address increased protection against brute-f
 In "Dual Control Key Rotation" we work through "key rotation" e.g. migrating from a dated "dek2013" key a to revised "DEK2014" key.
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
+
