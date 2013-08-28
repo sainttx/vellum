@@ -32,19 +32,22 @@ Step 1 for any data security endeavour is to generate an encryption key, which p
 
 {{{
 public class DualControlGenSecKey {
-    private VellumProperties properties = VellumProperties.systemProperties;
-    private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
-    private String keyAlias = properties.getString("alias");
-    private String keyStoreLocation = properties.getString("keystore");
-    private String keyStoreType = properties.getString("storetype");
-    private String keyAlg = properties.getString("keyalg");
-    private int keySize = properties.getInt("keysize");
-    ...    
-    public KeyStore call() throws Exception {
+    ...
+    private void init(VellumProperties properties) throws Exception {
+        submissionCount = properties.getInt("dualcontrol.submissions", 3);
+        keyAlias = properties.getString("alias");
+        keyStoreLocation = properties.getString("keystore");
+        keyStoreType = properties.getString("storetype");
+        keyAlg = properties.getString("keyalg");
+        keySize = properties.getInt("keysize");
+        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
+    }
+    
+    public KeyStore call(VellumProperties properties) throws Exception {
+        init(properties);
         String purpose = "new key " + keyAlias;
-        Map<String, char[]> dualMap = new DualControlReader(
-                DualControlSSLContextFactory.createSSLContext(
-                properties)).readDualMap(purpose, submissionCount);
+        Map<String, char[]> dualMap = new DualControlReader(sslContext).
+                readDualMap(purpose, submissionCount);
         char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
@@ -58,6 +61,7 @@ public class DualControlGenSecKey {
             KeyStore.ProtectionParameter prot = 
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
+            logger.info("alias " + alias);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
         return keyStore;
