@@ -32,25 +32,22 @@ public class DualControlReader {
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     
-    SSLContext sslContext;
     String purpose;
     int submissionCount;
+    SSLContext sslContext;
     Set<String> names = new TreeSet();
 
-    public DualControlReader(SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
-        
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        return new DualControlReader(DualControlSSLContextFactory.createSSLContext(
-                VellumProperties.systemProperties)).
-                readDualMap(purpose, 2).entrySet().iterator().next();
+        return new DualControlReader().readDualMap(purpose, 2,
+                DualControlSSLContextFactory.createSSLContext(VellumProperties.systemProperties)).
+                entrySet().iterator().next();
     }
 
-    public Map<String, char[]> readDualMap(String purpose, int submissionCount) 
-            throws Exception {
+    public Map<String, char[]> readDualMap(String purpose, int submissionCount,
+            SSLContext sslContext) throws Exception {
         this.purpose = purpose;
         this.submissionCount = submissionCount;
+        this.sslContext = sslContext;
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
         Map<String, char[]> map = new TreeMap();
@@ -103,21 +100,14 @@ public class DualControlReader {
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
-                    String responseMessage = new DualControlPasswordVerifier(
-                            VellumProperties.systemProperties).getInvalidMessage(password);
-                    if (responseMessage == null) {
-                        responseMessage = "Received " + username;
-                        map.put(username, password);
-                        logger.info(responseMessage);
-                        if (true) {
-                            responseMessage += " " + new Base32().encodeAsString(
-                                    Digests.sha1(Chars.getAsciiBytes(password)));
-                            responseMessage += " " + new String(password);
-                        }
-                    } else {
-                        logger.warn(responseMessage);
+                    String responseMessage = "Received " + username;
+                    map.put(username, password);
+                    if (true) {
+                        responseMessage += " " + new Base32().encodeAsString(
+                                Digests.sha1(Chars.getAsciiBytes(password)));
                     }
                     dos.writeUTF(responseMessage);
+                    logger.info(responseMessage);
                 }
             }
             socket.close();
