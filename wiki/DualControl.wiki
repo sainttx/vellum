@@ -294,6 +294,7 @@ public class DualControlReader {
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
+            names.add(name);
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
@@ -346,7 +347,6 @@ We accumulate the required number of submissions in a loop.
                 if (names.contains(username)) {
                     logger.warn("Ignore duplicate " + username);
                 } else {
-                    names.add(username);
                     DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
