@@ -275,9 +275,9 @@ So our <tt>!DualControlReader</tt> utility class handles reading split knowledge
 {{{
 public class DualControlReader {
     ...
-    SSLContext sslContext;
     String purpose;
     int submissionCount;
+    SSLContext sslContext;
     Set<String> names = new TreeSet();
 
     public DualControlReader(SSLContext sslContext) {
