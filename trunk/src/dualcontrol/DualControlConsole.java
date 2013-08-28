@@ -2,7 +2,6 @@
  * Apache Software License 2.0, (c) Copyright 2013, Evan Summers
  * 
  */
-
 package dualcontrol;
 
 import java.io.DataInputStream;
@@ -47,11 +46,11 @@ public class DualControlConsole {
                 String message = dis.readUTF();
                 System.console().writer().println(message);
             }
+            Arrays.fill(password, (char) 0);
         }
-        Arrays.fill(password, (char) 0);
-        socket.close();        
+        socket.close();
     }
-    
+
     public static char[] writeChars(DataOutputStream dos, char[] chars) throws IOException {
         dos.writeShort(chars.length);
         for (int i = 0; i < chars.length; i++) {
@@ -59,5 +58,4 @@ public class DualControlConsole {
         }
         return chars;
     }
-    
 }
