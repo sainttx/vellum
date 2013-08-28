@@ -36,7 +36,7 @@ public class DualControlGenSecKey {
         }
     }
 
-    private void init(VellumProperties properties) throws Exception {
+    public KeyStore call(VellumProperties properties) throws Exception {
         submissionCount = properties.getInt("dualcontrol.submissions", 3);
         keyAlias = properties.getString("alias");
         keyStoreLocation = properties.getString("keystore");
@@ -44,10 +44,10 @@ public class DualControlGenSecKey {
         keyAlg = properties.getString("keyalg");
         keySize = properties.getInt("keysize");
         sslContext = DualControlSSLContextFactory.createSSLContext(properties);
+        return call();
     }
     
-    public KeyStore call(VellumProperties properties) throws Exception {
-        init(properties);
+    private KeyStore call() throws Exception {
         String purpose = "new key " + keyAlias;
         Map<String, char[]> dualMap = new DualControlReader(sslContext).
                 readDualMap(purpose, submissionCount);
