@@ -46,8 +46,8 @@ public class DualControlGenSecKey {
     
     private KeyStore call() throws Exception {
         String purpose = "new key " + keyAlias;
-        Map<String, char[]> dualMap = new DualControlReader(sslContext).
-                readDualMap(purpose, submissionCount);
+        Map<String, char[]> dualMap = new DualControlReader().readDualMap(
+                purpose, submissionCount, sslContext);
         char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
@@ -154,6 +154,64 @@ The workaround for above "bugs" in plain management-speak, is that our "controls
 
 On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
 
+<h4>Complexity and length</h4>
+
+We ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
+
+{{{
+public class DualControlPasswordVerifier {
+    final boolean verifyPasswordComplexity;
+    final int minPasswordLength;
+
+    public DualControlPasswordVerifier(VellumProperties properties) {
+        verifyPasswordComplexity = properties.getBoolean(
+                "dualcontrol.verifyPasswordComplexity", false);
+        minPasswordLength = properties.getInt(
+                "dualcontrol.minPasswordLength", 18);
+    }
+    
+    public String getInvalidMessage(char[] password) throws Exception {
+        if (password.length < minPasswordLength) {
+            return "Password too short";
+        }
+        if (verifyPasswordComplexity) {
+            if (!containsLetter(password) || !containsUpperCase(password) || 
+                    !containsLowerCase(password) || !containsDigit(password) || 
+                    !containsPunctuation(password)) {
+                return "Insufficient password complexity";
+            }
+        }
+        return null;
+    }
+    ...
+}
+}}}
+
+We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits.
+
+Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longer passphrases.
+
+<h4>Brutish Key Protector</h4>
+
+Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
+
+We observe that a run-of-the-mill Intel i5 can manage about 30 guesses per millisecond on a JCE keystore, using 4 threads to utilise its quad-cores.
+
+{{{
+evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
+  $seckeystore $pass dek2013-evanx-henty eeeehhhh
+
+threads 4, count 1000000, time 128s, avg 0.032ms
+31 guesses per millisecond
+}}}
+
+A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
+
+Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
+
+Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
+
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
 Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and friends.
@@ -217,13 +275,20 @@ So our <tt>!DualControlReader</tt> utility class handles reading split knowledge
 {{{
 public class DualControlReader {
     ...
+    SSLContext sslContext;
     String purpose;
     int submissionCount;
+    Set<String> names = new TreeSet();
 
-    public Map<String, char[]> readDualMap(String purpose, int submissionCount) 
-            throws Exception {
+    public DualControlReader(SSLContext sslContext) {
+        this.sslContext = sslContext;
+    }
+
+    public Map<String, char[]> readDualMap(String purpose, int submissionCount,
+            SSLContext sslContext) throws Exception {
         this.purpose = purpose;
         this.submissionCount = submissionCount;
+        this.sslContext = sslContext;
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
         Map<String, char[]> map = new TreeMap();
@@ -286,16 +351,10 @@ We accumulate the required number of submissions in a loop.
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
-                    String responseMessage = new DualControlPasswordVerifier(
-                            VellumProperties.systemProperties).getInvalidMessage(password);
-                    if (responseMessage == null) {
-                        responseMessage = "Received " + username;
-                        map.put(username, password);
-                        logger.info(responseMessage);
-                    } else {
-                        logger.warn(responseMessage);
-                    }
+                    String responseMessage = "Received " + username;
+                    map.put(username, password);
                     dos.writeUTF(responseMessage);
+                    logger.info(responseMessage);
                 }
             }
             socket.close();
@@ -306,64 +365,6 @@ We accumulate the required number of submissions in a loop.
 }}}
 
 where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
-
-<h4>Complexity and length</h4>
-
-We ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
-
-{{{
-public class DualControlPasswordVerifier {
-    final boolean verifyPasswordComplexity;
-    final int minPasswordLength;
-
-    public DualControlPasswordVerifier(VellumProperties properties) {
-        verifyPasswordComplexity = properties.getBoolean(
-                "dualcontrol.verifyPasswordComplexity", false);
-        minPasswordLength = properties.getInt(
-                "dualcontrol.minPasswordLength", 18);
-    }
-    
-    public String getInvalidMessage(char[] password) throws Exception {
-        if (password.length < minPasswordLength) {
-            return "Password too short";
-        }
-        if (verifyPasswordComplexity) {
-            if (!containsLetter(password) || !containsUpperCase(password) || 
-                    !containsLowerCase(password) || !containsDigit(password) || 
-                    !containsPunctuation(password)) {
-                return "Insufficient password complexity";
-            }
-        }
-        return null;
-    }
-    ...
-}
-}}}
-
-We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits.
-
-Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longer passphrases.
-
-<h4>Brutish Key Protector</h4>
-
-Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
-
-We observe that a run-of-the-mill Intel i5 can manage about 30 guesses per millisecond on a JCE keystore, using 4 threads to utilise its quad-cores.
-
-{{{
-evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
-  $seckeystore $pass dek2013-evanx-henty eeeehhhh
-
-threads 4, count 1000000, time 128s, avg 0.032ms
-31 guesses per millisecond
-}}}
-
-A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
-
-Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
-
-Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
 <h4><tt>!DualControlDemoApp</tt></h4>
 
