@@ -53,6 +53,14 @@ public class VellumProperties {
         return Integer.parseInt(propertyString);
     }
     
+    public boolean getBoolean(String propertyName, boolean defaultValue) {
+        String string = properties.getProperty(propertyName);
+        if (string == null) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(string);
+    }    
+    
     public char[] getPassword(String propertyName, char[] defaultValue) {
         String passwordString = getString(propertyName);
         if (passwordString == null) {

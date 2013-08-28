@@ -18,7 +18,6 @@ import vellum.util.Args;
  * @author evans
  */
 public class DualControlGenSecKey {
-
     final static Logger logger = Logger.getLogger(DualControlGenSecKey.class);
     private VellumProperties properties = VellumProperties.systemProperties;
     private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
@@ -27,43 +26,37 @@ public class DualControlGenSecKey {
     private String keyStoreType = properties.getString("storetype");
     private String keyAlg = properties.getString("keyalg");
     private int keySize = properties.getInt("keysize");
-    private char[] keyStorePassword;
-    private Map<String, char[]> dualMap;
-    private KeyStore keyStore;
-    private SecretKey secretKey;
-
+    
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         try {
-            new DualControlGenSecKey().start();
+            new DualControlGenSecKey().call();
         } catch (DualControlException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public void start() throws Exception {
+    public KeyStore call() throws Exception {
         String purpose = "new key " + keyAlias;
-        dualMap = new DualControlReader(DualControlSSLContextFactory.createSSLContext(
+        Map<String, char[]> dualMap = new DualControlReader(
+                DualControlSSLContextFactory.createSSLContext(
                 properties)).readDualMap(purpose, submissionCount);
-        keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
+        char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
-        secretKey = keyGenerator.generateKey();
-        keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
+        SecretKey secretKey = keyGenerator.generateKey();
+        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
-            if (true) {
-                logger.info(Args.format(
-                        new String(keyStorePassword), dualAlias, alias, 
-                        dualPassword.length, new String(dualPassword)));
-            }
             KeyStore.ProtectionParameter prot = 
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
+            logger.info("alias " + alias);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        return keyStore;
     }
 }

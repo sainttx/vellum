@@ -61,8 +61,8 @@ public class DualControlReader {
                     String dualAlias = String.format("%s-%s", name, otherName);
                     char[] dualPassword = combineDualPassword(
                             submissions.get(name), submissions.get(otherName));
-                    logger.info("readDualMap dualAlias: " + dualAlias);
                     map.put(dualAlias, dualPassword);
+                    logger.info("readDualMap dualAlias: " + dualAlias);
                 }
             }
         }
