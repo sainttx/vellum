@@ -62,12 +62,10 @@ public class VellumProperties {
     }    
     
     public char[] getPassword(String propertyName, char[] defaultValue) {
-        String passwordString = getString(propertyName);
+        String passwordString = properties.getProperty(propertyName);
         if (passwordString == null) {
             return defaultValue;
         }
         return passwordString.toCharArray();
     }
-
-    
 }
