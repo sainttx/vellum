@@ -212,7 +212,7 @@ Since our admins already have their half of the "dual password," each admin's pa
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and friends.
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and associates.
 
 {{{
 public class DualControlSSLContextFactory {    
