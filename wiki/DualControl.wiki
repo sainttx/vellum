@@ -370,7 +370,7 @@ where the admin's username is determined from their SSL cert, in particular the 
 
 <h4><tt>!DualControlDemoApp</tt></h4>
 
-On the downside, we have to re-engineer our application to be dual-controlled, to load the key it so desperately needs to cipher our data.
+On the downside, we have to re-engineer our application to be dual-controlled, in order to load the key it so desperately needs to cipher our data.
 
 {{{
 public class DualControlDemoApp {
