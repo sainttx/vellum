@@ -132,7 +132,7 @@ public class DualControlConsole {
     ...
 }
 }}}
-where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the intended alias for the password e.g. "dek2013," submit our password, and finally display a response message e.g. hopefully "OK."
+where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified via our SSL client cert. We are prompted to enter the required password e.g. to protect a new key aliased as "dek2013." This password is submitted via the SSL connection, and finally a response message is printed.
 
 {{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
