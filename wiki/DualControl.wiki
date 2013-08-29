@@ -251,7 +251,7 @@ As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and 
 
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA or DSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
-So we use the <tt>SSLContext</tt> created above for opening a <tt>SSLSocket</tt> in <tt>!DualControlConsole</tt>, and also for creating an <tt>SSLServerSocket</tt> in <tt>!DualControlReader</tt> as illustrated below.
+The <tt>SSLContext</tt> created above is used for opening an <tt>SSLSocket</tt> in <tt>!DualControlConsole</tt>, and also for creating an <tt>SSLServerSocket</tt> in <tt>!DualControlReader</tt> as illustrated below.
 
 <h4><tt>!DualControlReader</tt></h4>
 
