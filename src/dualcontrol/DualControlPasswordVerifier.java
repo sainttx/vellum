@@ -5,6 +5,8 @@
 
 package dualcontrol;
 
+import vellum.util.VellumProperties;
+
 /**
  *
  * @author evans

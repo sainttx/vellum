@@ -5,6 +5,7 @@
 
 package dualcontrol;
 
+import vellum.util.VellumProperties;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
