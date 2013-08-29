@@ -222,8 +222,7 @@ public class DualControlSSLContextFactory {
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", 
-                null);
+        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
