@@ -78,7 +78,7 @@ So let's test <tt>!DualControlGenSecKey</tt>.
      dualcontrol.DualControlGenSecKey
 }}}
 
-where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
+where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is alias desired to reference this key.  
 
 For example, three admins submit their passwords via SSL socket where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
