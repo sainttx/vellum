@@ -137,7 +137,7 @@ where we open an SSL socket to our supposed dual-controlled app listening on por
 {{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter password for dual control SSL connection:
-Enter password for key dek2013: 
+Enter password for new key dek2013: 
 Re-enter password: 
 OK evanx
 }}}
