@@ -5,6 +5,7 @@
 
 package dualcontrol;
 
+import vellum.util.VellumProperties;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;

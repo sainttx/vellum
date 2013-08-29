@@ -5,6 +5,7 @@
 
 package dualcontrol;
 
+import vellum.util.VellumProperties;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;

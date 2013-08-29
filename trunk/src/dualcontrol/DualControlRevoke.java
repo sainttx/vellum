@@ -4,6 +4,7 @@
  */
 package dualcontrol;
 
+import vellum.util.VellumProperties;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.util.Arrays;

@@ -4,6 +4,7 @@
  */
 package dualcontrol;
 
+import vellum.util.VellumProperties;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
