@@ -307,7 +307,7 @@ public class DualControlReader {
     ...
 }}}
 
-The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt> which is just silly.
+The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
 
 We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
 
