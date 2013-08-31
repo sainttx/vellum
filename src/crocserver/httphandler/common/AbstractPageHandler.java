@@ -1,5 +1,5 @@
 /*
- * Vellum by Evan Summers under Apache Software License 2.0 from ASF. 2011, iPay (Pty) Ltd
+ * Contributed (2013) by Evan Summers via https://code.google.com/p/vellum 2011, iPay (Pty) Ltd
  */
 package crocserver.httphandler.common;
 

@@ -1,7 +1,7 @@
 /*
  * Apache Software License 2.0
  * Supported by iPay (Pty) Ltd, BizSwitch.net
- * Vellum by Evan Summers under Apache Software License 2.0 from ASF.
+ * Contributed (2013) by Evan Summers via https://code.google.com/p/vellum
  */
 
 package vellum.printer;
