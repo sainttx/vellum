@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.security;
@@ -9,7 +9,7 @@ import java.security.cert.X509Certificate;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class X509Pair {
     PrivateKey privateKey;

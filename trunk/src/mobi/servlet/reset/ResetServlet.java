@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mobi.servlet.reset;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 @WebServlet(name = "ResetHandler", urlPatterns = {"/reset"})
 public class ResetServlet extends HttpServlet {

@@ -4,7 +4,7 @@ package bizstat.entity;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public interface Storage {
     public <E> E get(Class<E> entityType, Comparable id);

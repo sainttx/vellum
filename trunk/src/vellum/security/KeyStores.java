@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.security;
@@ -20,7 +20,7 @@ import vellum.logr.LogrFactory;
  *
  * snippets from OpenJDK7 KeyTool etc.
  *
- * @author evan
+ * @author evan.summers
  */
 public class KeyStores {
 

@@ -3,7 +3,7 @@ package jx;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class Convertors {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.app;
@@ -15,7 +15,7 @@ import vellum.parameter.StringMap;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class JsonStrings {
     static Logr logger = LogrFactory.getLogger(JsonStrings.class);

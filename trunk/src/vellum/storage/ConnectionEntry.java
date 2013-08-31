@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.storage;
@@ -11,7 +11,7 @@ import java.sql.Statement;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class ConnectionEntry {
     Connection connection;

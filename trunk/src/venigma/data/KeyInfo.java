@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package venigma.data;
@@ -20,7 +20,7 @@ import venigma.server.storage.VStorageExceptionType;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class KeyInfo extends AbstractIdEntity {
     String keyAlias;

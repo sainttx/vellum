@@ -6,7 +6,7 @@ package vellumexp.servlet;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public interface HttpHandler {
  

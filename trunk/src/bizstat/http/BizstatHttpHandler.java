@@ -11,7 +11,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class BizstatHttpHandler implements HttpHandler {
     

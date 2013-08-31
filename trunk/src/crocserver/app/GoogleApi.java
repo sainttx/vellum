@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.app;
@@ -18,7 +18,7 @@ import vellum.util.Strings;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class GoogleApi {
 

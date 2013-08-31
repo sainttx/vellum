@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.jdbc.interceptor;
@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class VConnection implements Connection {
     Connection delegate;

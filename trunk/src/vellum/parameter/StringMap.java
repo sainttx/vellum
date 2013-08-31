@@ -13,7 +13,7 @@ import vellum.exception.EnumRuntimeException;
 
 /**
  *
- * @author evanx
+ * @author evan.summers
  */
 public class StringMap extends HashMap<String, String> {
     List<Entry<String, String>> entryList = new ArrayList();

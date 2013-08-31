@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package bizstat.server;
@@ -14,7 +14,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class BizstatGtalkConnection implements MessageListener {
     Logr logger = LogrFactory.getLogger(BizstatGtalkConnection.class);

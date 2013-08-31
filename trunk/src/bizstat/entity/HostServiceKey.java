@@ -6,7 +6,7 @@ import vellum.type.ComparableTuple;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class HostServiceKey extends ComparableTuple {
     Host host;

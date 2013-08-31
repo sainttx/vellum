@@ -1,6 +1,6 @@
 
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mobi.context;
@@ -12,7 +12,7 @@ import mobi.session.Servlets;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MobiContextListener implements ServletContextListener {
 

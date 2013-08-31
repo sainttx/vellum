@@ -15,7 +15,7 @@ import vellum.hype.java.JavaTokenizer;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class HypeReader {
 

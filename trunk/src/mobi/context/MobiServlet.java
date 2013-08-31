@@ -16,7 +16,7 @@ import mobi.fb.Page;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MobiServlet extends HttpServlet {
 

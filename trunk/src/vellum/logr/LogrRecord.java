@@ -1,6 +1,6 @@
 /*
  * Apache Software License 2.0
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  */
 package vellum.logr;
 
@@ -8,7 +8,7 @@ import vellum.datatype.Timestamped;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class LogrRecord implements Timestamped {
     LogrLevel level;

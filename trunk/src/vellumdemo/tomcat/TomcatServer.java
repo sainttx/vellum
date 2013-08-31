@@ -20,7 +20,7 @@ import vellumexp.servlet.HandlerServlet;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class TomcatServer {
 

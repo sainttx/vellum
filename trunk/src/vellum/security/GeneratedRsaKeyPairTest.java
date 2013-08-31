@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.security;
@@ -10,7 +10,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class GeneratedRsaKeyPairTest {
     Logr logger = LogrFactory.getLogger(getClass());    

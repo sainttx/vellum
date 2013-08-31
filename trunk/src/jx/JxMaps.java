@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class JxMaps {
     

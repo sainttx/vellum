@@ -15,7 +15,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class VellumHttpServer implements Startable {
     private Logr logger = LogrFactory.getLogger(VellumHttpServer.class);

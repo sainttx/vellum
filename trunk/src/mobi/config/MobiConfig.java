@@ -4,7 +4,7 @@ package mobi.config;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MobiConfig {
 

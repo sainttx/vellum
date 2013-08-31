@@ -10,7 +10,7 @@ import vellum.httpserver.VellumHttpServer;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class BizstatHttpServer extends VellumHttpServer {
     Logr logger = LogrFactory.getLogger(BizstatHttpServer.class);

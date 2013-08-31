@@ -18,7 +18,7 @@ import mobi.servlets.MobiServlet;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MobiTest {
  

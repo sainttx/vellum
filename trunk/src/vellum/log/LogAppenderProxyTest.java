@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2011, iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers 2011, iPay (Pty) Ltd
  */
 package vellum.log;
 
@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class LogAppenderProxyTest {
 

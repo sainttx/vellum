@@ -17,7 +17,7 @@ import java.net.URISyntaxException;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public interface HttpExchange {
     

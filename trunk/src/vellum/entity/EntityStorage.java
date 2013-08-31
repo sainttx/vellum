@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.entity;
@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public interface EntityStorage<I, E> {
     public I insert(E entity) throws SQLException;

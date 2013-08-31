@@ -6,7 +6,7 @@ import vellum.exception.DisplayMessage;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public enum SaltServerError implements DisplayMessage {
     INVALID_ARGS;

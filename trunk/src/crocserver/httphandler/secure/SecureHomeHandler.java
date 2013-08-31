@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  */
 package crocserver.httphandler.secure;
 
@@ -25,7 +25,7 @@ import vellum.logr.LogrLevel;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class SecureHomeHandler extends AbstractPageHandler {
 

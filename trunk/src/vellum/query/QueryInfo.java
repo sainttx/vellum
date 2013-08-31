@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * Apache Software License 2.0
  * Supported by iPay (Pty) Ltd, BizSwitch.net
  */
@@ -14,7 +14,7 @@ import javax.sql.RowSet;
 
 /**
  *
- * @author evanx
+ * @author evan.summers
  */
 public class QueryInfo {
 

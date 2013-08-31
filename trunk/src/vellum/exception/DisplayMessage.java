@@ -1,12 +1,12 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.exception;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public interface DisplayMessage {
  

@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellumdemo.totp;
@@ -12,7 +12,7 @@ import vellum.logr.LogrFactory;
 /**
  *
  *
- * @author evan
+ * @author evan.summers
  */
 public class GenerateTotpSecret {
     static Logr logger = LogrFactory.getLogger(GenerateTotpSecret.class);

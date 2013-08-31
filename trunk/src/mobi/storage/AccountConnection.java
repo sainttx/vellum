@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mobi.storage;
@@ -12,7 +12,7 @@ import mobi.entity.Account;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class AccountConnection {
     static QueryMap sqlMap = new QueryMap(AccountConnection.class);

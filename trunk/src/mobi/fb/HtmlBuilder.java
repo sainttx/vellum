@@ -4,7 +4,7 @@ package mobi.fb;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class HtmlBuilder {
     StringBuilder builder = new StringBuilder();

@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mantra.app;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MantraPasswordManager {
     private Map<String, char[]> passwordMap = new HashMap();

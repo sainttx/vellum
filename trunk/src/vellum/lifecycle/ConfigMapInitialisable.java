@@ -6,7 +6,7 @@ import vellum.config.ConfigMap;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public interface ConfigMapInitialisable {
     public void init(ConfigMap configMap) throws Exception;

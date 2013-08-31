@@ -289,6 +289,10 @@ command1_testconsole() {
   javaksc $1 dualcontrol.DualControlConsole
 }
 
+command0_testsimplesocketreader() {
+  javaks server dualcontrol.SimpleSocketReader
+}
+
 command1_testlong() {
   command0_testgenseckey
   command0_testkeystoreserver

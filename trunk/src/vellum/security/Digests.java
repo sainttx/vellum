@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class Digests {
 

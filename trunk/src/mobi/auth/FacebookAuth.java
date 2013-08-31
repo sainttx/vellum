@@ -6,7 +6,7 @@ import mobi.config.MobiConfig;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class FacebookAuth {
     private static final String fbAppId = MobiConfig.getProperty("fbAppId");

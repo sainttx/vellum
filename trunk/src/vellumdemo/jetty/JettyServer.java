@@ -6,7 +6,7 @@ package vellumdemo.jetty;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class JettyServer {
 

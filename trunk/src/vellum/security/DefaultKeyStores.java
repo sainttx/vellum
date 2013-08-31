@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.security;
@@ -12,7 +12,7 @@ import javax.net.ssl.*;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class DefaultKeyStores {
     static final String keyStoreLocation = System.getProperty("javax.net.ssl.keyStore");

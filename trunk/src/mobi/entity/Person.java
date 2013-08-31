@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mobi.entity;
@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class Person {
 

@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.query;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class QueryMap extends HashMap<String, String> {
 

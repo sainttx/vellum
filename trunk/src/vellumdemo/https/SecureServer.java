@@ -19,7 +19,7 @@ import vellumdemo.servlet.EchoHandler;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class SecureServer {
 

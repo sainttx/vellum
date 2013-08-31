@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mantra.app;
@@ -8,7 +8,7 @@ import vellum.storage.SimpleConnectionPool;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MantraStorage {
 

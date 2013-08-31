@@ -4,7 +4,7 @@ package vellum.lifecycle;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public interface Initialisable {
     public void init() throws Exception;
