@@ -464,7 +464,7 @@ where we read the dual info using the aforementioned <tt>!DualControlReader</tt>
 
 We might wish to create a central crypto server which is dual-controlled, rather than burden our app. In this case, we can restart our application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
 
-We'll implement the crypto server in a follow-up article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
+We'll implement the crypto server in a subsequent article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
 
 <h4>Conclusion</h4>
 
