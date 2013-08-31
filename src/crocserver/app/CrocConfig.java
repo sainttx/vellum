@@ -1,5 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation by Evan Summers, for ASL 2.0.
+ * Vellum by Evan Summers under Apache Software License 2.0 from ASF.
  * 
  * -Djavax.net.ssl.keyStore=security/croc.jks
  * -Djavax.net.ssl.keyStorePassword=crocserver

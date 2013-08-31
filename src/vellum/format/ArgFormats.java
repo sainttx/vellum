@@ -1,5 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation by Evan Summers, for ASL 2.0.
+ * Vellum by Evan Summers under Apache Software License 2.0 from ASF.
  * 
  */
 package vellum.format;
@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import vellum.util.Calendars;
 import vellum.util.Strings;
 import vellum.util.Types;
 
