@@ -395,7 +395,7 @@ public class DualControlDemoApp {
 }
 }}}
 
-The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
+The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
 
 {{{
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
