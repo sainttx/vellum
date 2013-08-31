@@ -212,7 +212,9 @@ A follow-up article will discuss this further, and conclude that we might want a
 Otherwise if we improbably assume that in the future someone can try a average of 1000 guesses per millisecond on a JCE keystore on a botnet of a 50M machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try a quarter possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
 
 {{{
-$ guess=1000; mach=50; echo "20^18/(365*24*3600*1000*$guess*$mach*1000*1000)/4" | bc
+guess=1000
+mach=50
+20^18/(365*24*3600*1000*$guess*$mach*1000*1000)/4
 41
 }}}
 
