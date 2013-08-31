@@ -482,7 +482,7 @@ We introduce <tt>!DualControlGenSecKey</tt> to generate a <i>really</i> secret k
 
 We demonstrate how our app can be dual-controlled to load a key at startup, by accepting two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
 
-To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>.
+To complete the picture, we provide a <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>.
 
 <h4>See also</h4>
 
