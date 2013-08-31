@@ -222,7 +222,7 @@ mach=50
 
 Since our admins already have their half of the "dual password," each admin's passphrase should be at least 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
-Incidently, if we assume some combination of the 2000 most common words is used for a passphrase, then we require 7 words i.e. <tt>2000^7</tt> possibilites, which is longer than 18 characters...
+Incidently, if we assume some combination of the 2000 most common words is used for a passphrase, then we require 7 words (<tt>2000^7</tt> possibilites), so actually 18 characters is not enough. <i>D'oh!</i>
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
