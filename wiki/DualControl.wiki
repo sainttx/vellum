@@ -163,17 +163,23 @@ We ensure that the default required complexity and/or length of the password is 
 public class DualControlPasswordVerifier {
     final boolean verifyPasswordComplexity;
     final int minPasswordLength;
+    final int minWordCount;
 
     public DualControlPasswordVerifier(VellumProperties properties) {
         verifyPasswordComplexity = properties.getBoolean(
                 "dualcontrol.verifyPasswordComplexity", false);
         minPasswordLength = properties.getInt(
                 "dualcontrol.minPasswordLength", 18);
+        minWordCount = properties.getInt(
+                "dualcontrol.minWordCount", 7);
     }
     
     public String getInvalidMessage(char[] password) throws Exception {
         if (password.length < minPasswordLength) {
             return "Password too short";
+        }
+        if (countWords(password) < minWordCount) {
+            return "Too few words in passphrase";
         }
         if (verifyPasswordComplexity) {
             if (!containsLetter(password) || !containsUpperCase(password) || 
