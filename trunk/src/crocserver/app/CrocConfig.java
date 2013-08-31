@@ -1,5 +1,5 @@
 /*
- * https://code.google.com/p/vellum - Contributed (2013) by Evan Summers to ASF
+ *    https://code.google.com/p/vellum - Contributed by Evan Summers
  * 
  * -Djavax.net.ssl.keyStore=security/croc.jks
  * -Djavax.net.ssl.keyStorePassword=crocserver
