@@ -155,7 +155,7 @@ The workaround for such "bugs" in plain management-speak is that our "controls" 
 
 On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
 
-<h4>Complexity and length</h4>
+<h4>Password complexity vs length</h4>
 
 We ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
 
@@ -206,8 +206,9 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
 
-A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
+
+A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 
 Otherwise if we improbably assume that in the future someone can try a average of 1000 guesses per millisecond on a JCE keystore on a botnet of a 50M machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try a quarter of all possible passwords, by which time hopefully the data is no longer of any value to anyone.
 
@@ -360,6 +361,11 @@ We accumulate the required number of submissions in a loop.
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
                     String responseMessage = "Received " + name;
+                    String invalidMessage = new DualControlPasswordVerifier(
+                            VellumProperties.systemProperties).getInvalidMessage(password);
+                    if (invalidMessage != null) {
+                        throw new Exception(responseMessage + ": " + invalidMessage);
+                    }
                     map.put(name, password);
                     if (true) {
                         responseMessage += " " + new Base32().encodeAsString(
