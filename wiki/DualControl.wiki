@@ -218,7 +218,7 @@ $ echo "20^18/(365*24*3600*1000*$guess*$mach*1000*1000)/4" | bc
 41
 }}}
 
-Since our admins already have their half of the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
+Since our admins already have their half of the "dual password," each admin's passphrase should be at least 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
