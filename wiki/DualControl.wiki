@@ -469,7 +469,7 @@ Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce
 
 We demonstrate how our app can be dual-controlled to load a key at startup, having accepted two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
 
-To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>. We can setup "double-two-factor" remote authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding (for the prerequisite <tt>localhost</tt> access), in addition to the password-protected <tt>!KeyStore</tt> for the client SSL connection.
+To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>.
 
 We suggest a minimum passphrase length of 18 characters for each admin's half of the split password,
 via a somewhat arbitrary and probably overly-conservative calculation, which will be discussed in the "Dual Control Key Protection" sequel.
