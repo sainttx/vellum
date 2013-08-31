@@ -1,5 +1,5 @@
 /*
- * Vellum by Evan Summers under Apache Software License 2.0 from ASF.
+ * Contributed (2013) by Evan Summers via https://code.google.com/p/vellum
  * 
  * -Djavax.net.ssl.keyStore=security/croc.jks
  * -Djavax.net.ssl.keyStorePassword=crocserver
