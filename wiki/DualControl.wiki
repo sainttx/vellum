@@ -149,7 +149,7 @@ where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore pas
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure by exploiting <i>root</i> access to SSL keystores. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
+A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
 
 The workaround for such "bugs" in plain management-speak is that our "controls" as documented in in our "policies and procedures" detect such attacks and dictate the immediate inauguration of appropriate remediation measures. 
 
