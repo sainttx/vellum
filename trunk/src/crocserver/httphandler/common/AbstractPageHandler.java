@@ -1,5 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) by Evan Summers 2011, iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation by Evan Summers, for ASL 2.0. 2011, iPay (Pty) Ltd
  */
 package crocserver.httphandler.common;
 

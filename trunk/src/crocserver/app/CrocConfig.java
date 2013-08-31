@@ -1,5 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) by Evan Summers
+ * Licensed to the Apache Software Foundation by Evan Summers, for ASL 2.0.
  * 
  * -Djavax.net.ssl.keyStore=security/croc.jks
  * -Djavax.net.ssl.keyStorePassword=crocserver
