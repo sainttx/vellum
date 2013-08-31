@@ -512,4 +512,4 @@ In "Dual Control Key Rotation" we'll address periodic key revision e.g. migratin
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
 
-<tt>{<a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a>; <a href="https://plus.google.com/107220652063555542868">+evan.summers</a>; <a href="https://www.java.net/blogs/evanx">java.net/evanx</a>; <a href="http://www.linkedin.com/in/evanx">linkedin/evanx</a>}</tt>
+<tt><a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a>, <a href="https://plus.google.com/107220652063555542868">+evan.summers</a>, <a href="https://www.java.net/blogs/evanx">java.net/evanx</a>, <a href="http://www.linkedin.com/in/evanx">linkedin/evanx</a></tt>
