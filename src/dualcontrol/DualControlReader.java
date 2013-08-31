@@ -1,5 +1,5 @@
 /*
-       Contributed (2013) by Evan Summers via https://code.google.com/p/vellum
+       https://code.google.com/p/vellum - Contributed (2013) by Evan Summers to ASF
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -117,6 +117,11 @@ public class DualControlReader {
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
                     String responseMessage = "Received " + name;
+                    String invalidMessage = new DualControlPasswordVerifier(
+                            VellumProperties.systemProperties).getInvalidMessage(password);
+                    if (invalidMessage != null) {
+                        throw new Exception(responseMessage + ": " + invalidMessage);
+                    }
                     map.put(name, password);
                     if (true) {
                         responseMessage += " " + new Base32().encodeAsString(

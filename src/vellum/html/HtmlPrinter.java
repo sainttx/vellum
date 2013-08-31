@@ -1,5 +1,5 @@
 /*
- * Contributed (2013) by Evan Summers via https://code.google.com/p/vellum 2011, iPay (Pty) Ltd
+ * https://code.google.com/p/vellum - Contributed (2013) by Evan Summers to ASF 2011, iPay (Pty) Ltd
  */
 package vellum.html;
 

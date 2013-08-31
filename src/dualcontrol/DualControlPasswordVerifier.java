@@ -1,5 +1,5 @@
 /*
-       Contributed (2013) by Evan Summers via https://code.google.com/p/vellum
+       https://code.google.com/p/vellum - Contributed (2013) by Evan Summers to ASF
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -29,17 +29,23 @@ import vellum.util.VellumProperties;
 public class DualControlPasswordVerifier {
     final boolean verifyPasswordComplexity;
     final int minPasswordLength;
+    final int minWordCount;
 
     public DualControlPasswordVerifier(VellumProperties properties) {
         verifyPasswordComplexity = properties.getBoolean(
                 "dualcontrol.verifyPasswordComplexity", false);
         minPasswordLength = properties.getInt(
                 "dualcontrol.minPasswordLength", 18);
+        minWordCount = properties.getInt(
+                "dualcontrol.minWordCount", 7);
     }
     
     public String getInvalidMessage(char[] password) throws Exception {
         if (password.length < minPasswordLength) {
             return "Password too short";
+        }
+        if (countWords(password) < minWordCount) {
+            return "Too few words in passphrase";
         }
         if (verifyPasswordComplexity) {
             if (!containsLetter(password) || !containsUpperCase(password) || 
@@ -58,6 +64,14 @@ public class DualControlPasswordVerifier {
         }
     }
 
+    public int countWords(char[] password) {
+        int count = 0;
+        for (char ch: password) {
+            if (ch == ' ') count++;
+        }
+        return count;
+    }
+    
     public boolean isValid(char[] password) throws Exception {
         return getInvalidMessage(password) == null;
     }
