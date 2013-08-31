@@ -6,9 +6,9 @@ We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="htt
 
 <h4>Introduction</h4>
 
-Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock our doors but leave the key in the lock. <i>Or under the mat, but that's my personal favourite so ssh-ssh.</i>
+Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock the door but leave the key in the lock. <i>Or under the mat, but that's my personal favourite so ssh-ssh.</i>
 
-The Payment Card Industry (PCI) has their "Data Security Standard" called <a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>, which advocates common-sense policies for building a secure network and protecting your data. Actually every industry should adopt PCI DSS because it's the only and best thing we got :)
+The Payment Card Industry (PCI) has their "Data Security Standard" called <a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>, which advocates common-sense policies for building a secure network and protecting your data. Actually every industry should adopt PCI DSS because it's the only and best such thing we got :)
 
 The PCI DSS mandates that PAN's aka <i>Primary Account Numbers</i> aka credit card numbers, must be "rendered unreadable" e.g. encrypted. It goes without saying that other industries also have sensitive data that people might want to steal, governments even ;)
 
