@@ -75,7 +75,7 @@ where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their sec
 So let's test <tt>!DualControlGenSecKey</tt>.
 
 {{{
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=18 \
+  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=17 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
@@ -149,7 +149,7 @@ where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore pas
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
+A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure, by <i>root</i>. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
 
 The workaround for such "bugs" in plain management-speak is that our "controls" as documented in in our "policies and procedures" detect such attacks and dictate the immediate inauguration of appropriate remediation measures. 
 
@@ -168,7 +168,7 @@ public class DualControlPasswordVerifier {
         verifyPasswordComplexity = properties.getBoolean(
                 "dualcontrol.verifyPasswordComplexity", false);
         minPasswordLength = properties.getInt(
-                "dualcontrol.minPasswordLength", 18);
+                "dualcontrol.minPasswordLength", 17);
     }
     
     public String getInvalidMessage(char[] password) throws Exception {
@@ -209,9 +209,9 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
-Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
+Otherwise if we improbably assume that someone can try a average of 100 guesses per millisecond on a JCE keystore on a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 17, for which more than our threshold of 30 years is required to try all possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
 
-Since our admins already have their half of the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
+Since our admins already have their half of the "dual password," each admin's passphrase should be 17 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
