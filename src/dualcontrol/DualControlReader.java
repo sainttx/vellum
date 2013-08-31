@@ -103,14 +103,14 @@ public class DualControlReader {
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                logger.warn("Ignoring remote address "
+                throw new Exception("Invalid remote address "
                         + socket.getInetAddress().getHostAddress());
             } else {
                 String name = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
                 names.add(name);
                 if (names.contains(name)) {
-                    logger.warn("Ignore duplicate " + name);
+                    throw new Exception("Duplicate submission from " + name);
                 } else {
                     DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                     dos.writeUTF(purpose);
