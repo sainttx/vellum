@@ -264,7 +264,7 @@ The <tt>SSLContext</tt> created above is used for opening an <tt>SSLSocket</tt> 
 
 <h4><tt>!DualControlReader</tt></h4>
 
-For example, we observe the following logs when testing <tt>!DualControlGenSecKey</tt>.
+We observe the following logs when testing <tt>!DualControlGenSecKey</tt>.
 {{{
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
