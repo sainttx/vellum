@@ -474,13 +474,13 @@ PCI requires that "split knowledge and dual control" be used to protect encrypti
 
 We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected by a different "dual password" jointly provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load a copy of the key when we restart our app :)
+In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected by a different "dual password" jointly provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load a copy of the key when we restart our app.
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce <tt>!DualControlGenSecKey</tt> to generate a secret key in a JCE keystore.
+We introduce <tt>!DualControlGenSecKey</tt> to generate a <i>really</i> secret key in a JCE keystore.
 
-We demonstrate how our app can be dual-controlled to load a key at startup, having accepted two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
+We demonstrate how our app can be dual-controlled to load a key at startup, by accepting two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>.
 
