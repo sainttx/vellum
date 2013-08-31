@@ -15,20 +15,22 @@ See the source article at <a href="https://code.google.com/p/vellum/wiki/DualCon
 We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="http://code.google.com/p/vellum">Enigma Posts</a>.
 
 <h4>PCI DSS</h4>
+The Payment Card Industry (PCI) has their "Data Security Standard" called <a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>, which advocates common-sense policies for building a secure network and protecting your data. Actually every industry should adopt PCI DSS because it's the only and best such thing we got :)
 
-The Payment Card Industry (PCI) has their "Data Security Standard" called <a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>, which advocates common-sense policies for building a secure network and protecting your data. Actually every industry should adopt PCI DSS because it's the only and best thing we got :)
-
-The PCI DSS mandates that PAN's aka <i>Primary Account Numbers</i> aka credit card numbers, must be "rendered unreadable" e.g. encrypted. It goes without saying that other industries also have sensitive data that people might want to steal, governments even ;)
+The PCI DSS mandates that credit card numbers (aka <i>Primary Account Numbers</i>, or PANs) must be "rendered unreadable" e.g. encrypted. It goes without saying that other industries also have sensitive data that people might want to steal, governments even ;)
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-PCI DSS suggests encrypting the key used to encrypt our data. Darn, we try to secure the data-encryption key (DEK), but now we're lumbered with another key, namely a "key-encryption key" (KEK).
+PCI DSS suggests encrypting the key used to encrypt our data. So we secure the data-encryption key (DEK), woohoo, but are thereby lumbered with another key, namely a "key-encryption key" (KEK), d'oh!
+Perhaps our enterprise has a gaggle of DEKs, protected by a flock of KEKs, which are all protected by a master KEK, which is the key to kingdom.
+
+<h4>Solution overview</h4>
 
 PCI requires that manual key management requires "split knowledge and dual control" of keys. The intent is that no single person can extract the clear-text data. 
 
 The glaring problem is that sysadmins are a single person, with God-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
-Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>DualControlGenSecKey</tt> utility for generating secret keys that are really secret, i.e. they are unattainable, even to <i>root</i>.
+Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>DualControlGenSecKey</tt> utility for generating secret keys that are really secret, i.e. they are unattainable, even by <i>root</i>.
 
 But then our application can't access those keys either. <i>D'oh!</i> So we must implement dual control of our application in order to load these keys. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server in a follow-up article.
 
@@ -86,9 +88,9 @@ So let's test <tt>DualControlGenSecKey</tt>.
      dualcontrol.DualControlGenSecKey
 </pre>
 
-where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is our desired alias to reference this key.  
+where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is the alias to reference this key.  
 
-For example, three admins submit their passwords via SSL socket where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. We see that <tt>DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
+For example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. We see that <tt>DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 <pre>
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
@@ -140,12 +142,12 @@ public class DualControlConsole {
     ...
 }
 </pre>
-where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified by our SSL client cert. We read the intended alias for the password e.g. "dek2013," submit our password, and finally display a response message e.g. hopefully "OK."
+where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>. We are authenticated and identified via our SSL client cert. We are prompted to enter the required password e.g. to protect a new key aliased as "dek2013." Our password is submitted via the SSL connection, and finally a response message is printed to confirm receipt thereof.
 
 <pre>
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter password for dual control SSL connection:
-Enter password for key dek2013: 
+Enter password for new key dek2013: 
 Re-enter password: 
 OK evanx
 </pre>
@@ -154,9 +156,9 @@ where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore pas
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
+A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. A follow-up article might propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes.
 
-The workaround for above "bugs" in plain management-speak, is that our "controls" as documented in in our "policies and procedures," prevent or detect such attacks, and dictate the immediate inauguration of appropriate remediation measures. 
+The workaround for such "bugs" in plain management-speak is that our "controls" as documented in in our "policies and procedures" detect such attacks and dictate the immediate inauguration of appropriate remediation measures. 
 
 On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
 
@@ -214,13 +216,21 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>KeyStore</tt> implementation than the one offered by the Oracle JCE Provider, e.g. with a stronger <tt>KeyProtector</tt> using <tt>PBKDF2</tt> or <tt>scrypt</tt> with a maximal number of iterations. 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
-Otherwise if we assume that someone can try 100 guesses per millisecond on a JCE keystore, using a botnet of a 100M machines, and a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try all possible passwords, by which time hopefully that data is no longer of any value to anyone ;)
+Otherwise if we improbably assume that in the future someone can try a average of 1000 guesses per millisecond on a JCE keystore on a botnet of a 50M machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try a quarter of all possible passwords, by which time hopefully the data is no longer of any value to anyone.
 
-Since our admins already have their half the "dual password," each admin's passphrase should be 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
+<pre>
+$ bc
+guess=1000
+mach=50
+20^18/(365*24*3600*1000*guess*mach*1000*1000)/4
+41
+</pre>
+
+Since our admins already have their half of the "dual password," each admin's passphrase should be at least 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and friends.
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>etc</i>.
 
 <pre>
 public class DualControlSSLContextFactory {    
@@ -230,8 +240,7 @@ public class DualControlSSLContextFactory {
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", 
-                null);
+        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
@@ -253,17 +262,17 @@ public class DualControlSSLContextFactory {
 }
 </pre>
 
-where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for a password to be entered on the console.
+where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console.
 
 As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. 
 
-Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> option is our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA or DSA assymmetric encryption. This should not be confused with our "secret keystore" e.g. which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
+Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA or DSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
-So we use the <tt>SSLContext</tt> created above for opening a <tt>SSLSocket</tt> in <tt>DualControlConsole</tt>, and also for creating an <tt>SSLServerSocket</tt> in <tt>DualControlReader</tt> as illustrated below.
+The <tt>SSLContext</tt> created above is used for opening an <tt>SSLSocket</tt> in <tt>DualControlConsole</tt>, and also for creating an <tt>SSLServerSocket</tt> in <tt>DualControlReader</tt> as illustrated below.
 
 <h4><tt>DualControlReader</tt></h4>
 
-For example, we observe the following logs when testing <tt>DualControlGenSecKey</tt>.
+We observe the following logs when testing <tt>DualControlGenSecKey</tt>.
 <pre>
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
@@ -300,7 +309,6 @@ public class DualControlReader {
         Map<String, char[]> map = new TreeMap();
         Map<String, char[]> submissions = readMap();
         for (String name : submissions.keySet()) {
-            names.add(name);
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
@@ -316,7 +324,7 @@ public class DualControlReader {
     ...
 </pre>
 
-The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt> which is just silly.
+The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
 
 We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
 
@@ -345,20 +353,25 @@ We accumulate the required number of submissions in a loop.
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                logger.warn("Ignoring remote address "
+                throw new Exception("Invalid remote address "
                         + socket.getInetAddress().getHostAddress());
             } else {
-                String username = new X500Name(socket.getSession().getPeerPrincipal().
+                String name = new X500Name(socket.getSession().getPeerPrincipal().
                         getName()).getCommonName();
-                if (names.contains(username)) {
-                    logger.warn("Ignore duplicate " + username);
+                names.add(name);
+                if (names.contains(name)) {
+                    throw new Exception("Duplicate submission from " + name);
                 } else {
                     DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                     dos.writeUTF(purpose);
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     char[] password = readChars(dis);
-                    String responseMessage = "Received " + username;
-                    map.put(username, password);
+                    String responseMessage = "Received " + name;
+                    map.put(name, password);
+                    if (true) {
+                        responseMessage += " " + new Base32().encodeAsString(
+                                Digests.sha1(Chars.getAsciiBytes(password)));
+                    }
                     dos.writeUTF(responseMessage);
                     logger.info(responseMessage);
                 }
@@ -374,7 +387,7 @@ where the admin's username is determined from their SSL cert, in particular the 
 
 <h4><tt>DualControlDemoApp</tt></h4>
 
-On the downside, we have to re-engineer our application to be dual-controlled, to load the key it so desperately needs to cipher our data.
+On the downside, we have to re-engineer our application to be dual-controlled, in order to load the key it so desperately needs to cipher our data.
 
 <pre>
 public class DualControlDemoApp {
@@ -384,12 +397,12 @@ public class DualControlDemoApp {
             throws Exception {
         dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
                 "DualControlDemoApp");
-        logger.info("loadKey " + alias + " alg " + dek.getAlgorithm());
+        logger.info("Loaded key " + alias + " alg " + dek.getAlgorithm());
     }
 }
 </pre>
 
-The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting for two admins to submit their passwords using <tt>DualControlConsole</tt>'s.
+The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>DualControlConsole</tt>'s.
 
 <pre>
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
@@ -401,7 +414,7 @@ INFO [DualControlReader] Received evanx
 INFO [DualControlReader] Received henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
-INFO [DualControlDemoApp] loadedKey dek2013 alg AES
+INFO [DualControlDemoApp] Loaded key dek2013 alg AES
 </pre>
 
 where the two <tt>DualControlConsole</tt> sessions are as follows. 
@@ -421,6 +434,8 @@ Enter password for key dek2013 for DualControlDemoApp:
 Re-enter password for key dek2013 for DualControlDemoApp: 
 OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
 </pre>
+
+where the response message includes a hash of the submitted password to recognise correctness.
 
 <h4><tt>DualControlSessions</tt></h4>
 
@@ -450,34 +465,31 @@ public class DualControlSessions {
 }
 </pre>
 
-where we read the dual info using the afore-mentioned <tt>DualControlReader</tt> (which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444).
+where we read the dual info using the aforementioned <tt>DualControlReader</tt> (which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444).
 
 <h4>Crypto server</h4>
 
-One might wish to create a central crypto server which is dual-controlled, rather than burden your app. In that case, you can restart your application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
+We might wish to create a central crypto server which is dual-controlled, rather than burden our app. In this case, we can restart our application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
 
-We'll implement the crypto server in a follow-up article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
+We'll implement the crypto server in a subsequent article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
 
 <h4>Conclusion</h4>
 
 The problem with encryption is secure key management. We shouldn't leave the key under the mat.
 
-PCI requires that "split knowledge and dual control" be used to protect our encryption keys so that no single person can acquire them, not even the most trustworthy employee today, rogue tomorrow.
+PCI requires that "split knowledge and dual control" be used to protect encryption keys so that no single person can acquire them, not even our most trustworthy employee today, rogue tomorrow.
 
-We take the approach of protecting the data-encryption keys using password-based encryption, by using <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
+We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
-In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected with a different "dual password" to be provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, we don't mind because we only require two admins to load a copy of the key when we restart our app :)
+In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected by a different "dual password" jointly provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load a copy of the key when we restart our app.
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-Our omnipresent <tt>keytool</tt> is tailored for a single admin, so we introduce <tt>DualControlGenSecKey</tt> to generate a secret key in a JCE keystore. This protects copies of the same key using "dual passwords" known to no single person. 
+We introduce <tt>DualControlGenSecKey</tt> to generate a <i>really</i> secret key in a JCE keystore.
 
-We demonstrate how our app can be dual-controlled to load a key from the store at startup, having read two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
+We demonstrate how our app can be dual-controlled to load a key at startup, by accepting two admins' passwords via a client-authenticated <tt>SSLServerSocket</tt>.
 
-To complete the picture, we provide a trivial <tt>DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>. We can setup "double-two-factor" remote authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding (for the prerequisite <tt>localhost</tt> access), in addition to the password-protected <tt>KeyStore</tt> for the client SSL connection.
-
-We suggest a minimum passphrase length of 18 characters for each admin's half of the split password,
-by a somewhat arbitrary and probably overly-conservative calculation, which we will be presented in the "Dual Control Key Protection" follow-up article.
+To complete the picture, we provide a <tt>DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>.
 
 <h4>See also</h4>
 
@@ -485,9 +497,10 @@ In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>D
 
 In "Dual Control Crypto Server" we implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java"><tt>CryptoServer.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java"><tt>CryptoHandler.java</tt></a>
 
-In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a large number of iterations, so that the key takes a second or two to decrypt and load, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JCEKSBruteForceTimer.java"><tt>JCEKSBruteForceTimer.java</tt></a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/EncryptedKeyStore.java"><tt>EncryptedKeyStore.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/EncryptedStore.java"><tt>EncryptedStore.java</tt></a>
+In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a huge number of iterations, so that the key takes a second or two to recover, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JCEKSBruteForceTimer.java"><tt>JCEKSBruteForceTimer.java</tt></a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/EncryptedKeyStore.java"><tt>EncryptedKeyStore.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/EncryptedStore.java"><tt>EncryptedStore.java</tt></a>
 
-In "Dual Control Key Rotation" we work through "key rotation" e.g. migrating from a dated "dek2013" key a to revised "DEK2014" key.
+In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from a old "dek2013" key a to revised "dek2014" key.
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
 
+<tt>{<a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a>; <a href="https://plus.google.com/107220652063555542868">+evan.summers</a>; <a href="https://www.java.net/blogs/evanx">java.net/evanx</a>; <a href="http://www.linkedin.com/in/evanx">linkedin/evanx</a>}</tt>
