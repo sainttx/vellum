@@ -471,9 +471,6 @@ We demonstrate how our app can be dual-controlled to load a key at startup, havi
 
 To complete the picture, we provide a trivial <tt>!DualControlConsole</tt> utility for admins to submit their password from their <tt>ssh</tt> console using a client <tt>SSLSocket</tt>.
 
-We suggest a minimum passphrase length of 18 characters for each admin's half of the split password,
-via a somewhat arbitrary and probably overly-conservative calculation, which will be discussed in the "Dual Control Key Protection" sequel.
-
 <h4>See also</h4>
 
 In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
