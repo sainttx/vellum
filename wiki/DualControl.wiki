@@ -14,7 +14,7 @@ The PCI DSS mandates that credit card numbers (aka <i>Primary Account Numbers</i
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-PCI DSS suggests encrypting the key used to encrypt our data. Darn, we try to secure the data-encryption key (DEK), but now we're lumbered with another key, namely a "key-encryption key" (KEK).
+PCI DSS suggests encrypting the key used to encrypt our data. So we secure the data-encryption key (DEK), but are thereby lumbered with another key, namely a "key-encryption key" (KEK).
 
 PCI requires that manual key management requires "split knowledge and dual control" of keys. The intent is that no single person can extract the clear-text data. 
 
