@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class JxMap extends HashMap<String, Object> {
     

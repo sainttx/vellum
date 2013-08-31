@@ -36,7 +36,7 @@ import vellum.util.Strings;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class Certificates {
 

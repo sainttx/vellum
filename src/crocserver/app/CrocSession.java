@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.app;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class CrocSession {
     Map<String, CrocUserSession> sessionMap = new HashMap();

@@ -9,7 +9,7 @@ import java.io.OutputStream;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class HypeMain {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package bizstat.enumtype;
@@ -11,7 +11,7 @@ import vellum.datatype.Millis;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public enum StatusChangeType {
     OK_WARNING,

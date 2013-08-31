@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.app;
@@ -11,7 +11,7 @@ import vellum.parameter.StringMap;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class CrocCookie {
     public static final long MAX_AGE_MILLIS = Millis.fromHours(16);

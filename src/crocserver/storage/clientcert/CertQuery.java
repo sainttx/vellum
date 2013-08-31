@@ -1,12 +1,12 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.storage.clientcert;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public enum CertQuery {
     insert,

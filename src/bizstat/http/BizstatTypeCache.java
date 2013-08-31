@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package bizstat.http;
@@ -9,7 +9,7 @@ import vellum.datatype.EntityCache;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class BizstatTypeCache implements EntityCache<String> {
     BizstatServer server;

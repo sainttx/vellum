@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.gtalk;
@@ -15,7 +15,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class GtalkConnection implements MessageListener {
     Logr logger = LogrFactory.getLogger(GtalkConnection.class);

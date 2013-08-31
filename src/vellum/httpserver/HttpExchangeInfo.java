@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.httpserver;
@@ -28,7 +28,7 @@ import vellum.util.Strings;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class HttpExchangeInfo {
     

@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  * -Djavax.net.ssl.keyStore=security/croc.jks
  * -Djavax.net.ssl.keyStorePassword=crocserver
@@ -13,7 +13,7 @@ import vellum.util.SystemProperties;
 
 /**
  * 
- * @author evan
+ * @author evan.summers
  */
 public class CrocConfig {
     boolean testing = SystemProperties.getBoolean(

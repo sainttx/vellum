@@ -1,12 +1,12 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package bizstat.filewatcher;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public interface FileCheckerListener {
     public void fileChanged(FileChecker checker);

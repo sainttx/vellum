@@ -6,7 +6,7 @@ import vellum.lifecycle.Initialisable;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class HypeContext implements Initialisable {
 

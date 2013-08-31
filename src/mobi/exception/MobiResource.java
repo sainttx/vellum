@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mobi.exception;
@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MobiResource {
     Locale locale;

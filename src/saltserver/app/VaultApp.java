@@ -25,7 +25,7 @@ import vellum.security.DefaultKeyStores;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class VaultApp {
 

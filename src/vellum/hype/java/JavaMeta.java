@@ -6,7 +6,7 @@ import vellum.util.Lists;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class JavaMeta {
 

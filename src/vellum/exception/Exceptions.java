@@ -13,7 +13,7 @@ import vellum.format.ArgFormats;
 /**
  * Utility methods related to exceptions.
  *
- * @author evan
+ * @author evan.summers
  */
 public class Exceptions {
 

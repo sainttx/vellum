@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mobi.servlet.register;
@@ -11,7 +11,7 @@ import vellum.crypto.Passwords;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class RegisterBean {
     String email;

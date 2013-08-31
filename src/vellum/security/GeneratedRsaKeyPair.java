@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.security;
@@ -14,7 +14,7 @@ import sun.security.x509.X500Name;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class GeneratedRsaKeyPair {    
     String providerName = null;

@@ -1,12 +1,12 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.storage.servicerecord;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public enum ServiceRecordMeta {
     service_record_id,

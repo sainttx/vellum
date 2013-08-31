@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package bizstat.entity;
@@ -8,7 +8,7 @@ import vellum.datatype.Timestamped;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MetricValue implements Timestamped {
     float value;

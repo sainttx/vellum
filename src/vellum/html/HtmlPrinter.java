@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2011, iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers 2011, iPay (Pty) Ltd
  */
 package vellum.html;
 
@@ -11,7 +11,7 @@ import vellum.util.Types;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class HtmlPrinter extends PrinterDelegator {
 

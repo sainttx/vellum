@@ -19,7 +19,7 @@ import vellum.util.Streams;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class GetSecretHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(getClass());

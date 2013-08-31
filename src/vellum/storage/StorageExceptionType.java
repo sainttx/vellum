@@ -5,7 +5,7 @@ package vellum.storage;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public enum StorageExceptionType {
     ALREADY_EXISTS,

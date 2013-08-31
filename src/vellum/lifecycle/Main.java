@@ -7,7 +7,7 @@ import vellum.config.ConfigParser;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class Main {
     

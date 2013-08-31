@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package mobi.mail;
@@ -25,7 +25,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class Mailer {
     static Logr logger = LogrFactory.getLogger(Mailer.class);

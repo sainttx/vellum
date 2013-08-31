@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellumdemo.totp;
@@ -20,7 +20,7 @@ import vellum.util.Strings;
  * from
  * http://thegreyblog.blogspot.com/2011/12/google-authenticator-using-it-in-your.html
  *
- * @author evan
+ * @author evan.summers
  */
 public class AuthenticateToptCode {
 

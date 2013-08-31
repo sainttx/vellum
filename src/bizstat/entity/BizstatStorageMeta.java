@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class BizstatStorageMeta {
     Class[] types = {

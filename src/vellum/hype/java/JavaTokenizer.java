@@ -8,7 +8,7 @@ import vellum.hype.Utils;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class JavaTokenizer {
 

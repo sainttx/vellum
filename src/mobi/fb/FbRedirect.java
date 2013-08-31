@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class FbRedirect {
 

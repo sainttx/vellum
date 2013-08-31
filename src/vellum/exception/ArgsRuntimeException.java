@@ -7,7 +7,7 @@ package vellum.exception;
 /**
  * Utility methods related to using loggers.
  *
- * @author evan
+ * @author evan.summers
  */
 public class ArgsRuntimeException extends RuntimeException {
     Object[] args;

@@ -15,7 +15,7 @@ import vellum.util.Bytes;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class HttpEchoServer {
 

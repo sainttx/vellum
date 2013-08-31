@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.app;
@@ -12,7 +12,7 @@ import org.apache.commons.codec.binary.Base32;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class CrocSecurity {
 

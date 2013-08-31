@@ -8,7 +8,7 @@ import vellum.httpserver.VellumHttpServer;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class CrocHttpServer {
     VellumHttpServer httpServer;

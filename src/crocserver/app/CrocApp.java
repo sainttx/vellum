@@ -1,6 +1,6 @@
 /*
  * 
- * Copyright 2013, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.app;
@@ -47,7 +47,7 @@ import vellum.util.DefaultDateFormats;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class CrocApp {
 

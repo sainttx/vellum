@@ -12,7 +12,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class VaultHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(VaultHttpHandler.class);

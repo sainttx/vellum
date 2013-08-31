@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.entity;
@@ -10,7 +10,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class LongIdEntityMapStorage<I extends Comparable, E extends IdEntity<I>> extends EntityMap<I, E> implements EntityStorage<I, E> {
     protected Logr logger = LogrFactory.getLogger(getClass());

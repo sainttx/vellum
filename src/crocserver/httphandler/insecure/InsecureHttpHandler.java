@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  */
 package crocserver.httphandler.insecure;
 
@@ -12,7 +12,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class InsecureHttpHandler implements HttpHandler {
 

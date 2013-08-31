@@ -4,7 +4,7 @@ package crocserver.exception;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public enum CrocExceptionType {
     INVALID_ARGS,

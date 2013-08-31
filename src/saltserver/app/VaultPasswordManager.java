@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package saltserver.app;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class VaultPasswordManager {
     private Map<String, char[]> passwordMap = new HashMap();

@@ -13,7 +13,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class MantraHttpHandler implements HttpHandler {
     Logr logger = LogrFactory.getLogger(MantraHttpHandler.class);

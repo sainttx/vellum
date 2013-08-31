@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package venigma.provider;
@@ -16,7 +16,7 @@ import java.util.Enumeration;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class KeyStoreSpi extends java.security.KeyStoreSpi {
     ClientContext provider = VProvider.providerContext;

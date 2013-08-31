@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.httphandler.persona;
@@ -17,7 +17,7 @@ import vellum.util.Streams;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class PersonaApi {
 

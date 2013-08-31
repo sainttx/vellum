@@ -6,7 +6,7 @@ package saltserver.storage.secret;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public enum SecretQuery {
     insert,

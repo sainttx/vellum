@@ -12,7 +12,7 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class VellumLocalHttpServer {
     private Logr logger = LogrFactory.getLogger(VellumLocalHttpServer.class);

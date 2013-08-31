@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers 2011, iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers 2011, iPay (Pty) Ltd
  */
 package crocserver.httphandler.common;
 
@@ -22,7 +22,7 @@ import vellum.html.HtmlPrinter;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public abstract class AbstractPageHandler implements HttpHandler {
 

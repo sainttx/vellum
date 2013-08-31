@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.httphandler.persona;
@@ -12,7 +12,7 @@ import vellum.util.Args;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class PersonaUserInfo {
     static Logr logger = LogrFactory.getLogger(PersonaUserInfo.class);

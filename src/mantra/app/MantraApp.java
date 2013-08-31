@@ -24,7 +24,7 @@ import vellum.util.Systems;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class MantraApp {
 

@@ -1,7 +1,7 @@
 /*
  * Apache Software License 2.0
  * Supported by iPay (Pty) Ltd, BizSwitch.net
- * Apache Software License 2.0, (c) Copyright 2012 Evan Summers, 2010 iPay (Pty) Ltd
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  */
 
 package vellum.printer;
@@ -11,7 +11,7 @@ import java.io.PrintStream;
 
 /**
  *
- * @author evanx
+ * @author evan.summers
  */
 public class EscapePrinter implements Printer {
     Printer printer;

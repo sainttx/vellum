@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package saltserver.crypto;
@@ -13,7 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class AESCipher {
     private final SecretKey aesSecret;

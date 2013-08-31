@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package crocserver.app;
@@ -8,7 +8,7 @@ import vellum.exception.DisplayMessage;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public enum CrocExceptionType implements DisplayMessage {
     NO_COOKIE,

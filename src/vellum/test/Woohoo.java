@@ -1,5 +1,5 @@
 /*
- * Copyright Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.test;
@@ -7,7 +7,7 @@ package vellum.test;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class Woohoo {
 

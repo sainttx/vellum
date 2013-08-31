@@ -4,7 +4,7 @@ package mobi.servlets;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public class HtmlBuilder {
     StringBuilder builder = new StringBuilder();

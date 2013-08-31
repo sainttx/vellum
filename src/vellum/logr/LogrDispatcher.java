@@ -1,6 +1,6 @@
 /*
  * Apache Software License 2.0
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  */
 package vellum.logr;
 
@@ -9,7 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
- * @author evans
+ * @author evan.summers
  */
 public class LogrDispatcher implements LogrHandler {
     List<LogrHandler> handlerList = new CopyOnWriteArrayList();

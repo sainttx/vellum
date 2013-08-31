@@ -1,5 +1,5 @@
 /*
- * Apache Software License 2.0, (c) Copyright 2012, Evan Summers
+ * Licensed to the Apache Software Foundation (ASF) by Evan Summers
  * 
  */
 package vellum.jdbc.interceptor;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author evan
+ * @author evan.summers
  */
 public abstract class VDriver implements Driver {
     Driver delegate; 
