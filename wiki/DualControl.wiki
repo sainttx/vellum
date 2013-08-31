@@ -428,6 +428,8 @@ Re-enter password for key dek2013 for DualControlDemoApp:
 OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
 }}}
 
+where we response message includes a hash of the submitted password which perhaps we recognise to gain confidence that it was the correct one.
+
 <h4><tt>!DualControlSessions</tt></h4>
 
 Our app above invokes the <tt>loadKey()</tt> method below to do the legwork. 
