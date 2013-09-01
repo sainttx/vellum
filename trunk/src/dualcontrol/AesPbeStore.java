@@ -103,7 +103,7 @@ public class AesPbeStore implements PbeStore {
         keyAlg = dis.readUTF();
         cipherTransform = dis.readUTF();
         if (!dis.readUTF().equals(type)) {
-            throw new Exception("Invalid keystore type");
+            throw new Exception("Invalid store type");
         }
         if (!dis.readUTF().equals(alias)) {
             throw new Exception("Invalid alias");
