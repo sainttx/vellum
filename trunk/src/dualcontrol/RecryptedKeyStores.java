@@ -32,7 +32,7 @@ import javax.crypto.SecretKey;
  *
  * @author evan.summers
  */
-public class EncryptedKeyStores {
+public class RecryptedKeyStores {
     
     public static void storeKey(SecretKey secretKey, String keyStoreLocation, String keyStoreType, 
             String alias, char[] password) throws Exception {
@@ -53,7 +53,7 @@ public class EncryptedKeyStores {
         keyStore.setEntry(alias, entry, prot);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         keyStore.store(baos, password);
-        new EncryptedStore(iterationCount).
+        new DefaultSymmetricEncryptionStore(iterationCount).
                 store(new FileOutputStream(keyStoreLocation), keyStoreType, 
                 alias, baos.toByteArray(), password);
     }
@@ -65,7 +65,7 @@ public class EncryptedKeyStores {
             throw new Exception("Encrypted keystore file not found: " + keyStoreLocation);
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(
-                new EncryptedStore().load(new FileInputStream(file), keyStoreType, 
+                new DefaultSymmetricEncryptionStore().load(new FileInputStream(file), keyStoreType, 
                 alias, password));
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);        
         keyStore.load(bais, password);

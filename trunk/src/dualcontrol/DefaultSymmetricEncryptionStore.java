@@ -35,17 +35,17 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.log4j.Logger;
+import vellum.encryptedstore.VellumSymmetricEncryptionStore;
 
 /**
  *
  * @author evan.summers
  */
-public class EncryptedStore {
-    private final static Logger logger = Logger.getLogger(EncryptedStore.class);
+public class DefaultSymmetricEncryptionStore implements VellumSymmetricEncryptionStore {
+    private final static Logger logger = Logger.getLogger(DefaultSymmetricEncryptionStore.class);
 
-    private final int MIN_VERSION = 1;
-    private final int CURRENT_VERSION = 1;
-    private int version = 1;
+    private final int VERSION = 0xabcd;
+    private int version = VERSION;
     private String pbeAlg = "PBKDF2WithHmacSHA1";
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
@@ -56,13 +56,14 @@ public class EncryptedStore {
     byte[] salt;
     byte[] iv = null;
     
-    public EncryptedStore() {
+    public DefaultSymmetricEncryptionStore() {
     }
 
-    public EncryptedStore(int iterationCount) {
+    public DefaultSymmetricEncryptionStore(int iterationCount) {
         this.iterationCount = iterationCount;
     }
     
+    @Override
     public void store(OutputStream stream, String type, String alias, 
             byte[] bytes, char[] password) throws Exception { 
         salt = new byte[saltLength];
@@ -72,7 +73,7 @@ public class EncryptedStore {
         byte[] encryptedBytes = encrypt(bytes);
         byte[] encryptedSalt = encrypt(salt);
         DataOutputStream dos = new DataOutputStream(stream);
-        dos.write(version);
+        dos.writeInt(version);
         dos.writeUTF(pbeAlg);
         dos.writeUTF(keyAlg);
         dos.writeUTF(cipherTransform);
@@ -91,14 +92,12 @@ public class EncryptedStore {
         dos.close();
     }    
     
+    @Override
     public byte[] load(InputStream stream, String type, String alias, char[] password) 
         throws Exception {
         DataInputStream dis = new DataInputStream(stream);
-        version = dis.read();
-        if (version < MIN_VERSION) {
-            throw new Exception("Invalid version " + version);
-        }
-        if (version > CURRENT_VERSION) {
+        version = dis.readInt();
+        if (version != VERSION) {
             throw new Exception("Invalid version " + version);
         }
         pbeAlg = dis.readUTF();

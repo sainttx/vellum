@@ -351,7 +351,7 @@ then
   shift
   command$#_$command $@
 else
-  command0_testshort
+  grep ^command $0 | sed 's/command\([0-9]\)_\([a-z]*\).*/\1 \2/'
 fi
 
 #sh NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh 2>&1 | grep -i '^WARN\|ERROR\|^INFO' | uniq -c
