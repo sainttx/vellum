@@ -32,8 +32,8 @@ import vellum.util.Bytes;
  *
  * @author evan.summers
  */
-public class EncryptedKeyStoreTest {
-    private final static Logger logger = Logger.getLogger(EncryptedKeyStoreTest.class);
+public class RecryptedKeyStoreTest {
+    private final static Logger logger = Logger.getLogger(RecryptedKeyStoreTest.class);
     private final String keyAlg = "AES";
     private final int keySize = 256;
     private final String keyStoreType = "JCEKS";
@@ -47,7 +47,7 @@ public class EncryptedKeyStoreTest {
         if (args.length != 5) {
             System.err.println("usage: keystore alias keyPass iterationCount repeat"); 
         } else {
-            new EncryptedKeyStoreTest().start(args[0], args[1], args[2].toCharArray(), 
+            new RecryptedKeyStoreTest().start(args[0], args[1], args[2].toCharArray(), 
                     Integer.parseInt(args[3]), Integer.parseInt(args[4]));
         }
     }    
