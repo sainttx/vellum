@@ -78,11 +78,11 @@ public class EncryptedKeyStoreTest {
         Log.info(logger, Bytes.toString(cipher.decrypt(encrypted)));
         Log.infof(logger, "decrypt %dms", Millis.elapsed(millis));
         millis = System.currentTimeMillis();
-        EncryptedKeyStores.storeKeyForce(iterationCount, dek, keyStoreLocation, 
+        RecryptedKeyStores.storeKeyForce(iterationCount, dek, keyStoreLocation, 
                 keyStoreType, keyAlias, keyPass);
         Log.infof(logger, "store %dms", Millis.elapsed(millis));
         millis = System.currentTimeMillis();
-        dek = EncryptedKeyStores.loadKey(keyStoreLocation, 
+        dek = RecryptedKeyStores.loadKey(keyStoreLocation, 
                 keyStoreType, keyAlias, keyPass);
         Log.infof(logger, "load %dms", Millis.elapsed(millis));
         Log.info(logger, keyAlias, dek.getAlgorithm());
