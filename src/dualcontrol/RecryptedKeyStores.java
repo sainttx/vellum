@@ -53,7 +53,7 @@ public class RecryptedKeyStores {
         keyStore.setEntry(alias, entry, prot);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         keyStore.store(baos, password);
-        new DefaultSymmetricEncryptionStore(iterationCount).
+        new AesPbeStore(iterationCount).
                 store(new FileOutputStream(keyStoreLocation), keyStoreType, 
                 alias, baos.toByteArray(), password);
     }
@@ -65,7 +65,7 @@ public class RecryptedKeyStores {
             throw new Exception("Encrypted keystore file not found: " + keyStoreLocation);
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(
-                new DefaultSymmetricEncryptionStore().load(new FileInputStream(file), keyStoreType, 
+                new AesPbeStore().load(new FileInputStream(file), keyStoreType, 
                 alias, password));
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);        
         keyStore.load(bais, password);
