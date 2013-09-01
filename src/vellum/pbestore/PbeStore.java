@@ -18,18 +18,20 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.encryptedstore;
+package vellum.pbestore;
 
-import dualcontrol.DefaultSymmetricEncryptionStore;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  *
  * @author evan.summers
  */
-public class SymmetricEncryptionStoreFactory {
-
-    public static VellumSymmetricEncryptionStore getAES(int iterationCount) {
-        return new DefaultSymmetricEncryptionStore(iterationCount);
-    }
+public interface PbeStore {
     
+    public void store(OutputStream stream, String type, String alias, 
+            byte[] bytes, char[] password) throws Exception;
+    
+    public byte[] load(InputStream stream, String type, String alias, 
+            char[] password) throws Exception;
 }
