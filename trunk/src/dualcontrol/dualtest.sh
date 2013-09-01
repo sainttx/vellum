@@ -212,7 +212,7 @@ command0_testkeystoreserver() {
 
 command2_teststore() {
   rm -f $seckeystore.enc
-  javaksc server dualcontrol.EncryptedKeyStoreTest $seckeystore.enc dek2013-evanx-henty eeeehhhh $@
+  javaksc server dualcontrol.RecryptedKeyStoreTest $seckeystore.enc dek2013-evanx-henty eeeehhhh $@
 }
 
 command0_teststore() {
