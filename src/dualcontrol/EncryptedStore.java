@@ -131,8 +131,8 @@ public class EncryptedStore {
 
     private SecretKey generateKey(char[] password) throws GeneralSecurityException  {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance(pbeAlg);
-        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), keyAlg);
+        SecretKey key = SecretKeyFactory.getInstance(pbeAlg).generateSecret(spec);
+        return new SecretKeySpec(key.getEncoded(), keyAlg);
     }
     
     private byte[] encrypt(byte[] bytes) throws GeneralSecurityException  {
