@@ -35,14 +35,14 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.log4j.Logger;
-import vellum.encryptedstore.VellumSymmetricEncryptionStore;
+import vellum.pbestore.PbeStore;
 
 /**
  *
  * @author evan.summers
  */
-public class DefaultSymmetricEncryptionStore implements VellumSymmetricEncryptionStore {
-    private final static Logger logger = Logger.getLogger(DefaultSymmetricEncryptionStore.class);
+public class AesPbeStore implements PbeStore {
+    private final static Logger logger = Logger.getLogger(AesPbeStore.class);
 
     private final int VERSION = 0xabcd;
     private int version = VERSION;
@@ -56,10 +56,10 @@ public class DefaultSymmetricEncryptionStore implements VellumSymmetricEncryptio
     byte[] salt;
     byte[] iv = null;
     
-    public DefaultSymmetricEncryptionStore() {
+    public AesPbeStore() {
     }
 
-    public DefaultSymmetricEncryptionStore(int iterationCount) {
+    public AesPbeStore(int iterationCount) {
         this.iterationCount = iterationCount;
     }
     
