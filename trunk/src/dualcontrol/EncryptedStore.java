@@ -35,7 +35,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.log4j.Logger;
-import static vellum.crypto.Passwords.ALGORITHM;
 
 /**
  *
@@ -47,7 +46,7 @@ public class EncryptedStore {
     private final int MIN_VERSION = 1;
     private final int CURRENT_VERSION = 1;
     private int version = 1;
-    private String pbeFactory = "PBKDF2WithHmacSHA1";
+    private String pbeAlg = "PBKDF2WithHmacSHA1";
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
     private int saltLength = 32;
@@ -69,13 +68,13 @@ public class EncryptedStore {
         salt = new byte[saltLength];
         SecureRandom random = new SecureRandom();
         random.nextBytes(salt);
-        init(password, salt);
+        byte[] hash = generateSecret(password);
+        pbeKey = new SecretKeySpec(hash, keyAlg);
         byte[] encryptedBytes = encrypt(bytes);
-        byte[] hash = hash(password);
         byte[] encryptedHash = encrypt(hash);
         DataOutputStream dos = new DataOutputStream(stream);
         dos.write(version);
-        dos.writeUTF(pbeFactory);
+        dos.writeUTF(pbeAlg);
         dos.writeUTF(keyAlg);
         dos.writeUTF(cipherTransform);
         dos.writeUTF(type);
@@ -103,7 +102,7 @@ public class EncryptedStore {
         if (version > CURRENT_VERSION) {
             throw new Exception("Invalid version " + version);
         }
-        pbeFactory = dis.readUTF();
+        pbeAlg = dis.readUTF();
         keyAlg = dis.readUTF();
         cipherTransform = dis.readUTF();
         if (!dis.readUTF().equals(type)) {
@@ -123,25 +122,18 @@ public class EncryptedStore {
         dis.read(encryptedHash);
         dis.read(encryptedBytes);
         dis.close();
-        init(password, salt);
+        pbeKey = new SecretKeySpec(generateSecret(password), keyAlg);
         Log.debug(logger, salt.length, iterationCount, keySize);
         byte[] hash = decrypt(encryptedHash);
-        if (!Arrays.equals(hash(password), hash)) {
+        if (!Arrays.equals(generateSecret(password), hash)) {
             throw new Exception("Invalid password");            
         }
         return decrypt(encryptedBytes);
     }
-    
-    private void init(char[] password, byte[] salt) throws GeneralSecurityException  {
-        PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance(pbeFactory);
-        SecretKey secret = factory.generateSecret(spec);
-        pbeKey = new SecretKeySpec(secret.getEncoded(), keyAlg);
-    }
 
-    private byte[] hash(char[] password) throws GeneralSecurityException {
+    private byte[] generateSecret(char[] password) throws GeneralSecurityException  {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(pbeAlg);
         return factory.generateSecret(spec).getEncoded();
     }
     
