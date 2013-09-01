@@ -1,5 +1,5 @@
 /*
-    https://code.google.com/p/vellum - Contributed by Evan Summers
+       Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
