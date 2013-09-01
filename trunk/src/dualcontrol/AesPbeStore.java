@@ -45,7 +45,6 @@ public class AesPbeStore implements PbeStore {
     private final static Logger logger = Logger.getLogger(AesPbeStore.class);
 
     private final int VERSION = 0xabcd;
-    private int version = VERSION;
     private String pbeAlg = "PBKDF2WithHmacSHA1";
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
@@ -73,7 +72,7 @@ public class AesPbeStore implements PbeStore {
         byte[] encryptedBytes = encrypt(bytes);
         byte[] encryptedSalt = encrypt(salt);
         DataOutputStream dos = new DataOutputStream(stream);
-        dos.writeInt(version);
+        dos.writeInt(VERSION);
         dos.writeUTF(pbeAlg);
         dos.writeUTF(keyAlg);
         dos.writeUTF(cipherTransform);
@@ -96,7 +95,7 @@ public class AesPbeStore implements PbeStore {
     public byte[] load(InputStream stream, String type, String alias, char[] password) 
         throws Exception {
         DataInputStream dis = new DataInputStream(stream);
-        version = dis.readInt();
+        int version = dis.readInt();
         if (version != VERSION) {
             throw new Exception("Invalid version " + version);
         }
