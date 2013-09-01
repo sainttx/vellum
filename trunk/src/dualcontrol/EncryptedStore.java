@@ -68,10 +68,9 @@ public class EncryptedStore {
         salt = new byte[saltLength];
         SecureRandom random = new SecureRandom();
         random.nextBytes(salt);
-        byte[] hash = generateSecret(password);
-        pbeKey = new SecretKeySpec(hash, keyAlg);
+        pbeKey = generateKey(password);
         byte[] encryptedBytes = encrypt(bytes);
-        byte[] encryptedHash = encrypt(hash);
+        byte[] encryptedSalt = encrypt(salt);
         DataOutputStream dos = new DataOutputStream(stream);
         dos.write(version);
         dos.writeUTF(pbeAlg);
@@ -83,11 +82,11 @@ public class EncryptedStore {
         dos.writeInt(iterationCount);
         dos.write(salt.length);
         dos.write(iv.length);
-        dos.write(encryptedHash.length);
+        dos.write(encryptedSalt.length);
         dos.writeShort(encryptedBytes.length);
         dos.write(salt);
         dos.write(iv);
-        dos.write(encryptedHash);
+        dos.write(encryptedSalt);
         dos.write(encryptedBytes);
         dos.close();
     }    
@@ -115,26 +114,25 @@ public class EncryptedStore {
         iterationCount = dis.readInt();
         salt = new byte[dis.read()];
         iv = new byte[dis.read()];
-        byte[] encryptedHash = new byte[dis.read()];
+        byte[] encryptedSalt = new byte[dis.read()];
         byte[] encryptedBytes = new byte[dis.readShort()];
         dis.read(salt);
         dis.read(iv);
-        dis.read(encryptedHash);
+        dis.read(encryptedSalt);
         dis.read(encryptedBytes);
         dis.close();
-        pbeKey = new SecretKeySpec(generateSecret(password), keyAlg);
+        pbeKey = generateKey(password);
         Log.debug(logger, salt.length, iterationCount, keySize);
-        byte[] hash = decrypt(encryptedHash);
-        if (!Arrays.equals(generateSecret(password), hash)) {
+        if (!Arrays.equals(salt, decrypt(encryptedSalt))) {
             throw new Exception("Invalid password");            
         }
         return decrypt(encryptedBytes);
     }
 
-    private byte[] generateSecret(char[] password) throws GeneralSecurityException  {
+    private SecretKey generateKey(char[] password) throws GeneralSecurityException  {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keySize);
         SecretKeyFactory factory = SecretKeyFactory.getInstance(pbeAlg);
-        return factory.generateSecret(spec).getEncoded();
+        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), keyAlg);
     }
     
     private byte[] encrypt(byte[] bytes) throws GeneralSecurityException  {
