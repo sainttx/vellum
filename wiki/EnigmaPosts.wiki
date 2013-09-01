@@ -15,7 +15,7 @@ Password Cipher - preview <a href="https://code.google.com/p/vellum/source/brows
 
 == Dual Control quadrilogy == 
 
-[DualControl Dual Control] (August 2013)
+[DualControl Dual Control] (September 2013)
 
 Dual Control Revoke and Enroll - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
