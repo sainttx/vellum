@@ -20,6 +20,7 @@
  */
 package dualcontrol;
 
+import vellum.crypto.AESCiphers;
 import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;

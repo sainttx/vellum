@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package vellum.crypto;
 
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
