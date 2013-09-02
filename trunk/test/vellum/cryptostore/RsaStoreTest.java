@@ -45,10 +45,12 @@ public class RsaStoreTest {
         ByteArrayOutputStream kos = new ByteArrayOutputStream();
         ks.storePublic(kos);
         ByteArrayInputStream kis = new ByteArrayInputStream(kos.toByteArray());
-        PublicKey publicKey = ks.loadPublic(kis);
-        logger.trace("public key " + Base64.encodeBase64String(publicKey.getEncoded()));
+        PublicKey loadedPublicKey = ks.loadPublic(kis);
+        System.out.printf("loaded public key %s %s: %s\n", alias, 
+                loadedPublicKey.getAlgorithm(), 
+                Base64.encodeBase64String(loadedPublicKey.getEncoded()));
         assertTrue("loaded public key", Arrays.equals(ks.getKeyPair().getPublic().getEncoded(),
-                publicKey.getEncoded()));
+                loadedPublicKey.getEncoded()));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         new RsaStore().store(baos, type, alias, text.getBytes(), ks.getKeyPair().getPublic());
         millis = Millis.elapsed(millis);
@@ -58,10 +60,14 @@ public class RsaStoreTest {
         kos = new ByteArrayOutputStream();
         ks.storePrivate(kos, password);
         kis = new ByteArrayInputStream(kos.toByteArray());        
-        PrivateKey privateKey = ks.loadPrivate(kis, alias, password);
+        PrivateKey loadedPrivateKey = ks.loadPrivate(kis, alias, password);
         assertTrue("loaded private key", Arrays.equals(ks.getKeyPair().getPrivate().getEncoded(),
-                privateKey.getEncoded()));
-        byte[] loadBytes = new RsaStore().load(bais, type, alias, privateKey);
+                loadedPrivateKey.getEncoded()));
+        millis = Millis.elapsed(millis);
+        System.out.printf("loaded private key %s %d %dms: %s\n", alias, iterationCount, 
+                millis, loadedPrivateKey.getAlgorithm());
+        millis = System.currentTimeMillis();
+        byte[] loadBytes = new RsaStore().load(bais, type, alias, loadedPrivateKey);
         millis = Millis.elapsed(millis);
         System.out.printf("load %s %d %dms: %s\n", alias, iterationCount, millis, 
                 new String(loadBytes));
