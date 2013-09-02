@@ -44,7 +44,7 @@ import vellum.pbestore.PbeStore;
 public class AesPbeStore implements PbeStore {
     private final static Logger logger = Logger.getLogger(AesPbeStore.class);
 
-    private final int VERSION = 0xabcd;
+    private final int VERSION = 0xaebe0001;
     private String pbeAlg = "PBKDF2WithHmacSHA1";
     private String keyAlg = "AES";
     private String cipherTransform = "AES/CBC/PKCS5Padding";    
@@ -88,16 +88,15 @@ public class AesPbeStore implements PbeStore {
         dos.write(iv);
         dos.write(encryptedSalt);
         dos.write(encryptedBytes);
-        dos.close();
+        dos.flush();
     }    
     
     @Override
     public byte[] load(InputStream stream, String type, String alias, char[] password) 
         throws Exception {
         DataInputStream dis = new DataInputStream(stream);
-        int version = dis.readInt();
-        if (version != VERSION) {
-            throw new Exception("Invalid version " + version);
+        if (dis.readInt() != VERSION) {
+            throw new Exception("Invalid version");
         }
         pbeAlg = dis.readUTF();
         keyAlg = dis.readUTF();
@@ -114,11 +113,10 @@ public class AesPbeStore implements PbeStore {
         iv = new byte[dis.read()];
         byte[] encryptedSalt = new byte[dis.read()];
         byte[] encryptedBytes = new byte[dis.readShort()];
-        dis.read(salt);
-        dis.read(iv);
-        dis.read(encryptedSalt);
-        dis.read(encryptedBytes);
-        dis.close();
+        dis.readFully(salt);
+        dis.readFully(iv);
+        dis.readFully(encryptedSalt);
+        dis.readFully(encryptedBytes);
         pbeKey = generateKey(password);
         Log.debug(logger, salt.length, iterationCount, keySize);
         if (!Arrays.equals(salt, decrypt(encryptedSalt))) {
