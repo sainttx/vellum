@@ -32,6 +32,8 @@ public class PbeStoreTest {
         testGenerate(1000);
         testGenerate(10000);
         testGenerate(100000);
+        testGenerate(500000);
+        testGenerate(1000000);
     }
     
     public void testGenerate(int iterationCount) throws Exception {
