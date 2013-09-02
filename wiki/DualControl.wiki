@@ -491,7 +491,7 @@ In order to generate a dual-controlled key, we propose keeping at least three co
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-We present a <tt>!DualControlConsole</tt> utility for admins to submit their password from an <tt>ssh</tt> terminal session, while our app waits for dual submissions in order to load the key at startup.
+We present a <tt>!DualControlConsole</tt> utility for admins to submit their password from an <tt>ssh</tt> terminal session, while our app waits for dual submissions.
 
 <h4>See also</h4>
 
