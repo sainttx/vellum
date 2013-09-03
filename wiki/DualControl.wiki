@@ -12,7 +12,7 @@ The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-PCI DSS suggests encrypting the key used to encrypt our data. In so doing we secure the data-encryption key (DEK), but are thereby lumbered with another key, namely a "key-encryption key" (KEK). Perhaps our enterprise has a gaggle of DEKs, protected by a flock of KEKs, which are all protected by a master KEK, which is the key to kingdom.
+PCI DSS suggests encrypting the data-encryption key (DEK) used to encrypt our data. But we are thereby lumbered with a "key-encryption key" (KEK). Perhaps our enterprise has a gaggle of DEKs, protected by a flock of KEKs, which are all protected by a master KEK, which is the key to kingdom.
 
 <h4>Solution overview</h4>
 
