@@ -14,19 +14,21 @@ The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia
 
 PCI DSS suggests encrypting the data-encryption key (DEK) used to encrypt our data. But we are thereby lumbered with a "key-encryption key" (KEK). Perhaps our enterprise has a gaggle of DEKs, protected by a flock of KEKs, which are all protected by a master KEK, which is the key to kingdom.
 
-<h4>Solution overview</h4>
-
 PCI DSS requires that manual key management requires "split knowledge and dual control" of keys. The intent is that no single person can extract the clear-text data. 
 
 The glaring problem is that sysadmins are a single person, with God-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
-Naturally, <tt>keytool</tt> is tailored for a single omnipotent admin, not for "dual control" by two half-cocked ones. So we present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret, i.e. they are unattainable, even by <i>root</i>.
+<h4>Solution overview</h4>
 
-But then our application can't access those keys either. <i>D'oh!</i> So we must implement dual control of our application in order to load these keys. <i>Woohoo!</i> But then starting our application requires two coordinated people. <i>D'oh!</i> So we'll present a companion crypto server in a follow-up article.
+We propose keeping at least three copies of the same key in our keystore, but where each copy is password-protected by a different "dual password" jointly provided by a given pair of admins. 
+
+Such split knowledge of the key password clearly requires dual control to load a copy of the key. 
+
+If one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to be on hand to restart our app.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. For this purpose, there shall be <tt>!DualControlGenSecKey</tt>, as follows.
+Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password by a single admin, we implement <tt>!DualControlGenSecKey</tt> as follows.
 
 {{{
 public class DualControlGenSecKey {
@@ -65,7 +67,7 @@ public class DualControlGenSecKey {
     }
 }
 }}}
-where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their secret "dual passwords," and we create a <tt>!KeyStore</tt> entry for each. 
+where <tt>!DualControlReader</tt> waits for multiple password submissions via SSL, and provides a map of "dual aliases" and their concatenated "dual passwords." For each duo, we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password combination which is known to no single person.
 
 <h4>Demo</h4>
 
@@ -485,9 +487,9 @@ The problem with encryption is secure key management. We shouldn't leave the key
 
 PCI requires that "split knowledge and dual control" be used to protect encryption keys so that no single person can acquire them, not even our most trustworthy employee today, rogue tomorrow.
 
-We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
-
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected by a different "dual password" jointly provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load a copy of the key when we restart our app.
+
+We present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret. We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enforce split knowledge of the password, which is effectively a key-encryption key.
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
