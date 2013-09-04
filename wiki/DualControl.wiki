@@ -18,11 +18,10 @@ PCI DSS requires that manual key management requires "split knowledge and dual c
 
 <h4>Solution overview</h4>
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "dual password" which is a combination of two personal passwords.
+We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-Such split knowledge of the key password clearly requires dual control to load a copy of the key. 
-
-If one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to be on hand to restart our app.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "dual password" combination of two personal passwords.
+Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to be on hand to restart our app.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
