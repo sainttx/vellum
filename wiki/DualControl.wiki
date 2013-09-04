@@ -440,7 +440,7 @@ Re-enter password for key dek2013 for DualControlDemoApp:
 OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
 }}}
 
-where the response message includes a hash of the submitted password to recognise correctness.
+where the response message includes a hash of the submitted password so we might recognise its correctness or correctability.
 
 <h4><tt>!DualControlSessions</tt></h4>
 
