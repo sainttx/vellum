@@ -64,7 +64,7 @@ public class DualControlGenSecKey {
     }
 }
 }}}
-where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their concatenated "dual passwords." For each duo, we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password combination, known to no single person.
+where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their concatenated "dual passwords." For each duo, we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
 <h4>Demo</h4>
 
