@@ -12,7 +12,7 @@ The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-PCI DSS suggests encrypting the data-encryption key (DEK) used to encrypt our data. But we are thereby lumbered with a "key-encryption key" (KEK). Perhaps our enterprise has a gaggle of DEKs, protected by a flock of KEKs, which are all protected by a master KEK, which is the key to kingdom.
+PCI DSS suggests encrypting the data-encryption key (DEK). Fantastic! Now we have a "key-encryption key" (KEK). Perhaps our enterprise has a gaggle of DEKs, protected by a flock of KEKs, which are all protected by a master KEK, which is the key to kingdom.
 
 PCI DSS requires that manual key management requires "split knowledge and dual control" of keys. The intent is that no single person can extract the clear-text data. 
 
