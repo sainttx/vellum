@@ -212,7 +212,7 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>.
 
-Otherwise if we fear that in the future someone can try an average of 1000 guesses per millisecond on a JCE keystore on a botnet of a 50M machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our threshold of 30 years is required to try a quarter of all possible passwords, by which time hopefully the data is no longer of any value to anyone.
+Otherwise if we fear that in the future someone can try an average of 1000 guesses per millisecond on a botnet of a 50M machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we must require a minimum passphrase length of 18, for which more than our arbitrary threshold of 30 years is required to try a quarter of all possible passwords, by which time hopefully the data is no longer of any value to anyone.
 
 {{{
 $ bc
