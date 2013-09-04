@@ -88,7 +88,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these three keys are one and the same. However each copy is password-protected using a different "dual password" combination, known to no single person.
+Actually these three keys are one and the same! However each copy has a different key password, which is actually a combination of a pair of personal passwords, which we call a "dual password."
 
 <h4><tt>!DualControlConsole</tt></h4>
 
