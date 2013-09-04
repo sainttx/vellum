@@ -18,7 +18,7 @@ PCI DSS requires that manual key management requires "split knowledge and dual c
 
 <h4>Solution overview</h4>
 
-We propose keeping at least three copies of the same key in our keystore, but where each copy is password-protected by a different "dual password" which is a combination of two personal passwords.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "dual password" which is a combination of two personal passwords.
 
 Such split knowledge of the key password clearly requires dual control to load a copy of the key. 
 
