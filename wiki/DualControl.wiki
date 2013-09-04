@@ -14,7 +14,7 @@ The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia
 
 PCI DSS suggests encrypting our critical data-encryption key (DEK) to protect it. Fantastic, we now have a "key-encryption key" (KEK) that requires even more protection.
 
-PCI DSS requires that manual key management requires "split knowledge and dual control" of keys. The intent is that no single person can extract the clear-text data. The glaring problem is that sysadmins are a single person, with God-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
+PCI DSS requires that manual key management requires "split knowledge and dual control" of keys, e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. The glaring problem is that sysadmins are a single person, with God-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
 <h4>Solution overview</h4>
 
@@ -482,7 +482,7 @@ We'll implement the crypto server in a subsequent article. <i>Then we can say, "
 
 The problem with encryption is secure key management. We shouldn't leave the key under the mat.
 
-PCI requires that "split knowledge and dual control" be used to protect encryption keys so that no single person can acquire them, not even our most trustworthy employee today, rogue tomorrow.
+PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow.
 
 In order to generate a dual-controlled key, we propose keeping at least three copies of the same key, but where each copy is password-protected by a different "dual password" jointly provided by a given pair of admins. Thereafter, if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load a copy of the key when we restart our app.
 
