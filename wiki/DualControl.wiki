@@ -470,7 +470,7 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using the aforementioned <tt>!DualControlReader</tt> (which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444).
+where we read the dual info using the aforementioned <tt>!DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
 
 <h4>Crypto server</h4>
 
