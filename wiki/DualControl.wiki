@@ -266,9 +266,9 @@ where passwords can specified on the command-line e.g. for test scripts, but oth
 
 <img align=right style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <tt>!SecretKeySpec</tt> and friends clone byte arrays like there's no tomorrow, d'oh! So we gotta somehow ensure no one can "debug" our memory!?
-
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA or DSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
+
+As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <tt>!SecretKeySpec</tt> and friends clone byte arrays like there's no tomorrow, d'oh! So we gotta somehow ensure no one can "debug" our memory!?
 
 <h4><tt>!DualControlReader</tt></h4>
 
