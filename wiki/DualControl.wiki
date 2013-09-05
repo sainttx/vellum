@@ -196,7 +196,7 @@ Importantly, passphrases are easier to remember, so we don't have to write them 
 
 <h4>Brutish Key Protector</h4>
 
-Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. 
+Our keystore is unfortunately forever vulnerable to theft and/or brute-force attacks. Even when we have deleted it, someone else might have ill-gotten it earlier. On the upside, we might assume that the data is no longer of any value to anyone after say 30 years.
 
 We observe that an Intel i5 can manage about 30 guesses per millisecond on a JCE keystore, using 4 threads to utilise its quad-cores.
 
@@ -210,7 +210,7 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
-If we fear that in the future someone can try an average of 1000 guesses per millisecond on a botnet of a 50M machines, using a subset of 20 lowercase letters and spaces, then by my backroom calculations we would want a minimum passphrase length of 18, if more than say 30 years should be required to try a quarter of all possible passwords. We hope that the data is no longer of any value to anyone after 30 years, or that anyone would want to tie up a botnet for such a spell ;)
+If we fear that in the future someone can try an average of 1000 guesses per millisecond on a botnet of a 50M machines, then by my backroom calculations, 41 years are required to try a quarter of all possible passwords up to 18 characters in length using a lazy subset of only 20 characters. 
 
 {{{
 $ bc
@@ -220,11 +220,11 @@ mach=50
 41
 }}}
 
-Since our admins already have their half of the "dual password," each admin's passphrase should be at least 18 characters, to protect against a rogue admin perpetrating the brute-force attack on the other half of the password.
+Our desired minimum length of say 18 characters applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the dual password.
 
-Incidently, if we assume some combination of the 2000 most common words is used for a passphrase, then we require 7 words (<tt>2000^7</tt> possibilites), so actually 18 characters is not enough. <i>D'oh!</i>
+If we assume some combination of the 2000 most common words is used for a passphrase, then we require 7 words (<tt>2000^7</tt> possibilites), so actually 18 characters is not enough. <i>D'oh!</i>
 
-A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>.
+A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>, with a large number of iterations e.g. 500k, so that it takes a few seconds to load the key i.e. a quite tolerable startup delay.
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
