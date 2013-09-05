@@ -222,7 +222,7 @@ mach=50
 
 Our desired minimum length of say 18 characters applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the dual password.
 
-If we assume some combination of the 2000 most common words is used for a passphrase, then we require 7 words (<tt>2000^7</tt> possibilites), so actually 18 characters is not enough. <i>D'oh!</i>
+However, if we assume some combination of the 2000 most common words is used for a passphrase, then we require 7 words (<tt>2000^7</tt> possibilites), so actually 18 characters is not enough. <i>D'oh!</i>
 
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>, with a large number of iterations e.g. 500k, so that it takes a few seconds to load the key i.e. a quite tolerable startup delay.
 
