@@ -35,13 +35,14 @@ import javax.crypto.SecretKey;
  */
 public class RecryptedKeyStores {
     
-    public static void storeKey(SecretKey secretKey, String keyStoreLocation, String keyStoreType, 
+    public static void storeKey(int iterationCount, SecretKey secretKey, 
+            String keyStoreLocation, String keyStoreType, 
             String alias, char[] password) throws Exception {
         File file = new File(keyStoreLocation);
         if (file.exists()) {
             throw new Exception("Encrypted keystore file already exists: " + keyStoreLocation);
         }
-        storeKey(secretKey, keyStoreLocation, keyStoreType, alias, password);
+        storeKeyForce(iterationCount, secretKey, keyStoreLocation, keyStoreType, alias, password);
     }
     
     public static void storeKeyForce(int iterationCount, 
