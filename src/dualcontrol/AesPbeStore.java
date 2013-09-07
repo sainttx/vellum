@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 import vellum.pbestore.PbeStore;
 
 /**
- *
+ * @see PbeStore
  * @author evan.summers
  */
 public class AesPbeStore implements PbeStore {
