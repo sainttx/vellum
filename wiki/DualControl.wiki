@@ -298,7 +298,7 @@ However, if we assume some combination of the 2000 most common words is used for
 
 We note that our desired minimum length applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
-A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>, with a large number of iterations e.g. 500k, so that it takes a few seconds to load the key i.e. a quite tolerable startup delay.
+A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>. We want a huge large number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is clearly a tolerable startup delay in our production environment, and will disable brute-force attacks.
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
