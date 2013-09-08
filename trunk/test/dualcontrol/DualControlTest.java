@@ -1,10 +1,18 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
  * 
  */
 package dualcontrol;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import static junit.framework.Assert.*;
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import javax.crypto.SecretKey;
 import org.junit.Test;
 import vellum.logr.Logr;
@@ -28,6 +36,8 @@ public class DualControlTest {
     KeyStore evanxKeyStore;
     KeyStore hentyKeyStore;
     KeyStore travsKeyStore;
+    Properties properties = new Properties();
+    private Map<String, char[]> dualPasswordMap = new HashMap();
 
     public DualControlTest() {
     }
@@ -36,13 +46,26 @@ public class DualControlTest {
     public void test() throws Exception {
     }
     
-    public void loadKey() throws Exception {
-        initSSLKeyStores();
-        dek = DualControlSessions.loadKey(dekKeyStoreLocation, keyStorePass, dekAlias, 
-                "DualControlTest");
-        logger.info("loadKey " + dek.getAlgorithm());
+    @Test
+    public void genKeyTest() throws Exception {
+        dualPasswordMap.put("brent-evanx", "bbbb+eeee".toCharArray());
+        dualPasswordMap.put("brent-henty", "bbbb+hhhh".toCharArray());
+        dualPasswordMap.put("evanx-henty", "eeee+hhhh".toCharArray());
+        properties.put("alias", "dek2013");
+        properties.put("storetype", "JCEKS");
+        properties.put("keyalg", "AES");
+        properties.put("keysize", "192");
+        DualControlGenSecKey instance = new DualControlGenSecKey();
+        KeyStore keyStore = instance.generate(properties, dualPasswordMap);
+        assertTrue(Collections.list(keyStore.aliases()).size() == 3);
+        String alias = Collections.list(keyStore.aliases()).get(0);
+        System.out.println(alias);
+        assertEquals("dek2013-brent-evanx", alias);
+        KeyStore.Entry entry = keyStore.getEntry(alias, 
+                new KeyStore.PasswordProtection("bbbb+eeee".toCharArray()));
+        System.out.println(entry);
     }
-
+    
     private void initSSLKeyStores() throws Exception {
         appKeyStore = createSSLKeyStore("app");
         brentKeyStore = createSSLKeyStore("brent");
@@ -54,6 +77,11 @@ public class DualControlTest {
     private KeyStore createSSLKeyStore(String name) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, keyStorePass);
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        KeyPair keyPair = generator.generateKeyPair();
+        X509Certificate[] chain = new X509Certificate[1];
+        keyStore.setKeyEntry(name, keyPair.getPrivate(), keyStorePass, chain);
         return keyStore;
     }    
 }
