@@ -139,7 +139,7 @@ We designed this class from the ground up to be readily testable, so let's test 
 
 <h4>Demo</h4>
 
-Let's run <tt>!DualControlGenSecKey</tt> from the command-line with various prerequisite <tt>-D</tt> options.
+Let's run <tt>!DualControlGenSecKey</tt> from the command-line with the prerequisite <tt>-D</tt> options.
 
 {{{
   java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=18 \
