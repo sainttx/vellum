@@ -294,7 +294,7 @@ mach=50
 41
 }}}
 
-However, if we assume some combination of the 2000 most common words is used for a passphrase, then 18 characters is not enough - <i>D'oh!</i>
+However, if we assume some combination of the 2000 most common words is used for a passphrase, then 18 characters is not enough - D'oh!
 
 We note that our desired minimum length applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
