@@ -48,10 +48,10 @@ public class DualControlReader {
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
-    String purpose;
-    int submissionCount;
-    SSLContext sslContext;
-    Set<String> names = new TreeSet();
+    private String purpose;
+    private int submissionCount;
+    private SSLContext sslContext;
+    private Set<String> names = new TreeSet();
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         return new DualControlReader().readDualMap(purpose, 2,
@@ -72,7 +72,7 @@ public class DualControlReader {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
-                    char[] dualPassword = combineDualPassword(
+                    char[] dualPassword = combineSplitPassword(
                             submissions.get(name), submissions.get(otherName));
                     map.put(dualAlias, dualPassword);
                     logger.info("readDualMap dualAlias: " + dualAlias);
@@ -82,7 +82,7 @@ public class DualControlReader {
         return map;
     }
 
-    private static char[] combineDualPassword(char[] password, char[] other) {
+    private static char[] combineSplitPassword(char[] password, char[] other) {
         StringBuilder builder = new StringBuilder();
         builder.append(password);
         builder.append(other);
