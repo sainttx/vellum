@@ -97,22 +97,27 @@ public class DualControlReader {
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
-        serverSocket.setNeedClientAuth(true);
-        read(serverSocket);
+        try {
+            serverSocket.setNeedClientAuth(true);
+            read(serverSocket);
+        } finally {
+            serverSocket.close();
+        }
     }
 
     private void read(SSLServerSocket serverSocket) throws Exception {
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
-            if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                throw new Exception("Invalid remote address "
-                        + socket.getInetAddress().getHostAddress());
-            } else {
+            try {
+                if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
+                    throw new Exception("Invalid remote address "
+                            + socket.getInetAddress().getHostAddress());
+                }
                 read(socket);
+            } finally {
+                socket.close();
             }
-            socket.close();
         }
-        serverSocket.close();
     }
     
     private void read(SSLSocket socket) throws Exception {
@@ -128,7 +133,7 @@ public class DualControlReader {
         char[] password = readChars(dis);
         String responseMessage = "Received " + name;
         String invalidMessage = new DualControlPasswordVerifier(
-                System.getProperties()).getInvalidMessage(password);
+                properties).getInvalidMessage(password);
         if (invalidMessage != null) {
             throw new Exception(responseMessage + ": " + invalidMessage);
         }
