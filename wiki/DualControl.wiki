@@ -486,7 +486,7 @@ $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
 INFO [DualControlReader] readDualMap submissionCount: 2
 INFO [DualControlReader] readDualMap purpose: key dek2013 for DualControlDemoApp
-INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] readSubmissions SSL port 4444
 INFO [DualControlReader] Received evanx
 INFO [DualControlReader] Received henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
