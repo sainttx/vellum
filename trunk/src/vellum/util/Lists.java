@@ -293,4 +293,9 @@ public class Lists {
         list.addAll(asList(array));
         return list.subList(fromIndex, array.length);
     }
+
+    public static <E> SortedSet<E> asSortedSet(Enumeration<E> enumeration) {
+        return new TreeSet(Collections.list(enumeration));
+    }
+    
 }
