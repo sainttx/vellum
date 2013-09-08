@@ -85,7 +85,7 @@ where we configure via properties e.g. system properties in the <tt>main()</tt> 
 
 where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL.
 
-We create a <tt>KeyStore</tt> as follows.
+We create a <tt>!KeyStore</tt> as follows.
 {{{      
     public KeyStore createKeyStore(Properties properties,
             Map<String, char[]> dualPasswordMap) throws Exception {
