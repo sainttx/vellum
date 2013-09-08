@@ -125,7 +125,7 @@ We designed this class from the ground up to be readily testable, so let's test 
         properties.put("alias", "dek2013");
         properties.put("storetype", "JCEKS");
         properties.put("keyalg", "AES");
-        properties.put("keysize", "192");
+        properties.put("keysize", "256");
         DualControlGenSecKey instance = new DualControlGenSecKey();
         KeyStore keyStore = instance.createKeyStore(properties, dualPasswordMap);
         assertTrue(Collections.list(keyStore.aliases()).size() == 3);
