@@ -58,7 +58,7 @@ public class DualControlGenSecKey {
 }
 }}}
 
-where we configure via properties e.g. system properties.
+where we configure via properties e.g. system properties in the <tt>main()</tt> method below.
 
 {{{
     public static void main(String[] args) throws Exception {
