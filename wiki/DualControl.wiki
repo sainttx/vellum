@@ -114,7 +114,7 @@ We create a <tt>!KeyStore</tt> as follows.
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-We refactored this class to be readily testable, so let's test it :)
+We designed this class from the ground up, or refactored it, to be readily testable, so let's test it :)
 
 {{{
     @Test
