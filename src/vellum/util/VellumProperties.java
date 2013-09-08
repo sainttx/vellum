@@ -28,9 +28,6 @@ import java.util.Properties;
  */
 public class VellumProperties extends Properties {
 
-    public static final VellumProperties systemProperties = 
-            new VellumProperties(System.getProperties());
-    
     public VellumProperties(Properties properties) {
         super.putAll(properties);
     }

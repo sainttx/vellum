@@ -20,7 +20,6 @@
  */
 package dualcontrol;
 
-import vellum.util.VellumProperties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
@@ -47,7 +46,7 @@ public class FileServer {
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String fileName) throws Exception {
         SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext(VellumProperties.systemProperties).
+                DualControlSSLContextFactory.createSSLContext(System.getProperties()).
                 getServerSocketFactory().createServerSocket(port, backlog, localAddress);
         serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);

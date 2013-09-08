@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 public class DualControlEnroll {
 
     final static Logger logger = Logger.getLogger(DualControlEnroll.class);
-    private VellumProperties properties = VellumProperties.systemProperties;
+    private VellumProperties properties = new VellumProperties(System.getProperties());
     private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
     private String username = properties.getString("dualcontrol.username");
     private String keyAlias = properties.getString("alias");

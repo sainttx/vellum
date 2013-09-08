@@ -20,12 +20,12 @@
  */
 package dualcontrol;
 
-import vellum.util.VellumProperties;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -48,14 +48,17 @@ public class DualControlReader {
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
+    private Properties properties = System.getProperties();
     private String purpose;
     private int submissionCount;
     private SSLContext sslContext;
     private Set<String> names = new TreeSet();
+    private Map<String, char[]> map = new TreeMap();
+    private Map<String, char[]> submissions = new TreeMap();
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         return new DualControlReader().readDualMap(purpose, 2,
-                DualControlSSLContextFactory.createSSLContext(VellumProperties.systemProperties)).
+                DualControlSSLContextFactory.createSSLContext(System.getProperties())).
                 entrySet().iterator().next();
     }
 
@@ -66,8 +69,7 @@ public class DualControlReader {
         this.sslContext = sslContext;
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
-        Map<String, char[]> map = new TreeMap();
-        Map<String, char[]> submissions = readMap();
+        readSubmissions();
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
@@ -85,56 +87,58 @@ public class DualControlReader {
     private static char[] combineSplitPassword(char[] password, char[] other) {
         StringBuilder builder = new StringBuilder();
         builder.append(password);
+        builder.append('+');
         builder.append(other);
         return builder.toString().toCharArray();
     }
 
-    private Map<String, char[]> readMap() throws Exception {
-        logger.info("readMap SSL port " + PORT);
+    private void readSubmissions() throws Exception {
+        logger.info("readSubmissions SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
         serverSocket.setNeedClientAuth(true);
-        return readMap(serverSocket);
+        read(serverSocket);
     }
 
-    private Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
-        Map<String, char[]> map = new TreeMap();
+    private void read(SSLServerSocket serverSocket) throws Exception {
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
                 throw new Exception("Invalid remote address "
                         + socket.getInetAddress().getHostAddress());
             } else {
-                String name = new X500Name(socket.getSession().getPeerPrincipal().
-                        getName()).getCommonName();
-                names.add(name);
-                if (names.contains(name)) {
-                    throw new Exception("Duplicate submission from " + name);
-                } else {
-                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                    dos.writeUTF(purpose);
-                    DataInputStream dis = new DataInputStream(socket.getInputStream());
-                    char[] password = readChars(dis);
-                    String responseMessage = "Received " + name;
-                    String invalidMessage = new DualControlPasswordVerifier(
-                            VellumProperties.systemProperties).getInvalidMessage(password);
-                    if (invalidMessage != null) {
-                        throw new Exception(responseMessage + ": " + invalidMessage);
-                    }
-                    map.put(name, password);
-                    if (true) {
-                        responseMessage += " " + new Base32().encodeAsString(
-                                Digests.sha1(Chars.getAsciiBytes(password)));
-                    }
-                    dos.writeUTF(responseMessage);
-                    logger.info(responseMessage);
-                }
+                read(socket);
             }
             socket.close();
         }
         serverSocket.close();
-        return map;
+    }
+    
+    private void read(SSLSocket socket) throws Exception {
+        String name = new X500Name(socket.getSession().getPeerPrincipal().
+                getName()).getCommonName();
+        if (names.contains(name)) {
+            throw new Exception("Duplicate submission from " + name);
+        }
+        names.add(name);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF(purpose);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        char[] password = readChars(dis);
+        String responseMessage = "Received " + name;
+        String invalidMessage = new DualControlPasswordVerifier(
+                System.getProperties()).getInvalidMessage(password);
+        if (invalidMessage != null) {
+            throw new Exception(responseMessage + ": " + invalidMessage);
+        }
+        map.put(name, password);
+        if (true) {
+            responseMessage += " " + new Base32().encodeAsString(
+                    Digests.sha1(Chars.getAsciiBytes(password)));
+        }
+        dos.writeUTF(responseMessage);
+        logger.info(responseMessage);
     }
 
     public Set<String> getNames() {

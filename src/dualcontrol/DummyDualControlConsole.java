@@ -20,11 +20,8 @@
  */
 package dualcontrol;
 
-import java.io.BufferedReader;
-import vellum.util.VellumProperties;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
@@ -45,7 +42,7 @@ public abstract class DummyDualControlConsole {
         } else {
             try {
                 submit(DualControlSSLContextFactory.createSSLContext(
-                        VellumProperties.systemProperties), 
+                        System.getProperties()), 
                         args[0], args[1].toCharArray());
             } catch (Exception e) {
                 logger.error(e.getMessage());
