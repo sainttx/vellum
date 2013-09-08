@@ -1,5 +1,5 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -53,7 +53,7 @@ public class CryptoServer {
             throws Exception {
         dualControlSession.configure(keyStoreLocation, storePass, purpose);
         ServerSocket serverSocket = DualControlSSLContextFactory.createSSLContext(
-                VellumProperties.systemProperties).getServerSocketFactory().
+                System.getProperties()).getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = null;

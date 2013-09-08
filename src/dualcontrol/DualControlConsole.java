@@ -1,5 +1,5 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -40,14 +40,14 @@ public class DualControlConsole {
 
     public static void main(String[] args) throws Exception {
         Socket socket = DualControlSSLContextFactory.createSSLContext(
-                VellumProperties.systemProperties).getSocketFactory().
+                System.getProperties()).getSocketFactory().
                 createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
         char[] password = System.console().readPassword(
                 "Enter password for " + purpose + ": ");
         String invalidMessage = new DualControlPasswordVerifier(
-                VellumProperties.systemProperties).getInvalidMessage(password);
+                System.getProperties()).getInvalidMessage(password);
         if (invalidMessage != null) {
             System.err.println(invalidMessage);
         } else {

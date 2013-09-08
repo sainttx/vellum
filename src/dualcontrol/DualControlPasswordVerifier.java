@@ -1,5 +1,5 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -20,6 +20,7 @@
  */
 package dualcontrol;
 
+import java.util.Properties;
 import vellum.util.VellumProperties;
 
 /**
@@ -31,12 +32,13 @@ public class DualControlPasswordVerifier {
     final int minPasswordLength;
     final int minWordCount;
 
-    public DualControlPasswordVerifier(VellumProperties properties) {
-        verifyPasswordComplexity = properties.getBoolean(
+    public DualControlPasswordVerifier(Properties properties) {
+        VellumProperties props = new VellumProperties(properties);
+        verifyPasswordComplexity = props.getBoolean(
                 "dualcontrol.verifyPasswordComplexity", false);
-        minPasswordLength = properties.getInt(
+        minPasswordLength = props.getInt(
                 "dualcontrol.minPasswordLength", 18);
-        minWordCount = properties.getInt(
+        minWordCount = props.getInt(
                 "dualcontrol.minWordCount", 7);
     }
     
