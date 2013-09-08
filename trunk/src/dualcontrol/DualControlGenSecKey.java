@@ -20,6 +20,8 @@
  */
 package dualcontrol;
 
+import java.io.File;
+import java.io.FileInputStream;
 import vellum.util.VellumProperties;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
@@ -58,23 +60,26 @@ public class DualControlGenSecKey {
     }
 
     public void call(Properties properties) throws Exception {
+        configureMain(new VellumProperties(properties));
         sslContext = DualControlSSLContextFactory.createSSLContext(properties);
         String purpose = "new key " + keyAlias;
         KeyStore keyStore = generate(properties, new DualControlReader().readDualMap(
                 purpose, submissionCount, sslContext));
+        if (new File(keyStoreLocation).exists()) {
+            throw new Exception("keystore file already exists: " + keyStoreLocation);
+        }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
         clear();
-
     }
 
     public KeyStore generate(Properties properties,
             Map<String, char[]> dualPasswordMap) throws Exception {
-        configure(new VellumProperties(properties));
+        configureGenerate(new VellumProperties(properties));
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
-        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation,
-                keyStoreType, keyStorePassword);
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);        
         setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
         return keyStore;
     }
@@ -85,26 +90,29 @@ public class DualControlGenSecKey {
         for (String dualAlias : dualPasswordMap.keySet()) {
             char[] dualPassword = dualPasswordMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
+            logger.info("alias " + alias);
             KeyStore.ProtectionParameter prot =
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
-            logger.info("alias " + alias);
         }
     }
 
-    private void configure(VellumProperties properties) throws Exception {
+    private void configureMain(VellumProperties properties) throws Exception {
         submissionCount = properties.getInt("dualcontrol.submissions", 3);
-        keyAlias = properties.getString("alias");
         keyStoreLocation = properties.getString("keystore");
-        keyStoreType = properties.getString("storetype");
-        keyAlg = properties.getString("keyalg");
-        keySize = properties.getInt("keysize");
         keyStorePassword = properties.getPassword("storepass", null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword("storepass: ");
         }
     }
 
+    private void configureGenerate(VellumProperties properties) throws Exception {
+        keyAlias = properties.getString("alias");
+        keyStoreType = properties.getString("storetype");
+        keyAlg = properties.getString("keyalg");
+        keySize = properties.getInt("keysize");
+    }
+    
     private void clear() {
         Arrays.fill(keyStorePassword, (char) 0);
         for (char[] password : dualPasswordMap.values()) {
