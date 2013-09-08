@@ -25,7 +25,7 @@ Then if one admin is on vacation or otherwise indisposed, that's OK because we o
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password to be entered by a single admin via the console, we introduce <tt>!DualControlGenSecKey</tt> which will wait for multiple password submissions via SSL.
+Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password to be entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
 
 {{{
 public class DualControlGenSecKey {
