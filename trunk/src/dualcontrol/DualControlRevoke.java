@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 public class DualControlRevoke {
 
     final static Logger logger = Logger.getLogger(DualControlRevoke.class);
-    private VellumProperties properties = VellumProperties.systemProperties;
+    private VellumProperties properties = new VellumProperties(System.getProperties());
     private String username = properties.getString("dualcontrol.username");
     private String keyAlias = properties.getString("alias");
     private String keyStoreLocation = properties.getString("keystore");
