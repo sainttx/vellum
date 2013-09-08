@@ -351,7 +351,7 @@ We observe the following logs when testing <tt>!DualControlGenSecKey</tt>.
 {{{
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
-INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] readSubmissions SSL port 4444
 INFO [DualControlReader] Received evanx
 INFO [DualControlReader] Received henty
 INFO [DualControlReader] Received brent
@@ -367,6 +367,7 @@ public class DualControlReader {
     private String purpose;
     private int submissionCount;
     private SSLContext sslContext;
+    private Map<String, char[]> map = new TreeMap();
     
     public Map<String, char[]> readDualMap(String purpose, int submissionCount,
             SSLContext sslContext) throws Exception {
@@ -375,8 +376,7 @@ public class DualControlReader {
         this.sslContext = sslContext;
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
-        Map<String, char[]> map = new TreeMap();
-        Map<String, char[]> submissions = readMap();
+        readSubmissions();
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
@@ -395,65 +395,67 @@ public class DualControlReader {
 
 The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
 
-We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
+We invoke <tt>readSubmissions()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
 
 {{{
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
-    private Map<String, char[]> readMap() throws Exception {
+    private void readSubmissions() throws Exception {
         logger.info("readMap SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
         serverSocket.setNeedClientAuth(true);
-        return readMap(serverSocket);
+        read(serverSocket);
     }
 }}}
 
 where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
 
-We accumulate the required number of submissions in a loop.
-
 {{{    
-    private Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
-        Map<String, char[]> map = new TreeMap();
+    private void read(SSLServerSocket serverSocket) throws Exception {
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
                 throw new Exception("Invalid remote address "
                         + socket.getInetAddress().getHostAddress());
             } else {
-                String name = new X500Name(socket.getSession().getPeerPrincipal().
-                        getName()).getCommonName();
-                names.add(name);
-                if (names.contains(name)) {
-                    throw new Exception("Duplicate submission from " + name);
-                } else {
-                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                    dos.writeUTF(purpose);
-                    DataInputStream dis = new DataInputStream(socket.getInputStream());
-                    char[] password = readChars(dis);
-                    String responseMessage = "Received " + name;
-                    String invalidMessage = new DualControlPasswordVerifier(
-                            VellumProperties.systemProperties).getInvalidMessage(password);
-                    if (invalidMessage != null) {
-                        throw new Exception(responseMessage + ": " + invalidMessage);
-                    }
-                    map.put(name, password);
-                    if (true) {
-                        responseMessage += " " + new Base32().encodeAsString(
-                                Digests.sha1(Chars.getAsciiBytes(password)));
-                    }
-                    dos.writeUTF(responseMessage);
-                    logger.info(responseMessage);
-                }
+                read(socket);
             }
             socket.close();
         }
         serverSocket.close();
-        return map;
+    }
+}}}
+
+where we accumulate the required number of submissions in a loop.
+
+{{{    
+    private void read(SSLSocket socket) throws Exception {
+        String name = new X500Name(socket.getSession().getPeerPrincipal().
+                getName()).getCommonName();
+        names.add(name);
+        if (names.contains(name)) {
+            throw new Exception("Duplicate submission from " + name);
+        }
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF(purpose);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        char[] password = readChars(dis);
+        String responseMessage = "Received " + name;
+        String invalidMessage = new DualControlPasswordVerifier(
+                VellumProperties.systemProperties).getInvalidMessage(password);
+        if (invalidMessage != null) {
+            throw new Exception(responseMessage + ": " + invalidMessage);
+        }
+        map.put(name, password);
+        if (true) {
+            responseMessage += " " + new Base32().encodeAsString(
+                    Digests.sha1(Chars.getAsciiBytes(password)));
+        }
+        dos.writeUTF(responseMessage);
     }
 }}}
 
