@@ -364,9 +364,9 @@ So our <tt>!DualControlReader</tt> utility class handles reading split knowledge
 
 {{{
 public class DualControlReader {
-    String purpose;
-    int submissionCount;
-    SSLContext sslContext;
+    private String purpose;
+    private int submissionCount;
+    private SSLContext sslContext;
     
     public Map<String, char[]> readDualMap(String purpose, int submissionCount,
             SSLContext sslContext) throws Exception {
