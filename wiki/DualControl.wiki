@@ -37,12 +37,12 @@ public class DualControlGenSecKey {
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
         keySize = properties.getInt("keysize");
-        return call(DualControlSSLContextFactory.createSSLContext(properties));
+        return handle(DualControlSSLContextFactory.createSSLContext(properties));
     }
     
-    private KeyStore call(SSLContext sslContext) throws Exception {
+    private KeyStore handle(SSLContext sslContext) throws Exception {
         String purpose = "new key " + keyAlias;
-        Map<String, char[]> dualMap = new DualControlReader().readDualMap(
+        dualPasswordMap = new DualControlReader().readDualMap(
                 purpose, submissionCount, sslContext);
         char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
@@ -50,16 +50,22 @@ public class DualControlGenSecKey {
         SecretKey secretKey = keyGenerator.generateKey();
         KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
+        setEntry(keyStore, secretKey);
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        clearMap();
+        Arrays.fill(keyStorePassword, (char)0);
+        return keyStore;
+    }
+    
+    private void setEntry(KeyStore keyStore, SecretKey secretKey) throws Exception {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
-        for (String dualAlias : dualMap.keySet()) {
-            char[] dualPassword = dualMap.get(dualAlias);
+        for (String dualAlias : dualPasswordMap.keySet()) {
+            char[] dualPassword = dualPasswordMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
             KeyStore.ProtectionParameter prot = 
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
         }
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-        return keyStore;
     }
 }
 }}}
