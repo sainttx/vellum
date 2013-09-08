@@ -142,7 +142,7 @@ We designed this class from the ground up to be readily testable, so let's test 
 Let's run <tt>!DualControlGenSecKey</tt> from the command-line with the prerequisite <tt>-D</tt> options.
 
 {{{
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=18 \
+  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
