@@ -4,19 +4,22 @@
  */
 package dualcontrol;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import static junit.framework.Assert.*;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import javax.crypto.SecretKey;
 import org.junit.Test;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.util.Lists;
 
 /**
  *
@@ -37,7 +40,7 @@ public class DualControlTest {
     KeyStore hentyKeyStore;
     KeyStore travsKeyStore;
     Properties properties = new Properties();
-    private Map<String, char[]> dualPasswordMap = new HashMap();
+    private Map<String, char[]> dualPasswordMap = new TreeMap();
 
     public DualControlTest() {
     }
@@ -56,16 +59,22 @@ public class DualControlTest {
         properties.put("keyalg", "AES");
         properties.put("keysize", "192");
         DualControlGenSecKey instance = new DualControlGenSecKey();
-        KeyStore keyStore = instance.generate(properties, dualPasswordMap);
-        assertTrue(Collections.list(keyStore.aliases()).size() == 3);
-        String alias = Collections.list(keyStore.aliases()).get(0);
-        System.out.println(alias);
-        assertEquals("dek2013-brent-evanx", alias);
-        KeyStore.Entry entry = keyStore.getEntry(alias, 
-                new KeyStore.PasswordProtection("bbbb+eeee".toCharArray()));
-        System.out.println(entry);
+        KeyStore keyStore = instance.createKeyStore(properties, dualPasswordMap);
+        assertEquals(3, Collections.list(keyStore.aliases()).size());
+        assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
+        SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
+        assertEquals("AES", key.getAlgorithm());
+        assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
+                "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
     }
     
+    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
+            throws GeneralSecurityException {
+        KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
+                keyAlias, new KeyStore.PasswordProtection(keyPass));
+        return entry.getSecretKey();
+    }
+        
     private void initSSLKeyStores() throws Exception {
         appKeyStore = createSSLKeyStore("app");
         brentKeyStore = createSSLKeyStore("brent");
