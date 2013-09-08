@@ -302,7 +302,7 @@ A follow-up article will discuss this further, and conclude that we might want a
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and what-not.
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and so on.
 
 These are used to create an <tt>SSLContext</tt>, in particular for opening an <tt>SSLSocket</tt> in <tt>!DualControlConsole</tt>, and for creating an <tt>SSLServerSocket</tt> in <tt>!DualControlReader</tt>.
 
