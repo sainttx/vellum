@@ -436,25 +436,21 @@ where we accumulate the required number of submissions in a loop.
     private void read(SSLSocket socket) throws Exception {
         String name = new X500Name(socket.getSession().getPeerPrincipal().
                 getName()).getCommonName();
-        names.add(name);
         if (names.contains(name)) {
             throw new Exception("Duplicate submission from " + name);
         }
+        names.add(name);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
         String responseMessage = "Received " + name;
         String invalidMessage = new DualControlPasswordVerifier(
-                VellumProperties.systemProperties).getInvalidMessage(password);
+                System.getProperties()).getInvalidMessage(password);
         if (invalidMessage != null) {
             throw new Exception(responseMessage + ": " + invalidMessage);
         }
         map.put(name, password);
-        if (true) {
-            responseMessage += " " + new Base32().encodeAsString(
-                    Digests.sha1(Chars.getAsciiBytes(password)));
-        }
         dos.writeUTF(responseMessage);
     }
 }}}
