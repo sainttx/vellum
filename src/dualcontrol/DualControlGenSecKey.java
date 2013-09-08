@@ -42,7 +42,6 @@ public class DualControlGenSecKey {
     private String keyStoreType;
     private String keyAlg;
     private int keySize;
-    private SSLContext sslContext;
 
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
@@ -60,11 +59,10 @@ public class DualControlGenSecKey {
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
         keySize = properties.getInt("keysize");
-        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
-        return call();
+        return call(DualControlSSLContextFactory.createSSLContext(properties));
     }
     
-    private KeyStore call() throws Exception {
+    private KeyStore call(SSLContext sslContext) throws Exception {
         String purpose = "new key " + keyAlias;
         Map<String, char[]> dualMap = new DualControlReader().readDualMap(
                 purpose, submissionCount, sslContext);
