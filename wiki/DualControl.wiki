@@ -137,6 +137,8 @@ We designed this class from the ground up, or refactored it, to be readily testa
     }
 }}}
 
+<i>Software that is not pleasantly testable has unpleasant quality issues, and we aint got time for that!</i>
+
 <h4>Usage demo</h4>
 
 Let's run <tt>!DualControlGenSecKey</tt> from the command-line.
