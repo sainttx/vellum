@@ -21,7 +21,6 @@
 package dualcontrol;
 
 import java.io.File;
-import java.io.FileInputStream;
 import vellum.util.VellumProperties;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
@@ -55,16 +54,16 @@ public class DualControlGenSecKey {
         try {
             new DualControlGenSecKey().call(System.getProperties());
         } catch (DualControlException e) {
-            logger.error(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 
     public void call(Properties properties) throws Exception {
-        configureMain(new VellumProperties(properties));
+        configure(new VellumProperties(properties));
         sslContext = DualControlSSLContextFactory.createSSLContext(properties);
         String purpose = "new key " + keyAlias;
-        KeyStore keyStore = generate(properties, new DualControlReader().readDualMap(
-                purpose, submissionCount, sslContext));
+        KeyStore keyStore = createKeyStore(properties, new DualControlReader().
+                readDualMap(purpose, submissionCount, sslContext));
         if (new File(keyStoreLocation).exists()) {
             throw new Exception("keystore file already exists: " + keyStoreLocation);
         }
@@ -72,9 +71,9 @@ public class DualControlGenSecKey {
         clear();
     }
 
-    public KeyStore generate(Properties properties,
+    public KeyStore createKeyStore(Properties properties,
             Map<String, char[]> dualPasswordMap) throws Exception {
-        configureGenerate(new VellumProperties(properties));
+        configureKeyStore(new VellumProperties(properties));
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
@@ -97,7 +96,7 @@ public class DualControlGenSecKey {
         }
     }
 
-    private void configureMain(VellumProperties properties) throws Exception {
+    private void configure(VellumProperties properties) throws Exception {
         submissionCount = properties.getInt("dualcontrol.submissions", 3);
         keyStoreLocation = properties.getString("keystore");
         keyStorePassword = properties.getPassword("storepass", null);
@@ -106,7 +105,7 @@ public class DualControlGenSecKey {
         }
     }
 
-    private void configureGenerate(VellumProperties properties) throws Exception {
+    private void configureKeyStore(VellumProperties properties) throws Exception {
         keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
