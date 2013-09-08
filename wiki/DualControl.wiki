@@ -137,7 +137,7 @@ We redesigned this class from the ground up to be readily testable, so let's tes
     }
 }}}
 
-Incidently, we refactored <tt>!DualControlGenSecKey</tt> to return a <tt>KeyStore</tt> for inspection, especially for the unit test above. <i>It's only taken me 30 years to learn that one should not write code per se - one should write tests with their accompanying testable code. And that <tt>public</tt> API's should be especially engineered for testing. Software without automated testing is generally unpleasant to maintain, and risky to deploy. As such it should be avoided, if not refactored as such.</i>
+Incidently, we refactored <tt>!DualControlGenSecKey</tt> to return a <tt>!KeyStore</tt> for inspection, especially for the unit test above. <i>It's only taken me 30 years to learn that one should not write code per se - one should write tests with their accompanying testable code. And that <tt>public</tt> API's should be especially engineered for testing. Software without automated testing is generally unpleasant to maintain, and risky to deploy. As such it should be avoided, if not refactored as such.</i>
 
 <h4>Usage demo</h4>
 
