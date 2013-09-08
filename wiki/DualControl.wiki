@@ -20,7 +20,7 @@ PCI DSS requires that manual key management requires "split knowledge and dual c
 
 We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "dual password" combination.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" combination.
 Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to be on hand to load the key when restart our app.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
@@ -29,47 +29,116 @@ Step 1 for any data security endeavour is to generate an encryption key, which p
 
 {{{
 public class DualControlGenSecKey {
-    ...
-    public KeyStore call(VellumProperties properties) throws Exception {
+    private int submissionCount;
+    private String keyAlias;
+    private String keyStoreLocation;
+    private String keyStoreType;
+    private String keyAlg;
+    private int keySize;
+    private char[] keyStorePassword;
+    private Map<String, char[]> dualPasswordMap;
+    private SSLContext sslContext;
+
+    private void configureMain(VellumProperties properties) throws Exception {
         submissionCount = properties.getInt("dualcontrol.submissions", 3);
-        keyAlias = properties.getString("alias");
         keyStoreLocation = properties.getString("keystore");
+        keyStorePassword = properties.getPassword("storepass", null);
+        if (keyStorePassword == null) {
+            keyStorePassword = System.console().readPassword("storepass: ");
+        }
+    }
+
+    private void configureKeyStore(VellumProperties properties) throws Exception {
+        keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
         keySize = properties.getInt("keysize");
-        return handle(DualControlSSLContextFactory.createSSLContext(properties));
     }
-    
-    private KeyStore handle(SSLContext sslContext) throws Exception {
+    ...
+}
+}}}
+
+where we configure via properties e.g. system properties.
+
+{{{
+    public static void main(String[] args) throws Exception {
+        try {
+            new DualControlGenSecKey().call(System.getProperties());
+        } catch (DualControlException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void call(Properties properties) throws Exception {
+        configureMain(new VellumProperties(properties));
+        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
         String purpose = "new key " + keyAlias;
-        dualPasswordMap = new DualControlReader().readDualMap(
-                purpose, submissionCount, sslContext);
-        char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
+        KeyStore keyStore = createKeyStore(properties, new DualControlReader().
+                readDualMap(purpose, submissionCount, sslContext));
+        if (new File(keyStoreLocation).exists()) {
+            throw new Exception("keystore file already exists: " + keyStoreLocation);
+        }
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        clear();
+    }
+}}}
+
+where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL.
+
+We create a <tt>KeyStore</tt> as follows.
+{{{      
+    public KeyStore createKeyStore(Properties properties,
+            Map<String, char[]> dualPasswordMap) throws Exception {
+        configureKeyStore(new VellumProperties(properties));
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
-        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
-                keyStoreType, keyStorePassword);
-        setEntry(keyStore, secretKey);
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-        clearMap();
-        Arrays.fill(keyStorePassword, (char)0);
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);        
+        setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
         return keyStore;
     }
-    
-    private void setEntry(KeyStore keyStore, SecretKey secretKey) throws Exception {
+}}}
+
+where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
+
+
+{{{ 
+    private static void setEntry(KeyStore keyStore, SecretKey secretKey,
+            String keyAlias, Map<String, char[]> dualPasswordMap) throws Exception {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualPasswordMap.keySet()) {
             char[] dualPassword = dualPasswordMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
-            KeyStore.ProtectionParameter prot = 
+            KeyStore.ProtectionParameter prot =
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
         }
     }
-}
 }}}
-where <tt>!DualControlReader</tt> provides a map of "dual aliases" and their concatenated "dual passwords." For each duo, we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
+
+We designed this class from the ground up to be readily testable, so let's test it :)
+
+{{{
+    @Test
+    public void genKeyTest() throws Exception {
+        dualPasswordMap.put("brent-evanx", "bbbb+eeee".toCharArray());
+        dualPasswordMap.put("brent-henty", "bbbb+hhhh".toCharArray());
+        dualPasswordMap.put("evanx-henty", "eeee+hhhh".toCharArray());
+        properties.put("alias", "dek2013");
+        properties.put("storetype", "JCEKS");
+        properties.put("keyalg", "AES");
+        properties.put("keysize", "192");
+        DualControlGenSecKey instance = new DualControlGenSecKey();
+        KeyStore keyStore = instance.createKeyStore(properties, dualPasswordMap);
+        assertTrue(Collections.list(keyStore.aliases()).size() == 3);
+        assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
+        SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
+        assertEquals("AES", key.getAlgorithm());
+        assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
+                "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
+    }
+}}}
 
 <h4>Demo</h4>
 
@@ -93,7 +162,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these three keys are one and the same! However each copy has a different key password, which is actually a combination of a pair of personal passwords, which we call a "dual password."
+Actually these three keys are one and the same! However each copy has a different key password, which is actually a combination of a pair of personal passwords, which we call a "split password."
 
 <h4><tt>!DualControlConsole</tt></h4>
 
@@ -166,12 +235,13 @@ public class DualControlPasswordVerifier {
     final int minPasswordLength;
     final int minWordCount;
 
-    public DualControlPasswordVerifier(VellumProperties properties) {
-        verifyPasswordComplexity = properties.getBoolean(
-                "dualcontrol.verifyPasswordComplexity", true);
-        minPasswordLength = properties.getInt(
+    public DualControlPasswordVerifier(Properties properties) {
+        VellumProperties props = new VellumProperties(properties);
+        verifyPasswordComplexity = props.getBoolean(
+                "dualcontrol.verifyPasswordComplexity", false);
+        minPasswordLength = props.getInt(
                 "dualcontrol.minPasswordLength", 18);
-        minWordCount = properties.getInt(
+        minWordCount = props.getInt(
                 "dualcontrol.minWordCount", 7);
     }
     
@@ -227,7 +297,7 @@ mach=50
 
 However, if we assume some combination of the 2000 most common words is used for a passphrase, then 18 characters is not enough, <i>D'oh!</i>
 
-We note that our desired minimum length applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the dual password.
+We note that our desired minimum length applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>, with a large number of iterations e.g. 500k, so that it takes a few seconds to load the key i.e. a quite tolerable startup delay.
 
@@ -239,23 +309,25 @@ These are used to create an <tt>SSLContext</tt>, in particular for opening an <t
 
 {{{
 public class DualControlSSLContextFactory {    
-
-    public static SSLContext createSSLContext(VellumProperties properties) throws Exception {
-        String keyStoreLocation = properties.getString("dualcontrol.ssl.keyStore");
+    ...
+    public static SSLContext createSSLContext(Properties properties) throws Exception {
+        VellumProperties props = new VellumProperties(properties);
+        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", null);
+        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", 
+                null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
         }
-        char[] keyPassword = properties.getPassword("dualcontrol.ssl.keyPassword", 
+        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
                 keyStorePassword);
         String trustStoreLocation =
-                properties.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
+                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
         char[] trustStorePassword =
-                properties.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
@@ -263,7 +335,6 @@ public class DualControlSSLContextFactory {
         Arrays.fill(trustStorePassword, (char) 0);
         return sslContext;
     }
-    ...
 }
 }}}
 
@@ -454,23 +525,18 @@ Our app above invokes the <tt>loadKey()</tt> method below to do the legwork.
 {{{
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
+    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass,
             String alias, String purpose) throws Exception {
-        char[] dualPass = null;
-        try {
-            KeyStore dualKeyStore = 
-                    DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
-            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
-                "key " + alias + " for " + purpose);
-            String dualAlias = entry.getKey();
-            dualPass = entry.getValue();
-            alias = alias + "-" + dualAlias;
-            return (SecretKey) dualKeyStore.getKey(alias, dualPass);
-        } finally {
-            if (dualPass != null) {
-                Arrays.fill(dualPass, (char) 0);            
-            }
-        }        
+        KeyStore dualKeyStore =
+                DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
+        purpose = "key " + alias + " for " + purpose;
+        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
+        String dualAlias = entry.getKey();
+        char[] dualPass = entry.getValue();
+        alias = alias + "-" + dualAlias;
+        SecretKey key = (SecretKey) dualKeyStore.getKey(alias, dualPass);
+        Arrays.fill(dualPass, (char) 0);
+        return key;
     }
 }
 }}}
