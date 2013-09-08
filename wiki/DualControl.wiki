@@ -403,12 +403,16 @@ We invoke <tt>readSubmissions()</tt> to listen for submissions via an <tt>SSLSer
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
     private void readSubmissions() throws Exception {
-        logger.info("readMap SSL port " + PORT);
+        logger.info("readSubmissions SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
-        serverSocket.setNeedClientAuth(true);
-        read(serverSocket);
+        try {
+            serverSocket.setNeedClientAuth(true);
+            read(serverSocket);
+        } finally {
+            serverSocket.close();
+        }
     }
 }}}
 
@@ -418,15 +422,16 @@ where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e.
     private void read(SSLServerSocket serverSocket) throws Exception {
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
-            if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                throw new Exception("Invalid remote address "
-                        + socket.getInetAddress().getHostAddress());
-            } else {
+            try {
+                if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
+                    throw new Exception("Invalid remote address "
+                            + socket.getInetAddress().getHostAddress());
+                }
                 read(socket);
+            } finally {
+                socket.close();
             }
-            socket.close();
         }
-        serverSocket.close();
     }
 }}}
 
@@ -446,13 +451,13 @@ where we accumulate the required number of submissions in a loop.
         char[] password = readChars(dis);
         String responseMessage = "Received " + name;
         String invalidMessage = new DualControlPasswordVerifier(
-                System.getProperties()).getInvalidMessage(password);
+                properties).getInvalidMessage(password);
         if (invalidMessage != null) {
             throw new Exception(responseMessage + ": " + invalidMessage);
         }
         map.put(name, password);
         dos.writeUTF(responseMessage);
-    }
+        logger.info(responseMessage);
 }}}
 
 where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
