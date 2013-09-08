@@ -264,7 +264,7 @@ public class DualControlPasswordVerifier {
 
 PCI DSS mandates alphanumeric passwords, and <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> says uppercase and lowercase, and we wanna cover all the bases.
 
-One might argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits. Having said that, we can easily capitalise the first letter of our passphrase, and add a fullstop or even exclamation mark at the end, and replace 'o' with 0 and/or 'e' with 3, to keep everyone happy.
+One might argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits. Having said that, we can easily capitalise the first letter of our passphrase, add a punctuation mark, and somewhere replace an 'o' with 0 and/or 'e' with 3, to keep everyone happy.
 
 Passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might require longer passphrases, rather than short complex passwords.
 
