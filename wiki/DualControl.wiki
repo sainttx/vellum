@@ -39,7 +39,7 @@ public class DualControlGenSecKey {
     private Map<String, char[]> dualPasswordMap;
     private SSLContext sslContext;
 
-    private void configureMain(VellumProperties properties) throws Exception {
+    private void configure(VellumProperties properties) throws Exception {
         submissionCount = properties.getInt("dualcontrol.submissions", 3);
         keyStoreLocation = properties.getString("keystore");
         keyStorePassword = properties.getPassword("storepass", null);
@@ -70,7 +70,7 @@ where we configure via properties e.g. system properties in the <tt>main()</tt> 
     }
 
     public void call(Properties properties) throws Exception {
-        configureMain(new VellumProperties(properties));
+        configure(new VellumProperties(properties));
         sslContext = DualControlSSLContextFactory.createSSLContext(properties);
         String purpose = "new key " + keyAlias;
         KeyStore keyStore = createKeyStore(properties, new DualControlReader().
@@ -98,12 +98,7 @@ We create a <tt>KeyStore</tt> as follows.
         setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
         return keyStore;
     }
-}}}
 
-where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
-
-
-{{{ 
     private static void setEntry(KeyStore keyStore, SecretKey secretKey,
             String keyAlias, Map<String, char[]> dualPasswordMap) throws Exception {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
@@ -116,6 +111,8 @@ where for each duo we programmatically create a <tt>!KeyStore</tt> entry contain
         }
     }
 }}}
+
+where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
 We designed this class from the ground up to be readily testable, so let's test it :)
 
