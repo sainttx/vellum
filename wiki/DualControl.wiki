@@ -114,7 +114,7 @@ We create a <tt>!KeyStore</tt> as follows.
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-We designed this class from the ground up to be readily testable, so let's test it :)
+We refactored this class from the ground up to be readily testable, so let's test it :)
 
 {{{
     @Test
@@ -136,6 +136,8 @@ We designed this class from the ground up to be readily testable, so let's test 
                 "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
     }
 }}}
+
+Software that is not pleasantly testable has unpleasant quality issues, and we aint got time for that!
 
 <h4>Usage demo</h4>
 
