@@ -128,7 +128,7 @@ We designed this class from the ground up, or refactored it, to be readily testa
         properties.put("keysize", "256");
         DualControlGenSecKey instance = new DualControlGenSecKey();
         KeyStore keyStore = instance.createKeyStore(properties, dualPasswordMap);
-        assertTrue(Collections.list(keyStore.aliases()).size() == 3);
+        assertEquals(3, Collections.list(keyStore.aliases()).size());
         assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
         SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
         assertEquals("AES", key.getAlgorithm());
