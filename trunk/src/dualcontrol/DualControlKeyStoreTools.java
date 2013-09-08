@@ -1,5 +1,5 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 public class DualControlKeyStoreTools {
 
     final static Logger logger = Logger.getLogger(DualControlKeyStoreTools.class);
+    
     public static char[] getKeyStorePassword() {
         String storePasswordString = System.getProperty("storepass");
         if (storePasswordString != null) {

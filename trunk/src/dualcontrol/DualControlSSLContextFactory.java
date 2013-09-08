@@ -1,5 +1,5 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Properties;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -43,23 +44,24 @@ public class DualControlSSLContextFactory {
                 keyStorePassword, keyStoreLocation, keyStorePassword);
     }
         
-    public static SSLContext createSSLContext(VellumProperties properties) throws Exception {
-        String keyStoreLocation = properties.getString("dualcontrol.ssl.keyStore");
+    public static SSLContext createSSLContext(Properties properties) throws Exception {
+        VellumProperties props = new VellumProperties(properties);
+        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", 
+        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", 
                 null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
         }
-        char[] keyPassword = properties.getPassword("dualcontrol.ssl.keyPassword", 
+        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
                 keyStorePassword);
         String trustStoreLocation =
-                properties.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
+                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
         char[] trustStorePassword =
-                properties.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);

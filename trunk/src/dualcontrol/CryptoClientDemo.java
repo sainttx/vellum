@@ -1,5 +1,5 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -42,7 +42,7 @@ public class CryptoClientDemo {
 
     private void run(String hostAddress, int port, byte[] data) throws Exception {
         Socket socket = DualControlSSLContextFactory.createSSLContext(
-                VellumProperties.systemProperties).getSocketFactory().
+                System.getProperties()).getSocketFactory().
                 createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeShort(data.length);

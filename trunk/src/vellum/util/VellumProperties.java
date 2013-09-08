@@ -1,5 +1,5 @@
 /*
-       Source https://code.google.com/p/vellum by @evanxsummers
+ * Source https://code.google.com/p/vellum by @evanxsummers
 
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements. See the NOTICE file
@@ -26,19 +26,17 @@ import java.util.Properties;
  *
  * @author evan.summers
  */
-public class VellumProperties {
+public class VellumProperties extends Properties {
 
     public static final VellumProperties systemProperties = 
             new VellumProperties(System.getProperties());
     
-    Properties properties;
-
     public VellumProperties(Properties properties) {
-        this.properties = properties;
+        super.putAll(properties);
     }
         
     public String getString(String propertyName) {
-        String propertyValue = properties.getProperty(propertyName);
+        String propertyValue = super.getProperty(propertyName);
         if (propertyValue == null) {
             throw new RuntimeException("Missing -D property: " + propertyName);
         }
@@ -46,7 +44,7 @@ public class VellumProperties {
     } 
 
     public String getString(String propertyName, String defaultValue) {
-        String propertyValue = properties.getProperty(propertyName);
+        String propertyValue = super.getProperty(propertyName);
         if (propertyValue == null) {
             return defaultValue;
         }
@@ -54,7 +52,7 @@ public class VellumProperties {
     } 
     
     public int getInt(String propertyName) {
-        String propertyString = properties.getProperty(propertyName);
+        String propertyString = super.getProperty(propertyName);
         if (propertyString == null) {
             throw new RuntimeException("Missing -D property: " + propertyName);
         }
@@ -62,7 +60,7 @@ public class VellumProperties {
     }
     
     public int getInt(String propertyName, int defaultValue) {
-        String propertyString = properties.getProperty(propertyName);
+        String propertyString = super.getProperty(propertyName);
         if (propertyString == null) {
             return defaultValue;
         }
@@ -70,7 +68,7 @@ public class VellumProperties {
     }
     
     public boolean getBoolean(String propertyName, boolean defaultValue) {
-        String string = properties.getProperty(propertyName);
+        String string = super.getProperty(propertyName);
         if (string == null) {
             return defaultValue;
         }
@@ -78,10 +76,10 @@ public class VellumProperties {
     }    
     
     public char[] getPassword(String propertyName, char[] defaultValue) {
-        String passwordString = properties.getProperty(propertyName);
-        if (passwordString == null) {
+        String string = super.getProperty(propertyName);
+        if (string == null) {
             return defaultValue;
         }
-        return passwordString.toCharArray();
+        return string.toCharArray();
     }
 }
