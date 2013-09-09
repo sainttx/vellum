@@ -12,7 +12,7 @@ The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-PCI DSS suggests encrypting our data-encryption key (DEK) in order to protect it. Fantastic, we now have a "key-encryption key" (KEK) that requires even more protection ;)
+PCI DSS suggests encrypting our data-encryption key (DEK) in order to protect it. Great, we now have a "key-encryption key" (KEK) that requires even more protection ;)
 
 PCI DSS requires that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. The glaring problem is that sysadmins are a single person, with god-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
