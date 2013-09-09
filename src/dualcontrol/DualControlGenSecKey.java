@@ -68,7 +68,7 @@ public class DualControlGenSecKey {
             throw new Exception("keystore file already exists: " + keyStoreLocation);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-        clear();
+        Arrays.fill(keyStorePassword, (char) 0);
     }
 
     public KeyStore createKeyStore(Properties properties,
@@ -90,9 +90,10 @@ public class DualControlGenSecKey {
             char[] dualPassword = dualPasswordMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
             logger.info("alias " + alias);
-            KeyStore.ProtectionParameter prot =
+            KeyStore.PasswordProtection prot =
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
+            prot.destroy();
         }
     }
 
@@ -113,16 +114,5 @@ public class DualControlGenSecKey {
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
         keySize = properties.getInt("keysize");
-    }
-    
-    private void clear() {
-        if (keyStorePassword != null) {
-            Arrays.fill(keyStorePassword, (char) 0);
-        }
-        for (char[] password : dualPasswordMap.values()) {
-            if (password != null) {
-                Arrays.fill(password, (char) 0);
-            }
-        }
     }
 }
