@@ -14,18 +14,19 @@ The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia
 
 PCI DSS suggests encrypting our data-encryption key (DEK) in order to protect it. Great, we now have a "key-encryption key" (KEK) that requires even more protection ;)
 
-PCI DSS requires that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. The glaring problem is that sysadmins are a single person, with god-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
+PCI DSS mandates that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. 
+
+The glaring problem is that sysadmins are a single person, with god-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
 <h4>Solution overview</h4>
 
 We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" combination.
-Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to be on hand to load the key when restart our app.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when restart our app.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password to be entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
+Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
 
 {{{
 public class DualControlGenSecKey {
@@ -58,7 +59,7 @@ public class DualControlGenSecKey {
 }
 }}}
 
-where we configure from <tt>System</tt> properties i.e. <tt>-D</tt> options.
+where we configure from <tt>System</tt> properties i.e. <tt>-D</tt> options, as follows.
 
 {{{
     public static void main(String[] args) throws Exception {
