@@ -102,6 +102,9 @@ public class DualControlGenSecKey {
         keyStorePassword = properties.getPassword("storepass", null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword("storepass: ");
+            if (keyStorePassword == null) {
+                throw new Exception("No console for storepass");
+            }
         }
     }
 
@@ -113,9 +116,13 @@ public class DualControlGenSecKey {
     }
     
     private void clear() {
-        Arrays.fill(keyStorePassword, (char) 0);
+        if (keyStorePassword != null) {
+            Arrays.fill(keyStorePassword, (char) 0);
+        }
         for (char[] password : dualPasswordMap.values()) {
-            Arrays.fill(password, (char) 0);
+            if (password != null) {
+                Arrays.fill(password, (char) 0);
+            }
         }
     }
 }
