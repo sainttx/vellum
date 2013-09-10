@@ -55,7 +55,8 @@ public class GeneratedRsaKeyPair {
         privateKey = keyPair.getPrivateKey();
         X500Name x500Name = new X500Name(dname);
         certReq = keyPair.getCertRequest(x500Name);
-        cert = keyPair.getSelfCertificate(x500Name, startDate, TimeUnit.DAYS.toSeconds(validityDays));
+        cert = keyPair.getSelfCertificate(x500Name, startDate, 
+                TimeUnit.DAYS.toSeconds(validityDays));
     }
 
     public void sign(PrivateKey signerKey, X509Certificate signerCert) throws Exception {

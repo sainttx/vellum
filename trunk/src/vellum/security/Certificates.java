@@ -184,31 +184,38 @@ public class Certificates {
         return request;
     }
 
-    public static X509Certificate signCert(PrivateKey privateKey, X509Certificate signerCert,
+    public static X509Certificate signCert(PrivateKey signingKey, X509Certificate signingCert,
             PKCS10 certReq, Date startDate, int validityDays) throws Exception {
         String sigAlgName = "SHA256WithRSA";
         Date endDate = new Date(startDate.getTime() + TimeUnit.DAYS.toMillis(validityDays));
-        CertificateValidity interval = new CertificateValidity(startDate, endDate);
-        byte[] encoded = signerCert.getEncoded();
+        CertificateValidity validity = new CertificateValidity(startDate, endDate);
+        byte[] encoded = signingCert.getEncoded();
         X509CertImpl signerCertImpl = new X509CertImpl(encoded);
         X509CertInfo signerCertInfo = (X509CertInfo) signerCertImpl.get(
                 X509CertImpl.NAME + "." + X509CertImpl.INFO);
         X500Name issuer = (X500Name) signerCertInfo.get(
                 X509CertInfo.SUBJECT + "." + CertificateSubjectName.DN_NAME);
         Signature signature = Signature.getInstance(sigAlgName);
-        signature.initSign(privateKey);
+        signature.initSign(signingKey);
+        X509CertImpl cert = new X509CertImpl(buildCertInfo(issuer, certReq, 
+                sigAlgName, validity));
+        cert.sign(signingKey, sigAlgName);
+        return cert;
+    }
+    
+    private static X509CertInfo buildCertInfo(X500Name issuer, PKCS10 certReq, 
+            String sigAlgName, CertificateValidity validity) throws Exception {
         X509CertInfo info = new X509CertInfo();
-        info.set(X509CertInfo.VALIDITY, interval);
+        info.set(X509CertInfo.VALIDITY, validity);
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
                 new java.util.Random().nextInt() & 0x7fffffff));
         info.set(X509CertInfo.VERSION, new CertificateVersion(CertificateVersion.V3));
-        info.set(X509CertInfo.ALGORITHM_ID, new CertificateAlgorithmId(AlgorithmId.get(sigAlgName)));
+        info.set(X509CertInfo.ALGORITHM_ID, 
+                new CertificateAlgorithmId(AlgorithmId.get(sigAlgName)));
         info.set(X509CertInfo.ISSUER, new CertificateIssuerName(issuer));
         info.set(X509CertInfo.KEY, new CertificateX509Key(certReq.getSubjectPublicKeyInfo()));
         info.set(X509CertInfo.SUBJECT, new CertificateSubjectName(certReq.getSubjectName()));
-        X509CertImpl cert = new X509CertImpl(info);
-        cert.sign(privateKey, sigAlgName);
-        return cert;
+        return info;
     }
 
     public static String getSubjectDname(String pem) throws Exception {
