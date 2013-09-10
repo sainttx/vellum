@@ -65,10 +65,13 @@ Our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> op
 
 {{{
     public static void main(String[] args) throws Exception {
+        DualControlGenSecKey instance = new DualControlGenSecKey();
         try {
-            new DualControlGenSecKey().call(System.getProperties());
+            instance.call(System.getProperties());
         } catch (DualControlException e) {
             System.err.println(e.getMessage());
+        } finally {
+            instance.clear();
         }
     }
 
@@ -82,7 +85,6 @@ Our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> op
             throw new Exception("keystore file already exists: " + keyStoreLocation);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-        clear();
     }
 }}}
 
