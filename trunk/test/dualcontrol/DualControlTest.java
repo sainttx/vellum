@@ -67,6 +67,15 @@ public class DualControlTest {
         assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
                 "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
     }
+
+    @Test
+    public void genConsole() throws Exception {
+    }
+
+    @Test
+    public void genReader() throws Exception {
+    }
+    
     
     private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
             throws GeneralSecurityException {
