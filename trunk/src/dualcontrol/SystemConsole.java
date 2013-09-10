@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol.console;
+package dualcontrol;
 
 import java.io.PrintWriter;
 
@@ -26,9 +26,15 @@ import java.io.PrintWriter;
  *
  * @author evan.summers
  */
-public interface MockableConsole {
+public class SystemConsole implements MockableConsole {
 
-    public char[] readPassword(String prompt, Object ... args);
+    @Override
+    public char[] readPassword(String prompt, Object ... args) {
+        return System.console().readPassword(prompt, args);
+    }        
     
-    public PrintWriter writer();
+    @Override
+    public PrintWriter writer() {
+        return System.console().writer();
+    }    
 }
