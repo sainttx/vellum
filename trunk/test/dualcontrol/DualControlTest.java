@@ -5,42 +5,41 @@
 package dualcontrol;
 
 import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import static junit.framework.Assert.*;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import javax.crypto.SecretKey;
+import javax.net.ssl.SSLContext;
 import org.junit.Test;
+import sun.security.x509.X500Name;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.security.GeneratedRsaKeyPair;
 import vellum.util.Lists;
 
 /**
  *
+ * @see DualControlReader
+ * @see DualControlGenSecKey
+ * @see DualControlConsole
+ * @see MockConsole
  * @author evan
  */
 public class DualControlTest {
-
     static Logr logger = LogrFactory.getLogger(DualControlTest.class);
 
-    char[] keyStorePass = "test1234".toCharArray();
-    String dekAlias = "dek2013";
-    String dekKeyStoreLocation = dekAlias;
-    KeyStore dekKeyStore;
-    SecretKey dek;
-    KeyStore appKeyStore;
-    KeyStore brentKeyStore;
-    KeyStore evanxKeyStore;
-    KeyStore hentyKeyStore;
-    KeyStore travsKeyStore;
-    Properties properties = new Properties();
+    private KeyStore trustStore;
+    private char[] keyStorePass = "test1234".toCharArray();
+    private Properties properties = new Properties();
     private Map<String, char[]> dualPasswordMap = new TreeMap();
+    private Map<String, KeyStore> keyStoreMap = new TreeMap();
+    private Map<String, SSLContext> sslContextMap = new TreeMap();
 
     public DualControlTest() {
     }
@@ -69,13 +68,93 @@ public class DualControlTest {
     }
 
     @Test
-    public void genConsole() throws Exception {
+    public void testReader() throws Exception {
+        initSSL();
+        DualReaderThread readerThread = new DualReaderThread();
+        SubmitterThread brentThread = new SubmitterThread("brent", "bbbb".toCharArray());
+        SubmitterThread evanxThread = new SubmitterThread("evanx", "eeee".toCharArray());
+        readerThread.start();
+        brentThread.start();
+        evanxThread.start();
+        readerThread.join(2000);
+        assertTrue(evanxThread.console.getOutput().startsWith("Enter password for app:"));
+        assertNull(evanxThread.exception);
+        assertNull(brentThread.exception);
+        assertNull(readerThread.exception);
+        assertEquals("brent-evanx", readerThread.dualEntry.getKey());
+        assertEquals("bbbb+eeee", new String(readerThread.dualEntry.getValue()));
     }
 
-    @Test
-    public void genReader() throws Exception {
+    private void initSSL() throws Exception {
+        trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(null, keyStorePass);
+        buildKeyStore("app");
+        buildKeyStore("brent");
+        buildKeyStore("evanx");
+        for (String name : keyStoreMap.keySet()) {
+            sslContextMap.put(name, DualControlSSLContextFactory.createSSLContext(
+                keyStoreMap.get(name), 
+                keyStorePass, trustStore));
+        }
+    }    
+
+    class SubmitterThread extends Thread  {
+        String alias;
+        MockConsole console;
+        Exception exception = null;
+        
+        public SubmitterThread(String alias, char[] password) {
+            super(alias);
+            this.alias = alias;
+            this.console = new MockConsole(password);
+        }
+        
+        @Override
+        public void run() {
+            try {
+                DualControlConsole.call(properties, console, sslContextMap.get(alias));
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                exception = e;
+            }
+        }
     }
     
+    class DualReaderThread extends Thread  {
+        Map.Entry<String, char[]> dualEntry = null;
+        Exception exception = null;
+        
+        @Override
+        public void run() {
+            try {
+                dualEntry = DualControlReader.readDualEntry("app",
+                        sslContextMap.get("app"));
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                exception = e;
+            }
+        }
+    }
+    
+    private KeyStore buildKeyStore(String alias) throws Exception {
+        KeyStore keyStore = createSSLKeyStore(alias, 1);
+        X509Certificate cert = (X509Certificate) keyStore.getCertificate(alias);
+        String dname = cert.getSubjectDN().getName();
+        assertEquals(alias, new X500Name(dname).getCommonName());
+        keyStoreMap.put(alias, keyStore);
+        trustStore.setCertificateEntry(alias, cert);
+        return keyStore;
+    }
+    
+    private KeyStore createSSLKeyStore(String name, int validityDays) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(null, keyStorePass);
+        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        keyPair.generate("CN=" + name, new Date(), validityDays);
+        X509Certificate[] chain = new X509Certificate[] {keyPair.getCert()};
+        keyStore.setKeyEntry(name, keyPair.getPrivateKey(), keyStorePass, chain);
+        return keyStore;
+    }    
     
     private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
             throws GeneralSecurityException {
@@ -84,22 +163,4 @@ public class DualControlTest {
         return entry.getSecretKey();
     }
         
-    private void initSSLKeyStores() throws Exception {
-        appKeyStore = createSSLKeyStore("app");
-        brentKeyStore = createSSLKeyStore("brent");
-        evanxKeyStore = createSSLKeyStore("evanx");
-        hentyKeyStore = createSSLKeyStore("henty");
-        travsKeyStore = createSSLKeyStore("travs");
-    }    
-    
-    private KeyStore createSSLKeyStore(String name) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(null, keyStorePass);
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-        generator.initialize(2048);
-        KeyPair keyPair = generator.generateKeyPair();
-        X509Certificate[] chain = new X509Certificate[1];
-        keyStore.setKeyEntry(name, keyPair.getPrivate(), keyStorePass, chain);
-        return keyStore;
-    }    
 }
