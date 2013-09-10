@@ -46,15 +46,17 @@ public class DualControlGenSecKey {
     private String keyAlg;
     private int keySize;
     private char[] keyStorePassword;
-    private Map<String, char[]> dualPasswordMap;
     private SSLContext sslContext;
 
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
+        DualControlGenSecKey instance = new DualControlGenSecKey();
         try {
-            new DualControlGenSecKey().call(System.getProperties());
+            instance.call(System.getProperties());
         } catch (DualControlException e) {
             System.err.println(e.getMessage());
+        } finally {
+            instance.clear();
         }
     }
 
@@ -68,7 +70,6 @@ public class DualControlGenSecKey {
             throw new Exception("keystore file already exists: " + keyStoreLocation);
         }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-        Arrays.fill(keyStorePassword, (char) 0);
     }
 
     public KeyStore createKeyStore(Properties properties,
@@ -114,5 +115,9 @@ public class DualControlGenSecKey {
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
         keySize = properties.getInt("keysize");
+    }
+    
+    private void clear() {
+        Arrays.fill(keyStorePassword, (char) 0);        
     }
 }
