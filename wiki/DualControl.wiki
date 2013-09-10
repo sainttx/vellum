@@ -59,7 +59,7 @@ public class DualControlGenSecKey {
 }
 }}}
 
-where <tt>VellumProperties</tt> is an utilitarian extension of <tt>java.util.Properties</tt>.
+where <tt>!VellumProperties</tt> is a simple utilitarian extension of <tt>java.util.Properties</tt>.
 
 Our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, as follows.
 
