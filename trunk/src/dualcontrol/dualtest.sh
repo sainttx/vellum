@@ -79,7 +79,7 @@ javaksc() {
   java \
     -Ddualcontrol.ssl.keyStore=$keystore \
     -Ddualcontrol.ssl.trustStore=$truststore \
-    -Ddualcontrol.minPasswordLength=4 \
+    -Ddualcontrol.verifyPassword=false \
     $@
   exitCode=$?
   if [ $exitCode -ne 0 ]
