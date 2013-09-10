@@ -481,7 +481,6 @@ where we accumulate the required number of submissions in a loop.
         }
         map.put(name, password);
         dos.writeUTF(responseMessage);
-        logger.info(responseMessage);
 }}}
 
 where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
