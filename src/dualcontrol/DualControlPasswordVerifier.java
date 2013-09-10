@@ -28,12 +28,15 @@ import vellum.util.VellumProperties;
  * @author evan.summers
  */
 public class DualControlPasswordVerifier {
+    final boolean verifyPassword;
     final boolean verifyPasswordComplexity;
     final int minPasswordLength;
     final int minWordCount;
 
     public DualControlPasswordVerifier(Properties properties) {
         VellumProperties props = new VellumProperties(properties);
+        verifyPassword = props.getBoolean(
+                "dualcontrol.verifyPassword", false);
         verifyPasswordComplexity = props.getBoolean(
                 "dualcontrol.verifyPasswordComplexity", false);
         minPasswordLength = props.getInt(
@@ -43,17 +46,19 @@ public class DualControlPasswordVerifier {
     }
     
     public String getInvalidMessage(char[] password) throws Exception {
-        if (password.length < minPasswordLength) {
-            return "Password too short";
-        }
-        if (countWords(password) < minWordCount) {
-            return "Too few words in passphrase";
-        }
-        if (verifyPasswordComplexity) {
-            if (!containsLetter(password) || !containsUpperCase(password) || 
-                    !containsLowerCase(password) || !containsDigit(password) || 
-                    !containsPunctuation(password)) {
-                return "Insufficient password complexity";
+        if (verifyPassword) {
+            if (password.length < minPasswordLength) {
+                return "Password too short";
+            }
+            if (countWords(password) < minWordCount) {
+                return "Too few words in passphrase";
+            }
+            if (verifyPasswordComplexity) {
+                if (!containsLetter(password) || !containsUpperCase(password)
+                        || !containsLowerCase(password) || !containsDigit(password)
+                        || !containsPunctuation(password)) {
+                    return "Insufficient password complexity";
+                }
             }
         }
         return null;
