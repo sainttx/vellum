@@ -53,15 +53,19 @@ public class DualControlReader {
     private int submissionCount;
     private SSLContext sslContext;
     private Set<String> names = new TreeSet();
-    private Map<String, char[]> map = new TreeMap();
     private Map<String, char[]> submissions = new TreeMap();
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        return new DualControlReader().readDualMap(purpose, 2,
-                DualControlSSLContextFactory.createSSLContext(System.getProperties())).
-                entrySet().iterator().next();
+        return readDualEntry(purpose, DualControlSSLContextFactory.createSSLContext(
+                System.getProperties()));
     }
 
+    public static Map.Entry<String, char[]> readDualEntry(String purpose,
+            SSLContext sslContext) throws Exception {
+        return new DualControlReader().readDualMap(purpose, 2, sslContext).
+                entrySet().iterator().next();
+    }
+        
     public Map<String, char[]> readDualMap(String purpose, int submissionCount,
             SSLContext sslContext) throws Exception {
         this.purpose = purpose;
@@ -70,18 +74,19 @@ public class DualControlReader {
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
         readSubmissions();
+        Map<String, char[]> dualMap = new TreeMap();
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
                     char[] dualPassword = combineSplitPassword(
                             submissions.get(name), submissions.get(otherName));
-                    map.put(dualAlias, dualPassword);
+                    dualMap.put(dualAlias, dualPassword);
                     logger.info("readDualMap dualAlias: " + dualAlias);
                 }
             }
         }
-        return map;
+        return dualMap;
     }
 
     private static char[] combineSplitPassword(char[] password, char[] other) {
@@ -106,7 +111,7 @@ public class DualControlReader {
     }
 
     private void read(SSLServerSocket serverSocket) throws Exception {
-        while (map.size() < submissionCount) {
+        while (submissions.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
                 if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
@@ -137,7 +142,7 @@ public class DualControlReader {
         if (invalidMessage != null) {
             throw new Exception(responseMessage + ": " + invalidMessage);
         }
-        map.put(name, password);
+        submissions.put(name, password);
         if (true) {
             responseMessage += " " + new Base32().encodeAsString(
                     Digests.sha1(Chars.getAsciiBytes(password)));

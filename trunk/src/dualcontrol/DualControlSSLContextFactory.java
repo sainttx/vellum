@@ -83,6 +83,11 @@ public class DualControlSSLContextFactory {
         keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
+        return createSSLContext(keyStore, keyPassword, trustStore);
+    }
+    
+    public static SSLContext createSSLContext(KeyStore keyStore, char[] keyPassword,
+            KeyStore trustStore) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
@@ -91,5 +96,5 @@ public class DualControlSSLContextFactory {
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         return sslContext;
-    }
+    }    
 }

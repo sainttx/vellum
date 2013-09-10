@@ -91,7 +91,7 @@ javaksc() {
 
 jc() {
   sleep 1 
-  javaks $1 dualcontrol.DummyDualControlConsole $@
+  javaks $1 dualcontrol.DummyDualControlConsole $2
 }
 
 jc2() {

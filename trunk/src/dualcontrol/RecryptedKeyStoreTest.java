@@ -63,33 +63,33 @@ public class RecryptedKeyStoreTest {
         for (int i = 0; i < repeat; i++) {
             test();
         }
-        Log.infof(logger, "average %dms", Millis.elapsed(millis)/repeat);
+        Logf.info(logger, "average %dms", Millis.elapsed(millis)/repeat);
     }
     
     private void test() throws Exception {
         String data = "4000555500001111";
         long millis = System.currentTimeMillis();
         SecretKey dek = KeyGenerators.generateKey(keyAlg, keySize);
-        Log.infof(logger, "generate %dms", Millis.elapsed(millis));
+        Logf.info(logger, "generate %dms", Millis.elapsed(millis));
         VellumCipher cipher = AESCiphers.getCipher(dek);
         millis = System.currentTimeMillis();
         Encrypted encrypted = cipher.encrypt(data.getBytes());
-        Log.infof(logger, "encrypt %dms", Millis.elapsed(millis));
+        Logf.info(logger, "encrypt %dms", Millis.elapsed(millis));
         millis = System.currentTimeMillis();
         Log.info(logger, Bytes.toString(cipher.decrypt(encrypted)));
-        Log.infof(logger, "decrypt %dms", Millis.elapsed(millis));
+        Logf.info(logger, "decrypt %dms", Millis.elapsed(millis));
         millis = System.currentTimeMillis();
         RecryptedKeyStores.storeKeyForce(iterationCount, dek, keyStoreLocation, 
                 keyStoreType, keyAlias, keyPass);
-        Log.infof(logger, "store %dms", Millis.elapsed(millis));
+        Logf.info(logger, "store %dms", Millis.elapsed(millis));
         millis = System.currentTimeMillis();
         dek = RecryptedKeyStores.loadKey(keyStoreLocation, 
                 keyStoreType, keyAlias, keyPass);
-        Log.infof(logger, "load %dms", Millis.elapsed(millis));
+        Logf.info(logger, "load %dms", Millis.elapsed(millis));
         Log.info(logger, keyAlias, dek.getAlgorithm());
         millis = System.currentTimeMillis();
         encrypted = cipher.encrypt(data.getBytes());
-        Log.infof(logger, "encrypt %dms", Millis.elapsed(millis));
+        Logf.info(logger, "encrypt %dms", Millis.elapsed(millis));
         Log.info(logger, Bytes.toString(cipher.decrypt(encrypted)));
     }
 }

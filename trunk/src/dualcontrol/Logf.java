@@ -20,23 +20,28 @@
  */
 package dualcontrol;
 
-import dualcontrol.console.MockConsole;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
-public abstract class DummyDualControlConsole {
-    final static Logger logger = Logger.getLogger(DummyDualControlConsole.class);
+public class Logf {
 
-    public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            logger.error("missing argument");
-        } else {
-            MockConsole console = new MockConsole(args[0].toCharArray());
-            DualControlConsole.call(System.getProperties(), console);
-            logger.info(console.getOutput());
-        }
-    }    
+    public static void debug(Logger logger, String format, Object ... args) {
+        logger.debug(String.format(format, args));        
+    }
+    
+    public static void info(Logger logger, String format, Object ... args) {
+        logger.info(String.format(format, args));        
+    }
+
+    public static void warn(Logger logger, String format, Object ... args) {
+        logger.warn(String.format(format, args));        
+    }
+
+    public static void error(Logger logger, String format, Object ... args) {
+        logger.error(String.format(format, args));        
+    }
+    
 }

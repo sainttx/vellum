@@ -18,25 +18,23 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package dualcontrol.console;
 
-import dualcontrol.console.MockConsole;
-import org.apache.log4j.Logger;
+import java.io.PrintWriter;
 
 /**
  *
  * @author evan.summers
  */
-public abstract class DummyDualControlConsole {
-    final static Logger logger = Logger.getLogger(DummyDualControlConsole.class);
+public class SystemConsole implements MockableConsole {
 
-    public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            logger.error("missing argument");
-        } else {
-            MockConsole console = new MockConsole(args[0].toCharArray());
-            DualControlConsole.call(System.getProperties(), console);
-            logger.info(console.getOutput());
-        }
+    @Override
+    public char[] readPassword(String prompt, Object ... args) {
+        return System.console().readPassword(prompt, args);
+    }        
+    
+    @Override
+    public PrintWriter writer() {
+        return System.console().writer();
     }    
 }
