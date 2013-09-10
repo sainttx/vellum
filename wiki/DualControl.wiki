@@ -190,7 +190,7 @@ public class DualControlConsole {
 
 where we provide <tt>public</tt> methods suitable for our unit test e.g. to provide a <tt>!MockConsole</tt> whereas the <tt>main()</tt> method passes the <tt>System</tt> properties and console. 
 
-The properties are used to create an <tt>SSLContext</tt> from <tt>-D</tt> options specifying the keystore and truststore, whereas our test will provide the <tt>SSLContext</tt> constructed from an <tt>KeyStore</tt> that is created programmatically. 
+The properties are used to create an <tt>SSLContext</tt> from <tt>-D</tt> options specifying the keystore and truststore, whereas our test will provide the <tt>SSLContext</tt> constructed from an <tt>!KeyStore</tt> that is created programmatically. 
 
 {{{
     public static void call(Properties properties, MockableConsole console,
@@ -559,144 +559,9 @@ public class DualControlSessions {
 
 where we read the dual info using the aforementioned <tt>!DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
 
-<h4>Mock console</h4>
-
-{{{
-public interface MockableConsole {
-
-    public char[] readPassword(String prompt, Object ... args);    
-
-    public PrintWriter writer();
-}
-}}}
-
-{{{
-public class SystemConsole implements MockableConsole {
-
-    @Override
-    public char[] readPassword(String prompt, Object ... args) {
-        return System.console().readPassword(prompt, args);
-    }        
-    
-    @Override
-    public PrintWriter writer() {
-        return System.console().writer();
-    }    
-}
-}}}
-
-{{{
-public class MockConsole implements MockableConsole {
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(stringWriter);
-    char[] password;
-    
-    public MockConsole(char[] password) {
-        this.password = password;
-    }
-
-    public String getOutput() {
-        return stringWriter.toString();
-    }
-
-    @Override
-    public char[] readPassword(String prompt, Object ... args) {
-        printWriter.printf(prompt, args);
-        return password.clone();
-    }        
-    
-    @Override
-    public PrintWriter writer() {
-        return printWriter;
-    }            
-}
-}}}
-
-Of course we need a unit test for a <tt>MockConsole</tt> ;)
-
-{{{
-}}}
-
 <h4>Unit test</h4>
 
-In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlReader</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads and <i>crumbled-up cookie things</i> like mock consoles and SSL contexts ;)
-
-{{{
-    @Test
-    public void testReader() throws Exception {
-        initSSL();
-        DualReaderThread readerThread = new DualReaderThread();
-        SubmitterThread brentThread = new SubmitterThread("brent", "bbbb".toCharArray());
-        SubmitterThread evanxThread = new SubmitterThread("evanx", "eeee".toCharArray());
-        readerThread.start();
-        brentThread.start();
-        evanxThread.start();
-        readerThread.join(2000);
-        assertTrue(evanxThread.console.getOutput().startsWith("Enter password for app:"));
-        assertNull(evanxThread.exception);
-        assertNull(brentThread.exception);
-        assertNull(readerThread.exception);
-        assertEquals("brent-evanx", readerThread.dualEntry.getKey());
-        assertEquals("bbbb+eeee", new String(readerThread.dualEntry.getValue()));
-    }
-}}}
-
-{{{
-    private void initSSL() throws Exception {
-        trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(null, keyStorePass);
-        buildKeyStore("app");
-        buildKeyStore("brent");
-        buildKeyStore("evanx");
-        for (String name : keyStoreMap.keySet()) {
-            sslContextMap.put(name, DualControlSSLContextFactory.createSSLContext(
-                keyStoreMap.get(name), 
-                keyStorePass, trustStore));
-        }
-    }    
-}}}
-
-{{{
-    class SubmitterThread extends Thread  {
-        String alias;
-        MockConsole console;
-        Exception exception = null;
-        
-        public SubmitterThread(String alias, char[] password) {
-            super(alias);
-            this.alias = alias;
-            this.console = new MockConsole(password);
-        }
-        
-        @Override
-        public void run() {
-            try {
-                DualControlConsole.call(properties, console, sslContextMap.get(alias));
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                exception = e;
-            }
-        }
-    }
-}}}
-
-{{{    
-    class DualReaderThread extends Thread  {
-        Map.Entry<String, char[]> dualEntry = null;
-        Exception exception = null;
-        
-        @Override
-        public void run() {
-            try {
-                dualEntry = DualControlReader.readDualEntry("app",
-                        sslContextMap.get("app"));
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                exception = e;
-            }
-        }
-    }
-}}}
+In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlReader</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads and <i>crumbled-up cookie things</i> like mock consoles and SSL context maps. This will be presented in a follow-on article, as this article is already too long.
 
 <h4>Crypto server</h4>
 
@@ -719,6 +584,8 @@ We propose keeping at least three copies of the same key, but where each copy is
 We present a <tt>!DualControlConsole</tt> utility for admins to submit their password remotely via SSL from an <tt>ssh</tt> terminal session, to our dual-controlled app.
 
 <h4>See also</h4>
+
+In "DualControl Mock Console" we will present a unit test for <tt>!DualControlReader</tt> and <tt>!DualControlConsole</tt> in concert - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>
 
 In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
