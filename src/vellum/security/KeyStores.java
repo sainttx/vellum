@@ -42,7 +42,8 @@ public class KeyStores {
 
     static Logr logger = LogrFactory.getLogger(KeyStores.class);
 
-    public static X509TrustManager loadTrustManager(TrustManagerFactory trustManagerFactory) throws Exception {
+    public static X509TrustManager loadTrustManager(TrustManagerFactory trustManagerFactory) 
+            throws Exception {
         for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
             if (trustManager instanceof X509TrustManager) {
                 return (X509TrustManager) trustManager;
@@ -70,7 +71,8 @@ public class KeyStores {
     public static SSLContext createSSLContext(KeyManagerFactory keyManagerFactory, 
             TrustManagerFactory trustManagerFactory) throws Exception {
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
+        sslContext.init(keyManagerFactory.getKeyManagers(), 
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
         return sslContext;
     }
     
