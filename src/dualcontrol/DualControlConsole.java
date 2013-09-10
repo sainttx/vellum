@@ -20,8 +20,6 @@
  */
 package dualcontrol;
 
-import dualcontrol.console.MockableConsole;
-import dualcontrol.console.SystemConsole;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

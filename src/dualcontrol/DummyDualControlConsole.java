@@ -20,7 +20,6 @@
  */
 package dualcontrol;
 
-import dualcontrol.console.MockConsole;
 import org.apache.log4j.Logger;
 
 /**
