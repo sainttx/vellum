@@ -20,12 +20,15 @@
  */
 package dualcontrol;
 
-import vellum.util.VellumProperties;
+import dualcontrol.console.MockableConsole;
+import dualcontrol.console.SystemConsole;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Properties;
+import javax.net.ssl.SSLContext;
 import vellum.security.Digests;
 import vellum.util.Chars;
 
@@ -39,29 +42,38 @@ public class DualControlConsole {
     private final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        Socket socket = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties()).getSocketFactory().
-                createSocket(HOST, PORT);
+        call(System.getProperties(), new SystemConsole());
+    }    
+
+    public static void call(Properties properties, 
+            MockableConsole console) throws Exception {
+        call(properties, console, 
+                DualControlSSLContextFactory.createSSLContext(properties));
+    }
+    
+    public static void call(Properties properties, MockableConsole console,
+            SSLContext sslContext) throws Exception {
+        Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
-        char[] password = System.console().readPassword(
+        char[] password = console.readPassword(
                 "Enter password for " + purpose + ": ");
         String invalidMessage = new DualControlPasswordVerifier(
-                System.getProperties()).getInvalidMessage(password);
+                properties).getInvalidMessage(password);
         if (invalidMessage != null) {
-            System.err.println(invalidMessage);
+            console.writer().println(invalidMessage);
         } else {
             String hash = Digests.sha1String(Chars.getBytes(password));
             Arrays.fill(password, (char) 0);
-            password = System.console().readPassword(
+            password = console.readPassword(
                     "Re-enter password for " + purpose + ": ");
             if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
-                System.err.println("Passwords don't match.");
+                console.writer().println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 writeChars(dos, password);
                 String message = dis.readUTF();
-                System.console().writer().println(message);
+                console.writer().println(message);
             }
             Arrays.fill(password, (char) 0);
         }
@@ -74,5 +86,9 @@ public class DualControlConsole {
             dos.writeChar(chars[i]);
         }
         return chars;
+    }
+
+    public static void submit(SSLContext sslContext, String purpose, 
+            String alias, char[] password) {
     }
 }
