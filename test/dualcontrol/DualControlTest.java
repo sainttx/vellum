@@ -25,10 +25,11 @@ import vellum.util.Lists;
 
 /**
  *
+ * @see MockConsole
+ * @see DualControlConsole
  * @see DualControlReader
  * @see DualControlGenSecKey
- * @see DualControlConsole
- * @see MockConsole
+ * 
  * @author evan
  */
 public class DualControlTest {
