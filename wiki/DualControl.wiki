@@ -585,7 +585,7 @@ We present a <tt>!DualControlConsole</tt> utility for admins to submit their pas
 
 <h4>See also</h4>
 
-In "Dual Control Mock Console" we will present a unit test for <tt>!DualControlReader</tt> and <tt>!DualControlConsole</tt> in concert - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>
+In "Dual Control Mock Console" we will present a unit test for <tt>!DualControlReader</tt> and <tt>!DualControlConsole</tt> in concert - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest.java</tt></a>
 
 In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
