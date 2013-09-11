@@ -54,9 +54,7 @@ public class DualControlGenSecKey {
     ...
 }
 }}}
-where <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/VellumProperties.java"><tt>!VellumProperties</tt></a> is a utilitarian extension of <tt>java.util.Properties</tt>. 
-
-Our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System<tt> console for entering the SSL keystore password.
+where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System<tt> console for entering the SSL keystore password.
 
 {{{
     public void call(VellumProperties properties, MockableConsole console) 
