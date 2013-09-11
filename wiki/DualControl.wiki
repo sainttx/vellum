@@ -164,8 +164,8 @@ INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
 INFO [DualControlReader] readSubmissions SSL port 4444
 INFO [DualControlReader] Received evanx KGV3SY3APDPPX6EI3BCXU7DW7BOI6EKM
-INFO [DualControlReader] Received brent SLZP3GMHTMGCIZVLQZEK7NR4JEBSG6OB
 INFO [DualControlReader] Received henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
+INFO [DualControlReader] Received brent SLZP3GMHTMGCIZVLQZEK7NR4JEBSG6OB
 INFO [DualControlReader] readDualMap dualAlias: brent-evanx
 INFO [DualControlReader] readDualMap dualAlias: brent-henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
