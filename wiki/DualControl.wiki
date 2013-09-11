@@ -40,51 +40,47 @@ public class DualControlGenSecKey {
     private Map<String, char[]> dualPasswordMap;
     private SSLContext sslContext;
 
-    private void configure(VellumProperties properties) throws Exception {
-        submissionCount = properties.getInt("dualcontrol.submissions", 3);
-        keyStoreLocation = properties.getString("keystore");
-        keyStorePassword = properties.getPassword("storepass", null);
-        if (keyStorePassword == null) {
-            keyStorePassword = System.console().readPassword(
-                    "Enter passphrase for keystore (%s): ", keyStoreLocation);
-        }
-    }
-
-    private void configureKeyStore(VellumProperties properties) throws Exception {
-        keyAlias = properties.getString("alias");
-        keyStoreType = properties.getString("storetype");
-        keyAlg = properties.getString("keyalg");
-        keySize = properties.getInt("keysize");
-    }
-    ...
-}
-}}}
-
-where <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/VellumProperties.java"><tt>!VellumProperties</tt></a> is a utilitarian extension of <tt>java.util.Properties</tt>.
-
-Our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, as follows.
-
-{{{
     public static void main(String[] args) throws Exception {
         DualControlGenSecKey instance = new DualControlGenSecKey();
         try {
-            instance.call(System.getProperties());
+            instance.call(new VellumProperties(System.getProperties()), 
+                    new SystemConsole());
         } catch (DualControlException e) {
-            System.err.println(e.getMessage());
+            instance.console.writer().println(e.getMessage());
         } finally {
             instance.clear();
         }
     }
+    ...
+}
+}}}
+where <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/util/VellumProperties.java"><tt>!VellumProperties</tt></a> is a utilitarian extension of <tt>java.util.Properties</tt>. 
 
-    public void call(Properties properties) throws Exception {
-        configure(new VellumProperties(properties));
+Our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System<tt> console for entering the SSL keystore password.
+
+{{{
+    public void call(VellumProperties properties, MockableConsole console) 
+            throws Exception {
+        this.console = console;
+        submissionCount = properties.getInt("dualcontrol.submissions", 3);
+        keyStoreLocation = properties.getString("keystore");
+        keyStorePassword = properties.getPassword("storepass", null);
+        keyAlias = properties.getString("alias");
+        if (keyStorePassword == null) {
+            keyStorePassword = console.readPassword(
+                    "Enter passphrase for keystore (%s): ", keyStoreLocation);
+            if (keyStorePassword == null) {
+                throw new Exception("No storepass from console");
+            }
+        }
+        if (new File(keyStoreLocation).exists()) {
+            throw new Exception(
+                    "Keystore file already exists: " + keyStoreLocation);
+        }
         sslContext = DualControlSSLContextFactory.createSSLContext(properties);
         String purpose = "new key " + keyAlias;
         KeyStore keyStore = createKeyStore(properties, new DualControlReader().
                 readDualMap(purpose, submissionCount, sslContext));
-        if (new File(keyStoreLocation).exists()) {
-            throw new Exception("keystore file already exists: " + keyStoreLocation);
-        }
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
     }
 }}}
@@ -93,9 +89,12 @@ where <tt>!DualControlReader</tt> provides a map of aliases and passwords, compo
 
 We create a <tt>!KeyStore</tt> as follows.
 {{{      
-    public KeyStore createKeyStore(Properties properties,
+    public KeyStore createKeyStore(VellumProperties properties,
             Map<String, char[]> dualPasswordMap) throws Exception {
-        configureKeyStore(new VellumProperties(properties));
+        keyAlias = properties.getString("alias");
+        keyStoreType = properties.getString("storetype");
+        keyAlg = properties.getString("keyalg");
+        keySize = properties.getInt("keysize");
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
@@ -160,7 +159,24 @@ Let's run <tt>!DualControlGenSecKey</tt> from the command-line.
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
 
-For example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
+For example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
+
+{{{
+INFO [DualControlReader] readDualMap submissionCount: 3
+INFO [DualControlReader] readDualMap purpose: new key dek2013
+INFO [DualControlReader] readSubmissions SSL port 4444
+INFO [DualControlReader] Received evanx KGV3SY3APDPPX6EI3BCXU7DW7BOI6EKM
+INFO [DualControlReader] Received brent SLZP3GMHTMGCIZVLQZEK7NR4JEBSG6OB
+INFO [DualControlReader] Received henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
+INFO [DualControlReader] readDualMap dualAlias: brent-evanx
+INFO [DualControlReader] readDualMap dualAlias: brent-henty
+INFO [DualControlReader] readDualMap dualAlias: evanx-henty
+INFO [DualControlGenSecKey] alias dek2013-brent-evanx
+INFO [DualControlGenSecKey] alias dek2013-brent-henty
+INFO [DualControlGenSecKey] alias dek2013-evanx-henty
+}}}
+
+We check that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
