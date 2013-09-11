@@ -20,74 +20,169 @@ The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-PCI DSS suggests encrypting our critical data-encryption key (DEK) in order to protect it. Fantastic, we now have a "key-encryption key" (KEK) that requires even more protection.
+PCI DSS suggests encrypting our data-encryption key (DEK) in order to protect it. Great, we now have a "key-encryption key" (KEK) that requires even more protection ;)
 
-PCI DSS requires that manual key management requires "split knowledge and dual control" of keys, e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. The glaring problem is that sysadmins are a single person, with God-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
+PCI DSS mandates that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. 
+
+The glaring problem is that sysadmins are a single person, with god-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
 <h4>Solution overview</h4>
 
 We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "dual password" combination.
-Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to be on hand to load the key when restart our app.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when we restart our app.
 
 <h4><tt>DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password to be entered by a single admin via the console, we introduce <tt>DualControlGenSecKey</tt> which will wait for multiple password submissions via SSL.
+Step 1 for any data security endeavour is to generate an encryption key, which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
 
 <pre>
 public class DualControlGenSecKey {
+    private int submissionCount;
+    private String keyAlias;
+    private String keyStoreLocation;
+    private String keyStoreType;
+    private String keyAlg;
+    private int keySize;
+    private char[] keyStorePassword;
+    private Map<String, char[]> dualPasswordMap;
+    private SSLContext sslContext;
+
+    public static void main(String[] args) throws Exception {
+        DualControlGenSecKey instance = new DualControlGenSecKey();
+        try {
+            instance.call(new VellumProperties(System.getProperties()), 
+                    new SystemConsole());
+        } catch (DualControlException e) {
+            instance.console.writer().println(e.getMessage());
+        } finally {
+            instance.clear();
+        }
+    }
     ...
-    public KeyStore call(VellumProperties properties) throws Exception {
+}
+</pre>
+where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console for entering the SSL keystore password.
+
+<pre>
+    public void call(VellumProperties properties, MockableConsole console) 
+            throws Exception {
+        this.console = console;
         submissionCount = properties.getInt("dualcontrol.submissions", 3);
-        keyAlias = properties.getString("alias");
         keyStoreLocation = properties.getString("keystore");
+        keyStorePassword = properties.getPassword("storepass", null);
+        keyAlias = properties.getString("alias");
+        if (keyStorePassword == null) {
+            keyStorePassword = console.readPassword(
+                    "Enter passphrase for keystore (%s): ", keyStoreLocation);
+            if (keyStorePassword == null) {
+                throw new Exception("No storepass from console");
+            }
+        }
+        if (new File(keyStoreLocation).exists()) {
+            throw new Exception(
+                    "Keystore file already exists: " + keyStoreLocation);
+        }
+        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
+        String purpose = "new key " + keyAlias;
+        KeyStore keyStore = createKeyStore(properties, new DualControlReader().
+                readDualMap(purpose, submissionCount, sslContext));
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+</pre>
+
+where <tt>DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL.
+
+We create a <tt>KeyStore</tt> as follows.
+<pre>      
+    public KeyStore createKeyStore(VellumProperties properties,
+            Map<String, char[]> dualPasswordMap) throws Exception {
+        keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
         keySize = properties.getInt("keysize");
-        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
-        return call();
-    }
-    
-    private KeyStore call() throws Exception {
-        String purpose = "new key " + keyAlias;
-        Map<String, char[]> dualMap = new DualControlReader().readDualMap(
-                purpose, submissionCount, sslContext);
-        char[] keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
-        KeyStore keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
-                keyStoreType, keyStorePassword);
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);        
+        setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
+        return keyStore;
+    }
+
+    private static void setEntry(KeyStore keyStore, SecretKey secretKey,
+            String keyAlias, Map<String, char[]> dualPasswordMap) throws Exception {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
-        for (String dualAlias : dualMap.keySet()) {
-            char[] dualPassword = dualMap.get(dualAlias);
+        for (String dualAlias : dualPasswordMap.keySet()) {
+            char[] dualPassword = dualPasswordMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
-            KeyStore.ProtectionParameter prot = 
+            KeyStore.ProtectionParameter prot =
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
         }
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-        return keyStore;
     }
-}
 </pre>
-where <tt>DualControlReader</tt> provides a map of "dual aliases" and their concatenated "dual passwords." For each duo, we programmatically create a <tt>KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-<h4>Demo</h4>
+where for each duo we programmatically create a <tt>KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-So let's test <tt>DualControlGenSecKey</tt>.
+We redesigned this class from the ground up to be readily testable, so let's test it :)
 
 <pre>
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=18 \
+    @Test
+    public void genKeyTest() throws Exception {
+        dualPasswordMap.put("brent-evanx", "bbbb+eeee".toCharArray());
+        dualPasswordMap.put("brent-henty", "bbbb+hhhh".toCharArray());
+        dualPasswordMap.put("evanx-henty", "eeee+hhhh".toCharArray());
+        properties.put("alias", "dek2013");
+        properties.put("storetype", "JCEKS");
+        properties.put("keyalg", "AES");
+        properties.put("keysize", "256");
+        DualControlGenSecKey instance = new DualControlGenSecKey();
+        KeyStore keyStore = instance.createKeyStore(properties, dualPasswordMap);
+        assertEquals(3, Collections.list(keyStore.aliases()).size());
+        assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
+        SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
+        assertEquals("AES", key.getAlgorithm());
+        assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
+                "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
+    }
+</pre>
+
+Incidently, we refactored <tt>DualControlGenSecKey</tt> to return a <tt>KeyStore</tt> for inspection, especially for the unit test above.
+
+One might argue that we should not write code per se - rather we should write tests with accompanying code. This naturally requires <tt>public</tt> methods specially engineered for our tests. 
+
+<h4>Usage demo</h4>
+
+Let's run <tt>DualControlGenSecKey</tt> from the command-line.
+
+<pre>
+  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
 </pre>
 
-where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, which is specified as 256bit AES, and "dek2013" is the alias to reference this key.  
+where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
 
-For example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. We see that <tt>DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
+For example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
+
+<pre>
+INFO [DualControlReader] readDualMap submissionCount: 3
+INFO [DualControlReader] readDualMap purpose: new key dek2013
+INFO [DualControlReader] readSubmissions SSL port 4444
+INFO [DualControlReader] Received evanx KGV3SY3APDPPX6EI3BCXU7DW7BOI6EKM
+INFO [DualControlReader] Received brent SLZP3GMHTMGCIZVLQZEK7NR4JEBSG6OB
+INFO [DualControlReader] Received henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
+INFO [DualControlReader] readDualMap dualAlias: brent-evanx
+INFO [DualControlReader] readDualMap dualAlias: brent-henty
+INFO [DualControlReader] readDualMap dualAlias: evanx-henty
+INFO [DualControlGenSecKey] alias dek2013-brent-evanx
+INFO [DualControlGenSecKey] alias dek2013-brent-henty
+INFO [DualControlGenSecKey] alias dek2013-evanx-henty
+</pre>
+
+We check that <tt>DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 <pre>
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
@@ -96,7 +191,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 </pre>
 
-Actually these three keys are one and the same! However each copy has a different key password, which is actually a combination of a pair of personal passwords, which we call a "dual password."
+Actually these three keys are one and the same! However each copy has a different key password, which is actually a combination of a pair of personal passwords, which we call a "split password."
 
 <h4><tt>DualControlConsole</tt></h4>
 
@@ -108,38 +203,53 @@ public class DualControlConsole {
     final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        Socket socket = DualControlSSLContextFactory.createSSLContext(
-                VellumProperties.systemProperties).getSocketFactory().
-                createSocket(HOST, PORT);
+        call(System.getProperties(), new SystemConsole());
+    }    
+
+    public static void call(Properties properties, 
+            MockableConsole console) throws Exception {
+        call(properties, console, 
+                DualControlSSLContextFactory.createSSLContext(properties));
+    }    
+    ...
+}
+</pre>
+
+where we provide <tt>public</tt> methods suitable for our unit test e.g. to provide a <tt>MockConsole</tt> whereas the <tt>main()</tt> method passes the <tt>System</tt> properties and console. 
+
+The properties are used to create an <tt>SSLContext</tt> from <tt>-D</tt> options specifying the keystore and truststore, whereas our test will provide the <tt>SSLContext</tt> constructed from an <tt>KeyStore</tt> that is created programmatically. 
+
+<pre>
+    public static void call(Properties properties, MockableConsole console,
+            SSLContext sslContext) throws Exception {
+        Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
-        char[] password = System.console().readPassword(
+        char[] password = console.readPassword(
                 "Enter password for " + purpose + ": ");
         String invalidMessage = new DualControlPasswordVerifier(
-                VellumProperties.systemProperties).getInvalidMessage(password);
+                properties).getInvalidMessage(password);
         if (invalidMessage != null) {
-            System.err.println(invalidMessage);
+            console.writer().println(invalidMessage);
         } else {
             String hash = Digests.sha1String(Chars.getBytes(password));
             Arrays.fill(password, (char) 0);
-            password = System.console().readPassword(
+            password = console.readPassword(
                     "Re-enter password for " + purpose + ": ");
             if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
-                System.err.println("Passwords don't match.");
+                console.writer().println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 writeChars(dos, password);
                 String message = dis.readUTF();
-                System.console().writer().println(message);
+                console.writer().println(message);
             }
             Arrays.fill(password, (char) 0);
         }
-        socket.close();        
+        socket.close();
     }
-    ...
-}
 </pre>
-where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>, and are authenticated and identified via our SSL cert, woohoo!
+where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>, and are authenticated and identified via our SSL cert - woohoo!
 
 <pre>
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
@@ -153,11 +263,11 @@ where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore pas
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known "bug" is that more Godly sysadmins can socially-engineer other less Godly admins to submit their passwords whilst a malicious socket server has been installed by the most Godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. Perhaps you can propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes? 
+A known "bug" is that more godly sysadmins can socially-engineer other less godly admins to submit their passwords whilst a malicious socket server has been installed by the most godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. Perhaps you can propose some measures to improve admins' level of confidence that they are not having the wool pulled over their eyes? 
 
-The workaround for such "bugs" in plain management-speak is that our "controls" as documented in our "policies and procedures" detect such attacks and dictate the immediate inauguration of appropriate remediation measures. <i>Yeah baby!</i>
+The workaround for such "bugs" in plain management-speak is that our "controls" as documented in our "policies and procedures" detect such attacks and dictate the immediate inauguration of appropriate remediation measures. <i>Sounds great!</i>
 
-On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
+On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. <i>The only problem is that root can also "have" the keys - D'oh!</i>
 
 <h4>Password complexity vs length</h4>
 
@@ -169,12 +279,13 @@ public class DualControlPasswordVerifier {
     final int minPasswordLength;
     final int minWordCount;
 
-    public DualControlPasswordVerifier(VellumProperties properties) {
-        verifyPasswordComplexity = properties.getBoolean(
-                "dualcontrol.verifyPasswordComplexity", true);
-        minPasswordLength = properties.getInt(
+    public DualControlPasswordVerifier(Properties properties) {
+        VellumProperties props = new VellumProperties(properties);
+        verifyPasswordComplexity = props.getBoolean(
+                "dualcontrol.verifyPasswordComplexity", false);
+        minPasswordLength = props.getInt(
                 "dualcontrol.minPasswordLength", 18);
-        minWordCount = properties.getInt(
+        minWordCount = props.getInt(
                 "dualcontrol.minWordCount", 7);
     }
     
@@ -198,9 +309,11 @@ public class DualControlPasswordVerifier {
 }
 </pre>
 
-We argue that password length is more practical than complexity, e.g. that a passphrase of 10 lowercase letters and spaces, is preferrable to an 8 character password with uppercase, lowercase and digits.
+PCI DSS mandates alphanumeric passwords, and <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> says uppercase and lowercase, and we wanna cover all the bases.
 
-Importantly, passphrases are easier to remember, so we don't have to write them down and stick them on our monitor. Consequently, we might choose not to enforce password complexity, but rather require longer passphrases. However PCI DSS mandates alphanumeric passwords, and <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> says uppercase and lowercase, and we gotta cover all dem bases.
+Passphrases are easier to remember than complex passwords. Perhaps we should enforce longer passphrases, rather than complexity per se. Then we don't have to write down our complex password and stick it on our monitor.
+
+Having said that, we can easily capitalise the first letter of our passphrase, add a punctuation mark at the end at least, and somewhere replace an 'o' with a zero or an 'e' with 3. <i>Yeah b4by!</i>
 
 <h4>Brutish Key Protector</h4>
 
@@ -228,37 +341,39 @@ mach=50
 41
 </pre>
 
-However, if we assume some combination of the 2000 most common words is used for a passphrase, then 18 characters is not enough, <i>D'oh!</i>
+However, if we assume some combination of the 2000 most common words is used for a passphrase, then 18 characters is not enough. <i>D'oh!</i>
 
-We note that our desired minimum length applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the dual password.
+We note that our desired minimum length applies to each admin's passphrase, so as to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
-A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>, with a large number of iterations e.g. 500k, so that it takes a few seconds to load the key i.e. a quite tolerable startup delay.
+A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>. We want a huge large number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is clearly a tolerable startup delay in our production environment, and will disable brute-force attacks.
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and what-not.
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> and so on.
 
 These are used to create an <tt>SSLContext</tt>, in particular for opening an <tt>SSLSocket</tt> in <tt>DualControlConsole</tt>, and for creating an <tt>SSLServerSocket</tt> in <tt>DualControlReader</tt>.
 
 <pre>
 public class DualControlSSLContextFactory {    
-
-    public static SSLContext createSSLContext(VellumProperties properties) throws Exception {
-        String keyStoreLocation = properties.getString("dualcontrol.ssl.keyStore");
+    ...
+    public static SSLContext createSSLContext(Properties properties) throws Exception {
+        VellumProperties props = new VellumProperties(properties);
+        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = properties.getPassword("dualcontrol.ssl.keyStorePassword", null);
+        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", 
+                null);
         if (keyStorePassword == null) {
             keyStorePassword = System.console().readPassword(
                     "Enter passphrase for dual control SSL connection: ");
         }
-        char[] keyPassword = properties.getPassword("dualcontrol.ssl.keyPassword", 
+        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
                 keyStorePassword);
         String trustStoreLocation =
-                properties.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
+                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
         char[] trustStorePassword =
-                properties.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
@@ -266,7 +381,6 @@ public class DualControlSSLContextFactory {
         Arrays.fill(trustStorePassword, (char) 0);
         return sslContext;
     }
-    ...
 }
 </pre>
 
@@ -284,7 +398,7 @@ We observe the following logs when testing <tt>DualControlGenSecKey</tt>.
 <pre>
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
-INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] readSubmissions SSL port 4444
 INFO [DualControlReader] Received evanx
 INFO [DualControlReader] Received henty
 INFO [DualControlReader] Received brent
@@ -297,16 +411,11 @@ So our <tt>DualControlReader</tt> utility class handles reading split knowledge 
 
 <pre>
 public class DualControlReader {
-    ...
-    String purpose;
-    int submissionCount;
-    SSLContext sslContext;
-    Set<String> names = new TreeSet();
-
-    public DualControlReader(SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
-
+    private String purpose;
+    private int submissionCount;
+    private SSLContext sslContext;
+    private Map<String, char[]> map = new TreeMap();
+    
     public Map<String, char[]> readDualMap(String purpose, int submissionCount,
             SSLContext sslContext) throws Exception {
         this.purpose = purpose;
@@ -314,13 +423,12 @@ public class DualControlReader {
         this.sslContext = sslContext;
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
-        Map<String, char[]> map = new TreeMap();
-        Map<String, char[]> submissions = readMap();
+        readSubmissions();
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
-                    char[] dualPassword = combineDualPassword(
+                    char[] dualPassword = combineSplitPassword(
                             submissions.get(name), submissions.get(otherName));
                     map.put(dualAlias, dualPassword);
                     logger.info("readDualMap dualAlias: " + dualAlias);
@@ -334,66 +442,68 @@ public class DualControlReader {
 
 The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
 
-We invoke <tt>readMap()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
+We invoke <tt>readSubmissions()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
 
 <pre>
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
-    private Map<String, char[]> readMap() throws Exception {
-        logger.info("readMap SSL port " + PORT);
+    private void readSubmissions() throws Exception {
+        logger.info("readSubmissions SSL port " + PORT);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
-        serverSocket.setNeedClientAuth(true);
-        return readMap(serverSocket);
+        try {
+            serverSocket.setNeedClientAuth(true);
+            read(serverSocket);
+        } finally {
+            serverSocket.close();
+        }
     }
 </pre>
 
 where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
 
-We accumulate the required number of submissions in a loop.
-
 <pre>    
-    private Map<String, char[]> readMap(SSLServerSocket serverSocket) throws Exception {
-        Map<String, char[]> map = new TreeMap();
+    private void read(SSLServerSocket serverSocket) throws Exception {
         while (map.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
-            if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                throw new Exception("Invalid remote address "
-                        + socket.getInetAddress().getHostAddress());
-            } else {
-                String name = new X500Name(socket.getSession().getPeerPrincipal().
-                        getName()).getCommonName();
-                names.add(name);
-                if (names.contains(name)) {
-                    throw new Exception("Duplicate submission from " + name);
-                } else {
-                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                    dos.writeUTF(purpose);
-                    DataInputStream dis = new DataInputStream(socket.getInputStream());
-                    char[] password = readChars(dis);
-                    String responseMessage = "Received " + name;
-                    String invalidMessage = new DualControlPasswordVerifier(
-                            VellumProperties.systemProperties).getInvalidMessage(password);
-                    if (invalidMessage != null) {
-                        throw new Exception(responseMessage + ": " + invalidMessage);
-                    }
-                    map.put(name, password);
-                    if (true) {
-                        responseMessage += " " + new Base32().encodeAsString(
-                                Digests.sha1(Chars.getAsciiBytes(password)));
-                    }
-                    dos.writeUTF(responseMessage);
-                    logger.info(responseMessage);
+            try {
+                if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
+                    throw new Exception("Invalid remote address "
+                            + socket.getInetAddress().getHostAddress());
                 }
+                read(socket);
+            } finally {
+                socket.close();
             }
-            socket.close();
         }
-        serverSocket.close();
-        return map;
     }
+</pre>
+
+where we accumulate the required number of submissions in a loop.
+
+<pre>    
+    private void read(SSLSocket socket) throws Exception {
+        String name = new X500Name(socket.getSession().getPeerPrincipal().
+                getName()).getCommonName();
+        if (names.contains(name)) {
+            throw new Exception("Duplicate submission from " + name);
+        }
+        names.add(name);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF(purpose);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        char[] password = readChars(dis);
+        String responseMessage = "Received " + name;
+        String invalidMessage = new DualControlPasswordVerifier(
+                properties).getInvalidMessage(password);
+        if (invalidMessage != null) {
+            throw new Exception(responseMessage + ": " + invalidMessage);
+        }
+        map.put(name, password);
+        dos.writeUTF(responseMessage);
 </pre>
 
 where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
@@ -422,7 +532,7 @@ $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
 INFO [DualControlReader] readDualMap submissionCount: 2
 INFO [DualControlReader] readDualMap purpose: key dek2013 for DualControlDemoApp
-INFO [DualControlReader] readMap SSL port 4444
+INFO [DualControlReader] readSubmissions SSL port 4444
 INFO [DualControlReader] Received evanx
 INFO [DualControlReader] Received henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
@@ -457,32 +567,33 @@ Our app above invokes the <tt>loadKey()</tt> method below to do the legwork.
 <pre>
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
+    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass,
             String alias, String purpose) throws Exception {
-        char[] dualPass = null;
-        try {
-            KeyStore dualKeyStore = 
-                    DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
-            Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(
-                "key " + alias + " for " + purpose);
-            String dualAlias = entry.getKey();
-            dualPass = entry.getValue();
-            alias = alias + "-" + dualAlias;
-            return (SecretKey) dualKeyStore.getKey(alias, dualPass);
-        } finally {
-            if (dualPass != null) {
-                Arrays.fill(dualPass, (char) 0);            
-            }
-        }        
+        KeyStore dualKeyStore =
+                DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
+        purpose = "key " + alias + " for " + purpose;
+        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
+        String dualAlias = entry.getKey();
+        char[] dualPass = entry.getValue();
+        alias = alias + "-" + dualAlias;
+        SecretKey key = (SecretKey) dualKeyStore.getKey(alias, dualPass);
+        Arrays.fill(dualPass, (char) 0);
+        return key;
     }
 }
 </pre>
 
 where we read the dual info using the aforementioned <tt>DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
 
+<h4>Unit test</h4>
+
+In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>DualControlTest</tt></a>, we test <tt>DualControlReader</tt> and two <tt>DualControlConsole</tt>'s in concert, using threads and <i>crumbled-up cookie things</i> like mock consoles and SSL context maps. This will be presented in a follow-on article, as this article is already too long.
+
 <h4>Crypto server</h4>
 
 We might wish to create a central crypto server which is dual-controlled, rather than burden our app. In this case, we can restart our application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We'll implement the crypto server in a subsequent article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
 
@@ -496,20 +607,20 @@ We present a <tt>DualControlGenSecKey</tt> utility for generating secret keys th
 
 We propose keeping at least three copies of the same key, but where each copy is password-protected by a different pair of admins. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load a copy of the key when we restart our app.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 We present a <tt>DualControlConsole</tt> utility for admins to submit their password remotely via SSL from an <tt>ssh</tt> terminal session, to our dual-controlled app.
 
 <h4>See also</h4>
 
-In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>DualControlGenSec</tt>, namely <tt>DualControlRevoke</tt> and <tt>DualControlEnroll</tt> to manage admin staff reshuffles - preview <a target="_blank" href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>DualControlEnroll.java</tt></a> and <a target="_blank" href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>DualControlRevoke.java</tt></a>
+In "Dual Control Mock Console" we will present a unit test for <tt>DualControlReader</tt> and <tt>DualControlConsole</tt> in concert - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>DualControlTest.java</tt></a>
 
-In "Dual Control Crypto Server" we implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security - preview <a target="_blank" href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java"><tt>CryptoServer.java</tt></a> and its <a target="_blank" href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java"><tt>CryptoHandler.java</tt></a>
+In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>DualControlGenSec</tt>, namely <tt>DualControlRevoke</tt> and <tt>DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>DualControlRevoke.java</tt></a>
 
-In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a high number of iterations, so that the key takes a second or two to recover, rather than half a millisecond - preview <a target="_blank" href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JCEKSBruteForceTimer.java"><tt>JCEKSBruteForceTimer.java</tt></a> and <a target="_blank" href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStores.java"><tt>RecryptedKeyStores.java</tt></a>.
+In "Dual Control Crypto Server" we implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java"><tt>CryptoServer.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java"><tt>CryptoHandler.java</tt></a>
+
+In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a high number of iterations, so that the key takes a second or two to recover, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JCEKSBruteForceTimer.java"><tt>JCEKSBruteForceTimer.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStores.java"><tt>RecryptedKeyStores.java</tt></a>.
 
 In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from a old "dek2013" key a to revised "dek2014" key.
 
-You can browse the code for this exercise at <a target="_blank" href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
+You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
 
-<tt><a target="_blank" href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a></tt>
+<tt><a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a></tt>
