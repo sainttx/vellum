@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 import java.util.TreeMap;
 import javax.crypto.SecretKey;
 import javax.net.ssl.SSLContext;
@@ -22,6 +21,7 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.security.GeneratedRsaKeyPair;
 import vellum.util.Lists;
+import vellum.util.VellumProperties;
 
 /**
  *
@@ -37,7 +37,7 @@ public class DualControlTest {
 
     private KeyStore trustStore;
     private char[] keyStorePass = "test1234".toCharArray();
-    private Properties properties = new Properties();
+    private VellumProperties properties = new VellumProperties();
     private Map<String, char[]> dualPasswordMap = new TreeMap();
     private Map<String, KeyStore> keyStoreMap = new TreeMap();
     private Map<String, SSLContext> sslContextMap = new TreeMap();
