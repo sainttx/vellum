@@ -157,6 +157,7 @@ command0_initks() {
 }
 
 command1_genseckey() {
+  rm -f tmp/dualtest/seckeystore.jceks
   javaks server -Ddualcontrol.submissions=3 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
      -Dalias=$1 -Dkeyalg=$keyAlg -Dkeysize=$keySize \

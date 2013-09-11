@@ -28,10 +28,14 @@ import java.util.Properties;
  */
 public class VellumProperties extends Properties {
 
+    public VellumProperties() {
+        super();
+    }
+    
     public VellumProperties(Properties properties) {
         super.putAll(properties);
     }
-        
+    
     public String getString(String propertyName) {
         String propertyValue = super.getProperty(propertyName);
         if (propertyValue == null) {
