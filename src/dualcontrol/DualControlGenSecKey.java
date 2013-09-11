@@ -103,7 +103,8 @@ public class DualControlGenSecKey {
         keyStoreLocation = properties.getString("keystore");
         keyStorePassword = properties.getPassword("storepass", null);
         if (keyStorePassword == null) {
-            keyStorePassword = System.console().readPassword("storepass: ");
+            keyStorePassword = System.console().readPassword(
+                    "Enter passphrase for dual control SSL connection: ");                    
             if (keyStorePassword == null) {
                 throw new Exception("No console for storepass");
             }
