@@ -68,7 +68,7 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
             keyStorePassword = console.readPassword(
                     "Enter passphrase for keystore (%s): ", keyStoreLocation);
             if (keyStorePassword == null) {
-                throw new Exception("No storepass from console");
+                throw new Exception("No keystore passphrase from console");
             }
         }
         if (new File(keyStoreLocation).exists()) {
