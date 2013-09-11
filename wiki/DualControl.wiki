@@ -22,7 +22,7 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when restart our app.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when we restart our app.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
