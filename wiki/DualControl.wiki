@@ -174,7 +174,7 @@ INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
 }}}
 
-We check that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
+We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
