@@ -24,6 +24,7 @@ import vellum.util.VellumProperties;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.Properties;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -36,13 +37,16 @@ public class CryptoClientDemo {
         if (args.length != 3) {
             System.err.println("CryptoClientDemo usage: hostAddress port text");
         } else {
-            new CryptoClientDemo().run(args[0], Integer.parseInt(args[1]), args[2].getBytes());
+            new CryptoClientDemo().call(System.getProperties(), 
+                    new ConsoleAdapter(System.console()),
+                    args[0], Integer.parseInt(args[1]), args[2].getBytes());
         }
     }
 
-    private void run(String hostAddress, int port, byte[] data) throws Exception {
+    private void call(Properties properties, MockableConsole console, 
+            String hostAddress, int port, byte[] data) throws Exception {
         Socket socket = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties()).getSocketFactory().
+                properties, console).getSocketFactory().
                 createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeShort(data.length);
@@ -56,7 +60,8 @@ public class CryptoClientDemo {
         if (new String(data).contains("DECRYPT")) {
             System.err.printf("INFO CryptoClientDemo decrypted %s\n", new String(bytes)); 
         } else {
-            System.out.printf("%s:%s\n", Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));            
+            System.out.printf("%s:%s\n", 
+                    Base64.encodeBase64String(ivBytes), Base64.encodeBase64String(bytes));            
         }
         socket.close();
     }

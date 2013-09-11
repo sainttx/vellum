@@ -40,8 +40,8 @@ public class DualControlKeyStores {
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
             Socket socket = DualControlSSLContextFactory.createSSLContext(
-                    System.getProperties()).getSocketFactory().
-                createSocket(array[0], Integer.parseInt(array[1]));
+                    System.getProperties(), new ConsoleAdapter(System.console())).
+                    getSocketFactory().createSocket(array[0], Integer.parseInt(array[1]));
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();
         } else if (new File(keyStoreLocation).exists()) {

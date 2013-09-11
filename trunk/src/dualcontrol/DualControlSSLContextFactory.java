@@ -44,7 +44,8 @@ public class DualControlSSLContextFactory {
                 keyStorePassword, keyStoreLocation, keyStorePassword);
     }
         
-    public static SSLContext createSSLContext(Properties properties) throws Exception {
+    public static SSLContext createSSLContext(Properties properties, MockableConsole console)
+            throws Exception {
         VellumProperties props = new VellumProperties(properties);
         String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
@@ -53,7 +54,7 @@ public class DualControlSSLContextFactory {
         char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", 
                 null);
         if (keyStorePassword == null) {
-            keyStorePassword = System.console().readPassword(
+            keyStorePassword = console.readPassword(
                     "Enter passphrase for dual control SSL connection: ");
         }
         char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 

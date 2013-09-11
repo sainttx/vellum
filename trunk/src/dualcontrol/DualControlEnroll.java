@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
 
@@ -52,16 +53,17 @@ public class DualControlEnroll {
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         try {
-            new DualControlEnroll().start();
+            new DualControlEnroll().call(System.getProperties(), 
+                    new ConsoleAdapter(System.console()));
         } catch (DualControlException e) {
             logger.error(e.getMessage());
         }
     }
 
-    void start() throws Exception {
+    void call(Properties properties, MockableConsole console) throws Exception {
         String purpose = String.format("key %s to enroll %s", keyAlias, username);
         dualMap = new DualControlReader().readDualMap(purpose, submissionCount,
-                DualControlSSLContextFactory.createSSLContext(properties));                
+                DualControlSSLContextFactory.createSSLContext(properties, console));
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
