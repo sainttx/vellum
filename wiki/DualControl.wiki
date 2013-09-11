@@ -54,7 +54,7 @@ public class DualControlGenSecKey {
     ...
 }
 }}}
-where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System<tt> console for entering the SSL keystore password.
+where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console for entering the SSL keystore password.
 
 {{{
     public void call(VellumProperties properties, MockableConsole console) 
