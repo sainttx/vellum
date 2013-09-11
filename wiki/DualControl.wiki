@@ -207,7 +207,7 @@ public class DualControlConsole {
 }
 }}}
 
-where we provide <tt>public</tt> methods suitable for our unit test e.g. to provide a <tt>!MockConsole</tt> whereas the <tt>main()</tt> method passes the <tt>System</tt> properties and console. 
+where we provide <tt>public</tt> methods suitable for our unit test e.g. to provide a <tt>!MockConsole</tt> whereas the <tt>main()</tt> method passes the <tt>System</tt> console. 
 
 The properties are used to create an <tt>SSLContext</tt> from <tt>-D</tt> options specifying the keystore and truststore, whereas our test will provide the <tt>SSLContext</tt> constructed from an <tt>!KeyStore</tt> that is created programmatically. 
 
