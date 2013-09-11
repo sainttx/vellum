@@ -43,10 +43,10 @@ public class DualControlConsole {
         call(System.getProperties(), new ConsoleAdapter(System.console()));
     }    
 
-    public static void call(Properties properties, 
-            MockableConsole console) throws Exception {
+    public static void call(Properties properties, MockableConsole console) 
+            throws Exception {
         call(properties, console, 
-                DualControlSSLContextFactory.createSSLContext(properties));
+                DualControlSSLContextFactory.createSSLContext(properties, console));
     }
     
     public static void call(Properties properties, MockableConsole console,

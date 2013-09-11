@@ -57,7 +57,7 @@ public class DualControlReader {
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         return readDualEntry(purpose, DualControlSSLContextFactory.createSSLContext(
-                System.getProperties()));
+                System.getProperties(), new ConsoleAdapter(System.console())));
     }
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose,

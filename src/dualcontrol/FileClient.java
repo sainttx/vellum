@@ -33,8 +33,8 @@ public class FileClient {
 
     public static byte[] read(String hostAddress, int port) throws Exception {
         Socket socket = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties()).getSocketFactory().
-                createSocket(hostAddress, port);
+                System.getProperties(), new ConsoleAdapter(System.console())).
+                getSocketFactory().createSocket(hostAddress, port);
         byte[] bytes = readBytes(socket.getInputStream());
         socket.close();
         return bytes;

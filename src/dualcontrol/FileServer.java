@@ -46,8 +46,9 @@ public class FileServer {
     private void run(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String fileName) throws Exception {
         SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext(System.getProperties()).
-                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
+                DualControlSSLContextFactory.createSSLContext(System.getProperties(),
+                new ConsoleAdapter(System.console())).getServerSocketFactory().
+                createServerSocket(port, backlog, localAddress);
         serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);
         int length = (int) new File(fileName).length();

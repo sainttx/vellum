@@ -20,11 +20,11 @@
  */
 package dualcontrol;
 
-import vellum.util.VellumProperties;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Properties;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,19 +42,21 @@ public class CryptoServer {
             System.err.println(
                     "usage: localAddress port backlog count remoteAddress keyStore storePass");
         } else {
-            new CryptoServer().run(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
+            new CryptoServer().call(System.getProperties(), new ConsoleAdapter(System.console()),
+                    InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
                     Integer.parseInt(args[2]), Integer.parseInt(args[3]), 
                     args[4], args[5], args[6].toCharArray());
         }
     }    
     
-    private void run(InetAddress localAddress, int port, int backlog, int count, 
+    private void call(Properties properties, MockableConsole console, 
+            InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String keyStoreLocation, char[] storePass) 
             throws Exception {
         dualControlSession.configure(keyStoreLocation, storePass, purpose);
         ServerSocket serverSocket = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties()).getServerSocketFactory().
-                createServerSocket(port, backlog, localAddress);
+                properties, console).
+                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = null;
             try {

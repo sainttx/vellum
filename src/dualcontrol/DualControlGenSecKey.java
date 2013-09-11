@@ -79,7 +79,8 @@ public class DualControlGenSecKey {
             throw new Exception(
                     "Keystore file already exists: " + keyStoreLocation);
         }
-        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
+        sslContext = DualControlSSLContextFactory.createSSLContext(properties,
+                new ConsoleAdapter(System.console()));
         String purpose = "new key " + keyAlias;
         KeyStore keyStore = createKeyStore(properties, new DualControlReader().
                 readDualMap(purpose, submissionCount, sslContext));
