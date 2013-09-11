@@ -53,7 +53,7 @@ public class DualControlGenSecKey {
         DualControlGenSecKey instance = new DualControlGenSecKey();
         try {
             instance.call(new VellumProperties(System.getProperties()), 
-                    new SystemConsole());
+                    new ConsoleAdapter(System.console()));
         } catch (DualControlException e) {
             instance.console.writer().println(e.getMessage());
         } finally {

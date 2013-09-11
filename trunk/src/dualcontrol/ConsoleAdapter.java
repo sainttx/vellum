@@ -20,21 +20,27 @@
  */
 package dualcontrol;
 
+import java.io.Console;
 import java.io.PrintWriter;
 
 /**
  *
  * @author evan.summers
  */
-public class SystemConsole implements MockableConsole {
-
+public class ConsoleAdapter implements MockableConsole {
+    Console console; 
+    
+    public ConsoleAdapter(Console console) {
+        this.console = console;
+    }
+    
     @Override
     public char[] readPassword(String prompt, Object ... args) {
-        return System.console().readPassword(prompt, args);
+        return console.readPassword(prompt, args);
     }        
     
     @Override
     public PrintWriter writer() {
-        return System.console().writer();
+        return console.writer();
     }    
 }

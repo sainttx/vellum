@@ -40,7 +40,7 @@ public class DualControlConsole {
     private final static String HOST = "127.0.0.1";
 
     public static void main(String[] args) throws Exception {
-        call(System.getProperties(), new SystemConsole());
+        call(System.getProperties(), new ConsoleAdapter(System.console()));
     }    
 
     public static void call(Properties properties, 
