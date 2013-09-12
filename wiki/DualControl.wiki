@@ -1,6 +1,6 @@
 #labels Dual Control, Split Knowledge, Key Management, Encryption, PAN, PCI
 
-= Dual Control Key Management =
+<h1>Dual Control Key Management</h1>
 
 We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="http://code.google.com/p/vellum">Enigma Posts</a>.
 
@@ -117,9 +117,7 @@ We create a <tt>!KeyStore</tt> using the following method, which is exposed for 
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-One might argue that we should not write code per se, but rather we should write tests with accompanying code ;)
-
-Indeed <tt>!DualControlGenSecKey</tt> was designed hand in glove with its unit test, so let's test it :)
+One might argue that we should not write code per se, but rather we should write tests with accompanying code, hand in glove, so let's do that :)
 {{{
     @Test
     public void genKeyTest() throws Exception {
@@ -243,14 +241,13 @@ We provide <tt>public</tt> methods suitable for our unit test e.g. to provide a 
 }}}
 where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>, and are authenticated and identified via our SSL cert - woohoo!
 
-{{{
+<pre>
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter password for dual control SSL connection:
 Enter password for new key dek2013: 
 Re-enter password: 
 OK evanx
-}}}
-
+</pre>
 where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
