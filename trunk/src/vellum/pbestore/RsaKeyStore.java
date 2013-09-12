@@ -18,7 +18,7 @@
  specific language governing permissions and limitations
  under the License.  
  */
-package vellum;
+package vellum.pbestore;
 
 import dualcontrol.AesPbeStore;
 import java.io.DataInputStream;
@@ -40,6 +40,8 @@ import vellum.pbestore.PbeStore;
 
 /**
  *
+ * @see PbeStore
+ * 
  * @author evan.summers
  */
 public class RsaKeyStore {
