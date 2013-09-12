@@ -82,10 +82,9 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
     }
 }}}
+where we choose similar property names to <tt>keytool</tt> arguments.
 
-where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL.
-
-We create a <tt>!KeyStore</tt> using the following method, which is exposed for unit testing.
+<tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>createKeyStore()</tt> method below.
 {{{      
     public KeyStore createKeyStore(VellumProperties properties,
             Map<String, char[]> dualPasswordMap) throws Exception {
@@ -117,7 +116,7 @@ We create a <tt>!KeyStore</tt> using the following method, which is exposed for 
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-One might argue that one should not write code per se, but rather tests with accompanying code, hand in glove, and we've done that, so...
+In general one might argue that one should not write code per se, but rather tests with accompanying code, hand in glove. Well, we've done that :)
 {{{
     @Test
     public void genKeyTest() throws Exception {
