@@ -1,0 +1,193 @@
+= PostgreSQL 9.0 =
+
+PostgreSQL 9.0 streaming replication
+
+== Documentation ==
+
+[http://wiki.postgresql.org/wiki/Binary_Replication_Tutorial#5_Minutes_to_Simple_Replication http://wiki.postgresql.org/wiki/Binary_Replication_Tutorial#5_Minutes_to_Simple_Replication]
+
+[http://www.linux.com/learn/tutorials/377071-using-replication-in-postgresql-90 http://www.linux.com/learn/tutorials/377071-using-replication-in-postgresql-90]
+
+== Primary ==
+
+Consider that we have create out primary database data files as follows.
+
+<pre>
+postgres@bizserver ~: cd /dbfiles/9.0
+postgres@bizserver 9.0: initdb prod
+postgres@bizserver 9.0: vi prod/postgresql.conf
+port = 9500
+listen_addresses = '*' # listen for connections from standby
+</pre>
+
+where assuming we have a current 8.x PostgreSQL installation running on port 5432, we choose a different port eg. 9500.
+
+In <tt>pg_hba.conf</tt> we must allow standby to connect for replication.
+
+<pre>
+$ vi prod/pg_hba.conf
+host all all 127.0.0.1/32 # normal bizswitch and psql access from localhost only
+host replication all 192.168.16.191/32 trust # allow slave on biz4 to connect for replication
+#host replication all 127.0.0.1/32 trust # standby on localhost for testing
+</pre>
+
+; Performance tuning
+
+<pre>
+max_connections = 1000 # ipay connection pool allows unlimted bursting
+shared_buffers = 2048MB # 1/4 of server RAM
+temp_buffers = 32MB #
+work_mem = 16MB # used to sorting etc
+maintenance_work_mem = 96MB # used for VACUUM, CREATE INDEX, ALTER TABLE ADD FOREIGN KEY
+effective_cache_size = 3072MB # 1/2 of server RAM (includes linux disk caching)
+</pre>
+
+; Primary
+
+The primary needs to support replication to hot-standby.
+
+<pre>
+wal_level = hot_standby # include enough info in WAL for hot-standby ie. read-only queries
+max_wal_senders = 3
+wal_keep_segments = 128 # 256x 16Mb = 4Gb required for kept WAL segments, for
+checkpoint_segments = 32 # checkpoint (flush dirty buffers) every so WAL segements (higher means less IO but slower crash recovery)
+</pre>
+
+If bulk loading is performed regularly then, <tt>maintenance_work_mem</tt>, and <tt>checkpoint_segments</tt> are important.
+
+== Standby ==
+
+Similar performance tuning settings to the primary eg. <tt>shared_buffers</tt>, <tt>max_connections</tt> etc, bearing in mind we expect to failover to this server
+ie. to be promote it to the primary at any time.
+
+<pre>
+postgres@biz4 9.0: vi standby/postgresql.conf
+
+port = 9600
+hot_standby = on
+</pre>
+
+<tt>recovery.conf</tt> dictates read-only standby mode, connecting to and replication from the primary specified via <tt>primary_conninfo</tt>.
+
+<pre>
+postgres@biz4 9.0: vi standby/recovery.conf
+
+standby_mode = 'on'
+primary_conninfo = 'host=127.0.0.1 port=9401' # connection to localhost for testing (on biz4 test/ port 9401)
+#primary_conninfo = 'host=192.168.16.190 port=9500' # connection to primary on bizserver
+</pre>
+
+We also allow remote connections to the standby for monitoring the lag.
+<pre>
+postgres@biz4 9.0: vi standby/pg_hba.conf
+
+host all all 196.168.16.190/32 trust # monitoring script on bizserver will connect
+</pre>
+
+; Trigger
+
+A further option is <tt>trigger_file</tt>.
+
+<pre>
+postgres@biz4 9.0: vi standby/recovery.conf
+
+trigger_file = '/dbfiles/9.0/standby/recovery_trigger_file'
+</pre>
+
+If specifying a <tt>trigger_file</tt>, when we can create this (empty) file (eg. <tt>touch</tt>) to failover,
+at which point <tt>recovery.conf</tt> will be renamed to <tt>recovery.done</tt>
+and the standby will be promoted to the primary ie. execute updates, as opposed to read-only standby mode.
+
+However, we can manually promote the standby database by removing <tt>recovery.conf</tt> and restarting.
+
+; Rsync
+
+Before <tt>rsync</tt>, inform that primary that file backup is to commence.
+
+<pre>
+postgres@biz4$ bin/psql -p 9500 -c "select pg_start_backup('backup')"
+</pre>
+
+Ensure the standby database is not running while files are rsync'ed to its directories.
+
+<pre>
+postgres@biz4$ sh scripts/pg_ctl_standby_stop_fast
+postgres@biz4$ ls standby/postmaster.pid # confirm not present
+postgres@biz4$ psql -p 9600 # confirm standby server down
+</pre>
+
+<pre>
+postgres@bizserver: rsync -av --exclude pg_xlog --exclude postgresql.conf --exclude postmaster.pid --exclude pg_ctl_start.log prod/* biz4:/dbfiles/9.0/standby/
+</pre>
+
+<pre>
+postgres@bizserver$ bin/psql -p 9500
+psql (9.0.4)
+postgres=# select pg_stop_backup();
+NOTICE:  WAL archiving is not enabled; you must ensure that all required WAL segments are copied through other means to complete the backup
+ pg_stop_backup
+----------------
+ 1A/99000168
+</pre>
+
+<pre>
+postgres@biz4 9.0: sh scripts/pg_ctl_standby_start
+server starting
+LOG:  database system was interrupted while in recovery at log time 2011-05-18 23:19:44 SAST
+HINT:  If this has occurred more than once some data might be corrupted and you might need to choose an earlier recovery target.
+LOG:  entering standby mode
+LOG:  redo starts at 1A/99000020
+LOG:  consistent recovery state reached at 1A/9A000000
+LOG:  database system is ready to accept read only connections
+LOG:  streaming replication successfully connected to primary
+</pre>
+
+We can check that transactions from the primary are being replicated.
+
+<pre>
+postgres@biz4 9.0: bin/psql -p 9600 biz_retail -t -c "select max(date_sold_by_us) from qschema.cell_token"
+</pre>
+
+== Monitoring ==
+
+We require a custom nagios plugin to monitor the replication lag.
+
+<pre>
+postgres@bizserver 9.0: sh scripts/check_lag
+PostgreSQLReplication OK - xschema cell_token 2550 2550, date_sold_by_us 14:47 at 14:48
+</pre>
+
+where for example this indicates critical state if lag is greater than 100 transactions, or warning if greater than 10 transactions.
+
+== Appendix ==
+
+=== Custom nagios plugin ===
+
+This script counts the number of transactions eg. in <tt>cell_token</tt> table, on the primary and the standby.
+
+<pre>
+postgres@bizserver 9.0: cat scripts/check_lag
+...
+query="select count(1) from xschema.cell_token where date_sold_by_us > current_date"
+count_primary=`bin/psql -h localhost -p 9500 biz_retail -t -c "$query"`
+count_standby=`bin/psql -h biz4 -p 9600 biz_retail -t -c "$query"`
+
+state=WARNING
+
+if $[ count_primary - count_standby < 10 ]
+then
+  state=OK
+fi
+
+if $[ count_primary - count_standby > 100 ]
+then
+  state=CRITICAL
+fi
+
+echo "PostgreSQLReplication $state - $schema $table $c0 $c1, $column $info at $now"
+</pre>
+
+
+[[Category:uncategorized]]
+
+__NOTOC__

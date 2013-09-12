@@ -1,0 +1,136 @@
+= Mega RAID =
+
+[http://download.intel.com/support/motherboards/server/s5500hv/sb/embedded_mr_sw_ug_v01.pdf]
+
+== Local examples == 
+
+We can use the following command to the check the state of the MegaRAID controller.
+
+  # /opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -L0 -a0
+  Adapter 0 -- Virtual Drive Information:
+  Virtual Disk: 0 (Target Id: 0)
+  Name:
+  RAID Level: Primary-1, Secondary-3, RAID Level Qualifier-0
+  Size:1427649MB
+  State: Optimal
+  Stripe Size: 128kB
+  Number Of Drives:2
+  Span Depth:3
+  Default Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU
+  Current Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU
+  Access Policy: Read/Write
+  Disk Cache Policy: Disk's Default
+  Exit Code: 0x00
+
+where -a0 indicates the 1st adapter (and only adapter in our case) and -L0 indicates the 1st logical disk aka "Virtual Disk" (as opposed to Physical Disk).
+
+In particular we monitor the state of the RAID in general by grepping the above output for the following line.
+  State: Optimal
+
+We should do this for each logical drive e.g. also <tt>-L1</tt> if we have two virtual disks, and otherwise <tt>-Lall</tt> which will have a "State:" line for each "Virtual Disk".
+  root@biz4 ~: /opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -LAll -aAll | grep "^State:"
+  State: Optimal
+  State: Optimal
+
+We check the status regularly via the crontab.
+
+  root@biz3 ~: crontab -l
+  MAILTO=evans.summers@gmail.com
+  * * * * * /scripts/check-megaraid
+
+The script checks the MegaRAID state every minute using the <tt>MegaCli64</tt> utility as follows.
+
+  root@biz3 ~: cat /opt/scripts/check-megaraid
+  /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -a0 -L0 | grep -q "^State: Optimal"
+  if [ $? -ne 0 ]
+  then
+    state=`/opt/MegaRAID/MegaCli//MegaCli64 -LDInfo -aALL -Lall | grep "^State: "`
+    /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -aALL -Lall | mail -s "MegaRAID $state" evan.summers@gmail.com
+    exit 2
+  fi
+
+where although the cron emails output, that might be filtered out and not receive urgent attention, so we use <tt>mail</tt> explicitly to provide an appropriate subject.
+
+Note that in the case of biz4, we have two logical disks, a smaller one for the system root directory, and the other for /mnt/dbfiles, and in this case need to check -L1 as well.
+
+For the purposes of a Nagios plugin, the script is modified as follows.
+
+  function check_disk {
+    /opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -L$1 -a0 | grep -q "^State: Optimal"
+    if [ $? -ne 0 ]
+    then
+      echo "Biz3MegaRaid CRITICAL - Logical disk $1 not optimal"
+      exit 2
+    fi
+  }
+
+  check_disk 0
+  check_disk 1
+
+  echo "Biz3MegaRaid OK"
+  exit 0
+
+Actually, since we have RAID10 and so both virtual disks are striped across all physical disks, we expect both to fail in the event a failed physical disk.
+
+If the state is not optimal we must check the the event log.
+
+  /opt/MegaRAID/MegaCli/MegaCli64 -AdpEventLog -GetEvents -f events.log -aALL
+
+We can script this as follows.
+
+  tmp=/tmp/$USER.`basename $0`
+  bin=/opt/MegaRAID/MegaCli
+
+  function grep_event_log_error {
+    $bin/MegaCli64 -AdpEventLog -GetEvents -f $tmp -aALL
+    grep -i error -B5 $tmp | grep -i "^Time\|error"
+  }
+
+Additionally we should check the battery backup, especially if we have optimised PostgreSQL on the assumption that in the event of a power-failure, the RAID controller will still retain data not written to disk.
+
+  function check_battery {
+    $bin/MegaCli64 -AdpBbuCmd -GetBbuStatus -aALL
+  }
+
+== General info ==
+
+Display Info about the adapter
+  ./MegaCli64 -AdpAllInfo -aALL
+
+Display Physical devices
+  ./MegaCli64 -PDList -aALL
+
+Display Logical devices
+  ./MegaCli64 -LDInfo -LALL -aALL
+
+Display detailed Adapter and Device information
+  ./MegaCli64 -AdpAlILog -aALL
+
+Make state "Unconfigured Good"
+  ./MegaCli64 -PDMakeGood -PhysDrv[8:3,8:4,8:5] -a0
+
+Add disk to the array
+  ./MegaCli64 -LDRecon -Start -R5 -Add -PhysDrv[252:7] -L0 -a0
+
+Check RAID reconstruction status
+  ./MegaCli64 -ldrecon showprog -L0 -a0
+
+Refresh the kernel infos about the RAID
+  rmmod megaraid_sas
+  modprobe megaraid_sas
+
+Repair a HD
+  ./MegaCli64 -PDMakeGood -PhysDrv[252:4] -a0
+
+Make a hot-spare
+  ./MegaCli64 -PDHSP -set -PhysDrv[A:B] -a0
+
+Silence alarm
+  ./MegaCli64 -AdpSetProp AlarmSilence -a
+
+Disable alarm disable
+  ./MegaCli64 -AdpSetProp AlarmDsbl -aALL
+
+Make alarm enable
+  ./MegaCli64 -AdpSetProp AlarmEnbl -aALL
+
