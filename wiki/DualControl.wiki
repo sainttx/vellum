@@ -141,7 +141,7 @@ Indeed <tt>!DualControlGenSecKey</tt> was designed hand in glove with its unit t
     }
 }}}
 
-where we inspect the <tt>KeyStore</tt> returned by the <tt>public</tt> <tt>createKeyStore()</tt> method, which is exposed especially for this unit test.
+where we inspect the <tt>!KeyStore</tt> returned by the <tt>public</tt> <tt>createKeyStore()</tt> method, which is exposed especially for this unit test.
 
 <h4>Usage demo</h4>
 
