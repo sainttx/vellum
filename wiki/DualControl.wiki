@@ -281,7 +281,7 @@ public class DualControlPasswordVerifier {
     ...
 }}}
 
-We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> says uppercase and lowercase, and we should cover all bases.
+We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> decrees uppercase and lowercase, and we should cover all bases.
 
 {{{    
     public String getInvalidMessage(char[] password) throws Exception {
