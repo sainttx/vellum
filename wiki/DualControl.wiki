@@ -147,7 +147,7 @@ where we inspect the <tt>!KeyStore</tt> returned by the <tt>public</tt> <tt>crea
 
 Let's run <tt>!DualControlGenSecKey</tt> from the command-line.
 
-<pre style='background-color: #eee;'>
+<code language="xml">
   java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
@@ -158,7 +158,7 @@ where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, genera
 
 For example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
 
-<pre style='background-color: #eee;'>
+<code language="xml">
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
 INFO [DualControlReader] readSubmissions SSL port 4444
