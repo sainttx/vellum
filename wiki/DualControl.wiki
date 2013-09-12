@@ -209,7 +209,7 @@ public class DualControlConsole {
 
 We provide <tt>public</tt> methods suitable for our unit test e.g. to provide a <tt>!MockConsole</tt> whereas the <tt>main()</tt> method above passes a <tt>System.console()</tt> adapter.
 
-We see above that <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from <tt>System</tt> properties, which specify the requisite keystore and truststore. We'll see later that our unit test provides the <tt>SSLContext</tt> constructed from an <tt>!KeyStore</tt> that is created programmatically. 
+We see above that <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from <tt>System</tt> properties, which specify the requisite keystore and truststore. We'll see later that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically. 
 
 {{{
     public static void call(Properties properties, MockableConsole console,
