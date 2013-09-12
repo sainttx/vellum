@@ -14,9 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
-import vellumexp.servlet.DefaultHandlerFactory;
-import vellumdemo.servlet.EchoHandler;
-import vellumexp.servlet.HandlerServlet;
 
 /**
  *
