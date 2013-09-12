@@ -243,13 +243,13 @@ We see above that <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContex
 }}}
 where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>, and are authenticated and identified via our SSL cert - woohoo!
 
-<code language="java">
+{{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter password for dual control SSL connection:
 Enter password for new key dek2013: 
 Re-enter password: 
 OK evanx
-</code>
+}}}
 where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
