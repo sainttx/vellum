@@ -36,13 +36,13 @@ public class DualControlPasswordVerifier {
     public DualControlPasswordVerifier(Properties properties) {
         VellumProperties props = new VellumProperties(properties);
         verifyPassword = props.getBoolean(
-                "dualcontrol.verifyPassword", false);
+                "dualcontrol.verifyPassword", true);
         verifyPasswordComplexity = props.getBoolean(
-                "dualcontrol.verifyPasswordComplexity", false);
+                "dualcontrol.verifyPasswordComplexity", true);
         minPasswordLength = props.getInt(
-                "dualcontrol.minPasswordLength", 18);
+                "dualcontrol.minPasswordLength", 12);
         minWordCount = props.getInt(
-                "dualcontrol.minWordCount", 7);
+                "dualcontrol.minWordCount", 4);
     }
     
     public String getInvalidMessage(char[] password) throws Exception {
