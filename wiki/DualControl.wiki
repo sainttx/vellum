@@ -152,7 +152,7 @@ Let's run <tt>!DualControlGenSecKey</tt> from the command-line.
      -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
      -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
      dualcontrol.DualControlGenSecKey
-</pre>
+</code>
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
 
@@ -171,16 +171,16 @@ INFO [DualControlReader] readDualMap dualAlias: evanx-henty
 INFO [DualControlGenSecKey] alias dek2013-brent-evanx
 INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
-</pre>
+</code>
 
 We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
-<pre>
+<code language="xml">
 $ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
 dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
 dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
-</pre>
+</code>
 
 Actually these three keys are one and the same! However each copy has a different key password, which is actually a combination of a pair of personal passwords, which we call a "split password."
 
@@ -243,13 +243,13 @@ We provide <tt>public</tt> methods suitable for our unit test e.g. to provide a 
 }}}
 where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt> e.g. port forwarded using <tt>ssh</tt>, and are authenticated and identified via our SSL cert - woohoo!
 
-<pre>
+<code language="xml">
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter password for dual control SSL connection:
 Enter password for new key dek2013: 
 Re-enter password: 
 OK evanx
-</pre>
+</code>
 where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
@@ -312,25 +312,25 @@ Our keystore is unfortunately forever vulnerable to theft and/or brute-force att
 
 We observe that an Intel i5 can manage about 30 guesses per millisecond on a JCE keystore, using 4 threads to utilise its quad-cores.
 
-<pre>
+<code language="xml">
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
   $seckeystore $pass dek2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
-</pre>
+</code>
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
 If we fear that in the future someone can try an average of 1000 guesses per millisecond on a botnet of a 50M machines, then by my backroom calculations, 41 years are required to try a quarter of all possible passwords up to 18 characters in length using a lazy subset of only 20 characters. 
 
-<pre>
+<code language="xml">
 $ bc
 guess=1000
 mach=50
 20^18/(365*24*3600*1000*guess*mach*1000*1000)/4
 41
-</pre>
+</code>
 
 However, if we assume some combination of the 2000 most common words is used for a passphrase, then 18 characters is not enough. <i>D'oh!</i>
 
@@ -387,7 +387,7 @@ As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and 
 <h4><tt>!DualControlReader</tt></h4>
 
 We observe the following logs when testing <tt>!DualControlGenSecKey</tt>.
-<pre>
+<code language="xml">
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
 INFO [DualControlReader] readSubmissions SSL port 4444
@@ -397,7 +397,7 @@ INFO [DualControlReader] Received brent
 INFO [DualControlReader] readDualMap dualAlias: brent-evanx
 INFO [DualControlReader] readDualMap dualAlias: brent-henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
-</pre>
+</code>
 
 So our <tt>!DualControlReader</tt> utility class handles reading split knowledge submissions.
 
@@ -520,7 +520,7 @@ public class DualControlDemoApp {
 
 The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
 
-<pre>
+<code language="xml">
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
 INFO [DualControlReader] readDualMap submissionCount: 2
@@ -531,25 +531,25 @@ INFO [DualControlReader] Received henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] Loaded key dek2013 alg AES
-</pre>
+</code>
 
 where the two <tt>!DualControlConsole</tt> sessions are as follows. 
 
-<pre>
+<code language="xml">
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key dek2013 for DualControlDemoApp: 
 Re-enter password for key dek2013 for DualControlDemoApp: 
 OK evanx WLCO4XPIFBTNWOHXTRWUVENGEZEGW4HJ
-</pre>
+</code>
 
-<pre>
+<code language="xml">
 $ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key dek2013 for DualControlDemoApp: 
 Re-enter password for key dek2013 for DualControlDemoApp: 
 OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
-</pre>
+</code>
 
 where the response message includes a hash of the submitted password so we might recognise its correctness or correctability.
 
