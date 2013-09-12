@@ -13,7 +13,7 @@ import java.util.Arrays;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import vellum.RsaKeyStore;
+import vellum.pbestore.RsaKeyStore;
 import vellum.asymmetricstore.RsaStore;
 import vellum.datatype.Millis;
 
