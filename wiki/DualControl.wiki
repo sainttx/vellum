@@ -329,14 +329,14 @@ $ bc
 guess=1000
 mach=50
 20^18/(365*24*3600*1000*guess*mach*1000*1000)/4
-41
+41 years
 </code>
 
 However, if we assume some combination of the 2200 most common words is used for a passphrase, then we need 7 words, and so even 18 characters is not enough. <i>D'oh!</i>
 
 <code language="xml">
 2200^7/(365*24*3600*1000*guess*mach*1000*1000)/4
-39
+39 years
 </code>
 
 We note that our desired minimum length applies to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
