@@ -117,7 +117,7 @@ We create a <tt>!KeyStore</tt> using the following method, which is exposed for 
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-We redesigned this class from the ground up to be readily testable, so let's test it :)
+One might argue that we should not write code per se, but rather we should write tests with accompanying code ;) Indeed we have designed this class to be readily testable, so let's test it :)
 
 {{{
     @Test
@@ -140,9 +140,7 @@ We redesigned this class from the ground up to be readily testable, so let's tes
     }
 }}}
 
-Incidently, we refactored <tt>!DualControlGenSecKey</tt> to offer a method which returns a <tt>!KeyStore</tt> for inspection, especially for the unit test above.
-
-One might argue that we should not write code per se, but rather we should write tests with accompanying code. This naturally requires <tt>public</tt> methods specially engineered for our tests. 
+where we inspect the <tt>KeyStore</tt> returned by the <tt>public</tt> <tt>createKeyStore()</tt> method, which is specially exposed for this unit test.
 
 <h4>Usage demo</h4>
 
