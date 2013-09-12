@@ -85,7 +85,7 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
 
 where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL.
 
-We create a <tt>!KeyStore</tt> as follows.
+We create a <tt>!KeyStore</tt> using the following method, which is exposed for unit testing.
 {{{      
     public KeyStore createKeyStore(VellumProperties properties,
             Map<String, char[]> dualPasswordMap) throws Exception {
