@@ -20,7 +20,6 @@
  */
 package vellum.io;
 
-import venigma.provider.ClientContext;
 import com.google.gson.Gson;
 import java.io.*;
 import java.net.Socket;
@@ -33,10 +32,11 @@ import vellum.logr.LogrFactory;
  */
 public class JsonSockets {
     static Logr logger = LogrFactory.getThreadLogger(JsonSockets.class);
+    public static final String CHARSET = "UTF8";
      
     public static void write(Socket socket, Object message) throws IOException {
         String json = new Gson().toJson(message);
-        byte[] bytes = json.getBytes(ClientContext.CHARSET);
+        byte[] bytes = json.getBytes(CHARSET);
         PrintWriter writer = new PrintWriter(socket.getOutputStream());
         writer.println(json);
         writer.flush();
