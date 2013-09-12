@@ -262,7 +262,7 @@ On a positive note, we can setup "<i>double</i>-two-factor" authentication where
 
 <h4>Password complexity vs length</h4>
 
-We ensure that the default required complexity and/or length of the password is sufficient to counter brute-force attacks.
+We ensure that the complexity and/or length of the password is sufficient to counter brute-force attacks.
 
 {{{
 public class DualControlPasswordVerifier {
