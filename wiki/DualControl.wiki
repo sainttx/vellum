@@ -117,7 +117,7 @@ We create a <tt>!KeyStore</tt> using the following method, which is exposed for 
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different password, known to no single person.
 
-One might argue that we should not write code per se, but rather we should write tests with accompanying code, hand in glove.
+One might argue that we should not write code per se, but rather we should write tests with accompanying code, hand in glove. So let's test this baby.
 {{{
     @Test
     public void genKeyTest() throws Exception {
