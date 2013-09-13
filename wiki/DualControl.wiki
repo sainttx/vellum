@@ -509,7 +509,7 @@ where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e.
     }
 }}}
 
-where we accumulate the required number of submissions in a loop.
+where we accumulate the required number of submissions in a loop as follows.
 
 {{{    
     private void read(SSLServerSocket serverSocket) throws Exception {
