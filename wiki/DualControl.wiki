@@ -533,11 +533,11 @@ The following utility demonstrates a trivial server for a remote keystore.
 {{{
 public class FileServer {
     private static Logger logger = Logger.getLogger(FileServer.class);
-    InetAddress localAddress;
-    int port;
-    int backlog;
-    Set<String> allowedHosts = new TreeSet();
-    String fileName;
+    private InetAddress localAddress;
+    private int port;
+    private int backlog;
+    private Set<String> allowedHosts = new TreeSet();
+    private String fileName;
     ...
     public void call() throws Exception {
         SSLServerSocket serverSocket = (SSLServerSocket) 
