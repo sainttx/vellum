@@ -407,7 +407,7 @@ where passwords can specified on the command-line e.g. for test scripts, but oth
 
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
-As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <tt><a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html">SecretKeySpec</a>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So we must be sure that no one can "debug" our JVM memory!
+As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <tt><a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html">!SecretKeySpec</a>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So we must be sure that no one can "debug" our JVM memory!
 
 <h4><tt>!DualControlReader</tt></h4>
 
