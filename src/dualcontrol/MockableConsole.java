@@ -20,8 +20,6 @@
  */
 package dualcontrol;
 
-import java.io.PrintWriter;
-
 /**
  *
  * @author evan.summers
@@ -30,5 +28,5 @@ public interface MockableConsole {
 
     public char[] readPassword(String prompt, Object ... args);
     
-    public PrintWriter writer();
+    public void println(String message);
 }

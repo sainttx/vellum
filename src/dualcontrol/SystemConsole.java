@@ -35,8 +35,8 @@ public class SystemConsole implements MockableConsole {
     }        
     
     @Override
-    public PrintWriter writer() {
-        return System.console().writer();
+    public void println(String message) {
+        System.console().writer().println(message);
     }    
 
 }
