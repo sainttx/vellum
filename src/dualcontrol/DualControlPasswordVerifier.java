@@ -57,9 +57,8 @@ public class DualControlPasswordVerifier {
                 return "Too few words in passphrase";
             }
             if (verifyPasswordComplexity) {
-                if (!containsLetter(password) || !containsUpperCase(password)
-                        || !containsLowerCase(password) || !containsDigit(password)
-                        || !containsPunctuation(password)) {
+                if (!containsUpperCase(password) || !containsLowerCase(password) || 
+                        !containsDigit(password) || !containsPunctuation(password)) {
                     return "Insufficient password complexity";
                 }
             }
