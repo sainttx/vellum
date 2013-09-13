@@ -568,7 +568,7 @@ $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key dek2013 for DualControlDemoApp: 
 Re-enter password for key dek2013 for DualControlDemoApp: 
-OK evanx WLCO4XPIFBTNWOHXTRWUVENGEZEGW4HJ
+OK evanx WLCO4XPIFBTNWOHX
 </code>
 
 <code language="xml">
@@ -576,10 +576,10 @@ $ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key dek2013 for DualControlDemoApp: 
 Re-enter password for key dek2013 for DualControlDemoApp: 
-OK henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
+OK henty 6QLBNC26WGS34AIL
 </code>
 
-where the response message includes a hash of the submitted password so we might recognise its correctness or correctability.
+where the response message includes a truncated hash of the submitted password so we might recognise its correctness or correctability. Hopefully this hash does not introduce some vulnerability? 
 
 <h4><tt>!DualControlSessions</tt></h4>
 
