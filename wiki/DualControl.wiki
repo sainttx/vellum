@@ -409,140 +409,9 @@ Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of ou
 
 As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <tt><a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html">!SecretKeySpec</a>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. Hopefully no one can scan or "debug" our JVM memory?!
 
-<h4><tt>!DualControlReader</tt></h4>
-
-We observe the following logs when testing <tt>!DualControlGenSecKey</tt>.
-{{{
-INFO [DualControlReader] readDualMap submissionCount: 3
-INFO [DualControlReader] readDualMap purpose: new key dek2013
-INFO [DualControlReader] readSubmissions SSL port 4444
-INFO [DualControlReader] Received evanx
-INFO [DualControlReader] Received henty
-INFO [DualControlReader] Received brent
-INFO [DualControlReader] readDualMap dualAlias: brent-evanx
-INFO [DualControlReader] readDualMap dualAlias: brent-henty
-INFO [DualControlReader] readDualMap dualAlias: evanx-henty
-}}}
-
-So our <tt>!DualControlReader</tt> utility class handles reading split knowledge submissions.
-
-{{{
-public class DualControlReader {
-    private Properties properties;
-    private String purpose;
-    private int submissionCount;
-    private SSLContext sslContext;
-    private Set<String> names = new TreeSet();
-    private Map<String, char[]> submissions = new TreeMap();
-    
-    public DualControlReader(Properties properties, int submissionCount, String purpose) {
-        this.properties = properties;
-        this.submissionCount = submissionCount;
-        this.purpose = purpose;
-    }
-
-    public void init(SSLContext sslContent) {
-        this.sslContext = sslContent;
-    }
-
-    public Map<String, char[]> readDualMap() throws Exception {
-        logger.info("readDualMap submissionCount: " + submissionCount);
-        logger.info("readDualMap purpose: " + purpose);
-        readSubmissions();
-        Map<String, char[]> dualMap = new TreeMap();
-        for (String name : submissions.keySet()) {
-            for (String otherName : submissions.keySet()) {
-                if (name.compareTo(otherName) < 0) {
-                    String dualAlias = String.format("%s-%s", name, otherName);
-                    char[] dualPassword = combineSplitPassword(
-                            submissions.get(name), submissions.get(otherName));
-                    dualMap.put(dualAlias, dualPassword);
-                    logger.info("readDualMap dualAlias: " + dualAlias);
-                }
-            }
-        }
-        return dualMap;
-    }
-    ...
-}
-}}}
-
-The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
-
-We invoke <tt>readSubmissions()</tt> to listen for submissions via an <tt>SSLServerSocket</tt>.
-
-{{{
-    private final static int PORT = 4444;
-    private final static String HOST = "127.0.0.1";
-    private final static String REMOTE_ADDRESS = "127.0.0.1";
-    ...
-    private void readSubmissions() throws Exception {
-        logger.info("readSubmissions SSL port " + PORT);
-        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
-                getServerSocketFactory().createServerSocket(PORT, submissionCount,
-                InetAddress.getByName(HOST));
-        try {
-            serverSocket.setNeedClientAuth(true);
-            read(serverSocket);
-        } finally {
-            serverSocket.close();
-        }
-    }
-}}}
-
-where we create a client-authenticated SSL server socket.
-
-Note that we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
-
-{{{    
-    private void read(SSLServerSocket serverSocket) throws Exception {
-        while (submissions.size() < submissionCount) {
-            SSLSocket socket = (SSLSocket) serverSocket.accept();
-            try {
-                if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                    throw new Exception("Invalid remote address "
-                            + socket.getInetAddress().getHostAddress());
-                }
-                read(socket);
-            } finally {
-                socket.close();
-            }
-        }
-    }
-}}}
-
-where we accumulate the required number of submissions in a loop, handing each socket connection as follows.
-
-{{{
-    private void read(SSLSocket socket) throws Exception {
-        String name = new X500Name(socket.getSession().getPeerPrincipal().
-                getName()).getCommonName();
-        if (names.contains(name)) {
-            throw new Exception("Duplicate submission from " + name);
-        }
-        names.add(name);
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        dos.writeUTF(purpose);
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-        char[] password = readChars(dis);
-        String responseMessage = "Received " + name;
-        String invalidMessage = new DualControlPasswordVerifier(properties).
-                getInvalidMessage(password);
-        if (invalidMessage != null) {
-            throw new Exception(responseMessage + ": " + invalidMessage);
-        }
-        submissions.put(name, password);
-        logger.info(responseMessage);
-        responseMessage += " " + DualControlUtil.digestBase32(password).substring(1, 16);
-        dos.writeUTF(responseMessage);
-    }
-}}}
-
-where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
-
 <h4><tt>!DualControlDemoApp</tt></h4>
 
-On the downside, we have to re-engineer our application to be dual-controlled, in order to load the key it so desperately needs to cipher our data.
+The downside of all this malarkey, is that we have to re-engineer our application to be dual-controlled, in order to load the key it so desperately needs to cipher our data.
 
 {{{
 public class DualControlDemoApp {
@@ -693,6 +562,130 @@ public class FileServer {
 }}}
 
 where we create an <tt>SSLServerSocket</tt> requiring client authentication, and write out the keystore file to client connections from allowed remote hosts.
+
+<h4><tt>!DualControlReader</tt></h4>
+
+Finally, we present <tt>!DualControlReader</tt> which handles split knowledge submissions.
+
+{{{
+public class DualControlReader {
+    private Properties properties;
+    private String purpose;
+    private int submissionCount;
+    private SSLContext sslContext;
+    private Set<String> names = new TreeSet();
+    private Map<String, char[]> submissions = new TreeMap();
+    
+    public DualControlReader(Properties properties, int submissionCount, String purpose) {
+        this.properties = properties;
+        this.submissionCount = submissionCount;
+        this.purpose = purpose;
+    }
+
+    public void init(SSLContext sslContent) {
+        this.sslContext = sslContent;
+    }
+    ...
+}
+}}}
+
+where we specify the required number of password submissions for some purpose e.g. the generate a key or load a key, and provide an <tt>SSLContext</tt> for the <tt>SSLServerSocket</tt>.
+
+Our app can then invoke <tt>readDualMap()</tt> below to compose a map of dual aliases and split passwords.
+
+{{{
+    public Map<String, char[]> readDualMap() throws Exception {
+        logger.info("readDualMap submissionCount: " + submissionCount);
+        logger.info("readDualMap purpose: " + purpose);
+        readSubmissions();
+        Map<String, char[]> dualMap = new TreeMap();
+        for (String name : submissions.keySet()) {
+            for (String otherName : submissions.keySet()) {
+                if (name.compareTo(otherName) < 0) {
+                    String dualAlias = String.format("%s-%s", name, otherName);
+                    char[] dualPassword = combineSplitPassword(
+                            submissions.get(name), submissions.get(otherName));
+                    dualMap.put(dualAlias, dualPassword);
+                    logger.info("readDualMap dualAlias: " + dualAlias);
+                }
+            }
+        }
+        return dualMap;
+    }
+}}}
+
+where the <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
+
+We see that <tt>readDualMap()</tt> above invokes <tt>readSubmissions()</tt> below, to listen for submissions via an <tt>SSLServerSocket</tt>.
+
+{{{
+    private final static int PORT = 4444;
+    private final static String HOST = "127.0.0.1";
+    private final static String REMOTE_ADDRESS = "127.0.0.1";
+    ...
+    private void readSubmissions() throws Exception {
+        logger.info("readSubmissions SSL port " + PORT);
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(PORT, submissionCount,
+                InetAddress.getByName(HOST));
+        try {
+            serverSocket.setNeedClientAuth(true);
+            read(serverSocket);
+        } finally {
+            serverSocket.close();
+        }
+    }
+}}}
+
+where we create a client-authenticated SSL server socket.
+
+Note that we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
+
+{{{    
+    private void read(SSLServerSocket serverSocket) throws Exception {
+        while (submissions.size() < submissionCount) {
+            SSLSocket socket = (SSLSocket) serverSocket.accept();
+            try {
+                if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
+                    throw new Exception("Invalid remote address "
+                            + socket.getInetAddress().getHostAddress());
+                }
+                read(socket);
+            } finally {
+                socket.close();
+            }
+        }
+    }
+}}}
+
+where we accumulate the required number of submissions in a loop, handing each socket connection as follows.
+
+{{{
+    private void read(SSLSocket socket) throws Exception {
+        String name = new X500Name(socket.getSession().getPeerPrincipal().
+                getName()).getCommonName();
+        if (names.contains(name)) {
+            throw new Exception("Duplicate submission from " + name);
+        }
+        names.add(name);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF(purpose);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        char[] password = readChars(dis);
+        String responseMessage = "Received " + name;
+        String invalidMessage = new DualControlPasswordVerifier(properties).
+                getInvalidMessage(password);
+        if (invalidMessage != null) {
+            throw new Exception(responseMessage + ": " + invalidMessage);
+        }
+        submissions.put(name, password);
+        logger.info(responseMessage);
+        responseMessage += " " + DualControlUtil.digestBase32(password).substring(1, 16);
+        dos.writeUTF(responseMessage);
+    }
+}}}
+
+where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
 
 <h4>Unit test</h4>
 
