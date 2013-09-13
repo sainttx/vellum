@@ -35,12 +35,12 @@ import org.apache.log4j.Logger;
  */
 public class FileServer {
     private static Logger logger = Logger.getLogger(FileServer.class);
-    InetAddress localAddress;
-    int port;
-    int backlog;
-    int count;
-    Set<String> allowedHosts = new TreeSet();
-    String fileName;
+    private InetAddress localAddress;
+    private int port;
+    private int backlog;
+    private int count;
+    private Set<String> allowedHosts = new TreeSet();
+    private String fileName;
     
     public static void main(String[] args) throws Exception {
         if (args.length != 6) {
