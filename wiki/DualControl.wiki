@@ -352,13 +352,14 @@ mach=1000*1000
 26 years
 }}}
 
-
-Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 250 most common words, then a minimum of 8 words is indicated for such passphrases.
+If we guess combinations of the 1500 most common words, then a minimum of 6 words is indicated for such passphrases. 
 
 {{{
-250^8/(mach*guess*1000*60*60*24*365)
-24 years
+(1500^6)/(mach*guess*1000*60*60*24*365)
+18 years
 }}}
+
+Apparently the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), which is somewhat disconcerting.
 
 Note that our mandatory minimums apply to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
