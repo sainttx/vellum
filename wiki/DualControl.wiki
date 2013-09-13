@@ -82,7 +82,7 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
         keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
     }
 }}}
-where we choose similar property names to <tt>keytool</tt> arguments.
+where we choose property names similar to <tt>keytool</tt>.
 
 <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>createKeyStore()</tt> method below.
 {{{      
