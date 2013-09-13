@@ -352,7 +352,7 @@ mach=1000*1000
 26 years
 }}}
 
-If we guess combinations of the 1500 most common words, then a minimum of 6 words is indicated for such passphrases. 
+Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then a minimum of 6 words is indicated for such passphrases. 
 
 {{{
 (1500^6)/(mach*guess*1000*60*60*24*365)
@@ -409,7 +409,7 @@ where passwords can specified on the command-line e.g. for test scripts, but oth
 
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
-As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <tt>!SecretKeySpec</tt> and friends clone byte arrays like there's no tomorrow, d'oh! So we gotta somehow ensure no one can "debug" our memory!?
+As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a>'s <tt>getEncoded()</tt> method clones the byte array, which is somewhat disconcerting? So we must be sure that no one can "debug" our memory!
 
 <h4><tt>!DualControlReader</tt></h4>
 
@@ -492,24 +492,9 @@ We invoke <tt>readSubmissions()</tt> to listen for submissions via an <tt>SSLSer
     }
 }}}
 
-where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
-
-{{{    
-    private void readSubmissions() throws Exception {
-        logger.info("readSubmissions SSL port " + PORT);
-        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
-                getServerSocketFactory().createServerSocket(PORT, submissionCount,
-                InetAddress.getByName(HOST));
-        try {
-            serverSocket.setNeedClientAuth(true);
-            read(serverSocket);
-        } finally {
-            serverSocket.close();
-        }
-    }
-}}}
-
 where we create a client-authenticated SSL server socket.
+
+Note that we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
 
 {{{    
     private void read(SSLServerSocket serverSocket) throws Exception {
@@ -528,7 +513,7 @@ where we create a client-authenticated SSL server socket.
     }
 }}}
 
-where we accumulate the required number of submissions in a loop.
+where we accumulate the required number of submissions in a loop, handing each socket connection as follows.
 
 {{{
     private void read(SSLSocket socket) throws Exception {
@@ -574,7 +559,7 @@ public class DualControlDemoApp {
 }
 }}}
 
-The application loads keys as if it's too easy. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
+The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
 
 {{{
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
@@ -607,7 +592,7 @@ Re-enter password for key dek2013 for DualControlDemoApp:
 OK henty 6QLBNC26WGS34AIL
 }}}
 
-where the response message includes a truncated hash of the submitted password so we might recognise its correctness or correctability. Hopefully this hash does not introduce some vulnerability? 
+where the response message includes a truncated hash of the submitted password, so we might recognise its correctness or correctability. Hopefully this hash does not introduce some vulnerability? 
 
 <h4><tt>!DualControlSessions</tt></h4>
 
@@ -644,9 +629,15 @@ where we read the dual info using the aforementioned <tt>!DualControlReader</tt>
     }   
 }}}
 
-Incidently we can trivally load a remote keystore via SSL as follows.
+where we read the first dual entry returned by <tt>readDualMap()</tt>. Actually this is the only entry in the map since we have required only two submissions.
+
+<h4>Remote keystore</h4>
+
+We might wish to store our keystore centrally, or internally on a more secure server, and load it via SSL as follows. 
 
 {{{
+public class DualControlSessions {
+    ...
     public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
             throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
@@ -668,7 +659,9 @@ Incidently we can trivally load a remote keystore via SSL as follows.
     }
 }}}
 
-where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. This is potentially useful for storing the keystore centrally or internally on a more secure server. The following utility demonstrates a trivial file server that could be used. 
+where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
+
+The following utility demonstrates a trivial server for a remote keystore.
 
 {{{
 public class FileServer {
@@ -676,29 +669,9 @@ public class FileServer {
     InetAddress localAddress;
     int port;
     int backlog;
-    int count;
-    String remoteHostAddress;
+    Set<String> allowedHosts = new TreeSet();
     String fileName;
-    
-    public static void main(String[] args) throws Exception {
-        if (args.length != 6) {
-            System.err.println("usage: localAddress port backlog count remoteAddress file");
-        } else {
-            new FileServer(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
-                    Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[4], args[5]).call();
-        }        
-    }        
-
-    public FileServer(InetAddress localAddress, int port, int backlog, int count, 
-            String remoteHostAddress, String fileName) {
-        this.localAddress = localAddress;
-        this.port = port;
-        this.backlog = backlog;
-        this.count = count;
-        this.remoteHostAddress = remoteHostAddress;
-        this.fileName = fileName;
-    }
-    
+    ...
     public void call() throws Exception {
         SSLServerSocket serverSocket = (SSLServerSocket) 
                 DualControlSSLContextFactory.createSSLContext(System.getProperties(),
@@ -712,15 +685,16 @@ public class FileServer {
         while (true) {
             Socket socket = serverSocket.accept();
             logger.info("hostAddress " + socket.getInetAddress().getHostAddress());
-            if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
+            if (allowedHosts.contains(socket.getInetAddress().getHostAddress())) {
                 socket.getOutputStream().write(bytes);
             }
             socket.close();
-            if (count > 0 && --count == 0) break;
         }        
     }    
 }
 }}}
+
+where we create an <tt>SSLServerSocket</tt> requiring client authentication, and write out the keystore file to client connections from allowed remote hosts.
 
 <h4>Unit test</h4>
 
