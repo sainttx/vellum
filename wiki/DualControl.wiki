@@ -341,9 +341,9 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
-
 If we fear that in the future someone can try an average of 20 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations, 26 years are required to try all possible passwords up to 12 characters in length using a lazy subset of 40 characters. 
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
 {{{
 guess=20
@@ -402,8 +402,6 @@ public class DualControlSSLContextFactory {
 }}}
 
 where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console.
-
-<img align=right style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
