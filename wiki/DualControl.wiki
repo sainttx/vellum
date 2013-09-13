@@ -588,9 +588,9 @@ Our app above invokes the <tt>loadKey()</tt> method below to do the legwork.
 {{{
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass,
+    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
             String alias, String purpose) throws Exception {
-        KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
+        KeyStore dualKeyStore = loadLocalKeyStore(keyStoreLocation, keyStorePass);
         purpose = "key " + alias + " for " + purpose;
         Map.Entry<String, char[]> entry = readDualEntry(purpose);
         String dualAlias = entry.getKey();
@@ -600,7 +600,13 @@ public class DualControlSessions {
         Arrays.fill(dualPass, (char) 0);
         return key;
     }
+    ...
+}
+}}}
 
+where we read the dual info using the aforementioned <tt>!DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
+
+{{{ 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlReader reader = new DualControlReader(System.getProperties(), 2, purpose);
         SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
@@ -608,10 +614,85 @@ public class DualControlSessions {
         reader.init(sslContext);
         return reader.readDualMap().entrySet().iterator().next();
     }   
-}
 }}}
 
-where we read the dual info using the aforementioned <tt>!DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
+Incidently we can trivally load a remote keystore via SSL as follows.
+
+{{{
+    public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
+            throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        if (keyStoreLocation.contains(":")) {
+            String[] array = keyStoreLocation.split(":");
+            Socket socket = DualControlSSLContextFactory.createSSLContext(
+                    System.getProperties(), new ConsoleAdapter(System.console())).
+                    getSocketFactory().createSocket(array[0], Integer.parseInt(array[1]));
+            keyStore.load(socket.getInputStream(), keyStorePassword);
+            socket.close();
+        } else if (new File(keyStoreLocation).exists()) {
+            FileInputStream fis = new FileInputStream(keyStoreLocation);
+            keyStore.load(fis, keyStorePassword);
+            fis.close();
+        } else {
+            keyStore.load(null, null);
+        }
+        return keyStore;
+    }
+}}}
+
+where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. This is potentially useful for storing the keystore centrally or internally on a more secure server. The following utility demonstrates a trivial file server that could be used. 
+
+{{{
+public class FileServer {
+    private static Logger logger = Logger.getLogger(FileServer.class);
+    InetAddress localAddress;
+    int port;
+    int backlog;
+    int count;
+    String remoteHostAddress;
+    String fileName;
+    
+    public static void main(String[] args) throws Exception {
+        if (args.length != 6) {
+            System.err.println("usage: localAddress port backlog count remoteAddress file");
+        } else {
+            new FileServer(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
+                    Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[4], args[5]).call();
+        }        
+    }        
+
+    public FileServer(InetAddress localAddress, int port, int backlog, int count, 
+            String remoteHostAddress, String fileName) {
+        this.localAddress = localAddress;
+        this.port = port;
+        this.backlog = backlog;
+        this.count = count;
+        this.remoteHostAddress = remoteHostAddress;
+        this.fileName = fileName;
+    }
+    
+    public void call() throws Exception {
+        SSLServerSocket serverSocket = (SSLServerSocket) 
+                DualControlSSLContextFactory.createSSLContext(System.getProperties(),
+                new ConsoleAdapter(System.console())).getServerSocketFactory().
+                createServerSocket(port, backlog, localAddress);
+        serverSocket.setNeedClientAuth(true);
+        FileInputStream stream = new FileInputStream(fileName);
+        int length = (int) new File(fileName).length();
+        byte[] bytes = new byte[length];
+        stream.read(bytes);
+        while (true) {
+            Socket socket = serverSocket.accept();
+            logger.info("hostAddress " + socket.getInetAddress().getHostAddress());
+            if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
+                socket.getOutputStream().write(bytes);
+            }
+            socket.close();
+            if (count > 0 && --count == 0) break;
+        }        
+    }    
+}
+}}}
 
 <h4>Unit test</h4>
 
