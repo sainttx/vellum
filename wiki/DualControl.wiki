@@ -324,20 +324,20 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 
 If we fear that in the future someone can try an average of 1000 guesses per millisecond on a botnet of a 50M machines, then by my backroom calculations, 41 years are required to try a quarter of all possible passwords up to 18 characters in length using a lazy subset of only 20 characters. 
 
-<code language="xml">
+{{{
 $ bc
 guess=1000
 mach=50
 20^18/(365*24*3600*1000*guess*mach*1000*1000)/4
 41 years
-</code>
+}}}
 
 However, if we assume some combination of the 2200 most common words is used for a passphrase, then we need 7 words, and so even 18 characters is not enough. <i>D'oh!</i>
 
-<code language="xml">
+{{{
 2200^7/(365*24*3600*1000*guess*mach*1000*1000)/4
 39 years
-</code>
+}}}
 
 We note that our desired minimum length applies to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
