@@ -466,6 +466,7 @@ public class DualControlReader {
         return dualMap;
     }
     ...
+}
 }}}
 
 The <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
