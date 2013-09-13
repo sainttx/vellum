@@ -509,7 +509,7 @@ where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e.
     }
 }}}
 
-where we accumulate the required number of submissions in a loop as follows.
+where we create a client-authenticated SSL server socket.
 
 {{{    
     private void read(SSLServerSocket serverSocket) throws Exception {
@@ -525,6 +525,33 @@ where we accumulate the required number of submissions in a loop as follows.
                 socket.close();
             }
         }
+    }
+}}}
+
+where we accumulate the required number of submissions in a loop.
+
+{{{
+    private void read(SSLSocket socket) throws Exception {
+        String name = new X500Name(socket.getSession().getPeerPrincipal().
+                getName()).getCommonName();
+        if (names.contains(name)) {
+            throw new Exception("Duplicate submission from " + name);
+        }
+        names.add(name);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF(purpose);
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        char[] password = readChars(dis);
+        String responseMessage = "Received " + name;
+        String invalidMessage = new DualControlPasswordVerifier(properties).
+                getInvalidMessage(password);
+        if (invalidMessage != null) {
+            throw new Exception(responseMessage + ": " + invalidMessage);
+        }
+        submissions.put(name, password);
+        logger.info(responseMessage);
+        responseMessage += " " + DualControlUtil.digestBase32(password).substring(1, 16);
+        dos.writeUTF(responseMessage);
     }
 }}}
 
