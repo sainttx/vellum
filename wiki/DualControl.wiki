@@ -349,8 +349,9 @@ If we fear that in the future someone can try an average of 20 guesses per milli
 guess=20
 mach=1000*1000
 40^12/(mach*guess*1000*60*60*24*365)
-26
+26 years
 }}}
+
 
 Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 250 most common words, then a minimum of 8 words is indicated for such passphrases.
 
