@@ -59,7 +59,6 @@ where we choose property names similar to <tt>keytool</tt>.
 
 {{{
     public static void main(String[] args) throws Exception {
-        logger.info("main " + Arrays.toString(args));
         DualControlGenSecKey instance = new DualControlGenSecKey(
                 new VellumProperties(System.getProperties()), 
                 new ConsoleAdapter(System.console()));
@@ -220,17 +219,8 @@ public class DualControlConsole {
         }
     }
 
-    public DualControlConsole(Properties properties, MockableConsole console) {
-        this.properties = properties;
-        this.console = console;
-    }
-
     public void init() throws Exception {
         this.sslContext = DualControlSSLContextFactory.createSSLContext(properties, console));
-    }
-
-    public void init(SSLContext sslContext) {
-        this.sslContext = sslContext;
     }
     ...
 }
@@ -440,31 +430,40 @@ So our <tt>!DualControlReader</tt> utility class handles reading split knowledge
 
 {{{
 public class DualControlReader {
+    private Properties properties;
     private String purpose;
     private int submissionCount;
     private SSLContext sslContext;
-    private Map<String, char[]> map = new TreeMap();
+    private Set<String> names = new TreeSet();
+    private Map<String, char[]> submissions = new TreeMap();
     
-    public Map<String, char[]> readDualMap(String purpose, int submissionCount,
-            SSLContext sslContext) throws Exception {
-        this.purpose = purpose;
+    public DualControlReader(Properties properties, int submissionCount, String purpose) {
+        this.properties = properties;
         this.submissionCount = submissionCount;
-        this.sslContext = sslContext;
+        this.purpose = purpose;
+    }
+
+    public void init(SSLContext sslContent) {
+        this.sslContext = sslContent;
+    }
+
+    public Map<String, char[]> readDualMap() throws Exception {
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
         readSubmissions();
+        Map<String, char[]> dualMap = new TreeMap();
         for (String name : submissions.keySet()) {
             for (String otherName : submissions.keySet()) {
                 if (name.compareTo(otherName) < 0) {
                     String dualAlias = String.format("%s-%s", name, otherName);
                     char[] dualPassword = combineSplitPassword(
                             submissions.get(name), submissions.get(otherName));
-                    map.put(dualAlias, dualPassword);
+                    dualMap.put(dualAlias, dualPassword);
                     logger.info("readDualMap dualAlias: " + dualAlias);
                 }
             }
         }
-        return map;
+        return dualMap;
     }
     ...
 }}}
@@ -495,8 +494,25 @@ We invoke <tt>readSubmissions()</tt> to listen for submissions via an <tt>SSLSer
 where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
 
 {{{    
+    private void readSubmissions() throws Exception {
+        logger.info("readSubmissions SSL port " + PORT);
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(PORT, submissionCount,
+                InetAddress.getByName(HOST));
+        try {
+            serverSocket.setNeedClientAuth(true);
+            read(serverSocket);
+        } finally {
+            serverSocket.close();
+        }
+    }
+}}}
+
+where we accumulate the required number of submissions in a loop.
+
+{{{    
     private void read(SSLServerSocket serverSocket) throws Exception {
-        while (map.size() < submissionCount) {
+        while (submissions.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
                 if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
@@ -508,31 +524,6 @@ where we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e.
                 socket.close();
             }
         }
-    }
-}}}
-
-where we accumulate the required number of submissions in a loop.
-
-{{{    
-    private void read(SSLSocket socket) throws Exception {
-        String name = new X500Name(socket.getSession().getPeerPrincipal().
-                getName()).getCommonName();
-        if (names.contains(name)) {
-            throw new Exception("Duplicate submission from " + name);
-        }
-        names.add(name);
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        dos.writeUTF(purpose);
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-        char[] password = readChars(dis);
-        String responseMessage = "Received " + name;
-        String invalidMessage = new DualControlPasswordVerifier(
-                properties).getInvalidMessage(password);
-        if (invalidMessage != null) {
-            throw new Exception(responseMessage + ": " + invalidMessage);
-        }
-        map.put(name, password);
-        dos.writeUTF(responseMessage);
     }
 }}}
 
@@ -599,10 +590,9 @@ public class DualControlSessions {
 
     public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass,
             String alias, String purpose) throws Exception {
-        KeyStore dualKeyStore =
-                DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
+        KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
         purpose = "key " + alias + " for " + purpose;
-        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
+        Map.Entry<String, char[]> entry = readDualEntry(purpose);
         String dualAlias = entry.getKey();
         char[] dualPass = entry.getValue();
         alias = alias + "-" + dualAlias;
@@ -610,6 +600,14 @@ public class DualControlSessions {
         Arrays.fill(dualPass, (char) 0);
         return key;
     }
+
+    public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
+        DualControlReader reader = new DualControlReader(System.getProperties(), 2, purpose);
+        SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
+                System.getProperties(), new ConsoleAdapter(System.console()));
+        reader.init(sslContext);
+        return reader.readDualMap().entrySet().iterator().next();
+    }   
 }
 }}}
 
