@@ -33,18 +33,33 @@ import org.apache.log4j.Logger;
  */
 public class FileServer {
     private static Logger logger = Logger.getLogger(FileServer.class);
+    InetAddress localAddress;
+    int port;
+    int backlog;
+    int count;
+    String remoteHostAddress;
+    String fileName;
     
     public static void main(String[] args) throws Exception {
         if (args.length != 6) {
             System.err.println("usage: localAddress port backlog count remoteAddress file");
         } else {
-            new FileServer().run(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
-                    Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[4], args[5]);
+            new FileServer(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
+                    Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[4], args[5]).call();
         }        
     }        
 
-    private void run(InetAddress localAddress, int port, int backlog, int count, 
-            String remoteHostAddress, String fileName) throws Exception {
+    public FileServer(InetAddress localAddress, int port, int backlog, int count, 
+            String remoteHostAddress, String fileName) {
+        this.localAddress = localAddress;
+        this.port = port;
+        this.backlog = backlog;
+        this.count = count;
+        this.remoteHostAddress = remoteHostAddress;
+        this.fileName = fileName;
+    }
+    
+    public void call() throws Exception {
         SSLServerSocket serverSocket = (SSLServerSocket) 
                 DualControlSSLContextFactory.createSSLContext(System.getProperties(),
                 new ConsoleAdapter(System.console())).getServerSocketFactory().
