@@ -30,11 +30,14 @@ import org.apache.log4j.Logger;
  */
 public class MockConsole implements MockableConsole {
     private static Logger logger = Logger.getLogger(MockConsole.class);
-    List<String> lines = new ArrayList();
-    char[] password;
+    private List<String> lines = new ArrayList();
+    private String alias;
+    private char[] password;
     
-    public MockConsole(char[] password) {
+    public MockConsole(String alias, char[] password) {
+        this.alias = alias;
         this.password = password;
+        logger = Logger.getLogger("MockConsole-" + alias);
     }
 
     public List<String> getLines() {

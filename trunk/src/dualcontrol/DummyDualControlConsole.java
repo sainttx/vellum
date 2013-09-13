@@ -30,11 +30,14 @@ public abstract class DummyDualControlConsole {
     final static Logger logger = Logger.getLogger(DummyDualControlConsole.class);
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            logger.error("missing argument");
+        if (args.length != 2) {
+            logger.error("usage: alias password");
         } else {
-            MockConsole console = new MockConsole(args[0].toCharArray());
-            DualControlConsole.call(System.getProperties(), console);
+            MockConsole console = new MockConsole(args[0], args[1].toCharArray());
+            DualControlConsole instance = new DualControlConsole(
+                    System.getProperties(), console);
+            instance.init();
+            instance.call();
             logger.info(console.getLines().get(0));
         }
     }    

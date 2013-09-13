@@ -21,6 +21,7 @@
 package dualcontrol;
 
 import java.util.Properties;
+import org.apache.log4j.Logger;
 import vellum.util.VellumProperties;
 
 /**
@@ -28,10 +29,11 @@ import vellum.util.VellumProperties;
  * @author evan.summers
  */
 public class DualControlPasswordVerifier {
-    final boolean verifyPassword;
-    final boolean verifyPasswordComplexity;
-    final int minPasswordLength;
-    final int minWordCount;
+    private final static Logger logger = Logger.getLogger(DualControlPasswordVerifier.class);
+    private final boolean verifyPassword;
+    private final boolean verifyPasswordComplexity;
+    private final int minPasswordLength;
+    private final int minWordCount;
 
     public DualControlPasswordVerifier(Properties properties) {
         VellumProperties props = new VellumProperties(properties);
@@ -43,6 +45,7 @@ public class DualControlPasswordVerifier {
                 "dualcontrol.minPasswordLength", 12);
         minWordCount = props.getInt(
                 "dualcontrol.minWordCount", 4);
+        logger.info("verifyPassword " + verifyPassword);
     }
     
     public String getInvalidMessage(char[] password) throws Exception {

@@ -20,10 +20,13 @@
  */
 package dualcontrol;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Map;
 import javax.crypto.SecretKey;
+import javax.net.ssl.SSLContext;
 
 /**
  *
@@ -31,12 +34,11 @@ import javax.crypto.SecretKey;
  */
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass,
+    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
             String alias, String purpose) throws Exception {
-        KeyStore dualKeyStore =
-                DualControlKeyStores.loadKeyStore(keyStoreLocation, keyStorePass);
+        KeyStore dualKeyStore = loadLocalKeyStore(keyStoreLocation, keyStorePass);
         purpose = "key " + alias + " for " + purpose;
-        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
+        Map.Entry<String, char[]> entry = readDualEntry(purpose);
         String dualAlias = entry.getKey();
         char[] dualPass = entry.getValue();
         alias = alias + "-" + dualAlias;
@@ -45,4 +47,24 @@ public class DualControlSessions {
         return key;
     }
     
+    public static KeyStore loadLocalKeyStore(String keyStoreLocation, 
+            char[] keyStorePassword) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        if (new File(keyStoreLocation).exists()) {
+            FileInputStream fis = new FileInputStream(keyStoreLocation);
+            keyStore.load(fis, keyStorePassword);
+            fis.close();
+        } else {
+            keyStore.load(null, null);
+        }
+        return keyStore;
+    }        
+    
+    public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
+        DualControlReader reader = new DualControlReader(System.getProperties(), 2, purpose);
+        SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
+                System.getProperties(), new ConsoleAdapter(System.console()));
+        reader.init(sslContext);
+        return reader.readDualMap().entrySet().iterator().next();
+    }   
 }

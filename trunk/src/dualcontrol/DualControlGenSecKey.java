@@ -68,7 +68,7 @@ public class DualControlGenSecKey {
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         DualControlGenSecKey instance = new DualControlGenSecKey(
-                new VellumProperties(System.getProperties()),
+                new VellumProperties(System.getProperties()), 
                 new ConsoleAdapter(System.console()));
         try {
             instance.init();

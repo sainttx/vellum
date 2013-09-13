@@ -43,7 +43,6 @@ import vellum.util.Chars;
  * @author evan.summers
  */
 public class DualControlReader {
-
     private final static Logger logger = Logger.getLogger(DualControlReader.class);
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
@@ -55,21 +54,22 @@ public class DualControlReader {
     private Set<String> names = new TreeSet();
     private Map<String, char[]> submissions = new TreeMap();
 
-    public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        return new DualControlReader(System.getProperties(), 2, purpose).readDualMap(
-            DualControlSSLContextFactory.createSSLContext(
-                System.getProperties(), new ConsoleAdapter(System.console()))).
-                entrySet().iterator().next();
-    }
-
     public DualControlReader(Properties properties, int submissionCount, String purpose) {
         this.properties = properties;
         this.submissionCount = submissionCount;
         this.purpose = purpose;
     }
-            
+
+    public void init(SSLContext sslContent) {
+        this.sslContext = sslContent;
+    }
+
     public Map<String, char[]> readDualMap(SSLContext sslContext) throws Exception {
         this.sslContext = sslContext;
+        return readDualMap();
+    }
+    
+    public Map<String, char[]> readDualMap() throws Exception {
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);
         readSubmissions();
@@ -136,8 +136,8 @@ public class DualControlReader {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
         String responseMessage = "Received " + name;
-        String invalidMessage = new DualControlPasswordVerifier(
-                properties).getInvalidMessage(password);
+        String invalidMessage = new DualControlPasswordVerifier(properties).
+                getInvalidMessage(password);
         if (invalidMessage != null) {
             throw new Exception(responseMessage + ": " + invalidMessage);
         }

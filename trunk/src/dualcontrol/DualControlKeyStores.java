@@ -49,7 +49,7 @@ public class DualControlKeyStores {
             keyStore.load(fis, keyStorePassword);
             fis.close();
         } else {
-            keyStore.load(null, keyStorePassword);            
+            keyStore.load(null, null);
         }
         return keyStore;
     }
@@ -62,10 +62,8 @@ public class DualControlKeyStores {
             keyStore.load(fis, keyStorePassword);
             fis.close();
         } else {
-            keyStore.load(null, keyStorePassword);            
+            keyStore.load(null, null);
         }
         return keyStore;
-    }
-    
-    
+    }        
 }

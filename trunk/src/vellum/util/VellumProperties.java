@@ -69,11 +69,17 @@ public class VellumProperties extends Properties {
     }
     
     public boolean getBoolean(String propertyName, boolean defaultValue) {
-        String string = super.getProperty(propertyName);
-        if (string == null) {
+        Object object = super.get(propertyName);
+        if (object == null) {
             return defaultValue;
         }
-        return Boolean.parseBoolean(string);
+        if (object instanceof String) {
+            return Boolean.parseBoolean((String) object);
+        }
+        if (object instanceof Boolean) {
+            return (Boolean) object;
+        }
+        throw new RuntimeException("Property value is not boolean: " + propertyName);
     }    
     
     public char[] getPassword(String propertyName, char[] defaultValue) {
