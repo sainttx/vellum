@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.net.ssl.SSLServerSocket;
 import org.apache.log4j.Logger;
 
@@ -37,7 +39,7 @@ public class FileServer {
     int port;
     int backlog;
     int count;
-    String remoteHostAddress;
+    Set<String> allowedHosts = new TreeSet();
     String fileName;
     
     public static void main(String[] args) throws Exception {
@@ -55,7 +57,7 @@ public class FileServer {
         this.port = port;
         this.backlog = backlog;
         this.count = count;
-        this.remoteHostAddress = remoteHostAddress;
+        this.allowedHosts.add(remoteHostAddress);
         this.fileName = fileName;
     }
     
@@ -72,7 +74,7 @@ public class FileServer {
         while (true) {
             Socket socket = serverSocket.accept();
             logger.info("hostAddress " + socket.getInetAddress().getHostAddress());
-            if (socket.getInetAddress().getHostAddress().equals(remoteHostAddress)) {
+            if (allowedHosts.contains(socket.getInetAddress().getHostAddress())) {
                 socket.getOutputStream().write(bytes);
             }
             socket.close();
