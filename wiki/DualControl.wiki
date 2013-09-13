@@ -353,7 +353,7 @@ mach=10
 25 years
 }}}
 
-However, considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 200 most common words, then we need a minimum of 9 words for our passphrase - <i>D'oh!</i>
+Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 200 most common words, then a minimum of 9 words is indicated for such passphrases.
 
 {{{
 200^9/(365*24*3600*1000*guess*mach*1000*1000)/4
