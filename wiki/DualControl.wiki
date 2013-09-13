@@ -312,13 +312,13 @@ Our keystore is unfortunately forever vulnerable to theft and/or brute-force att
 
 We observe that an Intel i5 can manage about 30 guesses per millisecond on a JCE keystore, using 4 threads to utilise its quad-cores.
 
-<code language="xml">
+{{{
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
   $seckeystore $pass dek2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
-</code>
+}}}
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
