@@ -344,24 +344,24 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
-If we fear that in the future someone can try an average of 50 guesses per millisecond on a botnet of a 50M machines, then by my backroom calculations, 41 years are required to try a quarter of all possible passwords up to 17 characters in length using a lazy subset of only 20 characters. 
+If we fear that in the future someone can try an average of 20 guesses per millisecond on a botnet of a 10M machines, then by my backroom calculations, 25 years are required to try a quarter of all possible passwords up to 16 characters in length using a lazy subset of only 20 characters. 
 
 {{{
 $ bc
-guess=50
-mach=50
-20^17/(365*24*3600*1000*guess*mach*1000*1000)/4
-41 years
+guess=20
+mach=10
+20^16/(365*24*3600*1000*guess*mach*1000*1000)/4
+25 years
 }}}
 
-However, considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), arguably we need a minimum of 11 words - <i>D'oh!</i>
+However, considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 200 most common words, then we need a minimum of 9 words for our passphrase - <i>D'oh!</i>
 
 {{{
-100^11/(365*24*3600*1000*guess*mach*1000*1000)/4
-31 years
+200^9/(365*24*3600*1000*guess*mach*1000*1000)/4
+20 years
 }}}
 
-We note that our desired minimum length applies to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
+Note that our mandatory minimums apply to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>. We would specify huge large number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is clearly a tolerable startup delay in our production environment, but will thwart brute-force attacks.
 
