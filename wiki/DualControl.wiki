@@ -40,13 +40,34 @@ public class DualControlGenSecKey {
     private Map<String, char[]> dualPasswordMap;
     private SSLContext sslContext;
 
+    public DualControlGenSecKey(VellumProperties properties, MockableConsole console) {
+        this.properties = properties;
+        this.console = console;
+        submissionCount = properties.getInt("dualcontrol.submissions", 3);
+        keyStorePassword = properties.getPassword("storepass", null);
+        keyAlias = properties.getString("alias");
+    }
+
+    public void init() throws Exception {
+        sslContext = DualControlSSLContextFactory.createSSLContext(properties, console);
+    }
+    ...
+}
+}}}
+
+where we choose property names similar to <tt>keytool</tt>.
+
+{{{
     public static void main(String[] args) throws Exception {
-        DualControlGenSecKey instance = new DualControlGenSecKey();
+        logger.info("main " + Arrays.toString(args));
+        DualControlGenSecKey instance = new DualControlGenSecKey(
+                new VellumProperties(System.getProperties()), 
+                new ConsoleAdapter(System.console()));
         try {
-            instance.call(new VellumProperties(System.getProperties()), 
-                    new ConsoleAdapter(System.console()));
+            instance.init();
+            instance.call();
         } catch (DualControlException e) {
-            instance.console.writer().println(e.getMessage());
+            instance.console.println(e.getMessage());
         } finally {
             instance.clear();
         }
@@ -57,13 +78,16 @@ public class DualControlGenSecKey {
 where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console for entering the SSL keystore password.
 
 {{{
-    public void call(VellumProperties properties, MockableConsole console) 
-            throws Exception {
-        this.console = console;
-        submissionCount = properties.getInt("dualcontrol.submissions", 3);
+    public void call() throws Exception {
         keyStoreLocation = properties.getString("keystore");
-        keyStorePassword = properties.getPassword("storepass", null);
-        keyAlias = properties.getString("alias");
+        if (new File(keyStoreLocation).exists()) {
+            throw new Exception("Keystore file already exists: " + keyStoreLocation);
+        }
+        KeyStore keyStore = createKeyStore();
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+
+    public KeyStore createKeyStore() throws Exception {
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
                     "Enter passphrase for keystore (%s): ", keyStoreLocation);
@@ -71,23 +95,15 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
                 throw new Exception("No keystore passphrase from console");
             }
         }
-        if (new File(keyStoreLocation).exists()) {
-            throw new Exception(
-                    "Keystore file already exists: " + keyStoreLocation);
-        }
-        sslContext = DualControlSSLContextFactory.createSSLContext(properties);
         String purpose = "new key " + keyAlias;
-        KeyStore keyStore = createKeyStore(properties, new DualControlReader().
-                readDualMap(purpose, submissionCount, sslContext));
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        return createKeyStore(new DualControlReader(properties, submissionCount, purpose).
+                readDualMap(sslContext));
     }
 }}}
-where we choose property names similar to <tt>keytool</tt>.
 
-<tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>createKeyStore()</tt> method below.
+where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>createKeyStore()</tt> method below.
 {{{      
-    public KeyStore createKeyStore(VellumProperties properties,
-            Map<String, char[]> dualPasswordMap) throws Exception {
+    public KeyStore createKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
         keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
@@ -96,7 +112,7 @@ where we choose property names similar to <tt>keytool</tt>.
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(null, null);        
+        keyStore.load(null, null);
         setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
         return keyStore;
     }
@@ -159,9 +175,9 @@ For example, three admins submit their passwords via SSL sockets where their cli
 INFO [DualControlReader] readDualMap submissionCount: 3
 INFO [DualControlReader] readDualMap purpose: new key dek2013
 INFO [DualControlReader] readSubmissions SSL port 4444
-INFO [DualControlReader] Received evanx KGV3SY3APDPPX6EI3BCXU7DW7BOI6EKM
-INFO [DualControlReader] Received henty 6QLBNC26WGS34AILXPBSP2V65B3N5CYF
-INFO [DualControlReader] Received brent SLZP3GMHTMGCIZVLQZEK7NR4JEBSG6OB
+INFO [DualControlReader] Received evanx
+INFO [DualControlReader] Received henty
+INFO [DualControlReader] Received brent
 INFO [DualControlReader] readDualMap dualAlias: brent-evanx
 INFO [DualControlReader] readDualMap dualAlias: brent-henty
 INFO [DualControlReader] readDualMap dualAlias: evanx-henty
@@ -187,51 +203,64 @@ Let's write an app for admins to submit their passwords via SSL.
 
 {{{
 public class DualControlConsole {
-    final static int PORT = 4444;
-    final static String HOST = "127.0.0.1";
+    private final static int PORT = 4444;
+    private final static String HOST = "127.0.0.1";
+    Properties properties;
+    MockableConsole console;
+    SSLContext sslContext;
 
     public static void main(String[] args) throws Exception {
-        call(System.getProperties(), new ConsoleAdapter(System.console()));
+        DualControlConsole instance = new DualControlConsole(System.getProperties(), 
+                new ConsoleAdapter(System.console()));
+        try {
+            instance.init();
+            instance.call();
+        } finally {            
+            instance.clear();
+        }
+    }
 
-    }    
+    public DualControlConsole(Properties properties, MockableConsole console) {
+        this.properties = properties;
+        this.console = console;
+    }
 
-    public static void call(Properties properties, MockableConsole console) 
-            throws Exception {
-        call(properties, console, 
-                DualControlSSLContextFactory.createSSLContext(properties));
-    }    
+    public void init() throws Exception {
+        this.sslContext = DualControlSSLContextFactory.createSSLContext(properties, console));
+    }
+
+    public void init(SSLContext sslContext) {
+        this.sslContext = sslContext;
+    }
     ...
 }
 }}}
 
-We provide <tt>public</tt> methods suitable for our unit test e.g. to provide a <tt>!MockConsole</tt>, whereas the <tt>main()</tt> method above passes a <tt>System.console()</tt> adapter.
-
-We see above that <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from <tt>System</tt> properties, which specify the requisite keystore and truststore. We'll see later that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically. 
+where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from <tt>System</tt> properties, which specify the requisite keystore and truststore. We'll see later that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically. 
 
 {{{
-    public static void call(Properties properties, MockableConsole console,
-            SSLContext sslContext) throws Exception {
+    public void call() throws Exception {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
         char[] password = console.readPassword(
                 "Enter password for " + purpose + ": ");
-        String invalidMessage = new DualControlPasswordVerifier(
-                properties).getInvalidMessage(password);
+        String invalidMessage = new DualControlPasswordVerifier(properties).
+                getInvalidMessage(password);
         if (invalidMessage != null) {
-            console.writer().println(invalidMessage);
+            console.println(invalidMessage);
         } else {
             String hash = Digests.sha1String(Chars.getBytes(password));
             Arrays.fill(password, (char) 0);
             password = console.readPassword(
                     "Re-enter password for " + purpose + ": ");
             if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
-                console.writer().println("Passwords don't match.");
+                console.println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 writeChars(dos, password);
                 String message = dis.readUTF();
-                console.writer().println(message);
+                console.println(message);
             }
             Arrays.fill(password, (char) 0);
         }
@@ -263,9 +292,10 @@ We ensure that the complexity and/or length of the password is sufficient to cou
 
 {{{
 public class DualControlPasswordVerifier {
-    final boolean verifyPasswordComplexity;
-    final int minPasswordLength;
-    final int minWordCount;
+    private final boolean verifyPassword;
+    private final boolean verifyPasswordComplexity;
+    private final int minPasswordLength;
+    private final int minWordCount;
 
     public DualControlPasswordVerifier(Properties properties) {
         VellumProperties props = new VellumProperties(properties);
@@ -285,17 +315,19 @@ We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en
 
 {{{    
     public String getInvalidMessage(char[] password) throws Exception {
-        if (password.length < minPasswordLength) {
-            return "Password too short";
-        }
-        if (countWords(password) < minWordCount) {
-            return "Too few words in passphrase";
-        }
-        if (verifyPasswordComplexity) {
-            if (!containsLetter(password) || !containsUpperCase(password) || 
-                    !containsLowerCase(password) || !containsDigit(password) || 
-                    !containsPunctuation(password)) {
-                return "Insufficient password complexity";
+        if (verifyPassword) {
+            if (password.length < minPasswordLength) {
+                return "Password too short";
+            }
+            if (countWords(password) < minWordCount) {
+                return "Too few words in passphrase";
+            }
+            if (verifyPasswordComplexity) {
+                if (!containsLetter(password) || !containsUpperCase(password)
+                        || !containsLowerCase(password) || !containsDigit(password)
+                        || !containsPunctuation(password)) {
+                    return "Insufficient password complexity";
+                }
             }
         }
         return null;
@@ -322,21 +354,21 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
 
-If we fear that in the future someone can try an average of 1000 guesses per millisecond on a botnet of a 50M machines, then by my backroom calculations, 41 years are required to try a quarter of all possible passwords up to 18 characters in length using a lazy subset of only 20 characters. 
+If we fear that in the future someone can try an average of 50 guesses per millisecond on a botnet of a 50M machines, then by my backroom calculations, 41 years are required to try a quarter of all possible passwords up to 17 characters in length using a lazy subset of only 20 characters. 
 
 {{{
 $ bc
-guess=1000
+guess=50
 mach=50
-20^18/(365*24*3600*1000*guess*mach*1000*1000)/4
+20^17/(365*24*3600*1000*guess*mach*1000*1000)/4
 41 years
 }}}
 
-However, if we assume some combination of the 2200 most common words is used for a passphrase, then we need 7 words, and so even 18 characters is not enough. <i>D'oh!</i>
+However, considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), then we need 11 words - <i>D'oh!</i>
 
 {{{
-2200^7/(365*24*3600*1000*guess*mach*1000*1000)/4
-39 years
+100^11/(365*24*3600*1000*guess*mach*1000*1000)/4
+31 years
 }}}
 
 We note that our desired minimum length applies to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
