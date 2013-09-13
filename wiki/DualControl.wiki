@@ -119,14 +119,14 @@ where for each duo we programmatically create a <tt>!KeyStore</tt> entry contain
 In general one might argue that we should not write code per se, but rather tests with accompanying code. Hand in glove, so to speak. Well, we've done that in this case, for a change ;)
 {{{
     @Test
-    public void genKeyTest() throws Exception {
+    public void testGenKeyStore() throws Exception {
         dualPasswordMap.put("brent-evanx", "bbbb+eeee".toCharArray());
         dualPasswordMap.put("brent-henty", "bbbb+hhhh".toCharArray());
         dualPasswordMap.put("evanx-henty", "eeee+hhhh".toCharArray());
         properties.put("alias", "dek2013");
         properties.put("storetype", "JCEKS");
         properties.put("keyalg", "AES");
-        properties.put("keysize", "256");
+        properties.put("keysize", "192");
         DualControlGenSecKey instance = new DualControlGenSecKey();
         KeyStore keyStore = instance.createKeyStore(properties, dualPasswordMap);
         assertEquals(3, Collections.list(keyStore.aliases()).size());
