@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package vellumdemo.net;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
