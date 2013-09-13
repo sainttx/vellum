@@ -295,16 +295,6 @@ public class Streams {
         }
     }
 
-    public static void flush() {
-        System.out.flush();
-        System.err.flush();
-    }
-
-    public static void printStackTrace(Exception e) {
-        flush();
-        e.printStackTrace(System.err);
-    }
-
     public static PrintWriter newPrintWriter(OutputStream outputStream) {
         return new PrintWriter(outputStream);
     }

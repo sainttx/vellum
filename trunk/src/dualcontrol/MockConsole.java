@@ -20,34 +20,45 @@
  */
 package dualcontrol;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
 public class MockConsole implements MockableConsole {
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(stringWriter);
+    private static Logger logger = Logger.getLogger(MockConsole.class);
+    List<String> lines = new ArrayList();
     char[] password;
     
     public MockConsole(char[] password) {
         this.password = password;
     }
 
-    public String getOutput() {
-        return stringWriter.toString();
+    public List<String> getLines() {
+        return lines;
     }
 
+    public String getLine(int index) {
+        if (index < lines.size()) {
+            return lines.get(index);
+        }
+        return "";
+    }
+    
     @Override
     public char[] readPassword(String prompt, Object ... args) {
-        printWriter.printf(prompt, args);
+        prompt = String.format(prompt, args);
+        logger.info(prompt);
+        lines.add(prompt);
         return password.clone();
     }        
     
     @Override
-    public PrintWriter writer() {
-        return printWriter;
-    }            
+    public void println(String message) {
+        logger.info(message);
+        lines.add(message);        
+    }
 }

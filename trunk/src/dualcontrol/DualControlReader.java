@@ -48,7 +48,7 @@ public class DualControlReader {
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
-    private Properties properties = System.getProperties();
+    private Properties properties;
     private String purpose;
     private int submissionCount;
     private SSLContext sslContext;
@@ -56,20 +56,19 @@ public class DualControlReader {
     private Map<String, char[]> submissions = new TreeMap();
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        return readDualEntry(purpose, DualControlSSLContextFactory.createSSLContext(
-                System.getProperties(), new ConsoleAdapter(System.console())));
-    }
-
-    public static Map.Entry<String, char[]> readDualEntry(String purpose,
-            SSLContext sslContext) throws Exception {
-        return new DualControlReader().readDualMap(purpose, 2, sslContext).
+        return new DualControlReader(System.getProperties(), 2, purpose).readDualMap(
+            DualControlSSLContextFactory.createSSLContext(
+                System.getProperties(), new ConsoleAdapter(System.console()))).
                 entrySet().iterator().next();
     }
-        
-    public Map<String, char[]> readDualMap(String purpose, int submissionCount,
-            SSLContext sslContext) throws Exception {
-        this.purpose = purpose;
+
+    public DualControlReader(Properties properties, int submissionCount, String purpose) {
+        this.properties = properties;
         this.submissionCount = submissionCount;
+        this.purpose = purpose;
+    }
+            
+    public Map<String, char[]> readDualMap(SSLContext sslContext) throws Exception {
         this.sslContext = sslContext;
         logger.info("readDualMap submissionCount: " + submissionCount);
         logger.info("readDualMap purpose: " + purpose);

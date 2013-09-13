@@ -21,7 +21,6 @@
 package dualcontrol;
 
 import java.io.Console;
-import java.io.PrintWriter;
 
 /**
  *
@@ -40,7 +39,7 @@ public class ConsoleAdapter implements MockableConsole {
     }        
     
     @Override
-    public PrintWriter writer() {
-        return console.writer();
+    public void println(String message) {
+        console.writer().println(message);
     }    
 }

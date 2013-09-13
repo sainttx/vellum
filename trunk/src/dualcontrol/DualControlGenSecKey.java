@@ -45,29 +45,51 @@ public class DualControlGenSecKey {
     private String keyAlg;
     private int keySize;
     private char[] keyStorePassword;
+    private VellumProperties properties;
+    private MockableConsole console;
     private SSLContext sslContext;
-    MockableConsole console;
+
+    public DualControlGenSecKey(VellumProperties properties, MockableConsole console) {
+        this.properties = properties;
+        this.console = console;
+        submissionCount = properties.getInt("dualcontrol.submissions", 3);
+        keyStorePassword = properties.getPassword("storepass", null);
+        keyAlias = properties.getString("alias");
+    }
+
+    public void init(SSLContext sslContext) {
+        this.sslContext = sslContext;
+    }
+
+    public void init() throws Exception {
+        sslContext = DualControlSSLContextFactory.createSSLContext(properties, console);
+    }
 
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
-        DualControlGenSecKey instance = new DualControlGenSecKey();
+        DualControlGenSecKey instance = new DualControlGenSecKey(
+                new VellumProperties(System.getProperties()),
+                new ConsoleAdapter(System.console()));
         try {
-            instance.call(new VellumProperties(System.getProperties()), 
-                    new ConsoleAdapter(System.console()));
+            instance.init();
+            instance.call();
         } catch (DualControlException e) {
-            instance.console.writer().println(e.getMessage());
+            instance.console.println(e.getMessage());
         } finally {
             instance.clear();
         }
     }
-
-    public void call(VellumProperties properties, MockableConsole console) 
-            throws Exception {
-        this.console = console;
-        submissionCount = properties.getInt("dualcontrol.submissions", 3);
+        
+    public void call() throws Exception {
         keyStoreLocation = properties.getString("keystore");
-        keyStorePassword = properties.getPassword("storepass", null);
-        keyAlias = properties.getString("alias");
+        if (new File(keyStoreLocation).exists()) {
+            throw new Exception("Keystore file already exists: " + keyStoreLocation);
+        }
+        KeyStore keyStore = createKeyStore();
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+
+    public KeyStore createKeyStore() throws Exception {
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
                     "Enter passphrase for keystore (%s): ", keyStoreLocation);
@@ -75,20 +97,12 @@ public class DualControlGenSecKey {
                 throw new Exception("No keystore passphrase from console");
             }
         }
-        if (new File(keyStoreLocation).exists()) {
-            throw new Exception(
-                    "Keystore file already exists: " + keyStoreLocation);
-        }
-        sslContext = DualControlSSLContextFactory.createSSLContext(properties,
-                new ConsoleAdapter(System.console()));
         String purpose = "new key " + keyAlias;
-        KeyStore keyStore = createKeyStore(properties, new DualControlReader().
-                readDualMap(purpose, submissionCount, sslContext));
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        return createKeyStore(new DualControlReader(properties, submissionCount, purpose).
+                readDualMap(sslContext));
     }
 
-    public KeyStore createKeyStore(VellumProperties properties,
-            Map<String, char[]> dualPasswordMap) throws Exception {
+    public KeyStore createKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
         keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
@@ -97,7 +111,7 @@ public class DualControlGenSecKey {
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(null, null);        
+        keyStore.load(null, null);
         setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
         return keyStore;
     }
@@ -115,8 +129,8 @@ public class DualControlGenSecKey {
             prot.destroy();
         }
     }
-    
+
     private void clear() {
-        Arrays.fill(keyStorePassword, (char) 0);        
+        Arrays.fill(keyStorePassword, (char) 0);
     }
 }

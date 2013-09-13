@@ -35,7 +35,7 @@ public abstract class DummyDualControlConsole {
         } else {
             MockConsole console = new MockConsole(args[0].toCharArray());
             DualControlConsole.call(System.getProperties(), console);
-            logger.info(console.getOutput());
+            logger.info(console.getLines().get(0));
         }
     }    
 }

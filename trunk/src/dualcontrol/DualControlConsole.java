@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Properties;
 import javax.net.ssl.SSLContext;
+import org.apache.log4j.Logger;
 import vellum.security.Digests;
 import vellum.util.Chars;
 
@@ -35,7 +36,6 @@ import vellum.util.Chars;
  * @author evan.summers
  */
 public class DualControlConsole {
-
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
 
@@ -59,19 +59,19 @@ public class DualControlConsole {
         String invalidMessage = new DualControlPasswordVerifier(
                 properties).getInvalidMessage(password);
         if (invalidMessage != null) {
-            console.writer().println(invalidMessage);
+            console.println(invalidMessage);
         } else {
             String hash = Digests.sha1String(Chars.getBytes(password));
             Arrays.fill(password, (char) 0);
             password = console.readPassword(
                     "Re-enter password for " + purpose + ": ");
             if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
-                console.writer().println("Passwords don't match.");
+                console.println("Passwords don't match.");                
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 writeChars(dos, password);
                 String message = dis.readUTF();
-                console.writer().println(message);
+                console.println(message);
             }
             Arrays.fill(password, (char) 0);
         }
