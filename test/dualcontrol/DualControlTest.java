@@ -67,7 +67,17 @@ public class DualControlTest {
         properties.put("keyalg", "AES");
         properties.put("keysize", "192");
     }
-        
+
+    @Test
+    public void testPasswordVerifier() throws Exception {
+        new DualControlPasswordVerifier(properties).assertValid("bbbb".toCharArray());
+        Properties props = new Properties();
+        assertNotNull(new DualControlPasswordVerifier(props).
+                getInvalidMessage("bbbb".toCharArray()));
+        assertNull(new DualControlPasswordVerifier(props).
+                getInvalidMessage("B bb bb 44 44 !".toCharArray()));
+    }
+    
     @Test
     public void testGenKeyStore() throws Exception {
         dualPasswordMap.put("brent-evanx", "bbbb+eeee".toCharArray());
@@ -87,8 +97,6 @@ public class DualControlTest {
     @Test
     public void testGenSecKey() throws Exception {
         initSSL();
-        assertNull(new DualControlPasswordVerifier(properties).
-                getInvalidMessage("bbbb".toCharArray()));
         MockConsole appConsole = new MockConsole("app", keyStorePass);
         GenSecKeyThread genSecKeyThread = new GenSecKeyThread(
                 new DualControlGenSecKey(properties, appConsole));
