@@ -194,7 +194,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 </code>
 
-Actually these three keys are one and the same! However each copy has a different key password, which is actually a combination of a pair of personal passwords, which we call a "split password."
+Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
