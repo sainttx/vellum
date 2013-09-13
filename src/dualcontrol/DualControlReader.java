@@ -140,11 +140,9 @@ public class DualControlReader {
             throw new Exception(responseMessage + ": " + invalidMessage);
         }
         submissions.put(name, password);
-        if (true) {
-            responseMessage += " " + DualControlUtil.digestBase32(password);
-        }
-        dos.writeUTF(responseMessage);
         logger.info(responseMessage);
+        responseMessage += " " + DualControlUtil.digestBase32(password).substring(1, 16);
+        dos.writeUTF(responseMessage);
     }
 
     public Set<String> getNames() {
