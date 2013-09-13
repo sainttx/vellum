@@ -35,8 +35,6 @@ import javax.net.ssl.SSLSocket;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.log4j.Logger;
 import sun.security.x509.X500Name;
-import vellum.security.Digests;
-import vellum.util.Chars;
 
 /**
  *
@@ -143,8 +141,7 @@ public class DualControlReader {
         }
         submissions.put(name, password);
         if (true) {
-            responseMessage += " " + new Base32().encodeAsString(
-                    Digests.sha1(Chars.getAsciiBytes(password)));
+            responseMessage += " " + DualControlUtil.digestBase32(password);
         }
         dos.writeUTF(responseMessage);
         logger.info(responseMessage);

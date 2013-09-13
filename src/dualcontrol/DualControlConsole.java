@@ -22,13 +22,10 @@ package dualcontrol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Properties;
 import javax.net.ssl.SSLContext;
-import vellum.security.Digests;
-import vellum.util.Chars;
 
 /**
  *
@@ -76,29 +73,21 @@ public class DualControlConsole {
         if (invalidMessage != null) {
             console.println(invalidMessage);
         } else {
-            String hash = Digests.sha1String(Chars.getBytes(password));
+            byte[] hash = DualControlUtil.digest(password);
             Arrays.fill(password, (char) 0);
             password = console.readPassword(
                     "Re-enter password for " + purpose + ": ");
-            if (!Digests.sha1String(Chars.getBytes(password)).equals(hash)) {
+            if (!Arrays.equals(hash, DualControlUtil.digest(password))) {
                 console.println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                writeChars(dos, password);
+                DualControlUtil.writeChars(dos, password);
                 String message = dis.readUTF();
                 console.println(message);
             }
             Arrays.fill(password, (char) 0);
         }
         socket.close();
-    }
-
-    public static char[] writeChars(DataOutputStream dos, char[] chars) throws IOException {
-        dos.writeShort(chars.length);
-        for (int i = 0; i < chars.length; i++) {
-            dos.writeChar(chars[i]);
-        }
-        return chars;
     }
     
     private void clear() {        
