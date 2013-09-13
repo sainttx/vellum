@@ -364,7 +364,7 @@ mach=50
 41 years
 }}}
 
-However, considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), then we need 11 words - <i>D'oh!</i>
+However, considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), arguably we need a minimum of 11 words - <i>D'oh!</i>
 
 {{{
 100^11/(365*24*3600*1000*guess*mach*1000*1000)/4
