@@ -8,7 +8,7 @@ We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="htt
 
 Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock the door but leave the key in the lock. <i>Or under the mat, but that's my personal favourite so ssh-ssh.</i>
 
-The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting your data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Although it focusses on credit card numbers (aka <i>Primary Account Numbers</i>, or PANs), it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
+The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Although it focusses on credit card numbers (aka <i>Primary Account Numbers</i>, or PANs), it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
@@ -26,7 +26,7 @@ We propose keeping at least three copies of the same key in our keystore, where 
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key - which preferrably not even root can pwn. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
+Step 1 for any data security endeavour is to generate an encryption key, which preferrably no one can pwn, not even root. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
 
 {{{
 public class DualControlGenSecKey {
@@ -82,11 +82,6 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
         if (new File(keyStoreLocation).exists()) {
             throw new Exception("Keystore file already exists: " + keyStoreLocation);
         }
-        KeyStore keyStore = createKeyStore();
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-    }
-
-    public KeyStore createKeyStore() throws Exception {
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
                     "Enter passphrase for keystore (%s): ", keyStoreLocation);
@@ -94,15 +89,21 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
                 throw new Exception("No keystore passphrase from console");
             }
         }
+        KeyStore keyStore = createKeyStore();
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+
+    public KeyStore createKeyStore() throws Exception {
         String purpose = "new key " + keyAlias;
-        return createKeyStore(new DualControlReader(properties, submissionCount, purpose).
+        return buildKeyStore(
+                new DualControlReader(properties, submissionCount, purpose).
                 readDualMap(sslContext));
     }
 }}}
 
-where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>createKeyStore()</tt> method below.
+where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>buildKeyStore()</tt> method below.
 {{{      
-    public KeyStore createKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
+    public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
         keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");
@@ -143,7 +144,7 @@ In general one might argue that we should not write code per se, but rather test
         properties.put("keyalg", "AES");
         properties.put("keysize", "192");
         DualControlGenSecKey instance = new DualControlGenSecKey();
-        KeyStore keyStore = instance.createKeyStore(properties, dualPasswordMap);
+        KeyStore keyStore = instance.buildKeyStore(properties, dualPasswordMap);
         assertEquals(3, Collections.list(keyStore.aliases()).size());
         assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
         SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
@@ -153,7 +154,7 @@ In general one might argue that we should not write code per se, but rather test
     }
 }}}
 
-where we inspect the <tt>!KeyStore</tt> returned by the <tt>public</tt> <tt>createKeyStore()</tt> method, which is exposed especially for this unit test.
+where we inspect the <tt>!KeyStore</tt> returned by the <tt>buildKeyStore()</tt> method, which is exposed especially for this unit test.
 
 <h4>Usage demo</h4>
 
@@ -719,6 +720,6 @@ In "Dual Control Key Protection" we address increased protection against brute-f
 
 In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from a old "dek2013" key a to revised "dek2014" key.
 
-You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"> <tt>dualcontrol</tt></a> package.
+You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"><tt>dualcontrol</tt></a> package.
 
 <tt><a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a></tt>
