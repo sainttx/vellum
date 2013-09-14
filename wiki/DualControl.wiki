@@ -467,7 +467,7 @@ public class DualControlSessions {
 
     public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
             String alias, String purpose) throws Exception {
-        KeyStore dualKeyStore = loadLocalKeyStore(keyStoreLocation, keyStorePass);
+        KeyStore dualKeyStore = loadKeyStore(keyStoreLocation, keyStorePass);
         purpose = "key " + alias + " for " + purpose;
         Map.Entry<String, char[]> entry = readDualEntry(purpose);
         String dualAlias = entry.getKey();
