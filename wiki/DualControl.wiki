@@ -562,7 +562,7 @@ where we create an <tt>SSLServerSocket</tt> requiring client authentication, and
 
 <h4><tt>!DualControlReader</tt></h4>
 
-Finally, we present <tt>!DualControlReader</tt> which handles split knowledge submissions.
+Finally, we present <tt>!DualControlReader</tt> which accepts the split knowledge submissions.
 
 {{{
 public class DualControlReader {
@@ -686,7 +686,7 @@ where the admin's username is determined from their SSL cert, in particular the 
 
 <h4>Unit test</h4>
 
-In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlReader</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads and <i>crumbled-up cookie things</i> like mock consoles and SSL context maps. This will be presented in a follow-on article, as this article is already too long.
+In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlReader</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads, mock consoles and what-not. This will be presented in a follow-on article, as this article is already too long.
 
 <h4>Crypto server</h4>
 
@@ -708,7 +708,7 @@ We propose keeping at least three copies of the same key, but where each copy is
 
 <h4>See also</h4>
 
-In "Dual Control Mock Console" we will present a unit test for <tt>!DualControlReader</tt> and <tt>!DualControlConsole</tt> in concert - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest.java</tt></a>
+In "Dual Control Mock Console" we will present a unit test orchestrating <tt>!DualControlReader</tt> and <tt>!DualControlConsole</tt> threads - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest.java</tt></a>
 
 In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
