@@ -99,7 +99,7 @@ public class DualControlGenSecKey {
     public KeyStore createKeyStore() throws Exception {
         String purpose = "new key " + keyAlias;
         return buildKeyStore(
-                new DualControlReader(properties, submissionCount, purpose).
+                new DualControlManager(properties, submissionCount, purpose).
                 readDualMap(sslContext));
     }
 

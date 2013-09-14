@@ -32,7 +32,6 @@ import java.util.TreeSet;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
-import org.apache.commons.codec.binary.Base32;
 import org.apache.log4j.Logger;
 import sun.security.x509.X500Name;
 
@@ -40,8 +39,8 @@ import sun.security.x509.X500Name;
  *
  * @author evan.summers
  */
-public class DualControlReader {
-    private final static Logger logger = Logger.getLogger(DualControlReader.class);
+public class DualControlManager {
+    private final static Logger logger = Logger.getLogger(DualControlManager.class);
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
@@ -52,7 +51,7 @@ public class DualControlReader {
     private Set<String> names = new TreeSet();
     private Map<String, char[]> submissions = new TreeMap();
 
-    public DualControlReader(Properties properties, int submissionCount, String purpose) {
+    public DualControlManager(Properties properties, int submissionCount, String purpose) {
         this.properties = properties;
         this.submissionCount = submissionCount;
         this.purpose = purpose;
@@ -158,7 +157,7 @@ public class DualControlReader {
     }
     
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        DualControlReader reader = new DualControlReader(System.getProperties(), 2, purpose);
+        DualControlManager reader = new DualControlManager(System.getProperties(), 2, purpose);
         SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
                 System.getProperties(), new ConsoleAdapter(System.console()));
         reader.init(sslContext);
