@@ -416,7 +416,7 @@ public class DualControlDemoApp {
     ...
     public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
+        dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", keyStorePass, alias,
                 "DualControlDemoApp");
         logger.info("Loaded key " + alias + " alg " + dek.getAlgorithm());
     }
@@ -465,19 +465,19 @@ Our app above invokes the <tt>loadKey()</tt> method below to do the legwork.
 {{{
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
-            String alias, String purpose) throws Exception {
-        KeyStore dualKeyStore = loadKeyStore(keyStoreLocation, keyStorePass);
-        purpose = "key " + alias + " for " + purpose;
-        Map.Entry<String, char[]> entry = readDualEntry(purpose);
+    public static SecretKey loadKey(String keyStoreLocation, String keyStoreType, 
+            char[] keyStorePass, String keyAlias, String purpose) throws Exception {
+        KeyStore keyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, 
+                keyStoreType, keyStorePass);
+        purpose = "key " + keyAlias + " for " + purpose;
+        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
         String dualAlias = entry.getKey();
-        char[] dualPass = entry.getValue();
-        alias = alias + "-" + dualAlias;
-        SecretKey key = (SecretKey) dualKeyStore.getKey(alias, dualPass);
-        Arrays.fill(dualPass, (char) 0);
+        char[] splitPassword = entry.getValue();
+        keyAlias = keyAlias + "-" + dualAlias;
+        SecretKey key = (SecretKey) keyStore.getKey(keyAlias, splitPassword);
+        Arrays.fill(splitPassword, (char) 0);
         return key;
     }
-    ...
 }
 }}}
 
@@ -500,8 +500,8 @@ where we read the first dual entry returned by <tt>readDualMap()</tt>. Actually 
 We might wish to store our keystore centrally, or internally on a more secure server, and load it via SSL as follows. 
 
 {{{
-public class DualControlSessions {
-    ...
+public class DualControlKeyStores {
+
     public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
             throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
