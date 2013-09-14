@@ -234,7 +234,7 @@ where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from 
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
         char[] password = console.readPassword(
-                "Enter password for " + purpose + ": ");
+                "Enter passphrase for " + purpose + ": ");
         String invalidMessage = new DualControlPasswordVerifier(properties).
                 getInvalidMessage(password);
         if (invalidMessage != null) {
@@ -243,7 +243,7 @@ where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from 
             byte[] hash = DualControlUtil.digest(password);
             Arrays.fill(password, (char) 0);
             password = console.readPassword(
-                    "Re-enter password for " + purpose + ": ");
+                    "Re-enter passphrase for " + purpose + ": ");
             if (!Arrays.equals(hash, DualControlUtil.digest(password))) {
                 console.println("Passwords don't match.");
             } else {
@@ -263,8 +263,8 @@ We restrict the "remote" host to <tt>localhost</tt> to enforce ssh port forwardi
 
 {{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
-Enter password for dual control SSL connection:
-Enter password for new key dek2013: 
+Enter passphrase for dual control SSL connection:
+Enter passphrase for new key dek2013: 
 Re-enter password: 
 OK evanx
 }}}
@@ -356,16 +356,16 @@ where the two <tt>!DualControlConsole</tt> sessions are as follows.
 {{{
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
-Enter password for key dek2013 for DualControlDemoApp: 
-Re-enter password for key dek2013 for DualControlDemoApp: 
+Enter passphrase for key dek2013 for DualControlDemoApp: 
+Re-enter passphrase for key dek2013 for DualControlDemoApp: 
 OK evanx WLCO4XPIFBTNWOHX
 }}}
 
 {{{
 $ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
-Enter password for key dek2013 for DualControlDemoApp: 
-Re-enter password for key dek2013 for DualControlDemoApp: 
+Enter passphrase for key dek2013 for DualControlDemoApp: 
+Re-enter passphrase for key dek2013 for DualControlDemoApp: 
 OK henty 6QLBNC26WGS34AIL
 }}}
 
