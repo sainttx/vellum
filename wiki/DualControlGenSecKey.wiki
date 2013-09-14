@@ -227,7 +227,7 @@ In "Dual Control Key Rotation" we'll address periodic key revision e.g. migratin
 
 <h4>Further reading</h4>
 
-See an extended preview article <a href="https://code.google.com/p/vellum/wiki/DualControl">here</a>.
+See an extended preview article: <a href="https://code.google.com/p/vellum/wiki/DualControl">vellum/wiki/DualControl</a>.
 
 <h4>Resources</h4>
 
