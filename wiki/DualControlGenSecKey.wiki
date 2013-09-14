@@ -205,6 +205,8 @@ In the next article in this series, we will present <tt>!DualControlConsole</tt>
 
 The problem with encryption is secure key management. We shouldn't leave the key under the mat.
 
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+
 PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow.
 
 We present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret. We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enable split knowledge of the key password, so that dual control is required to load the key.
