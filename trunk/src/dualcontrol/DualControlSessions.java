@@ -20,13 +20,10 @@
  */
 package dualcontrol;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Map;
 import javax.crypto.SecretKey;
-import javax.net.ssl.SSLContext;
 
 /**
  *
@@ -34,37 +31,18 @@ import javax.net.ssl.SSLContext;
  */
 public class DualControlSessions {
 
-    public static SecretKey loadKey(String keyStoreLocation, char[] keyStorePass, 
-            String alias, String purpose) throws Exception {
-        KeyStore dualKeyStore = loadLocalKeyStore(keyStoreLocation, keyStorePass);
-        purpose = "key " + alias + " for " + purpose;
-        Map.Entry<String, char[]> entry = readDualEntry(purpose);
+    public static SecretKey loadKey(String keyStoreLocation, String keyStoreType, 
+            char[] keyStorePass, String keyAlias, String purpose) throws Exception {
+        KeyStore keyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, 
+                keyStoreType, keyStorePass);
+        purpose = "key " + keyAlias + " for " + purpose;
+        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
         String dualAlias = entry.getKey();
-        char[] dualPass = entry.getValue();
-        alias = alias + "-" + dualAlias;
-        SecretKey key = (SecretKey) dualKeyStore.getKey(alias, dualPass);
-        Arrays.fill(dualPass, (char) 0);
+        char[] splitPassword = entry.getValue();
+        keyAlias = keyAlias + "-" + dualAlias;
+        SecretKey key = (SecretKey) keyStore.getKey(keyAlias, splitPassword);
+        Arrays.fill(splitPassword, (char) 0);
         return key;
     }
     
-    public static KeyStore loadLocalKeyStore(String keyStoreLocation, 
-            char[] keyStorePassword) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        if (new File(keyStoreLocation).exists()) {
-            FileInputStream fis = new FileInputStream(keyStoreLocation);
-            keyStore.load(fis, keyStorePassword);
-            fis.close();
-        } else {
-            keyStore.load(null, null);
-        }
-        return keyStore;
-    }        
-    
-    public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        DualControlReader reader = new DualControlReader(System.getProperties(), 2, purpose);
-        SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties(), new ConsoleAdapter(System.console()));
-        reader.init(sslContext);
-        return reader.readDualMap().entrySet().iterator().next();
-    }   
 }

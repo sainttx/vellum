@@ -85,11 +85,6 @@ public class DualControlGenSecKey {
         if (new File(keyStoreLocation).exists()) {
             throw new Exception("Keystore file already exists: " + keyStoreLocation);
         }
-        KeyStore keyStore = createKeyStore();
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
-    }
-
-    public KeyStore createKeyStore() throws Exception {
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
                     "Enter passphrase for keystore (%s): ", keyStoreLocation);
@@ -97,12 +92,18 @@ public class DualControlGenSecKey {
                 throw new Exception("No keystore passphrase from console");
             }
         }
+        KeyStore keyStore = createKeyStore();
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+
+    public KeyStore createKeyStore() throws Exception {
         String purpose = "new key " + keyAlias;
-        return createKeyStore(new DualControlReader(properties, submissionCount, purpose).
+        return buildKeyStore(
+                new DualControlReader(properties, submissionCount, purpose).
                 readDualMap(sslContext));
     }
 
-    public KeyStore createKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
+    public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
         keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
         keyAlg = properties.getString("keyalg");

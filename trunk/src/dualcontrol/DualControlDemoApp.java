@@ -43,7 +43,7 @@ public class DualControlDemoApp {
     
     public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {
-        dek = DualControlSessions.loadKey(keyStoreLocation, keyStorePass, alias,
+        dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", keyStorePass, alias,
                 "DualControlDemoApp");
         logger.debug("loaded key " + dek.getAlgorithm());
     }

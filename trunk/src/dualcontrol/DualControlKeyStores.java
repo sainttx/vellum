@@ -34,9 +34,9 @@ import org.apache.log4j.Logger;
 public class DualControlKeyStores {    
     static Logger logger = Logger.getLogger(DualControlKeyStores.class);
     
-    public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
-            throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+    public static KeyStore loadKeyStore(String keyStoreLocation, String keyStoreType,
+            char[] keyStorePassword) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
             Socket socket = DualControlSSLContextFactory.createSSLContext(
@@ -54,7 +54,7 @@ public class DualControlKeyStores {
         return keyStore;
     }
     
-    public static KeyStore loadLocalKeyStore(String keyStoreLocation, String keyStoreType, 
+    public static KeyStore loadLocalKeyStore(String keyStoreLocation, String keyStoreType,
             char[] keyStorePassword) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         if (new File(keyStoreLocation).exists()) {

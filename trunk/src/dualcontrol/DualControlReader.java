@@ -156,4 +156,12 @@ public class DualControlReader {
         }
         return chars;
     }
+    
+    public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
+        DualControlReader reader = new DualControlReader(System.getProperties(), 2, purpose);
+        SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
+                System.getProperties(), new ConsoleAdapter(System.console()));
+        reader.init(sslContext);
+        return reader.readDualMap().entrySet().iterator().next();
+    }       
 }
