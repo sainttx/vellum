@@ -96,12 +96,12 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
     public KeyStore createKeyStore() throws Exception {
         String purpose = "new key " + keyAlias;
         return buildKeyStore(
-                new DualControlReader(properties, submissionCount, purpose).
+                new DualControlManager(properties, submissionCount, purpose).
                 readDualMap(sslContext));
     }
 }}}
 
-where <tt>!DualControlReader</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>buildKeyStore()</tt> method below.
+where <tt>!DualControlManager</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>buildKeyStore()</tt> method below.
 {{{      
     public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
         keyAlias = properties.getString("alias");
@@ -172,15 +172,15 @@ where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, genera
 For this example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
 
 {{{
-INFO [DualControlReader] readDualMap submissionCount: 3
-INFO [DualControlReader] readDualMap purpose: new key dek2013
-INFO [DualControlReader] readSubmissions SSL port 4444
-INFO [DualControlReader] Received evanx
-INFO [DualControlReader] Received henty
-INFO [DualControlReader] Received brent
-INFO [DualControlReader] readDualMap dualAlias: brent-evanx
-INFO [DualControlReader] readDualMap dualAlias: brent-henty
-INFO [DualControlReader] readDualMap dualAlias: evanx-henty
+INFO [DualControlManager] readDualMap submissionCount: 3
+INFO [DualControlManager] readDualMap purpose: new key dek2013
+INFO [DualControlManager] readSubmissions SSL port 4444
+INFO [DualControlManager] Received evanx
+INFO [DualControlManager] Received henty
+INFO [DualControlManager] Received brent
+INFO [DualControlManager] readDualMap dualAlias: brent-evanx
+INFO [DualControlManager] readDualMap dualAlias: brent-henty
+INFO [DualControlManager] readDualMap dualAlias: evanx-henty
 INFO [DualControlGenSecKey] alias dek2013-brent-evanx
 INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
@@ -428,12 +428,12 @@ The application ostensibly loads the key with no fuss. But the caveat is that ex
 {{{
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
-INFO [DualControlReader] readDualMap submissionCount: 2
-INFO [DualControlReader] readDualMap purpose: key dek2013 for DualControlDemoApp
-INFO [DualControlReader] readSubmissions SSL port 4444
-INFO [DualControlReader] Received evanx
-INFO [DualControlReader] Received henty
-INFO [DualControlReader] readDualMap dualAlias: evanx-henty
+INFO [DualControlManager] readDualMap submissionCount: 2
+INFO [DualControlManager] readDualMap purpose: key dek2013 for DualControlDemoApp
+INFO [DualControlManager] readSubmissions SSL port 4444
+INFO [DualControlManager] Received evanx
+INFO [DualControlManager] Received henty
+INFO [DualControlManager] readDualMap dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] Loaded key dek2013 alg AES
 }}}
@@ -470,7 +470,7 @@ public class DualControlSessions {
         KeyStore keyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePass);
         purpose = "key " + keyAlias + " for " + purpose;
-        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
+        Map.Entry<String, char[]> entry = DualControlManager.readDualEntry(purpose);
         String dualAlias = entry.getKey();
         char[] splitPassword = entry.getValue();
         keyAlias = keyAlias + "-" + dualAlias;
@@ -481,15 +481,15 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using the aforementioned <tt>!DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on our chosen port.
+where we read the dual info using the aforementioned <tt>!DualControlManager</tt> which creates an <tt>SSLServerSocket</tt> on our chosen port.
 
 {{{ 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        DualControlReader reader = new DualControlReader(System.getProperties(), 2, purpose);
+        DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
         SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
                 System.getProperties(), new ConsoleAdapter(System.console()));
-        reader.init(sslContext);
-        return reader.readDualMap().entrySet().iterator().next();
+        manager.init(sslContext);
+        return manager.readDualMap().entrySet().iterator().next();
     }   
 }}}
 
@@ -560,12 +560,12 @@ public class FileServer {
 
 where we create an <tt>SSLServerSocket</tt> requiring client authentication, and write out the keystore file to client connections from allowed remote hosts.
 
-<h4><tt>!DualControlReader</tt></h4>
+<h4><tt>!DualControlManager</tt></h4>
 
-Finally, we present <tt>!DualControlReader</tt> which accepts the split knowledge submissions.
+Finally, we present <tt>!DualControlManager</tt> which accepts the split knowledge submissions.
 
 {{{
-public class DualControlReader {
+public class DualControlManager {
     private Properties properties;
     private String purpose;
     private int submissionCount;
@@ -573,7 +573,7 @@ public class DualControlReader {
     private Set<String> names = new TreeSet();
     private Map<String, char[]> submissions = new TreeMap();
     
-    public DualControlReader(Properties properties, int submissionCount, String purpose) {
+    public DualControlManager(Properties properties, int submissionCount, String purpose) {
         this.properties = properties;
         this.submissionCount = submissionCount;
         this.purpose = purpose;
@@ -686,7 +686,7 @@ where the admin's username is determined from their SSL cert, in particular the 
 
 <h4>Unit test</h4>
 
-In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlReader</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads, mock consoles and what-not. This will be presented in a follow-on article, as this article is already too long.
+In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlManager</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads, mock consoles and what-not. This will be presented in a follow-on article, as this article is already too long.
 
 <h4>Crypto server</h4>
 
@@ -708,7 +708,7 @@ We propose keeping at least three copies of the same key, but where each copy is
 
 <h4>Furthermore</h4>
 
-In "Dual Control Mock Console" we will present a unit test orchestrating <tt>!DualControlReader</tt> and <tt>!DualControlConsole</tt> threads - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest.java</tt></a>
+In "Dual Control Mock Console" we will present a unit test orchestrating <tt>!DualControlManager</tt> and <tt>!DualControlConsole</tt> threads - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest.java</tt></a>
 
 In "Dual Control Revoke and Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
