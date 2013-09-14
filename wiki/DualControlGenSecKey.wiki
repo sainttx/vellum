@@ -201,7 +201,7 @@ Actually these three keys are one and the same! However each copy has a differen
 
 In the next article in this series, we will present <tt>!DualControlConsole</tt> for submitting split passwords via SSL, as required for the above demo. 
 
-Thereafter we will present <tt>!DualControlManager</tt>, as used by <tt>!DualControlGenSecKey</tt> to combine these passwords. We will demonstrate how <tt>!DualControlManager</tt> is similarly used by our app to load a key, with dual control. 
+Thereafter we will present <tt>!DualControlManager</tt>, as used by <tt>!DualControlGenSecKey</tt> to receive and combine these passwords. We will demonstrate how <tt>!DualControlManager</tt> is similarly used by our app to load a key, with dual control. 
 
 <h4>Conclusion</h4>
 
