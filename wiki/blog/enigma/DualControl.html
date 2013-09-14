@@ -202,9 +202,17 @@ dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 
 Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is "known to no single person" as per PCI DSS requirements :)
 
+<h4>Furthermore</h4>
+
+In the next article in this series, we will present DualControlConsole for submitting split passwords via SSL, as required for the above demo. 
+
+Thereafter we will present DualControlManager, as used by DualControlGenSecKey to combine these passwords. We will demonstrate how DualControlManager is similarly used by our app to load a key, with dual control. 
+
 <h4>Conclusion</h4>
 
 The problem with encryption is secure key management. We shouldn't leave the key under the mat.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow.
 
@@ -212,17 +220,12 @@ We present a DualControlGenSecKey utility for generating secret keys that are re
 
 We propose keeping at least three copies of the same key, but where each copy is password-protected by a different pair of admins. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when we restart our app.
 
-<h4>Coming up</h4>
-
-In the next article in this series, we will present DualControlConsole for submitting split passwords via SSL, and thereafter DualControlManager as used by DualControlGenSecKey above to combine these passwords. We will demonstrate how DualControlManager is similarly used by our app to load a key, with dual control. 
-
 <h4>Further reading</h4>
 
-See an extended preview article: <a href="https://code.google.com/p/vellum/wiki/DualControl">vellum/wiki/DualControl</a>.
+See an extended preview article: <a href="https://code.google.com/p/vellum/wiki/DualControl">code.google.com/p/vellum/wiki/DualControl</a>.
 
 <h4>Resources</h4>
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol">dualcontrol</a> package.
-
 
 <a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a>
