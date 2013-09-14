@@ -85,7 +85,7 @@ public class DualControlTest {
         dualPasswordMap.put("evanx-henty", "eeee+hhhh".toCharArray());
         MockConsole appConsole = new MockConsole("app", keyStorePass);
         DualControlGenSecKey instance = new DualControlGenSecKey(properties, appConsole);
-        KeyStore keyStore = instance.createKeyStore(dualPasswordMap);
+        KeyStore keyStore = instance.buildKeyStore(dualPasswordMap);
         assertEquals(3, Collections.list(keyStore.aliases()).size());
         assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
         SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
