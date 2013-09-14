@@ -341,20 +341,20 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
 
-If we fear that in the future someone can try an average of 20 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations, 26 years are required to try all possible passwords up to 12 characters in length using a lazy subset of 40 characters. 
+If we fear that in the future someone can try an average of 20 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations, 3 years are required to try all possible passwords up to 11 characters in length using a lazy subset of 50 characters. 
 
 {{{
-guess=20
+guess=50
 mach=1000*1000
-40^12/(mach*guess*1000*60*60*24*365)
-26 years
+50^11/(mach*guess*1000*60*60*24*365)
+3 years
 }}}
 
-Considering that the most common 100 words make up a half of all written material (according to <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then a minimum of 6 words is indicated for such passphrases. 
+Considering that the most common 100 words make up a half of all written material (according to <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 7 years are required for such passphrases with 6 words. 
 
 {{{
 (1500^6)/(mach*guess*1000*60*60*24*365)
-18 years
+7 years
 }}}
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
