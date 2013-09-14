@@ -130,7 +130,7 @@ where <tt>!DaulControlManager</tt> provides a map of aliases and passwords, comp
     }
 }}}
 
-where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different split password, i.e. known to no single person :)
+where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different key password, which is split between two people i.e. known to no single person :)
 
 In general one might argue that we should not write code per se, but rather tests with accompanying code, hand in glove. Well, we've done that in this case, for a change ;)
 {{{
