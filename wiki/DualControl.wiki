@@ -481,7 +481,7 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using the aforementioned <tt>!DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on a well-known port e.g. 4444.
+where we read the dual info using the aforementioned <tt>!DualControlReader</tt> which creates an <tt>SSLServerSocket</tt> on our chosen port.
 
 {{{ 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
@@ -523,7 +523,7 @@ public class DualControlKeyStores {
     }
 }}}
 
-where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
+where if the keystore location is formatted as <tt>"host:port"</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
 
 The following utility demonstrates a trivial server for a remote keystore.
 
