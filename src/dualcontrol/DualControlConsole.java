@@ -67,7 +67,7 @@ public class DualControlConsole {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         String purpose = dis.readUTF();
         char[] password = console.readPassword(
-                "Enter password for " + purpose + ": ");
+                "Enter passphrase for " + purpose + ": ");
         String invalidMessage = new DualControlPasswordVerifier(properties).
                 getInvalidMessage(password);
         if (invalidMessage != null) {
@@ -76,7 +76,7 @@ public class DualControlConsole {
             byte[] hash = DualControlUtil.digest(password);
             Arrays.fill(password, (char) 0);
             password = console.readPassword(
-                    "Re-enter password for " + purpose + ": ");
+                    "Re-enter passphrase for " + purpose + ": ");
             if (!Arrays.equals(hash, DualControlUtil.digest(password))) {
                 console.println("Passwords don't match.");
             } else {

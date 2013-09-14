@@ -62,7 +62,7 @@ public class DualControlEnroll {
 
     void call(Properties properties, MockableConsole console) throws Exception {
         String purpose = String.format("key %s to enroll %s", keyAlias, username);
-        dualMap = new DualControlReader(properties, submissionCount, purpose).
+        dualMap = new DualControlManager(properties, submissionCount, purpose).
                 readDualMap(DualControlSSLContextFactory.createSSLContext(properties, console));
         keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 

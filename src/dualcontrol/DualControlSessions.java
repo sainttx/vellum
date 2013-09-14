@@ -36,7 +36,7 @@ public class DualControlSessions {
         KeyStore keyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePass);
         purpose = "key " + keyAlias + " for " + purpose;
-        Map.Entry<String, char[]> entry = DualControlReader.readDualEntry(purpose);
+        Map.Entry<String, char[]> entry = DualControlManager.readDualEntry(purpose);
         String dualAlias = entry.getKey();
         char[] splitPassword = entry.getValue();
         keyAlias = keyAlias + "-" + dualAlias;
