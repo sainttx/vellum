@@ -379,8 +379,7 @@ public class DualControlSSLContextFactory {
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
         }
-        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", 
-                null);
+        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", null);
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
                     "Enter passphrase for dual control SSL connection: ");
