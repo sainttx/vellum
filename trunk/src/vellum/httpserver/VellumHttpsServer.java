@@ -31,6 +31,7 @@ import vellum.lifecycle.Startable;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.security.DefaultKeyStores;
+import vellum.security.HttpsConfiguratorFactory;
 import vellum.security.KeyStores;
 import vellum.util.Sockets;
 
@@ -65,7 +66,8 @@ public class VellumHttpsServer implements Startable {
         Sockets.waitPort(config.getPort(), 4000, 500);
         InetSocketAddress socketAddress = new InetSocketAddress(config.getPort());
         httpsServer = HttpsServer.create(socketAddress, 4);
-        httpsServer.setHttpsConfigurator(KeyStores.createHttpsConfigurator(sslContext, config.isClientAuth()));
+        httpsServer.setHttpsConfigurator(HttpsConfiguratorFactory.
+                createHttpsConfigurator(sslContext, config.isClientAuth()));
         httpsServer.setExecutor(executor);
         httpsServer.start();
         logger.info("start", config.getPort());

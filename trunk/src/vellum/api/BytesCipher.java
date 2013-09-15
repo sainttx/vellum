@@ -18,15 +18,13 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.crypto;
+package vellum.api;
 
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
-import vellum.crypto.Encrypted;
-import vellum.crypto.VellumCipher;
 
 /**
  *
@@ -36,11 +34,12 @@ public class BytesCipher implements VellumCipher {
     private String cipherTransform;    
     private Key key;
     
-    BytesCipher(Key key, String cipherTransform) {
+    public BytesCipher(Key key, String cipherTransform) {
         this.key = key;
         this.cipherTransform = cipherTransform;
     }
     
+    @Override
     public Encrypted encrypt(byte[] bytes) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(cipherTransform);
         cipher.init(Cipher.ENCRYPT_MODE, key);

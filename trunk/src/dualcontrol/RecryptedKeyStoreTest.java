@@ -20,12 +20,12 @@
  */
 package dualcontrol;
 
-import vellum.crypto.AESCiphers;
+import vellum.crypto.aes.AESCiphers;
 import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
-import vellum.crypto.Encrypted;
-import vellum.crypto.VellumCipher;
+import vellum.api.Encrypted;
+import vellum.api.VellumCipher;
 import vellum.datatype.Millis;
 import vellum.util.Bytes;
 

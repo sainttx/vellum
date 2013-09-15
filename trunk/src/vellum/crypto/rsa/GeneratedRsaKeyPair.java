@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.security;
+package vellum.crypto.rsa;
 
 import java.security.PrivateKey;
 import java.util.Date;
@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import sun.security.pkcs.PKCS10;
 import sun.security.x509.CertAndKeyGen;
 import sun.security.x509.X500Name;
+import vellum.security.Certificates;
 
 /**
  *

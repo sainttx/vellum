@@ -20,6 +20,7 @@
  */
 package vellum.crypto;
 
+import vellum.api.Encrypted;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
