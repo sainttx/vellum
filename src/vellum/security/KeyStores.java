@@ -20,11 +20,7 @@
  */
 package vellum.security;
 
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsParameters;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.net.InetSocketAddress;
 import java.security.*;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.*;
@@ -53,10 +49,11 @@ public class KeyStores {
     
     public static SSLSocketFactory createSSLSocketFactory(String keyStoreLocation, 
             String keyStoreType, char[] keyStorePassword, char[] keyPassword,
-            String trustStoreLocation, char[] trustStorePassword) throws Exception {
+            String trustStoreLocation, String trustStoreType, 
+            char[] trustStorePassword) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
-        KeyStore trustStore = loadKeyStore("JKS", trustStoreLocation, trustStorePassword);
+        KeyStore trustStore = loadKeyStore(trustStoreType, trustStoreLocation, trustStorePassword);
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
@@ -106,30 +103,10 @@ public class KeyStores {
         }
     }
     
-    public static HttpsConfigurator createHttpsConfigurator(
-            SSLContext sslContext, final boolean needClientAuth) throws Exception {
-        return new HttpsConfigurator(sslContext) {
-
-            @Override
-            public void configure(HttpsParameters httpsParameters) {
-                SSLContext sslContext = getSSLContext();
-                InetSocketAddress remote = httpsParameters.getClientAddress();
-                if (remote.getHostName().equals("localhost")) {
-                }
-                SSLParameters defaultSSLParameters = sslContext.getDefaultSSLParameters();
-                defaultSSLParameters.setNeedClientAuth(needClientAuth);
-                httpsParameters.setSSLParameters(defaultSSLParameters);
-            }
-        };
-    }
-
-    public static void createKeyStore(String type, String fileName, char[] password) 
-            throws Exception {
-        KeyStore ks = KeyStore.getInstance(type);
-        ks.load(null, password);
-        FileOutputStream fos = new FileOutputStream(fileName);
-        ks.store(fos, password);
-        fos.close();
+    public static KeyStore createEmptyKeyStore(String type) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance(type);
+        keyStore.load(null, null);
+        return keyStore;
     }
     
     public static X509Certificate findRootCert(KeyStore keyStore, String alias) throws Exception {

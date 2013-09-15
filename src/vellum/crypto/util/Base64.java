@@ -18,17 +18,26 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.crypto;
+package vellum.crypto.util;
 
-import java.security.GeneralSecurityException;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 /**
  *
  * @author evan.summers
  */
-public interface VellumCipher {
-    public Encrypted encrypt(byte[] bytes) throws GeneralSecurityException;
-    public byte[] decrypt(byte[] bytes, byte[] iv) throws GeneralSecurityException;
-    public byte[] encrypt(byte[] bytes, byte[] iv) throws GeneralSecurityException;
-    public byte[] decrypt(Encrypted encrypted) throws GeneralSecurityException;
+public class Base64 {
+    
+    public static String encode(byte[] bytes) {
+        return new BASE64Encoder().encode(bytes);
+    }
+
+    public static byte[] decode(String string) {
+        try {
+            return new BASE64Decoder().decodeBuffer(string);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

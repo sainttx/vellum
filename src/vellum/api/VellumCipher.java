@@ -18,26 +18,17 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.crypto;
+package vellum.api;
+
+import java.security.GeneralSecurityException;
 
 /**
  *
  * @author evan.summers
  */
-public class Encrypted {
-    private final byte[] iv;
-    private final byte[] encryptedBytes;
-
-    public Encrypted(byte[] iv, byte[] encryptedBytes) {
-        this.iv = iv;
-        this.encryptedBytes = encryptedBytes;
-    }
-
-    public byte[] getIv() {
-        return iv;
-    }
-
-    public byte[] getEncryptedBytes() {
-        return encryptedBytes;
-    }   
+public interface VellumCipher {
+    public Encrypted encrypt(byte[] bytes) throws GeneralSecurityException;
+    public byte[] decrypt(byte[] bytes, byte[] iv) throws GeneralSecurityException;
+    public byte[] encrypt(byte[] bytes, byte[] iv) throws GeneralSecurityException;
+    public byte[] decrypt(Encrypted encrypted) throws GeneralSecurityException;
 }

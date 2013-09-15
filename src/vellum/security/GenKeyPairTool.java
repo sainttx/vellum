@@ -31,7 +31,7 @@ import vellum.util.Strings;
  *
  * @author evan.summers
  */
-public class VKeyTool {
+public class GenKeyPairTool {
 
     Logr logger = LogrFactory.getLogger(getClass());
     String keyStoreType = "JKS";
@@ -43,7 +43,7 @@ public class VKeyTool {
     String keyStorePassword;
     String trustStorePassword;
 
-    private void main() throws Exception {
+    private void call() throws Exception {
         keyStoreLocation = getProperty("javax.net.ssl.keyStore");
         trustStoreLocation = getProperty("javax.net.ssl.trustStore");
         keyStorePassword = getProperty("javax.net.ssl.keyStorePassword");
@@ -134,8 +134,9 @@ public class VKeyTool {
     }
 
     public static void main(String[] args) throws Exception {
+        GenKeyPairTool instance = new GenKeyPairTool();
         try {
-            new VKeyTool().main();
+            instance.call();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

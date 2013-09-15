@@ -18,29 +18,24 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.crypto;
+package vellum.crypto.util;
 
-import java.security.GeneralSecurityException;
-import java.security.Key;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
+import static dualcontrol.DualControlUtil.getBytes;
+import java.security.MessageDigest;
+import java.util.Arrays;
 
 /**
  *
  * @author evan.summers
  */
-public class AESCiphers {
-    private static String keyAlg = "AES";
-    private static final String cipherTransform = "AES/CBC/PKCS5Padding";    
-    
-    public static SecretKey generateKey(int keySize) 
-            throws GeneralSecurityException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
-        keyGenerator.init(keySize);
-        return keyGenerator.generateKey();        
+public class Digests {
+    public final static String DIGEST_ALG = "SHA-256";
+
+    public static byte[] digest(char[] chars) throws Exception {
+        byte[] bytes = getBytes(chars);
+        byte[] digestBytes = MessageDigest.getInstance(DIGEST_ALG).digest(bytes);
+        Arrays.fill(bytes, (byte) 0);
+        return digestBytes;
     }
     
-    public static BytesCipher getCipher(Key key) {
-        return new BytesCipher(key, cipherTransform);
-    }    
 }
