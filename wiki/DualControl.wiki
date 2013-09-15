@@ -185,14 +185,13 @@ where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, genera
 In the example below, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
 
 {{{
-INFO [DualControlManager] purpose new key dek2013
-INFO [DualControlManager] port 4444
+INFO [DualControlManager] purpose: new key dek2013
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
 INFO [DualControlManager] Received brent
-INFO [DualControlManager] buildDualMap dualAlias brent-evanx
-INFO [DualControlManager] buildDualMap dualAlias brent-henty
-INFO [DualControlManager] buildDualMap dualAlias evanx-henty
+INFO [DualControlManager] dualAlias: brent-evanx
+INFO [DualControlManager] dualAlias: brent-henty
+INFO [DualControlManager] dualAlias: evanx-henty
 INFO [DualControlGenSecKey] alias dek2013-brent-evanx
 INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
@@ -439,11 +438,10 @@ The application ostensibly loads the key with no fuss. But the caveat is that ex
 {{{
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
-INFO [DualControlManager] purpose key dek2013 for DualControlDemoApp
-INFO [DualControlManager] port 4444
+INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
-INFO [DualControlManager] buildDualMap dualAlias evanx-henty
+INFO [DualControlManager] dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] Loaded key dek2013 alg AES
 }}}
@@ -583,7 +581,6 @@ public class DualControlManager {
     private Map<String, char[]> submissions = new TreeMap();
     
     public DualControlManager(Properties properties, int submissionCount, String purpose) {
-        logger.info("purpose", purpose);
         this.properties = properties;
         this.submissionCount = submissionCount;
         this.purpose = purpose;
@@ -606,7 +603,7 @@ Our app calls <tt>DualControlManager</tt> to accept submissions via an <tt>SSLSe
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
     public void call() throws Exception {
-        logger.info("port", PORT);
+        logger.info("purpose: " + purpose);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
@@ -630,7 +627,7 @@ Note that we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt>.
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
                 if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                    throw new Exception("Invalid remote address "
+                    throw new Exception("Invalid remote address: "
                             + socket.getInetAddress().getHostAddress());
                 }
                 read(socket);
@@ -681,7 +678,7 @@ Finally, we compose a map of dual aliases and split passwords as follows.
                     char[] dualPassword = combineSplitPassword(
                             submissions.get(name), submissions.get(otherName));
                     dualMap.put(dualAlias, dualPassword);
-                    logger.info("buildDualMap dualAlias", dualAlias);
+                    logger.info("dualAlias: " + dualAlias);
                 }
             }
         }
