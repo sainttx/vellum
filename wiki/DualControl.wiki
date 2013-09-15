@@ -26,7 +26,7 @@ We propose keeping at least three copies of the same key in our keystore, where 
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
-Step 1 for any data security endeavour is to generate an encryption key, which preferrably no one can pwn, not even root. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
+Step 1 for any data security endeavour is to generate an encryption key. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
 
 {{{
 public class DualControlGenSecKey {
@@ -169,7 +169,7 @@ Let's run <tt>!DualControlGenSecKey</tt> from the command-line.
 
 where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
 
-For this example, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
+In the example below, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
 
 {{{
 INFO [DualControlManager] readDualMap submissionCount: 3
@@ -202,8 +202,6 @@ Actually these three keys are one and the same! However each copy has a differen
 Let's write an app for admins to submit their passwords via SSL.
 {{{
 public class DualControlConsole {
-    private final static int PORT = 4444;
-    private final static String HOST = "127.0.0.1";
     Properties properties;
     MockableConsole console;
     SSLContext sslContext;
@@ -226,9 +224,12 @@ public class DualControlConsole {
 }
 }}}
 
-where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from <tt>System</tt> properties, which specify the requisite keystore and truststore. (Later we'll see that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically.) 
+where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically.) 
 
 {{{
+    private final static int PORT = 4444;
+    private final static String HOST = "127.0.0.1";
+    
     public void call() throws Exception {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
@@ -257,9 +258,9 @@ where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from 
         socket.close();
     }
 }}}
-where we open an SSL socket to our supposed dual-controlled app listening on port 4444 on <tt>localhost</tt>, and are authenticated and identified via our SSL cert.
+where we open an SSL socket to our dual-controlled app, and are authenticated and identified by our SSL cert.
 
-We restrict the "remote" host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
+Incidently, we restrict the "remote" host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
 {{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
@@ -274,7 +275,7 @@ where <tt>DualControlSSLContextFactory</tt> will prompt for the SSL keystore pas
 
 A known "bug" is that more godly sysadmins can socially-engineer other less godly admins to submit their passwords whilst a malicious socket server has been installed by the most godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. So we must ensure that our logs and alerts prevent such events from going unnoticed.
 
-On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. While root can also "have" the files containing the keys, he can't "know" these passwords protecting the keys therein.
+On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. While root can also "have" the files containing the keys, he shouldn't know other admins' passwords protecting the keys therein.
 
 <h4>Password complexity vs length</h4>
 
@@ -341,7 +342,7 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
 
-If we fear that in the future someone can try an average of 20 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations, 3 years are required to try all possible passwords up to 11 characters in length using a lazy subset of 50 characters. 
+If we fear that in the future someone can try an average of 50 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations 3 years are required to try all possible passwords up to 11 characters in length using a lazy subset of 50 characters. 
 
 {{{
 guess=50
@@ -350,7 +351,7 @@ mach=1000*1000
 3 years
 }}}
 
-Considering that the most common 100 words make up a half of all written material (according to <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 7 years are required for such passphrases with 6 words. 
+Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 7 years are required for such passphrases with 6 words. 
 
 {{{
 (1500^6)/(mach*guess*1000*60*60*24*365)
@@ -365,9 +366,7 @@ A follow-up article will discuss this further, and conclude that we might want a
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>.
-
-These SSL properties are used to create an <tt>SSLContext</tt> as below.
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These SSL properties are used to create an <tt>SSLContext</tt> as below.
 
 {{{
 public class DualControlSSLContextFactory {    
@@ -400,9 +399,9 @@ public class DualControlSSLContextFactory {
 }
 }}}
 
-where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console.
+where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. We introduce a <tt>MockableConsole</tt> for the benefit of automated testing.
 
-Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. for RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
+Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
 As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a><tt>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory.
 
@@ -423,7 +422,7 @@ public class DualControlDemoApp {
 }
 }}}
 
-The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>!DualControlConsole</tt>'s.
+The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>!DualControlConsole</tt>.
 
 {{{
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
@@ -438,7 +437,7 @@ INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] Loaded key dek2013 alg AES
 }}}
 
-where the two <tt>!DualControlConsole</tt> sessions are as follows. 
+The two <tt>!DualControlConsole</tt> sessions are as follows. 
 
 {{{
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
@@ -481,7 +480,7 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using the aforementioned <tt>!DualControlManager</tt> which creates an <tt>SSLServerSocket</tt> on our chosen port.
+where we read the dual info using <tt>!DualControlManager</tt>, which opens an <tt>SSLServerSocket</tt> and waits for split password submissions.
 
 {{{ 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
