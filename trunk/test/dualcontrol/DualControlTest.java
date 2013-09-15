@@ -212,20 +212,19 @@ public class DualControlTest {
     }
     
     class DualReaderThread extends Thread  {
-        DualControlManager reader;
+        DualControlManager manager;
         Map.Entry<String, char[]> dualEntry = null;
         Exception exception = null;
 
         public DualReaderThread(DualControlManager reader) {
-            this.reader = reader;
+            this.manager = reader;
         }
-
         
         @Override
         public void run() {
             try {
-                dualEntry = reader.readDualMap().
-                        entrySet().iterator().next();
+                manager.call();
+                dualEntry = manager.getDualMap().entrySet().iterator().next();
             } catch (Exception e) {
                 exception = e;
             }
