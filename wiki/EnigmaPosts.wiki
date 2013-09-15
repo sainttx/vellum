@@ -1,5 +1,5 @@
 
-These articles are drafted here, published on my blog, http://www.java.net/blogs/evanx.
+These articles are drafted here, published on my blog, http://www.java.net/blogs/evanx
 
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
