@@ -595,7 +595,7 @@ public class DualControlManager {
 
 where we specify the required number of password submissions for some purpose e.g. the generate a key or load a key, and provide an <tt>SSLContext</tt> for the <tt>SSLServerSocket</tt>.
 
-Our app calls <tt>DualControlManager</tt> to accept submissions via an <tt>SSLServerSocket</tt> as follows.
+Our app calls <tt>!DualControlManager</tt> to accept submissions via an <tt>SSLServerSocket</tt> as follows.
 
 {{{
     private final static int PORT = 4444;
