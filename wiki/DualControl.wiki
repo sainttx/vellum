@@ -102,7 +102,7 @@ where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</
 }}}
 
 where <tt>!DualControlManager</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>buildKeyStore()</tt> method below.
-{{{      
+{{{
     public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
         keyAlias = properties.getString("alias");
         keyStoreType = properties.getString("storetype");
@@ -304,7 +304,7 @@ public class DualControlPasswordVerifier {
 
 We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> decrees uppercase and lowercase, and we should cover all bases.
 
-{{{    
+{{{
     public String getInvalidMessage(char[] password) throws Exception {
         if (verifyPassword) {
             if (password.length < minPasswordLength) {
@@ -482,7 +482,7 @@ public class DualControlSessions {
 
 where we read the dual info using <tt>!DualControlManager</tt>, which opens an <tt>SSLServerSocket</tt> and waits for split password submissions.
 
-{{{ 
+{{{
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
         SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
@@ -561,7 +561,7 @@ where we create an <tt>SSLServerSocket</tt> requiring client authentication, and
 
 <h4><tt>!DualControlManager</tt></h4>
 
-Finally, we present <tt>!DualControlManager</tt> which accepts the split knowledge submissions.
+Finally, we present <tt>!DualControlManager</tt> which accepts the split password submissions.
 
 {{{
 public class DualControlManager {
@@ -612,7 +612,7 @@ Our app can then invoke <tt>readDualMap()</tt> below to compose a map of dual al
 
 where the <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
 
-We see that <tt>readDualMap()</tt> above invokes <tt>readSubmissions()</tt> below, to listen for submissions via an <tt>SSLServerSocket</tt>.
+We see that <tt>readDualMap()</tt> above invokes <tt>readSubmissions()</tt> below, to accept submissions via an <tt>SSLServerSocket</tt>.
 
 {{{
     private final static int PORT = 4444;
@@ -635,9 +635,9 @@ We see that <tt>readDualMap()</tt> above invokes <tt>readSubmissions()</tt> belo
 
 where we create a client-authenticated SSL server socket.
 
-Note that we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt> i.e. via the loopback interface. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
+Note that we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt>. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
 
-{{{    
+{{{
     private void read(SSLServerSocket serverSocket) throws Exception {
         while (submissions.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
