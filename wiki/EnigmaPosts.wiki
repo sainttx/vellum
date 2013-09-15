@@ -3,7 +3,7 @@ These articles are drafted here, published on my blog, http://www.java.net/blogs
 
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
-Generating and signing browser certs - preview [http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/httphandler/access/GenKeyP12Handler.java GenKeyP12Handler.java]
+Generating and signing browser certs - preview [https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/rsa/PKCS12KeyStores.java PKCS12KeyStores.java]
 
 == Password Salt trilogy == 
 

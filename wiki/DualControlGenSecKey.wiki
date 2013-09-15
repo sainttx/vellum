@@ -2,7 +2,7 @@
 
 <h1>Dual Control Key Generation</h1>
 
-We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="http://code.google.com/p/vellum">Enigma Posts</a>.
+We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="http://code.google.com/p/vellum/EnigmaPosts">Enigma Posts</a>.
 
 <h4>Problem overview</h4>
 
