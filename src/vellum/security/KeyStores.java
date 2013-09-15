@@ -34,7 +34,6 @@ import vellum.logr.LogrFactory;
 
 /**
  *
- * snippets from OpenJDK7 KeyTool etc.
  *
  * @author evan.summers
  */
@@ -125,7 +124,8 @@ public class KeyStores {
         };
     }
 
-    public static void createKeyStore(String type, String fileName, char[] password) throws Exception {
+    public static void createKeyStore(String type, String fileName, char[] password) 
+            throws Exception {
         KeyStore ks = KeyStore.getInstance(type);
         ks.load(null, password);
         FileOutputStream fos = new FileOutputStream(fileName);
