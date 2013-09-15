@@ -98,9 +98,11 @@ public class DualControlGenSecKey {
 
     public KeyStore createKeyStore() throws Exception {
         String purpose = "new key " + keyAlias;
-        return buildKeyStore(
-                new DualControlManager(properties, submissionCount, purpose).
-                readDualMap(sslContext));
+        DualControlManager manager = new DualControlManager(properties, 
+                submissionCount, purpose);
+        manager.init(sslContext);
+        manager.call();
+        return buildKeyStore(manager.getDualMap());
     }
 
     public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {

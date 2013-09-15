@@ -55,7 +55,6 @@ public class DualControlManager {
     private Map<String, char[]> dualMap = new TreeMap();
 
     public DualControlManager(Properties properties, int submissionCount, String purpose) {
-        logger.info("purpose", purpose);
         this.properties = properties;
         this.submissionCount = submissionCount;
         this.purpose = purpose;
@@ -70,7 +69,7 @@ public class DualControlManager {
     }
     
     public void call() throws Exception {
-        logger.info("port {1}" , PORT);
+        logger.info("purpose: "  + purpose);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
@@ -91,7 +90,7 @@ public class DualControlManager {
                     char[] dualPassword = combineSplitPassword(
                             submissions.get(name), submissions.get(otherName));
                     dualMap.put(dualAlias, dualPassword);
-                    logger.info("buildDualMap dualAlias", dualAlias);
+                    logger.info("dualAlias: " + dualAlias);
                 }
             }
         }
@@ -110,7 +109,7 @@ public class DualControlManager {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
                 if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                    throw new Exception("Invalid remote address "
+                    throw new Exception("Invalid remote address: "
                             + socket.getInetAddress().getHostAddress());
                 }
                 read(socket);
