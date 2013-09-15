@@ -115,7 +115,7 @@ public class DualControlTest {
         assertOk(brentThread.exception);
         assertOk(hentyThread.exception);
         assertTrue(evanxThread.console.getLine(0).startsWith(
-                "Enter password for new key dek2013:"));
+                "Enter passphrase for new key dek2013:"));
         Threads.sleep(1000);
     }
 
@@ -143,7 +143,7 @@ public class DualControlTest {
     @Test
     public void testReader() throws Exception {
         initSSL();
-        DualControlReader reader = new DualControlReader(properties, 2, "app");
+        DualControlManager reader = new DualControlManager(properties, 2, "app");
         reader.init(sslContextMap.get("app"));
         DualReaderThread readerThread = new DualReaderThread(reader);
         SubmitterThread brentThread = createSubmitterThread("brent", "bbbb".toCharArray());
@@ -156,7 +156,7 @@ public class DualControlTest {
         assertOk(evanxThread.exception);
         assertOk(brentThread.exception);
         assertOk(readerThread.exception);
-        assertTrue(evanxThread.console.getLine(0).startsWith("Enter password for app:"));
+        assertTrue(evanxThread.console.getLine(0).startsWith("Enter passphrase for app:"));
         assertEquals("brent-evanx", readerThread.dualEntry.getKey());
         assertEquals("bbbb+eeee", new String(readerThread.dualEntry.getValue()));
         Threads.sleep(1000);
@@ -212,11 +212,11 @@ public class DualControlTest {
     }
     
     class DualReaderThread extends Thread  {
-        DualControlReader reader;
+        DualControlManager reader;
         Map.Entry<String, char[]> dualEntry = null;
         Exception exception = null;
 
-        public DualReaderThread(DualControlReader reader) {
+        public DualReaderThread(DualControlManager reader) {
             this.reader = reader;
         }
 
