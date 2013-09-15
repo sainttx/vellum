@@ -21,6 +21,7 @@
  */
 package vellum.crypto;
 
+import vellum.crypto.util.Base64;
 import static junit.framework.Assert.*;
 import org.junit.Test;
 import vellum.logr.Logr;

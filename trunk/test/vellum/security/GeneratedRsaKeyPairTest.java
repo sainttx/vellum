@@ -20,6 +20,7 @@
  */
 package vellum.security;
 
+import vellum.crypto.rsa.GeneratedRsaKeyPair;
 import java.util.Date;
 import org.junit.Test;
 import vellum.logr.Logr;
@@ -42,9 +43,9 @@ public class GeneratedRsaKeyPairTest {
     public void test() throws Exception {
         rootKeyPair.generate(rootDname, new Date(), 999);
         clientKeyPair.generate(clientDname, new Date(), 999);
-        logger.info(Certificates.buildCertReqPem(clientKeyPair.getCertReq()));
+        logger.info(Pems.buildCertReqPem(clientKeyPair.getCertReq()));
         clientKeyPair.sign(rootKeyPair.getPrivateKey(), rootKeyPair.getCert());
-        logger.info(Certificates.buildKeyPem(clientKeyPair.getPrivateKey()));
-        logger.info(Certificates.buildCertPem(clientKeyPair.getCert()));
+        logger.info(Pems.buildKeyPem(clientKeyPair.getPrivateKey()));
+        logger.info(Pems.buildCertPem(clientKeyPair.getCert()));
     }
 }

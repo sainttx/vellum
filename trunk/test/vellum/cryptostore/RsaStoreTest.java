@@ -31,7 +31,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import vellum.pbestore.RsaKeyStore;
-import vellum.asymmetricstore.RsaStore;
+import vellum.crypto.asymmetricstore.RsaStore;
 import vellum.datatype.Millis;
 
 /**
