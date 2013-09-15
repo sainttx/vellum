@@ -105,7 +105,6 @@ public class KeyStores {
             throw Exceptions.newRuntimeException(e);
         }
     }
-
     
     public static HttpsConfigurator createHttpsConfigurator(
             SSLContext sslContext, final boolean needClientAuth) throws Exception {
