@@ -7,9 +7,7 @@ Generating and signing browser certs (planned) - preview [https://code.google.co
 
 == Dual Control quadrilogy == 
 
-[DualControl Dual Control] (extended article) (September 2013)
-
-[DualControlGenSecKey Dual Control Key Generation] (September 2013)
+[DualControl Dual Control Key Management] (September 2013)
 
 Dual Control Revoke and Enroll - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
