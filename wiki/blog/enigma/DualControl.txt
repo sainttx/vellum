@@ -1,2 +1,1 @@
-
 In this first installment of the new 2013 "Dual Control" cryptology, we introduce a KeyStore utility to generate a SecretKey that is accessible to no single person, i.e. a really secret key, and dual control our app to load this data-encryption key by requiring two admins to submit split knowledge of the key protection password via an SSL connection.

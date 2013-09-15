@@ -100,9 +100,11 @@ where our main() method passes System properties i.e. -D options, and the System
 
     public KeyStore createKeyStore() throws Exception {
         String purpose = "new key " + keyAlias;
-        return buildKeyStore(
-                new DualControlManager(properties, submissionCount, purpose).
-                readDualMap(sslContext));
+        DualControlManager manager = new DualControlManager(properties, 
+                submissionCount, purpose);
+        manager.init(sslContext);
+        manager.call();
+        return buildKeyStore(manager.getDualMap());
     }
 </pre>
 
@@ -159,7 +161,18 @@ In general one might argue that we should not write code per se, but rather test
     }
 </pre>
 
-where we inspect the KeyStore returned by the buildKeyStore() method, which is exposed especially for this unit test.
+where we build a map of dual submissions where for example brent's password is "bbbb". We inspect the KeyStore returned by the buildKeyStore() method, which is exposed especially for this unit test. 
+
+The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This can be used the get the key in clear-text as follows.
+
+<pre>
+    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
+            throws GeneralSecurityException {
+        KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
+                keyAlias, new KeyStore.PasswordProtection(keyPass));
+        return entry.getSecretKey();
+    }
+</pre>
 
 <h4>Usage demo</h4>
 
@@ -177,15 +190,13 @@ where we use a JCEKS-type keystore for our symmetric secret key, generated as 25
 In the example below, three admins submit their passwords via SSL sockets where their client cert's CN identifies them as evanx, henty and brent. 
 
 <pre>
-INFO [DualControlManager] readDualMap submissionCount: 3
-INFO [DualControlManager] readDualMap purpose: new key dek2013
-INFO [DualControlManager] readSubmissions SSL port 4444
+INFO [DualControlManager] purpose: new key dek2013
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
 INFO [DualControlManager] Received brent
-INFO [DualControlManager] readDualMap dualAlias: brent-evanx
-INFO [DualControlManager] readDualMap dualAlias: brent-henty
-INFO [DualControlManager] readDualMap dualAlias: evanx-henty
+INFO [DualControlManager] dualAlias: brent-evanx
+INFO [DualControlManager] dualAlias: brent-henty
+INFO [DualControlManager] dualAlias: evanx-henty
 INFO [DualControlGenSecKey] alias dek2013-brent-evanx
 INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
@@ -230,6 +241,7 @@ public class DualControlConsole {
 </pre>
 
 where DualControlSSLContextFactory creates an SSLContext from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an SSLContext from KeyStore's which it creates programmatically.) 
+We connect and submit the password via SSL as follows.
 
 <pre>
     private final static int PORT = 4444;
@@ -263,7 +275,6 @@ where DualControlSSLContextFactory creates an SSLContext from the provided prope
         socket.close();
     }
 </pre>
-where we open an SSL socket to our dual-controlled app, and are authenticated and identified by our SSL cert.
 
 Incidently, we restrict the "remote" host to localhost to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
@@ -432,12 +443,10 @@ The application ostensibly loads the key with no fuss. But the caveat is that ex
 <pre>
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
-INFO [DualControlManager] readDualMap submissionCount: 2
-INFO [DualControlManager] readDualMap purpose: key dek2013 for DualControlDemoApp
-INFO [DualControlManager] readSubmissions SSL port 4444
+INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
-INFO [DualControlManager] readDualMap dualAlias: evanx-henty
+INFO [DualControlManager] dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] Loaded key dek2013 alg AES
 </pre>
@@ -490,14 +499,13 @@ where we read the dual info using DualControlManager, which opens an SSLServerSo
 <pre>
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
-        SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties(), new ConsoleAdapter(System.console()));
-        manager.init(sslContext);
-        return manager.readDualMap().entrySet().iterator().next();
+        manager.init(new ConsoleAdapter(System.console()));
+        manager.call();
+        return manager.getDualMap().entrySet().iterator().next();
     }   
 </pre>
 
-where we read the first dual entry returned by readDualMap(). Actually this is the only entry in the map since we have required only two submissions.
+where we read the first entry in dualMap. Actually this is the only entry in the map since we have required only two submissions.
 
 <h4>Remote keystore</h4>
 
@@ -592,40 +600,15 @@ public class DualControlManager {
 
 where we specify the required number of password submissions for some purpose e.g. the generate a key or load a key, and provide an SSLContext for the SSLServerSocket.
 
-Our app can then invoke readDualMap() below to compose a map of dual aliases and split passwords.
-
-<pre>
-    public Map<String, char[]> readDualMap() throws Exception {
-        logger.info("readDualMap submissionCount: " + submissionCount);
-        logger.info("readDualMap purpose: " + purpose);
-        readSubmissions();
-        Map<String, char[]> dualMap = new TreeMap();
-        for (String name : submissions.keySet()) {
-            for (String otherName : submissions.keySet()) {
-                if (name.compareTo(otherName) < 0) {
-                    String dualAlias = String.format("%s-%s", name, otherName);
-                    char[] dualPassword = combineSplitPassword(
-                            submissions.get(name), submissions.get(otherName));
-                    dualMap.put(dualAlias, dualPassword);
-                    logger.info("readDualMap dualAlias: " + dualAlias);
-                }
-            }
-        }
-        return dualMap;
-    }
-</pre>
-
-where the compareTo() in the nested loop above ensures that we exclude the alphabetically-challenged evanx-brent in favour of brent-evanx, and the likes of evanx-evanx, which is just silly.
-
-We see that readDualMap() above invokes readSubmissions() below, to accept submissions via an SSLServerSocket.
+Our app calls DualControlManager to accept submissions via an SSLServerSocket as follows.
 
 <pre>
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     ...
-    private void readSubmissions() throws Exception {
-        logger.info("readSubmissions SSL port " + PORT);
+    public void call() throws Exception {
+        logger.info("purpose: " + purpose);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
@@ -635,6 +618,7 @@ We see that readDualMap() above invokes readSubmissions() below, to accept submi
         } finally {
             serverSocket.close();
         }
+        buildDualMap();
     }
 </pre>
 
@@ -648,7 +632,7 @@ Note that we have hard-wired the SSLServerSocket to localhost. Therefore DualCon
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
                 if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
-                    throw new Exception("Invalid remote address "
+                    throw new Exception("Invalid remote address: "
                             + socket.getInetAddress().getHostAddress());
                 }
                 read(socket);
@@ -687,6 +671,26 @@ where we accumulate the required number of submissions in a loop, handing each s
 </pre>
 
 where the admin's username is determined from their SSL cert, in particular the CN field.
+
+Finally, we compose a map of dual aliases and split passwords as follows.
+
+<pre>
+    private void buildDualMap() {
+        for (String name : submissions.keySet()) {
+            for (String otherName : submissions.keySet()) {
+                if (name.compareTo(otherName) < 0) {
+                    String dualAlias = String.format("%s-%s", name, otherName);
+                    char[] dualPassword = combineSplitPassword(
+                            submissions.get(name), submissions.get(otherName));
+                    dualMap.put(dualAlias, dualPassword);
+                    logger.info("dualAlias: " + dualAlias);
+                }
+            }
+        }
+    }
+</pre>
+
+where the compareTo() in the nested loop above ensures that we exclude the alphabetically-challenged evanx-brent in favour of brent-evanx, and the likes of evanx-evanx, which is just silly.
 
 <h4>Unit test</h4>
 
