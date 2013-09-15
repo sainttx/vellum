@@ -35,7 +35,7 @@ import javax.crypto.SecretKey;
 import javax.net.ssl.SSLContext;
 import org.junit.Test;
 import sun.security.x509.X500Name;
-import vellum.security.GeneratedRsaKeyPair;
+import vellum.crypto.rsa.GeneratedRsaKeyPair;
 import vellum.util.Lists;
 import vellum.util.Sockets;
 import vellum.util.Threads;
