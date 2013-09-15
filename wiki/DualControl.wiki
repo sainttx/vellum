@@ -236,6 +236,7 @@ public class DualControlConsole {
 }}}
 
 where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically.) 
+We connect and submit the password via SSL as follows.
 
 {{{
     private final static int PORT = 4444;
@@ -269,7 +270,6 @@ where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from 
         socket.close();
     }
 }}}
-where we open an SSL socket to our dual-controlled app, and are authenticated and identified by our SSL cert.
 
 Incidently, we restrict the "remote" host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
