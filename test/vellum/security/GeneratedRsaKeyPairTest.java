@@ -39,7 +39,7 @@ public class GeneratedRsaKeyPairTest {
             "123456", "clientUnit", "clientOrg", "WP", "CT", "za");
     
     @Test
-    publicvoid test() throws Exception {
+    public void test() throws Exception {
         rootKeyPair.generate(rootDname, new Date(), 999);
         clientKeyPair.generate(clientDname, new Date(), 999);
         logger.info(Certificates.buildCertReqPem(clientKeyPair.getCertReq()));
