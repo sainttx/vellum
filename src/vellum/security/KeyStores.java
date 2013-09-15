@@ -109,7 +109,4 @@ public class KeyStores {
         return keyStore;
     }
     
-    public static X509Certificate findRootCert(KeyStore keyStore, String alias) throws Exception {
-        return Certificates.findRootCert(keyStore.getCertificateChain(alias));
-    }    
 }
