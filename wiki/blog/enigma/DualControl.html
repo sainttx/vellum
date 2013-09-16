@@ -5,7 +5,7 @@ Encryption is great for information security and all that. But the problem with 
 <p>   
 <a style='{text-decoration: none;} :visited{color: black;}' href="https://code.google.com/p/vellum/wiki/EnigmaPosts">
 <div style="border-bottom: solid 1px; background-color: #ccff00;">
-<img src="http://upload.wikimedia.org/wikipedia/commons/5/55/Gnome-security-medium.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Dual Control:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A cryptological quadrilogy, part of the "Enigma Posts"</span>
+<img src="http://upload.wikimedia.org/wikipedia/commons/5/55/Gnome-security-medium.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Dual Control:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A crypto quadrilogy, part of the "Enigma Posts"</span>
 </div>
 </a>
 
@@ -13,7 +13,7 @@ We hereby launch the new 2013 "Dual Control" series, part of the <a href="http:/
 
 <h4>PCI DSS</h4>
 
-The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Even though it addresses cardholder data security, it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
+The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Even though it addresses <i>cardholder</i> data security, it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
@@ -25,9 +25,9 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
+We'll split the knowledge of the key password between two admins, so it's known to no one. Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then even if one admin is unavailable, we're still good to go with the other two.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then even if one admin is unavailable, we're still good to go with two others.
 
 <h4>DualControlGenSecKey</h4>
 
@@ -45,12 +45,12 @@ public class DualControlGenSecKey {
     private Map<String, char[]> dualPasswordMap;
     private SSLContext sslContext;
 
-    public DualControlGenSecKey(VellumProperties properties, MockableConsole console) {
-        this.properties = properties;
+    public DualControlGenSecKey(Properties properties, MockableConsole console) {
+        this.props = new VellumProperties(properties);
         this.console = console;
-        submissionCount = properties.getInt("dualcontrol.submissions", 3);
-        keyStorePassword = properties.getPassword("storepass", null);
-        keyAlias = properties.getString("alias");
+        submissionCount = props.getInt("dualcontrol.submissions", 3);
+        keyStorePassword = props.getPassword("storepass", null);
+        keyAlias = props.getString("alias");
     }
 
     public void init() throws Exception {
@@ -60,12 +60,13 @@ public class DualControlGenSecKey {
 }
 </pre>
 
-where we choose property names similar to keytool.
+where VellumProperties is a utilitarian extension of regular Properties.
+
+Our main() method below passes System properties i.e. -D options, and the System console for entering the SSL keystore password.
 
 <pre>
     public static void main(String[] args) throws Exception {
-        DualControlGenSecKey instance = new DualControlGenSecKey(
-                new VellumProperties(System.getProperties()), 
+        DualControlGenSecKey instance = new DualControlGenSecKey(System.getProperties(),
                 new ConsoleAdapter(System.console()));
         try {
             instance.init();
@@ -79,7 +80,8 @@ where we choose property names similar to keytool.
     ...
 }
 </pre>
-where our main() method passes System properties i.e. -D options, and the System console for entering the SSL keystore password.
+
+where we instantiate, initialise, and then call this class.
 
 <pre>
     public void call() throws Exception {
@@ -139,7 +141,7 @@ where DualControlManager provides a map of aliases and passwords, composed from 
 
 where for each duo we programmatically create a KeyStore entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general one might argue that we should not write code per se, but rather tests with accompanying code, hand in glove. Well, we've done that in this case, for a change ;)
+In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. <i>Sounds like good, clean fun.</i>
 <pre>
     @Test
     public void testGenKeyStore() throws Exception {
@@ -161,12 +163,12 @@ In general one might argue that we should not write code per se, but rather test
     }
 </pre>
 
-where we build a map of dual submissions where for example brent's password is "bbbb". We inspect the KeyStore returned by the buildKeyStore() method, which is exposed especially for this unit test. 
+where we build a map of sample dual submissions, and inspect the KeyStore returned by buildKeyStore().
 
 The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This can be used the get the key in clear-text as follows.
 
 <pre>
-    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
+    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass)
             throws GeneralSecurityException {
         KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
@@ -211,7 +213,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 </pre>
 
-Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is "known to no single person" as per PCI DSS requirements :)
+Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person :)
 
 <h4>DualControlConsole</h4>
 
