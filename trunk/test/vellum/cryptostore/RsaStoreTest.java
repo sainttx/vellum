@@ -76,7 +76,7 @@ public class RsaStoreTest {
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         kos = new ByteArrayOutputStream();
         ks.storePrivate(kos, password);
-        kis = new ByteArrayInputStream(kos.toByteArray());        
+        kis = new ByteArrayInputStream(kos.toByteArray());
         PrivateKey loadedPrivateKey = ks.loadPrivate(kis, alias, password);
         assertTrue("loaded private key", Arrays.equals(ks.getKeyPair().getPrivate().getEncoded(),
                 loadedPrivateKey.getEncoded()));
