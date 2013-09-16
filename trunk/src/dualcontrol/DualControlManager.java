@@ -20,6 +20,7 @@
  */
 package dualcontrol;
 
+import java.io.Console;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -66,6 +67,10 @@ public class DualControlManager {
 
     public void init(MockableConsole console) throws Exception {
         init(DualControlSSLContextFactory.createSSLContext(properties, console));
+    }
+
+    public void init(Console console) throws Exception {
+        init(new ConsoleAdapter(console));
     }
     
     public void call() throws Exception {

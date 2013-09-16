@@ -34,8 +34,8 @@ import vellum.datatype.Nanos;
  *
  * @author evan.summers
  */
-public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable {
-    private final static Logger logger = Logger.getLogger(JCEKSBruteForceTimer.class);
+public class JceksBruteForceTimer extends Thread implements Cloneable, Runnable {
+    private final static Logger logger = Logger.getLogger(JceksBruteForceTimer.class);
     private static int passwordLength = Integer.getInteger("passwordLength", 8);
     private Random random;
     private Set<String> errorMessageSet;
@@ -51,12 +51,12 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         if (args.length != 6) {
             System.err.println("usage: threads count keystore storepass alias keypass"); 
         } else {
-            new JCEKSBruteForceTimer(Integer.parseInt(args[1]), args[2], args[3].toCharArray(),
+            new JceksBruteForceTimer(Integer.parseInt(args[1]), args[2], args[3].toCharArray(),
                     args[4], args[5].toCharArray()).start(Integer.parseInt(args[0]));
         }
     }    
 
-    public JCEKSBruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
+    public JceksBruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
             String alias, char[] keyPass) {
         this.random = new Random();
         this.errorMessageSet = new TreeSet();
@@ -72,15 +72,15 @@ public class JCEKSBruteForceTimer extends Thread implements Cloneable, Runnable 
         logger.info("alias " + alias);
         logger.info("keyPass " + new String(keyPass));
         logger.info("generatePassword " + new String(generateRandomPassword(passwordLength)));
-        List<JCEKSBruteForceTimer> threadList = new ArrayList();
+        List<JceksBruteForceTimer> threadList = new ArrayList();
         long nanos = System.nanoTime();
         for (int i = 0; i < threadCount; i++) {
-            JCEKSBruteForceTimer thread = new JCEKSBruteForceTimer(maximumCount, 
+            JceksBruteForceTimer thread = new JceksBruteForceTimer(maximumCount, 
                     keyStoreLocation, keyStorePass, alias, keyPass);
             thread.start();
             threadList.add(thread);
         }
-        for (JCEKSBruteForceTimer thread : threadList) {
+        for (JceksBruteForceTimer thread : threadList) {
             thread.join();
             if (thread.exception != null) {
                 logger.error(thread.exception);
