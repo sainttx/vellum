@@ -3,17 +3,17 @@ These articles are drafted here, published on my blog, http://www.java.net/blogs
 
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
-Generating and signing browser certs (planned) - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/rsa/PKCS12KeyStores.java"><tt>PKCS12KeyStores.java</tt></a>
+Generating and signing browser certs (planned) - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/rsa/PKCS12KeyStores.java">PKCS12KeyStores.java</a>
 
 == Dual Control quadrilogy == 
 
 [DualControl Dual Control Key Management] (September 2013)
 
-Dual Control Enroll - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
+Dual Control Enroll - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java">DualControlEnroll.java</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java">DualControlRevoke.java</a>
 
-Dual Control Crypto Server - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java"><tt>!CryptoServer.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java"><tt>!CryptoHandler.java</tt></a>
+Dual Control Crypto Server - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java">CryptoServer.java</a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java">CryptoHandler.java</a>
 
-Dual Control Key Protection - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java"><tt>!JceksBruteForceTimer.java</tt></a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStores.java"><tt>!RecryptedKeyStores.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java"><tt>!AesPbeStore.java</tt></a>
+Dual Control Key Protection - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java">JceksBruteForceTimer.java</a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStores.java">RecryptedKeyStores.java</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java">AesPbeStore.java</a>
 
 Dual Control Key Rotation - planned
 
@@ -23,5 +23,5 @@ Dual Control Key Rotation - planned
 
 [PasswordRehash Password Rehash] (May 2013)
 
-Password Cipher - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/PasswordHash.java"><tt>!PasswordHash.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/PBECipher.java"><tt>PBECipher.java</tt></a>
+Password Cipher - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/PasswordHash.java">PasswordHash.java</a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/PBECipher.java">PBECipher.java</a>
 
