@@ -51,7 +51,7 @@ public class DualControlGenSecKey {
     }
 
     public void init() throws Exception {
-        sslContext = DualControlSSLContextFactory.createSSLContext(properties, console);
+        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
     }
     ...
 }
@@ -82,7 +82,7 @@ where we instantiate, initialise, and then call this class.
 
 {{{
     public void call() throws Exception {
-        keyStoreLocation = properties.getString("keystore");
+        keyStoreLocation = props.getString("keystore");
         if (new File(keyStoreLocation).exists()) {
             throw new Exception("Keystore file already exists: " + keyStoreLocation);
         }
@@ -110,10 +110,10 @@ where we instantiate, initialise, and then call this class.
 where <tt>!DualControlManager</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>buildKeyStore()</tt> method below.
 {{{
     public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
-        keyAlias = properties.getString("alias");
-        keyStoreType = properties.getString("storetype");
-        keyAlg = properties.getString("keyalg");
-        keySize = properties.getInt("keysize");
+        keyAlias = props.getString("alias");
+        keyStoreType = props.getString("storetype");
+        keyAlg = props.getString("keyalg");
+        keySize = props.getInt("keysize");
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
@@ -149,8 +149,10 @@ In general some argue that we should not write code per se, but rather tests wit
         properties.put("storetype", "JCEKS");
         properties.put("keyalg", "AES");
         properties.put("keysize", "192");
-        DualControlGenSecKey instance = new DualControlGenSecKey();
-        KeyStore keyStore = instance.buildKeyStore(properties, dualPasswordMap);
+        char[] keyStorePass = "test1234".toCharArray();
+        MockConsole appConsole = new MockConsole("app", keyStorePass);
+        DualControlGenSecKey instance = new DualControlGenSecKey(properties, appConsole);
+        KeyStore keyStore = instance.buildKeyStore(dualPasswordMap);
         assertEquals(3, Collections.list(keyStore.aliases()).size());
         assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
         SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
