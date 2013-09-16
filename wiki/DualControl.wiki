@@ -138,7 +138,7 @@ where <tt>!DualControlManager</tt> provides a map of aliases and passwords, comp
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general one might argue that we should not write code per se, but rather tests with accompanying code, hand in glove. Well, we've done that in this case, for a change ;)
+In general one might argue that we should not write code per se, but rather tests with accompanying code, hand in glove. Let's subscribe to that. 
 {{{
     @Test
     public void testGenKeyStore() throws Exception {
@@ -160,12 +160,12 @@ In general one might argue that we should not write code per se, but rather test
     }
 }}}
 
-where we build a map of dual submissions where for example brent's password is "bbbb". We inspect the <tt>!KeyStore</tt> returned by the <tt>buildKeyStore()</tt> method, which is exposed especially for this unit test. 
+where we build a map of sample dual submissions, and inspect the <tt>!KeyStore</tt> returned by <tt>buildKeyStore()</tt>.
 
 The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This can be used the get the key in clear-text as follows.
 
 {{{
-    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
+    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass)
             throws GeneralSecurityException {
         KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
