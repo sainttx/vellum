@@ -698,11 +698,11 @@ where the <tt>compareTo()</tt> in the nested loop above ensures that we exclude 
 
 In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlManager</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads, mock consoles and what-not. This will be presented in a follow-on article, as this article is already too long.
 
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+
 <h4>Crypto server</h4>
 
 We might wish to create a central crypto server which is dual-controlled, rather than burden our app. In this case, we can restart our application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
-
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We'll implement the crypto server in a subsequent article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
 
@@ -714,9 +714,9 @@ PCI requires that "split knowledge and dual control" be used to protect our data
 
 We present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret. We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enable split knowledge of the key password, so that dual control is required to load the key.
 
-We propose keeping at least three copies of the same key, but where each copy is password-protected by a different pair of admins. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when we restart our app.
-
 <img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield.png" />
+
+We propose keeping at least three copies of the same key, but where each copy is password-protected by a different pair of admins. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when we restart our app.
 
 <h4>Furthermore</h4>
 
