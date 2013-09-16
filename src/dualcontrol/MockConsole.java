@@ -62,6 +62,6 @@ public class MockConsole implements MockableConsole {
     @Override
     public void println(String message) {
         logger.info(message);
-        lines.add(message);        
+        lines.add(message);
     }
 }

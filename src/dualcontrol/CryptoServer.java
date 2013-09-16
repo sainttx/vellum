@@ -79,7 +79,7 @@ public class CryptoServer {
             try {
                 socket.close();
             } catch (Exception e) {
-                logger.warn("close socket", e);                
+                logger.warn("close socket", e);        
             }
         }
     }

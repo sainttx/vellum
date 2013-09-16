@@ -120,7 +120,7 @@ public class AesPbeStore implements PbeStore {
         pbeKey = generateKey(password);
         Log.debug(logger, salt.length, iterationCount, keySize);
         if (!Arrays.equals(salt, decrypt(encryptedSalt))) {
-            throw new Exception("Invalid password");            
+            throw new Exception("Invalid password");    
         }
         return decrypt(encryptedBytes);
     }
@@ -136,7 +136,7 @@ public class AesPbeStore implements PbeStore {
         if (iv != null) {
             cipher.init(Cipher.ENCRYPT_MODE, pbeKey, new IvParameterSpec(iv));
         } else {
-            cipher.init(Cipher.ENCRYPT_MODE, pbeKey);            
+            cipher.init(Cipher.ENCRYPT_MODE, pbeKey);    
             AlgorithmParameters params = cipher.getParameters();
             iv = params.getParameterSpec(IvParameterSpec.class).getIV();
         }

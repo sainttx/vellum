@@ -118,7 +118,7 @@ public class JceksBruteForceTimer extends Thread implements Cloneable, Runnable 
         for (int i = 0; i < maximumCount; i++) {
             try {
                 char[] password = generateRandomPassword(8);
-                if (i%500 == 0) password = keyPass;                        
+                if (i%500 == 0) password = keyPass;
                 logger.trace("key " + keyStore.getKey(alias, password).getAlgorithm());
             } catch (Exception e) {
                 errorMessageSet.add(e.getMessage());
