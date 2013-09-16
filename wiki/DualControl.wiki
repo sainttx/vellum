@@ -716,6 +716,8 @@ We present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys t
 
 We propose keeping at least three copies of the same key, but where each copy is password-protected by a different pair of admins. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when we restart our app.
 
+<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield.png" />
+
 <h4>Furthermore</h4>
 
 In "Dual Control Mock Console" we will present a unit test orchestrating <tt>!DualControlManager</tt> and <tt>!DualControlConsole</tt> threads - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest.java</tt></a>
