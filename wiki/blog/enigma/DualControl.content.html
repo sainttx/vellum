@@ -128,7 +128,7 @@ where DualControlManager provides a map of aliases and passwords, composed from 
 
 where for each duo we programmatically create a KeyStore entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general one might argue that we should not write code per se, but rather tests with accompanying code, hand in glove. Let's subscribe to that. 
+In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that our tests determine our design, and it feels good.
 <pre>
     @Test
     public void testGenKeyStore() throws Exception {
@@ -152,7 +152,7 @@ In general one might argue that we should not write code per se, but rather test
 
 where we build a map of sample dual submissions, and inspect the KeyStore returned by buildKeyStore().
 
-The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This can be used the get the key in clear-text as follows.
+The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This can be used the get the key in clear-text using the following method.
 
 <pre>
     private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass)
@@ -229,8 +229,9 @@ public class DualControlConsole {
 }
 </pre>
 
-where DualControlSSLContextFactory creates an SSLContext from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an SSLContext from KeyStore's which it creates programmatically.) 
-We connect and submit the password via SSL as follows.
+where DualControlSSLContextFactory creates an SSLContext from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an SSLContext from KeyStore's which it creates programmatically.)
+
+We submit the password via SSL as follows.
 
 <pre>
     private final static int PORT = 4444;
@@ -265,7 +266,7 @@ We connect and submit the password via SSL as follows.
     }
 </pre>
 
-Incidently, we restrict the "remote" host to localhost to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
+where we restrict the "remote" host to localhost to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
 <pre>
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
@@ -274,7 +275,7 @@ Enter password for new key dek2013:
 Re-enter password: 
 OK evanx
 </pre>
-where DualControlSSLContextFactory will prompt for the SSL keystore password first.
+where DualControlSSLContextFactory prompts for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
@@ -347,20 +348,20 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 </pre>
 
-If we fear that in the future someone can try an average of 50 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations 3 years are required to try all possible passwords up to 11 characters in length using a lazy subset of 50 characters. 
+If we fear that in the future someone can try an average of 50 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations, 2 days are required to try all possible passwords up to 10 characters in length using a lazy subset of 40 characters. 
 
 <pre>
 guess=50
 mach=1000*1000
-50^11/(mach*guess*1000*60*60*24*365)
-3 years
+40^10/(mach*guess*1000*60*60*24)
+2.4 days
 </pre>
 
-Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 7 years are required for such passphrases with 6 words. 
+Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 2 days are required for such passphrases with 5 words. 
 
 <pre>
-(1500^6)/(mach*guess*1000*60*60*24*365)
-7 years
+(1500^5)/(mach*guess*1000*60*60*24)
+1.7 days
 </pre>
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-shield-250.png" />
@@ -488,7 +489,7 @@ where we read the dual info using DualControlManager, which opens an SSLServerSo
 <pre>
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
-        manager.init(new ConsoleAdapter(System.console()));
+        manager.init(System.console());
         manager.call();
         return manager.getDualMap().entrySet().iterator().next();
     }   
