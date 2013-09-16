@@ -694,13 +694,13 @@ Finally, we compose a map of dual aliases and split passwords as follows.
 
 where the <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 <h4>Unit test</h4>
 
 In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlManager</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads, mock consoles and what-not. This will be presented in a follow-on article, as this article is already too long.
 
 <h4>Crypto server</h4>
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We might wish to create a central crypto server which is dual-controlled, rather than burden our app. In this case, we can restart our application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
 
