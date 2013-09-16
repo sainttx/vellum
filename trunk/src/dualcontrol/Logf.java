@@ -29,19 +29,19 @@ import org.apache.log4j.Logger;
 public class Logf {
 
     public static void debug(Logger logger, String format, Object ... args) {
-        logger.debug(String.format(format, args));        
+        logger.debug(String.format(format, args));
     }
     
     public static void info(Logger logger, String format, Object ... args) {
-        logger.info(String.format(format, args));        
+        logger.info(String.format(format, args));
     }
 
     public static void warn(Logger logger, String format, Object ... args) {
-        logger.warn(String.format(format, args));        
+        logger.warn(String.format(format, args));
     }
 
     public static void error(Logger logger, String format, Object ... args) {
-        logger.error(String.format(format, args));        
+        logger.error(String.format(format, args));
     }
     
 }

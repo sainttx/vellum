@@ -38,7 +38,7 @@ public class AESCiphers {
             throws GeneralSecurityException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
-        return keyGenerator.generateKey();        
+        return keyGenerator.generateKey();
     }
     
     public static BytesCipher getCipher(Key key) {

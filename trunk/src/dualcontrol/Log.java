@@ -38,7 +38,7 @@ public class Log {
     }
     
     public static void info(Logger logger, Object ... args) {
-        logger.info(Arrays.toString(args));        
+        logger.info(Arrays.toString(args));
     }
 
     public static void warn(Logger logger, Object ... args) {

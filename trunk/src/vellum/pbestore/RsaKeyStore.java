@@ -104,7 +104,7 @@ public class RsaKeyStore {
     
     public PrivateKey loadPrivate(InputStream stream, String alias, char[] password) 
             throws Exception {
-        PbeStore pbeStore = new AesPbeStore();        
+        PbeStore pbeStore = new AesPbeStore();
         byte[] keyBytes = pbeStore.load(stream, alg, alias, password);
         return KeyFactory.getInstance(alg).generatePrivate(
                 new PKCS8EncodedKeySpec(keyBytes));

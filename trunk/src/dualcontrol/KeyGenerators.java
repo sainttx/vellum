@@ -34,6 +34,6 @@ public class KeyGenerators {
             throws GeneralSecurityException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
-        return keyGenerator.generateKey();        
+        return keyGenerator.generateKey();
     }
 }

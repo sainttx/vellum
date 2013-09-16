@@ -34,20 +34,27 @@ import javax.crypto.SecretKey;
  * 
  * @author evan.summers
  */
-public class RecryptedKeyStores {
+public class RecryptedKeyStore {
+    int iterationCount = 500000;
+
+    public RecryptedKeyStore() {
+    }
     
-    public static void storeKey(int iterationCount, SecretKey secretKey, 
+    public RecryptedKeyStore(int iterationCount) {
+        this.iterationCount = iterationCount;
+    }
+
+    public void storeKey(SecretKey secretKey, 
             String keyStoreLocation, String keyStoreType, 
             String alias, char[] password) throws Exception {
         File file = new File(keyStoreLocation);
         if (file.exists()) {
             throw new Exception("Encrypted keystore file already exists: " + keyStoreLocation);
         }
-        storeKeyForce(iterationCount, secretKey, keyStoreLocation, keyStoreType, alias, password);
+        storeKeyForce(secretKey, keyStoreLocation, keyStoreType, alias, password);
     }
     
-    public static void storeKeyForce(int iterationCount, 
-            SecretKey secretKey, String keyStoreLocation,
+    public void storeKeyForce(SecretKey secretKey, String keyStoreLocation,
             String keyStoreType, String alias, char[] password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, password);
@@ -70,7 +77,7 @@ public class RecryptedKeyStores {
         ByteArrayInputStream bais = new ByteArrayInputStream(
                 new AesPbeStore().load(new FileInputStream(file), keyStoreType, 
                 alias, password));
-        KeyStore keyStore = KeyStore.getInstance(keyStoreType);        
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(bais, password);
         return (SecretKey) keyStore.getKey(alias, password);
     }
