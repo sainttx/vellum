@@ -10,21 +10,21 @@ Encryption is great for information security and all that. But the problem with 
 
 <h4>PCI DSS</h4>
 
-The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Even though it addresses cardholder data security, it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
+The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Even though it addresses <i>cardholder</i> data security, it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 PCI DSS suggests encrypting our data-encryption key (DEK) in order to protect it. Great, we now have a "key-encryption key" (KEK) that requires even more protection ;)
 
-PCI DSS mandates that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. 
+PCI DSS mandates that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that "no single person" can extract the clear-text data. 
 
 The glaring problem is that sysadmins are a single person, with god-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
 <h4>Solution overview</h4>
 
-We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
+We'll split the knowledge of the key password between two admins, so it's known to <i>no single person.</i> Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then even if one admin is unavailable, we're still good to go with the other two.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then even if one admin is unavailable, we're still good to go with two others.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
