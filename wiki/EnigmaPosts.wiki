@@ -13,7 +13,7 @@ Dual Control Enroll - preview <a href="https://code.google.com/p/vellum/source/b
 
 Dual Control Crypto Server - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java"><tt>!CryptoServer.java</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java"><tt>!CryptoHandler.java</tt></a>
 
-Dual Control Key Protection - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java"><tt>!JceksBruteForceTimer.java</tt></a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStores.java"><tt>!RecryptedKeyStores.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java"><tt>!AesPbeStore.java</tt></a>
+Dual Control Key Protection - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java"><tt>!JceksBruteForceTimer.java</tt></a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStore.java"><tt>!RecryptedKeyStore.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java"><tt>!AesPbeStore.java</tt></a>
 
 Dual Control Key Rotation - planned
 

@@ -366,7 +366,7 @@ Considering that the most common 100 words make up a half of all written materia
 1.7 days
 </pre>
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield.png" />
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
 
 Note that our mandatory minimums apply to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
@@ -684,13 +684,13 @@ Finally, we compose a map of dual aliases and split passwords as follows.
 
 where the compareTo() in the nested loop above ensures that we exclude the alphabetically-challenged evanx-brent in favour of brent-evanx, and the likes of evanx-evanx, which is just silly.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 <h4>Unit test</h4>
 
 In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java">DualControlTest</a>, we test DualControlManager and two DualControlConsole's in concert, using threads, mock consoles and what-not. This will be presented in a follow-on article, as this article is already too long.
 
 <h4>Crypto server</h4>
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We might wish to create a central crypto server which is dual-controlled, rather than burden our app. In this case, we can restart our application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
 
@@ -710,13 +710,13 @@ We propose keeping at least three copies of the same key, but where each copy is
 
 In "Dual Control Mock Console" we will present a unit test orchestrating DualControlManager and DualControlConsole threads - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java">DualControlTest.java</a>
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/200px-Gnome-appointment-soon.svg.png" />
+<img align="left" style="margin-left: 4px" src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Gnome-applications-office.svg/200px-Gnome-applications-office.svg.png" />
 
 In "Dual Control Enroll" we will present other tools similar to DualControlGenSec, namely DualControlRevoke and DualControlEnroll to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java">DualControlEnroll.java</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java">DualControlRevoke.java</a>
 
 In "Dual Control Crypto Server" we implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java">CryptoServer.java</a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java">CryptoHandler.java</a>
 
-In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using PBKDF2 with a high number of iterations, so that the key takes a second or two to recover, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java">JceksBruteForceTimer.java</a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStores.java">RecryptedKeyStores.java</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java">AesPbeStore.java</a>
+In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using PBKDF2 with a high number of iterations, so that the key takes a second or two to recover, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java">JceksBruteForceTimer.java</a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStore.java">RecryptedKeyStore.java</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java">AesPbeStore.java</a>
 
 In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from a old "dek2013" key a to revised "dek2014" key.
 
