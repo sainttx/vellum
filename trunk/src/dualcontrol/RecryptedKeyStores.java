@@ -30,7 +30,7 @@ import javax.crypto.SecretKey;
 
 /**
  *
- * @see AesPbeStore
+ * @see AesPbeStore https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java
  * @author evan.summers
  */
 public class RecryptedKeyStores {
