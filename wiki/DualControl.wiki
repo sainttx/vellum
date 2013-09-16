@@ -499,7 +499,7 @@ where we read the dual info using <tt>!DualControlManager</tt>, which opens an <
 {{{
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
-        manager.init(new ConsoleAdapter(System.console()));
+        manager.init(System.console());
         manager.call();
         return manager.getDualMap().entrySet().iterator().next();
     }   
