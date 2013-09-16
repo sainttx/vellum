@@ -720,7 +720,7 @@ We propose keeping at least three copies of the same key, but where each copy is
 
 In "Dual Control Mock Console" we will present a unit test orchestrating <tt>!DualControlManager</tt> and <tt>!DualControlConsole</tt> threads - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest.java</tt></a>
 
-<img align="right" style="margin-left: 4px" src="http://www.jroller.com/evanx/resource/200px-Gnome-user-desktop-crop.png" />
+<img align="left" style="margin-left: 4px" src="http://www.jroller.com/evanx/resource/200px-Gnome-user-desktop-crop.png" />
 
 In "Dual Control Enroll" we will present other tools similar to <tt>!DualControlGenSec</tt>, namely <tt>!DualControlRevoke</tt> and <tt>!DualControlEnroll</tt> to manage admin staff reshuffles - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
