@@ -42,12 +42,12 @@ public class DualControlGenSecKey {
     private Map<String, char[]> dualPasswordMap;
     private SSLContext sslContext;
 
-    public DualControlGenSecKey(VellumProperties properties, MockableConsole console) {
-        this.properties = properties;
+    public DualControlGenSecKey(Properties properties, MockableConsole console) {
+        this.props = new VellumProperties(properties);
         this.console = console;
-        submissionCount = properties.getInt("dualcontrol.submissions", 3);
-        keyStorePassword = properties.getPassword("storepass", null);
-        keyAlias = properties.getString("alias");
+        submissionCount = props.getInt("dualcontrol.submissions", 3);
+        keyStorePassword = props.getPassword("storepass", null);
+        keyAlias = props.getString("alias");
     }
 
     public void init() throws Exception {
@@ -57,12 +57,13 @@ public class DualControlGenSecKey {
 }
 }}}
 
-where we choose property names similar to <tt>keytool</tt>.
+where <tt>VellumProperties</tt> is a utilitarian extension of regular <tt>Properties</tt>.
+
+Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console for entering the SSL keystore password.
 
 {{{
     public static void main(String[] args) throws Exception {
-        DualControlGenSecKey instance = new DualControlGenSecKey(
-                new VellumProperties(System.getProperties()), 
+        DualControlGenSecKey instance = new DualControlGenSecKey(System.getProperties(),
                 new ConsoleAdapter(System.console()));
         try {
             instance.init();
@@ -76,7 +77,8 @@ where we choose property names similar to <tt>keytool</tt>.
     ...
 }
 }}}
-where our <tt>main()</tt> method passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console for entering the SSL keystore password.
+
+where we instantiate, initialise, and then call this class.
 
 {{{
     public void call() throws Exception {
