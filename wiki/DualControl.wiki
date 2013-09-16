@@ -371,7 +371,7 @@ mach=1000*1000
 
 Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 2 days are required for such passphrases with 5 words. 
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield.png" />
+<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield.png" />
 
 
 {{{
