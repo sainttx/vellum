@@ -8,7 +8,9 @@ We hereby start the new 2013 "Dual Control" quadrilogy, part of the <a href="htt
 
 Encryption is great for information security and all that. But the problem with encryption is... key management. An analogy often bandied about is that we lock the door but leave the key in the lock. <i>Or under the mat, but that's my personal favourite so ssh-ssh.</i>
 
-The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Although it focusses on credit card numbers (aka <i>Primary Account Numbers</i>, or PANs), it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
+<h4>PCI DSS</h4>
+
+The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Even though it addresses cardholder data security, it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
@@ -22,7 +24,7 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then if one admin is on vacation or otherwise indisposed, that's OK because we only require two admins to load the key when we restart our app.
+We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then even if one admin is unavailable, we're still good to go with the other two.
 
 <h4><tt>!DualControlGenSecKey</tt></h4>
 
