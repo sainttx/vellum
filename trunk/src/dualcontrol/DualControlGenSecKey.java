@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Properties;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.net.ssl.SSLContext;
@@ -45,16 +46,16 @@ public class DualControlGenSecKey {
     private String keyAlg;
     private int keySize;
     private char[] keyStorePassword;
-    private VellumProperties properties;
+    private VellumProperties props;
     private MockableConsole console;
     private SSLContext sslContext;
 
-    public DualControlGenSecKey(VellumProperties properties, MockableConsole console) {
-        this.properties = properties;
+    public DualControlGenSecKey(Properties properties, MockableConsole console) {
+        this.props = new VellumProperties(properties);
         this.console = console;
-        submissionCount = properties.getInt("dualcontrol.submissions", 3);
-        keyStorePassword = properties.getPassword("storepass", null);
-        keyAlias = properties.getString("alias");
+        submissionCount = props.getInt("dualcontrol.submissions", 3);
+        keyStorePassword = props.getPassword("storepass", null);
+        keyAlias = props.getString("alias");
     }
 
     public void init(SSLContext sslContext) {
@@ -62,7 +63,7 @@ public class DualControlGenSecKey {
     }
 
     public void init() throws Exception {
-        sslContext = DualControlSSLContextFactory.createSSLContext(properties, console);
+        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
     }
 
     public static void main(String[] args) throws Exception {
@@ -81,7 +82,7 @@ public class DualControlGenSecKey {
     }
         
     public void call() throws Exception {
-        keyStoreLocation = properties.getString("keystore");
+        keyStoreLocation = props.getString("keystore");
         if (new File(keyStoreLocation).exists()) {
             throw new Exception("Keystore file already exists: " + keyStoreLocation);
         }
@@ -98,7 +99,7 @@ public class DualControlGenSecKey {
 
     public KeyStore createKeyStore() throws Exception {
         String purpose = "new key " + keyAlias;
-        DualControlManager manager = new DualControlManager(properties, 
+        DualControlManager manager = new DualControlManager(props, 
                 submissionCount, purpose);
         manager.init(sslContext);
         manager.call();
@@ -106,10 +107,10 @@ public class DualControlGenSecKey {
     }
 
     public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
-        keyAlias = properties.getString("alias");
-        keyStoreType = properties.getString("storetype");
-        keyAlg = properties.getString("keyalg");
-        keySize = properties.getInt("keysize");
+        keyAlias = props.getString("alias");
+        keyStoreType = props.getString("storetype");
+        keyAlg = props.getString("keyalg");
+        keySize = props.getInt("keysize");
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlg);
         keyGenerator.init(keySize);
         SecretKey secretKey = keyGenerator.generateKey();
