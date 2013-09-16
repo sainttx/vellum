@@ -363,8 +363,6 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 </pre>
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield.png" />
-
 If we fear that in the future someone can try an average of 50 guesses per millisecond on a botnet of 1M machines, then by my backroom calculations, 2 days are required to try all possible passwords up to 10 characters in length using a lazy subset of 40 characters. 
 
 <pre>
@@ -374,7 +372,10 @@ mach=1000*1000
 2.4 days
 </pre>
 
-Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 2 days are required for such passphrases with 5 words.
+Considering that the most common 100 words make up a half of all written material (cit. <a href="http://en.wikipedia.org/wiki/Most_common_words_in_English">Wikipedia</a>), if we guess combinations of the 1500 most common words, then 2 days are required for such passphrases with 5 words. 
+
+<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield.png" />
+
 
 <pre>
 (1500^5)/(mach*guess*1000*60*60*24)
