@@ -57,9 +57,9 @@ public class DualControlGenSecKey {
 }
 }}}
 
-where <tt>!VellumProperties</tt> is a utilitarian extension of regular <tt>Properties</tt>.
+where we configure via <tt>Properties,</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. Thereafter we must initialise the class with an <tt>SSLContext</tt>.
 
-Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console for entering the SSL keystore password.
+Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
 {{{
     public static void main(String[] args) throws Exception {
