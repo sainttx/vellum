@@ -49,15 +49,19 @@ public class DualControlGenSecKey {
         keyStorePassword = props.getPassword("storepass", null);
         keyAlias = props.getString("alias");
     }
-
-    public void init() throws Exception {
-        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
-    }
     ...
 }
 }}}
 
-where we configure via <tt>Properties,</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. Thereafter we must initialise the class with an <tt>SSLContext</tt>.
+where we configure via <tt>Properties,</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. 
+
+{{{
+    public void init() throws Exception {
+        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
+    }
+}}}
+
+where we initialise the class with an <tt>SSLContext</tt>.
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
