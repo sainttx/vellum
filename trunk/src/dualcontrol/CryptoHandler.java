@@ -63,7 +63,7 @@ public class CryptoHandler {
                     dos.writeUTF(key.getAlgorithm());
                     write(key.getEncoded());
                 }
-            } else {            
+            } else {    
                 cipher(mode, alias, fields[2], fields[3], fields[4]);
             }
         } finally {

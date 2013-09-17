@@ -60,7 +60,7 @@ public class Bytes {
         if (string == null) return defaultValue;
         if (string.length() >= 2 &&
                 Character.isLowerCase(string.charAt(string.length() - 1)) && 
-                Character.isDigit(string.charAt(string.length() - 2))) {            
+                Character.isDigit(string.charAt(string.length() - 2))) {    
             long value = Long.parseLong(string.substring(0, string.length() - 1));
             if (string.endsWith("b")) {
                 return value;

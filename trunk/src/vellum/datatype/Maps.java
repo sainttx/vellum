@@ -110,7 +110,7 @@ public class Maps {
     
     public static <K, V> Map<K, V> newMap(MapEntry ... entries) {
         Map map = new HashMap();
-        for (MapEntry entry : entries) {            
+        for (MapEntry entry : entries) {    
             map.put(entry.getKey(), entry.getValue());
         }
         return map;

@@ -23,9 +23,11 @@ package dualcontrol;
 import vellum.util.VellumProperties;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,29 +36,42 @@ import org.apache.log4j.Logger;
  */
 public class DualControlRevoke {
 
-    final static Logger logger = Logger.getLogger(DualControlRevoke.class);
-    private VellumProperties properties = new VellumProperties(System.getProperties());
-    private String username = properties.getString("dualcontrol.username");
-    private String keyAlias = properties.getString("alias");
-    private String keyStoreLocation = properties.getString("keystore");
-    private String keyStoreType = properties.getString("storetype");
+    private final static Logger logger = Logger.getLogger(DualControlRevoke.class);
+    private VellumProperties props;
+    private MockableConsole console;
+    private String username;
+    private String keyAlias;
+    private String keyStoreLocation;
+    private String keyStoreType;
     private char[] keyStorePassword;
     private KeyStore keyStore;
     List<String> aliasList;
 
-    public static void main(String[] args) throws Exception {
-        logger.info("main " + Arrays.toString(args));
-        try {
-            new DualControlRevoke().start();
-        } catch (DualControlException e) {
-            logger.error(e.getMessage());
-        }
+    public DualControlRevoke(Properties properties, MockableConsole console) {
+        this.props = new VellumProperties(properties);
+        this.console = console;
+        username = props.getString("dualcontrol.username");
+        keyAlias = props.getString("alias");
+        keyStoreType = props.getString("storetype");
     }
 
-    void start() throws Exception {
-        keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
+    public void init() {
+    }
+
+    public void clear() {
+        Arrays.fill(keyStorePassword, (char) 0);
+    }
+    
+    public void call() throws Exception {
+        keyStoreLocation = props.getString("keystore");
+        keyStorePassword = console.readPassword("Keystore password: ");
         keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
                 keyStoreType, keyStorePassword);
+        handle(keyStore);
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+    
+    public void handle(KeyStore keyStore) throws KeyStoreException {
         aliasList = Collections.list(keyStore.aliases());
         for (String alias : aliasList) {
             logger.debug("alias " + alias);
@@ -65,7 +80,6 @@ public class DualControlRevoke {
                 keyStore.deleteEntry(alias);
             }
         }
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
     }
 
     boolean matches(String alias) {
@@ -77,4 +91,19 @@ public class DualControlRevoke {
         }
         return false;
     }
+    
+    public static void main(String[] args) throws Exception {
+        logger.info("main " + Arrays.toString(args));
+        DualControlRevoke instance = new DualControlRevoke(System.getProperties(),
+                new SystemConsole());
+        try {
+            instance.init();
+            instance.call();
+        } catch (DualControlException e) {
+            logger.error(e.getMessage());
+        } finally {
+            instance.clear();
+        }
+    }
+    
 }
