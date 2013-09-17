@@ -28,9 +28,48 @@ We propose enrolling at least 3 admins, so if one admin is unavailable, we're st
 
 For each pair of admins, we keep a copy of the key, protected by the "split password" for that particular duo. Clearly for 3 admins, we have 3 pairings, so we'll have three copies of the same key in our keystore. The keystore password is shared, but the key protection passwords are split.  
 
-<h4><tt>!DualControlGenSecKey</tt></h4>
+<h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
 Step 1 for any data security endeavour is to generate an encryption key. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
+
+{{{
+$ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
+     -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
+     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
+     dualcontrol.DualControlGenSecKey
+}}}
+
+where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
+
+In the example below, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
+
+{{{
+INFO [DualControlManager] purpose: new key dek2013
+INFO [DualControlManager] Received evanx
+INFO [DualControlManager] Received henty
+INFO [DualControlManager] Received brent
+INFO [DualControlManager] dualAlias: brent-evanx
+INFO [DualControlManager] dualAlias: brent-henty
+INFO [DualControlManager] dualAlias: evanx-henty
+INFO [DualControlGenSecKey] alias dek2013-brent-evanx
+INFO [DualControlGenSecKey] alias dek2013-brent-henty
+INFO [DualControlGenSecKey] alias dek2013-evanx-henty
+}}}
+
+We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
+
+{{{
+$ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
+dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
+}}}
+
+Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person :)
+
+<h4><tt>!DualControlGenSecKey</tt> implementation</h4>
+
+Let's walk through the code.
 
 {{{
 public class DualControlGenSecKey {
@@ -180,45 +219,6 @@ The key password for the duo of brent and henty for example, is combined as "bbb
         return entry.getSecretKey();
     }
 }}}
-
-<h4>Usage demo</h4>
-
-Let's run <tt>!DualControlGenSecKey</tt> from the command-line.
-
-{{{
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
-     -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
-     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
-     dualcontrol.DualControlGenSecKey
-}}}
-
-where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
-
-In the example below, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
-
-{{{
-INFO [DualControlManager] purpose: new key dek2013
-INFO [DualControlManager] Received evanx
-INFO [DualControlManager] Received henty
-INFO [DualControlManager] Received brent
-INFO [DualControlManager] dualAlias: brent-evanx
-INFO [DualControlManager] dualAlias: brent-henty
-INFO [DualControlManager] dualAlias: evanx-henty
-INFO [DualControlGenSecKey] alias dek2013-brent-evanx
-INFO [DualControlGenSecKey] alias dek2013-brent-henty
-INFO [DualControlGenSecKey] alias dek2013-evanx-henty
-}}}
-
-We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
-
-{{{
-$ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
-dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
-dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
-dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
-}}}
-
-Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person :)
 
 <h4><tt>!DualControlConsole</tt></h4>
 
