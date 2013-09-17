@@ -225,7 +225,6 @@ The key password for the duo of brent and henty for example, is combined as "bbb
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
 Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These SSL properties are used to create an <tt>SSLContext</tt> as below.
-
 {{{
 public class DualControlSSLContextFactory {    
     ...
