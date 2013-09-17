@@ -96,15 +96,13 @@ public class DualControlGenSecKey {
 
 where we configure via <tt>Properties,</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. 
 
-<tt>!DualControlGenSecKey</tt> is configured with a keystore and truststore for the SSL connection, and produces a new keystore containing our secret key. 
-
 {{{
     public void init() throws Exception {
         sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
     }
 }}}
 
-where we initialise an <tt>SSLContext</tt> using the keystore and truststore configured via the properties.
+where we initialise an <tt>SSLContext</tt> using a keystore and truststore configured via properties, namely <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>, not to be confused with the output keystore for our newly generated secret key!
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
