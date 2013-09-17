@@ -222,6 +222,47 @@ The key password for the duo of brent and henty for example, is combined as "bbb
     }
 }}}
 
+<h4><tt>DualControlSSLContextFactory</tt></h4>
+
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These SSL properties are used to create an <tt>SSLContext</tt> as below.
+
+{{{
+public class DualControlSSLContextFactory {    
+    ...
+    public static SSLContext createSSLContext(Properties properties, MockableConsole console)
+            throws Exception {
+        VellumProperties props = new VellumProperties(properties);
+        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
+        if (keyStoreLocation == null) {
+            throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
+        }
+        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", null);
+        if (keyStorePassword == null) {
+            keyStorePassword = console.readPassword(
+                    "Enter passphrase for dual control SSL connection: ");
+        }
+        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
+                keyStorePassword);
+        String trustStoreLocation =
+                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
+        char[] trustStorePassword =
+                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+        SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
+                keyPassword, trustStoreLocation, trustStorePassword);
+        Arrays.fill(keyStorePassword, (char) 0);
+        Arrays.fill(keyPassword, (char) 0);
+        Arrays.fill(trustStorePassword, (char) 0);
+        return sslContext;
+    }
+}
+}}}
+
+where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. We introduce a <tt>!MockableConsole</tt> for the benefit of automated testing.
+
+Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
+
+As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a><tt>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory.
+
 <h4><tt>!DualControlConsole</tt></h4>
 
 Let's write an app for admins to submit their passwords via SSL.
@@ -389,47 +430,6 @@ Considering that the most common 100 words make up a half of all written materia
 Note that our mandatory minimums apply to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>. Then we would specify huge large number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is still a tolerable startup delay in our production environment, but would thwart brute-force attacks.
-
-<h4><tt>DualControlSSLContextFactory</tt></h4>
-
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These SSL properties are used to create an <tt>SSLContext</tt> as below.
-
-{{{
-public class DualControlSSLContextFactory {    
-    ...
-    public static SSLContext createSSLContext(Properties properties, MockableConsole console)
-            throws Exception {
-        VellumProperties props = new VellumProperties(properties);
-        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
-        if (keyStoreLocation == null) {
-            throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
-        }
-        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", null);
-        if (keyStorePassword == null) {
-            keyStorePassword = console.readPassword(
-                    "Enter passphrase for dual control SSL connection: ");
-        }
-        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
-                keyStorePassword);
-        String trustStoreLocation =
-                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
-        char[] trustStorePassword =
-                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
-        SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
-                keyPassword, trustStoreLocation, trustStorePassword);
-        Arrays.fill(keyStorePassword, (char) 0);
-        Arrays.fill(keyPassword, (char) 0);
-        Arrays.fill(trustStorePassword, (char) 0);
-        return sslContext;
-    }
-}
-}}}
-
-where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. We introduce a <tt>!MockableConsole</tt> for the benefit of automated testing.
-
-Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
-
-As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a><tt>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory.
 
 <h4><tt>!DualControlDemoApp</tt></h4>
 
