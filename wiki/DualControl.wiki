@@ -102,7 +102,7 @@ where we configure via <tt>Properties,</tt> and provide a <tt>!MockableConsole</
     }
 }}}
 
-where we initialise an <tt>SSLContext</tt> using a keystore and truststore configured via properties, namely <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>, not to be confused with the output keystore for our newly generated secret key!
+where we initialise an <tt>SSLContext</tt>. (We'll see further below that <tt>DualControlSSLContextFactory</tt> uses a keystore and truststore configured via the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>, not to be confused with the keystore for our secret key that we are generating here.)
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
@@ -183,7 +183,7 @@ where <tt>!DualControlManager</tt> provides a map of aliases and passwords, comp
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that our tests determine our design, and it feels good.
+In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this positively impels our implementation.
 {{{
     @Test
     public void testGenKeyStore() throws Exception {
