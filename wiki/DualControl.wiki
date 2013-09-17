@@ -256,7 +256,7 @@ public class DualControlSSLContextFactory {
 }
 }}}
 
-where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. We introduce a <tt>!MockableConsole</tt> for the benefit of automated testing.
+where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. We introduced a <tt>!MockableConsole</tt> for the benefit of automated testing.
 
 Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
