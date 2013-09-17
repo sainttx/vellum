@@ -45,7 +45,7 @@ public class GeneratedRsaKeyPair {
     X509Certificate cert;
     PKCS10 certReq;
     
-    public GeneratedRsaKeyPair() {        
+    public GeneratedRsaKeyPair() {
     }
 
     public void generate(String dname, Date startDate, int validityDays) throws Exception {

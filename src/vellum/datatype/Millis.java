@@ -98,7 +98,7 @@ public class Millis {
             return TimeUnit.valueOf(string.substring(index + 1)).toMillis(Long.parseLong(string.substring(0, index)));
         } else if (string.length() >= 2 &&
                 Character.isLowerCase(string.charAt(string.length() - 1)) && 
-                Character.isDigit(string.charAt(string.length() - 2))) {            
+                Character.isDigit(string.charAt(string.length() - 2))) {    
             long value = Long.parseLong(string.substring(0, string.length() - 1));    
             if (string.endsWith("d")) {
                 return TimeUnit.DAYS.toMillis(value);

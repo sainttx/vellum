@@ -38,38 +38,65 @@ import org.apache.log4j.Logger;
 public class DualControlEnroll {
 
     final static Logger logger = Logger.getLogger(DualControlEnroll.class);
-    private VellumProperties properties = new VellumProperties(System.getProperties());
-    private int submissionCount = properties.getInt("dualcontrol.submissions", 3);
-    private String username = properties.getString("dualcontrol.username");
-    private String keyAlias = properties.getString("alias");
-    private String keyStoreLocation = properties.getString("keystore");
-    private String keyStoreType = properties.getString("storetype");
+    private VellumProperties props;
+    private MockableConsole console;
+    private int submissionCount;
+    private String username;
+    private String keyAlias;
+    private String keyStoreLocation;
+    private String keyStoreType;
     private char[] keyStorePassword;
     private Map<String, char[]> dualMap;
     private KeyStore keyStore;
     private SecretKey secretKey;
     List<String> aliasList;
 
+    public DualControlEnroll(Properties properties, MockableConsole console) {
+        this.props = new VellumProperties(properties);
+        this.console = console;
+        submissionCount = props.getInt("dualcontrol.submissions", 3);
+        username = props.getString("dualcontrol.username");
+        keyAlias = props.getString("alias");
+        keyStoreLocation = props.getString("keystore");
+        keyStoreType = props.getString("storetype");
+        
+    }
+    
+    public void init() {
+    }
+
+    public void clear() {
+    }
+        
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
-        try {
-            new DualControlEnroll().call(System.getProperties(), 
+        DualControlEnroll instance = new DualControlEnroll(System.getProperties(),
                     new ConsoleAdapter(System.console()));
+        try {
+            instance.init();
+            instance.call();
         } catch (DualControlException e) {
             logger.error(e.getMessage());
+        } finally {
+            instance.clear();
         }
     }
 
-    void call(Properties properties, MockableConsole console) throws Exception {
+    public void call() throws Exception {
+        keyStorePassword = console.readPassword("Keystore password: ");
+        keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
+                keyStoreType, keyStorePassword);
+        handle(keyStore);
+        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+    }
+    
+    public void handle(KeyStore keyStore) throws Exception {
         String purpose = String.format("key %s to enroll %s", keyAlias, username);
-        DualControlManager manager = new DualControlManager(properties, 
+        DualControlManager manager = new DualControlManager(props, 
                 submissionCount, purpose);
         manager.init(console);
         manager.call();
         dualMap = manager.getDualMap();
-        keyStorePassword = DualControlKeyStoreTools.getKeyStorePassword();
-        keyStore = DualControlKeyStores.loadLocalKeyStore(keyStoreLocation, 
-                keyStoreType, keyStorePassword);
         aliasList = Collections.list(keyStore.aliases());
         secretKey = getKey();
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
@@ -81,8 +108,7 @@ public class DualControlEnroll {
                         new KeyStore.PasswordProtection(dualPassword);
                 keyStore.setEntry(alias, entry, prot);
             }
-        }
-        keyStore.store(new FileOutputStream(keyStoreLocation), keyStorePassword);
+        }        
     }
     
     SecretKey getKey() throws Exception {

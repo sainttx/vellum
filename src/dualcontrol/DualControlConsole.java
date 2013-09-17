@@ -44,7 +44,7 @@ public class DualControlConsole {
         try {
             instance.init();
             instance.call();
-        } finally {            
+        } finally {    
             instance.clear();
         }
     }
@@ -90,6 +90,6 @@ public class DualControlConsole {
         socket.close();
     }
     
-    private void clear() {        
+    private void clear() {
     }
 }

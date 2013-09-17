@@ -43,7 +43,7 @@ public class JsonSockets {
         logger.trace("write", message.getClass(), bytes.length, new String(bytes));
     }
 
-    public static <T> T read(Socket socket, Class messageClass) throws IOException {        
+    public static <T> T read(Socket socket, Class messageClass) throws IOException {
         logger.trace("read message", messageClass, socket.getInputStream().available());
         InputStreamReader reader = new InputStreamReader(socket.getInputStream());
         BufferedReader br = new BufferedReader(reader);

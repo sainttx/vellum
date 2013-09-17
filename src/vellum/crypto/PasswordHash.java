@@ -85,7 +85,7 @@ public class PasswordHash {
         int version = stream.read();
         if (version == VERSION_OBJECT_STREAM) {
             readObject(new ObjectInputStream(stream));
-        } else {            
+        } else {    
             MinimalPasswordHashSerializer.readObject(this, stream, version);
         }
     }

@@ -53,7 +53,7 @@ public class RsaStore {
     }
     
     public byte[] load(InputStream stream, String type, String alias,
-            PrivateKey privateKey) throws Exception {        
+            PrivateKey privateKey) throws Exception {
         DataInputStream dis = new DataInputStream(stream);
         if (dis.readInt() != VERSION) {
             throw new Exception("Invalid version");
