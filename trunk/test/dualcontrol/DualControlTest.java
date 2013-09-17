@@ -169,7 +169,7 @@ public class DualControlTest {
     }
     
     private void assertOk(Exception e) throws Exception {
-        if (e != null) {            
+        if (e != null) {    
             throw e;
         }
     }

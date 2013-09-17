@@ -53,12 +53,12 @@ public class PBESaltTest {
     }
 
     @Test
-    public void testVerify() throws Exception {        
+    public void testVerify() throws Exception {
         verify(PBE_PASSWORD, PBE_SALT);
     }
 
     @Test(expected = AssertionError.class)
-    public void testInvalidPasswordAssertion() throws Exception {        
+    public void testInvalidPasswordAssertion() throws Exception {
         verify("wrong password".toCharArray(), PBE_SALT);
     }
     
