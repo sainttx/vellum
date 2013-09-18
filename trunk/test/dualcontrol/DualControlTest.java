@@ -61,7 +61,7 @@ public class DualControlTest {
     private Map<String, SSLContext> sslContextMap = new TreeMap();
 
     public DualControlTest() {
-        properties.put("dualcontrol.verifyPassword", false);
+        properties.put("dualcontrol.verifyPassphrase", false);
         properties.put("alias", "dek2013");
         properties.put("storetype", "JCEKS");
         properties.put("keyalg", "AES");
@@ -69,12 +69,12 @@ public class DualControlTest {
     }
 
     @Test
-    public void testPasswordVerifier() throws Exception {
-        new DualControlPasswordVerifier(properties).assertValid("bbbb".toCharArray());
+    public void testPassphraseVerifier() throws Exception {
+        new DualControlPassphraseVerifier(properties).assertValid("bbbb".toCharArray());
         Properties props = new Properties();
-        assertNotNull(new DualControlPasswordVerifier(props).
+        assertNotNull(new DualControlPassphraseVerifier(props).
                 getInvalidMessage("bbbb".toCharArray()));
-        assertNull(new DualControlPasswordVerifier(props).
+        assertNull(new DualControlPassphraseVerifier(props).
                 getInvalidMessage("B bb bb 44 44 !".toCharArray()));
     }
     
@@ -251,7 +251,7 @@ public class DualControlTest {
         return keyStore;
     }    
     
-    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
+    private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
             throws GeneralSecurityException {
         KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
