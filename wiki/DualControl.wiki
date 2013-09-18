@@ -22,11 +22,9 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
+The key is stored in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. 
-
-For each pair of admins, we keep a copy of the key, protected by the "split password" for that particular duo. 
+We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. For each duo of admins, we'll generate a copy of the key, protected by their particular "split password."
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
@@ -40,9 +38,9 @@ $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     dualcontrol.DualControlGenSecKey
 }}}
 
-where we use a <tt>JCEKS</tt>-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
+where we have requested a 256bit AES secret key, aliased as "dek2013."
 
-For this demo, three admins submit their passwords via SSL sockets where their client cert's <tt>CN</tt> identifies them as <tt>evanx</tt>, <tt>henty</tt> and <tt>brent</tt>. 
+For this demo, three admins submit their passwords via SSL sockets, where their client certs' CN identifies them as evanx, henty and brent. 
 
 {{{
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
@@ -115,7 +113,7 @@ where we configure via <tt>Properties,</tt> and provide a <tt>!MockableConsole</
     }
 }}}
 
-where we initialise an <tt>SSLContext</tt>. (We'll see further below that <tt>DualControlSSLContextFactory</tt> uses a keystore and truststore configured via the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>, not to be confused with the keystore for our secret key that we are generating here.)
+where we initialise an <tt>SSLContext</tt>. (We'll see further below that <tt>DualControlSSLContextFactory</tt> uses a keystore and truststore configured by the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>, not to be confused with the keystore for our secret key that we are generating here.)
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
