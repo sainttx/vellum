@@ -25,26 +25,35 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
+The key is stored in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. 
-
-For each pair of admins, we keep a copy of the key, protected by the "split password" for that particular duo. Clearly for 3 admins, we have 3 pairings, so we'll have three copies of the same key in our keystore. The keystore password is shared, but the key protection passwords are split.  
+We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. For each duo of admins, we'll generate a copy of the same key, protected by their particular "split password."
 
 <h4>DualControlGenSecKey demo</h4>
 
 Step 1 for any data security endeavour is to generate an encryption key. Whereas keytool prompts for a password entered by a single admin, we introduce DualControlGenSecKey to handle multiple password submissions via SSL.
 
 <pre>
-$ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
-     -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
-     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
-     dualcontrol.DualControlGenSecKey
+$ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
+    -Ddualcontrol.ssl.keyStore=genseckey.jks \
+    -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
+    -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
+    dualcontrol.DualControlGenSecKey
 </pre>
 
 where we use a JCEKS-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
 
 For this demo, three admins submit their passwords via SSL sockets where their client cert's CN identifies them as evanx, henty and brent. 
+
+<pre>
+$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
+Enter passphrase for dual control SSL connection: 
+Enter password for key dek2013 for DualControlDemoApp: 
+Re-enter password for key dek2013 for DualControlDemoApp: 
+OK evanx WLCO4XPIFBTNWOHX
+</pre>
+
+The logs produced by DualControlGenSecKey are as follows.
 
 <pre>
 INFO [DualControlManager] purpose: new key dek2013
@@ -59,6 +68,8 @@ INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
 </pre>
 
+where DualControlManager accepts passwords via an SSLServerSocket.
+
 We see that DualControlGenSecKey creates secret key entries under the following "dual aliases."
 
 <pre>
@@ -68,7 +79,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 </pre>
 
-Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person :)
+Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person. The keystore password is shared, but that's OK.
 
 <h4>DualControlGenSecKey implementation</h4>
 
@@ -306,7 +317,7 @@ We submit the password via SSL as follows.
         String purpose = dis.readUTF();
         char[] password = console.readPassword(
                 "Enter password for " + purpose + ": ");
-        String invalidMessage = new DualControlPasswordVerifier(properties).
+        String invalidMessage = new DualControlPassphraseVerifier(properties).
                 getInvalidMessage(password);
         if (invalidMessage != null) {
             console.println(invalidMessage);
@@ -351,20 +362,20 @@ On a positive note, we can setup "<i>double</i>-two-factor" authentication where
 We ensure that the complexity and/or length of the password is sufficient to counter brute-force attacks.
 
 <pre>
-public class DualControlPasswordVerifier {
-    private final boolean verifyPassword;
-    private final boolean verifyPasswordComplexity;
-    private final int minPasswordLength;
+public class DualControlPassphraseVerifier {
+    private final boolean verifyPassphrase;
+    private final boolean verifyPassphraseComplexity;
+    private final int minPassphraseLength;
     private final int minWordCount;
 
-    public DualControlPasswordVerifier(Properties properties) {
+    public DualControlPassphraseVerifier(Properties properties) {
         VellumProperties props = new VellumProperties(properties);
-        verifyPassword = props.getBoolean(
-                "dualcontrol.verifyPassword", true);
-        verifyPasswordComplexity = props.getBoolean(
-                "dualcontrol.verifyPasswordComplexity", true);
-        minPasswordLength = props.getInt(
-                "dualcontrol.minPasswordLength", 12);
+        verifyPassphrase = props.getBoolean(
+                "dualcontrol.verifyPassphrase", true);
+        verifyPassphraseComplexity = props.getBoolean(
+                "dualcontrol.verifyPassphraseComplexity", true);
+        minPassphraseLength = props.getInt(
+                "dualcontrol.minPassphraseLength", 12);
         minWordCount = props.getInt(
                 "dualcontrol.minWordCount", 4);
     }
@@ -375,9 +386,9 @@ We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en
 
 <pre>
     public String getInvalidMessage(char[] password) throws Exception {
-        if (verifyPassword) {
-            if (password.length < minPasswordLength) {
-                return "Password too short";
+        if (verifyPassphrase) {
+            if (password.length < minPassphraseLength) {
+                return "Passphrase too short";
             }
             if (countWords(password) < minWordCount) {
                 return "Too few words in passphrase";
@@ -497,7 +508,7 @@ public class DualControlSessions {
         purpose = "key " + keyAlias + " for " + purpose;
         Map.Entry<String, char[]> entry = DualControlManager.readDualEntry(purpose);
         String dualAlias = entry.getKey();
-        char[] splitPassword = entry.getValue();
+        char[] splitPassphrase = entry.getValue();
         keyAlias = keyAlias + "-" + dualAlias;
         SecretKey key = (SecretKey) keyStore.getKey(keyAlias, splitPassword);
         Arrays.fill(splitPassword, (char) 0);
@@ -670,7 +681,7 @@ where we accumulate the required number of submissions in a loop, handing each s
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
         String responseMessage = "Received " + name;
-        String invalidMessage = new DualControlPasswordVerifier(properties).
+        String invalidMessage = new DualControlPassphraseVerifier(properties).
                 getInvalidMessage(password);
         if (invalidMessage != null) {
             throw new Exception(responseMessage + ": " + invalidMessage);
