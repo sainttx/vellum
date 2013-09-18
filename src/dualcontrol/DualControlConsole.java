@@ -68,7 +68,7 @@ public class DualControlConsole {
         String purpose = dis.readUTF();
         char[] password = console.readPassword(
                 "Enter passphrase for " + purpose + ": ");
-        String invalidMessage = new DualControlPasswordVerifier(properties).
+        String invalidMessage = new DualControlPassphraseVerifier(properties).
                 getInvalidMessage(password);
         if (invalidMessage != null) {
             console.println(invalidMessage);
