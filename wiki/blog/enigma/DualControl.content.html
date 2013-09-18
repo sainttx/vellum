@@ -12,13 +12,54 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll split the knowledge of the key password between two admins, so it's known to no one. Clearly dual control by those two admins is then required to load the key.
+We'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose keeping at least three copies of the same key in our keystore, where each copy is password-protected by a different "split password" pairing. Then even if one admin is unavailable, we're still good to go with two others.
+We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. 
 
-<h4>DualControlGenSecKey</h4>
+For each pair of admins, we keep a copy of the key, protected by the "split password" for that particular duo. Clearly for 3 admins, we have 3 pairings, so we'll have three copies of the same key in our keystore. The keystore password is shared, but the key protection passwords are split.  
+
+<h4>DualControlGenSecKey demo</h4>
 
 Step 1 for any data security endeavour is to generate an encryption key. Whereas keytool prompts for a password entered by a single admin, we introduce DualControlGenSecKey to handle multiple password submissions via SSL.
+
+<pre>
+$ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
+     -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
+     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
+     dualcontrol.DualControlGenSecKey
+</pre>
+
+where we use a JCEKS-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
+
+For this demo, three admins submit their passwords via SSL sockets where their client cert's CN identifies them as evanx, henty and brent. 
+
+<pre>
+INFO [DualControlManager] purpose: new key dek2013
+INFO [DualControlManager] Received evanx
+INFO [DualControlManager] Received henty
+INFO [DualControlManager] Received brent
+INFO [DualControlManager] dualAlias: brent-evanx
+INFO [DualControlManager] dualAlias: brent-henty
+INFO [DualControlManager] dualAlias: evanx-henty
+INFO [DualControlGenSecKey] alias dek2013-brent-evanx
+INFO [DualControlGenSecKey] alias dek2013-brent-henty
+INFO [DualControlGenSecKey] alias dek2013-evanx-henty
+</pre>
+
+We see that DualControlGenSecKey creates secret key entries under the following "dual aliases."
+
+<pre>
+$ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
+dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
+dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
+</pre>
+
+Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person :)
+
+<h4>DualControlGenSecKey implementation</h4>
+
+Let's walk through the code.
 
 <pre>
 public class DualControlGenSecKey {
@@ -39,17 +80,21 @@ public class DualControlGenSecKey {
         keyStorePassword = props.getPassword("storepass", null);
         keyAlias = props.getString("alias");
     }
-
-    public void init() throws Exception {
-        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
-    }
     ...
 }
 </pre>
 
-where VellumProperties is a utilitarian extension of regular Properties.
+where we configure via Properties, and provide a MockableConsole for entering keystore passwords. 
 
-Our main() method below passes System properties i.e. -D options, and the System console for entering the SSL keystore password.
+<pre>
+    public void init() throws Exception {
+        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
+    }
+</pre>
+
+where we initialise an SSLContext. (We'll see further below that DualControlSSLContextFactory uses a keystore and truststore configured via the properties dualcontrol.ssl.keystore and dualcontrol.ssl.truststore, not to be confused with the keystore for our secret key that we are generating here.)
+
+Our main() method below passes System properties i.e. -D options, and the System console.
 
 <pre>
     public static void main(String[] args) throws Exception {
@@ -128,7 +173,7 @@ where DualControlManager provides a map of aliases and passwords, composed from 
 
 where for each duo we programmatically create a KeyStore entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that our tests determine our design, and it feels good.
+In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this positively impels our implementation.
 <pre>
     @Test
     public void testGenKeyStore() throws Exception {
@@ -154,55 +199,58 @@ In general some argue that we should not write code per se, but rather tests wit
 
 where we build a map of sample dual submissions, and inspect the KeyStore returned by buildKeyStore().
 
-The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This can be used the get the key in clear-text using the following method.
+The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This is our so-called split password, which can be used to recover the key in clear-text using the following utility method.
 
 <pre>
-    private SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass)
-            throws GeneralSecurityException {
+    private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, 
+            char[] keyPass) throws GeneralSecurityException {
         KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
         return entry.getSecretKey();
     }
 </pre>
 
-<h4>Usage demo</h4>
+which merely invokes KeyStore.getEntry().
 
-Let's run DualControlGenSecKey from the command-line.
+<h4>DualControlSSLContextFactory</h4>
 
+Similarly to the standard -Dnet.javax.ssl.keyStore <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use -Ddualcontrol.ssl.keyStore <i>et al</i>. These SSL properties are used to create an SSLContext as below.
 <pre>
-  java -Ddualcontrol.submissions=3 -Ddualcontrol.minPasswordLength=8 \
-     -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
-     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
-     dualcontrol.DualControlGenSecKey
+public class DualControlSSLContextFactory {    
+    ...
+    public static SSLContext createSSLContext(Properties properties, MockableConsole console)
+            throws Exception {
+        VellumProperties props = new VellumProperties(properties);
+        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
+        if (keyStoreLocation == null) {
+            throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
+        }
+        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", null);
+        if (keyStorePassword == null) {
+            keyStorePassword = console.readPassword(
+                    "Enter passphrase for dual control SSL connection: ");
+        }
+        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
+                keyStorePassword);
+        String trustStoreLocation =
+                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
+        char[] trustStorePassword =
+                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
+        SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
+                keyPassword, trustStoreLocation, trustStorePassword);
+        Arrays.fill(keyStorePassword, (char) 0);
+        Arrays.fill(keyPassword, (char) 0);
+        Arrays.fill(trustStorePassword, (char) 0);
+        return sslContext;
+    }
+}
 </pre>
 
-where we use a JCEKS-type keystore for our symmetric secret key, generated as 256bit AES, and aliased as "dek2013."
+where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Clearly we have introduced a MockableConsole for the benefit of automated testing :)
 
-In the example below, three admins submit their passwords via SSL sockets where their client cert's CN identifies them as evanx, henty and brent. 
+Note that the -Ddualcontrol.ssl.keyStore property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
-<pre>
-INFO [DualControlManager] purpose: new key dek2013
-INFO [DualControlManager] Received evanx
-INFO [DualControlManager] Received henty
-INFO [DualControlManager] Received brent
-INFO [DualControlManager] dualAlias: brent-evanx
-INFO [DualControlManager] dualAlias: brent-henty
-INFO [DualControlManager] dualAlias: evanx-henty
-INFO [DualControlGenSecKey] alias dek2013-brent-evanx
-INFO [DualControlGenSecKey] alias dek2013-brent-henty
-INFO [DualControlGenSecKey] alias dek2013-evanx-henty
-</pre>
-
-We see that DualControlGenSecKey creates secret key entries under the following "dual aliases."
-
-<pre>
-$ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
-dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
-dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
-dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
-</pre>
-
-Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person :)
+As illustrated above, we invariably use char arrays for passwords, and clear these as soon as possible. String's are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html">SecretKeySpec</a>.getEncoded() clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory.
 
 <h4>DualControlConsole</h4>
 
@@ -371,47 +419,6 @@ Considering that the most common 100 words make up a half of all written materia
 Note that our mandatory minimums apply to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
 A follow-up article will discuss this further, and conclude that we might want an even stronger KeyStore implementation than JCEKS, in particular with a stronger KeyProtector using PBKDF2 or even scrypt. Then we would specify huge large number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is still a tolerable startup delay in our production environment, but would thwart brute-force attacks.
-
-<h4>DualControlSSLContextFactory</h4>
-
-Similarly to the standard -Dnet.javax.ssl.keyStore <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use -Ddualcontrol.ssl.keyStore <i>et al</i>. These SSL properties are used to create an SSLContext as below.
-
-<pre>
-public class DualControlSSLContextFactory {    
-    ...
-    public static SSLContext createSSLContext(Properties properties, MockableConsole console)
-            throws Exception {
-        VellumProperties props = new VellumProperties(properties);
-        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
-        if (keyStoreLocation == null) {
-            throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
-        }
-        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", null);
-        if (keyStorePassword == null) {
-            keyStorePassword = console.readPassword(
-                    "Enter passphrase for dual control SSL connection: ");
-        }
-        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
-                keyStorePassword);
-        String trustStoreLocation =
-                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
-        char[] trustStorePassword =
-                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
-        SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
-                keyPassword, trustStoreLocation, trustStorePassword);
-        Arrays.fill(keyStorePassword, (char) 0);
-        Arrays.fill(keyPassword, (char) 0);
-        Arrays.fill(trustStorePassword, (char) 0);
-        return sslContext;
-    }
-}
-</pre>
-
-where passwords can specified on the command-line e.g. for test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. We introduce a MockableConsole for the benefit of automated testing.
-
-Note that the -Ddualcontrol.ssl.keyStore property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
-
-As illustrated above, we invariably use char arrays for passwords, and clear these as soon as possible. String's are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html">SecretKeySpec</a>.getEncoded() clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory.
 
 <h4>DualControlDemoApp</h4>
 
@@ -690,9 +697,9 @@ In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontro
 
 <h4>Crypto server</h4>
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 We might wish to create a central crypto server which is dual-controlled, rather than burden our app. In this case, we can restart our application without dual control, and indeed have any number of apps using this server. This simplifies key management, and enables us to isolate our keys to improve security.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 We'll implement the crypto server in a subsequent article. <i>Then we can say, "Dual control? We have an app for that." ;)</i>
 
