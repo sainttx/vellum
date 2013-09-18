@@ -45,8 +45,8 @@ For this demo, three admins submit their passwords via SSL sockets, where their 
 {{{
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
-Enter password for key dek2013 for DualControlDemoApp: 
-Re-enter password for key dek2013 for DualControlDemoApp: 
+Enter password for new key dek2013:
+Re-enter password for new key dek2013:
 OK evanx WLCO4XPIFBTNWOHX
 }}}
 
