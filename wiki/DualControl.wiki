@@ -194,7 +194,7 @@ where <tt>!DualControlManager</tt> provides a map of aliases and passwords, comp
 
 where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this positively impels our implementation.
+In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this compels our implementation.
 {{{
     @Test
     public void testGenKeyStore() throws Exception {
