@@ -26,7 +26,7 @@ We'll split the knowledge of the key password between two admins, so it's known 
 
 We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. 
 
-For each pair of admins, we keep a copy of the key, protected by the "split password" for that particular duo. Clearly for 3 admins, we have 3 pairings, so we'll have three copies of the same key in our keystore. The keystore password is shared, but the key protection passwords are split.  
+For each pair of admins, we keep a copy of the key, protected by the "split password" for that particular duo. 
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
@@ -78,7 +78,7 @@ dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person :)
+Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person. The keystore password is shared, but that's OK.
 
 <h4><tt>!DualControlGenSecKey</tt> implementation</h4>
 
