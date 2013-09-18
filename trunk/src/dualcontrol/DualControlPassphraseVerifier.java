@@ -28,36 +28,36 @@ import vellum.util.VellumProperties;
  *
  * @author evan.summers
  */
-public class DualControlPasswordVerifier {
+public class DualControlPassphraseVerifier {
 
-    private final static Logger logger = Logger.getLogger(DualControlPasswordVerifier.class);
-    private final boolean verifyPassword;
-    private final boolean verifyPasswordComplexity;
-    private final int minPasswordLength;
+    private final static Logger logger = Logger.getLogger(DualControlPassphraseVerifier.class);
+    private final boolean verifyPassphrase;
+    private final boolean verifyPassphraseComplexity;
+    private final int minPassphraseLength;
     private final int minWordCount;
 
-    public DualControlPasswordVerifier(Properties properties) {
+    public DualControlPassphraseVerifier(Properties properties) {
         VellumProperties props = new VellumProperties(properties);
-        verifyPassword = props.getBoolean(
-                "dualcontrol.verifyPassword", true);
-        verifyPasswordComplexity = props.getBoolean(
-                "dualcontrol.verifyPasswordComplexity", true);
-        minPasswordLength = props.getInt(
-                "dualcontrol.minPasswordLength", 12);
+        verifyPassphrase = props.getBoolean(
+                "dualcontrol.verifyPassphrase", true);
+        verifyPassphraseComplexity = props.getBoolean(
+                "dualcontrol.verifyPassphraseComplexity", true);
+        minPassphraseLength = props.getInt(
+                "dualcontrol.minPassphraseLength", 12);
         minWordCount = props.getInt(
                 "dualcontrol.minWordCount", 4);
-        logger.info("verifyPassword " + verifyPassword);
+        logger.info("verifyPassphrase " + verifyPassphrase);
     }
 
     public String getInvalidMessage(char[] password) throws Exception {
-        if (verifyPassword) {
-            if (password.length < minPasswordLength) {
-                return "Password too short";
+        if (verifyPassphrase) {
+            if (password.length < minPassphraseLength) {
+                return "Passphrase too short";
             }
             if (countWords(password) < minWordCount) {
                 return "Too few words in passphrase";
             }
-            if (verifyPasswordComplexity) {
+            if (verifyPassphraseComplexity) {
                 if (!containsUpperCase(password) || !containsLowerCase(password)
                         || !containsDigit(password) || !containsPunctuation(password)) {
                     return "Insufficient password complexity";

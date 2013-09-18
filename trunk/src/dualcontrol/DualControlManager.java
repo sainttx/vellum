@@ -136,7 +136,7 @@ public class DualControlManager {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
         String responseMessage = "Received " + name;
-        String invalidMessage = new DualControlPasswordVerifier(properties).
+        String invalidMessage = new DualControlPassphraseVerifier(properties).
                 getInvalidMessage(password);
         if (invalidMessage != null) {
             throw new Exception(responseMessage + ": " + invalidMessage);
