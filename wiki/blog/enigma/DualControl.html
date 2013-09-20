@@ -13,13 +13,13 @@ We hereby launch the new 2013 "Dual Control" series, part of the <a href="http:/
 
 <h4>PCI DSS</h4>
 
-The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Even though it addresses <i>cardholder</i> data security, it goes without saying that companies in other industries also have sensitive data that people might want to steal, governments even ;)
+The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Even though it addresses <i>cardholder</i> data security, companies in other industries also have sensitive data that must be secured.
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 PCI DSS suggests encrypting our data-encryption key (DEK) in order to protect it. Great, we now have a "key-encryption key" (KEK) that requires even more protection ;)
 
-PCI DSS mandates that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. 
+Furthermore, PCI DSS decrees that manual key management requires "split knowledge and dual control" e.g. for key generation and loading. The intent is that no single person can extract the clear-text data. 
 
 The glaring problem is that sysadmins are a single person, with god-like access to all our data, and de facto custodian of the proverbial keys to the kindgom. <i>Consequently sysadmins have root access ;)</i>
 
@@ -27,7 +27,7 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 The key is stored in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. For each duo of admins, we'll generate a copy of the key, protected by their particular "split password."
+We propose enrolling at least three admins, so if one admin is unavailable, we're still good to go with two others. For each pairing, we'll store a copy of the key protected by their particular "split password." Consequently if we have 3 admins, we'll have 3 copies of the key in the keystore, one for each duo. If we have 4 admins, then we'll have 6 copies of the key.
 
 <h4>DualControlGenSecKey demo</h4>
 
@@ -48,8 +48,8 @@ For this demo, three admins submit their passwords via SSL sockets, where their 
 <pre>
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
-Enter password for new key dek2013: 
-Re-enter password for new key dek2013: 
+Enter password for new key dek2013:
+Re-enter password for new key dek2013:
 OK evanx WLCO4XPIFBTNWOHX
 </pre>
 
@@ -116,7 +116,7 @@ where we configure via Properties, and provide a MockableConsole for entering ke
     }
 </pre>
 
-where we initialise an SSLContext. (We'll see further below that DualControlSSLContextFactory uses a keystore and truststore configured via the properties dualcontrol.ssl.keystore and dualcontrol.ssl.truststore, not to be confused with the keystore for our secret key that we are generating here.)
+where we initialise an SSLContext. (We'll see further below that DualControlSSLContextFactory uses a keystore and truststore configured by the properties dualcontrol.ssl.keystore and dualcontrol.ssl.truststore, not to be confused with the keystore for our secret key that we are generating here.)
 
 Our main() method below passes System properties i.e. -D options, and the System console.
 
@@ -197,7 +197,7 @@ where DualControlManager provides a map of aliases and passwords, composed from 
 
 where for each duo we programmatically create a KeyStore entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this positively impels our implementation.
+In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this compels our implementation.
 <pre>
     @Test
     public void testGenKeyStore() throws Exception {
@@ -234,11 +234,11 @@ The key password for the duo of brent and henty for example, is combined as "bbb
     }
 </pre>
 
-which merely invokes KeyStore.getEntry().
+which invokes KeyStore.getEntry().
 
 <h4>DualControlSSLContextFactory</h4>
 
-Similarly to the standard -Dnet.javax.ssl.keyStore <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use -Ddualcontrol.ssl.keyStore <i>et al</i>. These SSL properties are used to create an SSLContext as below.
+Similarly to the standard -Dnet.javax.ssl.keyStore <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use -Ddualcontrol.ssl.keyStore <i>et al</i>. These properties are used to create an SSLContext as below.
 <pre>
 public class DualControlSSLContextFactory {    
     ...
@@ -314,28 +314,29 @@ We submit the password via SSL as follows.
     public void call() throws Exception {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         String purpose = dis.readUTF();
         char[] password = console.readPassword(
-                "Enter password for " + purpose + ": ");
+                "Enter passphrase for " + purpose + ": ");
         String invalidMessage = new DualControlPassphraseVerifier(properties).
                 getInvalidMessage(password);
         if (invalidMessage != null) {
             console.println(invalidMessage);
+            dos.writeShort(0);
         } else {
-            byte[] hash = DualControlUtil.digest(password);
-            Arrays.fill(password, (char) 0);
-            password = console.readPassword(
-                    "Re-enter password for " + purpose + ": ");
-            if (!Arrays.equals(hash, DualControlUtil.digest(password))) {
+            char[] pass = console.readPassword(
+                    "Re-enter passphrase for " + purpose + ": ");
+            if (!Arrays.equals(password, pass)) {
                 console.println("Passwords don't match.");
+                dos.writeShort(0);
             } else {
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                DualControlUtil.writeChars(dos, password);
+                writeChars(dos, password);
                 String message = dis.readUTF();
                 console.println(message);
             }
-            Arrays.fill(password, (char) 0);
+            Arrays.fill(pass, (char) 0);
         }
+        Arrays.fill(password, (char) 0);
         socket.close();
     }
 </pre>
@@ -670,8 +671,7 @@ where we accumulate the required number of submissions in a loop, handing each s
 
 <pre>
     private void read(SSLSocket socket) throws Exception {
-        String name = new X500Name(socket.getSession().getPeerPrincipal().
-                getName()).getCommonName();
+        String name = getCN(socket.getSession().getPeerPrincipal().getName());
         if (names.contains(name)) {
             throw new Exception("Duplicate submission from " + name);
         }
@@ -680,6 +680,9 @@ where we accumulate the required number of submissions in a loop, handing each s
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
+        if (password.length == 0) {
+            throw new Exception("Empty password submission from " + name);            
+        }
         String responseMessage = "Received " + name;
         String invalidMessage = new DualControlPassphraseVerifier(properties).
                 getInvalidMessage(password);
