@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 public class CryptoServer {
     static Logger logger = Logger.getLogger(CryptoServer.class);
     static final String purpose = "CryptoServer";
-    DualControlSession dualControlSession = new DualControlSession();
+    DualControlKeyStoreSession dualControlSession = new DualControlKeyStoreSession();
     
     public static void main(String[] args) throws Exception {
         logger.info("args: " + Arrays.toString(args));

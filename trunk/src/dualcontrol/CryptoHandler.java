@@ -40,12 +40,12 @@ public class CryptoHandler {
     static final int ivLength = Integer.getInteger("ivLength", 8);
     static final boolean enableGetKey = Boolean.getBoolean("enableGetKey");
     static final Logger logger = Logger.getLogger(CryptoHandler.class);
-    DualControlSession dualControl;
+    DualControlKeyStoreSession dualControl;
     byte[] ivBytes;
     byte[] dataBytes;
     DataOutputStream dos;
     
-    public void handle(DualControlSession dualControl, Socket socket) throws Exception {
+    public void handle(DualControlKeyStoreSession dualControl, Socket socket) throws Exception {
         try {
             this.dualControl = dualControl;
             DataInputStream dis = new DataInputStream(socket.getInputStream());

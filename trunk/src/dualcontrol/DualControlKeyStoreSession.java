@@ -30,35 +30,29 @@ import org.apache.log4j.Logger;
  *
  * @author evan.summers
  */
-public class DualControlSession {
-    private final static Logger logger = Logger.getLogger(DualControlSession.class);
+public class DualControlKeyStoreSession {
+    private final static Logger logger = Logger.getLogger(DualControlKeyStoreSession.class);
 
+    private KeyStore dualKeyStore;
     private char[] dualPass;
     private String dualAlias;
 
-    public void init(String prompt) throws Exception {
+    public void configure(String keyStoreLocation, char[] storePass, String prompt) 
+            throws Exception {
+        logger.debug("keyStore " + keyStoreLocation);
+        this.dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, 
+                "JCEKS", storePass);
         Map.Entry<String, char[]> entry = DualControlManager.readDualEntry(prompt);
         this.dualAlias = entry.getKey();
         this.dualPass = entry.getValue();
         logger.debug("alias " + dualAlias);
-    }
-
-    public String getDualAlias() {
-        return dualAlias;
-    }
-
-    public char[] getDualPass() {
-        return dualPass;
     }
     
     public void clear() {
         Arrays.fill(dualPass, (char) 0);
     }
 
-    public SecretKey loadKey(String keyStoreLocation, char[] storePass, String alias) throws Exception {
-        logger.debug("keyStore " + keyStoreLocation);
-        KeyStore dualKeyStore = DualControlKeyStores.loadKeyStore(keyStoreLocation, 
-                "JCEKS", storePass);
+    public SecretKey loadKey(String alias) throws Exception {
         alias += "-" + dualAlias;
         logger.debug("loadKey " + alias);
         return (SecretKey) dualKeyStore.getKey(alias, dualPass);
