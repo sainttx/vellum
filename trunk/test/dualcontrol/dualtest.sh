@@ -31,19 +31,19 @@ cert=$tmp/dual.pem
 pass=test1234
 secalias=dek2013
 
-aes() {
+context_aes() {
   keyAlg=AES
   keySize=256
   cipherTrans=AES/CBC/PKCS5Padding
 }
 
-des() {
+context_des() {
   keyAlg=DES
   keySize=56
   cipherTrans=DES/CBC/PKCS5Padding
 }
 
-des3() {
+context_des3() {
   keyAlg=DESede
   keySize=168
   cipherTrans=DESede/CBC/PKCS5Padding
@@ -344,15 +344,7 @@ command0_checksingle() {
   command0_testsingle 2>&1 | greplog
 }
 
-des3
-
-#set -x
-
-#command0_testsingle
-#command0_testshort
-#command0_testlong
-#command0_testcryptoserver
-#command0_testclient
+context_des3
 
 if [ $# -gt 0 ]
 then
