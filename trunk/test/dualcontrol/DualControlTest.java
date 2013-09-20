@@ -21,7 +21,6 @@
  */
 package dualcontrol;
 
-import static junit.framework.Assert.*;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
@@ -33,6 +32,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import javax.crypto.SecretKey;
 import javax.net.ssl.SSLContext;
+import org.junit.Assert;
 import org.junit.Test;
 import sun.security.x509.X500Name;
 import vellum.crypto.rsa.GeneratedRsaKeyPair;
@@ -71,9 +71,9 @@ public class DualControlTest {
     public void testPassphraseVerifier() throws Exception {
         new DualControlPassphraseVerifier(properties).assertValid("bbbb".toCharArray());
         Properties props = new Properties();
-        assertNotNull(new DualControlPassphraseVerifier(props).
+        Assert.assertNotNull(new DualControlPassphraseVerifier(props).
                 getInvalidMessage("bbbb".toCharArray()));
-        assertNull(new DualControlPassphraseVerifier(props).
+        Assert.assertNull(new DualControlPassphraseVerifier(props).
                 getInvalidMessage("B bb bb 44 44 !".toCharArray()));
     }
     
@@ -85,11 +85,11 @@ public class DualControlTest {
         MockConsole appConsole = new MockConsole("app", keyStorePass);
         DualControlGenSecKey instance = new DualControlGenSecKey(properties, appConsole);
         KeyStore keyStore = instance.buildKeyStore(dualPasswordMap);
-        assertEquals(3, Collections.list(keyStore.aliases()).size());
-        assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
+        Assert.assertEquals(3, Collections.list(keyStore.aliases()).size());
+        Assert.assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
         SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
-        assertEquals("AES", key.getAlgorithm());
-        assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
+        Assert.assertEquals("AES", key.getAlgorithm());
+        Assert.assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
                 "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
     }
 
@@ -113,7 +113,7 @@ public class DualControlTest {
         assertOk(evanxThread.exception);
         assertOk(brentThread.exception);
         assertOk(hentyThread.exception);
-        assertTrue(evanxThread.console.getLine(0).startsWith(
+        Assert.assertTrue(evanxThread.console.getLine(0).startsWith(
                 "Enter passphrase for new key dek2013:"));
         Threads.sleep(1000);
     }
@@ -155,9 +155,9 @@ public class DualControlTest {
         assertOk(evanxThread.exception);
         assertOk(brentThread.exception);
         assertOk(readerThread.exception);
-        assertTrue(evanxThread.console.getLine(0).startsWith("Enter passphrase for app:"));
-        assertEquals("brent-evanx", readerThread.dualEntry.getKey());
-        assertEquals("bbbb+eeee", new String(readerThread.dualEntry.getValue()));
+        Assert.assertTrue(evanxThread.console.getLine(0).startsWith("Enter passphrase for app:"));
+        Assert.assertEquals("brent-evanx", readerThread.dualEntry.getKey());
+        Assert.assertEquals("bbbb+eeee", new String(readerThread.dualEntry.getValue()));
         Threads.sleep(1000);
     }
 
@@ -234,7 +234,7 @@ public class DualControlTest {
         KeyStore keyStore = createSSLKeyStore(alias, 1);
         X509Certificate cert = (X509Certificate) keyStore.getCertificate(alias);
         String dname = cert.getSubjectDN().getName();
-        assertEquals(alias, new X500Name(dname).getCommonName());
+        Assert.assertEquals(alias, new X500Name(dname).getCommonName());
         keyStoreMap.put(alias, keyStore);
         trustStore.setCertificateEntry(alias, cert);
         return keyStore;
