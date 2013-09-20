@@ -33,6 +33,7 @@ import javax.net.ssl.SSLContext;
  * @author evan.summers
  */
 public class DualControlConsole {
+
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     Properties properties;
@@ -40,12 +41,12 @@ public class DualControlConsole {
     SSLContext sslContext;
 
     public static void main(String[] args) throws Exception {
-        DualControlConsole instance = new DualControlConsole(System.getProperties(), 
+        DualControlConsole instance = new DualControlConsole(System.getProperties(),
                 new ConsoleAdapter(System.console()));
         try {
             instance.init();
             instance.call();
-        } finally {    
+        } finally {
             instance.clear();
         }
     }
@@ -66,6 +67,7 @@ public class DualControlConsole {
     public void call() throws Exception {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         String purpose = dis.readUTF();
         char[] password = console.readPassword(
                 "Enter passphrase for " + purpose + ": ");
@@ -73,13 +75,14 @@ public class DualControlConsole {
                 getInvalidMessage(password);
         if (invalidMessage != null) {
             console.println(invalidMessage);
+            dos.writeShort(0);
         } else {
             char[] pass = console.readPassword(
                     "Re-enter passphrase for " + purpose + ": ");
             if (!Arrays.equals(password, pass)) {
                 console.println("Passwords don't match.");
+                dos.writeShort(0);
             } else {
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 writeChars(dos, password);
                 String message = dis.readUTF();
                 console.println(message);
@@ -89,10 +92,10 @@ public class DualControlConsole {
         Arrays.fill(password, (char) 0);
         socket.close();
     }
-    
+
     private void clear() {
     }
-    
+
     public static char[] writeChars(DataOutputStream dos, char[] chars) throws IOException {
         dos.writeShort(chars.length);
         for (int i = 0; i < chars.length; i++) {
@@ -100,5 +103,4 @@ public class DualControlConsole {
         }
         return chars;
     }
-    
 }
