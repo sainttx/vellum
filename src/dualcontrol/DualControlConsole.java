@@ -73,11 +73,9 @@ public class DualControlConsole {
         if (invalidMessage != null) {
             console.println(invalidMessage);
         } else {
-            byte[] hash = DualControlUtil.digest(password);
-            Arrays.fill(password, (char) 0);
-            password = console.readPassword(
+            char[] pass = console.readPassword(
                     "Re-enter passphrase for " + purpose + ": ");
-            if (!Arrays.equals(hash, DualControlUtil.digest(password))) {
+            if (!Arrays.equals(password, pass)) {
                 console.println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
@@ -85,8 +83,9 @@ public class DualControlConsole {
                 String message = dis.readUTF();
                 console.println(message);
             }
-            Arrays.fill(password, (char) 0);
+            Arrays.fill(pass, (char) 0);
         }
+        Arrays.fill(password, (char) 0);
         socket.close();
     }
     
