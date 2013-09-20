@@ -1,17 +1,25 @@
 
+#sh NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh 2>&1 | grep -i '^WARN\|ERROR\|^INFO' | uniq -c
+
 set -u
 
 cd
 
+dualcontrol="dualcontrol"
+
 CLASSPATH=NetBeansProjects/vellum/build/classes
-for jar in NetBeansProjects/vellum/dist/lib/*.jar
-do
-  CLASSPATH=$CLASSPATH:$jar
-done
+
+LIBPATH="NetBeansProjects/vellum/dist/lib/"
+
+if [ -n $LIBPATH ] 
+then
+  for jar in $LIBPATH/*.jar
+  do
+    CLASSPATH=$CLASSPATH:$jar
+ done
+fi
 
 export CLASSPATH=$CLASSPATH
-
-#echo CLASSPATH=$CLASSPATH
 
 tmp=tmp/`basename $0 .sh`
 mkdir -p $tmp
@@ -42,15 +50,15 @@ des3() {
 }
 
 killservers() {
-  if pgrep -f dualcontrol.FileServer
+  if pgrep -f $dualcontrol.FileServer
   then
     echo WARN killing FileServer
-    kill `pgrep -f dualcontrol.FileServer`
+    kill `pgrep -f $dualcontrol.FileServer`
   fi  
-  if pgrep -f dualcontrol.CryptoServer
+  if pgrep -f $dualcontrol.CryptoServer
   then
     echo WARN killing CryptoServer
-    kill `pgrep -f dualcontrol.CryptoServer`
+    kill `pgrep -f $dualcontrol.CryptoServer`
   fi
 }
 
@@ -91,7 +99,7 @@ javaksc() {
 
 jc() {
   sleep 1 
-  javaks $1 dualcontrol.DummyDualControlConsole $@
+  javaks $1 $dualcontrol.DummyDualControlConsole $@
 }
 
 jc2() {
@@ -161,7 +169,7 @@ command1_genseckey() {
   javaks server -Ddualcontrol.submissions=3 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
      -Dalias=$1 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
-     dualcontrol.DualControlGenSecKey
+     $dualcontrol.DualControlGenSecKey
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
   if [ `keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry | wc -l` -eq 3 ]
   then
@@ -176,7 +184,7 @@ command2_enroll() {
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
   javaks server -Ddualcontrol.submissions=3 -Ddualcontrol.username=$1 -Dalias=$2 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
-     dualcontrol.DualControlEnroll
+     $dualcontrol.DualControlEnroll
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
@@ -185,25 +193,25 @@ command2_revoke() {
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
   javaks server -Ddualcontrol.username=$1 -Dalias=$2 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass=$pass \
-     dualcontrol.DualControlRevoke
+     $dualcontrol.DualControlRevoke
   keytool -keystore $seckeystore -storetype JCEKS -storepass $pass -list | grep Entry
 }
 
 command0_app() {
-  javaks server -Ddualcontrol.submissions=2 dualcontrol.DualControlDemoApp $seckeystore $pass $secalias
+  javaks server -Ddualcontrol.submissions=2 $dualcontrol.DualControlDemoApp $seckeystore $pass $secalias
 }
 
 command0_keystoreserver() {
-  javaks server dualcontrol.FileServer 127.0.0.1 4445 1 1 127.0.0.1 $seckeystore
+  javaks server $dualcontrol.FileServer 127.0.0.1 4445 1 1 127.0.0.1 $seckeystore
 }
 
 keystoreclient() {
   sleep 1
-  javaks server dualcontrol.FileClientDemo 127.0.0.1 4445
+  javaks server $dualcontrol.FileClientDemo 127.0.0.1 4445
 }
 
 command2_bruteforcetimer() {
-  java dualcontrol.JCEKSBruteForceTimer $1 $2 $seckeystore $pass dek2013-evanx-henty eeeehhhh
+  java $dualcontrol.JCEKSBruteForceTimer $1 $2 $seckeystore $pass dek2013-evanx-henty eeeehhhh
 }
 
 command0_testkeystoreserver() {
@@ -213,7 +221,7 @@ command0_testkeystoreserver() {
 
 command2_teststore() {
   rm -f $seckeystore.enc
-  javaksc server dualcontrol.RecryptedKeyStoreTest $seckeystore.enc dek2013-evanx-henty eeeehhhh $@
+  javaksc server $dualcontrol.RecryptedKeyStoreTest $seckeystore.enc dek2013-evanx-henty eeeehhhh $@
 }
 
 command0_teststore() {
@@ -221,23 +229,23 @@ command0_teststore() {
 }
 
 command1_cryptoserver() {
-  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 $seckeystore $pass
+  javaks server $dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 $seckeystore $pass
 }
 
 command1_cryptoserver_remote() {
   echo "cryptoserver_remote $1"
-  javaks server dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:seckeystore" $pass
+  javaks server $dualcontrol.CryptoServer 127.0.0.1 4446 4 $1 127.0.0.1 "127.0.0.1:4445:seckeystore" $pass
 }
 
 command0_cryptoclient_cipher() {
   datum=1111222233334444
   request="ENCRYPT:$secalias:$cipherTrans:8:$datum"
   echo "TRACE CryptoClientDemo request $request"
-  data=`javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$request"`
+  data=`javaks server $dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$request"`
   echo "TRACE CryptoClientDemo response $data"
   request="DECRYPT:$secalias:$cipherTrans:$data"
   echo "TRACE CryptoClientDemo request $request"
-  javaks server dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$request"
+  javaks server $dualcontrol.CryptoClientDemo 127.0.0.1 4446 "$request"
 }
 
 command1_cryptoclient() {
@@ -287,11 +295,11 @@ command0_testenroll() {
 }
 
 command1_testconsole() {
-  javaksc $1 dualcontrol.DualControlConsole
+  javaksc $1 $dualcontrol.DualControlConsole
 }
 
 command0_testsimplesocketreader() {
-  javaks server dualcontrol.SimpleSocketReader
+  javaks server $dualcontrol.SimpleSocketReader
 }
 
 command1_testlong() {
@@ -354,7 +362,5 @@ then
 else
   grep ^command $0 | sed 's/command\([0-9]\)_\([a-z]*\).*/\1 \2/'
 fi
-
-#sh NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh 2>&1 | grep -i '^WARN\|ERROR\|^INFO' | uniq -c
 
 
