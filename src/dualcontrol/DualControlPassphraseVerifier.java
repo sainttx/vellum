@@ -45,7 +45,6 @@ public class DualControlPassphraseVerifier {
                 "dualcontrol.minPassphraseLength", 12);
         minWordCount = props.getInt(
                 "dualcontrol.minWordCount", 4);
-        logger.info("verifyPassphrase " + verifyPassphrase);
     }
 
     public String getInvalidMessage(char[] password) throws Exception {

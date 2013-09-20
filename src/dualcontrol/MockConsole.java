@@ -31,8 +31,8 @@ import org.apache.log4j.Logger;
 public class MockConsole implements MockableConsole {
     private static Logger logger = Logger.getLogger(MockConsole.class);
     private List<String> lines = new ArrayList();
-    private String alias;
     private char[] password;
+    String alias;
     
     public MockConsole(String alias, char[] password) {
         this.alias = alias;

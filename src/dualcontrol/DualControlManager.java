@@ -30,11 +30,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import sun.security.x509.X500Name;
 
 /**
@@ -43,7 +45,7 @@ import sun.security.x509.X500Name;
  */
 public class DualControlManager {
 
-    private final static Logger logger = LoggerFactory.getLogger(DualControlManager.class);
+    private final static Logger logger = Logger.getLogger(DualControlManager.class);
     private final static int PORT = 4444;
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
@@ -125,8 +127,7 @@ public class DualControlManager {
     }
 
     private void read(SSLSocket socket) throws Exception {
-        String name = new X500Name(socket.getSession().getPeerPrincipal().
-                getName()).getCommonName();
+        String name = getCN(socket.getSession().getPeerPrincipal().getName());
         if (names.contains(name)) {
             throw new Exception("Duplicate submission from " + name);
         }
@@ -171,4 +172,15 @@ public class DualControlManager {
         manager.call();
         return manager.getDualMap().entrySet().iterator().next();
     }
+    
+    public static String getCN(String dname) throws InvalidNameException {
+        LdapName ln = new LdapName(dname);
+        for (Rdn rdn : ln.getRdns()) {
+            if (rdn.getType().equalsIgnoreCase("CN")) {
+                return rdn.getValue().toString();
+            }
+        }
+        throw new InvalidNameException(dname);
+    }
+    
 }

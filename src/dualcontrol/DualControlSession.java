@@ -36,7 +36,7 @@ public class DualControlSession {
     private char[] dualPass;
     private String dualAlias;
 
-    public void init(String prompt) throws Exception {
+    public void call(String prompt) throws Exception {
         Map.Entry<String, char[]> entry = DualControlManager.readDualEntry(prompt);
         this.dualAlias = entry.getKey();
         this.dualPass = entry.getValue();
@@ -63,4 +63,5 @@ public class DualControlSession {
         logger.debug("loadKey " + alias);
         return (SecretKey) dualKeyStore.getKey(alias, dualPass);
     }
+
 }

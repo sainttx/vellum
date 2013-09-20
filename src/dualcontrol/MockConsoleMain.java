@@ -26,8 +26,8 @@ import org.apache.log4j.Logger;
  *
  * @author evan.summers
  */
-public abstract class DummyDualControlConsole {
-    final static Logger logger = Logger.getLogger(DummyDualControlConsole.class);
+public abstract class MockConsoleMain {
+    final static Logger logger = Logger.getLogger(MockConsoleMain.class);
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
