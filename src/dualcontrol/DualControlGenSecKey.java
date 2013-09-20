@@ -21,7 +21,6 @@
 package dualcontrol;
 
 import java.io.File;
-import vellum.util.VellumProperties;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.util.Arrays;
@@ -46,12 +45,12 @@ public class DualControlGenSecKey {
     private String keyAlg;
     private int keySize;
     private char[] keyStorePassword;
-    private VellumProperties props;
+    private DualControlProperties props;
     private MockableConsole console;
     private SSLContext sslContext;
 
     public DualControlGenSecKey(Properties properties, MockableConsole console) {
-        this.props = new VellumProperties(properties);
+        this.props = new DualControlProperties(properties);
         this.console = console;
         submissionCount = props.getInt("dualcontrol.submissions", 3);
         keyStorePassword = props.getPassword("storepass", null);
@@ -69,7 +68,7 @@ public class DualControlGenSecKey {
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         DualControlGenSecKey instance = new DualControlGenSecKey(
-                new VellumProperties(System.getProperties()), 
+                new DualControlProperties(System.getProperties()), 
                 new ConsoleAdapter(System.console()));
         try {
             instance.init();
