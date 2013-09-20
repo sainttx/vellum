@@ -136,6 +136,9 @@ public class DualControlManager {
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
+        if (password.length == 0) {
+            throw new Exception("Empty password submission from " + name);            
+        }
         String responseMessage = "Received " + name;
         String invalidMessage = new DualControlPassphraseVerifier(properties).
                 getInvalidMessage(password);
