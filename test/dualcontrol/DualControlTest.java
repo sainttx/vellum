@@ -21,8 +21,8 @@
  */
 package dualcontrol;
 
-import java.security.GeneralSecurityException;
 import static junit.framework.Assert.*;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -39,7 +39,6 @@ import vellum.crypto.rsa.GeneratedRsaKeyPair;
 import vellum.util.Lists;
 import vellum.util.Sockets;
 import vellum.util.Threads;
-import vellum.util.VellumProperties;
 
 /**
  *
@@ -55,7 +54,7 @@ public class DualControlTest {
 
     private KeyStore trustStore;
     private char[] keyStorePass = "test1234".toCharArray();
-    private VellumProperties properties = new VellumProperties();
+    private DualControlProperties properties = new DualControlProperties();
     private Map<String, char[]> dualPasswordMap = new TreeMap();
     private Map<String, KeyStore> keyStoreMap = new TreeMap();
     private Map<String, SSLContext> sslContextMap = new TreeMap();
