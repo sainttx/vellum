@@ -164,11 +164,11 @@ public class DualControlManager {
     }
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
-        DualControlManager reader = new DualControlManager(System.getProperties(), 2, purpose);
+        DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
         SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
                 System.getProperties(), new ConsoleAdapter(System.console()));
-        reader.init(sslContext);
-        reader.call();
-        return reader.getDualMap().entrySet().iterator().next();
+        manager.init(sslContext);
+        manager.call();
+        return manager.getDualMap().entrySet().iterator().next();
     }
 }
