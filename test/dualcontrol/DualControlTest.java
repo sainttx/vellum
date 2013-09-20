@@ -27,16 +27,18 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import javax.crypto.SecretKey;
 import javax.net.ssl.SSLContext;
 import org.junit.Assert;
 import org.junit.Test;
 import sun.security.x509.X500Name;
 import vellum.crypto.rsa.GeneratedRsaKeyPair;
-import vellum.util.Lists;
 import vellum.util.Sockets;
 import vellum.util.Threads;
 
@@ -87,7 +89,7 @@ public class DualControlTest {
         DualControlGenSecKey instance = new DualControlGenSecKey(properties, appConsole);
         KeyStore keyStore = instance.buildKeyStore(dualPasswordMap);
         Assert.assertEquals(3, Collections.list(keyStore.aliases()).size());
-        Assert.assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
+        Assert.assertEquals("dek2013-brent-evanx", asSortedSet(keyStore.aliases()).first());
         SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
         Assert.assertEquals("AES", key.getAlgorithm());
         Assert.assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
@@ -256,6 +258,10 @@ public class DualControlTest {
         KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
         return entry.getSecretKey();
+    }
+    
+    private static <E> SortedSet<E> asSortedSet(Enumeration<E> enumeration) {
+        return new TreeSet(Collections.list(enumeration));
     }
     
 }
