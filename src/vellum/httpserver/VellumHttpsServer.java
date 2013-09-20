@@ -32,7 +32,6 @@ import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 import vellum.security.DefaultKeyStores;
 import vellum.security.HttpsConfiguratorFactory;
-import vellum.security.KeyStores;
 import vellum.util.Sockets;
 
 /**

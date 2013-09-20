@@ -20,7 +20,7 @@
  */
 package vellum.util;
 
-import java.net.ServerSocket;
+import java.net.Socket;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
 
@@ -29,12 +29,13 @@ import vellum.logr.LogrFactory;
  * @author evan.summers
  */
 public class Sockets {
+    public static String localHost = "127.0.0.1";
     public static Logr logger = LogrFactory.getLogger(Sockets.class);
     
-    public static boolean portAvailable(int port) {
+    public static boolean portAvailable(String host, int port) {
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            serverSocket.close();
+            Socket socket = new Socket(host, port);
+            socket.close();
             return true;
         } catch (Exception e) {
             logger.warn("portAvailable", e.getMessage());
@@ -43,8 +44,12 @@ public class Sockets {
     }
 
     public static boolean waitPort(int port, long timeoutMillis, long sleepMillis) {
+        return waitPort(localHost, port, timeoutMillis, sleepMillis);
+    }
+    
+    public static boolean waitPort(String host, int port, long timeoutMillis, long sleepMillis) {
         long time = System.currentTimeMillis() + timeoutMillis;
-        while (!portAvailable(port) && System.currentTimeMillis() < time) {
+        while (!portAvailable(host, port) && System.currentTimeMillis() < time) {
             Threads.sleep(sleepMillis);
             logger.warn("waitPort");
         }
