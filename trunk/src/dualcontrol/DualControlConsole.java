@@ -22,6 +22,7 @@ package dualcontrol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Properties;
@@ -79,7 +80,7 @@ public class DualControlConsole {
                 console.println("Passwords don't match.");
             } else {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                DualControlUtil.writeChars(dos, password);
+                writeChars(dos, password);
                 String message = dis.readUTF();
                 console.println(message);
             }
@@ -91,4 +92,13 @@ public class DualControlConsole {
     
     private void clear() {
     }
+    
+    public static char[] writeChars(DataOutputStream dos, char[] chars) throws IOException {
+        dos.writeShort(chars.length);
+        for (int i = 0; i < chars.length; i++) {
+            dos.writeChar(chars[i]);
+        }
+        return chars;
+    }
+    
 }
