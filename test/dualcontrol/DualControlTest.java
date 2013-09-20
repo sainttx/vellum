@@ -50,6 +50,7 @@ import vellum.util.Threads;
  * @author evan
  */
 public class DualControlTest {
+    private final static String HOST = "127.0.0.1";
     private final static int PORT = 4444;
 
     private KeyStore trustStore;
@@ -103,7 +104,7 @@ public class DualControlTest {
         SubmitterThread brentThread = createSubmitterThread("brent", "bbbb".toCharArray());
         SubmitterThread evanxThread = createSubmitterThread("evanx", "eeee".toCharArray());
         SubmitterThread hentyThread = createSubmitterThread("henty", "hhhh".toCharArray());
-        Sockets.waitPort(PORT, 2000, 100);
+        Sockets.waitPort(HOST, PORT, 2000, 100);
         genSecKeyThread.start();
         brentThread.start();
         evanxThread.start();
@@ -256,5 +257,5 @@ public class DualControlTest {
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
         return entry.getSecretKey();
     }
-        
+    
 }
