@@ -20,7 +20,6 @@
  */
 package dualcontrol;
 
-import vellum.util.*;
 import java.util.Properties;
 
 /**
