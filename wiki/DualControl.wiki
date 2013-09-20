@@ -24,7 +24,7 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 The key is stored in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
 
-We propose enrolling at least 3 admins, so if one admin is unavailable, we're still good to go with two others. For each duo of admins, we'll generate a copy of the key, protected by their particular "split password." Consequently if we have 3 admins, we'll have 3 copies of the key in the keystore, one for each duo. If we have 4 admins, then we'll have 6 copies of the key.
+We propose enrolling at least three admins, so if one admin is unavailable, we're still good to go with two others. For each pairing, we'store a copy of the key protected by their particular "split password." Consequently if we have 3 admins, we'll have 3 copies of the key in the keystore, one for each duo. If we have 4 admins, then we'll have 6 copies of the key.
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
