@@ -20,7 +20,7 @@
  */
 package vellum.crypto.util;
 
-import static dualcontrol.DualControlUtil.getBytes;
+import static dualcontrol.DualControlDigest.getBytes;
 import java.security.MessageDigest;
 import java.util.Arrays;
 

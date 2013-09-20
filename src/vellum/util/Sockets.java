@@ -30,7 +30,6 @@ import vellum.logr.LogrFactory;
  */
 public class Sockets {
     public static String localHost = "127.0.0.1";
-    public static Logr logger = LogrFactory.getLogger(Sockets.class);
     
     public static boolean portAvailable(String host, int port) {
         try {
@@ -38,22 +37,27 @@ public class Sockets {
             socket.close();
             return true;
         } catch (Exception e) {
-            logger.warn("portAvailable", e.getMessage());
             return false;
         }
     }
 
-    public static boolean waitPort(int port, long timeoutMillis, long sleepMillis) {
+    public static boolean waitPort(int port, long timeoutMillis, long sleepMillis) throws InterruptedException {
         return waitPort(localHost, port, timeoutMillis, sleepMillis);
     }
     
-    public static boolean waitPort(String host, int port, long timeoutMillis, long sleepMillis) {
+    public static boolean waitPort(String host, int port, long timeoutMillis, long sleepMillis) throws InterruptedException {
         long time = System.currentTimeMillis() + timeoutMillis;
         while (!portAvailable(host, port) && System.currentTimeMillis() < time) {
-            Threads.sleep(sleepMillis);
-            logger.warn("waitPort");
+            sleep(sleepMillis);
         }
         return true;
+    }
+    
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (Exception e) {
+        }
     }
     
 }
