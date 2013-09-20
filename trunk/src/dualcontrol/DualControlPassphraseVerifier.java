@@ -22,7 +22,6 @@ package dualcontrol;
 
 import java.util.Properties;
 import org.apache.log4j.Logger;
-import vellum.util.VellumProperties;
 
 /**
  *
@@ -37,7 +36,7 @@ public class DualControlPassphraseVerifier {
     private final int minWordCount;
 
     public DualControlPassphraseVerifier(Properties properties) {
-        VellumProperties props = new VellumProperties(properties);
+        DualControlProperties props = new DualControlProperties(properties);
         verifyPassphrase = props.getBoolean(
                 "dualcontrol.verifyPassphrase", true);
         verifyPassphraseComplexity = props.getBoolean(

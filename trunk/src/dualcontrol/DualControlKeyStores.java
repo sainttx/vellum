@@ -20,7 +20,6 @@
  */
 package dualcontrol;
 
-import vellum.util.VellumProperties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.Socket;

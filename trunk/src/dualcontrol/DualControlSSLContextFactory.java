@@ -20,7 +20,6 @@
  */
 package dualcontrol;
 
-import vellum.util.VellumProperties;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -46,7 +45,7 @@ public class DualControlSSLContextFactory {
         
     public static SSLContext createSSLContext(Properties properties, MockableConsole console)
             throws Exception {
-        VellumProperties props = new VellumProperties(properties);
+        DualControlProperties props = new DualControlProperties(properties);
         String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
