@@ -35,6 +35,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.crypto.SecretKey;
 import javax.net.ssl.SSLContext;
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.Test;
 import sun.security.x509.X500Name;
