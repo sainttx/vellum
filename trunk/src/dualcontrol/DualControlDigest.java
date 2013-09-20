@@ -21,7 +21,6 @@
 package dualcontrol;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -33,19 +32,9 @@ import org.apache.commons.codec.binary.Base32;
  *
  * @author evan.summers
  */
-public class DualControlUtil {
-    public final static int PORT = 4444;
-    public final static String HOST = "127.0.0.1";
+public class DualControlDigest {
     public final static String DIGEST_ALG = "SHA-256";
     
-    public static char[] writeChars(DataOutputStream dos, char[] chars) throws IOException {
-        dos.writeShort(chars.length);
-        for (int i = 0; i < chars.length; i++) {
-            dos.writeChar(chars[i]);
-        }
-        return chars;
-    }
-
     public static String digestBase32(char[] chars) throws Exception {
         return new Base32().encodeAsString(digest(chars));
     }

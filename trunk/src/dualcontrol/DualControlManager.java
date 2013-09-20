@@ -143,7 +143,7 @@ public class DualControlManager {
         }
         submissions.put(name, password);
         logger.info(responseMessage);
-        responseMessage += " " + DualControlUtil.digestBase32(password).substring(1, 16);
+        responseMessage += " " + DualControlDigest.digestBase32(password).substring(1, 16);
         dos.writeUTF(responseMessage);
     }
 
