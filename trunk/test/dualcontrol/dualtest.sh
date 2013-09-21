@@ -8,9 +8,12 @@ cd
 dualcontrol="dualcontrol"
 
 CLASSPATH=NetBeansProjects/vellum/build/classes
+LIBPATH=NetBeansProjects/lib/vellum
 CLASSPATH=$CLASSPATH:NetBeansProjects/vellum/build/test/classes
-CLASSPATH=$CLASSPATH:NetBeansProjects/lib/vellum/log4j-1.2.15.jar
-CLASSPATH=$CLASSPATH:NetBeansProjects/lib/vellum/commons-codec-1.7.jar
+CLASSPATH=$CLASSPATH:$LIBPATH/log4j-1.2.15.jar
+CLASSPATH=$CLASSPATH:$LIBPATH/commons-codec-1.7.jar
+CLASSPATH=$CLASSPATH:$LIBPATH/slf4j-log4j12-1.5.10.jar
+CLASSPATH=$CLASSPATH:$LIBPATH/slf4j-api-1.5.10.jar
 
 export CLASSPATH=$CLASSPATH
 

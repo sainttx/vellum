@@ -21,20 +21,25 @@
 package dualcontrol;
 
 import java.net.Socket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author evan.summers
  */
 public class Sockets {
+    static final private Logger logger = LoggerFactory.getLogger(Sockets.class);
     
     public static boolean portAvailable(String host, int port) {
         try {
             Socket socket = new Socket(host, port);
             socket.close();
-            return true;
-        } catch (Exception e) {
+            logger.debug("port not available: {}", port);
             return false;
+        } catch (Exception e) {
+            logger.debug("port available: {}", port);
+            return true;
         }
     }
 
@@ -48,7 +53,7 @@ public class Sockets {
     }
     
     private static void sleep(long millis) throws InterruptedException {
+        logger.debug("sleep: {}", millis);
         Thread.sleep(millis);
-    }
-    
+    }    
 }
