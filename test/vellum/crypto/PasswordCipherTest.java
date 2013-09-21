@@ -117,5 +117,5 @@ public class PasswordCipherTest {
         passwordHash.decryptSalt(cipher);
         assertTrue(passwordHash.getIv().length == 0);
         assertTrue(Arrays.equals(hash, passwordHash.getHash()));
-    }    
+    }
 }
