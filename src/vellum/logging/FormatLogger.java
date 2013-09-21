@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.logf;
+package vellum.logging;
 
 import org.apache.log4j.Logger;
 import vellum.util.Args;

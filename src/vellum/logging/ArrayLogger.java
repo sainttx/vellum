@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package vellum.logging;
 
 import java.util.Arrays;
 import org.apache.log4j.Logger;
