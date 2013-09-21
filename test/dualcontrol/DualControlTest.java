@@ -45,7 +45,7 @@ import org.junit.Test;
  *
  * @see MockConsole
  * @see DualControlConsole
- * @see DualControlReader
+ * @see DualControlManager
  * @see DualControlGenSecKey
  * 
  * @author evan
@@ -140,9 +140,9 @@ public class DualControlTest {
     @Test
     public void testReader() throws Exception {
         initSSL();
-        DualControlManager reader = new DualControlManager(properties, 2, "app");
-        reader.init(sslContextMap.get("app"));
-        DualReaderThread readerThread = new DualReaderThread(reader);
+        DualControlManager manager = new DualControlManager(properties, 2, "app");
+        manager.init(sslContextMap.get("app"));
+        DualReaderThread readerThread = new DualReaderThread(manager);
         SubmitterThread brentThread = createSubmitterThread("brent", "bbbb".toCharArray());
         SubmitterThread evanxThread = createSubmitterThread("evanx", "eeee".toCharArray());
         waitPort();
