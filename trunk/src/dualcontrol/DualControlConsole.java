@@ -42,7 +42,7 @@ public class DualControlConsole {
 
     public static void main(String[] args) throws Exception {
         DualControlConsole instance = new DualControlConsole(System.getProperties(),
-                new ConsoleAdapter(System.console()));
+                new MockableConsoleAdapter(System.console()));
         try {
             instance.init();
             instance.call();

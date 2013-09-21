@@ -64,7 +64,7 @@ public class FileServer {
     public void call() throws Exception {
         SSLServerSocket serverSocket = (SSLServerSocket) 
                 DualControlSSLContextFactory.createSSLContext(System.getProperties(),
-                new ConsoleAdapter(System.console())).getServerSocketFactory().
+                new MockableConsoleAdapter(System.console())).getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);

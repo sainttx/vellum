@@ -26,10 +26,10 @@ import java.io.Console;
  *
  * @author evan.summers
  */
-public class ConsoleAdapter implements MockableConsole {
+public class MockableConsoleAdapter implements MockableConsole {
     Console console; 
     
-    public ConsoleAdapter(Console console) {
+    public MockableConsoleAdapter(Console console) {
         this.console = console;
     }
     
