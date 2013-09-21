@@ -65,13 +65,6 @@ public class DualControlPassphraseVerifier {
         return null;
     }
 
-    public void assertValid(char[] password) throws Exception {
-        String errorMessage = getInvalidMessage(password);
-        if (errorMessage != null) {
-            throw new Exception(errorMessage);
-        }
-    }
-
     public int countWords(char[] password) {
         int count = 0;
         for (char ch : password) {
@@ -80,10 +73,6 @@ public class DualControlPassphraseVerifier {
             }
         }
         return count;
-    }
-
-    public boolean isValid(char[] password) throws Exception {
-        return getInvalidMessage(password) == null;
     }
 
     public static boolean containsDigit(char[] array) {
