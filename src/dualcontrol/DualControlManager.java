@@ -137,7 +137,8 @@ public class DualControlManager {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
         if (password.length == 0) {
-            throw new Exception("Empty password submission from " + name);            
+            logger.warn("Empty password submission from " + name);
+            return;
         }
         String responseMessage = "Received " + name;
         String invalidMessage = new DualControlPassphraseVerifier(properties).
