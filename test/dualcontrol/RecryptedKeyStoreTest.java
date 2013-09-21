@@ -26,7 +26,7 @@ import org.junit.Test;
 import vellum.api.Encrypted;
 import vellum.api.VellumCipher;
 import vellum.datatype.Millis;
-import vellum.logf.Loggerf;
+import vellum.logging.FormatLogger;
 import vellum.util.Bytes;
 
 /**
@@ -34,7 +34,7 @@ import vellum.util.Bytes;
  * @author evan.summers
  */
 public class RecryptedKeyStoreTest {
-    private final static Loggerf logger = Loggerf.getLogger(RecryptedKeyStoreTest.class);
+    private final static FormatLogger logger = FormatLogger.getLogger(RecryptedKeyStoreTest.class);
     private final String keyAlg = "AES";
     private final int keySize = 256;
     private final String keyStoreType = "JCEKS";
