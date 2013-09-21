@@ -20,8 +20,8 @@
  */
 package vellum.crypto;
 
-import vellum.api.VellumCipher;
-import vellum.api.Encrypted;
+import vellum.crypto.api.VellumCipher;
+import vellum.crypto.api.Encrypted;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import javax.crypto.Cipher;
