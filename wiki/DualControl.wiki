@@ -422,7 +422,7 @@ threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
 }}}
 
-If we fear that someone can try an average of only 10 guesses per core per millisecond, but scale out using a botnet with 1M cores, then by my backroom calculations, 12 days are required to try all possible passwords up to 10 characters in length using a lazy subset of 40 characters. 
+If we fear that someone can try an average of only 10 guesses per core per millisecond, but scale out using a large botnet with 1M cores, then by my backroom calculations, 12 days are required to try all possible passwords up to 10 characters in length using a lazy subset of 40 characters. 
 
 {{{
 guess=10
