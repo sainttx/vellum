@@ -338,7 +338,9 @@ We submit the password via SSL as follows.
     }
 }}}
 
-where we restrict the "remote" host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
+where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt.
+
+Note that have hardcoded "remote" host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
 {{{
 evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
