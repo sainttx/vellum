@@ -48,8 +48,8 @@ public class RsaKeyStore {
 
     private final static Logger logger = Logger.getLogger(RsaKeyStore.class);
     private static final String alg = "RSA";
-    String alias;
-    KeyPair keyPair;
+    private String alias;
+    private KeyPair keyPair;
 
     public void generate(String alias, int keySize) throws NoSuchAlgorithmException {
         this.alias = alias;

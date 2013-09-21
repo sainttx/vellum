@@ -27,25 +27,30 @@ import org.apache.log4j.Logger;
  *
  * @author evan.summers
  */
-public class Log {
-    
-    public static void trace(Logger logger, Object ... args) {
+public class ArrayLogger {
+    private Logger logger;
+
+    public ArrayLogger(Logger logger) {
+        this.logger = logger;
+    }
+            
+    public void trace(Object ... args) {
         logger.trace(Arrays.toString(args));
     }
 
-    public static void debug(Logger logger, Object ... args) {
+    public void debug(Object ... args) {
         logger.debug(Arrays.toString(args));
     }
     
-    public static void info(Logger logger, Object ... args) {
+    public void info(Object ... args) {
         logger.info(Arrays.toString(args));
     }
 
-    public static void warn(Logger logger, Object ... args) {
+    public void warn(Object ... args) {
         logger.warn(Arrays.toString(args));
     }
 
-    public static void error(Logger logger, Object ... args) {
+    public void error(Object ... args) {
         logger.error(Arrays.toString(args));
     }
     
