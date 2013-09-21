@@ -34,12 +34,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.crypto.SecretKey;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.net.ssl.SSLContext;
 import org.junit.Assert;
 import org.junit.Test;
-import sun.security.x509.X500Name;
-import vellum.crypto.rsa.GeneratedRsaKeyPair;
-import vellum.util.Sockets;
 
 /**
  *
@@ -51,9 +51,6 @@ import vellum.util.Sockets;
  * @author evan
  */
 public class DualControlTest {
-    private final static String HOST = "127.0.0.1";
-    private final static int PORT = 4444;
-
     private KeyStore trustStore;
     private char[] keyStorePass = "test1234".toCharArray();
     private DualControlProperties properties = new DualControlProperties();
@@ -71,7 +68,6 @@ public class DualControlTest {
 
     @Test
     public void testPassphraseVerifier() throws Exception {
-        new DualControlPassphraseVerifier(properties).assertValid("bbbb".toCharArray());
         Properties props = new Properties();
         Assert.assertNotNull(new DualControlPassphraseVerifier(props).
                 getInvalidMessage("bbbb".toCharArray()));
@@ -105,7 +101,7 @@ public class DualControlTest {
         SubmitterThread brentThread = createSubmitterThread("brent", "bbbb".toCharArray());
         SubmitterThread evanxThread = createSubmitterThread("evanx", "eeee".toCharArray());
         SubmitterThread hentyThread = createSubmitterThread("henty", "hhhh".toCharArray());
-        Sockets.waitPort(HOST, PORT, 2000, 100);
+        waitPort();
         genSecKeyThread.start();
         brentThread.start();
         evanxThread.start();
@@ -149,6 +145,7 @@ public class DualControlTest {
         DualReaderThread readerThread = new DualReaderThread(reader);
         SubmitterThread brentThread = createSubmitterThread("brent", "bbbb".toCharArray());
         SubmitterThread evanxThread = createSubmitterThread("evanx", "eeee".toCharArray());
+        waitPort();
         readerThread.start();
         brentThread.start();
         evanxThread.start();
@@ -236,7 +233,7 @@ public class DualControlTest {
         KeyStore keyStore = createSSLKeyStore(alias, 1);
         X509Certificate cert = (X509Certificate) keyStore.getCertificate(alias);
         String dname = cert.getSubjectDN().getName();
-        Assert.assertEquals(alias, new X500Name(dname).getCommonName());
+        Assert.assertEquals(alias, getCN(dname));
         keyStoreMap.put(alias, keyStore);
         trustStore.setCertificateEntry(alias, cert);
         return keyStore;
@@ -261,6 +258,20 @@ public class DualControlTest {
     
     public static <E> SortedSet<E> asSortedSet(Enumeration<E> enumeration) {
         return new TreeSet(Collections.list(enumeration));
+    }
+    
+    public static String getCN(String dname) throws InvalidNameException {
+        LdapName ln = new LdapName(dname);
+        for (Rdn rdn : ln.getRdns()) {
+            if (rdn.getType().equalsIgnoreCase("CN")) {
+                return rdn.getValue().toString();
+            }
+        }
+        throw new InvalidNameException(dname);
+    }
+
+    private static void waitPort() throws InterruptedException {
+        Sockets.waitPort("127.0.0.1", 4444, 2000, 500);
     }
 
 }
