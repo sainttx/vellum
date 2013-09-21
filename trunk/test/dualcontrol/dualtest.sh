@@ -92,7 +92,7 @@ javaksc() {
 
 jc() {
   sleep 1 
-  javaks $1 $dualcontrol.MockConsoleMain $@
+  javaks $1 $dualcontrol.MockConsole $@
 }
 
 jc2() {
