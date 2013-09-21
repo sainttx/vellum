@@ -184,7 +184,7 @@ public class DualControlTest {
                 keyStoreMap.get(name), 
                 keyStorePass, trustStore));
         }
-    }    
+    }
 
     class SubmitterThread extends Thread  {
         MockConsole console;
@@ -247,7 +247,7 @@ public class DualControlTest {
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCert()};
         keyStore.setKeyEntry(name, keyPair.getPrivateKey(), keyStorePass, chain);
         return keyStore;
-    }    
+    }
     
     public static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
             throws GeneralSecurityException {
