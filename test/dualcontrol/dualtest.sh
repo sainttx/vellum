@@ -8,16 +8,9 @@ cd
 dualcontrol="dualcontrol"
 
 CLASSPATH=NetBeansProjects/vellum/build/classes
-
-LIBPATH="NetBeansProjects/vellum/dist/lib/"
-
-if [ -n $LIBPATH ] 
-then
-  for jar in $LIBPATH/*.jar
-  do
-    CLASSPATH=$CLASSPATH:$jar
- done
-fi
+CLASSPATH=$CLASSPATH:NetBeansProjects/vellum/build/test/classes
+CLASSPATH=$CLASSPATH:NetBeansProjects/lib/vellum/log4j-1.2.15.jar
+CLASSPATH=$CLASSPATH:NetBeansProjects/lib/vellum/commons-codec-1.7.jar
 
 export CLASSPATH=$CLASSPATH
 
@@ -71,7 +64,7 @@ javaks() {
     -Ddualcontrol.ssl.keyPassword=$pass \
     -Ddualcontrol.ssl.trustStore=$truststore \
     -Ddualcontrol.ssl.trustStorePassword=$pass \
-    -Ddualcontrol.verifyPassword=false \
+    -Ddualcontrol.verifyPassphrase=false \
     $@
   exitCode=$?
   if [ $exitCode -ne 0 ]
@@ -87,7 +80,7 @@ javaksc() {
   java \
     -Ddualcontrol.ssl.keyStore=$keystore \
     -Ddualcontrol.ssl.trustStore=$truststore \
-    -Ddualcontrol.verifyPassword=false \
+    -Ddualcontrol.verifyPassphrase=false \
     $@
   exitCode=$?
   if [ $exitCode -ne 0 ]
@@ -99,7 +92,7 @@ javaksc() {
 
 jc() {
   sleep 1 
-  javaks $1 $dualcontrol.DummyDualControlConsole $@
+  javaks $1 $dualcontrol.MockConsoleMain $@
 }
 
 jc2() {
