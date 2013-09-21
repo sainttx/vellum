@@ -33,28 +33,22 @@ import sun.security.x509.X500Name;
  * @author evan.summers
  */
 public class GeneratedRsaKeyPair {    
-    String providerName = null;
-    String keyAlgName = "RSA";
-    String sigAlgName = "SHA1WithRSA";
-    int keySize = 2048;
-    Date startDate;
-    int validityDays;
-    CertAndKeyGen keyPair;
-    PrivateKey privateKey;
-    X509Certificate cert;
-    PKCS10 certReq;
+    private String providerName = null;
+    private String keyAlgName = "RSA";
+    private String sigAlgName = "SHA1WithRSA";
+    private int keySize = 2048;
+    private CertAndKeyGen keyPair;
+    private PrivateKey privateKey;
+    private X509Certificate cert;
     
     public GeneratedRsaKeyPair() {
     }
 
     public void generate(String dname, Date startDate, int validityDays) throws Exception {
-        this.startDate = startDate;
-        this.validityDays = validityDays;
         keyPair = new CertAndKeyGen(keyAlgName, sigAlgName, providerName);
         keyPair.generate(keySize);
         privateKey = keyPair.getPrivateKey();
         X500Name x500Name = new X500Name(dname);
-        certReq = keyPair.getCertRequest(x500Name);
         cert = keyPair.getSelfCertificate(x500Name, startDate, 
                 TimeUnit.DAYS.toSeconds(validityDays));
     }

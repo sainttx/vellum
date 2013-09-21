@@ -273,5 +273,4 @@ public class DualControlTest {
     private static void waitPort() throws InterruptedException {
         Sockets.waitPort("127.0.0.1", 4444, 2000, 500);
     }
-
 }
