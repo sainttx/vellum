@@ -767,6 +767,6 @@ In "Dual Control Key Protection" we address increased protection against brute-f
 
 In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from a old "dek2013" key a to revised "dek2014" key.
 
-You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"><tt>src/dualcontrol</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/"><tt>test/dualcontrol</tt></a>.
+You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"><tt>src/dualcontrol</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/"><tt>test/dualcontrol</tt></a>.
 
 <tt><a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a></tt>
