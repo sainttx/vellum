@@ -35,13 +35,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.crypto.SecretKey;
 import javax.net.ssl.SSLContext;
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.Test;
 import sun.security.x509.X500Name;
 import vellum.crypto.rsa.GeneratedRsaKeyPair;
 import vellum.util.Sockets;
-import vellum.util.Threads;
 
 /**
  *
@@ -119,7 +117,7 @@ public class DualControlTest {
         assertOk(hentyThread.exception);
         Assert.assertTrue(evanxThread.console.getLine(0).startsWith(
                 "Enter passphrase for new key dek2013:"));
-        Threads.sleep(1000);
+        Thread.sleep(1000);
     }
 
     class GenSecKeyThread extends Thread  {
@@ -162,7 +160,7 @@ public class DualControlTest {
         Assert.assertTrue(evanxThread.console.getLine(0).startsWith("Enter passphrase for app:"));
         Assert.assertEquals("brent-evanx", readerThread.dualEntry.getKey());
         Assert.assertEquals("bbbb+eeee", new String(readerThread.dualEntry.getValue()));
-        Threads.sleep(1000);
+        Thread.sleep(1000);
     }
 
     private SubmitterThread createSubmitterThread(String alias, char[] password) {
@@ -254,15 +252,15 @@ public class DualControlTest {
         return keyStore;
     }    
     
-    private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
+    public static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
             throws GeneralSecurityException {
         KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
         return entry.getSecretKey();
     }
     
-    private static <E> SortedSet<E> asSortedSet(Enumeration<E> enumeration) {
+    public static <E> SortedSet<E> asSortedSet(Enumeration<E> enumeration) {
         return new TreeSet(Collections.list(enumeration));
     }
-    
+
 }
