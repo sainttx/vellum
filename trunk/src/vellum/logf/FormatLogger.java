@@ -27,14 +27,14 @@ import vellum.util.Args;
  *
  * @author evan.summers
  */
-public class Loggerf {
+public class FormatLogger {
     private Logger logger;
 
-    public static Loggerf getLogger(Class clazz) {
-        return new Loggerf(clazz);
+    public static FormatLogger getLogger(Class contextClass) {
+        return new FormatLogger(contextClass);
     }
     
-    private Loggerf(Class clazz) {
+    private FormatLogger(Class clazz) {
         this.logger = Logger.getLogger(clazz);
     }
     
