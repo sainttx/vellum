@@ -36,6 +36,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.log4j.Logger;
 import vellum.pbestore.PbeStore;
+import vellum.util.Args;
 
 /**
  * @see PbeStore
@@ -118,7 +119,7 @@ public class AesPbeStore implements PbeStore {
         dis.readFully(encryptedSalt);
         dis.readFully(encryptedBytes);
         pbeKey = generateKey(password);
-        Log.debug(logger, salt.length, iterationCount, keySize);
+        logger.debug(Args.format(salt.length, iterationCount, keySize));
         if (!Arrays.equals(salt, decrypt(encryptedSalt))) {
             throw new Exception("Invalid password");    
         }
