@@ -70,7 +70,7 @@ public class DualControlEnroll {
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         DualControlEnroll instance = new DualControlEnroll(System.getProperties(),
-                    new ConsoleAdapter(System.console()));
+                    new MockableConsoleAdapter(System.console()));
         try {
             instance.init();
             instance.call();

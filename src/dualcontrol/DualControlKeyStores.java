@@ -39,7 +39,7 @@ public class DualControlKeyStores {
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
             Socket socket = DualControlSSLContextFactory.createSSLContext(
-                    System.getProperties(), new ConsoleAdapter(System.console())).
+                    System.getProperties(), new MockableConsoleAdapter(System.console())).
                     getSocketFactory().createSocket(array[0], Integer.parseInt(array[1]));
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();

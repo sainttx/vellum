@@ -35,8 +35,12 @@ import org.apache.commons.codec.binary.Base32;
 public class DualControlDigest {
     public final static String DIGEST_ALG = "SHA-256";
     
-    public static String digestBase32(char[] chars) throws Exception {
-        return new Base32().encodeAsString(digest(chars));
+    public static String digestBase32(char[] chars) {
+        try {
+            return new Base32().encodeAsString(digest(chars));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String digestString(char[] chars) throws Exception {

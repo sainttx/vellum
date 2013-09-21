@@ -38,7 +38,7 @@ public class DualControl {
     public void call(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
         SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties(), new ConsoleAdapter(System.console()));
+                System.getProperties(), new MockableConsoleAdapter(System.console()));
         manager.init(sslContext);
         manager.call();
         Map.Entry<String, char[]> entry = manager.getDualMap().entrySet().iterator().next();

@@ -69,7 +69,7 @@ public class DualControlGenSecKey {
         logger.info("main " + Arrays.toString(args));
         DualControlGenSecKey instance = new DualControlGenSecKey(
                 new DualControlProperties(System.getProperties()), 
-                new ConsoleAdapter(System.console()));
+                new MockableConsoleAdapter(System.console()));
         try {
             instance.init();
             instance.call();

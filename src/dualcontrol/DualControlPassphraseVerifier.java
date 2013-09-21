@@ -47,7 +47,7 @@ public class DualControlPassphraseVerifier {
                 "dualcontrol.minWordCount", 4);
     }
 
-    public String getInvalidMessage(char[] password) throws Exception {
+    public String getInvalidMessage(char[] password) {
         if (verifyPassphrase) {
             if (password.length < minPassphraseLength) {
                 return "Passphrase too short";

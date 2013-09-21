@@ -37,7 +37,7 @@ public class CryptoClientDemo {
             System.err.println("CryptoClientDemo usage: hostAddress port text");
         } else {
             new CryptoClientDemo().call(System.getProperties(), 
-                    new ConsoleAdapter(System.console()),
+                    new MockableConsoleAdapter(System.console()),
                     args[0], Integer.parseInt(args[1]), args[2].getBytes());
         }
     }

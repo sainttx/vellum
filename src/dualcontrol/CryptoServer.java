@@ -42,7 +42,7 @@ public class CryptoServer {
             System.err.println(
                     "usage: localAddress port backlog count remoteAddress keyStore storePass");
         } else {
-            new CryptoServer().call(System.getProperties(), new ConsoleAdapter(System.console()),
+            new CryptoServer().call(System.getProperties(), new MockableConsoleAdapter(System.console()),
                     InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
                     Integer.parseInt(args[2]), Integer.parseInt(args[3]), 
                     args[4], args[5], args[6].toCharArray());

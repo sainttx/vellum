@@ -25,9 +25,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.naming.InvalidNameException;
@@ -37,7 +37,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import org.apache.log4j.Logger;
-import sun.security.x509.X500Name;
 
 /**
  *
@@ -50,10 +49,11 @@ public class DualControlManager {
     private final static String HOST = "127.0.0.1";
     private final static String REMOTE_ADDRESS = "127.0.0.1";
     private Properties properties;
+    private boolean verifyPassphrase = true;
     private String purpose;
     private int submissionCount;
     private SSLContext sslContext;
-    private Set<String> names = new TreeSet();
+    private Collection<String> verifiedNames = new TreeSet();
     private Map<String, char[]> submissions = new TreeMap();
     private Map<String, char[]> dualMap = new TreeMap();
 
@@ -63,6 +63,14 @@ public class DualControlManager {
         this.purpose = purpose;
     }
 
+    public void setVerifyPassphrase(boolean verifyPassphrase) {
+        this.verifyPassphrase = verifyPassphrase;
+    }
+    
+    public void addVerifiedNames(Collection<String> verifiedNames) {
+        this.verifiedNames.addAll(verifiedNames);
+    }
+    
     public void init(SSLContext sslContent) {
         this.sslContext = sslContent;
     }
@@ -72,7 +80,7 @@ public class DualControlManager {
     }
 
     public void init(Console console) throws Exception {
-        init(new ConsoleAdapter(console));
+        init(new MockableConsoleAdapter(console));
     }
     
     public void call() throws Exception {
@@ -128,34 +136,40 @@ public class DualControlManager {
 
     private void read(SSLSocket socket) throws Exception {
         String name = getCN(socket.getSession().getPeerPrincipal().getName());
-        if (names.contains(name)) {
+        if (submissions.keySet().contains(name)) {
             throw new Exception("Duplicate submission from " + name);
         }
-        names.add(name);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] password = readChars(dis);
+        DualControlMessageResult result = process(name, password);
+        dos.writeUTF(result.getMessage());
+        logger.info(result.getMessage());
+        if (!result.isOk()) {
+            throw result.exception();
+        }
+    }
+    
+    private DualControlMessageResult process(String name, char[] password) {
         if (password.length == 0) {
-            logger.warn("Empty password submission from " + name);
-            return;
+            return DualControlMessageResult.ok("Empty submission from " + name);
         }
         String responseMessage = "Received " + name;
-        String invalidMessage = new DualControlPassphraseVerifier(properties).
-                getInvalidMessage(password);
-        if (invalidMessage != null) {
-            throw new Exception(responseMessage + ": " + invalidMessage);
+        if (verifyPassphrase && !verifiedNames.contains(name)) {
+            String invalidMessage = new DualControlPassphraseVerifier(properties).
+                    getInvalidMessage(password);
+            if (invalidMessage != null) {
+                return DualControlMessageResult.error(
+                        responseMessage + ": " + invalidMessage);
+            }
         }
         submissions.put(name, password);
-        logger.info(responseMessage);
-        responseMessage += " " + DualControlDigest.digestBase32(password).substring(1, 16);
-        dos.writeUTF(responseMessage);
+        responseMessage += ": " + 
+                DualControlDigest.digestBase32(password).substring(1, 16);
+        return DualControlMessageResult.ok(responseMessage);
     }
-
-    public Set<String> getNames() {
-        return names;
-    }
-
+    
     public static char[] readChars(DataInputStream dis) throws IOException {
         char[] chars = new char[dis.readShort()];
         for (int i = 0; i < chars.length; i++) {
@@ -170,8 +184,9 @@ public class DualControlManager {
 
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
+        manager.setVerifyPassphrase(false);
         SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
-                System.getProperties(), new ConsoleAdapter(System.console()));
+                System.getProperties(), new MockableConsoleAdapter(System.console()));
         manager.init(sslContext);
         manager.call();
         return manager.getDualMap().entrySet().iterator().next();
