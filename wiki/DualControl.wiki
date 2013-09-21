@@ -393,7 +393,7 @@ We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en
             if (countWords(password) < minWordCount) {
                 return "Too few words in passphrase";
             }
-            if (verifyPasswordComplexity) {
+            if (verifyPassphraseComplexity) {
                 if (!containsUpperCase(password) || !containsLowerCase(password) || 
                         !containsDigit(password) || !containsPunctuation(password)) {
                     return "Insufficient password complexity";
