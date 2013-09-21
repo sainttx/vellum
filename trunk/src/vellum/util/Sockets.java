@@ -21,8 +21,6 @@
 package vellum.util;
 
 import java.net.Socket;
-import vellum.logr.Logr;
-import vellum.logr.LogrFactory;
 
 /**
  *
@@ -41,18 +39,20 @@ public class Sockets {
         }
     }
 
-    public static boolean waitPort(int port, long timeoutMillis, long sleepMillis) throws InterruptedException {
-        return waitPort(localHost, port, timeoutMillis, sleepMillis);
-    }
-    
-    public static boolean waitPort(String host, int port, long timeoutMillis, long sleepMillis) throws InterruptedException {
+    public static boolean waitPort(String host, int port, long timeoutMillis, long sleepMillis)
+            throws InterruptedException {
         long time = System.currentTimeMillis() + timeoutMillis;
         while (!portAvailable(host, port) && System.currentTimeMillis() < time) {
             sleep(sleepMillis);
         }
         return true;
     }
-    
+
+    public static boolean waitPort(int port, long timeoutMillis, long sleepMillis) 
+            throws InterruptedException {
+        return waitPort(localHost, port, timeoutMillis, sleepMillis);
+    }
+        
     private static void sleep(long millis) {
         try {
             Thread.sleep(millis);

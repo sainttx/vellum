@@ -24,37 +24,8 @@ package dualcontrol;
  *
  * @author evan.summers
  */
-public class DualControlMessageResult {
-    private boolean ok;
-    private String message;
+public class DualControlGlobals {
 
-    public DualControlMessageResult(boolean ok, String message) {
-        this.ok = ok;
-        this.message = message;
-    }
-
-    public boolean isOk() {
-        return ok;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-    
-    public String getMessage() {
-        return message;
-    }    
-    
-    public static DualControlMessageResult ok(String message) {
-        return new DualControlMessageResult(true, message);
-    }
-    
-    public static DualControlMessageResult error(String message) {
-        return new DualControlMessageResult(false, message);
-    }
-    
-    public DualControlException exception() {
-        return new DualControlException(message);
-    }
-    
+    public final static int PORT = 4444;
+    public final static String LOCALHOST = "127.0.0.1";
 }

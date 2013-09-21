@@ -85,6 +85,7 @@ public class DualControlManager {
     
     public void call() throws Exception {
         logger.info("purpose: "  + purpose);
+        
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
@@ -111,9 +112,9 @@ public class DualControlManager {
         }
     }
 
-    private static char[] combineSplitPassword(char[] password, char[] other) {
+    private static char[] combineSplitPassword(char[] passphrase, char[] other) {
         StringBuilder builder = new StringBuilder();
-        builder.append(password);
+        builder.append(passphrase);
         builder.append('+');
         builder.append(other);
         return builder.toString().toCharArray();
@@ -142,32 +143,32 @@ public class DualControlManager {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        char[] password = readChars(dis);
-        DualControlMessageResult result = process(name, password);
-        dos.writeUTF(result.getMessage());
-        logger.info(result.getMessage());
-        if (!result.isOk()) {
-            throw result.exception();
+        char[] passphrase = readChars(dis);
+        try {
+            String resultMessage = verify(name, passphrase);
+            dos.writeUTF(resultMessage);
+            logger.info(resultMessage);
+        } catch (Exception e) {
+            dos.writeUTF(e.getMessage());
+            logger.warn(e.getMessage());
+            throw e;
         }
     }
     
-    private DualControlMessageResult process(String name, char[] password) {
-        if (password.length == 0) {
-            return DualControlMessageResult.ok("Empty submission from " + name);
+    private String verify(String name, char[] passphrase) throws Exception {
+        if (passphrase.length == 0) {
+            return "Empty submission from " + name;
         }
         String responseMessage = "Received " + name;
         if (verifyPassphrase && !verifiedNames.contains(name)) {
             String invalidMessage = new DualControlPassphraseVerifier(properties).
-                    getInvalidMessage(password);
+                    getInvalidMessage(passphrase);
             if (invalidMessage != null) {
-                return DualControlMessageResult.error(
-                        responseMessage + ": " + invalidMessage);
+                throw new Exception(responseMessage + ": " + invalidMessage);
             }
         }
-        submissions.put(name, password);
-        responseMessage += ": " + 
-                DualControlDigest.digestBase32(password).substring(1, 16);
-        return DualControlMessageResult.ok(responseMessage);
+        submissions.put(name, passphrase);
+        return responseMessage;
     }
     
     public static char[] readChars(DataInputStream dis) throws IOException {
