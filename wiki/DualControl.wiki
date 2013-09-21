@@ -47,7 +47,7 @@ $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for new key dek2013:
 Re-enter password for new key dek2013:
-OK evanx WLCO4XPIFBTNWOHX
+Received evanx
 }}}
 
 The logs produced by <tt>!DualControlGenSecKey</tt> are as follows.
@@ -95,7 +95,7 @@ public class DualControlGenSecKey {
     private SSLContext sslContext;
 
     public DualControlGenSecKey(Properties properties, MockableConsole console) {
-        this.props = new VellumProperties(properties);
+        this.props = new DualControlProperties(properties);
         this.console = console;
         submissionCount = props.getInt("dualcontrol.submissions", 3);
         keyStorePassword = props.getPassword("storepass", null);
@@ -120,7 +120,7 @@ Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</
 {{{
     public static void main(String[] args) throws Exception {
         DualControlGenSecKey instance = new DualControlGenSecKey(System.getProperties(),
-                new ConsoleAdapter(System.console()));
+                new MockableConsoleAdapter(System.console()));
         try {
             instance.init();
             instance.call();
@@ -241,7 +241,7 @@ public class DualControlSSLContextFactory {
     ...
     public static SSLContext createSSLContext(Properties properties, MockableConsole console)
             throws Exception {
-        VellumProperties props = new VellumProperties(properties);
+        DualControlProperties props = new DualControlProperties(properties);
         String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
@@ -284,7 +284,7 @@ public class DualControlConsole {
 
     public static void main(String[] args) throws Exception {
         DualControlConsole instance = new DualControlConsole(System.getProperties(), 
-                new ConsoleAdapter(System.console()));
+                new MockableConsoleAdapter(System.console()));
         try {
             instance.init();
             instance.call();
@@ -345,7 +345,7 @@ evanx@beethoven:~$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualCon
 Enter password for dual control SSL connection:
 Enter password for new key dek2013: 
 Re-enter password: 
-OK evanx
+Received evanx
 }}}
 where <tt>DualControlSSLContextFactory</tt> prompts for the SSL keystore password first.
 
@@ -367,7 +367,7 @@ public class DualControlPassphraseVerifier {
     private final int minWordCount;
 
     public DualControlPassphraseVerifier(Properties properties) {
-        VellumProperties props = new VellumProperties(properties);
+        DualControlProperties props = new DualControlProperties(properties);
         verifyPassphrase = props.getBoolean(
                 "dualcontrol.verifyPassphrase", true);
         verifyPassphraseComplexity = props.getBoolean(
@@ -383,7 +383,7 @@ public class DualControlPassphraseVerifier {
 We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> decrees uppercase and lowercase, and we should cover all bases.
 
 {{{
-    public String getInvalidMessage(char[] password) throws Exception {
+    public String getInvalidMessage(char[] password) {
         if (verifyPassphrase) {
             if (password.length < minPassphraseLength) {
                 return "Passphrase too short";
@@ -479,7 +479,7 @@ $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key dek2013 for DualControlDemoApp: 
 Re-enter password for key dek2013 for DualControlDemoApp: 
-OK evanx WLCO4XPIFBTNWOHX
+Received evanx
 }}}
 
 {{{
@@ -487,10 +487,8 @@ $ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter password for key dek2013 for DualControlDemoApp: 
 Re-enter password for key dek2013 for DualControlDemoApp: 
-OK henty 6QLBNC26WGS34AIL
+Received henty
 }}}
-
-where the response message includes a truncated hash of the submitted password, so we might recognise its correctness or correctability. Hopefully this hash does not introduce some vulnerability? 
 
 <h4><tt>!DualControlSessions</tt></h4>
 
@@ -520,7 +518,8 @@ where we read the dual info using <tt>!DualControlManager</tt>, which opens an <
 {{{
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
-        manager.init(System.console());
+        manager.setVerifyPassphrase(false);
+        manager.init(new MockableConsoleAdapter(System.console()));
         manager.call();
         return manager.getDualMap().entrySet().iterator().next();
     }   
@@ -541,7 +540,7 @@ public class DualControlKeyStores {
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
             Socket socket = DualControlSSLContextFactory.createSSLContext(
-                    System.getProperties(), new ConsoleAdapter(System.console())).
+                    System.getProperties(), new MockableConsoleAdapter(System.console())).
                     getSocketFactory().createSocket(array[0], Integer.parseInt(array[1]));
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();
@@ -572,7 +571,7 @@ public class FileServer {
     public void call() throws Exception {
         SSLServerSocket serverSocket = (SSLServerSocket) 
                 DualControlSSLContextFactory.createSSLContext(System.getProperties(),
-                new ConsoleAdapter(System.console())).getServerSocketFactory().
+                new MockableConsoleAdapter(System.console())).getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);
@@ -681,10 +680,12 @@ where we accumulate the required number of submissions in a loop, handing each s
             throw new Exception("Empty password submission from " + name);            
         }
         String responseMessage = "Received " + name;
-        String invalidMessage = new DualControlPassphraseVerifier(properties).
-                getInvalidMessage(password);
-        if (invalidMessage != null) {
-            throw new Exception(responseMessage + ": " + invalidMessage);
+        if (verifyPassphrase && !verifiedNames.contains(name)) {
+            String invalidMessage = new DualControlPassphraseVerifier(properties).
+                    getInvalidMessage(password);
+            if (invalidMessage != null) {
+                throw new Exception(responseMessage + ": " + invalidMessage);
+            }
         }
         submissions.put(name, password);
         logger.info(responseMessage);
