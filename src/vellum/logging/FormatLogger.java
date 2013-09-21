@@ -30,12 +30,12 @@ import vellum.util.Args;
 public class FormatLogger {
     private Logger logger;
 
-    public static FormatLogger getLogger(Class contextClass) {
-        return new FormatLogger(contextClass);
+    public static FormatLogger getLogger(Class source) {
+        return new FormatLogger(source);
     }
     
-    private FormatLogger(Class clazz) {
-        this.logger = Logger.getLogger(clazz);
+    private FormatLogger(Class source) {
+        this.logger = Logger.getLogger(source);
     }
     
     public void trace(String message, Object ... args) {
