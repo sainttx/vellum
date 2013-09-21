@@ -20,7 +20,6 @@
  */
 package dualcontrol;
 
-import dualcontrol.MockableConsole;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -65,4 +64,18 @@ public class MockConsole implements MockableConsole {
         logger.info(message);
         lines.add(message);
     }
+    
+    public static void main(String[] args) throws Exception {
+        if (args.length != 2) {
+            logger.error("usage: alias password");
+        } else {
+            MockConsole console = new MockConsole(args[0], args[1].toCharArray());
+            DualControlConsole instance = new DualControlConsole(
+                    System.getProperties(), console);
+            instance.init();
+            instance.call();
+            logger.info(console.getLines().get(0));
+        }
+    }    
+    
 }
