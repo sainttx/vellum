@@ -52,7 +52,7 @@ public class MillisTest {
         Assert.assertEquals(Millis.format(1001), "00:00:01,001");
         Assert.assertEquals(Millis.format(60888), "00:01:00,888");
         Assert.assertEquals(Millis.format(3600999), "01:00:00,999");
-    }    
+    }
     
     @Test
     public void testParse() {

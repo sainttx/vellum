@@ -69,5 +69,5 @@ public class PBESaltTest {
         pbeSalt.encryptSalt(cipher);
         pbeSalt.decryptSalt(cipher);
         assertTrue(pbeSalt.matches(pbePassword));
-    }          
+    }      
 }
