@@ -60,5 +60,5 @@ public class DualControlDigest {
         writer.write(chars);
         writer.close();
         return baos.toByteArray();
-    }    
+    }
 }

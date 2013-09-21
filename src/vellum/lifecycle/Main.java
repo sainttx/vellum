@@ -34,7 +34,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-    }    
+    }
 
     public static void main(String[] args, ConfigMapInitialisable instance, ConfigMap configMap) {
         try {
@@ -42,6 +42,6 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-    }    
+    }
     
 }

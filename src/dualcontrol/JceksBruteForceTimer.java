@@ -54,7 +54,7 @@ public class JceksBruteForceTimer extends Thread implements Cloneable, Runnable 
             new JceksBruteForceTimer(Integer.parseInt(args[1]), args[2], args[3].toCharArray(),
                     args[4], args[5].toCharArray()).start(Integer.parseInt(args[0]));
         }
-    }    
+    }
 
     public JceksBruteForceTimer(int maximumCount, String keyStoreLocation, char[] keyStorePass, 
             String alias, char[] keyPass) {
@@ -147,5 +147,5 @@ public class JceksBruteForceTimer extends Thread implements Cloneable, Runnable 
         char first = ' ';
         char last = 'z';
         return (char) (first + (random.nextInt(last - first)));
-    }    
+    }
 }

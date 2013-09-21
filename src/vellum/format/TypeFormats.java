@@ -52,6 +52,6 @@ public class TypeFormats {
         } else {
             return arg.toString();
         }
-    }    
+    }
 
 }

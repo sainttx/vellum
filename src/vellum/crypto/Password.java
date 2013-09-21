@@ -79,5 +79,5 @@ public class Password {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }       
+    }   
 }

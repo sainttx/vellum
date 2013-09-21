@@ -84,6 +84,6 @@ public class StringMap extends HashMap<String, String> {
 
     public String toJson() {
         return new Gson().toJson(this);
-    }    
+    }
 }
 

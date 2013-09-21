@@ -77,5 +77,5 @@ public class FormatLogger {
     
     public void error(Throwable throwable, String message, Object ... args) {
         logger.error(String.format(message, args), throwable);        
-    }    
+    }
 }

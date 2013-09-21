@@ -116,12 +116,12 @@ public class CryptoHandler {
         write(dataBytes);
         logger.debug("ivBytes " + ivBytes.length);
         logger.debug("dataBytes " + dataBytes.length);
-    }    
+    }
     
     private void write(byte[] bytes) throws Exception {
         dos.writeShort(bytes.length);
         dos.write(bytes);
-    }    
+    }
     
 }
 

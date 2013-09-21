@@ -38,7 +38,7 @@ public class FileClient {
         byte[] bytes = readBytes(socket.getInputStream());
         socket.close();
         return bytes;
-    }    
+    }
     
     public static byte[] readBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

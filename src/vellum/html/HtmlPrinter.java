@@ -33,47 +33,47 @@ public class HtmlPrinter extends PrinterDelegator {
 
     public void divId(String id) {
         out.printf("<div id='%s'>\n", id);
-    }    
+    }
     
     public void div(String style) {
         out.printf("<div class='%s'>\n", style);
-    }    
+    }
 
     public void pf(String format, Object ... args) {
         out.printf("<p>%s</p>\n", String.format(format, args));
-    }    
+    }
     
     public void divClose() {
         out.printf("</div>\n");
-    }    
+    }
 
     public void span(String style, String string) {
         out.printf("<span class='%s'>%s</span>\n", style, string);
-    }    
+    }
     
     public void aClosed(String href, String text) {
         out.printf("<a href='%s'>%s</a>\n", href, text);
-    }    
+    }
     
     public void a(String href) {
         out.printf("<a href='%s'>\n", href);
-    }    
+    }
 
     public void img(String src) {
         out.printf("<img src='%s'/>\n",src);
-    }    
+    }
 
     public void aimg(String href, String src) {
         out.printf("<a href='%s'><img src='%s'/></a>\n", href, src);
-    }    
+    }
     
     public void a(String style, String href) {
         out.printf("<a class='%s' href='%s'>\n", style, href);
-    }    
+    }
     
     public void aClose() {
         out.printf("</a>\n");
-    }    
+    }
     
     public void tableDiv(String style) {
         out.printf("<div class='%s'>\n", style);

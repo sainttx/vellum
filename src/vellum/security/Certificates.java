@@ -75,7 +75,7 @@ public class Certificates {
     
     public static X509Certificate findRootCert(KeyStore keyStore, String alias) throws Exception {
         return findRootCert(keyStore.getCertificateChain(alias));
-    }    
+    }
     
     public static X509Certificate findRootCert(Certificate[] chain) throws Exception {
         for (Certificate cert : chain) {

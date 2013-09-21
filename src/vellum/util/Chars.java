@@ -50,7 +50,7 @@ public class Chars {
         writer.write(chars);
         writer.close();
         return baos.toByteArray();
-    }    
+    }
     
     public static byte[] getAsciiBytes(char[] chars) {
         byte[] array = new byte[chars.length];
@@ -58,5 +58,5 @@ public class Chars {
             array[i] = (byte) chars[i];    
         }
         return array;
-    }           
+    }       
 }

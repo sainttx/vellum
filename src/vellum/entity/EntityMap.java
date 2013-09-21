@@ -41,5 +41,5 @@ public class EntityMap<I extends Comparable, E extends IdEntity> {
     
     public List<IdEntity> getEntityList() {
         return new ArrayList(entityMap.values());
-    }    
+    }
 }

@@ -107,7 +107,7 @@ public class DualControlEnroll {
                         new KeyStore.PasswordProtection(dualPassword);
                 keyStore.setEntry(alias, entry, prot);
             }
-        }        
+        }    
     }
     
     SecretKey getKey() throws Exception {
@@ -124,7 +124,7 @@ public class DualControlEnroll {
             if (aliasList.contains(alias)) {
                 return (SecretKey) keyStore.getKey(alias, dualPassword);
             }
-        }      
+        }  
         throw new DualControlException("Key not found");
     }
 }

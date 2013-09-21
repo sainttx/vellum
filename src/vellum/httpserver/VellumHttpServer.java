@@ -43,7 +43,7 @@ public class VellumHttpServer implements Startable {
     
     public VellumHttpServer(HttpServerConfig config) {
         this.config = config;
-    }    
+    }
 
     private boolean portAvailable(int port) {
         try {
@@ -98,5 +98,5 @@ public class VellumHttpServer implements Startable {
             return true;
         }  
         return false;
-    }    
+    }
 }

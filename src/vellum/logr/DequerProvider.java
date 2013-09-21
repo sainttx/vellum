@@ -40,5 +40,5 @@ public class DequerProvider implements LogrProvider {
 
     public DequerHandler getDequerHandler() {
         return dequerHandler;
-    }    
+    }
 }

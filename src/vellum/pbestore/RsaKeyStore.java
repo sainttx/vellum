@@ -93,7 +93,7 @@ public class RsaKeyStore {
         byte[] keyBytes = keyPair.getPrivate().getEncoded();
         PbeStore pbeStore = new AesPbeStore();
         pbeStore.store(stream, alg, alias, keyBytes, password);
-    }    
+    }
     
     public PublicKey loadPublic(InputStream stream) throws Exception {
         DataInputStream dis = new DataInputStream(stream);
@@ -108,5 +108,5 @@ public class RsaKeyStore {
         byte[] keyBytes = pbeStore.load(stream, alg, alias, password);
         return KeyFactory.getInstance(alg).generatePrivate(
                 new PKCS8EncodedKeySpec(keyBytes));
-    }        
+    }    
 }

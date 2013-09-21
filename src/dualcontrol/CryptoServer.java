@@ -47,7 +47,7 @@ public class CryptoServer {
                     Integer.parseInt(args[2]), Integer.parseInt(args[3]), 
                     args[4], args[5], args[6].toCharArray());
         }
-    }    
+    }
     
     private void call(Properties properties, MockableConsole console, 
             InetAddress localAddress, int port, int backlog, int count, 
@@ -71,7 +71,7 @@ public class CryptoServer {
                 close(socket);
             }
             if (count > 0 && --count == 0) break;
-        }        
+        }    
     }
     
     private static void close(Socket socket) {

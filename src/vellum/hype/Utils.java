@@ -55,6 +55,6 @@ public class Utils {
             if (!isWord(ch)) return false;    
         }
         return true;
-    }    
+    }
     
 }

@@ -43,5 +43,5 @@ public class AESCiphers {
     
     public static BytesCipher getCipher(Key key) {
         return new BytesCipher(key, cipherTransform);
-    }    
+    }
 }

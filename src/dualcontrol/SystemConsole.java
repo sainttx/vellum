@@ -32,11 +32,10 @@ public class SystemConsole implements MockableConsole {
     @Override
     public char[] readPassword(String prompt, Object ... args) {
         return System.console().readPassword(prompt, args);
-    }        
+    }    
     
     @Override
     public void println(String message) {
         System.console().writer().println(message);
-    }    
-
+    }
 }

@@ -36,10 +36,10 @@ public class MockableConsoleAdapter implements MockableConsole {
     @Override
     public char[] readPassword(String prompt, Object ... args) {
         return console.readPassword(prompt, args);
-    }        
+    }    
     
     @Override
     public void println(String message) {
         console.writer().println(message);
-    }    
+    }
 }

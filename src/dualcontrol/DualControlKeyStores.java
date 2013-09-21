@@ -64,5 +64,5 @@ public class DualControlKeyStores {
             keyStore.load(null, null);
         }
         return keyStore;
-    }        
+    }    
 }

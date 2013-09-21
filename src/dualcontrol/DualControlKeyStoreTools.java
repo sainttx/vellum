@@ -37,5 +37,5 @@ public class DualControlKeyStoreTools {
         } else {
             return System.console().readPassword("storepass: ");
         }
-    }    
+    }
 }

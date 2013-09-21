@@ -64,5 +64,5 @@ public class MinimalPasswordHashSerializer {
         passwordHash.keySize = stream.read() * 8;
         stream.read(passwordHash.hash);
         stream.read(passwordHash.salt);
-    }    
+    }
 }
