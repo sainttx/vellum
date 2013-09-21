@@ -24,7 +24,7 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import vellum.api.BytesCipher;
+import vellum.crypto.api.BytesCipher;
 
 /**
  *
