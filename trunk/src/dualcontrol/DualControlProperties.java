@@ -80,7 +80,7 @@ public class DualControlProperties extends Properties {
             return (Boolean) object;
         }
         throw new RuntimeException("Property value is not boolean: " + propertyName);
-    }    
+    }
     
     public char[] getPassword(String propertyName, char[] defaultValue) {
         String string = super.getProperty(propertyName);

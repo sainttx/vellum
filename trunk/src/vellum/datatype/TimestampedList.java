@@ -72,5 +72,5 @@ public class TimestampedList<T extends Timestamped>  {
         } else {
             return new ArrayList(linkedList.subList(0, size));
         }
-    }    
+    }
 }

@@ -67,7 +67,7 @@ public class TimestampedDequer<T extends Timestamped>  {
             tail.addFirst(it.next());
         }
         return tail;
-    }    
+    }
     
     public synchronized Deque<T> tailDescending(int size) {
         Deque tail = new ArrayDeque();
@@ -76,6 +76,6 @@ public class TimestampedDequer<T extends Timestamped>  {
             tail.addLast(it.next());
         }
         return tail;
-    }    
+    }
     
 }

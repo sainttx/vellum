@@ -96,5 +96,5 @@ public class DualControlSSLContextFactory {
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         return sslContext;
-    }    
+    }
 }

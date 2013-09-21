@@ -35,5 +35,5 @@ public class PasswordSalts {
         SecureRandom random = new SecureRandom();
         random.nextBytes(salt);
         return salt;
-    }    
+    }
 }

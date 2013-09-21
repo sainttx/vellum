@@ -40,7 +40,7 @@ public class VellumLocalHttpServer {
     
     public VellumLocalHttpServer(VellumLocalHttpServerConfig config) {
         this.config = config;
-    }    
+    }
 
     public VellumLocalHttpServerConfig getConfig() {
         return config;
@@ -62,7 +62,7 @@ public class VellumLocalHttpServer {
             return true;
         }  
         return false;
-    }    
+    }
     
     public static void main(String[] args) throws Exception {
         VellumLocalHttpServer server = new VellumLocalHttpServer(new VellumLocalHttpServerConfig());

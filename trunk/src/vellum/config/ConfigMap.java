@@ -53,5 +53,5 @@ public class ConfigMap extends HashMap<ComparableTuple, ConfigEntry> {
 
     public List<ConfigEntry> getEntryList() {
         return entryList;
-    }    
+    }
 }

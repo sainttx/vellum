@@ -43,7 +43,7 @@ public class DualControlMessageResult {
     
     public String getMessage() {
         return message;
-    }    
+    }
     
     public static DualControlMessageResult ok(String message) {
         return new DualControlMessageResult(true, message);

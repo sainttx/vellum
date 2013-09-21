@@ -90,7 +90,7 @@ public class AesPbeStore implements PbeStore {
         dos.write(encryptedSalt);
         dos.write(encryptedBytes);
         dos.flush();
-    }    
+    }
     
     @Override
     public byte[] load(InputStream stream, String type, String alias, char[] password) 
@@ -142,7 +142,7 @@ public class AesPbeStore implements PbeStore {
             iv = params.getParameterSpec(IvParameterSpec.class).getIV();
         }
         return cipher.doFinal(bytes);
-    }            
+    }        
     
     private byte[] decrypt(byte[] bytes) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(cipherTransform);

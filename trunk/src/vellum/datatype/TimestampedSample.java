@@ -40,5 +40,5 @@ public class TimestampedSample<K, T extends Timestamped> extends TimestampedDige
 
     public IntegerCounterMap getCounterMap() {
         return counterMap;
-    }    
+    }
 }

@@ -48,5 +48,5 @@ public class DefaultHandler implements LogrHandler {
             return (Throwable) args[0];
         }
         return null;
-    }    
+    }
 }

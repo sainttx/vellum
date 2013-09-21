@@ -47,7 +47,7 @@ public class VellumHttpsServer implements Startable {
     
     public VellumHttpsServer(HttpServerConfig config) {
         this.config = config;
-    }    
+    }
 
     public void init() throws Exception {
         sslContext = DefaultKeyStores.createSSLContext();
@@ -55,7 +55,7 @@ public class VellumHttpsServer implements Startable {
     
     public void init(SSLContext sslContext) throws Exception {
         this.sslContext = sslContext;
-    }    
+    }
     
     @Override
     public void start() throws Exception {
@@ -84,5 +84,5 @@ public class VellumHttpsServer implements Startable {
             return true;
         }  
         return false;
-    }    
+    }
 }

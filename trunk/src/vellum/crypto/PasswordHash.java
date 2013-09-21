@@ -145,7 +145,7 @@ public class PasswordHash {
     public static boolean verifyBytes(byte[] bytes) {
         logger.info("verifyBytes", bytes.length, (int) bytes[0]);
         return bytes.length >= 48 && bytes[0] == VERSION;
-    }    
+    }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.writeInt(iterationCount);

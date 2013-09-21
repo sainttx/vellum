@@ -63,7 +63,7 @@ public class ArgFormats {
         } else {
             return arg.toString();
         }
-    }    
+    }
 
     public String formatArgs(Object ... args) {
         return formatArray(args);

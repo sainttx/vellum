@@ -46,5 +46,5 @@ public class VellumLocalHttpServerConfig {
 
     public String getRootFile() {
         return rootFile;
-    }    
+    }
 }

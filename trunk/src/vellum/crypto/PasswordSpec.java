@@ -50,5 +50,5 @@ public class PasswordSpec {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }    
+    }
 }

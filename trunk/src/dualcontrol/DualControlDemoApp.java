@@ -39,7 +39,7 @@ public class DualControlDemoApp {
         } else {
             new DualControlDemoApp().loadKey(args[0], args[1].toCharArray(), args[2]);
         }
-    }    
+    }
     
     public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
             throws Exception {

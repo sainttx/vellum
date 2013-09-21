@@ -74,5 +74,5 @@ public class GeneratedRsaKeyPair {
     
     public X509Certificate getCert() {
         return cert;
-    }    
+    }
 }

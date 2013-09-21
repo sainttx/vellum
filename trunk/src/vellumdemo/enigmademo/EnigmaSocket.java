@@ -34,7 +34,7 @@ public class EnigmaSocket {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }    
+    }
     
     public <T> T sendRequest(Object request, Class responseClass) throws Exception {
         socket.getOutputStream().write(new Gson().toJson(request).getBytes(CHARSET));
