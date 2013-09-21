@@ -668,33 +668,48 @@ where we accumulate the required number of submissions in a loop, handing each s
 {{{
     private void read(SSLSocket socket) throws Exception {
         String name = getCN(socket.getSession().getPeerPrincipal().getName());
-        if (names.contains(name)) {
+        if (submissions.keySet().contains(name)) {
             throw new Exception("Duplicate submission from " + name);
         }
-        names.add(name);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        char[] password = readChars(dis);
-        if (password.length == 0) {
-            throw new Exception("Empty password submission from " + name);            
+        char[] passphrase = readChars(dis);
+        try {
+            String resultMessage = verify(name, passphrase);
+            dos.writeUTF(resultMessage);
+            logger.info(resultMessage);
+        } catch (Exception e) {
+            dos.writeUTF(e.getMessage());
+            logger.warn(e.getMessage());
+            throw e;
         }
-        String responseMessage = "Received " + name;
-        if (verifyPassphrase && !verifiedNames.contains(name)) {
-            String invalidMessage = new DualControlPassphraseVerifier(properties).
-                    getInvalidMessage(password);
-            if (invalidMessage != null) {
-                throw new Exception(responseMessage + ": " + invalidMessage);
-            }
-        }
-        submissions.put(name, password);
-        logger.info(responseMessage);
-        responseMessage += " " + DualControlUtil.digestBase32(password).substring(1, 16);
-        dos.writeUTF(responseMessage);
     }
 }}}
 
 where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
+
+{{{
+    private String verify(String name, char[] passphrase) throws Exception {
+        if (passphrase.length == 0) {
+            return "Empty submission from " + name;
+        }
+        String responseMessage = "Received " + name;
+        if (verifyPassphrase && !verifiedNames.contains(name)) {
+            String invalidMessage = new DualControlPassphraseVerifier(properties).
+                    getInvalidMessage(passphrase);
+            if (invalidMessage != null) {
+                throw new Exception(responseMessage + ": " + invalidMessage);
+            }
+        }
+        submissions.put(name, passphrase);
+        return responseMessage;
+    }
+}}}
+
+where an empty passhrase is sent by <tt>!DualControlConsole</tt> to abort if re-entered passphrase doesn't match, and we'll let the admin retry in that case. 
+
+<tt>!DualControlGenSecKey</tt> will require <tt>!DualControlManager</tt> to verify passphrase length and complexity, but otherwise we don't verify existing passphrases.
 
 Finally, we compose a map of dual aliases and split passwords as follows.
 
