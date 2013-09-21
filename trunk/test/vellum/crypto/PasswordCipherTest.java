@@ -21,7 +21,7 @@
  */
 package vellum.crypto;
 
-import vellum.api.Encrypted;
+import vellum.crypto.api.Encrypted;
 import vellum.crypto.util.Base64;
 import java.util.Arrays;
 import org.junit.Test;
