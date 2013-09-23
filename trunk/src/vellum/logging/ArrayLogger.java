@@ -30,7 +30,11 @@ import org.apache.log4j.Logger;
 public class ArrayLogger {
     private Logger logger;
 
-    public ArrayLogger(Logger logger) {
+    public static ArrayLogger getLogger(Class source) {
+        return new ArrayLogger(Logger.getLogger(source));
+    }
+    
+    private ArrayLogger(Logger logger) {
         this.logger = logger;
     }
             

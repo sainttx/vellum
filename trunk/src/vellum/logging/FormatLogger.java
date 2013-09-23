@@ -51,7 +51,7 @@ public class FormatLogger {
     }
 
     public void info(String message, Object ... args) {
-        logger.info(String.format(message, args));        
+        logger.info(String.format(message, args));
     }
     
     public void infoArray(String message, Object[] args) {
@@ -76,6 +76,6 @@ public class FormatLogger {
     }
     
     public void error(Throwable throwable, String message, Object ... args) {
-        logger.error(String.format(message, args), throwable);        
+        logger.error(String.format(message, args), throwable);
     }
 }
