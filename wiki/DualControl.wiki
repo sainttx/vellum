@@ -77,12 +77,12 @@ We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the 
 
 {{{
 $ keytool -keystore $keystore -storetype JCEKS -storepass "$storepass" -list | grep Entry
+dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
 dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
-dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
 }}}
 
-Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person. The keystore password is shared, but that's just extra.
+Actually these three keys are one and the same! However each copy has a different "split password," which is a combination of a pair of personal passwords. Consequently the key password is known to no single person. (The keystore password is shared, but that's just extra.)
 
 <h4><tt>!DualControlGenSecKey</tt> implementation</h4>
 
