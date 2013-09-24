@@ -10,7 +10,7 @@ Encryption is great for information security and all that. But the problem with 
 
 <h4>PCI DSS</h4>
 
-The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Where it refers to "cardholder data," replace that with "sensitive customer data" or "security credentials" or what-have-you. 
+The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Where it refers to "cardholder data," replace that with "identity data" or "access credentials" or what-have-you. 
 
 If we want information security, then PCI DSS should be our new best friend forever. 
 
@@ -24,13 +24,13 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll store our key in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key, and PCI DSS compliance thus enabled :)
+We'll store our key in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance thus enabled :)
 
-We propose enrolling at least three admins, but preferrably four, so that if one or two admins are unavailable, we're still good to go with two others. For each pairing, we'll store a copy of the key protected by a combination of their two passwords. Consequently if we have 3 admins, we'll have 3 copies of the key in the keystore, one for each duo. If we have 4 admins, then we'll have 6 copies of the key.
+We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each pairing, we'll store a copy of the key protected by a combination of their two passwords. Consequently if we have 3 custodians, we'll have 3 copies of the key in the keystore, one for each duo. If we have 4 custodians, then we'll have 6 copies of the key.
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
-Step 1 for any data security endeavour is to generate an encryption key. Whereas <tt>keytool</tt> prompts for a password entered by a single admin, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
+Step 1 for any data security endeavour is to generate an encryption key. Whereas <tt>keytool</tt> prompts for a password entered by a single custodian, we introduce <tt>!DualControlGenSecKey</tt> to handle multiple password submissions via SSL.
 
 {{{
 $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
@@ -61,9 +61,9 @@ INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
 }}}
 
-where <tt>!DualControlManager</tt> does the leg work of receiving passwords from admins.
+where <tt>!DualControlManager</tt> does the leg work of receiving passwords from custodians.
 
-For this demo, three admins submit their passwords via SSL sockets, where their client certs' CN identifies them as evanx, henty and brent. 
+For this demo, three custodians submit their passwords via SSL sockets, where their client certs' CN identifies them as evanx, henty and brent. 
 
 {{{
 $ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
@@ -279,7 +279,7 @@ As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and 
 
 <h4><tt>!DualControlConsole</tt></h4>
 
-Let's write an app for admins to submit their passwords via SSL.
+Let's write an app for custodians to submit their passwords via SSL.
 {{{
 public class DualControlConsole {
     Properties properties;
@@ -357,9 +357,9 @@ where <tt>DualControlSSLContextFactory</tt> prompts for the SSL keystore passwor
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-A known "bug" is that more godly sysadmins can socially-engineer other less godly admins to submit their passwords whilst a malicious socket server has been installed by the most godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom admins, or the impersonation of other admins e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. So we must ensure that our logs and alerts prevent such events from going unnoticed.
+A known "bug" is that more godly sysadmins can socially-engineer other less godly admins to submit their passwords whilst a malicious socket server has been installed by the most godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom custodians, or the impersonation of other custodians e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. So we must ensure that our logs and alerts prevent such events from going unnoticed.
 
-On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the admin needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. While root can also "have" the files containing the keys, he shouldn't know other admins' passwords protecting the keys therein.
+On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the custodian needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. While root can also "have" the files containing the keys, he shouldn't know other custodians' passwords protecting the keys therein.
 
 <h4>Password complexity vs length</h4>
 
@@ -444,7 +444,7 @@ Considering that the most common 100 words make up a half of all written materia
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
 
-Note that our mandatory minimums apply to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
+Note that our mandatory minimums apply to each custodian's passphrase, to protect against a rogue custodian perpetrating the brute-force attack on the other half of the split password.
 
 A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>. Then we would specify huge number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is still a tolerable startup delay in our production environment, but would thwart brute-force attacks.
 
@@ -465,7 +465,7 @@ public class DualControlDemoApp {
 }
 }}}
 
-The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two admins to submit their passwords using <tt>!DualControlConsole</tt>.
+The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
 
 {{{
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
@@ -694,7 +694,7 @@ where we accumulate the required number of submissions in a loop, handing each s
     }
 }}}
 
-where the admin's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
+where the custodian's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
 
 {{{
     private String verify(String name, char[] passphrase) throws Exception {
@@ -714,7 +714,7 @@ where the admin's username is determined from their SSL cert, in particular the 
     }
 }}}
 
-where an empty passhrase is sent by <tt>!DualControlConsole</tt> to abort if re-entered passphrase doesn't match, and we'll let the admin retry in that case. 
+where an empty passhrase is sent by <tt>!DualControlConsole</tt> to abort if re-entered passphrase doesn't match, and we'll let the custodian retry in that case. 
 
 <tt>!DualControlGenSecKey</tt> will require <tt>!DualControlManager</tt> to verify passphrase length and complexity, but otherwise we don't verify existing passphrases.
 
@@ -775,11 +775,11 @@ The problem with encryption is secure key management. We shouldn't leave the key
 
 PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow.
 
-We present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret. We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enable split knowledge of the key password, so that dual control is required to load the key. Each split password is effectively a key-encryption key specific to a duo of admins, and so known to no single person.
+We present a <tt>!DualControlGenSecKey</tt> utility for generating secret keys that are really secret. We protect the data-encryption keys using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enable split knowledge of the key password, so that dual control is required to load the key. Each split password is effectively a key-encryption key specific to a duo of custodians, and so known to no single person.
 
-We propose keeping at least three copies of the same key, but where each copy is password-protected by a different pair of admins. Then if one admin is on vacation or otherwise indisposed, we're still good because we only require two admins to restart our app.
+We propose keeping at least three copies of the same key, but where each copy is password-protected by a different duo of custodians. Then if one custodian is on vacation or otherwise indisposed, we're still good because we only require two custodians to restart our app.
 
-Instead of single shared password for our secret keystore, we require two shared passwords (server SSL keystore/truststore and secret keystore), and as well two private passwords per admin (client SSL keystore/truststore and secret key split password).
+Instead of single shared password for our secret keystore, we require two shared passwords (server SSL keystore/truststore and secret keystore), and as well two private passwords per custodian (client SSL keystore/truststore and secret key split password).
 
 <h4>Furthermore</h4>
 
