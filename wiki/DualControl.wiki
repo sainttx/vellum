@@ -35,9 +35,11 @@ Step 1 for any data security endeavour is to generate an encryption key. Whereas
 {{{
 $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     -Ddualcontrol.ssl.keyStore=keystores/2013/dualcontrol.jks \
-    -Dkeystore=keystores/2013/dek.jceks -Dstoretype=JCEKS -Dstorepass="$storepass" \
+    -Dkeystore=keystores/2013/dek.jceks -Dstoretype=JCEKS \
     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
     dualcontrol.DualControlGenSecKey
+
+Enter passphrase for keystore (keystores/2013/dek.jceks):
 }}}
 
 where we have requested a new 256bit AES secret key, aliased as "dek2013."
