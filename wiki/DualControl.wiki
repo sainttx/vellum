@@ -24,7 +24,7 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll store our key in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key.
+We'll store our key in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two admins, so it's known to no single person. Clearly dual control by those two admins is then required to load the key. PCI DSS compliance thus enabled :)
 
 We propose enrolling at least three admins, so if one admin is unavailable, we're still good to go with two others. For each pairing, we'll store a copy of the key protected by a combination of their two passwords. Consequently if we have 3 admins, we'll have 3 copies of the key in the keystore, one for each duo. If we have 4 admins, then we'll have 6 copies of the key.
 
