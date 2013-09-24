@@ -801,6 +801,8 @@ Incidently, we combine the split passwords by simply concatenating them.
     }
 }}}
 
+where we arbitrarily use the vertical bar character as a delimiter between the two personal passwords.
+
 <h4>Unit test</h4>
 
 In <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java"><tt>!DualControlTest</tt></a>, we test <tt>!DualControlManager</tt> and two <tt>!DualControlConsole</tt>'s in concert, using threads, mock consoles and what-not. This will be presented in a follow-on article, as this article is already too long.
