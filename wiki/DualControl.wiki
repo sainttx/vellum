@@ -576,6 +576,8 @@ We instantiate, initialise and call <tt>!DualControlManager</tt> as follows.
 
 where we read the first entry in <tt>dualMap</tt>. Actually this is the only entry in the map since we have required only two submissions.
 
+Once we have used the split password to load the key, we clear that password. However the key itself is now in memory in clear-text, and we must be wary of it being compromised by our application, or extracted by attaching a debugger to the JVM, or malicious memory scanner, on the same VM or indeed on the host machine.
+
 <h4>Remote keystore</h4>
 
 We might wish to store our keystore centrally, or internally on a more secure server, and load it via SSL as follows. 
