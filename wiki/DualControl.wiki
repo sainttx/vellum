@@ -281,13 +281,13 @@ As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and 
 Naturally we use <tt>keytool</tt> we create our private SSL keystore.
 
 {{{
-evanx$ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
+$ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
     -alias evanx -dname "CN=evanx/OU=test"
 }}}
 
 We export our certificate, and cut and paste it into a PEM file.
 {{{
-evanx$ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
+$ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 }}}
 
 We can inspect the certificate using <tt>openssl</tt> as follows.
