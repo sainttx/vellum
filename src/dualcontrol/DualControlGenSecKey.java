@@ -87,7 +87,7 @@ public class DualControlGenSecKey {
         }
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
-                    "Enter passphrase for keystore (%s): ", keyStoreLocation);
+                    "Enter passphrase for secret keystore (%s): ", keyStoreLocation);
             if (keyStorePassword == null) {
                 throw new Exception("No keystore passphrase from console");
             }
