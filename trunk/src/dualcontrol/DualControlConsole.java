@@ -78,7 +78,7 @@ public class DualControlConsole {
             dos.writeShort(0);
         } else {
             char[] pass = console.readPassword(
-                    "Re-enter passphrase for " + purpose + ": ");
+                    "Re-enter passphrase: ");
             if (!Arrays.equals(password, pass)) {
                 console.println("Passwords don't match.");
                 dos.writeShort(0);
