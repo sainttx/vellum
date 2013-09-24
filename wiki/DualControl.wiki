@@ -163,9 +163,9 @@ where we instantiate, initialise, and then call this class.
     }
 }}}
 
-where <tt>!DualControlManager</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this <tt>dualPasswordMap</tt> to the <tt>buildKeyStore()</tt> method below.
+where <tt>!DualControlManager</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this map to the <tt>buildKeyStore()</tt> method below.
 {{{
-    public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
+    public KeyStore buildKeyStore(Map<String, char[]> dualMap) throws Exception {
         keyAlias = props.getString("alias");
         keyStoreType = props.getString("storetype");
         keyAlg = props.getString("keyalg");
@@ -175,26 +175,28 @@ where <tt>!DualControlManager</tt> provides a map of aliases and passwords, comp
         SecretKey secretKey = keyGenerator.generateKey();
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, null);
-        setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
+        setEntries(keyStore, secretKey, keyAlias, dualMap);
         return keyStore;
     }
 
-    private static void setEntry(KeyStore keyStore, SecretKey secretKey,
+    private static void setEntries(KeyStore keyStore, SecretKey secretKey,
             String keyAlias, Map<String, char[]> dualPasswordMap) throws Exception {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
         for (String dualAlias : dualPasswordMap.keySet()) {
             char[] dualPassword = dualPasswordMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
-            KeyStore.ProtectionParameter prot =
+            logger.info("alias " + alias);
+            KeyStore.PasswordProtection prot =
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, prot);
+            prot.destroy();
         }
     }
 }}}
 
-where for each duo we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different split password, i.e. known to no single person :)
+where for each duo in the map we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-In general some argue that we should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this compels our implementation.
+Some argue that one should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this compels our implementation, and feels good.
 {{{
     @Test
     public void testGenKeyStore() throws Exception {
