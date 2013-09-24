@@ -63,7 +63,7 @@ INFO [DualControlGenSecKey] alias dek2013-evanx-henty
 
 where <tt>!DualControlManager</tt> does the leg work of receiving passwords from custodians.
 
-For this demo, three custodians submit their passwords via SSL sockets using <tt>DualControlConsole</tt> as follows, where their client certs' CN identifies them as evanx, henty and brent. 
+For this demo, three custodians submit their passwords via SSL sockets using <tt>!DualControlConsole</tt> as follows, where their client certs' CN identifies them as evanx, henty and brent. 
 
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
