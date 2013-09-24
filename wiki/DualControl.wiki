@@ -734,9 +734,22 @@ Finally, we compose a map of dual aliases and split passwords as follows.
     }
 }}}
 
-where the <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
+where the <tt>compareTo()</tt> in the nested loop above ensures that we exclude tehe alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
 
+Incidently, we combine the split passwords by simply concatenating them.
 {{{
+    public static char[] combineSplitPassword(char[] password, char[] other) {
+        char[] splitPassword = new char[password.length + other.length + 1];
+        int index = 0;
+        for (char ch : password) {
+            splitPassword[index++] = ch;
+        }
+        splitPassword[index++] = '|';
+        for (char ch : other) {
+            splitPassword[index++] = ch;
+        }
+        return splitPassword;
+    }
 }}}
 
 <h4>Unit test</h4>
