@@ -292,7 +292,7 @@ evanx$ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 
 We can inspect the certificate using <tt>openssl</tt> as follows.
 {{{
-$ openssl x509 -text -in evanx.pem | grep CN
+$ openssl x509 -text -in evanx.pem
 }}}
 
 <h4><tt>!DualControlConsole</tt></h4>
