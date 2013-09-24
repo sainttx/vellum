@@ -740,6 +740,8 @@ where we accumulate the required number of submissions in a loop, handing each s
 
 where the custodian's username is determined from their SSL cert, in particular the <tt>CN</tt> field.
 
+<tt>!DualControlGenSecKey</tt> will require <tt>!DualControlManager</tt> to verify the length and complexity of new passphrases, but otherwise we'll set <tt>verifyPassphrase</tt> to <tt>false</tt> e.g. for existing passphrases as required to load the key into our app.
+
 {{{
     private String verify(String name, char[] passphrase) throws Exception {
         if (passphrase.length == 0) {
@@ -759,8 +761,6 @@ where the custodian's username is determined from their SSL cert, in particular 
 }}}
 
 where an empty passhrase is sent by <tt>!DualControlConsole</tt> to abort if re-entered passphrase doesn't match, and we'll let the custodian retry in that case. 
-
-<tt>!DualControlGenSecKey</tt> will require <tt>!DualControlManager</tt> to verify passphrase length and complexity, but otherwise we don't verify existing passphrases.
 
 Finally, we compose a map of dual aliases and split passwords as follows.
 
