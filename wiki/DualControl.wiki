@@ -318,7 +318,7 @@ We import the cert into the server SSL truststore as required by <tt>!DualContro
 $ keytool -keystore server.jks -alias evanx -importcert -file evanx.pem
 }}}
 
-Similarly, the server cert is imported into the custodians' truststores as specified by <tt>-Ddualcontrol.ssl.truststore</tt>.
+Similarly, the server cert is imported into the custodians' truststores as specified by <tt>dualcontrol.ssl.truststore</tt>.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
