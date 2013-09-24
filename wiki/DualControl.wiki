@@ -283,26 +283,16 @@ Naturally we use <tt>keytool</tt> we create our private SSL keystore.
 {{{
 evanx$ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 999 \
     -alias evanx -dname "CN=evanx/OU=test"
-
-Enter keystore password:  
-Re-enter new password: 
-Enter key password for <evanx>
-	(RETURN if same as keystore password): 
 }}}
 
 We export our certificate, and cut and paste it into a PEM file.
 {{{
 evanx$ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
-
-Enter keystore password:  
 }}}
 
 We can inspect the certificate using <tt>openssl</tt> as follows.
 {{{
 $ openssl x509 -text -in evanx.pem | grep CN
-
-        Issuer: CN=evanx, OU=test
-        Subject: CN=evanx, OU=test
 }}}
 
 <h4><tt>!DualControlConsole</tt></h4>
