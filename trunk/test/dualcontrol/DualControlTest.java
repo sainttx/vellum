@@ -54,7 +54,7 @@ public class DualControlTest {
     private KeyStore trustStore;
     private char[] keyStorePass = "test1234".toCharArray();
     private DualControlProperties properties = new DualControlProperties();
-    private Map<String, char[]> dualPasswordMap = new TreeMap();
+    private Map<String, char[]> dualMap = new TreeMap();
     private Map<String, KeyStore> keyStoreMap = new TreeMap();
     private Map<String, SSLContext> sslContextMap = new TreeMap();
 
@@ -76,19 +76,25 @@ public class DualControlTest {
     }
     
     @Test
+    public void testCombineSplitPassword() throws Exception {
+        Assert.assertEquals("bbbb|eeee", new String(DualControlManager.combineSplitPassword(
+                "bbbb".toCharArray(), "eeee".toCharArray())));
+    }
+        
+    @Test
     public void testGenKeyStore() throws Exception {
-        dualPasswordMap.put("brent-evanx", "bbbb+eeee".toCharArray());
-        dualPasswordMap.put("brent-henty", "bbbb+hhhh".toCharArray());
-        dualPasswordMap.put("evanx-henty", "eeee+hhhh".toCharArray());
+        dualMap.put("brent-evanx", "bbbb|eeee".toCharArray());
+        dualMap.put("brent-henty", "bbbb|hhhh".toCharArray());
+        dualMap.put("evanx-henty", "eeee|hhhh".toCharArray());
         MockConsole appConsole = new MockConsole("app", keyStorePass);
         DualControlGenSecKey instance = new DualControlGenSecKey(properties, appConsole);
-        KeyStore keyStore = instance.buildKeyStore(dualPasswordMap);
+        KeyStore keyStore = instance.buildKeyStore(dualMap);
         Assert.assertEquals(3, Collections.list(keyStore.aliases()).size());
         Assert.assertEquals("dek2013-brent-evanx", asSortedSet(keyStore.aliases()).first());
-        SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
+        SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb|eeee".toCharArray());
         Assert.assertEquals("AES", key.getAlgorithm());
         Assert.assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
-                "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
+                "dek2013-brent-henty", "bbbb|hhhh".toCharArray()).getEncoded()));
     }
 
     @Test
@@ -156,7 +162,7 @@ public class DualControlTest {
         assertOk(readerThread.exception);
         Assert.assertTrue(evanxThread.console.getLine(0).startsWith("Enter passphrase for app:"));
         Assert.assertEquals("brent-evanx", readerThread.dualEntry.getKey());
-        Assert.assertEquals("bbbb+eeee", new String(readerThread.dualEntry.getValue()));
+        Assert.assertEquals("bbbb|eeee", new String(readerThread.dualEntry.getValue()));
         Thread.sleep(1000);
     }
 
