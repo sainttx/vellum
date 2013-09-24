@@ -105,7 +105,7 @@ public class DualControlGenSecKey {
         return buildKeyStore(manager.getDualMap());
     }
 
-    public KeyStore buildKeyStore(Map<String, char[]> dualPasswordMap) throws Exception {
+    public KeyStore buildKeyStore(Map<String, char[]> dualMap) throws Exception {
         keyAlias = props.getString("alias");
         keyStoreType = props.getString("storetype");
         keyAlg = props.getString("keyalg");
@@ -115,21 +115,22 @@ public class DualControlGenSecKey {
         SecretKey secretKey = keyGenerator.generateKey();
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, null);
-        setEntry(keyStore, secretKey, keyAlias, dualPasswordMap);
+        setEntries(keyStore, secretKey, keyAlias, dualMap);
         return keyStore;
     }
 
-    private static void setEntry(KeyStore keyStore, SecretKey secretKey,
-            String keyAlias, Map<String, char[]> dualPasswordMap) throws Exception {
+    private static void setEntries(KeyStore keyStore, SecretKey secretKey,
+            String keyAlias, Map<String, char[]> dualMap) throws Exception {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
-        for (String dualAlias : dualPasswordMap.keySet()) {
-            char[] dualPassword = dualPasswordMap.get(dualAlias);
+        for (String dualAlias : dualMap.keySet()) {
+            char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
             logger.info("alias " + alias);
-            KeyStore.PasswordProtection prot =
+            KeyStore.PasswordProtection passwordProtection =
                     new KeyStore.PasswordProtection(dualPassword);
-            keyStore.setEntry(alias, entry, prot);
-            prot.destroy();
+            keyStore.setEntry(alias, entry, passwordProtection);
+            passwordProtection.destroy();
+            Arrays.fill(dualPassword, (char) 0);
         }
     }
 

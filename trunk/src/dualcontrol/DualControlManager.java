@@ -25,6 +25,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -84,8 +85,7 @@ public class DualControlManager {
     }
     
     public void call() throws Exception {
-        logger.info("purpose: "  + purpose);
-        
+        logger.info("purpose: "  + purpose);        
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
@@ -110,16 +110,30 @@ public class DualControlManager {
                 }
             }
         }
+        for (char[] password : submissions.values()) {
+            Arrays.fill(password, (char) 0);
+        }
     }
 
-    private static char[] combineSplitPassword(char[] passphrase, char[] other) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(passphrase);
-        builder.append('+');
-        builder.append(other);
-        return builder.toString().toCharArray();
+    public void clear() {
+        for (char[] password : dualMap.values()) {
+            Arrays.fill(password, (char) 0);
+        }        
     }
-
+    
+    public static char[] combineSplitPassword(char[] password, char[] other) {
+        char[] splitPassword = new char[password.length + other.length + 1];
+        int index = 0;
+        for (char ch : password) {
+            splitPassword[index++] = ch;
+        }
+        splitPassword[index++] = '|';
+        for (char ch : other) {
+            splitPassword[index++] = ch;
+        }
+        return splitPassword;
+    }
+    
     private void read(SSLServerSocket serverSocket) throws Exception {
         while (submissions.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
