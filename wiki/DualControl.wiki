@@ -297,12 +297,12 @@ $ openssl x509 -text -in evanx.pem
 Certificate:
     Data:
         Version: 3 (0x2)
-        Serial Number: 1380028538 (0x5241907a)
+        Serial Number: 1380030508 (0x5241982c)
     Signature Algorithm: sha1WithRSAEncryption
         Issuer: CN=evanx, OU=test
         Validity
-            Not Before: Sep 24 13:15:38 2013 GMT
-            Not After : Jun 19 13:15:38 2016 GMT
+            Not Before: Sep 24 13:48:28 2013 GMT
+            Not After : Sep 24 13:48:28 2014 GMT
         Subject: CN=evanx, OU=test
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
