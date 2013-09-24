@@ -66,7 +66,7 @@ where <tt>!DualControlManager</tt> does the leg work of receiving passwords from
 For this demo, three custodians submit their passwords via SSL sockets, where their client certs' CN identifies them as evanx, henty and brent. 
 
 {{{
-$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
+$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dual control SSL connection: 
 Enter passphrase for new key dek2013:
 Re-enter passphrase:
