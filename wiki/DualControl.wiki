@@ -843,7 +843,7 @@ In "Dual Control Crypto Server" we implement a dual-controlled crypto server to 
 
 In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using <tt>PBKDF2</tt> with a high number of iterations, so that the key takes a second or two to recover, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java"><tt>!JceksBruteForceTimer.java</tt></a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStore.java"><tt>!RecryptedKeyStore.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java"><tt>!AesPbeStore.java</tt></a>
 
-In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from a old "dek2013" key a to revised "dek2014" key.
+In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from an older "dek2013" key to a new "dek2014" key.
 
 You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol"><tt>src/dualcontrol</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/"><tt>test/dualcontrol</tt></a>.
 
