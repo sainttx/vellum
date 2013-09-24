@@ -309,6 +309,14 @@ Certificate:
                 Public-Key: (2048 bit)
 }}}
 
+We import the cert into the server SSL truststore as used by <tt>!DualControlManager</tt> on behalf of <tt>!DualControlGenSecKey</tt>, or our app.
+
+{{{
+$ keytool -keystore server.jks -alias evanx -importcert -file evanx.pem
+}}}
+
+Similarly the server cert is imported into the custodians' truststores.
+
 <h4><tt>!DualControlConsole</tt></h4>
 
 Let's write an app for custodians to submit their passwords via SSL.
