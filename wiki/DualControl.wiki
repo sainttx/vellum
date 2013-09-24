@@ -43,7 +43,7 @@ Enter passphrase for dual control SSL connection:
 Enter passphrase for secret keystore (keystores/dek2013.jceks): 
 }}}
 
-where we have requested a new 256bit AES secret key, aliased as <tt>dek2013</tt> and stored in <tt>dek2013.jceks</tt>.
+where we have requested a new 256bit AES secret key, aliased as <tt>dek2013</tt>.
 
 The logs produced by <tt>!DualControlGenSecKey</tt> are as follows.
 
