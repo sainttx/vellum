@@ -241,7 +241,7 @@ which invokes <tt>!KeyStore.getEntry()</tt>.
 
 <h4><tt>DualControlSSLContextFactory</tt></h4>
 
-Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to override the default "keyStore" and "trustStore" for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These properties are used to create an <tt>SSLContext</tt> as below.
+Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options to set the default keystore and truststore to be used for SSL sockets, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These properties are used to create an <tt>SSLContext</tt> as below.
 {{{
 public class DualControlSSLContextFactory {    
     ...
