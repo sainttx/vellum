@@ -40,7 +40,7 @@ $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     dualcontrol.DualControlGenSecKey
 
 Enter passphrase for dual control SSL connection: 
-Enter passphrase for keystore (tmp/dualtest/seckeystore.jceks): 
+Enter passphrase for secret keystore (keystores/2013/dek.jceks): 
 }}}
 
 where we have requested a new 256bit AES secret key, aliased as "dek2013."
@@ -150,7 +150,7 @@ where we instantiate, initialise, and then call this class.
         }
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
-                    "Enter passphrase for keystore (%s): ", keyStoreLocation);
+                    "Enter passphrase for secret keystore (%s): ", keyStoreLocation);
             if (keyStorePassword == null) {
                 throw new Exception("No keystore passphrase from console");
             }
