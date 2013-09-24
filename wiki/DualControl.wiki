@@ -604,7 +604,6 @@ public class DualControlManager {
     private String purpose;
     private int submissionCount;
     private SSLContext sslContext;
-    private Set<String> names = new TreeSet();
     private Map<String, char[]> submissions = new TreeMap();
     
     public DualControlManager(Properties properties, int submissionCount, String purpose) {
