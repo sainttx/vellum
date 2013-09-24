@@ -285,14 +285,28 @@ $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 36
     -dname "CN=evanx/OU=test"
 }}}
 
-We export our certificate, and cut and paste it into a PEM file.
+We export our certificate as follows.
+
 {{{
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 }}}
 
-We can inspect the certificate using <tt>openssl</tt> as follows.
+We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt> as follows.
 {{{
 $ openssl x509 -text -in evanx.pem
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1380028538 (0x5241907a)
+    Signature Algorithm: sha1WithRSAEncryption
+        Issuer: CN=evanx, OU=test
+        Validity
+            Not Before: Sep 24 13:15:38 2013 GMT
+            Not After : Jun 19 13:15:38 2016 GMT
+        Subject: CN=evanx, OU=test
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
 }}}
 
 <h4><tt>!DualControlConsole</tt></h4>
