@@ -180,10 +180,10 @@ where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords,
     }
 
     private static void setEntries(KeyStore keyStore, SecretKey secretKey,
-            String keyAlias, Map<String, char[]> dualPasswordMap) throws Exception {
+            String keyAlias, Map<String, char[]> dualMap) throws Exception {
         KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
-        for (String dualAlias : dualPasswordMap.keySet()) {
-            char[] dualPassword = dualPasswordMap.get(dualAlias);
+        for (String dualAlias : dualMap.keySet()) {
+            char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
             logger.info("alias " + alias);
             KeyStore.PasswordProtection passwordProtection =
@@ -196,7 +196,7 @@ where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords,
 
 where for each duo in the map we programmatically create a <tt>!KeyStore</tt> entry containing the same key, but protected by a different split password, i.e. known to no single person :)
 
-Some argue that one should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this compels our implementation, and feels good.
+Some argue that one should not write code per se, but rather tests with accompanying code, hand in glove. We take that approach here, observing that this compels our implementation nicely.
 {{{
     @Test
     public void testGenKeyStore() throws Exception {
