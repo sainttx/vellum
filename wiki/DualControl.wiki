@@ -559,8 +559,11 @@ public class DualControlSessions {
 }
 }}}
 
-where we read the dual info using <tt>!DualControlManager</tt>, which opens an <tt>SSLServerSocket</tt> and waits for split password submissions.
+where we read the dual info using <tt>!DualControlManager</tt>, which opens an <tt>SSLServerSocket</tt> and waits for split password submissions from any two custodians.
 
+Note that we append the dual alias e.g. so that "dek2013" becomes "dek2013-evanx-henty" to load that copy of the key from the keystore.
+
+We instantiate, initialise and call <tt>!DualControlManager</tt> as follows.
 {{{
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
