@@ -26,7 +26,7 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 We'll store our key in a standard JCE keystore, with a shared keystore password. However, we'll split the knowledge of the key password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance is thus enabled :)
 
-We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each pairing, we'll store a copy of the key protected by a combination of their two passwords. Consequently if we have three custodians, coincidently we'll have three copies of the key in the keystore, one for each duo. If we have 4 custodians, then we'll have 6 copies of the key.
+We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each custodial duo, we'll store a copy of the key protected by a combination of their two passwords. Consequently if we have three custodians, coincidently we'll have three copies of the key in the keystore, one for each duo. If we have 4 custodians, then we'll have 6 copies of the key.
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
