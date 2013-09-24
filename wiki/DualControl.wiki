@@ -65,7 +65,7 @@ INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
 }}}
 
-where <tt>!DualControlManager</tt> accepts passwords via an <tt>SSLServerSocket</tt>.
+where <tt>!DualControlManager</tt> receives passwords via an <tt>SSLServerSocket</tt>.
 
 We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
@@ -163,7 +163,7 @@ where we instantiate, initialise, and then call this class.
     }
 }}}
 
-where <tt>!DualControlManager</tt> provides a map of aliases and passwords, composed from submissions via SSL. We pass this map to the <tt>buildKeyStore()</tt> method below.
+where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords, composed from submissions via SSL. We pass this map to the <tt>buildKeyStore()</tt> method below.
 {{{
     public KeyStore buildKeyStore(Map<String, char[]> dualMap) throws Exception {
         keyAlias = props.getString("alias");
@@ -186,10 +186,10 @@ where <tt>!DualControlManager</tt> provides a map of aliases and passwords, comp
             char[] dualPassword = dualPasswordMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
             logger.info("alias " + alias);
-            KeyStore.PasswordProtection prot =
+            KeyStore.PasswordProtection passwordProtection =
                     new KeyStore.PasswordProtection(dualPassword);
-            keyStore.setEntry(alias, entry, prot);
-            prot.destroy();
+            keyStore.setEntry(alias, entry, passwordProtection);
+            passwordProtection.destroy();
         }
     }
 }}}
