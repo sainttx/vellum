@@ -54,6 +54,7 @@ The logs produced by <tt>!DualControlGenSecKey</tt> are as follows.
 
 {{{
 INFO [DualControlManager] purpose: new key dek2013
+INFO [DualControlManager] accept: 3
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
 INFO [DualControlManager] Received brent
@@ -65,7 +66,7 @@ INFO [DualControlGenSecKey] alias dek2013-brent-henty
 INFO [DualControlGenSecKey] alias dek2013-evanx-henty
 }}}
 
-where <tt>!DualControlManager</tt> receives passwords via an <tt>SSLServerSocket</tt>.
+where <tt>!DualControlManager</tt> does the leg work of receiving passwords from admins.
 
 We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
@@ -465,6 +466,7 @@ The application ostensibly loads the key with no fuss. But the caveat is that ex
 $ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
 INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
 INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
+INFO [DualControlManager] accept: 2
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
 INFO [DualControlManager] dualAlias: evanx-henty
@@ -634,7 +636,7 @@ Our app calls <tt>!DualControlManager</tt> to accept submissions via an <tt>SSLS
                 InetAddress.getByName(HOST));
         try {
             serverSocket.setNeedClientAuth(true);
-            read(serverSocket);
+            accept(serverSocket);
         } finally {
             serverSocket.close();
         }
@@ -647,7 +649,8 @@ where we create a client-authenticated SSL server socket.
 Note that we have hard-wired the <tt>SSLServerSocket</tt> to <tt>localhost</tt>. Therefore <tt>!DualControlConsole</tt> must be invoked either in a local <tt>ssh</tt> session, or a remote session using <tt>ssh</tt> port forwarding.
 
 {{{
-    private void read(SSLServerSocket serverSocket) throws Exception {
+    private void accept(SSLServerSocket serverSocket) throws Exception {
+        logger.info("accept: " + submissionCount);        
         while (submissions.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
