@@ -441,7 +441,7 @@ Considering that the most common 100 words make up a half of all written materia
 
 Note that our mandatory minimums apply to each admin's passphrase, to protect against a rogue admin perpetrating the brute-force attack on the other half of the split password.
 
-A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>. Then we would specify huge large number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is still a tolerable startup delay in our production environment, but would thwart brute-force attacks.
+A follow-up article will discuss this further, and conclude that we might want an even stronger <tt>!KeyStore</tt> implementation than JCEKS, in particular with a stronger <tt>!KeyProtector</tt> using <tt>PBKDF2</tt> or even <tt>scrypt</tt>. Then we would specify huge number of iterations e.g. 500k, so that it takes a few seconds to load the key. That is still a tolerable startup delay in our production environment, but would thwart brute-force attacks.
 
 <h4><tt>!DualControlDemoApp</tt></h4>
 
