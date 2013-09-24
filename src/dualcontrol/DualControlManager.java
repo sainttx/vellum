@@ -91,7 +91,7 @@ public class DualControlManager {
                 InetAddress.getByName(HOST));
         try {
             serverSocket.setNeedClientAuth(true);
-            read(serverSocket);
+            accept(serverSocket);
         } finally {
             serverSocket.close();
         }
@@ -134,7 +134,8 @@ public class DualControlManager {
         return splitPassword;
     }
     
-    private void read(SSLServerSocket serverSocket) throws Exception {
+    private void accept(SSLServerSocket serverSocket) throws Exception {
+        logger.info("accept: " + submissionCount);        
         while (submissions.size() < submissionCount) {
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
