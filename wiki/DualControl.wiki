@@ -420,7 +420,7 @@ We observe that an Intel i5 can manage about 30 guesses per millisecond on a JCE
 
 {{{
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
-  $seckeystore $pass dek2013-evanx-henty eeeehhhh
+  keystores/dek2013.jceks "$pass" dek2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
@@ -468,8 +468,7 @@ public class DualControlDemoApp {
 The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
 
 {{{
-$ java dualcontrol.DualControlDemoApp seckeystore.jceks test1234 dek2013
-INFO [DualControlDemoApp] main invoked with args: [seckeystore.jceks, test1234, dek2013]
+$ java dualcontrol.DualControlDemoApp keystores/dek2013.jceks test1234 dek2013
 INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
 INFO [DualControlManager] accept: 2
 INFO [DualControlManager] Received evanx
