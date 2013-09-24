@@ -39,7 +39,8 @@ $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
     dualcontrol.DualControlGenSecKey
 
-Enter passphrase for keystore (keystores/2013/dek.jceks):
+Enter passphrase for dual control SSL connection: 
+Enter passphrase for keystore (tmp/dualtest/seckeystore.jceks): 
 }}}
 
 where we have requested a new 256bit AES secret key, aliased as "dek2013."
