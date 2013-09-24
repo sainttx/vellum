@@ -309,7 +309,7 @@ Certificate:
                 Public-Key: (2048 bit)
 }}}
 
-We import the cert into the server SSL truststore as required by <tt>!DualControlManager</tt> on behalf of <tt>!DualControlGenSecKey</tt> and indeed our app.
+We import the cert into the server SSL truststore as required by <tt>!DualControlManager</tt> on behalf of <tt>!DualControlGenSecKey</tt> and our app.
 
 {{{
 $ keytool -keystore server.jks -alias evanx -importcert -file evanx.pem
