@@ -805,7 +805,7 @@ Incidently, we combine the split passwords by simply concatenating them.
     }
 }}}
 
-where we arbitrarily use the vertical bar character as a delimiter between the two personal passwords.
+where we arbitrarily decided to delimit the two personal passwords with the vertical bar character.
 
 <h4>Unit test</h4>
 
