@@ -10,7 +10,7 @@ Encryption is great for information security and all that. But the problem with 
 
 <h4>PCI DSS</h4>
 
-The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Where it refers to "cardholder data," replace that with "sensitive customer data" or "security credentials" or what-have-you. If we want information security, then PCI DSS is our best friend forever. 
+The "Payment Card Industry Data Security Standard" (<a href="http://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard">PCI DSS</a>) advocates common sense policies for building a secure network and protecting our data. Actually every enterprise should adopt PCI DSS because it's the only and best such thing we got. Where it refers to "cardholder data," replace that with "sensitive customer data" or "security credentials" or what-have-you. If we want information security, then PCI DSS should be our new best friend forever. 
 
 <img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
