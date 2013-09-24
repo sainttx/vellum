@@ -295,6 +295,7 @@ $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 }}}
 
 We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt> as follows.
+
 {{{
 $ openssl x509 -text -in evanx.pem
 Certificate:
@@ -822,7 +823,7 @@ We'll implement the crypto server in a subsequent article. <i>Then we can say, "
 
 The problem with encryption is secure key management. We shouldn't leave the key under the mat.
 
-PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow.
+PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow. Or victim of blackmail, or government coercision.
 
 We introduce the <tt>!DualControlGenSecKey</tt> utility for generating a new secret key. We protect this key using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enforce split knowledge of the key password, so that dual control is required to load the key. 
 
