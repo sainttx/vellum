@@ -606,7 +606,7 @@ public class DualControlKeyStores {
     }
 }}}
 
-where if the keystore location is formatted as <tt>"host:port"</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
+where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
 
 The following utility demonstrates a trivial server for a remote keystore.
 
