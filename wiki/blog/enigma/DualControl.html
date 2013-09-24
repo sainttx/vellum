@@ -227,7 +227,7 @@ Some argue that one should not write code per se, but rather tests with accompan
 
 where we build a map of sample dual submissions, and inspect the KeyStore returned by buildKeyStore().
 
-The key password for the duo of brent and henty for example, is simply concatenated. This is our so-called split password, which can be used to recover the key in clear-text using the following utility method.
+The key password for the duo of brent and henty for example, is simply concatenated as "bbbb|hhhh" i.e. using a bar delimiter. This is our so-called split password, which can be used to recover the key in clear-text using the following utility method.
 
 <pre>
     private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, 
