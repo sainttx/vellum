@@ -92,7 +92,7 @@ public class DualControlGenSecKey {
     private String keyAlg;
     private int keySize;
     private char[] keyStorePassword;
-    private Map<String, char[]> dualPasswordMap;
+    private Map<String, char[]> dualMap;
     private SSLContext sslContext;
 
     public DualControlGenSecKey(Properties properties, MockableConsole console) {
