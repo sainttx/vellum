@@ -227,8 +227,8 @@ where we build a map of sample dual submissions, and inspect the <tt>!KeyStore</
 For the key password for the duo of brent and henty for example, their personal passwords are simply concatenated as "bbbb|hhhh" i.e. using the vertical bar character as a delimiter. This is our so-called split password, which can be used to recover the key in clear-text using the following utility method.
 
 {{{
-    private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, 
-            char[] keyPass) throws GeneralSecurityException {
+    private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
+            throws GeneralSecurityException {
         KeyStore.SecretKeyEntry entry = (KeyStore.SecretKeyEntry) keyStore.getEntry(
                 keyAlias, new KeyStore.PasswordProtection(keyPass));
         return entry.getSecretKey();
