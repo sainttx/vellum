@@ -33,7 +33,7 @@ Step 1 for any data security endeavour is to generate an encryption key. Whereas
 {{{
 $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     -Ddualcontrol.ssl.keyStore=genseckey.jks \
-    -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass=$storepass \
+    -Dkeystore=$keystore -Dstoretype=JCEKS -Dstorepass="$storepass" \
     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
     dualcontrol.DualControlGenSecKey
 }}}
@@ -71,7 +71,7 @@ where <tt>!DualControlManager</tt> does the leg work of receiving passwords from
 We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 {{{
-$ keytool -keystore $keystore -storetype JCEKS -storepass $storepass -list | grep Entry
+$ keytool -keystore $keystore -storetype JCEKS -storepass "$storepass" -list | grep Entry
 dek2013-brent-henty, 18 Aug 2013, SecretKeyEntry, 
 dek2013-evanx-henty, 18 Aug 2013, SecretKeyEntry, 
 dek2013-brent-evanx, 18 Aug 2013, SecretKeyEntry,
