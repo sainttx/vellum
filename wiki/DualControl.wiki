@@ -121,7 +121,7 @@ We initialise the instance with an <tt>SSLContext</tt> as follows.
     }
 }}}
 
-where we'll see further below that <tt>DualControlSSLContextFactory</tt> uses a keystore and truststore configured by the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>. These should not be confused with the keystore for our new secret key which we are generating.
+where we'll see further below that <tt>DualControlSSLContextFactory</tt> uses a keystore and truststore configured by the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>. These SSL keystores should not be confused with the keystore for our new secret key which we are generating.
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
