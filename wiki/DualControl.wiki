@@ -190,6 +190,7 @@ where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords,
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, passwordProtection);
             passwordProtection.destroy();
+            Arrays.fill(dualPassword, (char) 0);
         }
     }
 }}}
@@ -200,29 +201,24 @@ Some argue that one should not write code per se, but rather tests with accompan
 {{{
     @Test
     public void testGenKeyStore() throws Exception {
-        dualPasswordMap.put("brent-evanx", "bbbb+eeee".toCharArray());
-        dualPasswordMap.put("brent-henty", "bbbb+hhhh".toCharArray());
-        dualPasswordMap.put("evanx-henty", "eeee+hhhh".toCharArray());
-        properties.put("alias", "dek2013");
-        properties.put("storetype", "JCEKS");
-        properties.put("keyalg", "AES");
-        properties.put("keysize", "192");
-        char[] keyStorePass = "test1234".toCharArray();
+        dualMap.put("brent-evanx", "bbbb|eeee".toCharArray());
+        dualMap.put("brent-henty", "bbbb|hhhh".toCharArray());
+        dualMap.put("evanx-henty", "eeee|hhhh".toCharArray());
         MockConsole appConsole = new MockConsole("app", keyStorePass);
         DualControlGenSecKey instance = new DualControlGenSecKey(properties, appConsole);
-        KeyStore keyStore = instance.buildKeyStore(dualPasswordMap);
-        assertEquals(3, Collections.list(keyStore.aliases()).size());
-        assertEquals("dek2013-brent-evanx", Lists.asSortedSet(keyStore.aliases()).first());
-        SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb+eeee".toCharArray());
-        assertEquals("AES", key.getAlgorithm());
-        assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
-                "dek2013-brent-henty", "bbbb+hhhh".toCharArray()).getEncoded()));
+        KeyStore keyStore = instance.buildKeyStore(dualMap);
+        Assert.assertEquals(3, Collections.list(keyStore.aliases()).size());
+        Assert.assertEquals("dek2013-brent-evanx", asSortedSet(keyStore.aliases()).first());
+        SecretKey key = getSecretKey(keyStore, "dek2013-brent-evanx", "bbbb|eeee".toCharArray());
+        Assert.assertEquals("AES", key.getAlgorithm());
+        Assert.assertTrue(Arrays.equals(key.getEncoded(), getSecretKey(keyStore, 
+                "dek2013-brent-henty", "bbbb|hhhh".toCharArray()).getEncoded()));
     }
 }}}
 
 where we build a map of sample dual submissions, and inspect the <tt>!KeyStore</tt> returned by <tt>buildKeyStore()</tt>.
 
-The key password for the duo of brent and henty for example, is combined as "bbbb+hhhh". This is our so-called split password, which can be used to recover the key in clear-text using the following utility method.
+The key password for the duo of brent and henty for example, is simply concatenated as "bbbb|hhhh". This is our so-called split password, which can be used to recover the key in clear-text using the following utility method.
 
 {{{
     private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, 
@@ -730,10 +726,16 @@ Finally, we compose a map of dual aliases and split passwords as follows.
                 }
             }
         }
+        for (char[] password : submissions.values()) {
+            Arrays.fill(password, (char) 0);
+        }
     }
 }}}
 
 where the <tt>compareTo()</tt> in the nested loop above ensures that we exclude the alphabetically-challenged <tt>evanx-brent</tt> in favour of <tt>brent-evanx</tt>, and the likes of <tt>evanx-evanx</tt>, which is just silly.
+
+{{{
+}}}
 
 <h4>Unit test</h4>
 
