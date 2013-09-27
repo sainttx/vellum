@@ -40,7 +40,7 @@ $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     dualcontrol.DualControlGenSecKey
 
 Enter passphrase for dual control SSL connection: 
-Enter passphrase for secret keystore (keystores/2013/dek2013.jceks): 
+Enter passphrase for keystore for new key dek2013: 
 }}}
 
 where we have requested a new 256bit AES secret key, aliased as <tt>dek2013</tt>.
@@ -104,7 +104,6 @@ public class DualControlGenSecKey {
         this.props = new DualControlProperties(properties);
         this.console = console;
         submissionCount = props.getInt("dualcontrol.submissions", 3);
-        keyStorePassword = props.getPassword("storepass", null);
         keyAlias = props.getString("alias");
     }
     ...
@@ -150,9 +149,10 @@ where we instantiate, initialise, and then call this class.
         if (new File(keyStoreLocation).exists()) {
             throw new Exception("Keystore file already exists: " + keyStoreLocation);
         }
+        keyStorePassword = props.getPassword("storepass", null);
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
-                    "Enter passphrase for secret keystore (%s): ", keyStoreLocation);
+                    "Enter passphrase for keystore for new key %s: ", keyAlias);
             if (keyStorePassword == null) {
                 throw new Exception("No keystore passphrase from console");
             }
