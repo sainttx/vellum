@@ -461,7 +461,9 @@ Clearly passphrases are easier to remember than complex passwords, and so perhap
 
 Having said that, we can easily capitalise the first letter of our passphrase, add a punctuation mark at the end at least, and somewhere replace an 'o' with a zero or an 'e' with 3. <i>Yeah b4by! (Darn, now I can't use that one anymore.)</i>
 
-Incidently, when we are submitting existing passwords to start our app using <tt>!DualControlConsole</tt>, we might have to disable passphrase verification if our old password falls short of revised complexity requirements. However in that case, we should rather change our password accordingly. In fact PCI DSS mandates that passwords be changed every 90 days. While we might believe that this applies to accounts rather than key protection passwords, PCI DSS is not so discriminating, and your PCI Qualified Security Assessor (QSA) is beholden thereupon. We'll present <tt>!DualControlChangePassword</tt> later in this series.
+Incidently, when we are submitting existing passwords to start our app using <tt>!DualControlConsole</tt>, we might have to disable passphrase verification if our old password falls short of revised complexity requirements. However in that case, we should rather change our password accordingly. 
+
+In fact PCI DSS mandates that passwords be changed every 90 days. While we might believe that this applies to accounts rather than key protection passwords, PCI DSS is not so discriminating, and your PCI Qualified Security Assessor (QSA) is beholden thereupon. We'll present <tt>!DualControlChangePassword</tt> later in this series.
 
 <h4>Brutish Key Protector</h4>
 
