@@ -393,7 +393,7 @@ We submit the password via SSL as follows.
 
 where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt.
 
-Incidently, when we are submitting existing passwords to start our app, we might have to disable passphrase verification if our old password falls short of current complexity requirements. However in that case, we should rather change our passwords accordingly. For that purpose, <tt>DualControlPasswordChanger</tt> will be presented in a later article.
+Incidently, when we are submitting existing passwords to start our app, we might have to disable passphrase verification if our old password falls short of our current default complexity requirements. However in that case, we should rather change our passwords accordingly. For that purpose, <tt>DualControlPasswordChanger</tt> will be presented in a later article.
 
 Note that have hard-coded the host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
