@@ -414,8 +414,8 @@ Having said that, some people argue that to really "have" something, it should n
 
 However <a href="https://www.pcisecuritystandards.org/documents/navigating_dss_v20.pdf>PCI DSS 2.0</a> provides the following guidance.
 <blockquote>
-A digital certificate is a valid option as a form of the authentication type "something 
-you have" as long as it is unique.
+<i>A digital certificate is a valid option as a form of the authentication type "something 
+you have" as long as it is unique.</i>
 </blockquote>
 where they mean the private key of said certificate of course ;)
 
