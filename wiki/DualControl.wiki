@@ -210,7 +210,7 @@ where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords,
 
 where for each duo in the map we program a keystore entry containing the same key, but protected by a different split password.
 
-Some argue that one should not write code per se, but rather tests with accompanying code, hand in glove.
+Some argue that one should not write code per se, but rather tests with accompanying code, hand in glove. Indeed we observe that our implementation is well defined by the unit test.
 {{{
     @Test
     public void testGenKeyStore() throws Exception {
