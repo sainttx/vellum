@@ -410,8 +410,6 @@ A known "bug" is that more godly sysadmins can socially-engineer other less godl
 
 On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the custodian needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. While root can also "have" the files containing the keys, he shouldn't know other custodians' passwords protecting the keys therein.
 
-Incidently, when we are submitting existing passwords to start our app, we might have to disable passphrase verification if our old password falls short of revised complexity requirements. However in that case, we should rather change our password accordingly. In fact PCI DSS mandates that passwords be changed every 90 days. While we might believe that this applies to accounts rather than key protection passwords, PCI DSS is not so discriminating, and your PCI Qualified Security Assessor (QSA) is beholden thereupon. We'll present <tt>!DualControlChangePassword</tt> later in this series.
-
 <h4>Password complexity vs length</h4>
 
 We ensure that the complexity and/or length of the password is sufficient to counter brute-force attacks.
@@ -462,6 +460,8 @@ We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en
 Clearly passphrases are easier to remember than complex passwords, and so perhaps we should enforce passphrases with a minimum word count, rather than complexity per se. Then we don't have to write down our complex password and stick it on our monitor.
 
 Having said that, we can easily capitalise the first letter of our passphrase, add a punctuation mark at the end at least, and somewhere replace an 'o' with a zero or an 'e' with 3. <i>Yeah b4by! (Darn, now I can't use that one anymore.)</i>
+
+Incidently, when we are submitting existing passwords to start our app using <tt>!DualControlConsole</tt>, we might have to disable passphrase verification if our old password falls short of revised complexity requirements. However in that case, we should rather change our password accordingly. In fact PCI DSS mandates that passwords be changed every 90 days. While we might believe that this applies to accounts rather than key protection passwords, PCI DSS is not so discriminating, and your PCI Qualified Security Assessor (QSA) is beholden thereupon. We'll present <tt>!DualControlChangePassword</tt> later in this series.
 
 <h4>Brutish Key Protector</h4>
 
