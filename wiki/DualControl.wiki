@@ -56,9 +56,9 @@ INFO [DualControlManager] Received brent
 INFO [DualControlManager] dualAlias: brent-evanx
 INFO [DualControlManager] dualAlias: brent-henty
 INFO [DualControlManager] dualAlias: evanx-henty
-INFO [DualControlGenSecKey] alias dek2013-brent-evanx
-INFO [DualControlGenSecKey] alias dek2013-brent-henty
-INFO [DualControlGenSecKey] alias dek2013-evanx-henty
+INFO [DualControlGenSecKey] alias: dek2013-brent-evanx
+INFO [DualControlGenSecKey] alias: dek2013-brent-henty
+INFO [DualControlGenSecKey] alias: dek2013-evanx-henty
 }}}
 
 where <tt>!DualControlManager</tt> does the leg work of receiving passwords from custodians.
@@ -193,7 +193,7 @@ where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords,
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
-            logger.info("alias " + alias);
+            logger.info("alias: " + alias);
             KeyStore.PasswordProtection passwordProtection =
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, passwordProtection);
