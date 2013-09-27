@@ -419,7 +419,7 @@ However root can also "have" the files containing the keys, but at least doesn't
 
 Some argue that to really "have" something, it should not be so copyable as a key in a file, but rather it should be a hardware token or smartcard.
 
-<a href="https://www.pcisecuritystandards.org/documents/navigating_dss_v20.pdf"><i>Navigating PCI DSS 2.0</i></a> provides the following guidance: 
+However, <a href="https://www.pcisecuritystandards.org/documents/navigating_dss_v20.pdf"><i>Navigating PCI DSS 2.0</i></a> provides the following guidance: 
 <blockquote>
 <i>A digital certificate is a valid option as a form of the authentication type "something 
 you have" as long as it is unique.</i>
