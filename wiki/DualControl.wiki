@@ -414,7 +414,7 @@ On a positive note, we can setup "<i>double</i>-two-factor" authentication where
 
 However root can also "have" the files containing the keys, but at least doesn't know other custodians' passwords protecting the keys therein.
 
-Some argue that to really "have" something, it should not be so copyable, i.e. it should be a hardware token, rather than a key in a file. Well then, at least we double-up to mitigate affairs ;)
+Some argue that to really "have" something, it should not be so copyable, i.e. it should be a hardware token, rather than a key in a file.
 
 <a href="https://www.pcisecuritystandards.org/documents/navigating_dss_v20.pdf>PCI DSS 2.0</a> provides the following guidance.
 <blockquote>
@@ -423,7 +423,7 @@ you have" as long as it is unique.</i>
 </blockquote>
 where they mean the private key of said certificate of course ;)
 
-A further challenge is that a password used to protect an ssh or SSL key, does not qualify as something we "know," as it is not verifiable by the server during authentication. What is your opinion on this issue?
+A further challenge is that a password used to protect an ssh or SSL key, does not qualify as something we "know," as it is not verifiable by the server during authentication. Well then, at least we double-up to mitigate affairs ;)
 
 <h4>Password complexity vs length</h4>
 
