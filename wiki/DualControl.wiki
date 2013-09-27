@@ -425,7 +425,7 @@ Some argue that to really "have" something, it should not be so copyable as a ke
 you have" as long as it is unique.</i>
 </blockquote>
 
-A further challenge is that a password which protects an ssh or SSL key, does not qualify as something we "know," as it is not verifiable by the server during authentication. Well then, at least we double-up to mitigate affairs ;)
+A further challenge is that a password which protects an ssh or SSL key, does not qualify as something we "know," as it is not verifiable by the server during authentication. Well then at least we double-up to mitigate affairs ;)
 
 <h4>Password complexity vs length</h4>
 
