@@ -424,7 +424,6 @@ Some argue that to really "have" something, it should not be so copyable as a ke
 <i>A digital certificate is a valid option as a form of the authentication type "something 
 you have" as long as it is unique.</i>
 </blockquote>
-where they mean the private key of said certificate of course ;)
 
 A further challenge is that a password which protects an ssh or SSL key, does not qualify as something we "know," as it is not verifiable by the server during authentication. Well then, at least we double-up to mitigate affairs ;)
 
