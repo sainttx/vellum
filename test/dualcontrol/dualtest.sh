@@ -1,6 +1,4 @@
 
-#sh NetBeansProjects/svn/vellum/trunk/src/dualcontrol/dualtest.sh 2>&1 | grep -i '^WARN\|ERROR\|^INFO' | uniq -c
-
 set -u
 
 cd
@@ -21,8 +19,8 @@ tmp=tmp/`basename $0 .sh`
 mkdir -p $tmp
 
 seckeystore=$tmp/seckeystore.jceks
-privatekeystore=$tmp/server.jks
-truststore=$tmp/truststore.jks
+serverkeystore=$tmp/server.jks
+servertruststore=$tmp/servertruststore.jks
 cert=$tmp/dual.pem
 pass=test1234
 secalias=dek2013
@@ -65,7 +63,7 @@ javaks() {
     -Ddualcontrol.ssl.keyStore=$keystore \
     -Ddualcontrol.ssl.keyStorePassword=$pass \
     -Ddualcontrol.ssl.keyPassword=$pass \
-    -Ddualcontrol.ssl.trustStore=$truststore \
+    -Ddualcontrol.ssl.trustStore=$servertruststore \
     -Ddualcontrol.ssl.trustStorePassword=$pass \
     -Ddualcontrol.verifyPassphrase=false \
     $@
@@ -82,7 +80,7 @@ javaksc() {
   shift
   java \
     -Ddualcontrol.ssl.keyStore=$keystore \
-    -Ddualcontrol.ssl.trustStore=$truststore \
+    -Ddualcontrol.ssl.trustStore=$servertruststore \
     -Ddualcontrol.verifyPassphrase=false \
     $@
   exitCode=$?
@@ -131,9 +129,9 @@ command1_keytool() {
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
   keytool -keystore $keystore -storepass "$pass" -alias $alias \
      -exportcert -rfc > $cert
-  keytool -keystore $truststore -storepass "$pass" -alias $alias \
+  keytool -keystore $servertruststore -storepass "$pass" -alias $alias \
      -importcert -noprompt -file $cert
-  keytool -keystore $truststore -storepass "$pass" -alias $alias \
+  keytool -keystore $servertruststore -storepass "$pass" -alias $alias \
      -exportcert -rfc | openssl x509 -text | grep 'CN='
 }
 
@@ -142,18 +140,18 @@ command0_initks() {
   serveralias="dualcontrol"
   dname="CN=dualcontrol, OU=test, O=test, L=ct, S=wp, C=za"
   rm -f $seckeystore
-  rm -f $privatekeystore
-  rm -f $truststore
-  keytool -keystore $privatekeystore -storepass "$pass" -keypass "$pass" \
+  rm -f $serverkeystore
+  rm -f $servertruststore
+  keytool -keystore $serverkeystore -storepass "$pass" -keypass "$pass" \
      -alias "$serveralias" -genkeypair -dname "$dname"
-  keytool -keystore $privatekeystore -storepass "$pass" -list | grep Entry
-  keytool -keystore $privatekeystore -storepass "$pass" -alias $serveralias \
+  keytool -keystore $serverkeystore -storepass "$pass" -list | grep Entry
+  keytool -keystore $serverkeystore -storepass "$pass" -alias $serveralias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
-  keytool -keystore $privatekeystore -storepass "$pass" -alias $serveralias \
+  keytool -keystore $serverkeystore -storepass "$pass" -alias $serveralias \
      -exportcert -rfc > $cert
-  keytool -keystore $truststore -storepass "$pass" -alias $serveralias \
+  keytool -keystore $servertruststore -storepass "$pass" -alias $serveralias \
      -importcert -noprompt -file $cert
-  keytool -keystore $truststore -storepass "$pass" -list | grep Entry
+  keytool -keystore $servertruststore -storepass "$pass" -list | grep Entry
   command1_keytool evanx
   command1_keytool henty
   command1_keytool brent
@@ -161,6 +159,20 @@ command0_initks() {
 }
 
 command1_genseckey() {
+  rm -f $seckeystore
+  java -Ddualcontrol.ssl.keyStore=$serverkeystore \
+     -Dkeystore=$seckeystore -Dstoretype=JCEKS \
+     -Dalias=$1 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
+     $dualcontrol.DualControlGenSecKey
+  if [ $? -eq 0 ]
+  then
+    echo "INFO DualControlGenSecKey $1 $keyAlg"
+  else
+    echo "WARN DualControlGenSecKey "
+  fi
+}
+
+command1_autogenseckey() {
   rm -f tmp/dualtest/seckeystore.jceks  
   javaks server -Ddualcontrol.submissions=3 \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS -Dstorepass="$pass" \
@@ -271,7 +283,7 @@ command1_testcryptoserver_remote() {
 
 command0_testgenseckey() {
   command0_initks 
-  jc3 & command1_genseckey $secalias
+  jc3 & command1_autogenseckey $secalias
   sleep 2
   if ! nc -z localhost 4444
   then
