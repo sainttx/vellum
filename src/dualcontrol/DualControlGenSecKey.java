@@ -53,7 +53,6 @@ public class DualControlGenSecKey {
         this.props = new DualControlProperties(properties);
         this.console = console;
         submissionCount = props.getInt("dualcontrol.submissions", 3);
-        keyStorePassword = props.getPassword("storepass", null);
         keyAlias = props.getString("alias");
     }
 
@@ -85,9 +84,10 @@ public class DualControlGenSecKey {
         if (new File(keyStoreLocation).exists()) {
             throw new Exception("Keystore file already exists: " + keyStoreLocation);
         }
+        keyStorePassword = props.getPassword("storepass", null);
         if (keyStorePassword == null) {
             keyStorePassword = console.readPassword(
-                    "Enter passphrase for secret keystore (%s): ", keyStoreLocation);
+                    "Enter passphrase for keystore for new key %s: ", keyAlias);
             if (keyStorePassword == null) {
                 throw new Exception("No keystore passphrase from console");
             }
@@ -125,7 +125,7 @@ public class DualControlGenSecKey {
         for (String dualAlias : dualMap.keySet()) {
             char[] dualPassword = dualMap.get(dualAlias);
             String alias = keyAlias + "-" + dualAlias;
-            logger.info("alias " + alias);
+            logger.info("alias: " + alias);
             KeyStore.PasswordProtection passwordProtection =
                     new KeyStore.PasswordProtection(dualPassword);
             keyStore.setEntry(alias, entry, passwordProtection);
@@ -135,6 +135,8 @@ public class DualControlGenSecKey {
     }
 
     private void clear() {
-        Arrays.fill(keyStorePassword, (char) 0);
+        if (keyStorePassword != null) {
+            Arrays.fill(keyStorePassword, (char) 0);
+        }
     }
 }
