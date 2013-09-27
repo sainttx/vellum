@@ -482,7 +482,7 @@ Having said that, we can easily capitalise the first letter of our passphrase, a
 
 Incidently, when we are submitting existing passwords using <tt>!DualControlConsole</tt> to start our app, we might have to disable passphrase verification if our old password falls short of revised complexity requirements. However in that case, we should rather change our password accordingly, e.g. together with a key rotation for good measure.
 
-We note that PCI DSS mandates that passwords be changed every 90 days. However, we believe that this applies to remote access passwords, and not to key protection passwords. We might regard key protection passwords as key-encryption keys, and not remote access credentials per se, even when they protect remote access keys. We argue the opposite for multi-factor authentication, so it depends on the context ;)
+We note that PCI DSS mandates that passwords be changed every 90 days. However, we believe that this applies to remote access passwords, and not to key protection passwords. We might regard key protection passwords as key-encryption keys, and not remote access credentials per se, even when they protect remote access keys. We argue the opposite in favour of multi-factor authentication, so it depends on the context ;)
 
 <h4>Brutish Key Protector</h4>
 
