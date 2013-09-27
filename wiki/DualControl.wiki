@@ -321,7 +321,7 @@ Certificate:
 We import the cert into the server SSL truststore as required by <tt>!DualControlManager</tt> on behalf of <tt>!DualControlGenSecKey</tt> and our app.
 
 {{{
-$ keytool -keystore server.jks -alias evanx -importcert -file evanx.pem
+$ keytool -keystore dualcontrolserver.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
 
 Similarly, the server cert is imported into the custodians' truststores as specified by <tt>dualcontrol.ssl.truststore</tt> for <tt>!DualControlConsole</tt>.
