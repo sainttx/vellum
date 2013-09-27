@@ -144,8 +144,6 @@ Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</
             instance.clear();
         }
     }
-    ...
-}
 }}}
 
 where we instantiate, initialise, and then call this class.
