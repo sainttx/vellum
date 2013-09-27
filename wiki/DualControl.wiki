@@ -35,12 +35,12 @@ Step 1 for any data security endeavour is to generate an encryption key. Whereas
 {{{
 $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     -Ddualcontrol.ssl.keyStore=keystores/2013/dualcontrol.jks \
-    -Dkeystore=keystores/dek2013.jceks -Dstoretype=JCEKS \
+    -Dkeystore=keystores/2013/dek2013.jceks -Dstoretype=JCEKS \
     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
     dualcontrol.DualControlGenSecKey
 
 Enter passphrase for dual control SSL connection: 
-Enter passphrase for secret keystore (keystores/dek2013.jceks): 
+Enter passphrase for secret keystore (keystores/2013/dek2013.jceks): 
 }}}
 
 where we have requested a new 256bit AES secret key, aliased as <tt>dek2013</tt>.
@@ -464,7 +464,7 @@ We observe that an Intel i5 can manage about 30 guesses per millisecond on a JCE
 
 {{{
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
-  keystores/dek2013.jceks "$pass" dek2013-evanx-henty eeeehhhh
+  keystores/2013/dek2013.jceks "$pass" dek2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
@@ -512,7 +512,7 @@ public class DualControlDemoApp {
 The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
 
 {{{
-$ java dualcontrol.DualControlDemoApp keystores/dek2013.jceks test1234 dek2013
+$ java dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks test1234 dek2013
 INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
 INFO [DualControlManager] accept: 2
 INFO [DualControlManager] Received evanx
