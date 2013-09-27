@@ -411,7 +411,9 @@ A known "bug" is that more godly sysadmins can socially-engineer other less godl
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
 
-On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the custodian needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so arguably both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
+On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. 
+
+For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the custodian needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so arguably both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
 
 However root can also "have" the files containing the keys, but at least doesn't know other custodians' passwords protecting the keys therein.
 
