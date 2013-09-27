@@ -410,7 +410,7 @@ A known "bug" is that more godly sysadmins can socially-engineer other less godl
 
 On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the custodian needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. While root can also "have" the files containing the keys, he doesn't know other custodians' passwords protecting the keys therein.
 
-Having said that, some people argue that to really "have" something, it should not be so copyable, i.e. it should be a hardware token, rather than a key in a file. Well then at least we double-up to mitigate affairs.
+Having said that, some people argue that to really "have" something, it should not be so copyable, i.e. it should be a hardware token, rather than a key in a file. Well then, at least we double-up to mitigate affairs.
 
 However <a href="https://www.pcisecuritystandards.org/documents/navigating_dss_v20.pdf>PCI DSS 2.0</a> provides the following guidance.
 <blockquote>
