@@ -410,18 +410,20 @@ A known "bug" is that more godly sysadmins can socially-engineer other less godl
 
 <h4>Multi-factor authentication</h4>
 
-On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the custodian needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. While root can also "have" the files containing the keys, he doesn't know other custodians' passwords protecting the keys therein.
+On a positive note, we can setup "<i>double</i>-two-factor" authentication whereby the client requires a password-protected <tt>ssh</tt> key for port forwarding, and a password-protected <tt>!KeyStore</tt> for the client-authenticated SSL connection. For both the underlying <tt>ssh</tt> access, and the <tt>SSL</tt> connection over that, the custodian needs to <i>have</i> the private key, and <i>know</i> the password that is protecting it, and so arguably both require <a href="http://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a>. 
 
-Having said that, some people argue that to really "have" something, it should not be so copyable, i.e. it should be a hardware token, rather than a key in a file. Well then, at least we double-up to mitigate affairs.
+However root can also "have" the files containing the keys, but at least doesn't know other custodians' passwords protecting the keys therein.
 
-However <a href="https://www.pcisecuritystandards.org/documents/navigating_dss_v20.pdf>PCI DSS 2.0</a> provides the following guidance.
+Some argue that to really "have" something, it should not be so copyable, i.e. it should be a hardware token, rather than a key in a file. Well then, at least we double-up to mitigate affairs ;)
+
+<a href="https://www.pcisecuritystandards.org/documents/navigating_dss_v20.pdf>PCI DSS 2.0</a> provides the following guidance.
 <blockquote>
 <i>A digital certificate is a valid option as a form of the authentication type "something 
 you have" as long as it is unique.</i>
 </blockquote>
 where they mean the private key of said certificate of course ;)
 
-A further challenge is that a password used to protect an ssh or SSL key, does not qualify as something we "know," as it is not verifiable by the server during authentication.
+A further challenge is that a password used to protect an ssh or SSL key, does not qualify as something we "know," as it is not verifiable by the server during authentication. What is your opinion on this issue?
 
 <h4>Password complexity vs length</h4>
 
