@@ -328,7 +328,7 @@ Similarly, the server cert is imported into the custodians' truststores as speci
 
 <h4><tt>!DualControlConsole</tt></h4>
 
-Let's write an app for custodians to submit their passwords via SSL.
+Let's check out this <tt>!DualControlConsole</tt> app for custodians to submit their passwords via SSL.
 {{{
 public class DualControlConsole {
     Properties properties;
