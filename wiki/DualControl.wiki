@@ -393,8 +393,6 @@ We submit the password via SSL as follows.
 
 where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt.
 
-Incidently, when we are submitting existing passwords to start our app, we might have to disable passphrase verification if our old password falls short of revised complexity requirements. However in that case, we should rather change our passwords accordingly, and so we'll present <tt>!DualControlChangePassword</tt> later in this series.
-
 Note that have hard-coded the host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
 {{{
@@ -407,6 +405,8 @@ Received evanx
 where <tt>DualControlSSLContextFactory</tt> prompts for the SSL keystore password first.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-preferences-desktop-personal-250-crop.png"/>
+
+Incidently, when we are submitting existing passwords to start our app, we might have to disable passphrase verification if our old password falls short of revised complexity requirements. However in that case, we should rather change our password accordingly. In fact PCI DSS mandates that passwords to be changed every 90 days. While we might believe that this applies to accounts rather than key protection passwords, PCI DSS is not so discriminating, and QSA's (Qualified Security Assessors) are somewhat beholden to the letter of the law. We'll present <tt>!DualControlChangePassword</tt> later in this series.
 
 A known "bug" is that more godly sysadmins can socially-engineer other less godly admins to submit their passwords whilst a malicious socket server has been installed by the most godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom custodians, or the impersonation of other custodians e.g. during a key generation procedure, by exploiting <i>root</i> access to SSL keystores. So we must ensure that our logs and alerts prevent such events from going unnoticed.
 
