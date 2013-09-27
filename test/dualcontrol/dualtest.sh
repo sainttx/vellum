@@ -159,7 +159,7 @@ command0_initks() {
 }
 
 command1_genseckey() {
-  rm -f $seckeystore
+  #rm -f $seckeystore
   java -Ddualcontrol.ssl.keyStore=$serverkeystore \
      -Dkeystore=$seckeystore -Dstoretype=JCEKS \
      -Dalias=$1 -Dkeyalg=$keyAlg -Dkeysize=$keySize \
