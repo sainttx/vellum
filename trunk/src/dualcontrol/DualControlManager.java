@@ -77,7 +77,8 @@ public class DualControlManager {
     }
 
     public void init(MockableConsole console) throws Exception {
-        init(DualControlSSLContextFactory.createSSLContext(properties, console));
+        init(PropertiesSSLContextFactory.createSSLContext("dualcontrol.ssl", 
+                properties, console));
     }
 
     public void init(Console console) throws Exception {
@@ -201,7 +202,7 @@ public class DualControlManager {
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
         manager.setVerifyPassphrase(false);
-        SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
+        SSLContext sslContext = PropertiesSSLContextFactory.createSSLContext("dualcontrol.ssl", 
                 System.getProperties(), new MockableConsoleAdapter(System.console()));
         manager.init(sslContext);
         manager.call();

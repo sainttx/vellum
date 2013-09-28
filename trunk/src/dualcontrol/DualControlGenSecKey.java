@@ -61,7 +61,8 @@ public class DualControlGenSecKey {
     }
 
     public void init() throws Exception {
-        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
+        sslContext = PropertiesSSLContextFactory.createSSLContext("dualcontrol.ssl",
+                props, console);
     }
 
     public static void main(String[] args) throws Exception {

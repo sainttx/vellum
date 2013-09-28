@@ -25,6 +25,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Properties;
+import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 
 /**
@@ -54,9 +55,10 @@ public class CryptoServer {
             String remoteHostAddress, String keyStoreLocation, char[] storePass) 
             throws Exception {
         dualControlSession.configure(keyStoreLocation, storePass, purpose);
-        ServerSocket serverSocket = DualControlSSLContextFactory.createSSLContext(
-                properties, console).
-                getServerSocketFactory().createServerSocket(port, backlog, localAddress);
+        SSLContext sslContext = PropertiesSSLContextFactory.createSSLContext(
+                "cryptoserver.ssl", properties, console);
+        ServerSocket serverSocket = sslContext.getServerSocketFactory().
+                createServerSocket(port, backlog, localAddress);
         while (true) {
             Socket socket = null;
             try {
