@@ -28,40 +28,28 @@ import java.util.Properties;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
-public class DualControlSSLContextFactory {    
-    private static final Logger logger = Logger.getLogger(DualControlSSLContextFactory.class);
-
-    public static SSLContext createSSLContext(String keyStoreLocation, char[] keyStorePassword)
-            throws Exception {    
-        return DualControlSSLContextFactory.createSSLContext(keyStoreLocation, keyStorePassword,
-                keyStorePassword, keyStoreLocation, keyStorePassword);
-    }
-        
-    public static SSLContext createSSLContext(Properties properties, MockableConsole console)
-            throws Exception {
+public class PropertiesSSLContextFactory {    
+    
+    public static SSLContext createSSLContext(String sslPrefix, Properties properties, 
+            MockableConsole console) throws Exception {
         DualControlProperties props = new DualControlProperties(properties);
-        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
+        String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
-            throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
+            throw new Exception("Missing -D property: " + sslPrefix + ".keyStore");
         }
-        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", 
-                null);
+        char[] keyStorePassword = props.getPassword(sslPrefix + ".keyStorePassword", null);
         if (keyStorePassword == null) {
-            keyStorePassword = console.readPassword(
-                    "Enter passphrase for dual control SSL connection: ");
+            keyStorePassword = console.readPassword("Enter passphrase for %s: ", sslPrefix);
         }
-        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
+        char[] keyPassword = props.getPassword(sslPrefix + ".keyPassword", keyStorePassword);
+        String trustStoreLocation = props.getString(sslPrefix + ".trustStore", keyStoreLocation);
+        char[] trustStorePassword = props.getPassword(sslPrefix + ".trustStorePassword", 
                 keyStorePassword);
-        String trustStoreLocation =
-                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
-        char[] trustStorePassword =
-                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
@@ -70,12 +58,6 @@ public class DualControlSSLContextFactory {
         return sslContext;
     }
     
-    public static void clearPassword(char[] password) {
-        if (password != null) {
-            Arrays.fill(password, (char) 0);
-        }
-    }
-
     public static SSLContext createSSLContext(String keyStoreLocation,
             char[] keyStorePassword, char[] keyPassword,
             String trustStoreLocation, char[] trustStorePassword) throws Exception {

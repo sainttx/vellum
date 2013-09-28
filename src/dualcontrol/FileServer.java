@@ -26,6 +26,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import org.apache.log4j.Logger;
 
@@ -62,9 +63,9 @@ public class FileServer {
     }
     
     public void call() throws Exception {
-        SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext(System.getProperties(),
-                new MockableConsoleAdapter(System.console())).getServerSocketFactory().
+        SSLContext sslContext = PropertiesSSLContextFactory.createSSLContext("fileserver.ssl", 
+                System.getProperties(), new MockableConsoleAdapter(System.console()));
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);
