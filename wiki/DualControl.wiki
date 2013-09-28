@@ -524,26 +524,30 @@ The downside of all this malarkey, is that we have to re-engineer our applicatio
 public class DualControlDemoApp {
     private SecretKey dek;     
     ...
-    public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
-            throws Exception {
-        dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", keyStorePass, alias,
+    public void loadKey(String keyStoreLocation, String alias) throws Exception {
+        char[] storePass = System.console().readPassword(
+                "Enter keystore password for %s: ", alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", storePass, alias,
                 "DualControlDemoApp");
-        logger.info("Loaded key " + alias + " alg " + dek.getAlgorithm());
+        logger.debug("loaded key {}: alg {}", alias, dek.getAlgorithm());
     }
 }
 }}}
-
-The application ostensibly loads the key with no fuss. But the caveat is that execution is blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
-
+where we prompt for the shared keystore password to be entered on the console.
 {{{
-$ java dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks test1234 dek2013
+$ java dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks dek2013
+Enter keystore password for dek2013:
+}}
+
+The application's execution is then blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
+{{{
 INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
 INFO [DualControlManager] accept: 2
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
 INFO [DualControlManager] dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
-INFO [DualControlDemoApp] Loaded key dek2013 alg AES
+INFO [DualControlDemoApp] loaded key dek2013: alg AES
 }}}
 
 The two <tt>!DualControlConsole</tt> sessions are as follows. 
