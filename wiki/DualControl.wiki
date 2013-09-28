@@ -423,7 +423,7 @@ Some argue that to really "have" something, it should not be so copyable as a ke
 you have" as long as it is unique.</i>
 </blockquote>
 
-A further challenge is that the existence of a password which protects an ssh or SSL key, cannot be verified by the server. So at least we double-up to mitigate affairs ;)
+A further challenge is that the existence of a password which protects an ssh or SSL key, cannot be verified by the server. So at least we double-up to mitigate this ;)
 
 <h4>Password complexity vs length</h4>
 
