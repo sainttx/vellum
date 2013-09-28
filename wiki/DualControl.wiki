@@ -594,7 +594,7 @@ where we read the dual info using <tt>!DualControlManager</tt>, which opens an <
 
 Note that we append the dual alias e.g. so that <tt>dek2013</tt> becomes <tt>dek2013-evanx-henty</tt>, and get that copy of the key from the keystore.
 
-Once we have used the split password to load the key, we clear that password. However the key itself is now in memory in clear-text, and we must be wary of it being compromised by our application, or extracted by attaching a debugger to the JVM, or by a malicious memory scanner (on the same VM or on the host machine).
+Once we have used the split password to load the key, we clear that password. However the key itself is now in memory in clear-text, and we must be wary of it being compromised by our application, or extracted by attaching a debugger to the JVM, or by a malicious memory scanner.
 
 We instantiate, initialise and call <tt>!DualControlManager</tt> as follows.
 {{{
