@@ -537,6 +537,8 @@ where we prompt for the shared keystore password to be entered on the console.
 {{{
 $ java dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks dek2013
 Enter keystore password for dek2013:
+INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
+INFO [DualControlManager] accept: 2
 }}}
 
 The application's execution is then blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
@@ -555,10 +557,8 @@ Re-enter passphrase:
 Received henty
 }}}
 
-The logs from <tt>!DualControlDemoApp</tt> are as follows.
+We observe the following logs from <tt>!DualControlDemoApp</tt>.
 {{{
-INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
-INFO [DualControlManager] accept: 2
 INFO [DualControlManager] Received evanx
 INFO [DualControlManager] Received henty
 INFO [DualControlManager] dualAlias: evanx-henty
