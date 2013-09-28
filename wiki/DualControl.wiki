@@ -569,7 +569,7 @@ where it accepts submissions from evanx and henty courtesy of <tt>!DualControlMa
 
 <h4><tt>!DualControlSessions</tt></h4>
 
-Our app above invokes the <tt>loadKey()</tt> method below to do the legwork. 
+Our demo app above invokes the <tt>loadKey()</tt> method below to do the legwork. 
 
 {{{
 public class DualControlSessions {
