@@ -535,7 +535,11 @@ public class DualControlDemoApp {
 }}}
 where we prompt for the shared keystore password to be entered on the console.
 {{{
-$ java dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks dek2013
+$ java \
+    -Ddualcontrol.ssl.keyStore=keystores/2013/dualcontrolserver.jks \
+    -Ddualcontrol.ssl.trustStore=keystores/2013/dualcontrolserver.trust.jks \
+    dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks dek2013
+Enter passphrase for dualcontrol.ssl:
 Enter keystore password for dek2013:
 INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
 INFO [DualControlManager] accept: 2
