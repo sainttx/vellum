@@ -529,7 +529,7 @@ public class DualControlDemoApp {
                 "Enter keystore password for %s: ", alias);
         dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", storePass, alias,
                 "DualControlDemoApp");
-        logger.debug("loaded key {}: alg {}", alias, dek.getAlgorithm());
+        logger.info("loaded key {}: alg {}", alias, dek.getAlgorithm());
     }
 }
 }}}
