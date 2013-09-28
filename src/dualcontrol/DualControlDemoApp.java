@@ -34,18 +34,29 @@ public class DualControlDemoApp {
     
     public static void main(String[] args) throws Exception {
         logger.debug("main invoked with args: " + Arrays.toString(args));
-        if (args.length != 3) {
-            System.err.println("usage: keyStoreLocation storePass alias");
+        if (args.length == 3) {
+            new DualControlDemoApp().loadKey(args[0], args[1], args[2].toCharArray());
+        } else if (args.length == 2) {
+            new DualControlDemoApp().loadKey(args[0], args[1]);
         } else {
-            new DualControlDemoApp().loadKey(args[0], args[1].toCharArray(), args[2]);
+            System.err.println("usage: keyStoreLocation alias storePass");
         }
     }
     
-    public void loadKey(String keyStoreLocation, char[] keyStorePass, String alias) 
+    public void loadKey(String keyStoreLocation, String alias, char[] keyStorePass) 
             throws Exception {
         dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", keyStorePass, alias,
                 "DualControlDemoApp");
         logger.debug("loaded key " + dek.getAlgorithm());
     }
+    
+    public void loadKey(String keyStoreLocation, String alias) throws Exception {
+        char[] storePass = System.console().readPassword("Enter keystore password for %s: ",
+                alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", storePass, alias,
+                "DualControlDemoApp");
+        logger.debug("loaded key " + dek.getAlgorithm());
+    }
+    
 }
 
