@@ -609,7 +609,7 @@ We instantiate, initialise and call <tt>!DualControlManager</tt> as follows.
 
 where we read the first entry in <tt>dualMap</tt>. Actually this is the only entry in the map since we have required only two submissions.
 
-Note that we are accepting custodians' existing passwords, and so we don't verify their complexity as we would for <tt>!DualControlGenSecKey</tt>.
+Note that we are accepting custodians' existing passwords to load the key, and so we don't verify their complexity as we would for <tt>!DualControlGenSecKey</tt>.
 
 <h4>Remote keystore</h4>
 
