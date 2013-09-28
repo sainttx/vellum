@@ -541,6 +541,22 @@ Enter keystore password for dek2013:
 
 The application's execution is then blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
 {{{
+evanx$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
+Enter passphrase for dual control SSL connection: 
+Enter passphrase for key dek2013 for DualControlDemoApp: 
+Re-enter passphrase:
+Received evanx
+}}}
+{{{
+henty$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
+Enter passphrase for dual control SSL connection: 
+Enter passphrase for key dek2013 for DualControlDemoApp: 
+Re-enter passphrase:
+Received henty
+}}}
+
+The logs from <tt>!DualControlDemoApp</tt> are as follows.
+{{{
 INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
 INFO [DualControlManager] accept: 2
 INFO [DualControlManager] Received evanx
@@ -550,23 +566,6 @@ INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] loaded key dek2013: alg AES
 }}}
 
-The two <tt>!DualControlConsole</tt> sessions are as follows. 
-
-{{{
-evanx$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection: 
-Enter passphrase for key dek2013 for DualControlDemoApp: 
-Re-enter passphrase:
-Received evanx
-}}}
-
-{{{
-henty$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection: 
-Enter passphrase for key dek2013 for DualControlDemoApp: 
-Re-enter passphrase:
-Received henty
-}}}
 
 <h4><tt>!DualControlSessions</tt></h4>
 
