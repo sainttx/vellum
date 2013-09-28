@@ -129,7 +129,7 @@ We initialise the instance with an <tt>SSLContext</tt> as follows.
     }
 }}}
 
-where we'll see further below that <tt>PropertiesSSLContextFactory</tt> uses a keystore and truststore configured by the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>. These SSL keystores should not be confused with the keystore for our new secret key which we are generating.
+where we'll see further below that <tt>PropertiesSSLContextFactory</tt> uses a keystore and truststore configured by the properties <tt>dualcontrol.ssl.keyStore</tt> and <tt>dualcontrol.ssl.trustStore</tt>. These SSL keystores should not be confused with the keystore for our new secret key which we are generating.
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
@@ -286,7 +286,7 @@ As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and 
 
 <h4><tt>keytool</tt></h4>
 
-Naturally we use <tt>keytool</tt> to create our private SSL keystore, e.g. as required by <tt>!DualControlConsole</tt>, specified by our <tt>dualcontrol.ssl.keystore</tt> property.
+Naturally we use <tt>keytool</tt> to create our private SSL keystore, e.g. as required by <tt>!DualControlConsole</tt>, specified by our <tt>dualcontrol.ssl.keyStore</tt> property.
 
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
@@ -324,7 +324,7 @@ We import the cert into the server SSL truststore as required by <tt>!DualContro
 $ keytool -keystore dualcontrolserver.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
 
-Similarly, the server cert is imported into the custodians' truststores as specified by <tt>dualcontrol.ssl.truststore</tt> for <tt>!DualControlConsole</tt>.
+Similarly, the server cert is imported into the custodians' truststores as specified by <tt>dualcontrol.ssl.trustStore</tt> for <tt>!DualControlConsole</tt>.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
@@ -646,7 +646,7 @@ public class DualControlKeyStores {
 
 where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
 
-Note that we use properties <tt>fileclient.ssl.keystore</tt> et al for for this client SSL connection, via <tt>PropertiesSSLContextFactory</tt>.
+Note that we use the properties <tt>fileclient.ssl.keyStore</tt> et al for for this client SSL connection, via <tt>PropertiesSSLContextFactory</tt>.
 
 The following utility demonstrates a trivial server for a remote keystore.
 
