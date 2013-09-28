@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.Socket;
 import java.security.KeyStore;
+import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,13 +35,17 @@ public class DualControlKeyStores {
     static Logger logger = Logger.getLogger(DualControlKeyStores.class);
     
     public static KeyStore loadKeyStore(String keyStoreLocation, String keyStoreType,
-            char[] keyStorePassword) throws Exception {
+            char[] keyStorePassword) 
+            throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
-            Socket socket = DualControlSSLContextFactory.createSSLContext(
-                    System.getProperties(), new MockableConsoleAdapter(System.console())).
-                    getSocketFactory().createSocket(array[0], Integer.parseInt(array[1]));
+            String keyStoreHost = array[0];
+            int keyStorePort = Integer.parseInt(array[1]);
+            SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
+                    System.getProperties(), new MockableConsoleAdapter(System.console()));
+            Socket socket = sslContext.getSocketFactory().createSocket(
+                    keyStoreHost, keyStorePort);
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();
         } else if (new File(keyStoreLocation).exists()) {
