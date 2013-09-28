@@ -38,6 +38,7 @@ public class PropertiesSSLContextFactory {
     public static SSLContext createSSLContext(String sslPrefix, Properties properties, 
             MockableConsole console) throws Exception {
         DualControlProperties props = new DualControlProperties(properties);
+        sslPrefix = props.getString(sslPrefix, sslPrefix);
         String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: " + sslPrefix + ".keyStore");
