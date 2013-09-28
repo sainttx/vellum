@@ -537,7 +537,7 @@ where we prompt for the shared keystore password to be entered on the console.
 {{{
 $ java dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks dek2013
 Enter keystore password for dek2013:
-}}
+}}}
 
 The application's execution is then blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
 {{{
