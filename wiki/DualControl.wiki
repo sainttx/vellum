@@ -287,7 +287,7 @@ As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and 
 
 <h4><tt>keytool</tt></h4>
 
-Naturally we use <tt>keytool</tt> to create our private SSL keystore, e.g. as required by <tt>!DualControlConsole</tt>, as specified by our <tt>dualcontrol.ssl.keystore</tt> property.
+Naturally we use <tt>keytool</tt> to create our private SSL keystore, e.g. as required by <tt>!DualControlConsole</tt>, specified by our <tt>dualcontrol.ssl.keystore</tt> property.
 
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
