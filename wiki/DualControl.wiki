@@ -618,16 +618,18 @@ We might wish to store our keystore centrally, or internally on a more secure se
 {{{
 public class DualControlKeyStores {
 
-    public static KeyStore loadKeyStore(String keyStoreLocation, char[] keyStorePassword) 
+    public static KeyStore loadKeyStore(String keyStoreLocation, String keyStoreType,
+            char[] keyStorePassword) 
             throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
             String keyStoreHost = array[0];
             int keyStorePort = Integer.parseInt(array[1]);
-            Socket socket = DualControlSSLContextFactory.createSSLContext(
-                    System.getProperties(), new MockableConsoleAdapter(System.console())).
-                    getSocketFactory().createSocket(keyStoreHost, keyStorePort);
+            SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
+                    System.getProperties(), new MockableConsoleAdapter(System.console()));
+            Socket socket = sslContext.getSocketFactory().createSocket(
+                    keyStoreHost, keyStorePort);
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();
         } else if (new File(keyStoreLocation).exists()) {
