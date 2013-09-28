@@ -40,7 +40,7 @@ $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
     dualcontrol.DualControlGenSecKey
 
-Enter passphrase for dual control SSL connection: 
+Enter passphrase for dualcontrol.ssl:
 Enter passphrase for keystore for new key dek2013: 
 }}}
 
@@ -68,7 +68,7 @@ For this demo, three custodians submit their passwords via SSL sockets, using <t
 
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection: 
+Enter passphrase for dualcontrol.ssl:
 Enter passphrase for new key dek2013:
 Re-enter passphrase:
 Received evanx
@@ -398,7 +398,7 @@ Note that have hard-coded the host to <tt>localhost</tt> to enforce ssh port for
 
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection:
+Enter passphrase for dualcontrol.ssl:
 Enter passphrase for new key dek2013: 
 Re-enter passphrase: 
 Received evanx
@@ -544,14 +544,14 @@ INFO [DualControlManager] accept: 2
 The application's execution is then blocked whilst we are waiting on the <tt>SSLServerSocket</tt> for two custodians to submit their passwords using <tt>!DualControlConsole</tt>.
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection: 
+Enter passphrase for dualcontrol.ssl:
 Enter passphrase for key dek2013 for DualControlDemoApp: 
 Re-enter passphrase:
 Received evanx
 }}}
 {{{
 henty$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
-Enter passphrase for dual control SSL connection: 
+Enter passphrase for dualcontrol.ssl:
 Enter passphrase for key dek2013 for DualControlDemoApp: 
 Re-enter passphrase:
 Received henty
