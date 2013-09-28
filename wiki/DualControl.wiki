@@ -565,7 +565,7 @@ INFO [DualControlManager] dualAlias: evanx-henty
 INFO [DualControlSessions] dek2013-evanx-henty
 INFO [DualControlDemoApp] loaded key dek2013: alg AES
 }}}
-
+where it accepts submissions from evanx and henty courtesy of <tt>!DualControlManager</tt>, and can then load the key.
 
 <h4><tt>!DualControlSessions</tt></h4>
 
