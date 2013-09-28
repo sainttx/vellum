@@ -592,7 +592,7 @@ public class DualControlSessions {
 
 where we read the dual info using <tt>!DualControlManager</tt>, which opens an <tt>SSLServerSocket</tt> and waits for split password submissions from any two custodians.
 
-Note that we append the dual alias e.g. so that <tt>dek2013</tt> becomes <tt>dek2013-evanx-henty</tt>.
+Note that we append the dual alias e.g. so that <tt>dek2013</tt> becomes <tt>dek2013-evanx-henty</tt>, and get that copy of the key from the keystore.
 
 We instantiate, initialise and call <tt>!DualControlManager</tt> as follows.
 {{{
