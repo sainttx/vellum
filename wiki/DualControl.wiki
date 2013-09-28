@@ -623,9 +623,11 @@ public class DualControlKeyStores {
         KeyStore keyStore = KeyStore.getInstance("JCEKS");
         if (keyStoreLocation.contains(":")) {
             String[] array = keyStoreLocation.split(":");
+            String keyStoreHost = array[0];
+            int keyStorePort = Integer.parseInt(array[1]);
             Socket socket = DualControlSSLContextFactory.createSSLContext(
                     System.getProperties(), new MockableConsoleAdapter(System.console())).
-                    getSocketFactory().createSocket(array[0], Integer.parseInt(array[1]));
+                    getSocketFactory().createSocket(keyStoreHost, keyStorePort);
             keyStore.load(socket.getInputStream(), keyStorePassword);
             socket.close();
         } else if (new File(keyStoreLocation).exists()) {
