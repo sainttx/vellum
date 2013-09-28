@@ -649,7 +649,7 @@ public class DualControlKeyStores {
 
 where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
 
-Note that we use the properties <tt>fileclient.ssl.keyStore</tt> et al for for this client SSL connection, via <tt>PropertiesSSLContextFactory</tt>.
+Note that we use the properties <tt>fileclient.ssl.keyStore</tt> et al for this client SSL connection, via <tt>PropertiesSSLContextFactory</tt>.
 
 The following utility demonstrates a trivial server for a remote keystore.
 
