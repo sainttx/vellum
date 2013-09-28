@@ -60,6 +60,10 @@ javaks() {
   keystore=$tmp/$1.jks
   shift
   java \
+    -Dfileclient.ssl=dualcontrol.ssl \
+    -Dfileserver.ssl=dualcontrol.ssl \
+    -Dcryptoclient.ssl=dualcontrol.ssl \
+    -Dcryptoserver.ssl=dualcontrol.ssl \
     -Ddualcontrol.ssl.keyStore=$keystore \
     -Ddualcontrol.ssl.keyStorePassword=$pass \
     -Ddualcontrol.ssl.keyPassword=$pass \
@@ -206,7 +210,7 @@ command2_revoke() {
 }
 
 command0_app() {
-  javaks server -Ddualcontrol.submissions=2 $dualcontrol.DualControlDemoApp $seckeystore $pass $secalias
+  javaks server -Ddualcontrol.submissions=2 $dualcontrol.DualControlDemoApp $seckeystore $secalias $pass 
 }
 
 command0_keystoreserver() {
