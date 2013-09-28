@@ -186,7 +186,7 @@ public class DualControlTest {
         buildKeyStore("evanx");
         buildKeyStore("henty");
         for (String name : keyStoreMap.keySet()) {
-            sslContextMap.put(name, DualControlSSLContextFactory.createSSLContext(
+            sslContextMap.put(name, PropertiesSSLContextFactory.createSSLContext(
                 keyStoreMap.get(name), 
                 keyStorePass, trustStore));
         }
