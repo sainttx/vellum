@@ -124,11 +124,12 @@ We initialise the instance with an <tt>SSLContext</tt> as follows.
 
 {{{
     public void init() throws Exception {
-        sslContext = DualControlSSLContextFactory.createSSLContext(props, console);
+        sslContext = PropertiesSSLContextFactory.createSSLContext("dualcontrol.ssl",
+                props, console);
     }
 }}}
 
-where we'll see further below that <tt>DualControlSSLContextFactory</tt> uses a keystore and truststore configured by the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>. These SSL keystores should not be confused with the keystore for our new secret key which we are generating.
+where we'll see further below that <tt>PropertiesSSLContextFactory</tt> uses a keystore and truststore configured by the properties <tt>dualcontrol.ssl.keystore</tt> and <tt>dualcontrol.ssl.truststore</tt>. These SSL keystores should not be confused with the keystore for our new secret key which we are generating.
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
 
@@ -245,30 +246,27 @@ Note that the key passwords are concatenations of personal passwords, where we a
 
 which invokes <tt>!KeyStore.getEntry()</tt>.
 
-<h4><tt>DualControlSSLContextFactory</tt></h4>
+<h4><tt>PropertiesSSLContextFactory</tt></h4>
 
 Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options used to specify the default keystore and truststore for SSL sockets, and in order to avoid any potential conflict with those, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These properties are used to create an <tt>SSLContext</tt> as below.
 {{{
-public class DualControlSSLContextFactory {    
+public class PropertiesSSLContextFactory {    
     ...
-    public static SSLContext createSSLContext(Properties properties, MockableConsole console)
-            throws Exception {
+    public static SSLContext createSSLContext(String sslPrefix, Properties properties, 
+            MockableConsole console) throws Exception {
         DualControlProperties props = new DualControlProperties(properties);
-        String keyStoreLocation = props.getString("dualcontrol.ssl.keyStore");
+        String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
-            throw new Exception("Missing -D property: dualcontrol.ssl.keyStore");
+            throw new Exception("Missing -D property: " + sslPrefix + ".keyStore");
         }
-        char[] keyStorePassword = props.getPassword("dualcontrol.ssl.keyStorePassword", null);
+        char[] keyStorePassword = props.getPassword(sslPrefix + ".keyStorePassword", null);
         if (keyStorePassword == null) {
-            keyStorePassword = console.readPassword(
-                    "Enter passphrase for dual control SSL connection: ");
+            keyStorePassword = console.readPassword("Enter passphrase for %s: ", sslPrefix);
         }
-        char[] keyPassword = props.getPassword("dualcontrol.ssl.keyPassword", 
+        char[] keyPassword = props.getPassword(sslPrefix + ".keyPassword", keyStorePassword);
+        String trustStoreLocation = props.getString(sslPrefix + ".trustStore", keyStoreLocation);
+        char[] trustStorePassword = props.getPassword(sslPrefix + ".trustStorePassword", 
                 keyStorePassword);
-        String trustStoreLocation =
-                props.getString("dualcontrol.ssl.trustStore", keyStoreLocation);
-        char[] trustStorePassword =
-                props.getPassword("dualcontrol.ssl.trustStorePassword", keyStorePassword);
         SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
@@ -348,13 +346,14 @@ public class DualControlConsole {
     }
 
     public void init() throws Exception {
-        this.sslContext = DualControlSSLContextFactory.createSSLContext(properties, console));
+        init(PropertiesSSLContextFactory.createSSLContext("dualcontrol.ssl", 
+                properties, console));
     }
     ...
 }
 }}}
 
-where <tt>DualControlSSLContextFactory</tt> creates an <tt>SSLContext</tt> from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically.)
+where <tt>PropertiesSSLContextFactory</tt> creates an <tt>SSLContext</tt> from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically.)
 
 We submit the password via SSL as follows.
 
@@ -403,7 +402,7 @@ Enter passphrase for new key dek2013:
 Re-enter passphrase: 
 Received evanx
 }}}
-where <tt>DualControlSSLContextFactory</tt> prompts for the SSL keystore password first.
+where <tt>PropertiesSSLContextFactory</tt> prompts for the SSL keystore password first.
 
 A known "bug" is that more godly sysadmins can socially-engineer other less godly admins to submit their passwords whilst a malicious socket server has been installed by the most godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom custodians, or the impersonation of other custodians e.g. during a key generation procedure, by abusing root access to SSL keystores. So we must ensure that our logs and alerts prevent such events from going unnoticed.
 
@@ -626,8 +625,9 @@ public class DualControlKeyStores {
             String[] array = keyStoreLocation.split(":");
             String keyStoreHost = array[0];
             int keyStorePort = Integer.parseInt(array[1]);
-            SSLContext sslContext = DualControlSSLContextFactory.createSSLContext(
-                    System.getProperties(), new MockableConsoleAdapter(System.console()));
+            SSLContext sslContext = PropertiesSSLContextFactory.createSSLContext(
+                    "fileclient.ssl", System.getProperties(), 
+                    new MockableConsoleAdapter(System.console()));
             Socket socket = sslContext.getSocketFactory().createSocket(
                     keyStoreHost, keyStorePort);
             keyStore.load(socket.getInputStream(), keyStorePassword);
@@ -645,7 +645,7 @@ public class DualControlKeyStores {
 
 where if the keystore location is formatted as <tt>host:port</tt>, then we open an <tt>SSLSocket</tt> from which to read a remote keystore file. 
 
-Note that we have reused the same dual control SSL server keystore and truststore for this client connection, via <tt>DualControlSSLContextFactory</tt>.
+Note that we use properties <tt>fileclient.ssl.keystore</tt> et al for for this client SSL connection, via <tt>PropertiesSSLContextFactory</tt>.
 
 The following utility demonstrates a trivial server for a remote keystore.
 
@@ -659,9 +659,9 @@ public class FileServer {
     private String fileName;
     ...
     public void call() throws Exception {
-        SSLServerSocket serverSocket = (SSLServerSocket) 
-                DualControlSSLContextFactory.createSSLContext(System.getProperties(),
-                new MockableConsoleAdapter(System.console())).getServerSocketFactory().
+        SSLContext sslContext = PropertiesSSLContextFactory.createSSLContext("fileserver.ssl", 
+                System.getProperties(), new MockableConsoleAdapter(System.console()));
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
         serverSocket.setNeedClientAuth(true);
         FileInputStream stream = new FileInputStream(fileName);
