@@ -865,7 +865,7 @@ The problem with encryption is secure key management. We shouldn't leave the key
 
 PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow. Or victim of blackmail, or government coercion ;)
 
-We introduce our <tt>!DualControlGenSecKey</tt> utility for generating a new secret key. We protect this key using password-based encryption, courtesy of <tt>JceKeyStore</tt>. We enforce split knowledge of the key password, so that dual control is required to load the key. Each split password is effectively a key-encryption key split between two custodians, and so known to no single person.
+We introduce our <tt>!DualControlGenSecKey</tt> utility for generating a new secret key. We protect this key using password-based encryption, courtesy of <tt>!JceKeyStore</tt>. We enforce split knowledge of the key password, so that dual control is required to load the key. Each split password is effectively a key-encryption key split between two custodians, and so known to no single person.
 
 We propose keeping at least three copies of the same key, but where each copy is password-protected by a different duo of custodians. Then when any one custodian is on vacation or otherwise indisposed, the other two custodians can restart our app.
 
