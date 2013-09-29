@@ -30,7 +30,7 @@ We'll split the knowledge of the key-protection password between two custodians,
 
 We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each duo, we'll store a copy of the key protected by the concatenation of their two personal passwords. 
 
-Since a split password is used for password-based encryption of the key, it is effectively a key-encryption key, which is clearly well protected by virtue of being known to no single person, and not stored anywhere.
+Since the split password is used for password-based encryption of the key, it is effectively a key-encryption key, which is clearly well protected by virtue of being known to no single person, and not stored anywhere.
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
