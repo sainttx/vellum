@@ -28,7 +28,7 @@ We'll store our key in a standard <a href="http://www.docjar.com/html/api/com/su
 
 We'll split the knowledge of the key-protection password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance is thus enabled :)
 
-We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each duo, we'll store a copy of the key protected by the concatenation of their two personal passwords. Since this split password is used for password-based encryption of the key, it is effectively a key-encryption key, and is well protected by virtue of being unknown :)
+We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each duo, we'll store a copy of the key protected by the concatenation of their two personal passwords. Since this split password is used for password-based encryption of the key, it is effectively a key-encryption key, and is well protected by virtue of being unknown.
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
