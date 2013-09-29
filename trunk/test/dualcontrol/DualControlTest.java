@@ -53,7 +53,7 @@ import org.junit.Test;
 public class DualControlTest {
     private KeyStore trustStore;
     private char[] keyStorePass = "test1234".toCharArray();
-    private VellumProperties properties = new VellumProperties();
+    private ExtendedProperties properties = new ExtendedProperties();
     private Map<String, char[]> dualMap = new TreeMap();
     private Map<String, KeyStore> keyStoreMap = new TreeMap();
     private Map<String, SSLContext> sslContextMap = new TreeMap();
