@@ -278,10 +278,7 @@ public class SSLContexts {
     ...
 }
 }}}
-
-where passwords can specified on the command-line e.g. for automated test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Moreover, we have introduced a <tt>!MockableConsole</tt> for the benefit of automated unit testing.
-
-Note that we reuse the same password for the SSL keystore, its private key, and the truststore.
+where we reuse the same password for the SSL keystore, its private key, and the truststore. This password can specified on the command-line e.g. for automated test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Moreover, we have introduced a <tt>!MockableConsole</tt> for the benefit of automated unit testing.
 
 As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a><tt>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory and thereby extract our passwords, or indeed the key itself.
 
