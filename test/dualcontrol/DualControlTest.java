@@ -53,7 +53,7 @@ import org.junit.Test;
 public class DualControlTest {
     private KeyStore trustStore;
     private char[] keyStorePass = "test1234".toCharArray();
-    private DualControlProperties properties = new DualControlProperties();
+    private VellumProperties properties = new VellumProperties();
     private Map<String, char[]> dualMap = new TreeMap();
     private Map<String, KeyStore> keyStoreMap = new TreeMap();
     private Map<String, SSLContext> sslContextMap = new TreeMap();
@@ -186,7 +186,7 @@ public class DualControlTest {
         buildKeyStore("evanx");
         buildKeyStore("henty");
         for (String name : keyStoreMap.keySet()) {
-            sslContextMap.put(name, PropertiesSSLContextFactory.createSSLContext(
+            sslContextMap.put(name, SSLContexts.create(
                 keyStoreMap.get(name), 
                 keyStorePass, trustStore));
         }
