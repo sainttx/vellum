@@ -369,8 +369,8 @@ However, in this case, we have to handle certificate revocation! Since we don't 
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
-    X509TrustManager delegate;
     X509Certificate serverCertificate;
+    X509TrustManager delegate;
     Collection<BigInteger> revocationList;
     ...
     @Override
@@ -394,11 +394,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
     }
 }
 }}}
-where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list. Finally, we delegate to the standard <tt>X509TrustManager</tt>.
-
-{{{
-}}}
-
+where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
