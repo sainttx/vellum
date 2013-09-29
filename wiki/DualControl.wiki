@@ -48,7 +48,7 @@ Enter passphrase for keystore for new key dek2013:
 
 where we have requested a new 256bit AES secret key, aliased as <tt>dek2013</tt>.
 
-Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of our "private keystore" which contains the <i>private</i> key and its certificate, used for SSL e.g. RSA assymmetric encryption. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
+Note that the <tt>-Ddualcontrol.ssl.keyStore</tt> property is the location of the "private keystore" for SSL. This contains the <i>private</i> key and its public certificate for RSA assymmetric encryption to establish an SSL connection. This should not be confused with our "secret keystore" which contains an AES or DESede <i>secret</i> key for symmetric encryption of our data.
 
 The logs produced by <tt>!DualControlGenSecKey</tt> are as follows.
 
