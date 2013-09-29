@@ -63,7 +63,7 @@ public class FileServer {
     }
     
     public void call() throws Exception {
-        SSLContext sslContext = PropertiesSSLContextFactory.createSSLContext("fileserver.ssl", 
+        SSLContext sslContext = SSLContexts.create("fileserver.ssl", 
                 System.getProperties(), new MockableConsoleAdapter(System.console()));
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);

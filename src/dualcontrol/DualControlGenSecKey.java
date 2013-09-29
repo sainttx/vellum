@@ -45,12 +45,12 @@ public class DualControlGenSecKey {
     private String keyAlg;
     private int keySize;
     private char[] keyStorePassword;
-    private DualControlProperties props;
+    private VellumProperties props;
     private MockableConsole console;
     private SSLContext sslContext;
 
     public DualControlGenSecKey(Properties properties, MockableConsole console) {
-        this.props = new DualControlProperties(properties);
+        this.props = new VellumProperties(properties);
         this.console = console;
         submissionCount = props.getInt("dualcontrol.submissions", 3);
         keyAlias = props.getString("alias");
@@ -61,14 +61,14 @@ public class DualControlGenSecKey {
     }
 
     public void init() throws Exception {
-        sslContext = PropertiesSSLContextFactory.createSSLContext("dualcontrol.ssl",
+        sslContext = SSLContexts.create("dualcontrol.ssl",
                 props, console);
     }
 
     public static void main(String[] args) throws Exception {
         logger.info("main " + Arrays.toString(args));
         DualControlGenSecKey instance = new DualControlGenSecKey(
-                new DualControlProperties(System.getProperties()), 
+                new VellumProperties(System.getProperties()), 
                 new MockableConsoleAdapter(System.console()));
         try {
             instance.init();
