@@ -43,20 +43,19 @@ public class SSLContexts {
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: " + sslPrefix + ".keyStore");
         }
-        char[] keyStorePassword = props.getPassword(sslPrefix + ".keyStorePassword", null);
-        if (keyStorePassword == null) {
-            keyStorePassword = console.readPassword("Enter passphrase for %s: ", sslPrefix);
+        char[] passphrase = props.getPassword(sslPrefix + ".pass", null);
+        if (passphrase == null) {
+            passphrase = console.readPassword("Enter passphrase for %s: ", sslPrefix);
         }
-        char[] keyPassword = props.getPassword(sslPrefix + ".keyPassword", keyStorePassword);
         String trustStoreLocation = props.getString(sslPrefix + ".trustStore", keyStoreLocation);
-        char[] trustStorePassword = props.getPassword(sslPrefix + ".trustStorePassword", 
-                keyStorePassword);
-        SSLContext sslContext = create(keyStoreLocation, keyStorePassword,
-                keyPassword, trustStoreLocation, trustStorePassword);
-        Arrays.fill(keyStorePassword, (char) 0);
-        Arrays.fill(keyPassword, (char) 0);
-        Arrays.fill(trustStorePassword, (char) 0);
+        SSLContext sslContext = create(keyStoreLocation, trustStoreLocation, passphrase);
+        Arrays.fill(passphrase, (char) 0);
         return sslContext;
+    }
+
+    public static SSLContext create(String keyStoreLocation, String trustStoreLocation, 
+            char[] pass) throws Exception {
+        return create(keyStoreLocation, pass, pass, trustStoreLocation, pass);
     }
     
     public static SSLContext create(String keyStoreLocation,
