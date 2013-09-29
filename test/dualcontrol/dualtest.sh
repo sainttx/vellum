@@ -65,10 +65,8 @@ javaks() {
     -Dcryptoclient.ssl=dualcontrol.ssl \
     -Dcryptoserver.ssl=dualcontrol.ssl \
     -Ddualcontrol.ssl.keyStore=$keystore \
-    -Ddualcontrol.ssl.keyStorePassword=$pass \
-    -Ddualcontrol.ssl.keyPassword=$pass \
+    -Ddualcontrol.ssl.pass=$pass \
     -Ddualcontrol.ssl.trustStore=$servertruststore \
-    -Ddualcontrol.ssl.trustStorePassword=$pass \
     -Ddualcontrol.verifyPassphrase=false \
     $@
   exitCode=$?
