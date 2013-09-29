@@ -33,11 +33,11 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author evan.summers
  */
-public class PropertiesSSLContextFactory {    
+public class SSLContexts {    
     
-    public static SSLContext createSSLContext(String sslPrefix, Properties properties, 
+    public static SSLContext create(String sslPrefix, Properties properties, 
             MockableConsole console) throws Exception {
-        DualControlProperties props = new DualControlProperties(properties);
+        VellumProperties props = new VellumProperties(properties);
         sslPrefix = props.getString(sslPrefix, sslPrefix);
         String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
@@ -51,7 +51,7 @@ public class PropertiesSSLContextFactory {
         String trustStoreLocation = props.getString(sslPrefix + ".trustStore", keyStoreLocation);
         char[] trustStorePassword = props.getPassword(sslPrefix + ".trustStorePassword", 
                 keyStorePassword);
-        SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
+        SSLContext sslContext = create(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
         Arrays.fill(keyPassword, (char) 0);
@@ -59,17 +59,17 @@ public class PropertiesSSLContextFactory {
         return sslContext;
     }
     
-    public static SSLContext createSSLContext(String keyStoreLocation,
+    public static SSLContext create(String keyStoreLocation,
             char[] keyStorePassword, char[] keyPassword,
             String trustStoreLocation, char[] trustStorePassword) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
-        return createSSLContext(keyStore, keyPassword, trustStore);
+        return create(keyStore, keyPassword, trustStore);
     }
     
-    public static SSLContext createSSLContext(KeyStore keyStore, char[] keyPassword,
+    public static SSLContext create(KeyStore keyStore, char[] keyPassword,
             KeyStore trustStore) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);

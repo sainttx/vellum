@@ -42,7 +42,7 @@ public class DualControlKeyStores {
             String[] array = keyStoreLocation.split(":");
             String keyStoreHost = array[0];
             int keyStorePort = Integer.parseInt(array[1]);
-            SSLContext sslContext = PropertiesSSLContextFactory.createSSLContext(
+            SSLContext sslContext = SSLContexts.create(
                     "fileclient.ssl", System.getProperties(), 
                     new MockableConsoleAdapter(System.console()));
             Socket socket = sslContext.getSocketFactory().createSocket(
@@ -58,7 +58,7 @@ public class DualControlKeyStores {
         }
         return keyStore;
     }
-    
+
     public static KeyStore loadLocalKeyStore(String keyStoreLocation, String keyStoreType,
             char[] keyStorePassword) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);

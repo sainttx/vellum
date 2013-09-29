@@ -26,13 +26,13 @@ import java.util.Properties;
  *
  * @author evan.summers
  */
-public class DualControlProperties extends Properties {
+public class VellumProperties extends Properties {
 
-    public DualControlProperties() {
+    public VellumProperties() {
         super();
     }
     
-    public DualControlProperties(Properties properties) {
+    public VellumProperties(Properties properties) {
         super.putAll(properties);
     }
     

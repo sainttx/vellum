@@ -61,7 +61,7 @@ public class DualControlConsole {
     }
 
     public void init() throws Exception {
-        init(PropertiesSSLContextFactory.createSSLContext("dualcontrol.ssl", 
+        init(SSLContexts.create("dualcontrol.ssl", 
                 properties, console));
     }
 
