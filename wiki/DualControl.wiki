@@ -365,7 +365,35 @@ Clearly our keystore can double up as our truststore since it contains the serve
 
 Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert which is used to sign our client certs.
 
-However, in this case, we have to handle certificate revocation.
+However, in this case, we have to handle certificate revocation! Since we don't actually know to do this properly, we might introduce our own custom <tt>X509TrustManager</tt> implementation for our <tt>SSLContext</tt>, which is configured with a local CRL file.
+
+{{{
+public class RevocableClientTrustManager implements X509TrustManager {
+    X509Certificate serverCertificate;
+    Collection<BigInteger> revocationList;
+    ...
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        logger.debug("checkClientTrusted {}", certs[0].getSubjectDN().getName());
+        if (certs.length != 2) {
+            throw new CertificateException("Invalid cert chain length");
+        }
+        if (!certs[0].getIssuerX500Principal().equals(
+                serverCertificate.getSubjectX500Principal())) {
+            throw new CertificateException("Invalid issuer");
+        }
+        if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
+                serverCertificate.getPublicKey().getEncoded())) {
+            throw new CertificateException("Invalid server certificate");
+        }
+        if (revocationList.contains(certs[0].getSerialNumber())) {
+            throw new CertificateException("Certificate in revocation list");
+        }
+    }
+}
+}}}
+where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
