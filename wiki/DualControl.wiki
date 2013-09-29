@@ -118,7 +118,9 @@ public class DualControlGenSecKey {
 }
 }}}
 
-where we configure via <tt>Properties,</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. 
+where we configure via <tt>Properties</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. 
+
+Note that <tt>VellumProperties</tt> is a utility wrapper for <tt>java.util.Properties</tt> that will throw an exception if the property is not found and no default is provided.
 
 We initialise the instance with an <tt>SSLContext</tt> as follows.
 
