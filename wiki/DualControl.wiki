@@ -24,13 +24,11 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll store our key in a standard <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/JceKeyStore.java.html">!<tt>JceKeyStore</tt></a>. This keystore implementation's <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html">!<tt>KeyProtector</tt></a> uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html">triple DES cipher</a> for password-based encryption (PBE).
+We'll store our key in a standard <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/JceKeyStore.java.html">!<tt>JceKeyStore</tt></a>. This keystore implementation's <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html">!<tt>KeyProtector</tt></a> uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html">triple DES cipher</a> for password-based encryption of the key.
 
-We'll split the knowledge of the key password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance is thus enabled :)
+We'll split the knowledge of the key-protection password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance is thus enabled :)
 
-We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each duo, we'll store a copy of the key protected by the concatenation of their two personal passwords. 
-
-This unknown split password is used for password-based encryption (PBE) of the key, and so is effectively a key-encryption key.
+We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each duo, we'll store a copy of the key protected by the concatenation of their two personal passwords. Since this unknown split password is used for password-based encryption of the key, it is effectively a key-encryption key.
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
