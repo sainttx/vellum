@@ -328,6 +328,45 @@ $ keytool -keystore dualcontrolserver.trust.jks -alias evanx -importcert -file e
 
 Similarly, the server cert is imported into the custodians' truststores as specified by <tt>dualcontrol.ssl.trustStore</tt> for <tt>!DualControlConsole</tt>.
 
+Alternatively, we could export an CSR, and sign this with the server cert.
+{{{
+$ keytool -keystore evanx.jks -alias evanx -certreq
+}}}
+
+Using JDK7's keytool, we can sign the CSR.
+{{{
+$ keytool -keystore dualcontrolserver.jks -gencert -validity 365 -rfc \
+    -dname "CN=evanx/OU=test" -infile evanx.csr -outfile evanx.signed.pem
+}}}
+
+Note that <tt>-gencert</tt> is not present in Java6's keytool.
+
+We inspect the cert using <tt>openssl</tt>.
+{{{
+$ openssl x509 -text -in evanx.signed.pem | grep CN
+        Issuer: CN=dualcontrolserver, OU=test
+        Subject: CN=evanx, OU=test
+}}}
+
+Since our keystore requires our cert chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
+{{{
+$ keytool -keystore evanx.jks -importcert -noprompt \
+    -file dualcontrolserver.pem -alias dualcontrolserver 
+Enter keystore password:  
+Certificate was added to keystore
+
+$ keytool -keystore evanx.jks -importcert -noprompt \
+    -file evanx.signed.pem  -alias evanx
+Enter keystore password:  
+Certificate reply was installed in keystore
+}}}
+
+Clearly our keystore can double up as our truststore since it contains the server cert, which is self-signed. If our server cert is CA-signed, we can't do this, since we must not trust <i>any</i> cert signed by the CA.
+
+Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert which is used to sign our client certs.
+
+However, in this case, we have to handle certificate revocation.
+
 <h4><tt>!DualControlConsole</tt></h4>
 
 Let's check out this <tt>!DualControlConsole</tt> app, which is used by custodians to submit their passwords via SSL.
@@ -424,7 +463,7 @@ Some argue that to really "have" something, it should not be so copyable as a ke
 you have" as long as it is unique.</i>
 </blockquote>
 
-A further challenge is that the existence of a password which protects an ssh or SSL key, cannot be verified by the server. So at least we double-up to mitigate this ;)
+A further challenge is that the existence of a password which protects an ssh or SSL key, cannot be verified by the server. So at least we double up to mitigate this ;)
 
 <h4>Password complexity vs length</h4>
 
@@ -552,7 +591,7 @@ Enter passphrase for key dek2013 for DualControlDemoApp:
 Re-enter passphrase:
 Received evanx
 }}}
-where we specify the keystore for the SSL socket, which can double-up as our truststore.
+where we specify the keystore for the SSL socket, which can double up as our truststore.
 {{{
 henty$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dualcontrol.ssl:
