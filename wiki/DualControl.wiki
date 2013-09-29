@@ -550,6 +550,7 @@ Enter passphrase for key dek2013 for DualControlDemoApp:
 Re-enter passphrase:
 Received evanx
 }}}
+where we specify the keystore for the SSL socket, which can double up as our trust store.
 {{{
 henty$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dualcontrol.ssl:
