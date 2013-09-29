@@ -24,7 +24,7 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll store our key in a standard <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/JceKeyStore.java.html"><tt>!JceKeyStore</tt></a>. This keystore's <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> uses <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html">PBEWithMD5AndTripleDESCipher</a> for password-based encryption of the key.
+We'll store our key in a standard <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/JceKeyStore.java.html"><tt>!JceKeyStore</tt></a>. Its <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html"><tt>!KeyProtector</tt></a> uses <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html">PBEWithMD5AndTripleDESCipher</a> for password-based encryption of the key.
 
 We'll split the knowledge of the key-protection password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance is thus enabled :)
 
