@@ -24,9 +24,13 @@ The glaring problem is that sysadmins are a single person, with god-like access 
 
 <h4>Solution overview</h4>
 
-We'll store our key in a standard <a href="http://en.wikipedia.org/wiki/Java_Cryptography_Extension">JCE</a> keystore. We'll split the knowledge of the key password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance is thus enabled :)
+We'll store our key in a standard <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/JceKeyStore.java.html">!<tt>JceKeyStore</tt></a>. This keystore implementation's <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/KeyProtector.java.html">!<tt>KeyProtector</tt></a> uses a <a href="http://www.docjar.com/html/api/com/sun/crypto/provider/PBEWithMD5AndTripleDESCipher.java.html">triple DES cipher</a> for password-based encryption (PBE).
 
-We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each duo, we'll store a copy of the key protected by a concatenation of their two personal passwords.
+We'll split the knowledge of the key password between two custodians, so it's known to no single person. Clearly dual control by those two custodians is then required to load the key, and PCI DSS compliance is thus enabled :)
+
+We propose enrolling at least three custodians, so that if one is unavailable, we're still good to go with two others. For each duo, we'll store a copy of the key protected by the concatenation of their two personal passwords. 
+
+This unknown split password is used for password-based encryption (PBE) of the key, and so is effectively a key-encryption key.
 
 <h4><tt>!DualControlGenSecKey</tt> demo</h4>
 
@@ -863,7 +867,7 @@ The problem with encryption is secure key management. We shouldn't leave the key
 
 PCI requires that "split knowledge and dual control" be used to protect our data-encryption key so that no single person can extract the data in clear-text, not even our most trustworthy employee today, rogue tomorrow. Or victim of blackmail, or government coercion ;)
 
-We introduce our <tt>!DualControlGenSecKey</tt> utility for generating a new secret key. We protect this key using password-based encryption, courtesy of <tt>JCEKeyStore</tt>. We enforce split knowledge of the key password, so that dual control is required to load the key. Each split password is effectively a key-encryption key split between two custodians, and so known to no single person.
+We introduce our <tt>!DualControlGenSecKey</tt> utility for generating a new secret key. We protect this key using password-based encryption, courtesy of <tt>JceKeyStore</tt>. We enforce split knowledge of the key password, so that dual control is required to load the key. Each split password is effectively a key-encryption key split between two custodians, and so known to no single person.
 
 We propose keeping at least three copies of the same key, but where each copy is password-protected by a different duo of custodians. Then when any one custodian is on vacation or otherwise indisposed, the other two custodians can restart our app.
 
