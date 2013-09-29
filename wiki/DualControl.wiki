@@ -367,7 +367,7 @@ Clearly our keystore can double up as our truststore since it contains the serve
 
 Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert which is used to sign our client certs.
 
-However, in this case, we have to handle certificate revocation! Since we don't actually know to do this properly, we might introduce our own custom <tt>!X509TrustManager</tt> implementation for our <tt>SSLContext</tt>, which is configured with a local CRL file.
+However, in this case, we have to handle certificate revocation! We might introduce our own custom <tt>!X509TrustManager</tt> implementation for our <tt>SSLContext</tt>, which is configured with a local CRL file.
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
