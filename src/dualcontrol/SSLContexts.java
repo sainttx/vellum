@@ -43,6 +43,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import org.apache.log4j.Logger;
+import sun.security.validator.Validator;
 
 /**
  *
@@ -118,8 +119,11 @@ public class SSLContexts {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);
         SSLContext sslContext = SSLContext.getInstance("TLS");
+        Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE, 
+                Validator.VAR_GENERIC, trustStore);
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
-                getX509TrustManager(trustStore), getSoleCertificate(trustStore), 
+                validator, getX509TrustManager(trustStore), 
+                getSoleCertificate(trustStore), 
                 recovationList);
         sslContext.init(keyManagerFactory.getKeyManagers(), 
                 new TrustManager[] {revocableTrustManager}, 

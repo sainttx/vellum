@@ -28,6 +28,7 @@ import java.util.Collection;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.validator.Validator;
 
 /**
  *
@@ -36,13 +37,16 @@ import org.slf4j.LoggerFactory;
 public class RevocableClientTrustManager implements X509TrustManager {
     static Logger logger = LoggerFactory.getLogger(RevocableClientTrustManager.class);
 
+    Validator validator;
     X509TrustManager delegate;
     X509Certificate serverCertificate;
     Collection<BigInteger> revocationList;
     
-    public RevocableClientTrustManager(X509TrustManager delegate,
+    public RevocableClientTrustManager(Validator validator, 
+            X509TrustManager delegate,
             X509Certificate serverCertificate, 
             Collection<BigInteger> revocationList) {
+        this.validator = validator;
         this.delegate = delegate;
         this.serverCertificate = serverCertificate;
         this.revocationList = revocationList;
@@ -71,6 +75,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
         if (revocationList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate in revocation list");
         }
+        validator.validate(certs);
         delegate.checkClientTrusted(certs, authType);
     }
     
