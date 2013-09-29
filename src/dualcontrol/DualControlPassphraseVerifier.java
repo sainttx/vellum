@@ -36,7 +36,7 @@ public class DualControlPassphraseVerifier {
     private final int minWordCount;
 
     public DualControlPassphraseVerifier(Properties properties) {
-        VellumProperties props = new VellumProperties(properties);
+        ExtendedProperties props = new ExtendedProperties(properties);
         verifyPassphrase = props.getBoolean(
                 "dualcontrol.verifyPassphrase", true);
         verifyPassphraseComplexity = props.getBoolean(
