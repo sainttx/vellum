@@ -18,10 +18,13 @@ export CLASSPATH=$CLASSPATH
 tmp=tmp/`basename $0 .sh`
 mkdir -p $tmp
 
+keytool=jdk7/jre/bin/keytool
+
 seckeystore=$tmp/seckeystore.jceks
-serverkeystore=$tmp/server.jks
-servertruststore=$tmp/servertruststore.jks
-cert=$tmp/dual.pem
+serveralias=dualcontrolserver
+serverkeystore=$tmp/$serveralias.jks
+servertruststore=$tmp/$serveralias.trust.jks
+servercert=$tmp/$serveralias.pem
 pass=test1234
 secalias=dek2013
 
@@ -120,12 +123,13 @@ jc3t() {
     jc travs tttt
 }
 
-command1_keytool() {
+command1_genkeypair() {
   keystore=$tmp/$1.jks
   alias=$1
+  cert=$tmp/$1.pem
   rm -f $keystore
   keytool -keystore $keystore -storepass "$pass" -keypass "$pass" -alias $alias \
-     -genkeypair -dname "CN=$alias, OU=test, O=test, L=ct, S=wp, C=za"
+     -genkeypair -dname "CN=$alias/OU=test"
   keytool -keystore $keystore -storepass "$pass" -list | grep Entry
   keytool -keystore $keystore -storepass "$pass" -alias $alias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
@@ -139,25 +143,37 @@ command1_keytool() {
 
 command0_initks() {
   killservers
-  serveralias="dualcontrol"
-  dname="CN=dualcontrol, OU=test, O=test, L=ct, S=wp, C=za"
   rm -f $seckeystore
   rm -f $serverkeystore
   rm -f $servertruststore
   keytool -keystore $serverkeystore -storepass "$pass" -keypass "$pass" \
-     -alias "$serveralias" -genkeypair -dname "$dname"
+     -alias "$serveralias" -genkeypair -dname "CN=$serveralias/OU=test"
   keytool -keystore $serverkeystore -storepass "$pass" -list | grep Entry
   keytool -keystore $serverkeystore -storepass "$pass" -alias $serveralias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
   keytool -keystore $serverkeystore -storepass "$pass" -alias $serveralias \
-     -exportcert -rfc > $cert
+     -exportcert -rfc > $servercert
   keytool -keystore $servertruststore -storepass "$pass" -alias $serveralias \
-     -importcert -noprompt -file $cert
+     -importcert -noprompt -file $servercert
   keytool -keystore $servertruststore -storepass "$pass" -list | grep Entry
-  command1_keytool evanx
-  command1_keytool henty
-  command1_keytool brent
-  command1_keytool travs
+  command1_genkeypair evanx
+  command1_genkeypair henty
+  command1_genkeypair brent
+  command1_genkeypair travs
+}
+
+command1_sign() {
+  alias=$1
+  $keytool -keystore $tmp/$alias.jks -alias $alias -certreq -storepass "$pass" > $tmp/$alias.csr
+  $keytool -keystore $serverkeystore -alias $serveralias -storepass "$pass" \
+    -gencert -rfc -validity 365 -dname "CN=$alias/OU=test" -infile $tmp/$alias.csr \
+    -outfile $tmp/$alias.signed.pem
+  echo $tmp/$alias.signed.pem
+  cat $tmp/$alias.signed.pem | openssl x509 -text | grep CN
+  $keytool -keystore $tmp/$alias.jks -alias $serveralias -importcert -noprompt \
+    -file $tmp/$serveralias.pem # -storepass "$pass"
+  $keytool -keystore $tmp/$alias.jks -alias $alias -importcert -noprompt \
+    -file $tmp/$alias.signed.pem # -storepass "$pass"    
 }
 
 command1_genseckey() {
