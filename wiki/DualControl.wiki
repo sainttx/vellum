@@ -113,7 +113,7 @@ public class DualControlGenSecKey {
     private SSLContext sslContext;
 
     public DualControlGenSecKey(Properties properties, MockableConsole console) {
-        this.props = new VellumProperties(properties);
+        this.props = new ExtendedProperties(properties);
         this.console = console;
         submissionCount = props.getInt("dualcontrol.submissions", 3);
         keyAlias = props.getString("alias");
@@ -124,7 +124,7 @@ public class DualControlGenSecKey {
 
 where we configure via <tt>Properties</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. 
 
-Note that <tt>!VellumProperties</tt> is a utility wrapper for <tt>java.util.Properties</tt> that will throw an exception if the property is not found and no default is provided.
+Note that <tt>!ExtendedProperties</tt> is a utility wrapper for <tt>java.util.Properties</tt> that will throw an exception if the property is not found and no default is provided.
 
 We initialise the instance with an <tt>SSLContext</tt> as follows.
 
@@ -217,6 +217,8 @@ where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords,
 
 where for each duo in the map we program a keystore entry containing the same key, but protected by a different split password.
 
+Incidently, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a><tt>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory and thereby extract our passwords, or indeed the key itself.
+
 Some argue that one should not write code per se, but rather tests with accompanying code, hand in glove. Indeed we observe that our implementation is well defined by the unit tests.
 {{{
     @Test
@@ -259,7 +261,7 @@ public class SSLContexts {
 
     public static SSLContext create(String sslPrefix, Properties properties, 
             MockableConsole console) throws Exception {
-        VellumProperties props = new VellumProperties(properties);
+        ExtendedProperties props = new ExtendedProperties(properties);
         sslPrefix = props.getString(sslPrefix, sslPrefix);
         String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
@@ -281,8 +283,6 @@ public class SSLContexts {
 where we reuse the same password for the SSL keystore, its private key, and the truststore. This password can specified on the command-line e.g. for automated test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Moreover, we have introduced a <tt>!MockableConsole</tt> for the benefit of automated unit testing.
 
 Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. However, when using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root; but these cannot be in our truststore, otherwise we trust any cert signed by that CA!
-
-As illustrated above, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a><tt>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory and thereby extract our passwords, or indeed the key itself.
 
 <h4><tt>keytool</tt></h4>
 
@@ -436,7 +436,7 @@ public class DualControlPassphraseVerifier {
     private final int minWordCount;
 
     public DualControlPassphraseVerifier(Properties properties) {
-        VellumProperties props = new VellumProperties(properties);
+        ExtendedProperties props = new ExtendedProperties(properties);
         verifyPassphrase = props.getBoolean(
                 "dualcontrol.verifyPassphrase", true);
         verifyPassphraseComplexity = props.getBoolean(
@@ -450,7 +450,6 @@ public class DualControlPassphraseVerifier {
 }}}
 
 We note that PCI DSS mandates alphanumeric passwords, whereas <a href="http://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act">SOX</a> requires uppercase and lowercase, and we should cover all bases.
-
 {{{
     public String getInvalidMessage(char[] password) {
         if (verifyPassphrase) {
