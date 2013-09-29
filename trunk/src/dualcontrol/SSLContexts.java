@@ -37,19 +37,20 @@ public class SSLContexts {
     
     public static SSLContext create(String sslPrefix, Properties properties, 
             MockableConsole console) throws Exception {
-        VellumProperties props = new VellumProperties(properties);
+        ExtendedProperties props = new ExtendedProperties(properties);
         sslPrefix = props.getString(sslPrefix, sslPrefix);
         String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
             throw new Exception("Missing -D property: " + sslPrefix + ".keyStore");
         }
-        char[] passphrase = props.getPassword(sslPrefix + ".pass", null);
-        if (passphrase == null) {
-            passphrase = console.readPassword("Enter passphrase for %s: ", sslPrefix);
+        char[] pass = props.getPassword(sslPrefix + ".pass", null);
+        if (pass == null) {
+            pass = console.readPassword("Enter passphrase for %s: ", sslPrefix);
         }
-        String trustStoreLocation = props.getString(sslPrefix + ".trustStore", keyStoreLocation);
-        SSLContext sslContext = create(keyStoreLocation, trustStoreLocation, passphrase);
-        Arrays.fill(passphrase, (char) 0);
+        String trustStoreLocation = props.getString(sslPrefix + ".trustStore", 
+                keyStoreLocation);
+        SSLContext sslContext = create(keyStoreLocation, trustStoreLocation, pass);
+        Arrays.fill(pass, (char) 0);
         return sslContext;
     }
 

@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 public class DualControlEnroll {
 
     final static Logger logger = Logger.getLogger(DualControlEnroll.class);
-    private VellumProperties props;
+    private ExtendedProperties props;
     private MockableConsole console;
     private int submissionCount;
     private String username;
@@ -51,7 +51,7 @@ public class DualControlEnroll {
     List<String> aliasList;
 
     public DualControlEnroll(Properties properties, MockableConsole console) {
-        this.props = new VellumProperties(properties);
+        this.props = new ExtendedProperties(properties);
         this.console = console;
         submissionCount = props.getInt("dualcontrol.submissions", 3);
         username = props.getString("dualcontrol.username");

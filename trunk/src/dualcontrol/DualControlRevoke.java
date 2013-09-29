@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 public class DualControlRevoke {
 
     private final static Logger logger = Logger.getLogger(DualControlRevoke.class);
-    private VellumProperties props;
+    private ExtendedProperties props;
     private MockableConsole console;
     private String username;
     private String keyAlias;
@@ -47,7 +47,7 @@ public class DualControlRevoke {
     List<String> aliasList;
 
     public DualControlRevoke(Properties properties, MockableConsole console) {
-        this.props = new VellumProperties(properties);
+        this.props = new ExtendedProperties(properties);
         this.console = console;
         username = props.getString("dualcontrol.username");
         keyAlias = props.getString("alias");
