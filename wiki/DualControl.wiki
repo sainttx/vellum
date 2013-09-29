@@ -250,8 +250,8 @@ which invokes <tt>!KeyStore.getEntry()</tt>.
 Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options used to specify the default keystore and truststore for SSL sockets, and in order to avoid any potential conflict with those, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These properties are used to create an <tt>SSLContext</tt> as below.
 {{{
 public class SSLContexts {    
-    ...
-    public static SSLContext createSSLContext(String sslPrefix, Properties properties, 
+
+    public static SSLContext create(String sslPrefix, Properties properties, 
             MockableConsole console) throws Exception {
         VellumProperties props = new VellumProperties(properties);
         sslPrefix = props.getString(sslPrefix, sslPrefix);
@@ -264,13 +264,14 @@ public class SSLContexts {
         String trustStoreLocation = props.getString(sslPrefix + ".trustStore", keyStoreLocation);
         char[] trustStorePassword = props.getPassword(sslPrefix + ".trustStorePassword", 
                 keyStorePassword);
-        SSLContext sslContext = createSSLContext(keyStoreLocation, keyStorePassword,
+        SSLContext sslContext = create(keyStoreLocation, keyStorePassword,
                 keyPassword, trustStoreLocation, trustStorePassword);
         Arrays.fill(keyStorePassword, (char) 0);
         Arrays.fill(keyPassword, (char) 0);
         Arrays.fill(trustStorePassword, (char) 0);
         return sslContext;
     }
+    ...
 }
 }}}
 
