@@ -369,6 +369,7 @@ However, in this case, we have to handle certificate revocation! Since we don't 
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
+    X509TrustManager delegate;
     X509Certificate serverCertificate;
     Collection<BigInteger> revocationList;
     ...
@@ -390,10 +391,15 @@ public class RevocableClientTrustManager implements X509TrustManager {
         if (revocationList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate in revocation list");
         }
+        delegate.checkClientTrusted(certs, authType);
     }
 }
 }}}
-where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list.
+where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list. Finally, we delegate to the standard <tt>X509TrustManager</tt>.
+
+{{{
+}}}
+
 
 <h4><tt>!DualControlConsole</tt></h4>
 
