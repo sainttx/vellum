@@ -184,8 +184,8 @@ public class RevocableClientTrustManagerTest {
         Exception exception = testConnection(serverContext, clientContext);
         if (exception != null) {
             if (!exception.getMessage().contains(expectedExceptionMessage)) {
-                logger.error("testConnectionException expected: " + expectedExceptionMessage);
-                logger.error("testConnectionException got: " + exception.getMessage());
+                logger.info("expected: " + expectedExceptionMessage);
+                logger.error("got: %s" + exception.getMessage());
                 throw new Exception("testConnectionException invalid");
             }
         } else {
