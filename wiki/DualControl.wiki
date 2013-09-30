@@ -290,10 +290,25 @@ where we reuse the same password for the SSL keystore, its private key, and the 
 
 Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
 
-In order to support a "local CA," we enable a certificate revocation list (CRL). Actually this is just a <tt>List</tt> of our revoked certificates' serial numbers, read from a local file.
+Ordinarily we create the <tt>SSLContext</tt> as follows.
+{{{
+    public static SSLContext create(KeyStore keyStore, char[] keyPassword,
+            KeyStore trustStore) throws Exception {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPassword);
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(trustStore);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
+        return sslContext;
+    }
+}}}
+
+Furthermore, in order to support a "local CA," we enable a local certificate revocation list (CRL), specified by the <tt>crlFile</tt> property.
 {{{
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, Collection<BigInteger> revocationList) throws Exception {
+            KeyStore trustStore, List<BigInteger> revocationList) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -310,22 +325,57 @@ In order to support a "local CA," we enable a certificate revocation list (CRL).
         return sslContext;
     }
 }}}
-where this uses a custom <tt>!RevocableClientTrustManager</tt> which is presented further below.
+where this uses a custom <tt>!RevocableClientTrustManager</tt> which is instantiated with a <tt>List</tt> of revoked certificates' serial numbers read from a local text file.
 
-Otherwise we create the <tt>SSLContext</tt> ordinarily.
 {{{
-    public static SSLContext create(KeyStore keyStore, char[] keyPassword,
-            KeyStore trustStore) throws Exception {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(trustStore);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(keyManagerFactory.getKeyManagers(),
-                trustManagerFactory.getTrustManagers(), new SecureRandom());
-        return sslContext;
+    private static List<BigInteger> readRevocationList(String crlFile)
+            throws FileNotFoundException, IOException {
+        List<BigInteger> revocationList = new ArrayList();
+        BufferedReader reader = new BufferedReader(new FileReader(crlFile));
+        while (true) {
+            String line = reader.readLine();
+            if (line == null) {
+                return revocationList;
+            }
+            revocationList.add(new BigInteger(line.trim()));
+        }        
     }
 }}}
+
+<h4><tt>!RevocableClientTrustManager</tt></h4>
+
+We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also the CA cert used to sign client certs.
+
+{{{
+public class RevocableClientTrustManager implements X509TrustManager {
+    X509Certificate serverCertificate;
+    X509TrustManager delegate;
+    Collection<BigInteger> revocationList;
+    ...
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        if (certs.length != 2) {
+            throw new CertificateException("Invalid cert chain length");
+        }
+        if (!certs[0].getIssuerX500Principal().equals(
+                serverCertificate.getSubjectX500Principal())) {
+            throw new CertificateException("Untrusted issuer");
+        }
+        if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
+                serverCertificate.getPublicKey().getEncoded())) {
+            throw new CertificateException("Invalid server certificate");
+        }
+        if (revocationList.contains(certs[0].getSerialNumber())) {
+            throw new CertificateException("Certificate in revocation list");
+        }
+        delegate.checkClientTrusted(certs, authType);
+    }
+}
+}}}
+where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
+
+We'll elaborate on <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RevocableClientTrustManager.java"><tt>!RevocableClientTrustManager</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/RevocableClientTrustManagerTest.java">unit tests</a> in a follow-up article.
 
 <h4><tt>keytool</tt></h4>
 
@@ -407,41 +457,6 @@ Certificate reply was installed in keystore
 Our client keystore can double up as our truststore since it contains the server cert as the root of its certificate chain. If our server cert is CA-signed, we can't do that, since our keystore certificate chain would include the CA's root cert, and so we would trust <i>any</i> cert signed by that CA.
 
 Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs.
-
-<h4><tt>!RevocableClientTrustManager</tt></h4>
-
-We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also the CA cert used to sign client certs.
-
-{{{
-public class RevocableClientTrustManager implements X509TrustManager {
-    X509Certificate serverCertificate;
-    X509TrustManager delegate;
-    Collection<BigInteger> revocationList;
-    ...
-    @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
-            throws CertificateException {
-        if (certs.length != 2) {
-            throw new CertificateException("Invalid cert chain length");
-        }
-        if (!certs[0].getIssuerX500Principal().equals(
-                serverCertificate.getSubjectX500Principal())) {
-            throw new CertificateException("Untrusted issuer");
-        }
-        if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
-                serverCertificate.getPublicKey().getEncoded())) {
-            throw new CertificateException("Invalid server certificate");
-        }
-        if (revocationList.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate in revocation list");
-        }
-        delegate.checkClientTrusted(certs, authType);
-    }
-}
-}}}
-where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
-
-We'll elaborate on <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RevocableClientTrustManager.java"><tt>!RevocableClientTrustManager</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/RevocableClientTrustManagerTest.java">unit tests</a> in a follow-up article.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
