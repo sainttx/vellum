@@ -365,7 +365,7 @@ Certificate reply was installed in keystore
 
 Clearly our keystore can double up as our truststore since it contains the server cert, which is self-signed. If our server cert is CA-signed, we can't do this, since our keystore cert chain includes the root CA cert, and so we would trust <i>any</i> cert signed by the CA.
 
-Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert which is used to sign our client certs. However, in this case, we have to handle certificate revocation...
+Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert which is used to sign our client certs. However, in this case, we have to handle client certificate revocation...
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
