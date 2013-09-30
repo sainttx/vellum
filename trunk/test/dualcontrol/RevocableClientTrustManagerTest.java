@@ -72,6 +72,7 @@ public class RevocableClientTrustManagerTest {
         testSigned();
         testRevoked();
         testInvalidServerCertClient();
+        testInvalidServerCertSigned();
         testInvalidServerCertOther();
     }
 
@@ -98,6 +99,8 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals(1, Collections.list(clientKeyStore.aliases()).size());
         SSLContext clientContext = SSLContexts.create(clientKeyStore, pass, clientKeyStore);
         testConnectionOk(clientContext, clientContext);
+        testConnectionException(serverContext, clientContext, 
+                "Received fatal alert: certificate_unknown");
     }
     
     private void testSigned() throws Exception {
@@ -111,6 +114,7 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals(2, Collections.list(signedKeyStore.aliases()).size());        
         signedContext = SSLContexts.create(signedKeyStore, pass,
                 signedKeyStore);
+        testConnectionOk(serverContext, signedContext);
         testConnectionOk(signedContext, signedContext);
     }
     
@@ -130,6 +134,15 @@ public class RevocableClientTrustManagerTest {
                 "Received fatal alert: certificate_unknown");
     }
 
+    private void testInvalidServerCertSigned() throws Exception {
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
+                signedCert, signedCert
+                );
+        SSLContext invalidContext = createContext(invalidKeyStore, "client", 1);
+        testConnectionException(serverContext, invalidContext, 
+                "Received fatal alert: certificate_unknown");
+    }
+    
     private void testInvalidServerCertOther() throws Exception {
         GenRsaPair otherPair = new GenRsaPair();
         otherPair.call("CN=server", new Date(), 1);
@@ -161,10 +174,12 @@ public class RevocableClientTrustManagerTest {
         Exception exception = testConnection(serverContext, clientContext);
         if (exception != null) {
             if (!exception.getMessage().contains(expectedExceptionMessage)) {
-                throw new Exception("testConnection exception: " + exception.getMessage());
+                logger.error("testConnectionException expected: " + expectedExceptionMessage);
+                logger.error("testConnectionException got: " + exception.getMessage());
+                throw new Exception("testConnectionException invalid");
             }
         } else {
-            throw new Exception("testConnection accepted");
+            throw new Exception("testConnectionException expected exception");
         }
     }
 
@@ -174,8 +189,8 @@ public class RevocableClientTrustManagerTest {
         ClientThread clientThread = new ClientThread(clientContext);
         serverThread.start();
         clientThread.start();
-        clientThread.join(2000);
-        serverThread.join(2000);
+        clientThread.join(1000);
+        serverThread.join(1000);
         if (serverThread.exception != null) {
             return serverThread.exception;
         }
