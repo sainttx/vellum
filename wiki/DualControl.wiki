@@ -341,7 +341,7 @@ $ keytool -keystore dualcontrolserver.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx/OU=test" -infile evanx.csr -outfile evanx.signed.pem
 }}}
 
-Note that <tt>-gencert</tt> is not present in Java6's keytool.
+(Note that <tt>-gencert</tt> is not present in Java6's keytool.)
 
 We inspect the cert using <tt>openssl</tt>.
 {{{
