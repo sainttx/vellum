@@ -471,6 +471,7 @@ Received evanx
 }}}
 where our <tt>SSLContexts</tt> utility prompts for the SSL keystore password first.
 
+We implement the <tt>main()>/tt> as follows.
 {{{
 public class DualControlConsole {
     Properties properties;
