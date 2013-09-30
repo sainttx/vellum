@@ -114,16 +114,22 @@ public class SSLContexts {
         return create(keyStore, pass, trustStore, revocationList);
     }
 
-    public static SSLContext create(KeyStore keyStore, char[] keyPassword,
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+            Collection<BigInteger> recovationList) throws Exception {
+        return create(keyStore, keyPass, keyStore, recovationList);
+    }
+    
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore, Collection<BigInteger> recovationList) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
+        keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE, 
                 Validator.VAR_GENERIC, trustStore);
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
-                validator, getX509TrustManager(trustStore), 
-                getSoleCertificate(trustStore), 
+                validator, 
+                getSoleCertificate(keyStore), 
+                getX509TrustManager(trustStore), 
                 recovationList);
         sslContext.init(keyManagerFactory.getKeyManagers(), 
                 new TrustManager[] {revocableTrustManager}, 
