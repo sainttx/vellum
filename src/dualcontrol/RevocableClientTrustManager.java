@@ -60,10 +60,12 @@ public class RevocableClientTrustManager implements X509TrustManager {
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
-        logger.debug("checkClientTrusted {}", certs[0].getSubjectDN().getName());
         if (certs.length != 2) {
             throw new CertificateException("Invalid cert chain length");
         }
+        logger.debug(String.format("checkClientTrusted %s, issuer %s, root %s", 
+                certs[0].getSubjectDN().getName(), certs[0].getIssuerDN().getName(),
+                certs[1].getSubjectDN().getName()));
         if (!certs[0].getIssuerX500Principal().equals(
                 serverCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
