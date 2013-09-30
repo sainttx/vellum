@@ -248,8 +248,8 @@ public class DualControlTest {
     private KeyStore createSSLKeyStore(String name, int validityDays) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, keyStorePass);
-        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
-        keyPair.generate("CN=" + name, new Date(), validityDays);
+        GenRsaKeyPair keyPair = new GenRsaKeyPair(name);
+        keyPair.call("CN=" + name, new Date(), validityDays);
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCert()};
         keyStore.setKeyEntry(name, keyPair.getPrivateKey(), keyStorePass, chain);
         return keyStore;
