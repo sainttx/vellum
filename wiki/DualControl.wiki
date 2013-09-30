@@ -295,7 +295,7 @@ Note that the truststore is defaulted to the specified private keystore, which i
 In order to support a "local CA," we enable a local certificate revocation list. 
 {{{
     public static SSLContext create(KeyStore keyStore, String keyAlias, char[] keyPass,
-            KeyStore trustStore, Collection<BigInteger> recovationList) throws Exception {
+            KeyStore trustStore, Collection<BigInteger> revocationList) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -305,7 +305,7 @@ In order to support a "local CA," we enable a local certificate revocation list.
                 validator,
                 getPrivateKeyCertificate(keyStore, keyAlias),
                 getX509TrustManager(trustStore),
-                recovationList);
+                revocationList);
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 new TrustManager[]{revocableTrustManager},
                 new SecureRandom());
