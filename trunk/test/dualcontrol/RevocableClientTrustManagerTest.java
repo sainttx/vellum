@@ -1,22 +1,22 @@
 /*
  * Source https://code.google.com/p/vellum by @evanxsummers
 
-       Licensed to the Apache Software Foundation (ASF) under one
-       or more contributor license agreements. See the NOTICE file
-       distributed with this work for additional information
-       regarding copyright ownership.  The ASF licenses this file
-       to you under the Apache License, Version 2.0 (the
-       "License"); you may not use this file except in compliance
-       with the License.  You may obtain a copy of the License at
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements. See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
 
-         http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-       Unless required by applicable law or agreed to in writing,
-       software distributed under the License is distributed on an
-       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-       KIND, either express or implied.  See the License for the
-       specific language governing permissions and limitations
-       under the License.  
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.  
        
  */
 package dualcontrol;
@@ -47,40 +47,124 @@ import sun.security.pkcs.PKCS10;
  * @author evan
  */
 public class RevocableClientTrustManagerTest {
+
     static Logger logger = Logger.getLogger(RevocableClientTrustManagerTest.class);
     private int port = 4446;
     private char[] pass = "test1234".toCharArray();
+    GenRsaKeyPair serverKeyPair;
+    GenRsaKeyPair clientKeyPair;
+    KeyStore serverKeyStore;
+    KeyStore clientKeyStore;
+    KeyStore signedKeyStore;
+    SSLContext serverContext;
+    SSLContext clientContext;
+    SSLContext signedContext;
+    SSLContext revokedContext;
+    SSLContext invalidContext;
+    X509Certificate serverCert;
+    X509Certificate clientCert;
+    X509Certificate signedCert;
+    PKCS10 certRequest;
     
     public RevocableClientTrustManagerTest() {
     }
 
-    @Test
-    public void test() throws Exception {
-        GenRsaKeyPair serverKeyPair = new GenRsaKeyPair("server");
+    private void prepareServer() throws Exception {
+        serverKeyPair = new GenRsaKeyPair("server");
         serverKeyPair.call("CN=server", new Date(), 1);
-        GenRsaKeyPair clientKeyPair = new GenRsaKeyPair("client");
+        serverCert = serverKeyPair.getCert();
+        serverKeyStore = createSSLKeyStore(serverKeyPair);        
+        Assert.assertEquals("CN=server", serverCert.getIssuerDN().getName());        
+        Assert.assertEquals("CN=server", serverCert.getSubjectDN().getName());        
+        Assert.assertEquals(1, Collections.list(serverKeyStore.aliases()).size());
+        serverContext = createContext(serverKeyStore, "server", 1); 
+    }
+    
+    private void prepareClient() throws Exception {
+        clientKeyPair = new GenRsaKeyPair("client");
         clientKeyPair.call("CN=client", new Date(), 1);
-        KeyStore serverKeyStore = createSSLKeyStore(serverKeyPair);
-        KeyStore clientKeyStore = createSSLKeyStore(clientKeyPair);
-        X509Certificate clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
-        Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());
-        PKCS10 certRequest = RsaSigner.getCertRequest(clientKeyPair.getKeyPair(), "CN=client"); 
-        X509Certificate signedCert = RsaSigner.signCert(serverKeyPair.getPrivateKey(), 
-                serverKeyPair.getCert(), certRequest, new Date(), 365, 1);
-        clientKeyStore = createSSLKeyStore("client", clientKeyPair.getPrivateKey(), signedCert,
-                serverKeyPair.getCert());
+        clientKeyStore = createSSLKeyStore(clientKeyPair);
         clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
-        Assert.assertEquals("CN=server", clientCert.getIssuerDN().getName());
-        List<BigInteger> revocationList = new ArrayList();
-        logger.info("clientKeyStore: " + Collections.list(clientKeyStore.aliases()));
-        SSLContext serverContext = SSLContexts.create(serverKeyStore, pass, 
-                serverKeyStore, revocationList);
-        SSLContext clientContext = SSLContexts.create(clientKeyStore, pass, 
-                clientKeyStore);
-        testConnection(serverContext, clientContext);
+        Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());        
+        Assert.assertEquals("CN=client", clientCert.getSubjectDN().getName());        
+        Assert.assertEquals(1, Collections.list(clientKeyStore.aliases()).size());
+        clientContext = SSLContexts.create(clientKeyStore, pass, clientKeyStore);
+    }
+    
+    private void prepareSigned() throws Exception {
+        certRequest = RsaSigner.getCertRequest(clientKeyPair.getKeyPair(), "CN=client");
+        signedCert = RsaSigner.signCert(serverKeyPair.getPrivateKey(),
+                serverKeyPair.getCert(), certRequest, new Date(), 365, 1234);
+        Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
+        Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());        
+        signedKeyStore = createSSLKeyStore("client", clientKeyPair.getPrivateKey(), signedCert,
+                serverKeyPair.getCert());
+        Assert.assertEquals(2, Collections.list(signedKeyStore.aliases()).size());        
+        signedContext = SSLContexts.create(signedKeyStore, pass,
+                signedKeyStore);
+    }
+    
+    private void prepareRevoked() throws Exception {        
+        revokedContext = createContext(serverKeyStore, "server", 
+                signedCert.getSerialNumber());
     }
 
-    private void testConnection(SSLContext serverContext, SSLContext clientContext) 
+    private void prepareInvalid() throws Exception {
+        GenRsaKeyPair invalidKeyPair = new GenRsaKeyPair("server");
+        invalidKeyPair.call("CN=server", new Date(), 1);
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientKeyPair.getPrivateKey(), 
+                signedCert, invalidKeyPair.getCert()
+                );
+        invalidContext = createContext(invalidKeyStore, "client", 1);
+    }
+    
+    
+    private void prepare() throws Exception {
+        prepareServer();
+        prepareClient();
+        prepareSigned();
+        prepareRevoked();
+        prepareInvalid();
+    }
+    
+    private SSLContext createContext(KeyStore keyStore, String keyAlias, Number revokedSerialNumber) 
+            throws Exception {
+        List<BigInteger> revocationList = new ArrayList();
+        revocationList.add(new BigInteger(revokedSerialNumber.toString()));
+        return SSLContexts.create(keyStore, keyAlias, pass, revocationList);
+    }
+    
+    @Test
+    public void test() throws Exception {
+        prepare();
+        testConnectionOk(signedContext, signedContext);
+        testConnectionOk(serverContext, signedContext);
+        testConnectionException(serverContext, serverContext, "Invalid cert chain length");
+        testConnectionException(serverContext, revokedContext, "Certificate in revocation list");
+        testConnectionException(serverContext, invalidContext, "X");
+    }
+
+    private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)
+            throws Exception {
+        Exception exception = testConnection(serverContext, clientContext);
+        if (exception != null) {
+            throw exception;
+        }
+    }
+
+    private void testConnectionException(SSLContext serverContext, SSLContext clientContext,
+            String expectedExceptionMessage) throws Exception {
+        Exception exception = testConnection(serverContext, clientContext);
+        if (exception != null) {
+            if (!exception.getMessage().contains(expectedExceptionMessage)) {
+                throw new Exception("testConnection exception: " + exception.getMessage());
+            }
+        } else {
+            throw new Exception("testConnection accepted");
+        }
+    }
+
+    private Exception testConnection(SSLContext serverContext, SSLContext clientContext)
             throws Exception {
         ServerThread serverThread = new ServerThread(serverContext);
         ClientThread clientThread = new ClientThread(clientContext);
@@ -89,40 +173,41 @@ public class RevocableClientTrustManagerTest {
         clientThread.join(2000);
         serverThread.join(2000);
         if (serverThread.exception != null) {
-            throw new Exception("serverThread", serverThread.exception);
+            return serverThread.exception;
         }
         if (clientThread.exception != null) {
-            throw new Exception("clientThread", clientThread.exception);
+            return clientThread.exception;
         }
+        return null;
     }
-    
+
     private KeyStore createSSLKeyStore(GenRsaKeyPair keyPair) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
-        X509Certificate[] chain = new X509Certificate[] {keyPair.getCert()};
+        X509Certificate[] chain = new X509Certificate[]{keyPair.getCert()};
         keyStore.setKeyEntry(keyPair.getAlias(), keyPair.getPrivateKey(), pass, chain);
         return keyStore;
     }
-    
-    private KeyStore createSSLKeyStore(String alias, PrivateKey privateKey, 
+
+    private KeyStore createSSLKeyStore(String alias, PrivateKey privateKey,
             X509Certificate signedCert, X509Certificate issuer) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
-        X509Certificate[] chain = new X509Certificate[] {signedCert, issuer};
+        X509Certificate[] chain = new X509Certificate[]{signedCert, issuer};
         keyStore.setCertificateEntry("issuer", issuer);
         keyStore.setKeyEntry(alias, privateKey, pass, chain);
         return keyStore;
     }
-    
-    
-    class ServerThread extends Thread  {
+
+    class ServerThread extends Thread {
+
         SSLContext sslContext;
         Exception exception;
-        
+
         public ServerThread(SSLContext sslContext) {
             this.sslContext = sslContext;
-        }        
-        
+        }
+
         @Override
         public void run() {
             SSLServerSocket serverSocket = null;
@@ -146,15 +231,16 @@ public class RevocableClientTrustManagerTest {
             }
         }
     }
-    
-    class ClientThread extends Thread  {
+
+    class ClientThread extends Thread {
+
         SSLContext sslContext;
         Exception exception;
-        
+
         public ClientThread(SSLContext sslContext) {
             this.sslContext = sslContext;
-        }        
-        
+        }
+
         @Override
         public void run() {
             SSLSocket clientSocket = null;
@@ -192,5 +278,5 @@ public class RevocableClientTrustManagerTest {
                 logger.warn(ioe.getMessage());
             }
         }
-    }        
+    }
 }
