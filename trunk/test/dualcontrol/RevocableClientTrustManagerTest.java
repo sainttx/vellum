@@ -71,6 +71,7 @@ public class RevocableClientTrustManagerTest {
         testClient();
         testSigned();
         testRevoked();
+        testInvalidServerCertOrder();
         testInvalidServerCertClient();
         testInvalidServerCertSigned();
         testInvalidServerCertOther();
@@ -134,6 +135,15 @@ public class RevocableClientTrustManagerTest {
                 "Received fatal alert: certificate_unknown");
     }
 
+    private void testInvalidServerCertOrder() throws Exception {
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
+                serverCert, signedCert
+                );
+        SSLContext invalidContext = createContext(invalidKeyStore, 1);
+        testConnectionException(serverContext, invalidContext, 
+                "Invalid server certificate");
+    }
+    
     private void testInvalidServerCertSigned() throws Exception {
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
                 signedCert, signedCert
