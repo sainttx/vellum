@@ -292,7 +292,42 @@ where we reuse the same password for the SSL keystore, its private key, and the 
 
 Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
 
-In order to support a "local CA," we enable a local certificate revocation list. This requires a special <tt>!RevocableClientTrustManager</tt> which is presented further below.
+In order to support a "local CA," we enable a local certificate revocation list. 
+{{{
+    public static SSLContext create(KeyStore keyStore, String keyAlias, char[] keyPass,
+            KeyStore trustStore, Collection<BigInteger> recovationList) throws Exception {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPass);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
+                Validator.VAR_GENERIC, trustStore);
+        TrustManager revocableTrustManager = new RevocableClientTrustManager(
+                validator,
+                getPrivateKeyCertificate(keyStore, keyAlias),
+                getX509TrustManager(trustStore),
+                recovationList);
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                new TrustManager[]{revocableTrustManager},
+                new SecureRandom());
+        return sslContext;
+    }
+}}}
+where this uses a special <tt>!RevocableClientTrustManager</tt> which is presented further below.
+
+Otherewise we create the <tt>SSLContext</tt> ordinarily.
+{{{
+    public static SSLContext create(KeyStore keyStore, char[] keyPassword,
+            KeyStore trustStore) throws Exception {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPassword);
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(trustStore);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
+        return sslContext;
+    }
+}}}
 
 <h4><tt>keytool</tt></h4>
 
