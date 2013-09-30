@@ -460,7 +460,7 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4><tt>!DualControlConsole</tt></h4>
 
-Let's check out that <tt>!DualControlConsole</tt> app, which is used by custodians to submit their passwords via SSL.
+Let's try our <tt>!DualControlConsole</tt> app, e.g. to submit a password to <tt>!DualControlGenSecKey</tt>.
 
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
@@ -469,7 +469,7 @@ Enter passphrase for new key dek2013:
 Re-enter passphrase: 
 Received evanx
 }}}
-where our <tt>SSLContexts</tt> utility prompts for the SSL keystore password first.
+where our <tt>SSLContexts</tt> utility prompts for the SSL keystore password first. We are prompted for our secret key password.
 
 We implement the <tt>main()</tt> as follows.
 {{{
