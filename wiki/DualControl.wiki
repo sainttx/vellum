@@ -311,9 +311,9 @@ In order to support a "local CA," we enable a local certificate revocation list.
         return sslContext;
     }
 }}}
-where this uses a special <tt>!RevocableClientTrustManager</tt> which is presented further below.
+where this uses a custom <tt>!RevocableClientTrustManager</tt> which is presented further below.
 
-Otherewise we create the <tt>SSLContext</tt> ordinarily.
+Otherwise we create the <tt>SSLContext</tt> ordinarily.
 {{{
     public static SSLContext create(KeyStore keyStore, char[] keyPassword,
             KeyStore trustStore) throws Exception {
