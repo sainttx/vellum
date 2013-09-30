@@ -398,7 +398,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
 }}}
 where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
 
-We'll present <a href=""><tt>RevocableClientTrustManager.java</tt></a> in a follow-up article, with some unit testing courtesy of <a href=""><tt>RevocableClientTrustManagerTest.java</tt></a>.
+We'll present <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RevocableClientTrustManager.java"><tt>!RevocableClientTrustManager.java</tt></a> in a follow-up article, with some unit testing courtesy of <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/RevocableClientTrustManagerTest.java"><tt>!RevocableClientTrustManagerTest.java</tt></a>.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
