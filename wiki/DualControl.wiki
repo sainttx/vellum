@@ -305,7 +305,7 @@ Ordinarily we create the <tt>SSLContext</tt> as follows.
     }
 }}}
 
-Furthermore, in order to support a "local CA," we enable a local certificate revocation list (CRL), specified by the <tt>crlFile</tt> property.
+Furthermore, we enable a local certificate revocation list (CRL), specified by the <tt>crlFile</tt> property.
 {{{
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore, List<BigInteger> revocationList) throws Exception {
