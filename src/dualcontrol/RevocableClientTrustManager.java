@@ -75,10 +75,8 @@ public class RevocableClientTrustManager implements X509TrustManager {
         if (revocationList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate in revocation list");
         }
-        if (false) {
-            validator.validate(certs);
-            delegate.checkClientTrusted(certs, authType);
-        }
+        validator.validate(certs);
+        delegate.checkClientTrusted(certs, authType);
     }
     
     @Override
