@@ -52,24 +52,20 @@ public class RevocableClientTrustManagerTest {
     private int port = 4446;
     private char[] pass = "test1234".toCharArray();
     GenRsaKeyPair serverKeyPair;
-    GenRsaKeyPair clientKeyPair;
-    KeyStore serverKeyStore;
-    KeyStore clientKeyStore;
-    KeyStore signedKeyStore;
-    SSLContext serverContext;
-    SSLContext clientContext;
-    SSLContext signedContext;
-    SSLContext revokedContext;
-    SSLContext invalidContext;
     X509Certificate serverCert;
+    KeyStore serverKeyStore;
+    SSLContext serverContext;
+    GenRsaKeyPair clientKeyPair;
     X509Certificate clientCert;
-    X509Certificate signedCert;
     PKCS10 certRequest;
+    KeyStore signedKeyStore;
+    X509Certificate signedCert;
+    SSLContext signedContext;
     
     public RevocableClientTrustManagerTest() {
     }
 
-    private void prepareServer() throws Exception {
+    private void testServer() throws Exception {
         serverKeyPair = new GenRsaKeyPair("server");
         serverKeyPair.call("CN=server", new Date(), 1);
         serverCert = serverKeyPair.getCert();
@@ -78,20 +74,23 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals("CN=server", serverCert.getSubjectDN().getName());        
         Assert.assertEquals(1, Collections.list(serverKeyStore.aliases()).size());
         serverContext = createContext(serverKeyStore, "server", 1); 
+        testConnectionException(serverContext, serverContext, 
+                "Invalid cert chain length");
     }
     
-    private void prepareClient() throws Exception {
+    private void testClient() throws Exception {
         clientKeyPair = new GenRsaKeyPair("client");
         clientKeyPair.call("CN=client", new Date(), 1);
-        clientKeyStore = createSSLKeyStore(clientKeyPair);
+        KeyStore clientKeyStore = createSSLKeyStore(clientKeyPair);
         clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
         Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());        
         Assert.assertEquals("CN=client", clientCert.getSubjectDN().getName());        
         Assert.assertEquals(1, Collections.list(clientKeyStore.aliases()).size());
-        clientContext = SSLContexts.create(clientKeyStore, pass, clientKeyStore);
+        SSLContext clientContext = SSLContexts.create(clientKeyStore, pass, clientKeyStore);
+        testConnectionOk(clientContext, clientContext);
     }
     
-    private void prepareSigned() throws Exception {
+    private void testSigned() throws Exception {
         certRequest = RsaSigner.getCertRequest(clientKeyPair.getKeyPair(), "CN=client");
         signedCert = RsaSigner.signCert(serverKeyPair.getPrivateKey(),
                 serverKeyPair.getCert(), certRequest, new Date(), 365, 1234);
@@ -102,29 +101,34 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals(2, Collections.list(signedKeyStore.aliases()).size());        
         signedContext = SSLContexts.create(signedKeyStore, pass,
                 signedKeyStore);
+        testConnectionOk(signedContext, signedContext);
     }
     
-    private void prepareRevoked() throws Exception {        
-        revokedContext = createContext(serverKeyStore, "server", 
+    private void testRevoked() throws Exception {        
+        SSLContext revokedContext = createContext(serverKeyStore, "server", 
                 signedCert.getSerialNumber());
+        testConnectionException(revokedContext, signedContext, 
+                "Certificate in revocation list");
     }
 
-    private void prepareInvalid() throws Exception {
-        GenRsaKeyPair invalidKeyPair = new GenRsaKeyPair("server");
-        invalidKeyPair.call("CN=server", new Date(), 1);
+    private void testInvalidServerCertClient() throws Exception {
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientKeyPair.getPrivateKey(), 
-                signedCert, invalidKeyPair.getCert()
+                signedCert, clientCert
                 );
-        invalidContext = createContext(invalidKeyStore, "client", 1);
+        SSLContext invalidContext = createContext(invalidKeyStore, "client", 1);
+        testConnectionException(serverContext, invalidContext, 
+                "Received fatal alert: certificate_unknown");
     }
-    
-    
-    private void prepare() throws Exception {
-        prepareServer();
-        prepareClient();
-        prepareSigned();
-        prepareRevoked();
-        prepareInvalid();
+
+    private void testInvalidServerCertOther() throws Exception {
+        GenRsaKeyPair otherKeyPair = new GenRsaKeyPair("server");
+        otherKeyPair.call("CN=server", new Date(), 1);
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientKeyPair.getPrivateKey(), 
+                signedCert, otherKeyPair.getCert()
+                );
+        SSLContext invalidContext = createContext(invalidKeyStore, "client", 1);
+        testConnectionException(serverContext, invalidContext, 
+                "Received fatal alert: certificate_unknown");
     }
     
     private SSLContext createContext(KeyStore keyStore, String keyAlias, Number revokedSerialNumber) 
@@ -136,12 +140,12 @@ public class RevocableClientTrustManagerTest {
     
     @Test
     public void test() throws Exception {
-        prepare();
-        testConnectionOk(signedContext, signedContext);
-        testConnectionOk(serverContext, signedContext);
-        testConnectionException(serverContext, serverContext, "Invalid cert chain length");
-        testConnectionException(serverContext, revokedContext, "Certificate in revocation list");
-        testConnectionException(serverContext, invalidContext, "X");
+        testServer();
+        testClient();
+        testSigned();
+        testRevoked();
+        testInvalidServerCertClient();
+        testInvalidServerCertOther();
     }
 
     private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)
