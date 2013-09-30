@@ -306,7 +306,7 @@ In order to support a "local CA," we enable a local certificate revocation list.
                 getX509TrustManager(trustStore),
                 revocationList);
         sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[]{revocableTrustManager},
+                new TrustManager[] {revocableTrustManager},
                 new SecureRandom());
         return sslContext;
     }
