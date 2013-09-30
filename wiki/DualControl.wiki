@@ -365,11 +365,11 @@ Certificate reply was installed in keystore
 
 Clearly our keystore can double up as our truststore since it contains the server cert, which is self-signed. If our server cert is CA-signed, we can't do this, since our keystore cert chain includes the root CA cert, and so we would trust <i>any</i> cert signed by the CA.
 
-Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert which is used to sign our client certs. However, in this case, we have to handle client certificate revocation...
+Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert, which is used to sign our client certs. However, we must enable client certificate revocation...
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
-We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. Our client certs are signed by our server cert, which is self-signed. This enables a simple "local CA" with a single keystore/truststore with a single entry.
+We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" as a single keystore/truststore file with a single entry. Our client certs are signed by our server cert, which is our root CA cert.
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
