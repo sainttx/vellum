@@ -167,18 +167,17 @@ public class SSLContexts {
         return count;
     }
 
-    private static Collection<BigInteger> readRevocationList(String crlFile)
+    private static List<BigInteger> readRevocationList(String crlFile)
             throws FileNotFoundException, IOException {
         List<BigInteger> revocationList = new ArrayList();
         BufferedReader reader = new BufferedReader(new FileReader(crlFile));
         while (true) {
             String line = reader.readLine();
             if (line == null) {
-                break;
+                return revocationList;
             }
             revocationList.add(new BigInteger(line.trim()));
-        }
-        return revocationList;
+        }        
     }
 
     private static X509TrustManager getX509TrustManager(KeyStore trustStore)
