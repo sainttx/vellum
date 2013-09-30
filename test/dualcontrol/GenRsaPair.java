@@ -45,7 +45,7 @@ import sun.security.x509.X509CertInfo;
  *
  * @author evan.summers
  */
-public class GenRsaKeyPair {    
+public class GenRsaPair {    
     private String providerName = null;
     private String keyAlgName = "RSA";
     private String sigAlgName = "SHA1WithRSA";
@@ -54,7 +54,7 @@ public class GenRsaKeyPair {
     private CertAndKeyGen keyPair;
     private X509Certificate cert;
     
-    public GenRsaKeyPair(String alias) {
+    public GenRsaPair() {
         this.alias = alias;
     }
 
@@ -66,10 +66,6 @@ public class GenRsaKeyPair {
                 TimeUnit.DAYS.toSeconds(validityDays));
     }
 
-    public String getAlias() {
-        return alias;
-    }
-        
     public CertAndKeyGen getKeyPair() {
         return keyPair;
     }
