@@ -367,7 +367,7 @@ Clearly our keystore can double up as our truststore since it contains the serve
 
 Furthermore, our server keystore too can double up as its truststore, since it already contains it's own cert which is used to sign our client certs.
 
-However, in this case, we have to handle certificate revocation! 
+However, in this case, we have to handle certificate revocation...
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
