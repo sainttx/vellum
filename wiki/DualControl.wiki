@@ -290,7 +290,7 @@ where we reuse the same password for the SSL keystore, its private key, and the 
 
 Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
 
-In order to support a "local CA," we enable a local certificate revocation list. 
+In order to support a "local CA," we enable a certificate revocation list (CRL). Actually this is just a <tt>List</tt> of our revoked certificates' serial numbers, read from a local file.
 {{{
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore, Collection<BigInteger> revocationList) throws Exception {
