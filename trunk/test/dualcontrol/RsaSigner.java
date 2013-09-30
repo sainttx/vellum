@@ -47,9 +47,11 @@ import sun.security.x509.X509CertInfo;
  */
 public class RsaSigner {    
 
-    public static PKCS10 getCertRequest(CertAndKeyGen keyPair, String dname) 
+    public static X509Certificate sign(GenRsaPair signing, GenRsaPair pair, 
+            String dname, Date notBefore, int validityDays, int serialNumber) 
             throws Exception {
-        return keyPair.getCertRequest(new X500Name(dname));
+        return signCert(signing.getPrivateKey(), signing.getCert(), 
+            pair.getCertRequest(dname), notBefore, validityDays, serialNumber);
     }
     
     public static X509Certificate signCert(PrivateKey signingKey, X509Certificate signingCert,
