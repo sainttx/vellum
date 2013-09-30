@@ -70,8 +70,7 @@ public class SSLContexts {
         SSLContext sslContext = create(keyStoreLocation, pass, trustStoreLocation);
         String crlFile = props.getString(sslPrefix + ".crlFile", null);
         if (crlFile != null) {
-            String keyAlias = props.getString(sslPrefix + ".keyAlias");
-            sslContext = create(keyStoreLocation, keyAlias, pass, trustStoreLocation,
+            sslContext = create(keyStoreLocation, pass, trustStoreLocation,
                     readRevocationList(crlFile));
         }
         Arrays.fill(pass, (char) 0);
@@ -105,23 +104,23 @@ public class SSLContexts {
         return sslContext;
     }
 
-    public static SSLContext create(String keyStoreLocation, String keyAlias, char[] pass,
+    public static SSLContext create(String keyStoreLocation, char[] pass,
             String trustStoreLocation,
             Collection<BigInteger> revocationList) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreLocation), pass);
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStoreLocation), pass);
-        return create(keyStore, keyAlias, pass, trustStore, revocationList);
+        return create(keyStore, pass, trustStore, revocationList);
     }
 
-    public static SSLContext create(KeyStore keyStore, String keyAlias, char[] keyPass,
-            Collection<BigInteger> recovationList) throws Exception {
-        return create(keyStore, keyAlias, keyPass, keyStore, recovationList);
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+            Collection<BigInteger> revocationList) throws Exception {
+        return create(keyStore, keyPass, keyStore, revocationList);
     }
 
-    public static SSLContext create(KeyStore keyStore, String keyAlias, char[] keyPass,
-            KeyStore trustStore, Collection<BigInteger> recovationList) throws Exception {
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+            KeyStore trustStore, Collection<BigInteger> revocationList) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -129,9 +128,9 @@ public class SSLContexts {
                 Validator.VAR_GENERIC, trustStore);
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
                 validator,
-                getPrivateKeyCertificate(keyStore, keyAlias),
+                getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
-                recovationList);
+                revocationList);
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 new TrustManager[]{revocableTrustManager},
                 new SecureRandom());
