@@ -471,7 +471,7 @@ Received evanx
 }}}
 where <tt>SSLContexts</tt> prompts for the SSL keystore password first. We then enter a passphrase for the new key.
 
-The importance of not echoing passwords to the console, so they are not cut and pasted by mistake, is demonstated above ;)
+The importance of not echoing passwords to the console, so that they are not cut and pasted by mistake, is demonstated above ;)
 
 We implement the <tt>main()</tt> as follows.
 {{{
