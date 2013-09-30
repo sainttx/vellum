@@ -369,7 +369,7 @@ Furthermore, our server keystore too can double up as its truststore, since it a
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
-We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" as a single keystore/truststore file with a single entry, where our client certs are signed by our server cert, which is our root CA cert.
+We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" as a single keystore/truststore file with a single entry, where our client certs are signed by our server cert.
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
