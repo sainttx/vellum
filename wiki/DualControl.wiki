@@ -335,7 +335,7 @@ Alternatively, we could export an CSR, and sign this with the server cert.
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
 
-Using JDK7's keytool, we can sign the CSR.
+Using Java7's keytool, we can sign the CSR.
 {{{
 $ keytool -keystore dualcontrolserver.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx/OU=test" -infile evanx.csr -outfile evanx.signed.pem
