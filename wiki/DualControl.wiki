@@ -335,13 +335,13 @@ Alternatively, we could export an CSR, and sign this with the server cert.
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
 
-Using Java7's keytool, we can sign the CSR.
+We use Java7's keytool to sign the CSR.
 {{{
 $ keytool -keystore dualcontrolserver.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx/OU=test" -infile evanx.csr -outfile evanx.signed.pem
 }}}
 
-(Note that <tt>-gencert</tt> is not present in Java6's keytool.)
+(Note that <tt>-gencert</tt> is not available in Java6's keytool.)
 
 We inspect the cert using <tt>openssl</tt>.
 {{{
