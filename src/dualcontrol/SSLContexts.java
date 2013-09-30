@@ -138,12 +138,12 @@ public class SSLContexts {
         return sslContext;
     }
 
-    public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore, String alias)
-            throws KeyStoreException {
-        if (!keyStore.entryInstanceOf(alias, KeyStore.PrivateKeyEntry.class)) {
-            throw new KeyStoreException("Not private key entry: " + alias);
+    public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore, 
+            String keyAlias) throws KeyStoreException {
+        if (!keyStore.entryInstanceOf(keyAlias, KeyStore.PrivateKeyEntry.class)) {
+            throw new KeyStoreException("Not private key entry: " + keyAlias);
         }
-        return (X509Certificate) keyStore.getCertificate(alias);
+        return (X509Certificate) keyStore.getCertificate(keyAlias);
     }
 
     public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore) 
