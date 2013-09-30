@@ -65,6 +65,16 @@ public class RevocableClientTrustManagerTest {
     public RevocableClientTrustManagerTest() {
     }
 
+    @Test
+    public void test() throws Exception {
+        testServer();
+        testClient();
+        testSigned();
+        testRevoked();
+        testInvalidServerCertClient();
+        testInvalidServerCertOther();
+    }
+
     private void testServer() throws Exception {
         serverPair = new GenRsaPair();
         serverPair.call("CN=server", new Date(), 1);
@@ -91,7 +101,7 @@ public class RevocableClientTrustManagerTest {
     }
     
     private void testSigned() throws Exception {
-        certRequest = RsaSigner.getCertRequest(clientPair.getKeyPair(), "CN=client");
+        certRequest = clientPair.getCertRequest("CN=client");
         signedCert = RsaSigner.signCert(serverPair.getPrivateKey(),
                 serverPair.getCert(), certRequest, new Date(), 365, 1234);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
@@ -138,16 +148,6 @@ public class RevocableClientTrustManagerTest {
         return SSLContexts.create(keyStore, keyAlias, pass, revocationList);
     }
     
-    @Test
-    public void test() throws Exception {
-        testServer();
-        testClient();
-        testSigned();
-        testRevoked();
-        testInvalidServerCertClient();
-        testInvalidServerCertOther();
-    }
-
     private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)
             throws Exception {
         Exception exception = testConnection(serverContext, clientContext);
