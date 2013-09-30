@@ -66,7 +66,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
         }
         if (!certs[0].getIssuerX500Principal().equals(
                 serverCertificate.getSubjectX500Principal())) {
-            throw new CertificateException("Untrusted isser");
+            throw new CertificateException("Untrusted issuer");
         }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
                 serverCertificate.getPublicKey().getEncoded())) {
