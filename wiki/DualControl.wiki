@@ -461,6 +461,16 @@ Our server keystore can also double up as its truststore, since it contains its 
 <h4><tt>!DualControlConsole</tt></h4>
 
 Let's check out that <tt>!DualControlConsole</tt> app, which is used by custodians to submit their passwords via SSL.
+
+{{{
+evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
+Enter passphrase for dualcontrol.ssl:
+Enter passphrase for new key dek2013: 
+Re-enter passphrase: 
+Received evanx
+}}}
+where our <tt>SSLContexts</tt> utility prompts for the SSL keystore password first.
+
 {{{
 public class DualControlConsole {
     Properties properties;
@@ -526,15 +536,6 @@ We submit the password via SSL as follows.
 where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt.
 
 Note that have hard-coded the host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
-
-{{{
-evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
-Enter passphrase for dualcontrol.ssl:
-Enter passphrase for new key dek2013: 
-Re-enter passphrase: 
-Received evanx
-}}}
-where our <tt>SSLContexts</tt> utility prompts for the SSL keystore password first.
 
 A known "bug" is that more godly sysadmins can socially-engineer other less godly admins to submit their passwords whilst a malicious socket server has been installed by the most godly one onto that frikking port! Other naughty tricks that come to mind is the creation of phantom custodians, or the impersonation of other custodians e.g. during a key generation procedure, by abusing root access to SSL keystores. So we must ensure that our logs and alerts prevent such events from going unnoticed.
 
