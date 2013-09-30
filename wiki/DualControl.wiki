@@ -344,7 +344,7 @@ where this uses a custom <tt>!RevocableClientTrustManager</tt> which is instanti
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
-We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also the CA cert used to sign client certs.
+We introduce a custom <tt>!X509TrustManager</tt> implementation to support local certificate revocation. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also the CA cert used to sign client certs.
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
