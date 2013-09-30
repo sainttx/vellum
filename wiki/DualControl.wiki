@@ -363,9 +363,9 @@ Enter keystore password:
 Certificate reply was installed in keystore
 }}}
 
-Our client keystore can double up as our truststore since it contains the server cert as the root of its certificate chain. If our server cert is CA-signed, we can't do that, since our keystore certificate chain includes the root CA cert, and so we would trust <i>any</i> cert signed by the CA.
+Our client keystore can double up as our truststore since it contains the server cert as the root of its certificate chain. If our server cert is CA-signed, we can't do that, since our keystore certificate chain would include the CA's root cert, and so we would trust <i>any</i> cert signed by that CA.
 
-Furthermore, our server keystore too can double up as its truststore, since it contains its cert which signs our client certs.
+Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs.
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
