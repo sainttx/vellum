@@ -145,6 +145,24 @@ command1_genkeypair() {
   keytool -keystore $keystore -storepass "$pass" -list | grep Entry
   keytool -keystore $servertruststore -storepass "$pass" -alias $alias \
      -exportcert -rfc | openssl x509 -text | grep 'CN='
+  command1_sign $alias
+}
+
+command1_sign() {
+  alias=$1
+  $keytool -keystore $tmp/$alias.jks -alias $alias -certreq -storepass "$pass" > $tmp/$alias.csr
+  $keytool -keystore $serverkeystore -alias $serveralias -storepass "$pass" \
+    -gencert -rfc -validity 365 -dname "CN=$alias/OU=test" -infile $tmp/$alias.csr \
+    -outfile $tmp/$alias.signed.pem
+  echo $tmp/$alias.signed.pem
+  cat $tmp/$alias.signed.pem | openssl x509 -text | grep CN
+  $keytool -keystore $tmp/$alias.jks -alias $serveralias -importcert -noprompt \
+    -file $tmp/$serveralias.pem -storepass "$pass"
+  $keytool -keystore $tmp/$alias.jks -alias $alias -importcert -noprompt \
+    -file $tmp/$alias.signed.pem -storepass "$pass"    
+  $keytool -keystore $tmp/$alias.jks -storepass "$pass" -list | grep Entry
+  $keytool -keystore $tmp/$alias.jks -storepass "$pass" -alias $alias -exportcert -rfc |
+    openssl x509 -text | grep CN
 }
 
 command0_initks() {
@@ -166,21 +184,6 @@ command0_initks() {
   command1_genkeypair brent
   command1_genkeypair travs
   keytool -keystore $servertruststore -storepass "$pass" -list | grep Entry
-}
-
-command1_sign() {
-  alias=$1
-  $keytool -keystore $tmp/$alias.jks -alias $alias -certreq -storepass "$pass" > $tmp/$alias.csr
-  $keytool -keystore $serverkeystore -alias $serveralias -storepass "$pass" \
-    -gencert -rfc -validity 365 -dname "CN=$alias/OU=test" -infile $tmp/$alias.csr \
-    -outfile $tmp/$alias.signed.pem
-  echo $tmp/$alias.signed.pem
-  cat $tmp/$alias.signed.pem | openssl x509 -text | grep CN
-  $keytool -keystore $tmp/$alias.jks -alias $serveralias -importcert -noprompt \
-    -file $tmp/$serveralias.pem -storepass "$pass"
-  $keytool -keystore $tmp/$alias.jks -alias $alias -importcert -noprompt \
-    -file $tmp/$alias.signed.pem -storepass "$pass"    
-  $keytool -keystore $tmp/$alias.jks -storepass "$pass" -list | grep Entry
 }
 
 command1_genseckey() {
