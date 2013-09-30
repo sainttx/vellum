@@ -369,7 +369,7 @@ Furthermore, our server keystore too can double up as its truststore, since it a
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
-We might introduce a custom <tt>!X509TrustManager</tt> implementation for our <tt>SSLContext</tt>, which is configured with a local CRL file. This is for the specific purpose described above i.e. when our client cert is signed by our server cert, which is self-signed.
+We might introduce a custom <tt>!X509TrustManager</tt> implementation for our <tt>SSLContext</tt>, which is configured with a local CRL file. This is for the specific purpose described above i.e. when our client certs are signed by our server cert, which is also our root cert. Our server keystore is its truststore, and is a "local CA" which requires a mechanism to revoke its client certs.
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
