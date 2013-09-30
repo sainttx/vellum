@@ -38,13 +38,13 @@ public class RevocableClientTrustManager implements X509TrustManager {
     static Logger logger = LoggerFactory.getLogger(RevocableClientTrustManager.class);
 
     Validator validator;
-    X509TrustManager delegate;
     X509Certificate serverCertificate;
+    X509TrustManager delegate;
     Collection<BigInteger> revocationList;
     
     public RevocableClientTrustManager(Validator validator, 
-            X509TrustManager delegate,
             X509Certificate serverCertificate, 
+            X509TrustManager delegate,
             Collection<BigInteger> revocationList) {
         this.validator = validator;
         this.delegate = delegate;
@@ -66,7 +66,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
         }
         if (!certs[0].getIssuerX500Principal().equals(
                 serverCertificate.getSubjectX500Principal())) {
-            throw new CertificateException("Invalid issuer");
+            throw new CertificateException("Untrusted isser");
         }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
                 serverCertificate.getPublicKey().getEncoded())) {
