@@ -276,6 +276,12 @@ public class SSLContexts {
         String trustStoreLocation = props.getString(sslPrefix + ".trustStore", 
                 keyStoreLocation);
         SSLContext sslContext = create(keyStoreLocation, trustStoreLocation, pass);
+        String crlFile = props.getString(sslPrefix + ".crlFile", null);
+        if (crlFile != null) {
+            String keyAlias = props.getString(sslPrefix + ".keyAlias");
+            sslContext = create(keyStoreLocation, keyAlias, pass, trustStoreLocation,
+                    readRevocationList(crlFile));
+        }
         Arrays.fill(pass, (char) 0);
         return sslContext;
     }
@@ -285,6 +291,8 @@ public class SSLContexts {
 where we reuse the same password for the SSL keystore, its private key, and the truststore. This password can specified on the command-line e.g. for automated test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Moreover, we have introduced a <tt>!MockableConsole</tt> for the benefit of automated unit testing.
 
 Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
+
+In order to support a "local CA," we enable a local certificate revocation list. This requires a special <tt>!RevocableClientTrustManager</tt> which is presented further below.
 
 <h4><tt>keytool</tt></h4>
 
@@ -369,7 +377,7 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
-We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also the CA cert, i.e. is used to sign client certs.
+We might introduce a custom <tt>!X509TrustManager</tt> implementation for <tt>SSLContexts</tt>, which is configured with a local CRL file. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also the CA cert used to sign client certs.
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
