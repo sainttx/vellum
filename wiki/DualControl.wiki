@@ -421,7 +421,7 @@ Similarly, the server cert is imported into the custodians' truststores as speci
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we could export an CSR, and sign this with the server cert.
+Alternatively, we could export an CSR, and sign this with the server cert, which is then our local CA cert, and we must support certificate revocation.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
