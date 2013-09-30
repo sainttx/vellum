@@ -328,7 +328,7 @@ $ keytool -keystore dualcontrolserver.trust.jks -alias evanx -importcert -file e
 
 Similarly, the server cert is imported into the custodians' truststores as specified by <tt>dualcontrol.ssl.trustStore</tt> for <tt>!DualControlConsole</tt>.
 
-<h4><tt>Client certificate signing</tt></h4>
+<h4>Client certificate signing</h4>
 
 Alternatively, we could export an CSR, and sign this with the server cert.
 {{{
