@@ -400,7 +400,7 @@ where we initialise this trust manager with a collection of serial numbers of lo
 
 <h4><tt>!DualControlConsole</tt></h4>
 
-Let's check out this <tt>!DualControlConsole</tt> app, which is used by custodians to submit their passwords via SSL.
+Let's check out that <tt>!DualControlConsole</tt> app, which is used by custodians to submit their passwords via SSL.
 {{{
 public class DualControlConsole {
     Properties properties;
