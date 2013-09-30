@@ -498,7 +498,7 @@ public class DualControlConsole {
 
 where we create an <tt>SSLContext</tt> from the provided properties, which must specify the requisite keystore and truststore. (Later we'll see that our unit test provides an <tt>SSLContext</tt> from <tt>!KeyStore</tt>'s which it creates programmatically.)
 
-We submit the password via SSL as follows.
+We submit the password via SSL in the <tt>call()</tt> method below.
 
 {{{
     private final static int PORT = 4444;
