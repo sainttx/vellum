@@ -39,7 +39,6 @@ Step 1 for any data security endeavour is to generate an encryption key. Whereas
 {{{
 $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
     -Ddualcontrol.ssl.keyStore=keystores/2013/dualcontrolserver.jks \
-    -Ddualcontrol.ssl.trustStore=keystores/2013/dualcontrolserver.trust.jks \
     -Dkeystore=keystores/2013/dek2013.jceks -Dstoretype=JCEKS \
     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
     dualcontrol.DualControlGenSecKey
@@ -652,7 +651,6 @@ public class DualControlDemoApp {
 where we prompt for the shared keystore password to be entered on the console.
 {{{
 $ java -Ddualcontrol.ssl.keyStore=keystores/2013/dualcontrolserver.jks \
-    -Ddualcontrol.ssl.trustStore=keystores/2013/dualcontrolserver.trust.jks \
     dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks dek2013
 Enter passphrase for dualcontrol.ssl:
 Enter keystore password for dek2013:
