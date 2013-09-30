@@ -325,7 +325,7 @@ Furthermore, we enable a local certificate revocation list (CRL) specified by ou
         return sslContext;
     }
 }}}
-where this uses a custom <tt>!RevocableClientTrustManager</tt> which is instantiated with a <tt>List</tt> of revoked certificates' serial numbers read from a local text file.
+where this uses a custom <tt>!RevocableClientTrustManager</tt> instantiated with a <tt>List</tt> of revoked certificates' serial numbers. These are read from a local text file, as follows.
 
 {{{
     private static List<BigInteger> readRevocationList(String crlFile)
