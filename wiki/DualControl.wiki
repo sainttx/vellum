@@ -469,7 +469,7 @@ Enter passphrase for new key dek2013:
 Re-enter passphrase: 
 Received evanx
 }}}
-where our <tt>SSLContexts</tt> utility prompts for the SSL keystore password first. We are then prompted for a passphrase for the new key.
+where <tt>SSLContexts</tt> prompts for the SSL keystore password first. We then enter a passphrase for the new key.
 
 We implement the <tt>main()</tt> as follows.
 {{{
