@@ -70,7 +70,8 @@ public class SSLContexts {
         SSLContext sslContext = create(keyStoreLocation, pass, trustStoreLocation);
         String crlFile = props.getString(sslPrefix + ".crlFile", null);
         if (crlFile != null) {
-            sslContext = create(keyStoreLocation, pass, trustStoreLocation,
+            String keyAlias = props.getString(sslPrefix + ".keyAlias");
+            sslContext = create(keyStoreLocation, keyAlias, pass, trustStoreLocation,
                     readRevocationList(crlFile));
         }
         Arrays.fill(pass, (char) 0);
@@ -104,46 +105,67 @@ public class SSLContexts {
         return sslContext;
     }
 
-    public static SSLContext create(String keyStoreLocation, char[] pass,
+    public static SSLContext create(String keyStoreLocation, String keyAlias, char[] pass,
             String trustStoreLocation,
             Collection<BigInteger> revocationList) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreLocation), pass);
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStoreLocation), pass);
-        return create(keyStore, pass, trustStore, revocationList);
+        return create(keyStore, keyAlias, pass, trustStore, revocationList);
     }
 
-    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+    public static SSLContext create(KeyStore keyStore, String keyAlias, char[] keyPass,
             Collection<BigInteger> recovationList) throws Exception {
-        return create(keyStore, keyPass, keyStore, recovationList);
+        return create(keyStore, keyAlias, keyPass, keyStore, recovationList);
     }
-    
-    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+
+    public static SSLContext create(KeyStore keyStore, String keyAlias, char[] keyPass,
             KeyStore trustStore, Collection<BigInteger> recovationList) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE, 
+        Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
                 Validator.VAR_GENERIC, trustStore);
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
-                validator, 
-                getSoleCertificate(keyStore), 
-                getX509TrustManager(trustStore), 
+                validator,
+                getPrivateKeyCertificate(keyStore, keyAlias),
+                getX509TrustManager(trustStore),
                 recovationList);
-        sslContext.init(keyManagerFactory.getKeyManagers(), 
-                new TrustManager[] {revocableTrustManager}, 
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                new TrustManager[]{revocableTrustManager},
                 new SecureRandom());
         return sslContext;
     }
 
-    public static X509Certificate getSoleCertificate(KeyStore trustStore)
+    public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore, String alias)
             throws KeyStoreException {
-        if (Collections.list(trustStore.aliases()).size() > 1) {
-            throw new KeyStoreException("Multiple keys in keystore");
+        if (!keyStore.entryInstanceOf(alias, KeyStore.PrivateKeyEntry.class)) {
+            throw new KeyStoreException("Not private key entry: " + alias);
         }
-        String alias = trustStore.aliases().nextElement();
-        return (X509Certificate) trustStore.getCertificate(alias);
+        return (X509Certificate) keyStore.getCertificate(alias);
+    }
+
+    public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore) 
+            throws KeyStoreException {
+        if (countKeys(keyStore) == 1) {
+            for (String alias : Collections.list(keyStore.aliases())) {
+                if (keyStore.entryInstanceOf(alias, KeyStore.PrivateKeyEntry.class)) {
+                    return (X509Certificate) keyStore.getCertificate(alias);
+                }
+            }
+        }
+        throw new KeyStoreException("No sole private key found in keystore");
+    }
+            
+    public static int countKeys(KeyStore keyStore) throws KeyStoreException {
+        int count = 0;
+        for (String alias : Collections.list(keyStore.aliases())) {
+            if (keyStore.entryInstanceOf(alias, KeyStore.PrivateKeyEntry.class)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static Collection<BigInteger> readRevocationList(String crlFile)
