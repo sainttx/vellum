@@ -21,10 +21,14 @@
 package dualcontrol;
 
 import java.math.BigInteger;
+import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,4 +91,19 @@ public class RevocableClientTrustManager implements X509TrustManager {
         delegate.checkServerTrusted(certs, authType);
     }        
         
+    public static String getCN(Principal principal) throws CertificateException {
+        String dname = principal.getName();
+        try {
+            LdapName ln = new LdapName(dname);
+            for (Rdn rdn : ln.getRdns()) {
+                if (rdn.getType().equalsIgnoreCase("CN")) {
+                    return rdn.getValue().toString();
+                }
+            }
+            throw new InvalidNameException("no CN: " + dname);
+        } catch (Exception e) {
+            throw new CertificateException(e.getMessage());
+        }
+    }        
+    
 }
