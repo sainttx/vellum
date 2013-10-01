@@ -407,9 +407,9 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4>Client certificate management</h4>
 
-When issuing a certificate, we must take care to ensure uniqueness of the identifier used for revocation, e.g. the CN if not the serial number, and add the certificate, or at least its unique identifier, to our registry.
+When issuing a certificate, we must take care to ensure uniqueness of the identifier used for revocation, e.g. the CN if not the serial number, and add the certificate, or at least its unique identifier, to our registry. A rogue certificate with a duplicate CN, could impersonate a valid certificate.
 
-If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot review and revoke access, if we have no record of all issued certificates. Moreover, a rogue certificate with a duplicate CN, could impersonate a valid certificate.
+If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We want to regularly review and revoke access. 
 
 We might record our signed certs into a keystore file as follows.
 {{{
@@ -420,9 +420,9 @@ where this is not a truststore per se, but just a database of issued certs.
 
 Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
 
-Given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore.
+All told, given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore.
 
-Naturally the server certificate is in the server keystore. Therefore, the server keystore must not be used as its truststore. Otherwise, any client certificate signed by that server certificate is trusted. As such, a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>.
+Naturally the server certificate is in the server keystore. Therefore, its keystore must not be used as its truststore. Otherwise, any client certificate signed by that server certificate is trusted. As such, a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
