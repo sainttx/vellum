@@ -93,7 +93,7 @@ public class DualControlChangePassword {
         String purpose = String.format("key %s to enroll %s", keyAlias, username);
         DualControlManager manager = new DualControlManager(props, 
                 submissionCount, purpose);
-        manager.init(console);
+        manager.init(SSLContexts.create(true, "dualcontrol.ssl", props, console));
         manager.call();
         dualMap = manager.getDualMap();
         aliasList = Collections.list(keyStore.aliases());

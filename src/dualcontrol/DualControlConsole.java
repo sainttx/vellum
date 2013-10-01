@@ -63,8 +63,7 @@ public class DualControlConsole {
     }
 
     public void init() throws Exception {
-        init(SSLContexts.create("dualcontrol.ssl", 
-                properties, console));
+        init(SSLContexts.create(false, "dualcontrol.ssl", properties, console));
     }
 
     public void call() throws Exception {
