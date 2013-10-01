@@ -442,7 +442,7 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4>Client certificate database</h4>
 
-Our <tt>RevocableClientTrustManager</tt> handles a revocation list of CN's, where we assume these are unique. Alternatively we could use the cert's serial number.
+Our <tt>!RevocableClientTrustManager</tt> handles a revocation list of CN's, where we assume these are unique. Alternatively we could use the cert's serial number.
 
 If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was even issued!
 
