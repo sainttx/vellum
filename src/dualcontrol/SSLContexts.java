@@ -125,7 +125,6 @@ public class SSLContexts {
         Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
                 Validator.VAR_GENERIC, trustStore);
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
-                validator,
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
                 revocationList);

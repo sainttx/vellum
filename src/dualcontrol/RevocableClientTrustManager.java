@@ -20,18 +20,18 @@
  */
 package dualcontrol;
 
+import java.math.BigInteger;
 import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.validator.Validator;
 
 /**
  *
@@ -40,19 +40,16 @@ import sun.security.validator.Validator;
 public class RevocableClientTrustManager implements X509TrustManager {
     static Logger logger = LoggerFactory.getLogger(RevocableClientTrustManager.class);
 
-    Validator validator;
     X509Certificate serverCertificate;
     X509TrustManager delegate;
-    List<String> revocationList;
+    Collection<String> revokedCNList;
+    Collection<BigInteger> revokedSerialNumberList;
     
-    public RevocableClientTrustManager(Validator validator, 
-            X509Certificate serverCertificate, 
-            X509TrustManager delegate,
-            List<String> revocationList) {
-        this.validator = validator;
+    public RevocableClientTrustManager(X509Certificate serverCertificate, 
+            X509TrustManager delegate, Collection<String> revocationList) {
         this.delegate = delegate;
         this.serverCertificate = serverCertificate;
-        this.revocationList = revocationList;
+        this.revokedCNList = revocationList;
     }
     
     @Override
@@ -77,10 +74,12 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revocationList.contains(getCN(certs[0].getSubjectDN()))) {
-            throw new CertificateException("Certificate in revocation list");
+        if (revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
+            throw new CertificateException("Certificate CN revoked");
         }
-        validator.validate(certs);
+        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
+            throw new CertificateException("Certificate serial number revoked");
+        }
         delegate.checkClientTrusted(certs, authType);
     }
     
