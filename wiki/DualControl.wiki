@@ -440,7 +440,7 @@ Our client keystore can double up as our truststore since it contains the server
 
 Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs.
 
-<h4>Client certificate database</h4>
+<h4>Client certificate management</h4>
 
 Our <tt>!RevocableClientTrustManager</tt> handles a revocation list of CN's, where we assume these are unique. Alternatively we could use the cert's serial number.
 
@@ -451,11 +451,9 @@ We might record our signed certs into a keystore as follows.
 $ keytool -keystore dualcontrolserver.issued.jks -importcert -file evanx.pem
 }}}
 
-<h4>Client certificate management</h4>
+Given the risk of a rogue certificate, we recommend using a separate server truststore which explicitly contains the self-signed client certs which we accept.
 
-Given the risk of a rogue certificate, actually we do not recommend signing client certificates, but rather using a separate server truststore which explicitly contains the self-signed client certs which we accept.
-
-Note that the server keystore must not be used as its truststore into which we load self-signed client certificates. Since it naturally contains the server certificate, any client certificate signed by that server certificate would be equally trusted. As such, a rogue certificate could be created by signing it using the server keystore.
+Note that the server keystore must not be used as its truststore, into which we load self-signed client certificates. Naturally it contains the server certificate, and consequently any client certificate signed by that server certificate would be equally trusted. As such, a rogue certificate can be created by signing it using the server keystore.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
