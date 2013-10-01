@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -33,7 +32,6 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -106,7 +104,7 @@ public class SSLContexts {
 
     public static SSLContext create(String keyStoreLocation, char[] pass,
             String trustStoreLocation,
-            Collection<BigInteger> revocationList) throws Exception {
+            List<String> revocationList) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreLocation), pass);
         KeyStore trustStore = KeyStore.getInstance("JKS");
@@ -115,12 +113,12 @@ public class SSLContexts {
     }
 
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            Collection<BigInteger> revocationList) throws Exception {
+            List<String> revocationList) throws Exception {
         return create(keyStore, keyPass, keyStore, revocationList);
     }
 
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, Collection<BigInteger> revocationList) throws Exception {
+            KeyStore trustStore, List<String> revocationList) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -167,16 +165,16 @@ public class SSLContexts {
         return count;
     }
 
-    private static List<BigInteger> readRevocationList(String crlFile)
+    private static List<String> readRevocationList(String crlFile)
             throws FileNotFoundException, IOException {
-        List<BigInteger> revocationList = new ArrayList();
+        List<String> revocationList = new ArrayList();
         BufferedReader reader = new BufferedReader(new FileReader(crlFile));
         while (true) {
             String line = reader.readLine();
             if (line == null) {
                 return revocationList;
             }
-            revocationList.add(new BigInteger(line.trim()));
+            revocationList.add(line.trim());
         }        
     }
 

@@ -161,8 +161,10 @@ public class DualControlManager {
         if (submissions.keySet().contains(name)) {
             String errorMessage = "Duplicate submission from " + name;
             dos.writeUTF(errorMessage);
+            dos.writeUTF("");
             throw new Exception(errorMessage);
         }
+        dos.writeUTF("Connected " + name);        
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] passphrase = readChars(dis);
