@@ -46,6 +46,8 @@ public class DualControlConsole {
         try {
             instance.init();
             instance.call();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         } finally {
             instance.clear();
         }
@@ -69,7 +71,12 @@ public class DualControlConsole {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        String message = dis.readUTF();
+        console.println(message);
         String purpose = dis.readUTF();
+        if (purpose.length() == 0) {
+            return;
+        }
         char[] password = console.readPassword(
                 "Enter passphrase for " + purpose + ": ");
         String invalidMessage = new DualControlPassphraseVerifier(properties).
@@ -85,8 +92,7 @@ public class DualControlConsole {
                 dos.writeShort(0);
             } else {
                 writeChars(dos, password);
-                String message = dis.readUTF();
-                console.println(message);
+                console.println(dis.readUTF());
             }
             Arrays.fill(pass, (char) 0);
         }

@@ -25,6 +25,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -147,7 +148,7 @@ public class DualControlManager {
                 }
                 read(socket);
             } catch (Exception e) {
-                logger.warn(e);
+                logger.warn(e.getMessage());
             } finally {
                 socket.close();
             }
@@ -156,7 +157,7 @@ public class DualControlManager {
 
     private void read(SSLSocket socket) throws Exception {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        String name = getCN(socket.getSession().getPeerPrincipal().getName());
+        String name = getCN(socket.getSession().getPeerPrincipal());
         if (submissions.keySet().contains(name)) {
             String errorMessage = "Duplicate submission from " + name;
             dos.writeUTF(errorMessage);
@@ -214,7 +215,8 @@ public class DualControlManager {
         return manager.getDualMap().entrySet().iterator().next();
     }
     
-    public static String getCN(String dname) throws InvalidNameException {
+    public static String getCN(Principal principal) throws InvalidNameException {
+        String dname = principal.getName();
         LdapName ln = new LdapName(dname);
         for (Rdn rdn : ln.getRdns()) {
             if (rdn.getType().equalsIgnoreCase("CN")) {
@@ -222,6 +224,5 @@ public class DualControlManager {
             }
         }
         throw new InvalidNameException(dname);
-    }
-    
+    }    
 }
