@@ -407,11 +407,14 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4>Client certificate management</h4>
 
-However, if a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was even issued!
+However, if a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was ever issued, or if it uses a duplicate CN (or serial number). 
+
+So when issuing a certificate, we must take care to ensure uniqueness of the identifier used for revocation, e.g. the CN if not the serial number, and add the certificate, or at least its unique identifier, to our registry.
 
 We might record our signed certs into a keystore file as follows.
 {{{
-$ keytool -keystore dualcontrolserver.issued.jks -importcert -file evanx.pem
+$ keytool -keystore dualcontrolserver.issued.jks -importcert -alias evanx -file evanx.pem 
+Certificate was added to keystore
 }}}
 where this is not a truststore per se, but just a database of issued certs. 
 
