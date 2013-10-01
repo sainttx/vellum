@@ -131,7 +131,7 @@ Note that <tt>!ExtendedProperties</tt> is a utility wrapper for <tt>java.util.Pr
 We initialise the instance with an <tt>SSLContext</tt> as follows.
 {{{
     public void init() throws Exception {
-        sslContext = SSLContexts.create("dualcontrol.ssl", props, console);
+        sslContext = SSLContexts.create(true, "dualcontrol.ssl", props, console);
     }
 }}}
 
@@ -253,13 +253,13 @@ Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command
 {{{
 public class SSLContexts {    
 
-    public static SSLContext create(String sslPrefix, Properties properties, 
+    public static SSLContext create(boolean strict, String sslPrefix, Properties properties,
             MockableConsole console) throws Exception {
         ExtendedProperties props = new ExtendedProperties(properties);
         sslPrefix = props.getString(sslPrefix, sslPrefix);
         String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
-            throw new Exception("Missing -D property: " + sslPrefix + ".keyStore");
+            throw new Exception("Missing keystore property for " + sslPrefix);
         }
         char[] pass = props.getPassword(sslPrefix + ".pass", null);
         if (pass == null) {
@@ -267,12 +267,10 @@ public class SSLContexts {
         }
         String trustStoreLocation = props.getString(sslPrefix + ".trustStore", 
                 keyStoreLocation);
-        SSLContext sslContext = create(keyStoreLocation, trustStoreLocation, pass);
-        String crlFile = props.getString(sslPrefix + ".crlFile", null);
-        if (crlFile != null) {
-            sslContext = create(keyStoreLocation, pass, trustStoreLocation,
-                    readRevocationList(crlFile));
+        if (strict && keyStoreLocation.equals(trustStoreLocation)) {
+            throw new KeyStoreException("Require separate truststore");
         }
+        SSLContext sslContext = create(keyStoreLocation, pass, trustStoreLocation);
         Arrays.fill(pass, (char) 0);
         return sslContext;
     }
@@ -282,6 +280,8 @@ public class SSLContexts {
 where we reuse the same password for the SSL keystore, its private key, and the truststore. This password can specified on the command-line e.g. for automated test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Moreover, we have introduced a <tt>!MockableConsole</tt> for the benefit of automated unit testing.
 
 Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
+
+To improve safety, the server <tt>SSLContext</tt> should have a separate truststore. 
 
 Ordinarily we create the <tt>SSLContext</tt> as follows.
 {{{
@@ -298,42 +298,7 @@ Ordinarily we create the <tt>SSLContext</tt> as follows.
     }
 }}}
 
-Furthermore, we enable a local certificate revocation list (CRL) specified by our <tt>crlFile</tt> property.
-{{{
-    public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, List<BigInteger> revocationList) throws Exception {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPass);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        TrustManager revocableTrustManager = new RevocableClientTrustManager(
-                getPrivateKeyCertificate(keyStore),
-                getX509TrustManager(trustStore),
-                revocationList);
-        sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[] {revocableTrustManager},
-                new SecureRandom());
-        return sslContext;
-    }
-}}}
-where this uses a custom <tt>!RevocableClientTrustManager</tt> instantiated with a <tt>List</tt> of revoked certificates' names. These are read from a local text file, as follows.
-{{{
-    private static List<String> readRevocationList(String crlFile)
-            throws FileNotFoundException, IOException {
-        List<String> revocationList = new ArrayList();
-        BufferedReader reader = new BufferedReader(new FileReader(crlFile));
-        while (true) {
-            String line = reader.readLine();
-            if (line == null) {
-                return revocationList;
-            }
-            revocationList.add(line.trim());
-        }        
-    }
-}}}
-
-<h4><tt>!RevocableClientTrustManager</tt></h4>
-
-We implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also our root CA cert used to sign client certs.
+Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also our root CA cert used to sign client certs.
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
@@ -355,10 +320,12 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
+        if (revokedCNList != null && 
+                revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
-        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
+        if (revokedSerialNumberList != null &&
+                revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
         }
         delegate.checkClientTrusted(certs, authType);
@@ -366,8 +333,6 @@ public class RevocableClientTrustManager implements X509TrustManager {
 }
 }}}
 where we initialise this trust manager with a collection of revoked certificates' CNs or serial numbers. We check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
-
-We'll elaborate on <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RevocableClientTrustManager.java"><tt>!RevocableClientTrustManager</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/RevocableClientTrustManagerTest.java">unit tests</a> in a follow-up article.
 
 <h4><tt>keytool</tt></h4>
 
@@ -406,7 +371,7 @@ Similarly, the server cert is imported into the custodians' truststores as speci
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we could export an CSR, and sign this with the server cert, which is then our local CA cert, and we must support certificate revocation.
+Incidently, we could export an CSR, and sign this with the server cert, which is then our local CA cert, and we must support certificate revocation.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
@@ -442,18 +407,19 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4>Client certificate management</h4>
 
-Our <tt>!RevocableClientTrustManager</tt> handles a revocation list of CN's, where we assume these are unique. Alternatively we could use the cert's serial number.
+However, if a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was even issued!
 
-If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was even issued!
-
-We might record our signed certs into a keystore as follows.
+We might record our signed certs into a keystore file as follows.
 {{{
 $ keytool -keystore dualcontrolserver.issued.jks -importcert -file evanx.pem
 }}}
+where this is not a truststore per se, but just a database of issued certs. 
 
-Given the risk of a rogue certificate, we recommend using a separate server truststore which explicitly contains the self-signed client certs which we accept.
+Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
 
-Note that the server keystore must not be used as its truststore, into which we load self-signed client certificates. Naturally it contains the server certificate, and consequently any client certificate signed by that server certificate would be equally trusted. As such, a rogue certificate can be created by signing it using the server keystore.
+Given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore.
+
+Note that the server keystore must not be used as its truststore, otherwise any client certificate signed by that server certificate is trusted, since the server certificate in the keystore. As such, a rogue certificate can be created by signing it using the server keystore.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
