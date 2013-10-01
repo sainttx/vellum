@@ -38,8 +38,9 @@ Step 1 for any data security endeavour is to generate an encryption key. Whereas
 
 {{{
 $ java -Ddualcontrol.submissions=3 -Ddualcontrol.minPassphraseLength=8 \
-    -Ddualcontrol.ssl.keyStore=keystores/2013/dualcontrolserver.jks \
-    -Dkeystore=keystores/2013/dek2013.jceks -Dstoretype=JCEKS \
+    -Ddualcontrol.ssl.keyStore=keystores/dualcontrolserver.jks \
+    -Ddualcontrol.ssl.trustStore=keystores/dualcontrolserver.trust.jks \
+    -Dkeystore=keystores/dek2013.jceks -Dstoretype=JCEKS \
     -Dalias=dek2013 -Dkeyalg=AES -Dkeysize=256 \
     dualcontrol.DualControlGenSecKey
 
@@ -83,7 +84,7 @@ Received evanx
 We see that <tt>!DualControlGenSecKey</tt> creates secret key entries under the following "dual aliases."
 
 {{{
-$ keytool -keystore keystores/2013/dek2013.jceks -storetype JCEKS -list
+$ keytool -keystore keystores/dek2013.jceks -storetype JCEKS -list
 Enter keystore password:  
 
 Keystore type: JCEKS
@@ -123,13 +124,11 @@ public class DualControlGenSecKey {
     ...
 }
 }}}
-
 where we configure via <tt>Properties</tt> and provide a <tt>!MockableConsole</tt> for entering keystore passwords. 
 
 Note that <tt>!ExtendedProperties</tt> is a utility wrapper for <tt>java.util.Properties</tt> that will throw an exception if the property is not found and no default is provided.
 
 We initialise the instance with an <tt>SSLContext</tt> as follows.
-
 {{{
     public void init() throws Exception {
         sslContext = SSLContexts.create("dualcontrol.ssl", props, console);
@@ -139,7 +138,6 @@ We initialise the instance with an <tt>SSLContext</tt> as follows.
 where we'll see further below that <tt>SSLContexts</tt> uses a keystore and truststore configured by properties e.g. <tt>dualcontrol.ssl.keyStore</tt> and <tt>dualcontrol.ssl.trustStore</tt>. These SSL keystores should not be confused with the keystore for our new secret key which we are generating.
 
 Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</tt> options, and the <tt>System</tt> console.
-
 {{{
     public static void main(String[] args) throws Exception {
         DualControlGenSecKey instance = new DualControlGenSecKey(System.getProperties(),
@@ -154,7 +152,6 @@ Our <tt>main()</tt> method below passes <tt>System</tt> properties i.e. <tt>-D</
         }
     }
 }}}
-
 where we instantiate, initialise, and then call this class.
 
 {{{
@@ -184,7 +181,6 @@ where we instantiate, initialise, and then call this class.
         return buildKeyStore(manager.getDualMap());
     }
 }}}
-
 where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords, composed from submissions via SSL. We pass this map to the <tt>buildKeyStore()</tt> method below.
 {{{
     public KeyStore buildKeyStore(Map<String, char[]> dualMap) throws Exception {
@@ -216,7 +212,6 @@ where <tt>!DualControlManager</tt> provides a map of dual aliases and passwords,
         }
     }
 }}}
-
 where for each duo in the map we program a keystore entry containing the same key, but protected by a different split password.
 
 Incidently, we invariably use <tt>char</tt> arrays for passwords, and clear these as soon as possible. <tt>String</tt>'s are immutable and will be garbage-collected and overwritten in memory at some stage, but that is too indeterminate to alleviate our paranoia. Having said that, <a href="http://www.docjar.com/html/api/javax/crypto/spec/SecretKeySpec.java.html"><tt>!SecretKeySpec</tt></a><tt>.getEncoded()</tt> clones the byte array, which is somewhat disconcerting. So hopefully no one can scan or "debug" our JVM memory and thereby extract our passwords, or indeed the key itself.
@@ -239,11 +234,9 @@ Some argue that one should not write code per se, but rather tests with accompan
                 "dek2013-brent-henty", "bbbb|hhhh".toCharArray()).getEncoded()));
     }
 }}}
-
 where we build a map of sample dual submissions, and inspect the <tt>!KeyStore</tt> returned by <tt>buildKeyStore()</tt>.
 
 Note that the key passwords are concatenations of personal passwords, where we arbitrarily choose the vertical bar character as a delimiter. This is our so-called split password, which can be used to recover the key in clear-text using the following utility method.
-
 {{{
     private static SecretKey getSecretKey(KeyStore keyStore, String keyAlias, char[] keyPass) 
             throws GeneralSecurityException {
@@ -252,12 +245,7 @@ Note that the key passwords are concatenations of personal passwords, where we a
         return entry.getSecretKey();
     }
 }}}
-
 which invokes <tt>!KeyStore.getEntry()</tt>.
-
-<h1>SSL Contexts</h1>
-
-We hereby start a new quadrilogy, part of the <a href="http://code.google.com/p/vellum/wiki/EnigmaPosts">Enigma Posts</a>.
 
 <h4><tt>SSLContexts</tt></h4>
 
@@ -328,7 +316,6 @@ Furthermore, we enable a local certificate revocation list (CRL) specified by ou
     }
 }}}
 where this uses a custom <tt>!RevocableClientTrustManager</tt> instantiated with a <tt>List</tt> of revoked certificates' names. These are read from a local text file, as follows.
-
 {{{
     private static List<String> readRevocationList(String crlFile)
             throws FileNotFoundException, IOException {
@@ -347,7 +334,6 @@ where this uses a custom <tt>!RevocableClientTrustManager</tt> instantiated with
 <h4><tt>!RevocableClientTrustManager</tt></h4>
 
 We implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also our root CA cert used to sign client certs.
-
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
@@ -386,20 +372,15 @@ We'll elaborate on <a href="https://code.google.com/p/vellum/source/browse/trunk
 <h4><tt>keytool</tt></h4>
 
 Naturally we use <tt>keytool</tt> to create our private SSL keystore, e.g. as required by <tt>!DualControlConsole</tt>, specified by our <tt>dualcontrol.ssl.keyStore</tt> property.
-
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx, OU=test"
 }}}
-
 We export our certificate as follows.
-
 {{{
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 }}}
-
 We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt> as follows.
-
 {{{
 $ openssl x509 -text -in evanx.pem
 Certificate:
@@ -416,9 +397,7 @@ Certificate:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
 }}}
-
 We import the cert into the server SSL truststore as required by <tt>!DualControlManager</tt> on behalf of <tt>!DualControlGenSecKey</tt> and our app.
-
 {{{
 $ keytool -keystore dualcontrolserver.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
@@ -431,13 +410,11 @@ Alternatively, we could export an CSR, and sign this with the server cert, which
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
-
 We use Java7's keytool to sign the CSR.
 {{{
 $ keytool -keystore dualcontrolserver.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
 }}}
-
 Note that <tt>-gencert</tt> is not available in Java6's keytool.
 
 We inspect the cert using <tt>openssl</tt>.
@@ -446,7 +423,6 @@ $ openssl x509 -text -in evanx.signed.pem | grep CN
         Issuer: CN=dualcontrolserver, OU=test
         Subject: CN=evanx, OU=test
 }}}
-
 Since our keystore requires our cert chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
 {{{
 $ keytool -keystore evanx.jks -importcert -noprompt \
@@ -464,7 +440,7 @@ Our client keystore can double up as our truststore since it contains the server
 
 Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs.
 
-<h4>Client certificate records</h4>
+<h4>Client certificate database</h4>
 
 Our <tt>RevocableClientTrustManager</tt> handles a revocation list of CN's, where we assume these are unique. Alternatively we could use the cert's serial number.
 
@@ -474,6 +450,12 @@ We might record our signed certs into a keystore as follows.
 {{{
 $ keytool -keystore dualcontrolserver.issued.jks -importcert -file evanx.pem
 }}}
+
+<h4>Client certificate management</h4>
+
+Given the risk of a rogue certificate, actually we do not recommend signing client certificates, but rather using a separate server truststore which explicitly contains the self-signed client certs which we accept.
+
+Note that the server keystore must not be used as its truststore into which we load self-signed client certificates. Since it naturally contains the server certificate, any client certificate signed by that server certificate would be equally trusted. As such, a rogue certificate could be created by signing it using the server keystore.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
@@ -642,7 +624,7 @@ We observe that an Intel i5 can manage about 30 guesses per millisecond on a JCE
 
 {{{
 evanx@beethoven:~$ java dualcontrol.JCEKSBruteForceTimer 4 1000000 \
-  keystores/2013/dek2013.jceks "$pass" dek2013-evanx-henty eeeehhhh
+  keystores/dek2013.jceks "$pass" dek2013-evanx-henty eeeehhhh
 
 threads 4, count 1000000, time 128s, avg 0.032ms
 31 guesses per millisecond
@@ -687,8 +669,9 @@ public class DualControlDemoApp {
 }}}
 where we prompt for the shared keystore password to be entered on the console.
 {{{
-$ java -Ddualcontrol.ssl.keyStore=keystores/2013/dualcontrolserver.jks \
-    dualcontrol.DualControlDemoApp keystores/2013/dek2013.jceks dek2013
+$ java -Ddualcontrol.ssl.keyStore=keystores/dualcontrolserver.jks \
+    -Ddualcontrol.ssl.trustStore=keystores/dualcontrolserver.trust.jks \
+    dualcontrol.DualControlDemoApp keystores/dek2013.jceks dek2013
 Enter passphrase for dualcontrol.ssl:
 Enter keystore password for dek2013:
 INFO [DualControlManager] purpose: key dek2013 for DualControlDemoApp
