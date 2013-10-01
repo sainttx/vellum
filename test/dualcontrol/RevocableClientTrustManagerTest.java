@@ -24,7 +24,6 @@ package dualcontrol;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -41,6 +40,7 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import sun.security.pkcs.PKCS10;
+import sun.security.validator.Validator;
 
 /**
  *
@@ -123,7 +123,7 @@ public class RevocableClientTrustManagerTest {
         SSLContext revokedContext = createContext(serverKeyStore, 
                 DualControlManager.getCN(signedCert.getSubjectDN()));
         testConnectionException(revokedContext, signedContext, 
-                "Certificate in revocation list");
+                "Certificate CN revoked");
     }
 
     private void testInvalidServerCertClient() throws Exception {
@@ -170,7 +170,7 @@ public class RevocableClientTrustManagerTest {
         if (revokedName != null) {
             revocationList.add(revokedName);
         }
-        return SSLContexts.create(keyStore, pass, revocationList);
+        return RevocableSSLContexts.create(keyStore, pass, revocationList);
     }
     
     private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)
@@ -230,6 +230,11 @@ public class RevocableClientTrustManagerTest {
         return keyStore;
     }
 
+    private void testValidator() {
+        Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
+                Validator.VAR_GENERIC, serverKeyStore);
+    }
+    
     class ServerThread extends Thread {
 
         SSLContext sslContext;
