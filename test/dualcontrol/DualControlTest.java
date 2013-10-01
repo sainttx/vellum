@@ -119,7 +119,8 @@ public class DualControlTest {
         assertOk(brentThread.exception);
         assertOk(hentyThread.exception);
         Assert.assertEquals("Connected evanx", evanxThread.console.getLine(0));
-        Assert.assertEquals("Enter passphrase for app: ", evanxThread.console.getLine(1));
+        Assert.assertEquals("Enter passphrase for new key dek2013: ", 
+                evanxThread.console.getLine(1));
         Thread.sleep(1000);
     }
     
