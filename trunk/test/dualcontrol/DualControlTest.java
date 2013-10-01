@@ -126,12 +126,11 @@ public class DualControlTest {
     }
     
     public static void assertContains(String pattern, String string) throws AssertionError {
+        logger.info("expected: " + pattern);
         if (!string.contains(pattern)) {
-            logger.warn("expected to contain: " + pattern);
             logger.error("invalid: " + string);
-        }
-        throw new AssertionError(string);
-        
+            throw new AssertionError(string);
+        }        
     }
 
     class GenSecKeyThread extends Thread  {
