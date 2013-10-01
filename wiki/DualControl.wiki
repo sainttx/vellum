@@ -407,9 +407,9 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4>Client certificate management</h4>
 
-However, if a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was ever issued, or if it uses a duplicate CN (or serial number). 
+When issuing a certificate, we must take care to ensure uniqueness of the identifier used for revocation, e.g. the CN if not the serial number, and add the certificate, or at least its unique identifier, to our registry.
 
-So when issuing a certificate, we must take care to ensure uniqueness of the identifier used for revocation, e.g. the CN if not the serial number, and add the certificate, or at least its unique identifier, to our registry.
+If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was ever issued, or if it uses a duplicate CN (or serial number). 
 
 We might record our signed certs into a keystore file as follows.
 {{{
