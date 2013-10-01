@@ -77,15 +77,6 @@ public class DualControlManager {
         this.sslContext = sslContent;
     }
 
-    public void init(MockableConsole console) throws Exception {
-        init(SSLContexts.create("dualcontrol.ssl", 
-                properties, console));
-    }
-
-    public void init(Console console) throws Exception {
-        init(new MockableConsoleAdapter(console));
-    }
-    
     public void call() throws Exception {
         logger.info("purpose: "  + purpose);        
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
@@ -211,7 +202,7 @@ public class DualControlManager {
     public static Map.Entry<String, char[]> readDualEntry(String purpose) throws Exception {
         DualControlManager manager = new DualControlManager(System.getProperties(), 2, purpose);
         manager.setVerifyPassphrase(false);
-        SSLContext sslContext = SSLContexts.create("dualcontrol.ssl", 
+        SSLContext sslContext = SSLContexts.create(true, "dualcontrol.ssl", 
                 System.getProperties(), new MockableConsoleAdapter(System.console()));
         manager.init(sslContext);
         manager.call();

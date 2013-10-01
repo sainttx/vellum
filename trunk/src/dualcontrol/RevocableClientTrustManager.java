@@ -74,10 +74,12 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
+        if (revokedCNList != null && 
+                revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
-        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
+        if (revokedSerialNumberList != null && 
+                revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
         }
         delegate.checkClientTrusted(certs, authType);

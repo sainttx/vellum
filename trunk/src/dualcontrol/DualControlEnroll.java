@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javax.crypto.SecretKey;
+import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,6 +40,7 @@ public class DualControlEnroll {
     final static Logger logger = Logger.getLogger(DualControlEnroll.class);
     private ExtendedProperties props;
     private MockableConsole console;
+    private SSLContext sslContext;
     private int submissionCount;
     private String username;
     private String keyAlias;
@@ -61,7 +63,8 @@ public class DualControlEnroll {
         
     }
     
-    public void init() {
+    public void init() throws Exception {
+        sslContext = SSLContexts.create(true, "dualcontrol.ssl", props, console);
     }
 
     public void clear() {
@@ -93,7 +96,7 @@ public class DualControlEnroll {
         String purpose = String.format("key %s to enroll %s", keyAlias, username);
         DualControlManager manager = new DualControlManager(props, 
                 submissionCount, purpose);
-        manager.init(console);
+        manager.init(sslContext);
         manager.call();
         dualMap = manager.getDualMap();
         aliasList = Collections.list(keyStore.aliases());

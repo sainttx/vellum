@@ -44,7 +44,7 @@ public class CryptoClientDemo {
 
     private void call(Properties properties, MockableConsole console, 
             String hostAddress, int port, byte[] data) throws Exception {
-        Socket socket = SSLContexts.create("cryptoclient.ssl", 
+        Socket socket = SSLContexts.create(false, "cryptoclient.ssl", 
                 properties, console).getSocketFactory().
                 createSocket(hostAddress, port);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
