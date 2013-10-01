@@ -139,7 +139,7 @@ public class DualControlManager {
     private void accept(SSLServerSocket serverSocket) throws Exception {
         logger.info("accept: " + submissionCount);        
         while (submissions.size() < submissionCount) {
-            logger.info(String.format("waiting for %d of %d", submissions.size() + 1, submissionCount));
+            logger.info(String.format("Waiting for %d of %d", submissions.size() + 1, submissionCount));
             SSLSocket socket = (SSLSocket) serverSocket.accept();
             try {
                 if (!socket.getInetAddress().getHostAddress().equals(REMOTE_ADDRESS)) {
