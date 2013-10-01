@@ -118,21 +118,11 @@ public class DualControlTest {
         assertOk(evanxThread.exception);
         assertOk(brentThread.exception);
         assertOk(hentyThread.exception);
-        assertContains("Connected evanx", 
-                evanxThread.console.getLine(0));
-        assertContains("Enter passphrase for new key dek2013:", 
-                evanxThread.console.getLine(1));
+        Assert.assertEquals("Connected evanx", evanxThread.console.getLine(0));
+        Assert.assertEquals("Enter passphrase for app: ", evanxThread.console.getLine(1));
         Thread.sleep(1000);
     }
     
-    public static void assertContains(String pattern, String string) throws AssertionError {
-        logger.info("expected: " + pattern);
-        if (!string.contains(pattern)) {
-            logger.error("invalid: " + string);
-            throw new AssertionError(string);
-        }        
-    }
-
     class GenSecKeyThread extends Thread  {
         DualControlGenSecKey genSecKey;
         KeyStore keyStore;
@@ -167,12 +157,11 @@ public class DualControlTest {
         brentThread.start();
         evanxThread.start();
         readerThread.join(2000);
-        System.out.println("evanx console: " + evanxThread.console.getLine(0));
         assertOk(evanxThread.exception);
         assertOk(brentThread.exception);
         assertOk(readerThread.exception);
-        Assert.assertTrue(evanxThread.console.getLine(0).startsWith("Connected evanx"));
-        Assert.assertTrue(evanxThread.console.getLine(1).startsWith("Enter passphrase for app:"));
+        Assert.assertEquals("Connected evanx", evanxThread.console.getLine(0));
+        Assert.assertEquals("Enter passphrase for app: ", evanxThread.console.getLine(1));
         Assert.assertEquals("brent-evanx", readerThread.dualEntry.getKey());
         Assert.assertEquals("bbbb|eeee", new String(readerThread.dualEntry.getValue()));
         Thread.sleep(1000);
