@@ -279,9 +279,9 @@ public class SSLContexts {
 }}}
 where we reuse the same password for the SSL keystore, its private key, and the truststore. This password can specified on the command-line e.g. for automated test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Moreover, we have introduced a <tt>!MockableConsole</tt> for the benefit of automated unit testing.
 
-Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
+Note that the truststore is defaulted to the specified private keystore, which is usually only OK on the client side, when using self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
 
-To improve safety, the server <tt>SSLContext</tt> should have a separate truststore. 
+The server <tt>SSLContext</tt> must have a separate truststore, even when using self-signed certificates. Otherwise a rogue client certificate can be created by signing it with server certificate.
 
 Ordinarily we create the <tt>SSLContext</tt> as follows.
 {{{
@@ -298,7 +298,7 @@ Ordinarily we create the <tt>SSLContext</tt> as follows.
     }
 }}}
 
-Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also our root CA cert used to sign client certs.
+Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs.
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
@@ -419,7 +419,7 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 Given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore.
 
-Note that the server keystore must not be used as its truststore, otherwise any client certificate signed by that server certificate is trusted, since the server certificate in the keystore. As such, a rogue certificate can be created by signing it using the server keystore.
+Naturally the server certificate is in the server keystore. Therefore, the server keystore must not be used as its truststore. Otherwise, any client certificate signed by that server certificate is trusted. As such, a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
@@ -456,7 +456,7 @@ public class DualControlConsole {
     }
 
     public void init() throws Exception {
-        init(SSLContexts.create("dualcontrol.ssl", properties, console));
+        init(SSLContexts.create(false, "dualcontrol.ssl", properties, console));
     }
     ...
 }
@@ -730,7 +730,7 @@ public class DualControlKeyStores {
             String[] array = keyStoreLocation.split(":");
             String keyStoreHost = array[0];
             int keyStorePort = Integer.parseInt(array[1]);
-            SSLContext sslContext = SSLContexts.create("fileclient.ssl", 
+            SSLContext sslContext = SSLContexts.create(false, "fileclient.ssl", 
                     System.getProperties(), 
                     new MockableConsoleAdapter(System.console()));
             Socket socket = sslContext.getSocketFactory().createSocket(
@@ -764,7 +764,7 @@ public class FileServer {
     private String fileName;
     ...
     public void call() throws Exception {
-        SSLContext sslContext = SSLContexts.create("fileserver.ssl", 
+        SSLContext sslContext = SSLContexts.create(true, "fileserver.ssl", 
                 System.getProperties(), new MockableConsoleAdapter(System.console()));
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
