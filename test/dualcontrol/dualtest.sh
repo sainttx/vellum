@@ -129,12 +129,12 @@ jc3t() {
 
 command1_genkeypair() {
   alias=$1
+  echo "genkeypair $alias"
   keystore=$tmp/$1.jks
   cert=$tmp/$1.pem
-  echo "alias $alias"
   rm -f $keystore
   $keytool -keystore $keystore -storepass "$pass" -keypass "$pass" -alias $alias \
-     -genkeypair -dname "CN=$alias/OU=test" # -keyalg EC -keysize 256
+     -genkeypair -dname "CN=$alias, OU=test" # -keyalg EC -keysize 256
   keytool -keystore $keystore -storepass "$pass" -list | grep Entry
   keytool -keystore $keystore -storepass "$pass" -alias $alias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
@@ -150,9 +150,10 @@ command1_genkeypair() {
 
 command1_sign() {
   alias=$1
+  echo "sign $alias"
   $keytool -keystore $tmp/$alias.jks -alias $alias -certreq -storepass "$pass" > $tmp/$alias.csr
   $keytool -keystore $serverkeystore -alias $serveralias -storepass "$pass" \
-    -gencert -rfc -validity 365 -dname "CN=$alias/OU=test" -infile $tmp/$alias.csr \
+    -gencert -rfc -validity 365 -dname "CN=$alias, OU=test" -infile $tmp/$alias.csr \
     -outfile $tmp/$alias.signed.pem
   echo $tmp/$alias.signed.pem
   cat $tmp/$alias.signed.pem | openssl x509 -text | grep CN
@@ -171,7 +172,7 @@ command0_initks() {
   rm -f $serverkeystore
   rm -f $servertruststore
   keytool -keystore $serverkeystore -storepass "$pass" -keypass "$pass" \
-     -alias "$serveralias" -genkeypair -dname "CN=$serveralias/OU=test"
+     -alias "$serveralias" -genkeypair -dname "CN=$serveralias, OU=test"
   keytool -keystore $serverkeystore -storepass "$pass" -list | grep Entry
   keytool -keystore $serverkeystore -storepass "$pass" -alias $serveralias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"
