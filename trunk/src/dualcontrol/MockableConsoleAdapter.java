@@ -21,12 +21,14 @@
 package dualcontrol;
 
 import java.io.Console;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
 public class MockableConsoleAdapter implements MockableConsole {
+    static Logger logger = Logger.getLogger(MockableConsoleAdapter.class);
     Console console; 
     
     public MockableConsoleAdapter(Console console) {
@@ -35,11 +37,19 @@ public class MockableConsoleAdapter implements MockableConsole {
     
     @Override
     public char[] readPassword(String prompt, Object ... args) {
+        if (console == null) {
+            logger.warn("No console available: " + String.format(prompt, args));
+            return new char[0];
+        }
         return console.readPassword(prompt, args);
-    }    
+    }        
     
     @Override
     public void println(String message) {
-        console.writer().println(message);
-    }
+        if (console == null) {
+            logger.warn("No console available: " + message);
+        } else {
+            console.writer().println(message);            
+        }
+    }    
 }

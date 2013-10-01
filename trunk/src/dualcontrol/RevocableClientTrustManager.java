@@ -20,12 +20,11 @@
  */
 package dualcontrol;
 
-import java.math.BigInteger;
 import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -44,12 +43,12 @@ public class RevocableClientTrustManager implements X509TrustManager {
     Validator validator;
     X509Certificate serverCertificate;
     X509TrustManager delegate;
-    Collection<BigInteger> revocationList;
+    List<String> revocationList;
     
     public RevocableClientTrustManager(Validator validator, 
             X509Certificate serverCertificate, 
             X509TrustManager delegate,
-            Collection<BigInteger> revocationList) {
+            List<String> revocationList) {
         this.validator = validator;
         this.delegate = delegate;
         this.serverCertificate = serverCertificate;
@@ -78,7 +77,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revocationList.contains(certs[0].getSerialNumber())) {
+        if (revocationList.contains(getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate in revocation list");
         }
         validator.validate(certs);
