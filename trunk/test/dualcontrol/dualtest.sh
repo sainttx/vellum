@@ -133,8 +133,8 @@ command1_genkeypair() {
   cert=$tmp/$1.pem
   echo "alias $alias"
   rm -f $keystore
-  keytool -keystore $keystore -storepass "$pass" -keypass "$pass" -alias $alias \
-     -genkeypair -dname "CN=$alias/OU=test"
+  $keytool -keystore $keystore -storepass "$pass" -keypass "$pass" -alias $alias \
+     -genkeypair -dname "CN=$alias/OU=test" # -keyalg EC -keysize 256
   keytool -keystore $keystore -storepass "$pass" -list | grep Entry
   keytool -keystore $keystore -storepass "$pass" -alias $alias \
      -exportcert -rfc | openssl x509 -text | grep "Subject:"

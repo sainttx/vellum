@@ -20,6 +20,8 @@
  */
 package dualcontrol;
 
+import dualcontrol.DualControlSessions;
+import dualcontrol.DualControlSessions;
 import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
@@ -51,9 +53,9 @@ public class DualControlDemoApp {
     }
     
     public void loadKey(String keyStoreLocation, String alias) throws Exception {
-        char[] storePass = System.console().readPassword("Enter keystore password for %s: ",
-                alias);
-        dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", storePass, alias,
+        char[] keyStorePass = System.console().readPassword(
+                "Enter keystore password for %s: ", alias);
+        dek = DualControlSessions.loadKey(keyStoreLocation, "JCEKS", keyStorePass, alias,
                 "DualControlDemoApp");
         logger.debug("loaded key " + dek.getAlgorithm());
     }
