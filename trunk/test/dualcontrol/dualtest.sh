@@ -156,14 +156,14 @@ command1_sign() {
     -gencert -rfc -validity 365 -dname "CN=$alias, OU=test" -infile $tmp/$alias.csr \
     -outfile $tmp/$alias.signed.pem
   echo $tmp/$alias.signed.pem
-  cat $tmp/$alias.signed.pem | openssl x509 -text | grep CN
+  cat $tmp/$alias.signed.pem | openssl x509 -text | grep "CN="
   $keytool -keystore $tmp/$alias.jks -alias $serveralias -importcert -noprompt \
     -file $tmp/$serveralias.pem -storepass "$pass"
   $keytool -keystore $tmp/$alias.jks -alias $alias -importcert -noprompt \
     -file $tmp/$alias.signed.pem -storepass "$pass"    
   $keytool -keystore $tmp/$alias.jks -storepass "$pass" -list | grep Entry
   $keytool -keystore $tmp/$alias.jks -storepass "$pass" -alias $alias -exportcert -rfc |
-    openssl x509 -text | grep CN
+    openssl x509 -text | grep "CN="
 }
 
 command0_initks() {
