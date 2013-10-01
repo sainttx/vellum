@@ -155,11 +155,13 @@ public class DualControlManager {
     }
 
     private void read(SSLSocket socket) throws Exception {
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         String name = getCN(socket.getSession().getPeerPrincipal().getName());
         if (submissions.keySet().contains(name)) {
-            throw new Exception("Duplicate submission from " + name);
+            String errorMessage = "Duplicate submission from " + name;
+            dos.writeUTF(errorMessage);
+            throw new Exception(errorMessage);
         }
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] passphrase = readChars(dis);
