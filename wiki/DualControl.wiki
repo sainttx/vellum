@@ -74,6 +74,7 @@ For this demo, three custodians submit their passwords via SSL sockets, using <t
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dualcontrol.ssl:
+Connected evanx
 Enter passphrase for new key dek2013:
 Re-enter passphrase:
 Received evanx
@@ -254,6 +255,10 @@ Note that the key passwords are concatenations of personal passwords, where we a
 
 which invokes <tt>!KeyStore.getEntry()</tt>.
 
+<h1>SSL Contexts</h1>
+
+We hereby start a new quadrilogy, part of the <a href="http://code.google.com/p/vellum/wiki/EnigmaPosts">Enigma Posts</a>.
+
 <h4><tt>SSLContexts</tt></h4>
 
 Similarly to the standard <tt>-Dnet.javax.ssl.keyStore</tt> <i>et al</i> command-line options used to specify the default keystore and truststore for SSL sockets, and in order to avoid any potential conflict with those, we use <tt>-Ddualcontrol.ssl.keyStore</tt> <i>et al</i>. These properties are used to create an <tt>SSLContext</tt> as follows.
@@ -312,10 +317,7 @@ Furthermore, we enable a local certificate revocation list (CRL) specified by ou
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
-                Validator.VAR_GENERIC, trustStore);
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
-                validator,
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
                 revocationList);
@@ -325,19 +327,19 @@ Furthermore, we enable a local certificate revocation list (CRL) specified by ou
         return sslContext;
     }
 }}}
-where this uses a custom <tt>!RevocableClientTrustManager</tt> instantiated with a <tt>List</tt> of revoked certificates' serial numbers. These are read from a local text file, as follows.
+where this uses a custom <tt>!RevocableClientTrustManager</tt> instantiated with a <tt>List</tt> of revoked certificates' names. These are read from a local text file, as follows.
 
 {{{
-    private static List<BigInteger> readRevocationList(String crlFile)
+    private static List<String> readRevocationList(String crlFile)
             throws FileNotFoundException, IOException {
-        List<BigInteger> revocationList = new ArrayList();
+        List<String> revocationList = new ArrayList();
         BufferedReader reader = new BufferedReader(new FileReader(crlFile));
         while (true) {
             String line = reader.readLine();
             if (line == null) {
                 return revocationList;
             }
-            revocationList.add(new BigInteger(line.trim()));
+            revocationList.add(line.trim());
         }        
     }
 }}}
@@ -350,7 +352,8 @@ We implement a custom <tt>!X509TrustManager</tt> to support local certificate re
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
     X509TrustManager delegate;
-    Collection<BigInteger> revocationList;
+    Collection<String> revokedCNList;
+    Collection<BigInteger> revokedSerialNumberList;
     ...
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
@@ -366,14 +369,17 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revocationList.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate in revocation list");
+        if (revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
+            throw new CertificateException("Certificate CN revoked");
+        }
+        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
+            throw new CertificateException("Certificate serial number revoked");
         }
         delegate.checkClientTrusted(certs, authType);
     }
 }
 }}}
-where we initialise this trust manager with a collection of serial numbers of locally revoked client certificates. We check that the client certificate is signed by our server certificate, and not in the revocation list. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
+where we initialise this trust manager with a collection of revoked certificates' CNs or serial numbers. We check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
 
 We'll elaborate on <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RevocableClientTrustManager.java"><tt>!RevocableClientTrustManager</tt></a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/RevocableClientTrustManagerTest.java">unit tests</a> in a follow-up article.
 
@@ -383,7 +389,7 @@ Naturally we use <tt>keytool</tt> to create our private SSL keystore, e.g. as re
 
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
-    -dname "CN=evanx/OU=test"
+    -dname "CN=evanx, OU=test"
 }}}
 
 We export our certificate as follows.
@@ -429,10 +435,10 @@ $ keytool -keystore evanx.jks -alias evanx -certreq
 We use Java7's keytool to sign the CSR.
 {{{
 $ keytool -keystore dualcontrolserver.jks -gencert -validity 365 -rfc \
-    -dname "CN=evanx/OU=test" -infile evanx.csr -outfile evanx.signed.pem
+    -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
 }}}
 
-(Note that <tt>-gencert</tt> is not available in Java6's keytool.)
+Note that <tt>-gencert</tt> is not available in Java6's keytool.
 
 We inspect the cert using <tt>openssl</tt>.
 {{{
@@ -458,6 +464,17 @@ Our client keystore can double up as our truststore since it contains the server
 
 Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs.
 
+<h4>Client certificate records</h4>
+
+Our <tt>RevocableClientTrustManager</tt> handles a revocation list of CN's, where we assume these are unique. Alternatively we could use the cert's serial number.
+
+If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was even issued!
+
+We might record our signed certs into a keystore as follows.
+{{{
+$ keytool -keystore dualcontrolserver.issued.jks -importcert -file evanx.pem
+}}}
+
 <h4><tt>!DualControlConsole</tt></h4>
 
 Let's try our <tt>!DualControlConsole</tt> app, e.g. to submit a password to <tt>!DualControlGenSecKey</tt>.
@@ -465,6 +482,7 @@ Let's try our <tt>!DualControlConsole</tt> app, e.g. to submit a password to <tt
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=keystores/evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dualcontrol.ssl:
+Connected evanx
 Enter passphrase for new key dek2013: 
 Re-enter passphrase: 
 Received evanx
@@ -681,6 +699,7 @@ The application's execution is then blocked whilst we are waiting on the <tt>SSL
 {{{
 evanx$ java -Ddualcontrol.ssl.keyStore=evanx.jks dualcontrol.DualControlConsole
 Enter passphrase for dualcontrol.ssl:
+Connected evanx
 Enter passphrase for key dek2013 for DualControlDemoApp: 
 Re-enter passphrase:
 Received evanx
@@ -689,6 +708,7 @@ where we specify the keystore for the SSL socket, which can double up as our tru
 {{{
 henty$ java -Ddualcontrol.ssl.keyStore=henty.jks dualcontrol.DualControlConsole
 Enter passphrase for dualcontrol.ssl:
+Connected henty
 Enter passphrase for key dek2013 for DualControlDemoApp: 
 Re-enter passphrase:
 Received henty
