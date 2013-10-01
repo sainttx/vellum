@@ -38,6 +38,7 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.net.ssl.SSLContext;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -117,9 +118,20 @@ public class DualControlTest {
         assertOk(evanxThread.exception);
         assertOk(brentThread.exception);
         assertOk(hentyThread.exception);
-        Assert.assertTrue(evanxThread.console.getLine(0).startsWith(
-                "Enter passphrase for new key dek2013:"));
+        assertContains("Connected evanx", 
+                evanxThread.console.getLine(0));
+        assertContains("Enter passphrase for new key dek2013:", 
+                evanxThread.console.getLine(1));
         Thread.sleep(1000);
+    }
+    
+    public static void assertContains(String pattern, String string) throws AssertionError {
+        if (!string.contains(pattern)) {
+            logger.warn("expected to contain: " + pattern);
+            logger.error("invalid: " + string);
+        }
+        throw new AssertionError(string);
+        
     }
 
     class GenSecKeyThread extends Thread  {
@@ -279,4 +291,6 @@ public class DualControlTest {
     private static void waitPort() throws InterruptedException {
         Sockets.waitPort("127.0.0.1", 4444, 2000, 500);
     }
+    
+    static Logger logger = Logger.getLogger(DualControlTest.class);    
 }

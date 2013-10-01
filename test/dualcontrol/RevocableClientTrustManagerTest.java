@@ -47,8 +47,8 @@ import sun.security.pkcs.PKCS10;
  * @author evan
  */
 public class RevocableClientTrustManagerTest {
-
     static Logger logger = Logger.getLogger(RevocableClientTrustManagerTest.class);
+    
     private int port = 4446;
     private char[] pass = "test1234".toCharArray();
     GenRsaPair serverPair;
@@ -85,7 +85,7 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals("CN=server", serverCert.getIssuerDN().getName());        
         Assert.assertEquals("CN=server", serverCert.getSubjectDN().getName());        
         Assert.assertEquals(1, Collections.list(serverKeyStore.aliases()).size());
-        serverContext = createContext(serverKeyStore, 1); 
+        serverContext = createContext(serverKeyStore, "revokedName"); 
         testConnectionException(serverContext, serverContext, 
                 "Invalid cert chain length");
     }
@@ -121,7 +121,7 @@ public class RevocableClientTrustManagerTest {
     
     private void testRevoked() throws Exception {        
         SSLContext revokedContext = createContext(serverKeyStore, 
-                signedCert.getSerialNumber());
+                DualControlManager.getCN(signedCert.getSubjectDN()));
         testConnectionException(revokedContext, signedContext, 
                 "Certificate in revocation list");
     }
@@ -130,7 +130,7 @@ public class RevocableClientTrustManagerTest {
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
                 signedCert, clientCert
                 );
-        SSLContext invalidContext = createContext(invalidKeyStore, 1);
+        SSLContext invalidContext = createContext(invalidKeyStore, null);
         testConnectionException(serverContext, invalidContext, 
                 "Received fatal alert: certificate_unknown");
     }
@@ -139,7 +139,7 @@ public class RevocableClientTrustManagerTest {
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
                 serverCert, signedCert
                 );
-        SSLContext invalidContext = createContext(invalidKeyStore, 1);
+        SSLContext invalidContext = createContext(invalidKeyStore, null);
         testConnectionException(serverContext, invalidContext, 
                 "Invalid server certificate");
     }
@@ -148,7 +148,7 @@ public class RevocableClientTrustManagerTest {
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
                 signedCert, signedCert
                 );
-        SSLContext invalidContext = createContext(invalidKeyStore, 1);
+        SSLContext invalidContext = createContext(invalidKeyStore, null);
         testConnectionException(serverContext, invalidContext, 
                 "Received fatal alert: certificate_unknown");
     }
@@ -159,15 +159,17 @@ public class RevocableClientTrustManagerTest {
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
                 signedCert, otherPair.getCert()
                 );
-        SSLContext invalidContext = createContext(invalidKeyStore, 1);
+        SSLContext invalidContext = createContext(invalidKeyStore, null);
         testConnectionException(serverContext, invalidContext, 
                 "Received fatal alert: certificate_unknown");
     }
     
-    private SSLContext createContext(KeyStore keyStore, Number revokedSerialNumber) 
+    private SSLContext createContext(KeyStore keyStore, String revokedName) 
             throws Exception {
-        List<BigInteger> revocationList = new ArrayList();
-        revocationList.add(new BigInteger(revokedSerialNumber.toString()));
+        List<String> revocationList = new ArrayList();
+        if (revokedName != null) {
+            revocationList.add(revokedName);
+        }
         return SSLContexts.create(keyStore, pass, revocationList);
     }
     
