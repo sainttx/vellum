@@ -41,7 +41,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import org.apache.log4j.Logger;
-import sun.security.validator.Validator;
 
 /**
  *
@@ -122,8 +121,6 @@ public class RevocableSSLContexts {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
-                Validator.VAR_GENERIC, trustStore);
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
