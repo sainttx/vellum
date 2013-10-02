@@ -298,7 +298,7 @@ Ordinarily we create the <tt>SSLContext</tt> as follows.
     }
 }}}
 
-Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs.
+Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs. However, we do not recommend such an approach here.
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
