@@ -48,7 +48,7 @@ public class RevocableSSLContexts {
     }
 }
 }}}
-where we initialise a custom <tt>!RevocableClientTrustManager</tt> with our server cert, and a collection of revoked certificates' CNs (or serial numbers).
+where we initialise a custom <tt>!RevocableClientTrustManager</tt> with our server cert, and a collection of revoked certificates' CNs.
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
@@ -76,7 +76,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
 }}}
 where we initialise this trust manager with a collection of revoked certificates' CNs. We check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
 
-We might choose to revoke certificates by serial number rather.
+We might prefer to revoke certificates by serial number.
 {{{
         if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
