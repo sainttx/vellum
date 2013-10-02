@@ -2,6 +2,8 @@
 
 <h4>Overview</h4>
 
+<img align=left style="margin-right: 16px" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
+
 Imagine we have innumerable clients connecting to a Java server over SSL sockets. 
 
 Naturally, we generate certificates for each client, and can import these self-signed certificates into our server truststore.  
@@ -157,6 +159,8 @@ Our server keystore can also double up as its truststore, since it contains its 
 <h4>Client certificate management</h4>
 
 Clearly a rogue certificate with a duplicate CN can impersonate a valid certificate. So when issuing a certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. In order to regularly review access, we require a perfect record of all issued certificates. We might record our signed certs into a keystore file as follows.
 {{{
