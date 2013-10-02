@@ -476,8 +476,13 @@ We submit the password via SSL in the <tt>call()</tt> method below.
     public void call() throws Exception {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        String message = dis.readUTF();
+        console.println(message);
         String purpose = dis.readUTF();
+        if (purpose.length() == 0) {
+            return;
+        }
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         char[] password = console.readPassword(
                 "Enter passphrase for " + purpose + ": ");
         String invalidMessage = new DualControlPassphraseVerifier(properties).
@@ -503,7 +508,7 @@ We submit the password via SSL in the <tt>call()</tt> method below.
     }
 }}}
 
-where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt.
+where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt. Similarly, if the server rejects our connection, it will politely send us an empty <tt>purpose</tt>, so that we can abort gracefully.
 
 Note that have hard-coded the host to <tt>localhost</tt> to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
@@ -865,11 +870,15 @@ where we accumulate the required number of submissions in a loop, handing each s
 
 {{{
     private void read(SSLSocket socket) throws Exception {
-        String name = getCN(socket.getSession().getPeerPrincipal().getName());
-        if (submissions.keySet().contains(name)) {
-            throw new Exception("Duplicate submission from " + name);
-        }
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        String name = getCN(socket.getSession().getPeerPrincipal());
+        if (submissions.keySet().contains(name)) {
+            String errorMessage = "Duplicate submission from " + name;
+            dos.writeUTF(errorMessage);
+            dos.writeUTF("");
+            throw new Exception(errorMessage);
+        }
+        dos.writeUTF("Connected " + name);        
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] passphrase = readChars(dis);
