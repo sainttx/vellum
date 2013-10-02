@@ -175,9 +175,11 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 <h4>Self-signed client certificates</h4>
 
-All told, given the risk of a rogue certificate, we recommend self-signed client certificates whenever possible, where these are explicitly imported into our server truststore. Crucially, its keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above.
+All told, given the risk of a rogue certificate, we recommend self-signed client certificates whenever possible, where these are explicitly imported into our server truststore. 
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
+
+Note that when using self-signed certs (or CA certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above.
 
 <h4>Conclusion</h4>
 
