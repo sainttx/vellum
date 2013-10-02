@@ -173,10 +173,10 @@ All told, given the risk of a rogue certificate, we recommend self-signed client
 
 <h4>Furthermore</h4>
 
-We'll delve into our <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/RevocableClientTrustManagerTest.java">unit tests</a> in a follow-up article.
+We'll delve into some unit testing in a follow-up article.
 
 <h4>Conclusion</h4>
 
-In this article, we sign the client certificates using our server certificate, which is then our local CA root certificate. We introduce <tt>RevocableClientTrustManager</tt> to support certificate revocation.
+We can sign client certificates using our server certificate, which is then our local CA root certificate. We introduce a custom <tt>!RevocableClientTrustManager</tt> to support this scenario.
 
-<tt><a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a></tt>
+<tt><a href="https://twitter.com/evanxsummers">@evanxsummers</a></tt>
