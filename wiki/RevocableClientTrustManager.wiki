@@ -122,7 +122,7 @@ Similarly, the server cert is imported into the clients' truststores.
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we could export an CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.
+Alternatively, we could export a CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
