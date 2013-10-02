@@ -69,13 +69,13 @@ public class DualControlConsole {
     public void call() throws Exception {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         String message = dis.readUTF();
         console.println(message);
         String purpose = dis.readUTF();
         if (purpose.length() == 0) {
             return;
         }
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         char[] password = console.readPassword(
                 "Enter passphrase for " + purpose + ": ");
         String invalidMessage = new DualControlPassphraseVerifier(properties).
