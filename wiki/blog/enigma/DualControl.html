@@ -134,7 +134,7 @@ Note that ExtendedProperties is a utility wrapper for java.util.Properties that 
 We initialise the instance with an SSLContext as follows.
 <pre>
     public void init() throws Exception {
-        sslContext = SSLContexts.create("dualcontrol.ssl", props, console);
+        sslContext = SSLContexts.create(true, "dualcontrol.ssl", props, console);
     }
 </pre>
 
@@ -256,13 +256,13 @@ Similarly to the standard -Dnet.javax.ssl.keyStore <i>et al</i> command-line opt
 <pre>
 public class SSLContexts {    
 
-    public static SSLContext create(String sslPrefix, Properties properties, 
+    public static SSLContext create(boolean strict, String sslPrefix, Properties properties,
             MockableConsole console) throws Exception {
         ExtendedProperties props = new ExtendedProperties(properties);
         sslPrefix = props.getString(sslPrefix, sslPrefix);
         String keyStoreLocation = props.getString(sslPrefix + ".keyStore");
         if (keyStoreLocation == null) {
-            throw new Exception("Missing -D property: " + sslPrefix + ".keyStore");
+            throw new Exception("Missing keystore property for " + sslPrefix);
         }
         char[] pass = props.getPassword(sslPrefix + ".pass", null);
         if (pass == null) {
@@ -270,12 +270,10 @@ public class SSLContexts {
         }
         String trustStoreLocation = props.getString(sslPrefix + ".trustStore", 
                 keyStoreLocation);
-        SSLContext sslContext = create(keyStoreLocation, trustStoreLocation, pass);
-        String crlFile = props.getString(sslPrefix + ".crlFile", null);
-        if (crlFile != null) {
-            sslContext = create(keyStoreLocation, pass, trustStoreLocation,
-                    readRevocationList(crlFile));
+        if (strict && keyStoreLocation.equals(trustStoreLocation)) {
+            throw new KeyStoreException("Require separate truststore");
         }
+        SSLContext sslContext = create(keyStoreLocation, pass, trustStoreLocation);
         Arrays.fill(pass, (char) 0);
         return sslContext;
     }
@@ -284,7 +282,9 @@ public class SSLContexts {
 </pre>
 where we reuse the same password for the SSL keystore, its private key, and the truststore. This password can specified on the command-line e.g. for automated test scripts, but otherwise we prompt for the SSL keystore password to be entered on the console. Moreover, we have introduced a MockableConsole for the benefit of automated unit testing.
 
-Note that the truststore is defaulted to the specified private keystore, which is OK for self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
+Note that the truststore is defaulted to the specified private keystore, which is usually only OK on the client side, when using self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
+
+The server SSLContext must have a separate truststore, even when using self-signed certificates. Otherwise a rogue client certificate can be created by signing it with the server certificate.
 
 Ordinarily we create the SSLContext as follows.
 <pre>
@@ -301,42 +301,7 @@ Ordinarily we create the SSLContext as follows.
     }
 </pre>
 
-Furthermore, we enable a local certificate revocation list (CRL) specified by our crlFile property.
-<pre>
-    public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, List<BigInteger> revocationList) throws Exception {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPass);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        TrustManager revocableTrustManager = new RevocableClientTrustManager(
-                getPrivateKeyCertificate(keyStore),
-                getX509TrustManager(trustStore),
-                revocationList);
-        sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[] {revocableTrustManager},
-                new SecureRandom());
-        return sslContext;
-    }
-</pre>
-where this uses a custom RevocableClientTrustManager instantiated with a List of revoked certificates' names. These are read from a local text file, as follows.
-<pre>
-    private static List<String> readRevocationList(String crlFile)
-            throws FileNotFoundException, IOException {
-        List<String> revocationList = new ArrayList();
-        BufferedReader reader = new BufferedReader(new FileReader(crlFile));
-        while (true) {
-            String line = reader.readLine();
-            if (line == null) {
-                return revocationList;
-            }
-            revocationList.add(line.trim());
-        }        
-    }
-</pre>
-
-<h4>RevocableClientTrustManager</h4>
-
-We implement a custom X509TrustManager to support local certificate revocation. This enables a simple "local CA" via a server keystore/truststore with a single entry, where the server cert is also our root CA cert used to sign client certs.
+Incidently, in a further article we'll implement a custom X509TrustManager to support local certificate revocation. This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs.
 <pre>
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
@@ -358,10 +323,12 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
+        if (revokedCNList != null && 
+                revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
-        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
+        if (revokedSerialNumberList != null &&
+                revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
         }
         delegate.checkClientTrusted(certs, authType);
@@ -369,8 +336,6 @@ public class RevocableClientTrustManager implements X509TrustManager {
 }
 </pre>
 where we initialise this trust manager with a collection of revoked certificates' CNs or serial numbers. We check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard X509TrustManager for good measure.
-
-We'll elaborate on <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RevocableClientTrustManager.java">RevocableClientTrustManager</a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/RevocableClientTrustManagerTest.java">unit tests</a> in a follow-up article.
 
 <h4>keytool</h4>
 
@@ -409,7 +374,7 @@ Similarly, the server cert is imported into the custodians' truststores as speci
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we could export an CSR, and sign this with the server cert, which is then our local CA cert, and we must support certificate revocation.
+Incidently, we could export an CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation.
 <pre>
 $ keytool -keystore evanx.jks -alias evanx -certreq
 </pre>
@@ -443,22 +408,22 @@ Our client keystore can double up as our truststore since it contains the server
 
 Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs.
 
-<h4>Client certificate database</h4>
-
-Our RevocableClientTrustManager handles a revocation list of CN's, where we assume these are unique. Alternatively we could use the cert's serial number.
-
-If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We cannot revoke it when we have no record that it was even issued!
-
-We might record our signed certs into a keystore as follows.
-<pre>
-$ keytool -keystore dualcontrolserver.issued.jks -importcert -file evanx.pem
-</pre>
-
 <h4>Client certificate management</h4>
 
-Given the risk of a rogue certificate, actually we do not recommend signing client certificates, but rather using a separate server truststore which explicitly contains the self-signed client certs which we accept.
+Clearly a rogue certificate with a duplicate CN can impersonate a valid certificate. So when issuing a certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
 
-Note that the server keystore must not be used as its truststore into which we load self-signed client certificates. Since it naturally contains the server certificate, any client certificate signed by that server certificate would be equally trusted. As such, a rogue certificate could be created by signing it using the server keystore.
+If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We want to regularly review and revoke access, and so require a record of all issued certificates. 
+
+We might record our signed certs into a keystore file as follows.
+<pre>
+$ keytool -keystore dualcontrolserver.issued.jks -importcert -alias evanx -file evanx.pem 
+Certificate was added to keystore
+</pre>
+where this is not a truststore per se, but just a database of issued certificates. 
+
+Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
+
+All told, given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore. Crucially, its keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using keytool -gencert.
 
 <h4>DualControlConsole</h4>
 
@@ -495,7 +460,7 @@ public class DualControlConsole {
     }
 
     public void init() throws Exception {
-        init(SSLContexts.create("dualcontrol.ssl", properties, console));
+        init(SSLContexts.create(false, "dualcontrol.ssl", properties, console));
     }
     ...
 }
@@ -512,8 +477,13 @@ We submit the password via SSL in the call() method below.
     public void call() throws Exception {
         Socket socket = sslContext.getSocketFactory().createSocket(HOST, PORT);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        String message = dis.readUTF();
+        console.println(message);
         String purpose = dis.readUTF();
+        if (purpose.length() == 0) {
+            return;
+        }
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         char[] password = console.readPassword(
                 "Enter passphrase for " + purpose + ": ");
         String invalidMessage = new DualControlPassphraseVerifier(properties).
@@ -539,7 +509,7 @@ We submit the password via SSL in the call() method below.
     }
 </pre>
 
-where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt.
+where if the re-entered password does not match, we politely send an empty password to the server, which indicates an aborted attempt. Similarly, if the server rejects our connection, it will politely send us an empty purpose, so that we can abort gracefully.
 
 Note that have hard-coded the host to localhost to enforce ssh port forwarding for remote access i.e. SSL over ssh :)
 
@@ -769,7 +739,7 @@ public class DualControlKeyStores {
             String[] array = keyStoreLocation.split(":");
             String keyStoreHost = array[0];
             int keyStorePort = Integer.parseInt(array[1]);
-            SSLContext sslContext = SSLContexts.create("fileclient.ssl", 
+            SSLContext sslContext = SSLContexts.create(false, "fileclient.ssl", 
                     System.getProperties(), 
                     new MockableConsoleAdapter(System.console()));
             Socket socket = sslContext.getSocketFactory().createSocket(
@@ -803,7 +773,7 @@ public class FileServer {
     private String fileName;
     ...
     public void call() throws Exception {
-        SSLContext sslContext = SSLContexts.create("fileserver.ssl", 
+        SSLContext sslContext = SSLContexts.create(true, "fileserver.ssl", 
                 System.getProperties(), new MockableConsoleAdapter(System.console()));
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
                 createServerSocket(port, backlog, localAddress);
@@ -901,11 +871,15 @@ where we accumulate the required number of submissions in a loop, handing each s
 
 <pre>
     private void read(SSLSocket socket) throws Exception {
-        String name = getCN(socket.getSession().getPeerPrincipal().getName());
-        if (submissions.keySet().contains(name)) {
-            throw new Exception("Duplicate submission from " + name);
-        }
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        String name = getCN(socket.getSession().getPeerPrincipal());
+        if (submissions.keySet().contains(name)) {
+            String errorMessage = "Duplicate submission from " + name;
+            dos.writeUTF(errorMessage);
+            dos.writeUTF("");
+            throw new Exception(errorMessage);
+        }
+        dos.writeUTF("Connected " + name);        
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] passphrase = readChars(dis);
@@ -1011,3 +985,19 @@ We propose keeping at least three copies of the same key, but where each copy is
 We note that we require two shared passwords (server SSL keystore/truststore and secret keystore), and as well two private passwords per custodian (client SSL keystore/truststore and secret key split password), and thereby hopefully keep our secret key, erm, secret.
 
 <h4>Furthermore</h4>
+
+In "Dual Control Mock Console" we will present a unit test orchestrating DualControlManager and DualControlConsole threads - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/DualControlTest.java">DualControlTest.java</a>
+
+<img align="left" style="margin-left: 4px" src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Gnome-applications-office.svg/200px-Gnome-applications-office.svg.png" />
+
+In "Dual Control Enroll" we will present tools to enroll and revoke custodians - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java">DualControlEnroll.java</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java">DualControlRevoke.java</a>
+
+In "Dual Control Crypto Server" we implement a dual-controlled crypto server to unburden our apps, simplify key management and enhance security - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoServer.java">CryptoServer.java</a> and its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/CryptoHandler.java">CryptoHandler.java</a>
+
+In "Dual Control Key Protection" we address increased protection against brute-force password attacks e.g. via PBE of the keystore using PBKDF2 with a high number of iterations, so that the key takes a second or two to recover, rather than half a millisecond - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/JceksBruteForceTimer.java">JceksBruteForceTimer.java</a>, <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/RecryptedKeyStore.java">RecryptedKeyStore.java</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/AesPbeStore.java">AesPbeStore.java</a>
+
+In "Dual Control Key Rotation" we'll address periodic key revision e.g. migrating from an older "dek2013" key to a new "dek2014" key.
+
+You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fdualcontrol">src/dualcontrol</a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/test/dualcontrol/">test/dualcontrol</a>.
+
+<a href="https://twitter.com/evanxsummers" class="twitter-follow-button" data-show-count="false">@evanxsummers</a>
