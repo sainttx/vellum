@@ -1,7 +1,5 @@
 #labels SSL, keytool, Java
 
-<h1>Simple Local CA</h1>
-
 <h4>Overview</h4>
 
 Imagine we have innumerable clients connecting to a Java server over SSL sockets. 
