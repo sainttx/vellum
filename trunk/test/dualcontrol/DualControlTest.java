@@ -251,8 +251,8 @@ public class DualControlTest {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, keyStorePass);
         GenRsaPair keyPair = new GenRsaPair();
-        keyPair.call("CN=" + name, new Date(), validityDays);
-        X509Certificate[] chain = new X509Certificate[] {keyPair.getCert()};
+        keyPair.generate("CN=" + name, new Date(), validityDays);
+        X509Certificate[] chain = new X509Certificate[] {keyPair.getCertificate()};
         keyStore.setKeyEntry(name, keyPair.getPrivateKey(), keyStorePass, chain);
         return keyStore;
     }

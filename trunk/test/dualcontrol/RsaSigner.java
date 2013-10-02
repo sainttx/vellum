@@ -50,7 +50,7 @@ public class RsaSigner {
     public static X509Certificate sign(GenRsaPair signing, GenRsaPair pair, 
             String dname, Date notBefore, int validityDays, int serialNumber) 
             throws Exception {
-        return signCert(signing.getPrivateKey(), signing.getCert(), 
+        return signCert(signing.getPrivateKey(), signing.getCertificate(), 
             pair.getCertRequest(dname), notBefore, validityDays, serialNumber);
     }
     
