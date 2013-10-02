@@ -56,6 +56,8 @@ public class RevocableClientTrustManagerTest {
     KeyStore serverKeyStore;
     SSLContext serverContext;
     GenRsaPair clientPair;
+    SSLContext clientContext;
+    KeyStore clientKeyStore;
     X509Certificate clientCert;
     PKCS10 certRequest;
     KeyStore signedKeyStore;
@@ -67,8 +69,23 @@ public class RevocableClientTrustManagerTest {
 
     @Test
     public void test() throws Exception {
-        testServer();
-        testClient();
+        serverPair = new GenRsaPair();
+        serverPair.generate("CN=server", new Date(), 365);
+        serverCert = serverPair.getCertificate();
+        serverKeyStore = createKeyStore("server", serverPair);        
+        clientPair = new GenRsaPair();
+        clientPair.generate("CN=client", new Date(), 365);
+        clientKeyStore = createKeyStore("client", clientPair);
+        clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
+        serverContext = SSLContexts.create(serverKeyStore, pass, clientKeyStore);
+        clientContext = SSLContexts.create(clientKeyStore, pass, serverKeyStore);
+        testConnection(serverContext, clientContext);
+    }
+    
+    @Test
+    public void testAll() throws Exception {
+        initServer();
+        initClient();
         testSigned();
         testRevoked();
         testInvalidServerCertOrder();
@@ -77,11 +94,11 @@ public class RevocableClientTrustManagerTest {
         testInvalidServerCertOther();
     }
 
-    private void testServer() throws Exception {
+    private void initServer() throws Exception {
         serverPair = new GenRsaPair();
-        serverPair.call("CN=server", new Date(), 1);
-        serverCert = serverPair.getCert();
-        serverKeyStore = createSSLKeyStore("server", serverPair);        
+        serverPair.generate("CN=server", new Date(), 1);
+        serverCert = serverPair.getCertificate();
+        serverKeyStore = createKeyStore("server", serverPair);        
         Assert.assertEquals("CN=server", serverCert.getIssuerDN().getName());        
         Assert.assertEquals("CN=server", serverCert.getSubjectDN().getName());        
         Assert.assertEquals(1, Collections.list(serverKeyStore.aliases()).size());
@@ -90,10 +107,10 @@ public class RevocableClientTrustManagerTest {
                 "Invalid cert chain length");
     }
     
-    private void testClient() throws Exception {
+    private void initClient() throws Exception {
         clientPair = new GenRsaPair();
-        clientPair.call("CN=client", new Date(), 1);
-        KeyStore clientKeyStore = createSSLKeyStore("client", clientPair);
+        clientPair.generate("CN=client", new Date(), 1);
+        clientKeyStore = createKeyStore("client", clientPair);
         clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
         Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());        
         Assert.assertEquals("CN=client", clientCert.getSubjectDN().getName());        
@@ -107,11 +124,11 @@ public class RevocableClientTrustManagerTest {
     private void testSigned() throws Exception {
         certRequest = clientPair.getCertRequest("CN=client");
         signedCert = RsaSigner.signCert(serverPair.getPrivateKey(),
-                serverPair.getCert(), certRequest, new Date(), 365, 1234);
+                serverPair.getCertificate(), certRequest, new Date(), 365, 1234);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
         Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());        
         signedKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), signedCert,
-                serverPair.getCert());
+                serverPair.getCertificate());
         Assert.assertEquals(2, Collections.list(signedKeyStore.aliases()).size());        
         signedContext = SSLContexts.create(signedKeyStore, pass,
                 signedKeyStore);
@@ -155,9 +172,9 @@ public class RevocableClientTrustManagerTest {
     
     private void testInvalidServerCertOther() throws Exception {
         GenRsaPair otherPair = new GenRsaPair();
-        otherPair.call("CN=server", new Date(), 1);
+        otherPair.generate("CN=server", new Date(), 1);
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
-                signedCert, otherPair.getCert()
+                signedCert, otherPair.getCertificate()
                 );
         SSLContext invalidContext = createContext(invalidKeyStore, null);
         testConnectionException(serverContext, invalidContext, 
@@ -212,10 +229,10 @@ public class RevocableClientTrustManagerTest {
         return null;
     }
 
-    private KeyStore createSSLKeyStore(String keyAlias, GenRsaPair keyPair) throws Exception {
+    private KeyStore createKeyStore(String keyAlias, GenRsaPair keyPair) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
-        X509Certificate[] chain = new X509Certificate[]{keyPair.getCert()};
+        X509Certificate[] chain = new X509Certificate[]{keyPair.getCertificate()};
         keyStore.setKeyEntry(keyAlias, keyPair.getPrivateKey(), pass, chain);
         return keyStore;
     }

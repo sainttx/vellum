@@ -41,7 +41,7 @@ public class GenRsaPair {
     private CertAndKeyGen pair;
     private X509Certificate cert;
     
-    public void call(String dname, Date notBefore, int validityDays) throws Exception {
+    public void generate(String dname, Date notBefore, int validityDays) throws Exception {
         pair = new CertAndKeyGen(keyAlgName, sigAlgName, providerName);
         pair.generate(keySize);
         X500Name x500Name = new X500Name(dname);
@@ -57,7 +57,7 @@ public class GenRsaPair {
         return pair.getPrivateKey();
     }
 
-    public X509Certificate getCert() {
+    public X509Certificate getCertificate() {
         return cert;
     }    
 
