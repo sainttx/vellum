@@ -298,20 +298,40 @@ Ordinarily we create the <tt>SSLContext</tt> as follows.
     }
 }}}
 
-Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs. However, we do not recommend such an approach here, where we want tightly managed access control, which is easy to review.
+<h4><tt>!RevocableSSLContexts</tt></h4>
+
+Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. 
+
+{{{
+public class RevocableSSLContexts {
+    ...
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+            KeyStore trustStore, List<String> revocationList) throws Exception {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPass);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        TrustManager revocableTrustManager = new RevocableClientTrustManager(
+                getPrivateKeyCertificate(keyStore),
+                getX509TrustManager(trustStore),
+                revocationList);
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                new TrustManager[]{revocableTrustManager},
+                new SecureRandom());
+        return sslContext;
+    }
+}
+}}}
+
+This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs. However, we do not recommend such an approach here, where we want tightly managed access control, which is easy to review.
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
     X509TrustManager delegate;
     Collection<String> revokedCNList;
-    Collection<BigInteger> revokedSerialNumberList;
     ...
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
-        if (certs.length != 2) {
-            throw new CertificateException("Invalid cert chain length");
-        }
         if (!certs[0].getIssuerX500Principal().equals(
                 serverCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
@@ -320,13 +340,8 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revokedCNList != null && 
-                revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
+        if (revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
-        }
-        if (revokedSerialNumberList != null &&
-                revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate serial number revoked");
         }
         delegate.checkClientTrusted(certs, authType);
     }
