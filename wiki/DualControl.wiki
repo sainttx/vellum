@@ -298,7 +298,7 @@ Ordinarily we create the <tt>SSLContext</tt> as follows.
     }
 }}}
 
-Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs. However, we do not recommend such an approach here.
+Incidently, in a further article we'll implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. This enables a simple "local CA" where the server cert is also our root CA cert used to sign client certs. However, we do not recommend such an approach here, where we want tightly managed access control, which is easy to review.
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
@@ -371,7 +371,7 @@ Similarly, the server cert is imported into the custodians' truststores as speci
 
 <h4>Client certificate signing</h4>
 
-Incidently, we could export an CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation.
+Incidently, we could export an CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using that <tt>!RecovableClientTrustManager</tt> introduced further above.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
@@ -409,9 +409,7 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 Clearly a rogue certificate with a duplicate CN can impersonate a valid certificate. So when issuing a certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
 
-If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We want to regularly review and revoke access, and so require a record of all issued certificates. 
-
-We might record our signed certs into a keystore file as follows.
+If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. In order to regularly review access, we require a perfect record of all issued certificates. We might record our signed certs into a keystore file as follows.
 {{{
 $ keytool -keystore dualcontrolserver.issued.jks -importcert -alias evanx -file evanx.pem 
 Certificate was added to keystore
@@ -420,7 +418,7 @@ where this is not a truststore per se, but just a database of issued certificate
 
 Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
 
-All told, given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore. Crucially, its keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>.
+All told, given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore. Crucially, its keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
