@@ -187,6 +187,6 @@ We can sign client certificates using our server certificate, which is then our 
 
 <h4>Also see</h4>
 
-We'll delve into some unit testing in a follow-up article.
+We'll perform unit testing of <tt>!RevocableClientTrustManager</tt> in a follow-up article.
 
-Also in this series on Java crypto: <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a>
+Also in this series on Java crypto: <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a>, <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a>.
