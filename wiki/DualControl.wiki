@@ -407,7 +407,7 @@ Our server keystore can also double up as its truststore, since it contains its 
 
 <h4>Client certificate management</h4>
 
-When issuing a certificate, we must take care to ensure uniqueness of the identifier used for revocation, e.g. the CN if not the serial number, and add the certificate, or at least its unique identifier, to our registry. A rogue certificate with a duplicate CN, could impersonate a valid certificate.
+Clearly a rogue certificate with a duplicate CN can impersonate a valid certificate. So when issuing a certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
 
 If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. We want to regularly review and revoke access, and so require a record of all issued certificates. 
 
