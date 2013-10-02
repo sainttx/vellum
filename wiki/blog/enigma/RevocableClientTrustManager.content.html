@@ -1,7 +1,3 @@
-In this article, we sign the client certificates using our server certificate, which is then our local CA root certificate, and as such our server must support certificate revocation.
-
-<h4>SSLContexts</h4>
-
 Ordinarily we create an SSLContext as follows.
 <pre>
 public class SSLContexts {
@@ -167,9 +163,11 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 <h4>Self-signed client certificates</h4>
 
-All told, given the risk of a rogue certificate, we recommend self-signed client certificates whenever possible, where these are explicitly imported into our server truststore. Crucially, its keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using keytool -gencert, as illustrated above.
+All told, given the risk of a rogue certificate, we recommend self-signed client certificates whenever possible, where these are explicitly imported into our server truststore. 
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
+
+Note that when using self-signed certs (or CA certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using keytool -gencert, as illustrated above.
 
 <h4>Conclusion</h4>
 
@@ -177,6 +175,6 @@ We can sign client certificates using our server certificate, which is then our 
 
 <h4>Also see</h4>
 
-We'll delve into some unit testing in a follow-up article.
+We'll perform unit testing of RevocableClientTrustManager in a follow-up article.
 
-Also in this series on Java crypto: <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a>
+Also in this series on Java crypto: <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a>, <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a>.
