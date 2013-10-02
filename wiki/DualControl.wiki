@@ -281,7 +281,7 @@ where we reuse the same password for the SSL keystore, its private key, and the 
 
 Note that the truststore is defaulted to the specified private keystore, which is usually only OK on the client side, when using self-signed certificates. When using CA-signed certificates, our keystore must contain the certificate chain including the CA certs e.g. intermediate and root. However, these cannot be in our truststore, otherwise we trust any cert signed by that CA!
 
-The server <tt>SSLContext</tt> must have a separate truststore, even when using self-signed certificates. Otherwise a rogue client certificate can be created by signing it with server certificate.
+The server <tt>SSLContext</tt> must have a separate truststore, even when using self-signed certificates. Otherwise a rogue client certificate can be created by signing it with the server certificate.
 
 Ordinarily we create the <tt>SSLContext</tt> as follows.
 {{{
