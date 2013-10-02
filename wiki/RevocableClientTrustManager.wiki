@@ -48,7 +48,7 @@ public class RevocableSSLContexts {
     }
 }
 }}}
-where we initialise a custom <tt>RevocableClientTrustManager</tt> with our server cert, and a collection of revoked certificates' CNs (or serial numbers).
+where we initialise a custom <tt>!RevocableClientTrustManager</tt> with our server cert, and a collection of revoked certificates' CNs (or serial numbers).
 
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
