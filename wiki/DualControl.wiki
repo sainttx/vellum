@@ -420,9 +420,7 @@ where this is not a truststore per se, but just a database of issued certificate
 
 Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
 
-All told, given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore.
-
-Naturally the server certificate is in the server keystore. Therefore, its keystore must not be used as its truststore. Otherwise, any client certificate signed by that server certificate is trusted. As such, a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>.
+All told, given the risk of a rogue certificate, we recommend sticking with self-signed client certificates, explicitly imported into our server truststore. Crucially, its keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>.
 
 <h4><tt>!DualControlConsole</tt></h4>
 
