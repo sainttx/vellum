@@ -26,19 +26,19 @@ public class SSLContexts {
         return sslContext;
     }
 }}}
-Let's implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. 
+Let's support local certificate revocation via a list of revoked CNs.
 {{{
 public class RevocableSSLContexts {
     ...
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, List<String> revocationList) throws Exception {
+            KeyStore trustStore, List<String> revokedCNList) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
-                revocationList);
+                revokedCNList);
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 new TrustManager[]{revocableTrustManager},
                 new SecureRandom());
@@ -73,7 +73,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
 }}}
 where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
 
-We might prefer to revoke certificates by serial number.
+Alternatively we might prefer to revoke certificates by serial number, as follows.
 {{{
         if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
@@ -173,6 +173,7 @@ All told, given the risk of a rogue certificate, we recommend self-signed client
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 Note that when using self-signed certs (or CA certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above.
+
 
 <h4>Conclusion</h4>
 
