@@ -26,7 +26,7 @@ public class SSLContexts {
         return sslContext;
     }
 }}}
-Let's support local certificate revocation via a list of revoked CNs.
+Let's support local certificate revocation by means of a list of revoked CNs.
 {{{
 public class RevocableSSLContexts {
     ...
