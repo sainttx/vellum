@@ -26,9 +26,7 @@ public class SSLContexts {
         return sslContext;
     }
 }}}
-
 Let's implement a custom <tt>!X509TrustManager</tt> to support local certificate revocation. 
-
 {{{
 public class RevocableSSLContexts {
     ...
@@ -49,7 +47,6 @@ public class RevocableSSLContexts {
 }
 }}}
 where we initialise a custom <tt>!RevocableClientTrustManager</tt> with our server cert, and a collection of revoked certificates' CNs.
-
 {{{
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
@@ -83,6 +80,8 @@ We might prefer to revoke certificates by serial number.
         }
 }}}
 
+The collection of revoked certificates' identifiers might be read from a file or a database, and could be a synchronized collection that is updated externally.
+
 <h4><tt>keytool</tt></h4>
 
 Let's use <tt>keytool</tt> to create our private SSL keystore for a client, say evanx.
@@ -115,27 +114,22 @@ We import the cert into the server SSL truststore.
 {{{
 $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
-
 Similarly, the server cert is imported into the clients' truststores.
+
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we could export a CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.
-{{{
+Alternatively, we could export a CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.{{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
-
 We use Java7's keytool to sign the CSR.
-
 {{{
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
 }}}
-
 Note that <tt>-gencert</tt> is not available in Java6's keytool.
 
 We inspect the cert using <tt>openssl</tt>.
-
 {{{
 $ openssl x509 -text -in evanx.signed.pem | grep CN
         Issuer: CN=server, OU=test
@@ -143,7 +137,6 @@ $ openssl x509 -text -in evanx.signed.pem | grep CN
 }}}
 
 Since our keystore requires our cert chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
-
 {{{
 $ keytool -keystore evanx.jks -importcert -noprompt \
     -file server.pem -alias server 
@@ -155,10 +148,10 @@ $ keytool -keystore evanx.jks -importcert -noprompt \
 Enter keystore password: 
 Certificate reply was installed in keystore
 }}}
-
 Our client keystore can double up as our truststore since it contains the server cert as the root of its certificate chain. If our server cert is CA-signed, we can't do that, since our keystore certificate chain would include the CA's root cert, and so we would trust <i>any</i> cert signed by that CA.
 
 Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs.
+
 
 <h4>Client certificate management</h4>
 
