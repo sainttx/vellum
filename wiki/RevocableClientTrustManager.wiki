@@ -194,7 +194,7 @@ Incidently, in a follow-up article we will create keystores programmatically for
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we might export a certificate signing request (CSR), and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.
+Alternatively, we might export a certificate signing request (CSR), and sign this with the server cert. In this case our server is a local CA, and so must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
