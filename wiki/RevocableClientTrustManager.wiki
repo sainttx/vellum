@@ -95,7 +95,7 @@ We see that <a href="http://www.docjar.com/html/api/sun/security/tools/KeyTool.j
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
             new java.util.Random().nextInt() & 0x7fffffff));
 }}}
-In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records in an SQL database.
+In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records them into an SQL database.
 
 In that case, we might revoke certificates by their serial numbers, and so our trust manager would reject them as follows.
 {{{
