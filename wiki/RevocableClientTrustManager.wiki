@@ -228,7 +228,7 @@ In this case, our client keystore can double up as our truststore since it happe
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-Our server keystore can also double up as its truststore in this particular case, since naturally it contains the self-signed server cert (paired with its private key), and our client certs' CA cert is this sole server cert.
+Our server keystore can also double up as its truststore in this particular case, since naturally it contains the self-signed server cert (paired with its private key), and our client certs' CA cert is in fact this server cert.
 
 If our server cert is CA-signed, then since the keystore must include its key certificate chain, it will include the CA root cert. Therefore if the keystore is misused as the trustore, then the server would trust <i>any</i> client cert signed by that CA.
 
