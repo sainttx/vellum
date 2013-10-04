@@ -80,7 +80,7 @@ where we check that the client certificate is signed by our server certificate, 
 
 Notice that we do not accept the server cert as a client cert. This is a precaution in case our server keystore has been compromised, and a rogue is using it to connect to our server.
 
-The collection of revoked certificates' identifiers might be read from a file or a database, and could be a synchronized list that is updated externally on the fly.
+The collection of revoked certificates' identifiers might be read from a file or a database. This could be a synchronized list that is updated externally on the fly, and so enables a dynamic truststore.
 {{{
         revokedCNList = Collections.synchronizedList(readRevocationList(crlFile));
         SSLContext sslContext = create(keyStore, pass, trustStore, revokedCNList);
