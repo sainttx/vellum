@@ -266,7 +266,7 @@ We discuss the risk of rogue certificates, and so we recommend using self-signed
 
 <h4>Furthermore</h4>
 
-We'll perform unit testing of <tt>!RevocableClientTrustManager</tt> in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, a local CA server supporting standard CRLs, and perhaps even a web-based admin tool for these goodies.
+We'll perform unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, a local CA server supporting standard CRLs, and perhaps even a web-based admin tool for these goodies.
 
 <h4>Other reading</h4>
 
