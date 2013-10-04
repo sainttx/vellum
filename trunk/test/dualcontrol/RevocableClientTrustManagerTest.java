@@ -187,7 +187,7 @@ public class RevocableClientTrustManagerTest {
         if (revokedName != null) {
             revocationList.add(revokedName);
         }
-        return RevocableSSLContexts.create(keyStore, pass, revocationList);
+        return RevocableSSLContextFactory.create(keyStore, pass, revocationList);
     }
     
     private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)
@@ -247,6 +247,14 @@ public class RevocableClientTrustManagerTest {
         return keyStore;
     }
 
+    private KeyStore createTrustStore(String alias, X509Certificate cert) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(null, null);
+        X509Certificate[] chain = new X509Certificate[]{cert};
+        keyStore.setCertificateEntry(alias, cert);
+        return keyStore;
+    }
+    
     private void testValidator() {
         Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
                 Validator.VAR_GENERIC, serverKeyStore);
