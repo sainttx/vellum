@@ -198,7 +198,7 @@ Alternatively, we might export a certificate signing request (CSR), and sign thi
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
-We use Java7's keytool to sign the CSR, using its new <tt>-gencert</tt> option, which is not available in earlier JRE's.
+We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its new <tt>-gencert</tt> option, which by the way is not available in earlier JRE's.
 {{{
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
