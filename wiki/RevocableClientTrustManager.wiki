@@ -83,7 +83,9 @@ Notice that we do not accept the server cert as a client cert. This is a precaut
 The collection of revoked certificates' identifiers might be read from a file or a database, and could be a synchronized list that is updated externally on the fly.
 {{{
         revokedCNList = Collections.synchronizedList(readRevocationList(crlFile));
-        sslContext = create(keyStore, pass, trustStore, revokedCNList);
+        SSLContext sslContext = create(keyStore, pass, trustStore, revokedCNList);
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(port);
 }}}
 
 <h4>Certificate serial numbers</h4>
