@@ -46,10 +46,11 @@ import org.apache.log4j.Logger;
  *
  * @author evan.summers
  */
-public class RevocableSSLContexts {
+public class RevocableSSLContextFactory {
 
-    static Logger logger = Logger.getLogger(RevocableSSLContexts.class);
-
+    static Logger logger = Logger.getLogger(RevocableSSLContextFactory.class);
+    static List<String> revokedCNList; 
+    
     public static SSLContext create(String sslPrefix, Properties properties,
             MockableConsole console) throws Exception {
         ExtendedProperties props = new ExtendedProperties(properties);
@@ -67,8 +68,9 @@ public class RevocableSSLContexts {
         SSLContext sslContext = create(keyStoreLocation, pass, trustStoreLocation);
         String crlFile = props.getString(sslPrefix + ".crlFile", null);
         if (crlFile != null) {
+            revokedCNList = Collections.synchronizedList(readRevocationList(crlFile));
             sslContext = create(keyStoreLocation, pass, trustStoreLocation,
-                    readRevocationList(crlFile));
+                    revokedCNList);
         }
         Arrays.fill(pass, (char) 0);
         return sslContext;
