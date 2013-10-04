@@ -261,7 +261,7 @@ We can sign client certificates using our server certificate, which is then our 
 
 In this special case, we can use our keystore as our truststore, which we argue is a practice that should be prohibited ordinarily.
 
-Given the risk of a rogue certificate, actually we recommend using self-signed client certificates whenever possible, rather than the local CA presented here.
+We discuss the the risk of a rogue certificate, and so we recommend using self-signed client certificates whenever possible, rather than the local CA presented here.
 
 <h4>Furthermore</h4>
 
