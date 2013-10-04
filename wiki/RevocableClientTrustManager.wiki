@@ -56,6 +56,10 @@ public class RevocableClientTrustManager implements X509TrustManager {
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
+        if (!certs[0].getSubjectX500Principal().equals(
+                serverCertificate.getSubjectX500Principal())) {
+            throw new CertificateException("Server cert used as client cert");
+        }
         if (!certs[0].getIssuerX500Principal().equals(
                 serverCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
