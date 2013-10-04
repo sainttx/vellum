@@ -152,7 +152,9 @@ Certificate chain
    i:/OU=test/CN=ca
 }}}
 
-This demonstrates why the keystore requires a certificate chain, i.e. to advise the peer thereof during the SSL handshake.
+This demonstrates why the keystore requires a certificate chain, i.e. to advise the peer thereof during the SSL handshake. 
+
+Any certificate in the truststore is itself trusted, as well as any of its children. So the certificate chain must not be included in the truststore, otherwise we trust <i>any</i> children of those parents.
 
 
 <h4><tt>keytool</tt></h4>
