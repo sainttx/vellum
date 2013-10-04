@@ -143,7 +143,7 @@ where our server cert is signed by a local CA cert, which is by definition the s
 
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
 {{{
-$ openssl s_client -connect localhost:4446
+$ openssl s_client -connect localhost:4444
 
 Certificate chain
  0 s:/OU=test/CN=server
