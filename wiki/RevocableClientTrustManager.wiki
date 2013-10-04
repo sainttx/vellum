@@ -112,7 +112,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
     }
 }
 }}}
-where we find that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html><tt>!X509Certificate</tt></a> uses <tt>!BigInteger</tt> for the serial number.
+where we find that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html"><tt>!X509Certificate</tt></a> uses <tt>!BigInteger</tt> for the serial number.
 {{{
 public abstract class X509Certificate extends Certificate {
    ...
