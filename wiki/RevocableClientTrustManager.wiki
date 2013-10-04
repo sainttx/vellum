@@ -139,7 +139,7 @@ $ keytool -keystore server.trust.jks -list
 Your keystore contains 1 entry
 server, trustedCertEntry
 }}}
-where our server cert is signed by a local CA, which is by definition the self-signed root of its cert chain.
+where our server cert is signed by a local CA, which is by definition the self-signed root of its certificate chain.
 
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
 {{{
