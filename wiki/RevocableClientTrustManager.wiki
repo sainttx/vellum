@@ -115,6 +115,39 @@ public class RevocableClientTrustManager implements X509TrustManager {
 where we find that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a>.getSerialNumber()</tt> returns a <tt>!BigInteger</tt> for the serial number. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl.java</tt></a>.
 
 
+<h4>Certificate chain</h4>
+
+Naturally a <tt>SSLServerSocket</tt> is created using the <tt>SSLContext</tt> which is configured via a keystore and a truststore.
+
+{{{
+$ keytool -keystore server.jks -alias server -list -v
+Certificate chain length: 2
+Certificate[1]:
+Owner:  CN=server, OU=test
+Issuer: CN=ca, OU=test
+Certificate[2]:
+Owner:  CN=ca, OU=test
+Issuer: CN=ca, OU=test
+
+$ keytool -keystore server.trust.jks -list 
+Your keystore contains 1 entry
+server, trustedCertEntry
+}}}
+where our server cert is signed by a local CA, which is by definition the self-signed root of its cert chain.
+
+We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
+{{{
+$ openssl s_client -connect localhost:4446
+
+Certificate chain
+ 0 s:/OU=test/CN=server
+   i:/OU=test/CN=ca
+ 1 s:/OU=test/CN=ca
+   i:/OU=test/CN=ca
+}}}
+
+This demonstrates why the keystore requires a certificate chain, i.e. to advise the client thereof during the SSL handshake.
+
 
 <h4><tt>keytool</tt></h4>
 
@@ -218,7 +251,7 @@ Similarly, when using CA-signed server certs, the server keystore contains the C
 
 <h4>Conclusion</h4>
 
-We can sign client certificates using our server certificate, which is then our local CA root certificate. As such we should support certification revocation. So we introduce a custom <tt>!RevocableClientTrustManager</tt> to support a simple local revocation list of CNs. Naturally, this is only useful is if we can configure our server to use it. 
+We can sign client certificates using our server certificate, which is then our local CA root certificate. As such we should support certification revocation. So we introduce a custom <tt>!RevocableClientTrustManager</tt> to support a simple local revocation list of CNs. Naturally, this is only useful is if we can configure our server to use it.
 
 In this special case, we can use our keystore as our truststore, which is a practice that ordinarily should be prohibited, as argued above.
 
