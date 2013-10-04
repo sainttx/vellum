@@ -94,7 +94,7 @@ We see that <tt><a href="http://www.docjar.com/html/api/sun/security/tools/KeyTo
 }}}
 In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records in an SQL database.
 
-In that case, we might prefer to revoke certificates by its serial number, as follows.
+In that case, we might prefer to revoke certificates by their serial numbers, as follows.
 {{{
         if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
