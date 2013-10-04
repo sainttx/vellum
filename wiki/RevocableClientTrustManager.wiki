@@ -25,6 +25,7 @@ public class SSLContexts {
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         return sslContext;
     }
+}
 }}}
 Let's support local certificate revocation by means of a list of revoked CNs.
 {{{
