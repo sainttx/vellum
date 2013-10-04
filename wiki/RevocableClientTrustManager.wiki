@@ -137,12 +137,11 @@ Incidently, in a sequel article we will create keystores programmatically for ou
 Alternatively, we could export a CSR, and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.{{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
-We use Java7's keytool to sign the CSR.
+We use Java7's keytool to sign the CSR, using its new <tt>-gencert</tt> option, which is not available in earlier JRE's.
 {{{
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
 }}}
-Note that <tt>-gencert</tt> is not available in Java6's keytool.
 
 We inspect the cert using <tt>openssl</tt>.
 {{{
