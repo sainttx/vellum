@@ -112,7 +112,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
     }
 }
 }}}
-where we see that <tt>!X509Certificate</tt> uses <tt>!BigInteger</tt> for the serial number.
+where we find that <tt>!X509CertificateImpl</tt> uses <tt>!BigInteger</tt> for the serial number.
 
 <h4><tt>keytool</tt></h4>
 
