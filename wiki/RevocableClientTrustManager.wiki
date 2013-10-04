@@ -218,11 +218,11 @@ Similarly, when using CA-signed server certs, the server keystore contains the C
 
 <h4>Conclusion</h4>
 
-We can sign client certificates using our server certificate, which is then our local CA root certificate. We introduce a custom <tt>!RevocableClientTrustManager</tt> to support this scenario.
+We can sign client certificates using our server certificate, which is then our local CA root certificate. As such we should support certification revocation. So we introduce a custom <tt>!RevocableClientTrustManager</tt> to support a simple local revocation list of CNs. Naturally, this is only useful is if we can configure our server to use it. 
 
 In this special case, we can use our keystore as our truststore, which is a practice that ordinarily should be prohibited.
 
-However, given the risk of a rogue certificate, actually we recommend using self-signed client certificates whenever possible, rather than the local CA presented here.
+Given the risk of a rogue certificate, actually we recommend using self-signed client certificates whenever possible, rather than the local CA presented here.
 
 <h4>Furthermore</h4>
 
