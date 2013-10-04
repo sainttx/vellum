@@ -171,7 +171,7 @@ $ openssl x509 -text -in evanx.signed.pem | grep CN
         Subject: CN=evanx, OU=test
 }}}
 
-Since our keystore requires our cert chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
+Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
 {{{
 $ keytool -keystore evanx.jks -importcert -noprompt \
     -file server.pem -alias server 
@@ -183,9 +183,12 @@ $ keytool -keystore evanx.jks -importcert -noprompt \
 Enter keystore password: 
 Certificate reply was installed in keystore
 }}}
-Our client keystore can double up as our truststore since it contains the server cert as the root of its certificate chain. 
 
-Our server keystore can also double up as its truststore, since it contains its cert which signs our client certs, and a client cert is trusted by definition if it is signed by any certificate in the truststore. 
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+
+In this case, our client keystore can double up as our truststore since it happens to contain the server cert by virtue of its certificate chain, and naturally it must trust the server to which it wishes to connect. If the client cert is CA-signed, we must not use its keystore as its truststore, otherwise it would trust any server with a cert signed by that CA.
+
+Our server keystore can also double up as its truststore in this particular case, since it contains its cert which signs our client certs, and a client cert is trusted by definition if it is signed by any certificate in the truststore. 
 
 If our server cert is CA-signed, since the keystore must include its certificate chain, then this naturally includes the CA root cert. Therefore if the keystore is also used as the trustore, then the server would trust <i>any</i> cert signed by that CA.
 
