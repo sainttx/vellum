@@ -77,6 +77,8 @@ public class RevocableClientTrustManager implements X509TrustManager {
 }}}
 where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
 
+Note that we do not accept the server cert as a client cert, e.g. in case our server keystore has been compromised, and a rogue is using it to connect to our server.
+
 Alternatively we might prefer to revoke certificates by serial number, as follows.
 {{{
         if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
