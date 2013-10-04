@@ -96,11 +96,23 @@ In a later article, we might build a local CA management tool, which might use a
 
 In that case, we might prefer to revoke certificates by their serial numbers, and our trust manager would reject them as follows.
 {{{
+public class RevocableClientTrustManager implements X509TrustManager {
+    X509Certificate serverCertificate;
+    X509TrustManager delegate;
+    Collection<BigInteger> revokedSerialNumberList;
+    ...
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        ...
         if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
         }
+        delegate.checkClientTrusted(certs, authType);
+    }
+}
 }}}
-
+where we see that <tt>X509Certificate</tt> uses <tt>!BigInteger</tt> for the serial number.
 
 <h4><tt>keytool</tt></h4>
 
