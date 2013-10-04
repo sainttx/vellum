@@ -22,7 +22,7 @@ public class SimpleServer extends Thread {
             try {
                 new EnigmaThread(serverSocket.accept()).start();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn(e);
             }
             break;
         }
