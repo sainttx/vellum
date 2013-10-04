@@ -194,7 +194,7 @@ If our server cert is CA-signed, then since the keystore must include its key ce
 
 <h4>Client certificate management</h4>
 
-Clearly a rogue certificate with a duplicate CN, can impersonate a valid certificate with that same CN. So when issuing a client certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
+Clearly a certificate with a duplicate CN, impersonates the original certificate with that CN. So when issuing a client certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
 
 If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. In order to review access, we require a perfect record of all issued certificates. We might record our signed certs into a keystore file as follows.
 {{{
@@ -219,6 +219,8 @@ Similarly, when using CA-signed server certs, the server keystore contains the C
 <h4>Conclusion</h4>
 
 We can sign client certificates using our server certificate, which is then our local CA root certificate. We introduce a custom <tt>!RevocableClientTrustManager</tt> to support this scenario.
+
+In this special case, we can use our keystore as our truststore, which is a practice that ordinarily should be prohibited.
 
 <h4>Also see</h4>
 
