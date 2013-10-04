@@ -222,8 +222,12 @@ We can sign client certificates using our server certificate, which is then our 
 
 In this special case, we can use our keystore as our truststore, which is a practice that ordinarily should be prohibited.
 
-<h4>Also see</h4>
+However, given the risk of a rogue certificate, we recommend using self-signed client certificates whenever possible.
 
-We'll perform unit testing of <tt>!RevocableClientTrustManager</tt> in a follow-up article.
+<h4>Furthermore</h4>
 
-Also in this series on Java crypto: <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a>, <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a>.
+We'll perform unit testing of <tt>!RevocableClientTrustManager</tt> in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, a local CA server supporting standard CRLs, and perhaps even a web-based admin tool for those goodies.
+
+<h4>Other crypto</h4>
+
+Also relating to Java crypto in this blog, see <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a>, <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a>.
