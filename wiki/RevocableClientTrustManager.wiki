@@ -81,19 +81,20 @@ Note that we do not accept the server cert as a client cert, e.g. in case our se
 
 The collection of revoked certificates' identifiers might be read from a file or a database, and could be a synchronized collection that is updated externally.
 
-Alternatively we might prefer to revoke certificates by serial number, as follows.
-{{{
-        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate serial number revoked");
-        }
-}}}
-
 We note that <a href="http://www.docjar.com/html/api/sun/security/tools/KeyTool.java.html"><tt>keytool</tt></a> generates a random serial number as follows.
 {{{
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
             new java.util.Random().nextInt() & 0x7fffffff));
 }}}
 In a later article, we might build a web-based local CA management tool, which might use a sequence number for client certs which it generates programmatically and saves in an SQL database.
+
+In that case, we might prefer to revoke certificates by its serial number, as follows.
+{{{
+        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
+            throw new CertificateException("Certificate serial number revoked");
+        }
+}}}
+
 
 <h4><tt>keytool</tt></h4>
 
