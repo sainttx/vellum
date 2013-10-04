@@ -230,4 +230,4 @@ We'll perform unit testing of <tt>!RevocableClientTrustManager</tt> in a follow-
 
 <h4>Other crypto</h4>
 
-Also relating to Java crypto in this blog, see <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a>, and using <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a> for multi-factor autentication for your own site.
+Also relating to Java crypto in this blog, see <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a> for secure passwords, and using the <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a> mobile app for multi-factor authentication for your own website.
