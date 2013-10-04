@@ -188,15 +188,15 @@ In this case, our client keystore can double up as our truststore since it happe
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-Our server keystore can also double up as its truststore in this particular case, since it contains its cert which signs our client certs, and a client cert is trusted by definition if it is signed by any certificate in the truststore. 
+Our server keystore can also double up as its truststore in this particular case, since naturally it contains the self-signed server cert together with its private key, and our client certs' CA cert is this sole server cert.
 
-If our server cert is CA-signed, since the keystore must include its certificate chain, then this naturally includes the CA root cert. Therefore if the keystore is also used as the trustore, then the server would trust <i>any</i> cert signed by that CA.
+If our server cert is CA-signed, then since the keystore must include its key certificate chain, it will include the CA root cert. Therefore if the keystore is also used as the trustore, then the server would trust <i>any</i> client cert signed by that CA.
 
 <h4>Client certificate management</h4>
 
-Clearly a rogue certificate with a duplicate CN can impersonate a valid certificate. So when issuing a certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
+Clearly a rogue certificate with a duplicate CN, can impersonate a valid certificate with that same CN. So when issuing a client certificate, we must take care to ensure the uniqueness of the CN, and add the certificate, or at least its unique identifier, to a registry of some sort. 
 
-If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. In order to regularly review access, we require a perfect record of all issued certificates. We might record our signed certs into a keystore file as follows.
+If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. In order to review access, we require a perfect record of all issued certificates. We might record our signed certs into a keystore file as follows.
 {{{
 $ keytool -keystore server.issued.jks -importcert -alias evanx -file evanx.pem 
 Certificate was added to keystore
@@ -207,7 +207,7 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 <h4>Self-signed client certificates</h4>
 
-All told, given the risk of a rogue certificate, we recommend self-signed client certificates whenever possible, where these are explicitly imported into our server truststore. 
+All told, given the risk of a rogue certificate, we recommend using self-signed client certificates whenever possible, where these are explicitly imported into our server truststore, which can be reviewed. Any issued certificate which goes unrecorded, or is given a duplicate identifier, by mistake or on purpose, should be considered to be a rogue certificate, that has access under the radar.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
