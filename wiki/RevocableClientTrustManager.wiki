@@ -270,4 +270,4 @@ We'll perform unit testing of our custom trust manager in a follow-up article. T
 
 <h4>Other reading</h4>
 
-Also relating to Java crypto in this blog, see <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a> for secure passwords, and using the <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a> mobile app for multi-factor authentication for your own website.
+Also relating to Java crypto in this blog, see <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a> for secure passwords, and using the <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a> mobile app for multi-factor authentication by your own sites.
