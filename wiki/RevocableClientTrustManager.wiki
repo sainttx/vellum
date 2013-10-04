@@ -104,7 +104,7 @@ In that case, we might prefer to revoke certificates by their serial numbers, an
 
 <h4><tt>keytool</tt></h4>
 
-Let's use <tt>keytool</tt> to create our private SSL keystore for a client, say evanx.
+Naturally we use <tt>keytool</tt> to create our keystores and truststores. For example, we create a private SSL keystore for a client, say evanx, as follows.
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx, OU=test"
