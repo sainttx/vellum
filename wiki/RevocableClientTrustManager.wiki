@@ -124,7 +124,7 @@ Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/s
 
 <h4>Certificate chain</h4>
 
-Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore, e.g. as follows.
+Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore, e.g. <tt>server.jks</tt> and <tt>server.trust.jks</tt> as follows.
 {{{
 $ keytool -keystore server.jks -alias server -list -v
 Certificate chain length: 2
