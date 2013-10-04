@@ -120,7 +120,7 @@ public abstract class X509Certificate extends Certificate {
    ...
    public abstract BigInteger getSerialNumber();
 }}}
-Actually, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl.java</tt></a>.
+Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl.java</tt></a>.
 
 <h4>Certificate chain</h4>
 
@@ -194,7 +194,7 @@ Incidently, in a follow-up article we will create keystores programmatically for
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we could export a certificate signing request (CSR), and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.
+Alternatively, we might export a certificate signing request (CSR), and sign this with the server cert. In this case our server is a local CA, which must support certificate revocation e.g. using <tt>!RecovableClientTrustManager</tt>.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
