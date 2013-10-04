@@ -165,6 +165,8 @@ Naturally we use keytool to create our keystores and truststores. For example, w
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx, OU=test"
 </pre>
+where we specify a validity period of 365 days. 
+
 We export our certificate as follows.
 <pre>
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
