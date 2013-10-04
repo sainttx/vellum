@@ -184,9 +184,9 @@ Enter keystore password:
 Certificate reply was installed in keystore
 }}}
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 In this case, our client keystore can double up as our truststore since it happens to contain the server cert by virtue of its certificate chain, and naturally it must trust the server to which it wishes to connect. If the client cert is CA-signed, we must not use its keystore as its truststore, otherwise it would trust any server with a cert signed by that CA.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 Our server keystore can also double up as its truststore in this particular case, since it contains its cert which signs our client certs, and a client cert is trusted by definition if it is signed by any certificate in the truststore. 
 
