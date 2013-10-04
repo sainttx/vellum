@@ -93,7 +93,7 @@ The collection of revoked certificates' identifiers might be read from a file or
 
 <h4>Certificate serial numbers</h4>
 
-We see that <a href="http://www.docjar.com/html/api/sun/security/tools/KeyTool.java.html">KeyTool.java</a>, as used by the keytool command-line utility, generates a random serial number as follows.
+We see that <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html">KeyTool.java</a>, as used by the keytool command-line utility, generates a random serial number as follows.
 <pre>
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
             new java.util.Random().nextInt() & 0x7fffffff));
@@ -165,8 +165,6 @@ Naturally we use keytool to create our keystores and truststores. For example, w
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx, OU=test"
 </pre>
-where we specify a validity period of 365 days. 
-
 We export our certificate as follows.
 <pre>
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
@@ -207,7 +205,7 @@ We cut and paste the output PEM text into a CSR file, and use Java7's keytool to
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
 </pre>
-where we specify an unchanged DN and validity period for the signed certificate.
+where we specify the DN and validity for the certificate signed by our local CA.
 
 We can inspect the cert using openssl.
 <pre>
@@ -215,7 +213,6 @@ $ openssl x509 -text -in evanx.signed.pem | grep CN
         Issuer: CN=server, OU=test
         Subject: CN=evanx, OU=test
 </pre>
-
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
 <pre>
 $ keytool -keystore evanx.jks -importcert -noprompt \
