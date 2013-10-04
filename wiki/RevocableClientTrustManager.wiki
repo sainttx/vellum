@@ -87,7 +87,7 @@ The collection of revoked certificates' identifiers might be read from a file or
 
 <h4>Certificate serial numbers</h4>
 
-We see that <tt><a href="http://www.docjar.com/html/api/sun/security/tools/KeyTool.java.html">KeyTool.java</a></tt>, as used by the <tt>keytool</tt> command-line utility, generates a random serial number as follows.
+We see that <tt><a href="http://www.docjar.com/html/api/sun/security/tools/KeyTool.java.html">!KeyTool.java</a></tt>, as used by the <tt>keytool</tt> command-line utility, generates a random serial number as follows.
 {{{
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
             new java.util.Random().nextInt() & 0x7fffffff));
