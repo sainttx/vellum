@@ -23,6 +23,8 @@ package dualcontrol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
@@ -47,21 +49,26 @@ public class ClientThread extends Thread {
 
     @Override
     public void run() {
-        SSLSocket clientSocket = null;
         try {
-            Thread.sleep(500);
-            clientSocket = (SSLSocket) sslContext.getSocketFactory().
-                    createSocket("localhost", port);
-            DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-            dos.writeUTF("clienthello");
-            DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-            Assert.assertEquals("serverhello", dis.readUTF());
-            clientSocket.close();
+            connect(sslContext, host, port);
         } catch (Exception e) {
             exception = e;
-            Streams.close(clientSocket);
         }
     }
+    
+    static void connect(SSLContext context, String host, int port) 
+            throws GeneralSecurityException, IOException {
+        SSLSocket socket = (SSLSocket) context.getSocketFactory().createSocket(host, port);
+        try {
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("clienthello");
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            Assert.assertEquals("serverhello", dis.readUTF());
+        } finally {
+            socket.close();            
+        }
+    }
+    
     
     public Exception getException() {
         return exception;

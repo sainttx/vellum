@@ -23,6 +23,9 @@ package dualcontrol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.security.GeneralSecurityException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
@@ -46,28 +49,37 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
-        SSLServerSocket serverSocket = null;
-        SSLSocket clientSocket = null;
         try {
-            serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
-                    createServerSocket(port);
-            serverSocket.setNeedClientAuth(true);
-            clientSocket = (SSLSocket) serverSocket.accept();
-            DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-            Assert.assertEquals("clienthello", dis.readUTF());
-            DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-            dos.writeUTF("serverhello");
-            clientSocket.close();
-            serverSocket.close();
-            Thread.sleep(500);
+            accept(sslContext, port);
         } catch (Exception e) {
             exception = e;
-            Streams.close(clientSocket);
-            Streams.close(serverSocket);
+        }
+    }
+
+    static void accept(SSLContext sslContext, int port) throws Exception {
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(port);
+        try {
+            serverSocket.setNeedClientAuth(true);
+            handle(serverSocket.accept());
+        } finally {
+            serverSocket.close();
+            Thread.sleep(100);
+        }
+    }
+
+    static void handle(Socket socket) throws IOException {
+        try {
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            Assert.assertEquals("clienthello", dis.readUTF());
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("serverhello");
+        } finally {
+            socket.close();
         }
     }
 
     public Exception getException() {
         return exception;
-    }        
+    }
 }
