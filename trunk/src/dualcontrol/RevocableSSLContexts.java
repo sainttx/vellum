@@ -25,16 +25,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -46,10 +47,10 @@ import org.apache.log4j.Logger;
  *
  * @author evan.summers
  */
-public class RevocableSSLContextFactory {
+public class RevocableSSLContexts {
 
-    static Logger logger = Logger.getLogger(RevocableSSLContextFactory.class);
-    static List<String> revokedCNList; 
+    static Logger logger = Logger.getLogger(RevocableSSLContexts.class);
+    static Set<String> revokedNames; 
     
     public static SSLContext create(String sslPrefix, Properties properties,
             MockableConsole console) throws Exception {
@@ -68,9 +69,9 @@ public class RevocableSSLContextFactory {
         SSLContext sslContext = create(keyStoreLocation, pass, trustStoreLocation);
         String crlFile = props.getString(sslPrefix + ".crlFile", null);
         if (crlFile != null) {
-            revokedCNList = Collections.synchronizedList(readRevocationList(crlFile));
+            revokedNames = Collections.synchronizedSet(readRevokedCertNames(crlFile));
             sslContext = create(keyStoreLocation, pass, trustStoreLocation,
-                    revokedCNList);
+                    revokedNames);
         }
         Arrays.fill(pass, (char) 0);
         return sslContext;
@@ -105,34 +106,51 @@ public class RevocableSSLContextFactory {
 
     public static SSLContext create(String keyStoreLocation, char[] pass,
             String trustStoreLocation,
-            List<String> revocationList) throws Exception {
+            Set<String> revokedNames) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreLocation), pass);
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStoreLocation), pass);
-        return create(keyStore, pass, trustStore, revocationList);
+        return createRevokedNames(keyStore, pass, trustStore, revokedNames);
     }
 
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            List<String> revocationList) throws Exception {
-        return create(keyStore, keyPass, keyStore, revocationList);
+            Set<String> revokedNames) throws Exception {
+        return createRevokedNames(keyStore, keyPass, keyStore, revokedNames);
     }
 
-    public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, List<String> revocationList) throws Exception {
+    public static SSLContext createRevokedNames(KeyStore keyStore, char[] keyPass,
+            KeyStore trustStore, Set<String> revokedNames) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
                 getPrivateKeyCertificate(keyStore),
-                getX509TrustManager(trustStore),
-                revocationList);
+                getX509TrustManager(trustStore),                
+                revokedNames, new TreeSet());
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 new TrustManager[]{revocableTrustManager},
                 new SecureRandom());
         return sslContext;
     }
 
+    public static SSLContext createRevokedSerialNumbers(KeyStore keyStore, char[] keyPass,
+            KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) 
+            throws GeneralSecurityException {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPass);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        TrustManager revocableTrustManager = new RevocableClientTrustManager(
+                getPrivateKeyCertificate(keyStore),
+                getX509TrustManager(trustStore),
+                new TreeSet(),
+                revokedSerialNumbers);
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                new TrustManager[]{revocableTrustManager},
+                new SecureRandom());
+        return sslContext;
+    }
+    
     public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore, 
             String keyAlias) throws KeyStoreException {
         if (!keyStore.entryInstanceOf(keyAlias, KeyStore.PrivateKeyEntry.class)) {
@@ -163,9 +181,9 @@ public class RevocableSSLContextFactory {
         return count;
     }
 
-    private static List<String> readRevocationList(String crlFile)
+    private static Set<String> readRevokedCertNames(String crlFile)
             throws FileNotFoundException, IOException {
-        List<String> revocationList = new ArrayList();
+        Set<String> revocationList = new TreeSet();
         BufferedReader reader = new BufferedReader(new FileReader(crlFile));
         while (true) {
             String line = reader.readLine();
