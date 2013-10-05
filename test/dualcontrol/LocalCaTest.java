@@ -104,6 +104,7 @@ public class LocalCaTest {
     @Test
     public void test() throws Exception {
         init();
+        server.trust(server.cert);
         testRevocation(server.keyStore, server.trustStore, client.signedKeyStore, 
                 client.trustStore, client.cert);        
     }
