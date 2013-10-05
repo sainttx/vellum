@@ -55,6 +55,7 @@ Enter keystore password:
 Your keystore contains 1 entry
 server, trustedCertEntry
 }}}
+where our client certificates will be signed by the server certificate. Notice that the certificate chain of this trusted certificate is not installed in the truststore. 
 
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
 {{{
