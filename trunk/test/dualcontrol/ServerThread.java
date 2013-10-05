@@ -51,12 +51,8 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         try {
-            while (--count > 0) {
-                try {
-                    handle(serverSocket.accept());
-                } catch (Exception e) {
-                    errorMessage = e.getMessage();
-                }
+            while (count-- > 0) {
+                handle(serverSocket.accept());
             }
         } catch (Exception e) {
             errorMessage = e.getMessage();
