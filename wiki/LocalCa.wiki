@@ -61,7 +61,8 @@ Certificate chain
 
 This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root. 
 
-The server truststore contains trusted certificates to authenticate the client key certificate chain. {{{
+The server truststore contains trusted certificates to authenticate the client key certificate chain. 
+{{{
 $ keytool -keystore server.trust.jks -list 
 Enter keystore password: 
 Your keystore contains 1 entry
