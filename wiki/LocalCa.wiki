@@ -40,10 +40,10 @@ $ keytool -keystore server.jks -alias server -list -v
 Enter keystore password: 
 Certificate chain length: 2
 Certificate[1]:
-Owner:  CN=server, OU=test
+Owner: CN=server, OU=test
 Issuer: CN=ca, OU=test
 Certificate[2]:
-Owner:  CN=ca, OU=test
+Owner: CN=ca, OU=test
 Issuer: CN=ca, OU=test
 }}}
 where our CA cert is by definition the self-signed root of our certificate chain.
