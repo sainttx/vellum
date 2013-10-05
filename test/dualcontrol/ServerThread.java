@@ -28,6 +28,7 @@ import java.net.Socket;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import junit.framework.Assert;
+import org.apache.log4j.Logger;
 import vellum.util.Threads;
 
 /**
@@ -35,6 +36,7 @@ import vellum.util.Threads;
  * @author evan
  */
 public class ServerThread extends Thread {
+    final static Logger logger = Logger.getLogger(ClientThread.class);
 
     private int count;
     private String errorMessage = "";
@@ -55,6 +57,7 @@ public class ServerThread extends Thread {
                 handle(serverSocket.accept());
             }
         } catch (Exception e) {
+            logger.info(e.getMessage());
             errorMessage = e.getMessage();
         } finally {
             Streams.close(serverSocket);
