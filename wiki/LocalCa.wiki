@@ -10,7 +10,7 @@ In this article, we sign client certificates using our server certificate as a l
 
 <h4>Certificate chain</h4>
 
-Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore.
+Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore, e.g. as follows.
 
 {{{
 public class LocalCaTest {
@@ -37,6 +37,7 @@ public class LocalCaTest {
     }    
 }
 }}}
+where we create an SSL context and server socket, accept a connection, and test the I/O.
 
 The keystore must contain our asymmetric private key and its public key certificate. Moreover, it must contain the entire certificate chain of that key certificate right through to its root certificate. We list the certicate chain as follows.
 {{{
