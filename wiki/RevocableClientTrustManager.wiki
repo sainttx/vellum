@@ -34,7 +34,7 @@ public class LocalCaTest {
 }
 }}}
 
-The keystore must contain our asymmetric private key and its public key certificate. Actually, it must contain the entire certificate chain of that key certificate right through to its root certificate. 
+The keystore must contain our asymmetric private key and its public key certificate. Moreover, it must contain the entire certificate chain of that key certificate right through to its root certificate. 
 {{{
 $ keytool -keystore server.jks -list 
 Enter keystore password: 
