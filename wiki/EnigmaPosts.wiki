@@ -1,7 +1,7 @@
 
 These articles are drafted here, published on my blog, http://www.java.net/blogs/evanx
 
-[RevocableClientTrustManager Local CA] (October 2013)
+[LocalCa Local CA] (October 2013)
 
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
