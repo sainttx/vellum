@@ -130,11 +130,11 @@ Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, w
 $ keytool -keystore server.jks -alias server -list -v
 Certificate chain length: 2
 Certificate[1]:
-Owner:  CN=server
-Issuer: CN=ca
+Owner:  CN=server, OU=test
+Issuer: CN=ca, OU=test
 Certificate[2]:
-Owner:  CN=ca
-Issuer: CN=ca
+Owner:  CN=ca, OU=test
+Issuer: CN=ca, OU=test
 
 $ keytool -keystore server.trust.jks -list 
 Your keystore contains 1 entry
@@ -147,10 +147,10 @@ We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspe
 $ openssl s_client -connect localhost:4444
 
 Certificate chain
- 0 s:/CN=server
-   i:/CN=ca
- 1 s:/CN=ca
-   i:/CN=ca
+ 0 s:/OU=test/CN=server
+   i:/OU=test/CN=ca
+ 1 s:/OU=test/CN=ca
+   i:/OU=test/CN=ca
 }}}
 
 This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain for authentication, and stops as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert must <i>not</i> be stored in the truststore, otherwise we trust <i>any</i> children of the trusted cert's root. 
@@ -203,15 +203,15 @@ $ keytool -keystore evanx.jks -alias evanx -certreq
 We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its new <tt>-gencert</tt> option, which by the way is not available in earlier JRE's.
 {{{
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
-    -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem
+    -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
 }}}
 where we specify an unchanged DN and validity period for the newly signed certificate.
 
 We can inspect the cert using <tt>openssl</tt>.
 {{{
 $ openssl x509 -text -in evanx.signed.pem | grep CN
-        Issuer:  CN=server
-        Subject: CN=evanx
+        Issuer: CN=server, OU=test
+        Subject: CN=evanx, OU=test
 }}}
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
