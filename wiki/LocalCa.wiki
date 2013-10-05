@@ -20,7 +20,7 @@ public class LocalCaTest {
         SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(port);
-        serverSocket.setNeedClientAuth(false);
+        serverSocket.setNeedClientAuth(true);
         Socket socket = serverSocket.accept();
         try {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
@@ -167,7 +167,7 @@ Notice that we do not accept the server cert as a client cert. This is a precaut
 The set of revoked certificates' identifiers might be read from a file or a database. This could be a synchronized set that can be updated on the fly, and so enables a dynamic truststore.
 {{{
     private void testRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore, 
-            KeyStore clientKeyStore, KeyStore clientTrustStore, String clientAlias) 
+            KeyStore clientKeyStore, KeyStore clientTrustStore, String revokedAlias) 
             throws GeneralSecurityException {
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
         SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
@@ -176,7 +176,7 @@ The set of revoked certificates' identifiers might be read from a file or a data
         new ServerThread(serverSSLContext, port).start();
         Assert.assertTrue(testClientConnection(clientSSLContext));
         X509Certificate clientCertificate = (X509Certificate) 
-                clientKeyStore.getCertificate(clientAlias);
+                clientKeyStore.getCertificate(revokedAlias);
         revokedSerialNumbers.add(clientCertificate.getSerialNumber());
         Assert.assertFalse(testClientConnection(clientSSLContext));        
     }
