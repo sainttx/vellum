@@ -153,7 +153,7 @@ Certificate chain
    i:/OU=test/CN=ca
 }}}
 
-This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives chains for authentication, and stops as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert must <i>not</i> be stored in the truststore, otherwise we trust <i>any</i> children of the trusted cert's root. 
+This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain for authentication, and stops as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert must <i>not</i> be stored in the truststore, otherwise we trust <i>any</i> children of the trusted cert's root. 
 
 
 <h4><tt>keytool</tt></h4>
