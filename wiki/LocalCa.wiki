@@ -91,9 +91,7 @@ public class SSLContexts {
 }
 }}}
 
-Since we wish to support a local CA, we should enable local certificate revocation, in order to retain access control. 
-
-We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the serial number, that should be unique. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.
+Since we wish to support a local CA, we should enable local certificate revocation, in order to retain access control. We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the serial number, that should be unique. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.
 
 So we create an <tt>SSLContext</tt> with a set of revoked certificate serial numbers, as follows.
 {{{
