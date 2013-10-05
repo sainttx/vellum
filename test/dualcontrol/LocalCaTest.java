@@ -22,16 +22,24 @@
 package dualcontrol;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import sun.security.pkcs.PKCS10;
@@ -42,70 +50,126 @@ import sun.security.pkcs.PKCS10;
  */
 public class LocalCaTest {
 
-    static Logger logger = Logger.getLogger(LocalCaTest.class);
-    private int port = 4446;
+    private final static Logger logger = Logger.getLogger(LocalCaTest.class);
+    private final int port = 4446;
     private char[] pass = "test1234".toCharArray();
-    GenRsaPair caPair;
-    X509Certificate caCert;
-    KeyStore caTrustStore;
-    GenRsaPair serverPair;
-    X509Certificate serverCert;
-    KeyStore serverKeyStore;
-    SSLContext serverContext;
-    PKCS10 serverCertRequest;
-    GenRsaPair clientPair;
-    SSLContext clientContext;
-    KeyStore clientKeyStore;
-    X509Certificate clientCert;
-    KeyStore signedServerKeyStore;
-    KeyStore signedServerTrustStore;
-    X509Certificate signedServerCert;
-    SSLContext signedServerContext;
+    private SSLParams ca = new SSLParams("ca");
+    private SSLParams server = new SSLParams("server");
+    private SSLParams client = new SSLParams("client");
+            
+    class SSLParams {
+        String alias;
+        GenRsaPair pair;
+        KeyStore keyStore;
+        KeyStore trustStore;
+        SSLContext sslContext;
+        X509Certificate cert;
+        PKCS10 certRequest;
+        KeyStore signedKeyStore;
+        KeyStore signedTrustStore;
+        X509Certificate signedCert;
+        SSLContext signedContext;
+        
+        SSLParams(String alias) {
+            this.alias = alias;
+        }
+        
+        void init() throws Exception {
+            pair = new GenRsaPair();
+            pair.generate("CN=" + alias, new Date(), 365);
+            cert = pair.getCertificate();
+            keyStore = createKeyStore(alias, pair);
+            sslContext = SSLContexts.create(keyStore, pass, keyStore);
+            certRequest = pair.getCertRequest("CN=" + alias);
+        }
 
+        void sign(SSLParams signer) throws Exception {
+            signedCert = RsaSigner.signCert(signer.pair.getPrivateKey(),
+                    signer.pair.getCertificate(), certRequest, new Date(), 365, 1234);
+            signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
+                    signedCert, signer.cert);
+            signedContext = SSLContexts.create(signedKeyStore, pass,
+                    signer.trustStore);
+            signedTrustStore = createTrustStore(alias, signedCert);
+            signedKeyStore.store(createOutputStream(alias), pass);
+            signedTrustStore.store(createOutputStream(alias + ".trust"), pass);
+        }        
+    }
+    
     public LocalCaTest() {
     }
 
     @Test
     public void test() throws Exception {
-        caPair = new GenRsaPair();
-        caPair.generate("CN=ca, OU=test", new Date(), 365);
-        caCert = caPair.getCertificate();
-        caTrustStore = createTrustStore("ca", caCert);
-        serverPair = new GenRsaPair();
-        serverPair.generate("CN=server, OU=test", new Date(), 365);
-        serverCert = serverPair.getCertificate();
-        serverKeyStore = createKeyStore("server", serverPair);
-        serverContext = SSLContexts.create(serverKeyStore, pass, clientKeyStore);
-        serverCertRequest = serverPair.getCertRequest("CN=server, OU=test");
-        signedServerCert = RsaSigner.signCert(caPair.getPrivateKey(),
-                caPair.getCertificate(), serverCertRequest, new Date(), 365, 1234);
-        signedServerKeyStore = createKeyStore("server", serverPair.getPrivateKey(),
-                signedServerCert, caCert);
-        signedServerContext = SSLContexts.create(signedServerKeyStore, pass, caTrustStore);
-        signedServerTrustStore = createTrustStore("server", signedServerCert);
-        signedServerKeyStore.store(new FileOutputStream("/home/evans/tmp/server.jks"), pass);
-        signedServerTrustStore.store(new FileOutputStream("/home/evans/tmp/server.trust.jks"), pass);
-        SSLServerSocket serverSocket = (SSLServerSocket) signedServerContext.
+        init();
+        testRevocation(server.keyStore, server.trustStore, client.signedKeyStore, 
+                client.signedTrustStore, client.cert);
+        
+    }
+
+    private void init() throws Exception {
+        ca.init();
+        server.init();
+        server.sign(ca);
+        client.init();
+        client.sign(server);
+    }
+    private FileOutputStream createOutputStream(String alias) throws IOException {
+        return new FileOutputStream(File.createTempFile(alias, "jks"));
+    }
+
+    private void testRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore, 
+            KeyStore clientKeyStore, KeyStore clientTrustStore, 
+            X509Certificate revokedCert) throws GeneralSecurityException {
+        Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
+        SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
+                serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
+        SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
+        new ServerThread(serverSSLContext, port).start();
+        Assert.assertTrue(testClientConnection(clientSSLContext));
+        revokedSerialNumbers.add(revokedCert.getSerialNumber());
+        Assert.assertFalse(testClientConnection(clientSSLContext));        
+    }
+    
+    private boolean testClientConnection(SSLContext sslContext) {
+        try {
+            connect(sslContext, "localhost", port);
+            return true;
+        } catch (Exception e) {
+            logger.warn(e);
+            return false;
+        }
+    }
+    
+    private void accept(SSLContext sslContext, int port) 
+            throws GeneralSecurityException, IOException {
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(port);
-        serverSocket.setNeedClientAuth(false);
-        if (false) {
-            logger.info("accept");
-            Socket socket = serverSocket.accept();
+        serverSocket.setNeedClientAuth(true);
+        Socket socket = serverSocket.accept();
+        try {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
-            dis.read();
-            close(socket);
-            close(serverSocket);
+            Assert.assertEquals("clienthello", dis.readUTF());
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("serverhello");
+        } finally {
+            socket.close();
         }
     }
 
-    private void initClient() throws Exception {
-        clientPair = new GenRsaPair();
-        clientPair.generate("CN=evanx, OU=test", new Date(), 365);
-        clientKeyStore = createKeyStore("evanx", clientPair);
-        clientCert = (X509Certificate) clientKeyStore.getCertificate("evanx");
-        clientContext = SSLContexts.create(clientKeyStore, pass, serverKeyStore);
+    private void connect(SSLContext context, String host, int port) 
+            throws GeneralSecurityException, IOException {
+        SSLSocket socket = (SSLSocket) context.getSocketFactory().createSocket(host, port);
+        try {
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("clienthello");
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            Assert.assertEquals("serverhello", dis.readUTF());
+        } finally {
+            socket.close();            
+        }
     }
-
+    
     private KeyStore createKeyStore(String keyAlias, GenRsaPair keyPair) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
@@ -129,25 +193,5 @@ public class LocalCaTest {
         X509Certificate[] chain = new X509Certificate[] {signed, ca};
         keyStore.setKeyEntry(alias, privateKey, pass, chain);
         return keyStore;
-    }
-
-    public static void close(Socket socket) {
-        if (socket != null && !socket.isClosed()) {
-            try {
-                socket.close();
-            } catch (IOException ioe) {
-                logger.warn(ioe.getMessage());
-            }
-        }
-    }
-
-    public static void close(ServerSocket serverSocket) {
-        if (serverSocket != null && !serverSocket.isClosed()) {
-            try {
-                serverSocket.close();
-            } catch (IOException ioe) {
-                logger.warn(ioe.getMessage());
-            }
-        }
     }
 }

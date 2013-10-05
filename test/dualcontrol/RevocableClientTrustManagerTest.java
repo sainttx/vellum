@@ -29,10 +29,10 @@ import java.net.Socket;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
@@ -183,11 +183,11 @@ public class RevocableClientTrustManagerTest {
     
     private SSLContext createContext(KeyStore keyStore, String revokedName) 
             throws Exception {
-        List<String> revocationList = new ArrayList();
+        Set<String> revocationList = new TreeSet();
         if (revokedName != null) {
             revocationList.add(revokedName);
         }
-        return RevocableSSLContextFactory.create(keyStore, pass, revocationList);
+        return RevocableSSLContexts.create(keyStore, pass, revocationList);
     }
     
     private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)
