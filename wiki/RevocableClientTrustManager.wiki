@@ -192,7 +192,7 @@ $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
 Similarly, the server cert is imported into the clients' truststores.
 
-Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <tt>!KeyTool.java</tt>, and emulating the manual procedure.
+Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool</tt></a>, and emulating the manual procedure.
 
 <h4>Client certificate signing</h4>
 
