@@ -21,14 +21,10 @@
  */
 package dualcontrol;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -37,8 +33,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -106,7 +100,7 @@ public class LocalCaTest {
         init();
         server.trust(server.cert);
         testRevocation(server.keyStore, server.trustStore, client.signedKeyStore, 
-                client.trustStore, client.cert);        
+                client.trustStore, client.signedCert);
     }
 
     private void init() throws Exception {
@@ -125,25 +119,18 @@ public class LocalCaTest {
 
     private void testRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore, 
             KeyStore clientKeyStore, KeyStore clientTrustStore, 
-            X509Certificate revokedCert) throws GeneralSecurityException {
+            X509Certificate revokedCert) throws Exception {
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
         SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
                 serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
-        new ServerThread(serverSSLContext, port).start();
-        Assert.assertTrue(testClientConnection(clientSSLContext));
+        ServerThread serverThread = new ServerThread();
+        serverThread.start(serverSSLContext, port, 2);
+        Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
+        Assert.assertEquals("", serverThread.getErrorMessage());
         revokedSerialNumbers.add(revokedCert.getSerialNumber());
-        Assert.assertFalse(testClientConnection(clientSSLContext));        
-    }
-    
-    private boolean testClientConnection(SSLContext sslContext) {
-        try {
-            ClientThread.connect(sslContext, "localhost", port);
-            return true;
-        } catch (Exception e) {
-            logger.warn(e);
-            return false;
-        }
+        Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
+        Assert.assertEquals("", serverThread.getErrorMessage());
     }
     
     private KeyStore createKeyStore(String keyAlias, GenRsaPair keyPair) throws Exception {
@@ -164,7 +151,7 @@ public class LocalCaTest {
     private KeyStore createKeyStore(String alias, PrivateKey privateKey,
             X509Certificate signed, X509Certificate ca) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(null, null);        
+        keyStore.load(null, null);
         keyStore.setCertificateEntry("ca", ca);
         X509Certificate[] chain = new X509Certificate[] {signed, ca};
         keyStore.setKeyEntry(alias, privateKey, pass, chain);
