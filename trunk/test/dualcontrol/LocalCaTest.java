@@ -47,11 +47,11 @@ public class LocalCaTest {
     private final static Logger logger = Logger.getLogger(LocalCaTest.class);
     private final int port = 4446;
     private char[] pass = "test1234".toCharArray();
-    private SSLParams ca = new SSLParams("ca");
-    private SSLParams server = new SSLParams("server");
-    private SSLParams client = new SSLParams("client");
+    private SSLContextBuilder ca = new SSLContextBuilder("ca");
+    private SSLContextBuilder server = new SSLContextBuilder("server");
+    private SSLContextBuilder client = new SSLContextBuilder("client");
             
-    class SSLParams {
+    class SSLContextBuilder {
         String alias;
         GenRsaPair pair;
         KeyStore keyStore;
@@ -63,7 +63,7 @@ public class LocalCaTest {
         X509Certificate signedCert;
         SSLContext signedContext;
         
-        SSLParams(String alias) {
+        SSLContextBuilder(String alias) {
             this.alias = alias;
         }
         
@@ -75,7 +75,7 @@ public class LocalCaTest {
             certRequest = pair.getCertRequest("CN=" + alias);
         }
 
-        void sign(SSLParams signer, int serialNumber) throws Exception {
+        void sign(SSLContextBuilder signer, int serialNumber) throws Exception {
             signedCert = RsaSigner.signCert(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365, 
                     serialNumber);
@@ -99,10 +99,10 @@ public class LocalCaTest {
     private void init() throws Exception {
         ca.init();
         server.init();
-        server.sign(ca, 1);
+        server.sign(ca, 1000);
         server.trust(ca.cert);
         client.init();
-        client.sign(server, 2);
+        client.sign(server, 1001);
         client.trust(server.cert);
     }
         
@@ -123,14 +123,17 @@ public class LocalCaTest {
                 serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
-        serverThread.start(serverSSLContext, port, 2);
-        Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
-        Assert.assertEquals("", serverThread.getErrorMessage());
-        revokedSerialNumbers.add(new BigInteger("" + serialNumber));
-        logger.debug(String.format("revoked %s %d", revokedSerialNumbers.hashCode(),
-                revokedSerialNumbers.size()));
-        Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
-        Assert.assertEquals("", serverThread.getErrorMessage());
+        try {
+            serverThread.start(serverSSLContext, port, 2);
+            Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
+            Assert.assertEquals("", serverThread.getErrorMessage());
+            revokedSerialNumbers.add(new BigInteger("" + serialNumber));
+            logger.debug("revokedSerialNumbers: " + revokedSerialNumbers);
+            Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
+            Assert.assertEquals("", serverThread.getErrorMessage());
+        } finally {
+            serverThread.close();
+        }
     }
     
     private FileOutputStream createOutputStream(String alias) throws IOException {

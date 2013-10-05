@@ -21,6 +21,7 @@
  */
 package dualcontrol;
 
+import static dualcontrol.ServerThread.logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -28,12 +29,14 @@ import java.security.GeneralSecurityException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan
  */
 public class ClientThread extends Thread {
+    final static Logger logger = Logger.getLogger(ClientThread.class);
     private static final String HOST = "localhost";
 
     private final SSLContext sslContext;
@@ -68,6 +71,7 @@ public class ClientThread extends Thread {
             Assert.assertEquals("serverhello", dis.readUTF());
             return "";
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return e.getMessage();
         } finally {
             socket.close();            
