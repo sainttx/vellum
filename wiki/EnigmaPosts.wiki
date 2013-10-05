@@ -1,13 +1,15 @@
 
 These articles are drafted here, published on my blog, http://www.java.net/blogs/evanx
 
+[RevocableClientTrustManager Local CA] (October 2013)
+
 [GoogleAuthenticator Google Authenticator] (November 2012)
 
 Generating and signing browser certs (planned) - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellum/crypto/rsa/PKCS12KeyStores.java"><tt>PKCS12KeyStores.java</tt></a>
 
 == Dual Control quadrilogy == 
 
-[DualControl Dual Control Key Management] (September 2013)
+[DualControl Dual Control Key Management] (October 2013)
 
 Dual Control Enroll - preview <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlEnroll.java"><tt>!DualControlEnroll.java</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/src/dualcontrol/DualControlRevoke.java"><tt>!DualControlRevoke.java</tt></a>
 
