@@ -66,7 +66,6 @@ public class LocalCaTest {
         X509Certificate cert;
         PKCS10 certRequest;
         KeyStore signedKeyStore;
-        KeyStore signedTrustStore;
         X509Certificate signedCert;
         SSLContext signedContext;
         
@@ -79,7 +78,6 @@ public class LocalCaTest {
             pair.generate("CN=" + alias, new Date(), 365);
             cert = pair.getCertificate();
             keyStore = createKeyStore(alias, pair);
-            sslContext = SSLContexts.create(keyStore, pass, keyStore);
             certRequest = pair.getCertRequest("CN=" + alias);
         }
 
@@ -88,11 +86,15 @@ public class LocalCaTest {
                     signer.pair.getCertificate(), certRequest, new Date(), 365, 1234);
             signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
                     signedCert, signer.cert);
-            signedContext = SSLContexts.create(signedKeyStore, pass,
-                    signer.trustStore);
-            signedTrustStore = createTrustStore(alias, signedCert);
             signedKeyStore.store(createOutputStream(alias), pass);
-            signedTrustStore.store(createOutputStream(alias + ".trust"), pass);
+        }
+        
+        void trust(X509Certificate trustedCert) throws Exception {
+            trustStore = createTrustStore(alias, trustedCert);
+            trustStore.store(createOutputStream(alias + ".trust"), pass);
+            sslContext = SSLContexts.create(keyStore, pass, trustStore);
+            signedContext = SSLContexts.create(signedKeyStore, pass,
+                    trustStore);
         }        
     }
     
@@ -103,17 +105,19 @@ public class LocalCaTest {
     public void test() throws Exception {
         init();
         testRevocation(server.keyStore, server.trustStore, client.signedKeyStore, 
-                client.signedTrustStore, client.cert);
-        
+                client.trustStore, client.cert);        
     }
 
     private void init() throws Exception {
         ca.init();
         server.init();
         server.sign(ca);
+        server.trust(ca.cert);
         client.init();
         client.sign(server);
+        client.trust(server.cert);
     }
+    
     private FileOutputStream createOutputStream(String alias) throws IOException {
         return new FileOutputStream(File.createTempFile(alias, "jks"));
     }
@@ -133,40 +137,11 @@ public class LocalCaTest {
     
     private boolean testClientConnection(SSLContext sslContext) {
         try {
-            connect(sslContext, "localhost", port);
+            ClientThread.connect(sslContext, "localhost", port);
             return true;
         } catch (Exception e) {
             logger.warn(e);
             return false;
-        }
-    }
-    
-    private void accept(SSLContext sslContext, int port) 
-            throws GeneralSecurityException, IOException {
-        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
-                getServerSocketFactory().createServerSocket(port);
-        serverSocket.setNeedClientAuth(true);
-        Socket socket = serverSocket.accept();
-        try {
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-            Assert.assertEquals("clienthello", dis.readUTF());
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            dos.writeUTF("serverhello");
-        } finally {
-            socket.close();
-        }
-    }
-
-    private void connect(SSLContext context, String host, int port) 
-            throws GeneralSecurityException, IOException {
-        SSLSocket socket = (SSLSocket) context.getSocketFactory().createSocket(host, port);
-        try {
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            dos.writeUTF("clienthello");
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-            Assert.assertEquals("serverhello", dis.readUTF());
-        } finally {
-            socket.close();            
         }
     }
     
