@@ -95,14 +95,6 @@ Since we wish to support a local CA, we should enable local certificate revocati
 
 We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the serial number, that should be unique. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.
 
-<a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> command-line utility, generates a random serial number as follows.
-{{{
-        info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
-            new java.util.Random().nextInt() & 0x7fffffff));
-}}}
-
-In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records them into an SQL database.
-
 So we create an <tt>SSLContext</tt> with a set of revoked certificate serial numbers, as follows.
 {{{
 public class RevocableSSLContexts {
@@ -174,6 +166,14 @@ The set of revoked certificates' identifiers might be read from a file or a data
     }
 }}}
 where we revoke the client certificate after the server has been started, and test that the connection then fails. 
+
+Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> command-line utility, generates a random serial number as follows.
+{{{
+        info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
+            new java.util.Random().nextInt() & 0x7fffffff));
+}}}
+
+In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records them into an SQL database.
 
 
 <h4><tt>keytool</tt></h4>
