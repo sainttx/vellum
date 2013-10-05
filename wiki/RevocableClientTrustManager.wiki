@@ -111,7 +111,7 @@ We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509C
 
 In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records them into an SQL database.
 
-We create an <tt>SSLContext</tt> with a set of revoked certificate serial numbers, as follows.
+So we create an <tt>SSLContext</tt> with a set of revoked certificate serial numbers, as follows.
 {{{
 public class RevocableSSLContexts {
     ...
