@@ -21,6 +21,8 @@
 package dualcontrol;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.SecureRandom;
@@ -62,13 +64,13 @@ public class SSLContexts {
     }
 
     public static SSLContext create(String keyStoreLocation, char[] pass,
-            String trustStoreLocation) throws Exception {
+            String trustStoreLocation) throws GeneralSecurityException, IOException {
         return create(keyStoreLocation, pass, pass, trustStoreLocation, pass);
     }
 
     public static SSLContext create(String keyStoreLocation,
-            char[] keyStorePassword, char[] keyPassword,
-            String trustStoreLocation, char[] trustStorePassword) throws Exception {
+            char[] keyStorePassword, char[] keyPassword, String trustStoreLocation, 
+            char[] trustStorePassword) throws GeneralSecurityException, IOException {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
         KeyStore trustStore = KeyStore.getInstance("JKS");
@@ -77,7 +79,7 @@ public class SSLContexts {
     }
 
     public static SSLContext create(KeyStore keyStore, char[] keyPassword,
-            KeyStore trustStore) throws Exception {
+            KeyStore trustStore) throws GeneralSecurityException {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPassword);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");

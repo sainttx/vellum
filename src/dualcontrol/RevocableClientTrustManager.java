@@ -26,6 +26,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -42,14 +43,16 @@ public class RevocableClientTrustManager implements X509TrustManager {
 
     X509Certificate serverCertificate;
     X509TrustManager delegate;
-    Collection<String> revokedCNList;
-    Collection<BigInteger> revokedSerialNumberList;
+    Set<String> revokedCommonNames;
+    Set<BigInteger> revokedSerialNumbers;
     
     public RevocableClientTrustManager(X509Certificate serverCertificate, 
-            X509TrustManager delegate, Collection<String> revocationList) {
+            X509TrustManager delegate, Set<String> revokedCommonNames,
+            Set<BigInteger> revokedSerialNumbers) {
         this.delegate = delegate;
         this.serverCertificate = serverCertificate;
-        this.revokedCNList = revocationList;
+        this.revokedCommonNames = revokedCommonNames;
+        this.revokedSerialNumbers = revokedSerialNumbers;
     }
     
     @Override
@@ -74,12 +77,12 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revokedCNList != null && 
-                revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
+        if (revokedCommonNames != null && 
+                revokedCommonNames.contains(getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
-        if (revokedSerialNumberList != null && 
-                revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
+        if (revokedSerialNumbers != null && 
+                revokedSerialNumbers.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
         }
         delegate.checkClientTrusted(certs, authType);
