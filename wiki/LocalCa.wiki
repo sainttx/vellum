@@ -148,22 +148,26 @@ Notice that we do not accept the server cert as a client cert. This is a precaut
 
 The set of revoked certificates' identifiers might be read from a file or a database. This could be a synchronized set that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
 {{{
-    private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore, 
+    private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore, 
             int serialNumber) throws Exception {
-        logger.info("testRevoke: " + serialNumber);
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
         SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
                 serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
-        serverThread.start(serverSSLContext, port, 2);
-        Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
-        Assert.assertEquals("", serverThread.getErrorMessage());
-        revokedSerialNumbers.add(new BigInteger("" + serialNumber));
-        clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
-        Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
-        Assert.assertEquals("", serverThread.getErrorMessage());
+        try {
+            serverThread.start(serverSSLContext, port, 2);
+            Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
+            Assert.assertEquals("", serverThread.getErrorMessage());
+            revokedSerialNumbers.add(new BigInteger("" + serialNumber));
+            clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
+            ClientThread.connect(clientSSLContext, port);
+            Assert.assertTrue(serverThread.getErrorMessage().
+                    contains("Certificate serial number revoked"));
+        } finally {
+            serverThread.close();
+        }
     }
 }}}
 where we create a concurrent set for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. Incidently, we find that the client session is cached for the SSL context, and create a new <tt>clientSSLContext</tt> instance to force re-authentication by the server.
