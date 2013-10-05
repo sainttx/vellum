@@ -68,7 +68,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
             throw new CertificateException("Invalid cert chain length");
         }
         logger.debug(String.format(
-                "checkClientTrusted revoked %d %d, %s [%s], issuer [%s], root [%s]", 
+                "checkClientTrusted: revoked %s %d, %s [%s], issuer [%s], root [%s]", 
                 revokedSerialNumbers.hashCode(),
                 revokedSerialNumbers.size(),
                 certs[0].getSerialNumber(),
