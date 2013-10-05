@@ -128,6 +128,7 @@ Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/s
 Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore, e.g. <tt>server.jks</tt> and <tt>server.trust.jks</tt> as follows.
 {{{
 $ keytool -keystore server.jks -alias server -list -v
+Enter keystore password: 
 Certificate chain length: 2
 Certificate[1]:
 Owner:  CN=server, OU=test
@@ -137,6 +138,7 @@ Owner:  CN=ca, OU=test
 Issuer: CN=ca, OU=test
 
 $ keytool -keystore server.trust.jks -list 
+Enter keystore password: 
 Your keystore contains 1 entry
 server, trustedCertEntry
 }}}
