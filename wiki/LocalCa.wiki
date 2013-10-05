@@ -15,22 +15,26 @@ Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, w
 {{{
 public class LocalCaTest {
     ...
-    private void accept(KeyStore keyStore, char[] keyPassword, KeyStore trustStore, 
+    static void acceptSingle(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
             int port) throws GeneralSecurityException, IOException {
         SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(port);
-        serverSocket.setNeedClientAuth(true);
-        Socket socket = serverSocket.accept();
         try {
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-            Assert.assertEquals("clienthello", dis.readUTF());
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            dos.writeUTF("serverhello");
+            serverSocket.setNeedClientAuth(true);
+            Socket socket = serverSocket.accept();
+            try {
+                DataInputStream dis = new DataInputStream(socket.getInputStream());
+                Assert.assertEquals("clienthello", dis.readUTF());
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                dos.writeUTF("serverhello");
+            } finally {
+                socket.close();
+            }
         } finally {
-            socket.close();
+            serverSocket.close();
         }
-    }
+    }    
 }
 }}}
 
