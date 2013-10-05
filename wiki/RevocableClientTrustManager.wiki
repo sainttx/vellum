@@ -158,7 +158,7 @@ This demonstrates why the keystore requires a certificate chain, i.e. to send to
 
 <h4><tt>keytool</tt></h4>
 
-Naturally we use <tt>keytool</tt> to create our keystores and truststores. For example, we create a private SSL keystore for a client, say evanx, as follows.
+Naturally we use <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> to create our keystores and truststores. For example, we create a private SSL keystore for a client, say evanx, as follows.
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx, OU=test"
