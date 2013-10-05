@@ -25,12 +25,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.security.GeneralSecurityException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
-import vellum.util.Streams;
+import vellum.util.Threads;
 
 /**
  *
@@ -38,33 +36,33 @@ import vellum.util.Streams;
  */
 public class ServerThread extends Thread {
 
-    private final SSLContext sslContext;
-    private final int port;
-    private Exception exception;
+    private int count;
+    private String errorMessage = "";
+    private SSLServerSocket serverSocket; 
 
-    public ServerThread(SSLContext sslContext, int port) {
-        this.sslContext = sslContext;
-        this.port = port;
+    public void start(SSLContext sslContext, int port, int count) throws IOException {
+        this.count = count;
+        serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
+                createServerSocket(port);
+        serverSocket.setNeedClientAuth(true);
+        start();
     }
-
+    
     @Override
     public void run() {
         try {
-            accept(sslContext, port);
+            while (--count > 0) {
+                try {
+                    handle(serverSocket.accept());
+                } catch (Exception e) {
+                    errorMessage = e.getMessage();
+                }
+            }
         } catch (Exception e) {
-            exception = e;
-        }
-    }
-
-    static void accept(SSLContext sslContext, int port) throws Exception {
-        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
-                getServerSocketFactory().createServerSocket(port);
-        try {
-            serverSocket.setNeedClientAuth(true);
-            handle(serverSocket.accept());
+            errorMessage = e.getMessage();
         } finally {
-            serverSocket.close();
-            Thread.sleep(100);
+            Streams.close(serverSocket);
+            Threads.sleep(100);
         }
     }
 
@@ -79,7 +77,11 @@ public class ServerThread extends Thread {
         }
     }
 
-    public Exception getException() {
-        return exception;
+    public String getErrorMessage() {
+        return errorMessage;
+    }    
+    
+    public void close() {
+        Streams.close(serverSocket);
     }
 }

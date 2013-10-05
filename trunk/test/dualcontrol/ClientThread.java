@@ -28,13 +28,13 @@ import java.security.GeneralSecurityException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
-import vellum.util.Streams;
 
 /**
  *
  * @author evan
  */
 public class ClientThread extends Thread {
+    private static final String HOST = "localhost";
 
     private final SSLContext sslContext;
     private final int port;
@@ -50,20 +50,24 @@ public class ClientThread extends Thread {
     @Override
     public void run() {
         try {
-            connect(sslContext, host, port);
+            connect(sslContext, port);
         } catch (Exception e) {
             exception = e;
         }
     }
     
-    static void connect(SSLContext context, String host, int port) 
+    static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
-        SSLSocket socket = (SSLSocket) context.getSocketFactory().createSocket(host, port);
+        SSLSocket socket = (SSLSocket) context.getSocketFactory().
+                createSocket(HOST, port);
         try {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF("clienthello");
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             Assert.assertEquals("serverhello", dis.readUTF());
+            return "";
+        } catch (Exception e) {
+            return e.getMessage();
         } finally {
             socket.close();            
         }
