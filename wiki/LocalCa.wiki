@@ -34,16 +34,7 @@ public class LocalCaTest {
 }
 }}}
 
-The keystore must contain our asymmetric private key and its public key certificate. Moreover, it must contain the entire certificate chain of that key certificate right through to its root certificate. 
-{{{
-$ keytool -keystore server.jks -list 
-Enter keystore password: 
-Your keystore contains 1 entry
-server, trustedCertEntry
-ca, trustedCertEntry
-}}}
-
-We list the certicate chain as follows.
+The keystore must contain our asymmetric private key and its public key certificate. Moreover, it must contain the entire certificate chain of that key certificate right through to its root certificate. We list the certicate chain as follows.
 {{{
 $ keytool -keystore server.jks -alias server -list -v
 Enter keystore password: 
