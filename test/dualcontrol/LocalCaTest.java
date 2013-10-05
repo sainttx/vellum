@@ -21,11 +21,11 @@
  */
 package dualcontrol;
 
+import static dualcontrol.RevocableClientTrustManager.logger;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -75,9 +75,10 @@ public class LocalCaTest {
             certRequest = pair.getCertRequest("CN=" + alias);
         }
 
-        void sign(SSLParams signer) throws Exception {
+        void sign(SSLParams signer, int serialNumber) throws Exception {
             signedCert = RsaSigner.signCert(signer.pair.getPrivateKey(),
-                    signer.pair.getCertificate(), certRequest, new Date(), 365, 1234);
+                    signer.pair.getCertificate(), certRequest, new Date(), 365, 
+                    serialNumber);
             signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
                     signedCert, signer.cert);
             signedKeyStore.store(createOutputStream(alias), pass);
@@ -95,31 +96,28 @@ public class LocalCaTest {
     public LocalCaTest() {
     }
 
+    private void init() throws Exception {
+        ca.init();
+        server.init();
+        server.sign(ca, 1);
+        server.trust(ca.cert);
+        client.init();
+        client.sign(server, 2);
+        client.trust(server.cert);
+    }
+        
     @Test
     public void test() throws Exception {
         init();
         server.trust(server.cert);
-        testRevocation(server.keyStore, server.trustStore, client.signedKeyStore, 
-                client.trustStore, client.signedCert);
+        testDynamicRevocation(server.keyStore, server.trustStore, client.signedKeyStore, 
+                client.trustStore, 2);
     }
 
-    private void init() throws Exception {
-        ca.init();
-        server.init();
-        server.sign(ca);
-        server.trust(ca.cert);
-        client.init();
-        client.sign(server);
-        client.trust(server.cert);
-    }
-    
-    private FileOutputStream createOutputStream(String alias) throws IOException {
-        return new FileOutputStream(File.createTempFile(alias, "jks"));
-    }
-
-    private void testRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore, 
+    private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore, 
             KeyStore clientKeyStore, KeyStore clientTrustStore, 
-            X509Certificate revokedCert) throws Exception {
+            int serialNumber) throws Exception {
+        logger.info("testRevoke: " + serialNumber);
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
         SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
                 serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
@@ -128,11 +126,17 @@ public class LocalCaTest {
         serverThread.start(serverSSLContext, port, 2);
         Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
         Assert.assertEquals("", serverThread.getErrorMessage());
-        revokedSerialNumbers.add(revokedCert.getSerialNumber());
+        revokedSerialNumbers.add(new BigInteger("" + serialNumber));
+        logger.debug(String.format("revoked %s %d", revokedSerialNumbers.hashCode(),
+                revokedSerialNumbers.size()));
         Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
         Assert.assertEquals("", serverThread.getErrorMessage());
     }
     
+    private FileOutputStream createOutputStream(String alias) throws IOException {
+        return new FileOutputStream(File.createTempFile(alias, "jks"));
+    }
+
     private KeyStore createKeyStore(String keyAlias, GenRsaPair keyPair) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
