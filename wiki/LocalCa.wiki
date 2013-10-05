@@ -48,7 +48,7 @@ Issuer: CN=ca, OU=test
 }}}
 where our CA cert is by definition the self-signed root of our certificate chain.
 
-The truststore contains the peer certificates that we trust, disregarding their certificate chains. So in contrast to the keystore, it must <i>not</i> contain certificate chains!
+The truststore contains the peer certificates that we trust, disregarding their certificate chains. So in contrast to the keystore, it must not contain certificate chains.
 {{{
 $ keytool -keystore server.trust.jks -list 
 Enter keystore password: 
