@@ -134,7 +134,7 @@ public class RevocableSSLContexts {
 where we initialise a custom <tt>!RevocableTrustManager</tt> with our server cert, and a set of revoked certificates' serial numbers.
 {{{
 public class RevocableTrustManager implements X509TrustManager {
-    X509Certificate parentCertificate;
+    X509Certificate serverCertificate;
     X509TrustManager delegate;
     Set<BigInteger> revokedSerialNumbers;
     ...
@@ -145,16 +145,16 @@ public class RevocableTrustManager implements X509TrustManager {
             throw new CertificateException("Invalid cert chain length");
         }
         if (!certs[0].getSubjectX500Principal().equals(
-                parentCertificate.getSubjectX500Principal())) {
+                serverCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
         if (certs[0].getSubjectX500Principal().equals(
-                parentCertificate.getSubjectX500Principal())) {
+                serverCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Certificate is parent certificate");
         }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
-                parentCertificate.getPublicKey().getEncoded())) {
-            throw new CertificateException("Issuer certificate not matching");
+                serverCertificate.getPublicKey().getEncoded())) {
+            throw new CertificateException("Issuer public key invalid");
         }
         if (revokedSerialNumbers.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
