@@ -23,9 +23,7 @@ package localca;
 
 import vellumtest.util.Invoker;
 import vellumtest.util.Exec;
-import dualcontrol.GenRsaPair;
-import localca.SSLContexts;
-import localca.RevocableSSLContexts;
+import vellum.crypto.rsa.GenRsaPair;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -83,7 +81,7 @@ public class LocalCaTest {
         }
 
         void sign(SSLEndPoint signer, int serialNumber) throws Exception {
-            signedCert = RsaSigner.signCert(signer.pair.getPrivateKey(),
+            signedCert = Certificates.sign(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
                     serialNumber);
             signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
