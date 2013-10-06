@@ -65,11 +65,6 @@ public class RevocableClientTrustManager implements X509TrustManager {
         if (certs.length != 2) {
             throw new CertificateException("Invalid cert chain length");
         }
-        logger.debug("revokedSerialNumbers {}", revokedSerialNumbers);
-        logger.debug("cert: {}", Args.format(
-                    certs[0].getSerialNumber(),
-                    certs[0].getSubjectDN().getName(), certs[0].getIssuerDN().getName(),
-                    certs[1].getSubjectDN().getName()));
         if (!certs[0].getIssuerX500Principal().equals(
                 parentCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
@@ -101,6 +96,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
             throws CertificateException {
         logger.debug("checkServerTrusted {}", certs[0].getSubjectDN().getName());
         checkTrusted(certs);
+        logger.debug("checkServerTrusted delegate");
         delegate.checkServerTrusted(certs, authType);
     }            
 }

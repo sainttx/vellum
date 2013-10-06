@@ -81,10 +81,10 @@ public class RevocableSSLContexts {
         keyStore.load(new FileInputStream(keyStoreLocation), pass);
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStoreLocation), pass);
-        return createRevokedNames(keyStore, pass, trustStore, revokedNames);
+        return createRevocableNames(keyStore, pass, trustStore, revokedNames);
     }
 
-    public static SSLContext createRevokedNames(KeyStore keyStore, char[] keyPass,
+    public static SSLContext createRevocableNames(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore, Set<String> revokedNames) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
@@ -99,7 +99,7 @@ public class RevocableSSLContexts {
         return sslContext;
     }
 
-    public static SSLContext createRevokedSerialNumbers(KeyStore keyStore, char[] keyPass,
+    public static SSLContext createRevocableSerialNumbers(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) 
             throws GeneralSecurityException {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
