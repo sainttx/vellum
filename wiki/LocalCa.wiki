@@ -289,9 +289,9 @@ Certificate reply was installed in keystore
 
 In this case, our client keystore can double up as our truststore since it happens to contain the server cert by virtue of its certificate chain, and naturally it must trust the server to which it wishes to connect. If the client cert is CA-signed, we must not use its keystore as its truststore, otherwise it would trust any server with a cert signed by that CA, since the CA certificate must be in the keystore as the root of the key certificate chain.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 Our server keystore can also double up as its truststore in this particular case, since naturally it contains the self-signed server cert (paired with its private key), and our client certs' CA cert is in fact this server cert.
+
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 If our server cert is CA-signed, then since the keystore must include its key certificate chain, it will include the CA root cert. Therefore if the keystore is misused as the trustore, then the server would trust <i>any</i> client cert signed by that CA.
 
@@ -321,19 +321,19 @@ As a precaution, we might use a restrictive client trust manager, implemented as
 {{{
 public class ExclusiveClientTrustManager implements X509TrustManager {
     X509TrustManager delegate;
-    Map<String, X509Certificate> clientCertificateMap = new HashMap();
+    Map<String, X509Certificate> certificateMap = new HashMap();
     
     public ExclusiveClientTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
         this.delegate = KeyStores.getX509TrustManager(trustStore);
         for (String alias: Collections.list(trustStore.aliases())) {
-            clientCertificateMap.put(alias, (X509Certificate) 
+            certificateMap.put(alias, (X509Certificate) 
                     trustStore.getCertificate(alias));
         }
     }
     ...
 }}}
-where we build a map of our trusted certificates, and check these as follows.
+where we build a map of the certificates in our truststore, and check these as follows.
 {{{    
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
@@ -342,7 +342,7 @@ where we build a map of our trusted certificates, and check these as follows.
         if (certs.length != 1) {
             throw new CertificateException("Invalid cert chain length");
         }
-        X509Certificate trustedCertificate = clientCertificateMap.get(
+        X509Certificate trustedCertificate = certificateMap.get(
                 getCN(certs[0].getSubjectDN()));
         if (trustedCertificate == null) {
             throw new CertificateException("Untrusted client certificate");            
@@ -354,13 +354,13 @@ where we build a map of our trusted certificates, and check these as follows.
         delegate.checkClientTrusted(certs, authType);
     }
 }}}
-where the client certificate i.e. the first cert in the chain, must be in our truststore.
-
-<img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
+where we only accept our self-signed client certificates i.e. the first cert in the chain.
 
 <h4>Conclusion</h4>
 
 We can sign client certificates using our server certificate, which is then our local CA root certificate. As such we should support certificate revocation. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our server to use it!
+
+<img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 In this special case, we can use our keystore as our truststore, which we argue is a practice that should be prohibited ordinarily.
 
