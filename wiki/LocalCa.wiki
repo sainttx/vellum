@@ -190,7 +190,7 @@ The set of revoked certificates' identifiers might be read from a file or a data
 }}}
 where we create a concurrent <tt>Set</tt> for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the client session is cached for the SSL context, and so recreate the <tt>clientSSLContext</tt> instance in our test above. This forces re-authentication by the server, so our trust manager is invoked and rejects the newly revoked certificate.
+Incidently, we find that the client session is cached for the SSL context, and so we recreate the <tt>clientSSLContext</tt> instance in our test above. This forces re-authentication by the server, so our trust manager is invoked and rejects the newly revoked certificate.
 
 We connect to the server socket as follows.
 {{{
