@@ -316,8 +316,7 @@ Note that when using self-signed client certs (or CA-signed server certs), the s
 
 Similarly, when using CA-signed server certs, the server keystore contains the CA root key, and so must not be used as the truststore. Otherwise any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
 
-As a precaution, we might use a restrictive client trust manager, implemented as follows.
-
+As a precaution, we might use an exclusive client trust manager, implemented as follows.
 {{{
 public class ExclusiveClientTrustManager implements X509TrustManager {
     X509TrustManager delegate;
@@ -335,10 +334,8 @@ public class ExclusiveClientTrustManager implements X509TrustManager {
 }}}
 where we build a map of the certificates in our truststore, and check these as follows.
 {{{    
-    @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+    private void checkTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
-        logger.debug("checkClientTrusted {}", certs[0].getSubjectDN().getName());
         if (certs.length != 1) {
             throw new CertificateException("Invalid cert chain length");
         }
@@ -351,11 +348,17 @@ where we build a map of the certificates in our truststore, and check these as f
                 trustedCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid client certificate");
         }
+    }
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        logger.debug("checkClientTrusted {}", certs[0].getSubjectDN().getName());
+        checkTrusted(certs, authType);
         delegate.checkClientTrusted(certs, authType);
     }
 }}}
-
-where we only accept our self-signed client certificates i.e. the first cert in the chain.
+where we only accept our self-signed client certificates i.e. the first cert in the chain sent by the peer.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
@@ -371,6 +374,11 @@ We discuss the risk of rogue certificates, and recommend using self-signed clien
 
 We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, a local CA server supporting standard CRLs, and perhaps even a web-based admin tool for these goodies.
 
+<h4>Resources</h4>
+
+You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellumdemo/localca"><tt>src/localca</tt></a> package, and <a href="https://code.google.com/p/vellum/source/browse/trunk/test/vellumdemo/localca"><tt>test/localca</tt></a>.
+
 <h4>Other reading</h4>
 
 Also relating to Java crypto in this blog: <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a> for secure passwords; and leveraging the <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a> mobile app for multi-factor authentication for your own sites.
+
