@@ -159,7 +159,7 @@ public class RevocableTrustManager implements X509TrustManager {
     }
 }
 }}}
-where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure.
+where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure, to validate the certificate chain, expiry dates and what-not.
 
 Notice that we do not accept the server cert as a client cert. This is a precaution in case our server keystore has been compromised, and a rogue is using it to connect to our server.
 
