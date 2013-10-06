@@ -187,7 +187,9 @@ public class RevocableClientTrustManagerTest {
         if (revokedName != null) {
             revocationList.add(revokedName);
         }
-        return RevocableSSLContexts.create(keyStore, pass, revocationList);
+        KeyStore trustStore = keyStore;
+        return RevocableSSLContexts.createRevokedNames(keyStore, pass, trustStore, 
+                revocationList);
     }
     
     private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)

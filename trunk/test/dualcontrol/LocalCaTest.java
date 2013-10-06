@@ -48,11 +48,11 @@ public class LocalCaTest {
     private final static Logger logger = Logger.getLogger(LocalCaTest.class);
     private final int port = 4446;
     private char[] pass = "test1234".toCharArray();
-    private SSLContextBuilder ca = new SSLContextBuilder("ca");
-    private SSLContextBuilder server = new SSLContextBuilder("server");
-    private SSLContextBuilder client = new SSLContextBuilder("client");
+    private SSLEndPoint ca = new SSLEndPoint("ca");
+    private SSLEndPoint server = new SSLEndPoint("server");
+    private SSLEndPoint client = new SSLEndPoint("client");
 
-    class SSLContextBuilder {
+    class SSLEndPoint {
 
         String alias;
         GenRsaPair pair;
@@ -65,7 +65,7 @@ public class LocalCaTest {
         X509Certificate signedCert;
         SSLContext signedContext;
 
-        SSLContextBuilder(String alias) {
+        SSLEndPoint(String alias) {
             this.alias = alias;
         }
 
@@ -77,7 +77,7 @@ public class LocalCaTest {
             certRequest = pair.getCertRequest("CN=" + alias);
         }
 
-        void sign(SSLContextBuilder signer, int serialNumber) throws Exception {
+        void sign(SSLEndPoint signer, int serialNumber) throws Exception {
             signedCert = RsaSigner.signCert(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
                     serialNumber);
@@ -101,9 +101,9 @@ public class LocalCaTest {
     private void init() throws Exception {
         ca.init();
         server.init();
+        client.init();
         server.sign(ca, 1000);
         server.trust(server.cert);
-        client.init();
         client.sign(server, 1001);
         client.trust(server.cert);
     }
@@ -111,13 +111,35 @@ public class LocalCaTest {
     @Test
     public void test() throws Exception {
         init();
-        server.trust(server.cert);
-        testDynamicRevocation(server.keyStore, server.trustStore, client.signedKeyStore,
-                client.trustStore, 1001);
-        testDynamicRevocation(server.keyStore, server.trustStore, client.signedKeyStore,
-                client.trustStore, 1001);
+        server.trust(client.cert);
+        testExclusive(server.keyStore, server.trustStore, 
+                client.signedKeyStore, client.trustStore,
+                "");
     }
-
+   
+    //@Test
+    public void testDynamicRevocation() throws Exception {
+        init();
+        testDynamicRevocation(server.keyStore, server.trustStore, 
+                client.signedKeyStore, client.trustStore, 1001);
+    }
+    
+    private void testExclusive(KeyStore serverKeyStore, KeyStore serverTrustStore,
+            KeyStore clientKeyStore, KeyStore clientTrustStore,
+            String expectedServerErrorMessage) throws Exception {        
+        SSLContext serverSSLContext = SSLContexts.create(
+                serverKeyStore, pass, serverTrustStore);
+        SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
+        ServerThread serverThread = new ServerThread();
+        try {
+            serverThread.start(serverSSLContext, port, 1);
+            Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
+            Assert.assertEquals(expectedServerErrorMessage, serverThread.getErrorMessage());
+        } finally {
+            serverThread.close();
+        }
+    }
+    
     private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
             int serialNumber) throws Exception {        
@@ -182,10 +204,10 @@ public class LocalCaTest {
         } finally {
             serverSocket.close();
         }
-    }    
+    }
 
     //@Test
-    public void testMain() throws Exception {
+    public void testOpenssl() throws Exception {
         System.setProperty("Xjavax.net.debug", "ssl:trustmanager");
         init();
         new Invoker(new Object() {
@@ -197,9 +219,9 @@ public class LocalCaTest {
     }
     
     
-    public static void main(String[] args) throws Exception {
+    public static void main0(String[] args) throws Exception {
         try {
-            new LocalCaTest().testMain();
+            new LocalCaTest().testOpenssl();
         } catch (Exception e) {
             logger.warn("", e);
         }
