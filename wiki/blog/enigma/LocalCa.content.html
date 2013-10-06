@@ -15,19 +15,24 @@ public class SSLContexts {
     }
 }
 </pre>
-Let's support local certificate revocation by means of a list of revoked CNs.
+
+Since we wish to support a local CA, we should enable local certificate revocation, in order to retain access control. 
+
+We see that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">X509Certificate</a> returns a BigInteger for the serial number, that should be unique. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html">X509CertImpl</a>.
+
+So we create an SSLContext with a set of revoked certificate serial numbers, as follows.
 <pre>
 public class RevocableSSLContexts {
     ...
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, List<String> revokedCNList) throws Exception {
+            KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableClientTrustManager(
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
-                revokedCNList);
+                revokedList);
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 new TrustManager[]{revocableTrustManager},
                 new SecureRandom());
@@ -35,12 +40,12 @@ public class RevocableSSLContexts {
     }
 }
 </pre>
-where we initialise a custom RevocableClientTrustManager with our server cert, and a collection of revoked certificates' CNs.
+where we initialise a custom RevocableClientTrustManager with our server cert, and a set of revoked certificates' serial numbers.
 <pre>
 public class RevocableClientTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
     X509TrustManager delegate;
-    Collection<String> revokedCNList;
+    Set<BigInteger> revokedSerialNumbers;
     ...
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
@@ -57,8 +62,8 @@ public class RevocableClientTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
-        if (revokedCNList.contains(getCN(certs[0].getSubjectDN()))) {
-            throw new CertificateException("Certificate CN revoked");
+        if (revokedSerialNumbers.contains(certs[0].getSerialNumber())) {
+            throw new CertificateException("Certificate serial number revoked");
         }
         delegate.checkClientTrusted(certs, authType);
     }
@@ -68,48 +73,32 @@ where we check that the client certificate is signed by our server certificate, 
 
 Notice that we do not accept the server cert as a client cert. This is a precaution in case our server keystore has been compromised, and a rogue is using it to connect to our server.
 
-The collection of revoked certificates' identifiers might be read from a file or a database. This could be a synchronized list that can be updated on the fly, and so enables a dynamic truststore.
+The set of revoked certificates' identifiers might be read from a file or a database. This could be a synchronized set that can be updated on the fly, and so enables a dynamic truststore.
 <pre>
-        revokedCNList = Collections.synchronizedList(readRevocationList(crlFile));
-        SSLContext sslContext = RevocableSSLContexts.create(keyStore, pass, trustStore, 
-                revokedCNList);
-        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
-                getServerSocketFactory().createServerSocket(port);
+    private void testRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore, 
+            KeyStore clientKeyStore, KeyStore clientTrustStore, String revokedAlias) 
+            throws GeneralSecurityException {
+        Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
+        SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
+                serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
+        SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
+        new ServerThread(serverSSLContext, port).start();
+        Assert.assertTrue(testClientConnection(clientSSLContext));
+        X509Certificate clientCertificate = (X509Certificate) 
+                clientKeyStore.getCertificate(revokedAlias);
+        revokedSerialNumbers.add(clientCertificate.getSerialNumber());
+        Assert.assertFalse(testClientConnection(clientSSLContext));        
+    }
 </pre>
+where we revoke the client certificate after the server has been started, and test that the connection then fails. 
 
-
-<h4>Certificate serial numbers</h4>
-
-We see that <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html">KeyTool.java</a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html">keytool</a> command-line utility, generates a random serial number as follows.
+Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html">KeyTool.java</a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html">keytool</a> command-line utility, generates a random serial number as follows.
 <pre>
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
             new java.util.Random().nextInt() & 0x7fffffff));
 </pre>
-In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records them into an SQL database. In this case, we might revoke certificates by their serial numbers.
-<pre>
-public class RevocableClientTrustManager implements X509TrustManager {
-    X509Certificate serverCertificate;
-    X509TrustManager delegate;
-    Collection<BigInteger> revokedSerialNumberList;
-    ...
-    @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
-            throws CertificateException {
-        ...
-        if (revokedSerialNumberList.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate serial number revoked");
-        }
-        delegate.checkClientTrusted(certs, authType);
-    }
-}
-</pre>
-where <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">X509Certificate</a>.getSerialNumber() returns a BigInteger.
-<pre>
-public abstract class X509Certificate extends Certificate {
-   ...
-   public abstract BigInteger getSerialNumber();
-</pre>
-Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html">X509CertImpl</a>.
+
+In a later article, we might build a local CA management tool, which might use a sequence number for client certs which it generates programmatically and records them into an SQL database.
 
 
 <h4>keytool</h4>

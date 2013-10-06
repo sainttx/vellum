@@ -163,6 +163,15 @@ where we check that the client certificate is signed by our server certificate, 
 
 Notice that we do not accept the server cert as a client cert. This is a precaution in case our server keystore has been compromised, and a rogue is using it to connect to our server.
 
+Since we use this trust manager on the server rather than a client, we do not expect its <tt>checkServerTrusted()</tt> method to be invoked.
+{{{
+    @Override
+    public void checkServerTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        throw new CertificateException("Server authentication not supported");
+    }    
+}}}
+
 <h4>Revoked certificates</h4>
 
 The set of revoked certificates' identifiers might be read from a file or a database. This could be a <tt>synchronized</tt> <tt>Set</tt> that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
