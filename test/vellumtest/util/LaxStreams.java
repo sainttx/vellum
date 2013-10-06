@@ -19,24 +19,19 @@
  under the License.  
        
  */
-package localca;
+package vellumtest.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import org.apache.log4j.Logger;
-import vellum.exception.Exceptions;
-import vellum.exception.SizeRuntimeException;
 
 /**
  *
  * @author evan
  */
-public class Streams {
-    private final static Logger logger = Logger.getLogger(Streams.class);
+public class LaxStreams {
+    private final static Logger logger = Logger.getLogger(LaxStreams.class);
     
     public static void close(Socket socket) {
         if (socket != null && !socket.isClosed()) {
@@ -56,26 +51,5 @@ public class Streams {
                 logger.warn(ioe.getMessage());
             }
         }
-    }
-    
-    public static String readString(InputStream stream, long capacity) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder builder = new StringBuilder();
-        while (true) {
-            try {
-                String line = reader.readLine();
-                if (line == null) {
-                    return builder.toString();
-                }
-                builder.append(line);
-                builder.append("\n");
-                if (capacity > 0 && builder.length() > capacity) {
-                    throw new SizeRuntimeException(builder.length());
-                }
-            } catch (Exception e) {
-                throw Exceptions.newRuntimeException(e);
-            }
-        }
-    }
-    
+    }       
 }

@@ -21,6 +21,7 @@
  */
 package localca;
 
+import vellumtest.util.LaxStreams;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class ServerThread extends Thread {
                 }
             }
         } finally {
-            Streams.close(serverSocket);
+            LaxStreams.close(serverSocket);
             Threads.sleep(0);
         }
     }
@@ -86,6 +87,6 @@ public class ServerThread extends Thread {
     }
     
     public void close() {
-        Streams.close(serverSocket);
+        LaxStreams.close(serverSocket);
     }
 }
