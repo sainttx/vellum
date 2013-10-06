@@ -37,7 +37,7 @@ public class LocalCaTest {
 }}}
 where we create an SSL context and server socket, and accept a client connection.
 
-The keystore must contain our asymmetric private key and its public key certificate. Moreover, it must contain the entire certificate chain of that key certificate right through to its root certificate. We list the certicate chain as follows.
+The keystore must contain our asymmetric private key, which is paired with its public key certificate. Moreover, it must contain the entire certificate chain of that key certificate right through to its root certificate. We list the certicate chain as follows.
 {{{
 $ keytool -keystore server.jks -alias server -list -v
 Enter keystore password: 
