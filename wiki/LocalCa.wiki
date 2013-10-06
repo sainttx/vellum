@@ -43,11 +43,11 @@ $ keytool -keystore server.jks -alias server -list -v
 Enter keystore password: 
 Certificate chain length: 2
 Certificate[1]:
-Owner: CN=server, OU=test
-Issuer: CN=ca, OU=test
+Owner: CN=server
+Issuer: CN=ca
 Certificate[2]:
-Owner: CN=ca, OU=test
-Issuer: CN=ca, OU=test
+Owner: CN=ca
+Issuer: CN=ca
 }}}
 where our CA cert is by definition the self-signed root of our certificate chain.
 
@@ -56,10 +56,13 @@ We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspe
 $ openssl s_client -connect localhost:4444
 
 Certificate chain
- 0 s:/OU=test/CN=server
-   i:/OU=test/CN=ca
- 1 s:/OU=test/CN=ca
-   i:/OU=test/CN=ca
+ 0 s:/CN=server
+   i:/CN=ca
+ 1 s:/CN=ca
+   i:/CN=ca
+...
+Acceptable client certificate CA names
+/CN=server
 }}}
 
 This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root. 
@@ -189,7 +192,7 @@ In a later article, we might build a local CA management tool, which might use a
 Naturally we use <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> to create our keystores and truststores. For example, we create a private SSL keystore for a client, say evanx, as follows.
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
-    -dname "CN=evanx, OU=test"
+    -dname "CN=evanx"
 }}}
 where we specify a validity period of 365 days.
  
@@ -205,11 +208,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1380030508 (0x5241982c)
     Signature Algorithm: sha1WithRSAEncryption
-        Issuer: CN=evanx, OU=test
+        Issuer: CN=evanx
         Validity
             Not Before: Sep 24 13:48:28 2013 GMT
             Not After : Sep 24 13:48:28 2014 GMT
-        Subject: CN=evanx, OU=test
+        Subject: CN=evanx
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -231,15 +234,15 @@ $ keytool -keystore evanx.jks -alias evanx -certreq
 We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its new <tt>-gencert</tt> option, which by the way is not available in earlier JRE's.
 {{{
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
-    -dname "CN=evanx, OU=test" -infile evanx.csr -outfile evanx.signed.pem
+    -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem
 }}}
 where we specify an unchanged DN and validity period for the newly signed certificate.
 
 We can inspect the cert using <tt>openssl</tt>.
 {{{
 $ openssl x509 -text -in evanx.signed.pem | grep CN
-        Issuer: CN=server, OU=test
-        Subject: CN=evanx, OU=test
+        Issuer: CN=server
+        Subject: CN=evanx
 }}}
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
