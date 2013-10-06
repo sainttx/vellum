@@ -367,15 +367,8 @@ where we build a map of the certificates in our truststore, and check these as f
             throw new CertificateException("Invalid client certificate");
         }
     }
-
-    @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
-            throws CertificateException {
-        checkTrusted(certs, authType);
-        delegate.checkClientTrusted(certs, authType);
-    }
 }}}
-where we only accept our self-signed client certificates i.e. the first cert in the chain sent by the peer.
+where we check that the first cert in the chain sent by the peer, is contained in our map.
 
 <h4>Conclusion</h4>
 
