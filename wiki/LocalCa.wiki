@@ -49,7 +49,7 @@ Certificate[2]:
 Owner: CN=ca
 Issuer: CN=ca
 }}}
-where our CA cert is by definition the self-signed root of our certificate chain.
+where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
 
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
 {{{
