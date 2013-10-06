@@ -358,9 +358,9 @@ where we only accept our self-signed client certificates i.e. the first cert in 
 
 <h4>Conclusion</h4>
 
-We can sign client certificates using our server certificate, which is then our local CA root certificate. As such we should support certificate revocation. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our server to use it!
-
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
+
+We can sign client certificates using our server certificate, which is then our local CA root certificate. As such we should support certificate revocation. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our server to use it!
 
 In this special case, we can use our keystore as our truststore, which we argue is a practice that should be prohibited ordinarily.
 
