@@ -376,7 +376,7 @@ We'll delve into the unit testing of our custom trust manager in a follow-up art
 
 <h4>Resources</h4>
 
-You can browse the code for this exercise on <a href="https://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Flocalca">code.google.com/vellum</a>.
+You can browse the code for this exercise on <a href="https://code.google.com/p/vellum">code.google.com/vellum</a>.
 
 <h4>Other reading</h4>
 
