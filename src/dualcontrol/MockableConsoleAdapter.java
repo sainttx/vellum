@@ -18,24 +18,38 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package localca;
+package dualcontrol;
 
-import dualcontrol.*;
-import java.io.PrintWriter;
+import java.io.Console;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
-public class SystemConsole implements MockableConsole {
+public class MockableConsoleAdapter implements MockableConsole {
+    static Logger logger = Logger.getLogger(MockableConsoleAdapter.class);
+    Console console; 
     
-    @Override
-    public char[] readPassword(String prompt, Object ... args) {
-        return System.console().readPassword(prompt, args);
+    public MockableConsoleAdapter(Console console) {
+        this.console = console;
     }
     
     @Override
+    public char[] readPassword(String prompt, Object ... args) {
+        if (console == null) {
+            logger.warn("No console available: " + String.format(prompt, args));
+            return new char[0];
+        }
+        return console.readPassword(prompt, args);
+    }    
+    
+    @Override
     public void println(String message) {
-        System.console().writer().println(message);
+        if (console == null) {
+            logger.warn("No console available: " + message);
+        } else {
+            console.writer().println(message);
+        }
     }
 }

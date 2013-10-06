@@ -20,9 +20,7 @@
  */
 package dualcontrol;
 
-import localca.MockableConsoleAdapter;
 import localca.SSLContexts;
-import localca.MockableConsole;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.util.Arrays;

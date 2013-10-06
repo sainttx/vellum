@@ -20,9 +20,7 @@
  */
 package dualcontrol;
 
-import localca.MockableConsoleAdapter;
 import localca.SSLContexts;
-import localca.MockableConsole;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;

@@ -28,6 +28,7 @@ import java.security.Signature;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.naming.InvalidNameException;
@@ -58,18 +59,28 @@ import vellum.util.Strings;
 public class Certificates {
     public static final String LOCAL_DNAME = 
             "CN=localhost, OU=local, O=local, L=local, S=local, C=local";
-    
+
     public static String formatDname(String cn, String ou, String o, String l, 
             String s, String c) {
-        cn = Strings.coalesce(cn, "unknown");
-        ou = Strings.coalesce(ou, "unknown");
-        o = Strings.coalesce(o, "unknown");
-        l = Strings.coalesce(l, "unknown");
-        s = Strings.coalesce(s, "unknown");
-        c = Strings.coalesce(c, "unknown");
-        return String.format("CN=%s, OU=%s, O=%s, L=%s, S=%s, C=%s", cn, ou, o, l, s, c);
+        StringBuilder builder = new StringBuilder();
+        appendf(builder, "", "cn=%s", cn);
+        appendf(builder, "", "ou=%s", ou);
+        appendf(builder, "", "o=%s", o);
+        appendf(builder, "", "l=%s", l);
+        appendf(builder, "", "s=%s", s);
+        appendf(builder, "", "c=%s", c);
+        return builder.toString();
     }
 
+    public static void appendf(StringBuilder builder, String delimiter, String format, Object arg) {
+        if (arg != null) {
+            if (builder.length() > 0) {
+                builder.append(delimiter);
+            }
+            builder.append(String.format(format, arg));
+        }
+    }
+    
     public static String getCommonName(String subject) {
         try {
             return new X500Name(subject).getCommonName();
@@ -160,5 +171,15 @@ public class Certificates {
             throw new CertificateException(e.getMessage());
         }
     }    
+
+    public static boolean equals(X509Certificate cert, X509Certificate other) {
+        if (cert.getSubjectDN().equals(other.getSubjectDN())) {
+            if (Arrays.equals(cert.getPublicKey().getEncoded(),
+                    other.getPublicKey().getEncoded())) {
+                return true;
+            }
+        }
+        return false;
+    }
     
 }

@@ -20,6 +20,7 @@
  */
 package localca;
 
+import dualcontrol.MockableConsole;
 import dualcontrol.ExtendedProperties;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -89,7 +90,7 @@ public class RevocableSSLContexts {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        TrustManager revocableTrustManager = new RevocableClientTrustManager(
+        TrustManager revocableTrustManager = new RevocableTrustManager(
                 KeyStores.getPrivateKeyCertificate(keyStore),
                 KeyStores.getX509TrustManager(trustStore),                
                 revokedNames, new TreeSet());
@@ -105,7 +106,7 @@ public class RevocableSSLContexts {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        TrustManager revocableTrustManager = new RevocableClientTrustManager(
+        TrustManager revocableTrustManager = new RevocableTrustManager(
                 KeyStores.getPrivateKeyCertificate(keyStore),
                 KeyStores.getX509TrustManager(trustStore),
                 new TreeSet(),

@@ -20,8 +20,6 @@
  */
 package dualcontrol;
 
-import localca.SystemConsole;
-import localca.MockableConsole;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
