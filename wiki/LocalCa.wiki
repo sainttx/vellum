@@ -206,7 +206,7 @@ public class LocalCaTest {
             serverThread.join(1000);
         }
     }
-}
+    ...
 }}}
 where we create a concurrent <tt>Set</tt> for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
