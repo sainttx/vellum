@@ -28,5 +28,5 @@ public class DualControlRuntimeException extends RuntimeException {
 
     public DualControlRuntimeException(String message) {
         super(message);
-    }    
+    }
 }

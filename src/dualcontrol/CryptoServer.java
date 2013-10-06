@@ -74,7 +74,7 @@ public class CryptoServer {
                 close(socket);
             }
             if (count > 0 && --count == 0) break;
-        }    
+        }
     }
     
     private static void close(Socket socket) {

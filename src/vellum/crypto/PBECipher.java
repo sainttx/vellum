@@ -69,7 +69,7 @@ public final class PBECipher implements VellumCipher {
         Cipher cipher = Cipher.getInstance(CIPHER_TRANS);
         cipher.init(Cipher.ENCRYPT_MODE, pbeKey, new IvParameterSpec(iv));
         return cipher.doFinal(bytes);
-    }        
+    }    
 
     @Override
     public byte[] decrypt(byte[] bytes, byte[] iv) throws GeneralSecurityException {

@@ -86,5 +86,5 @@ public class DataSourceConfig {
 
     public Integer getPoolSize() {
         return poolSize;
-    }     
+    } 
 }

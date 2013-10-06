@@ -257,7 +257,7 @@ public class Lists {
         set = new HashSet(set);
         set.removeAll(other);
         return set.size() < size;
-    }       
+    }   
 
     public static boolean containsArgs(Object value, Object ... args) {
         for (Object arg : args) {

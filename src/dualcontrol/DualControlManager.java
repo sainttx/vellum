@@ -111,7 +111,7 @@ public class DualControlManager {
     public void clear() {
         for (char[] password : dualMap.values()) {
             Arrays.fill(password, (char) 0);
-        }        
+        }    
     }
     
     public static char[] combineSplitPassword(char[] password, char[] other) {
@@ -218,5 +218,5 @@ public class DualControlManager {
             }
         }
         throw new InvalidNameException(dname);
-    }    
+    }
 }

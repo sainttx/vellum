@@ -110,7 +110,7 @@ public class DualControlEnroll {
                         new KeyStore.PasswordProtection(dualPassword);
                 keyStore.setEntry(alias, entry, prot);
             }
-        }    
+        }
     }
     
     SecretKey getKey() throws Exception {

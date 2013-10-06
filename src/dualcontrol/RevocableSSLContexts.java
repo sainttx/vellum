@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
@@ -39,8 +37,6 @@ import java.util.TreeSet;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -129,7 +125,7 @@ public class RevocableSSLContexts {
                 return revocationList;
             }
             revocationList.add(line.trim());
-        }        
+        }    
     }
 
     static Set<BigInteger> readRevokedSerialNumbers(String crlFile)
@@ -142,6 +138,6 @@ public class RevocableSSLContexts {
                 return revocationList;
             }
             revocationList.add(new BigInteger(line.trim()));
-        }        
+        }    
     }
 }

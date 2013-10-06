@@ -49,8 +49,8 @@ public class FileServer {
         } else {
             new FileServer(InetAddress.getByName(args[0]), Integer.parseInt(args[1]), 
                     Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[4], args[5]).call();
-        }    
-    }    
+        }
+    }
 
     public FileServer(InetAddress localAddress, int port, int backlog, int count, 
             String remoteHostAddress, String fileName) {
@@ -80,6 +80,6 @@ public class FileServer {
             }
             socket.close();
             if (count > 0 && --count == 0) break;
-        }    
+        }
     }
 }
