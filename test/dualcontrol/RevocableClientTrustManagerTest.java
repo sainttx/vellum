@@ -21,8 +21,8 @@
  */
 package dualcontrol;
 
-import vellumdemo.localca.SSLContexts;
-import vellumdemo.localca.RevocableSSLContexts;
+import localca.SSLContexts;
+import localca.RevocableSSLContexts;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
