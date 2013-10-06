@@ -21,6 +21,8 @@
  */
 package localca;
 
+import vellumtest.util.Invoker;
+import vellumtest.util.Exec;
 import dualcontrol.GenRsaPair;
 import localca.SSLContexts;
 import localca.RevocableSSLContexts;
