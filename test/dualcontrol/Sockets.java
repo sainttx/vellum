@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package localca;
+package dualcontrol;
 
 import java.net.Socket;
 import org.slf4j.Logger;
