@@ -169,24 +169,28 @@ Notice that we do not accept the server cert as a client cert. This is a precaut
 The set of revoked certificates' identifiers might be read from a file or a database. This could be a <tt>synchronized</tt> <tt>Set</tt> that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
 {{{
     private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
-            KeyStore clientKeyStore, KeyStore clientTrustStore, 
+            KeyStore clientKeyStore, KeyStore clientTrustStore,
             int serialNumber) throws Exception {
+        logger.info("testRevoke: " + serialNumber);
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
-        SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
+        SSLContext serverSSLContext = RevocableSSLContexts.createRevocableSerialNumbers(
                 serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
-            Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
+            Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
-            ClientThread.connect(clientSSLContext, port);
-            Assert.assertTrue(serverThread.getErrorMessage().
-                    contains("Certificate serial number revoked"));
+            String errorMessage = ClientThread.connect(clientSSLContext, port);
+            Assert.assertEquals("java.security.cert.CertificateException: " + 
+                    "Certificate serial number revoked", 
+                    serverThread.getErrorMessage());
+            Assert.assertNotNull(errorMessage);
         } finally {
             serverThread.close();
+            serverThread.join(1000);
         }
     }
 }}}
