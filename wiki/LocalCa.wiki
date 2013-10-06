@@ -316,6 +316,46 @@ Note that when using self-signed client certs (or CA-signed server certs), the s
 
 Similarly, when using CA-signed server certs, the server keystore contains the CA root key, and so must not be used as the truststore. Otherwise any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
 
+As a precaution, we might use a restrictive client trust manager, implemented as follows.
+
+{{{
+public class ExclusiveClientTrustManager implements X509TrustManager {
+    X509TrustManager delegate;
+    Map<String, X509Certificate> clientCertificateMap = new HashMap();
+    
+    public ExclusiveClientTrustManager(KeyStore trustStore) 
+        throws GeneralSecurityException {
+        this.delegate = KeyStores.getX509TrustManager(trustStore);
+        for (String alias: Collections.list(trustStore.aliases())) {
+            clientCertificateMap.put(alias, (X509Certificate) 
+                    trustStore.getCertificate(alias));
+        }
+    }
+    ...
+}}}
+where we build a map of our trusted certificates, and check these as follows.
+{{{    
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        logger.debug("checkClientTrusted {}", certs[0].getSubjectDN().getName());
+        if (certs.length != 1) {
+            throw new CertificateException("Invalid cert chain length");
+        }
+        X509Certificate trustedCertificate = clientCertificateMap.get(
+                getCN(certs[0].getSubjectDN()));
+        if (trustedCertificate == null) {
+            throw new CertificateException("Untrusted client certificate");            
+        }
+        if (!Arrays.equals(certs[0].getPublicKey().getEncoded(),
+                trustedCertificate.getPublicKey().getEncoded())) {
+            throw new CertificateException("Invalid client certificate");
+        }
+        delegate.checkClientTrusted(certs, authType);
+    }
+}}}
+where the client certificate i.e. the first cert in the chain, must be in our truststore.
+
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 <h4>Conclusion</h4>
