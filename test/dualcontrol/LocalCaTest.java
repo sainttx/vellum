@@ -98,7 +98,24 @@ public class LocalCaTest {
     public LocalCaTest() {
     }
 
-    private void init() throws Exception {
+    @Test
+    public void testExclusive() throws Exception {
+        server.init();
+        client.init();
+        server.trust(client.cert);
+        client.trust(server.cert);
+        testExclusive(server.keyStore, server.trustStore, 
+                client.keyStore, client.trustStore,
+                "", 
+                "");
+        testExclusive(server.keyStore, server.trustStore, 
+                client.signedKeyStore, client.trustStore,
+                "",
+                "Received fatal alert: bad_certificate");
+    }
+   
+    //@Test
+    public void testDynamicRevocation() throws Exception {
         ca.init();
         server.init();
         client.init();
@@ -106,35 +123,23 @@ public class LocalCaTest {
         server.trust(server.cert);
         client.sign(server, 1001);
         client.trust(server.cert);
-    }
-
-    @Test
-    public void test() throws Exception {
-        init();
-        server.trust(client.cert);
-        testExclusive(server.keyStore, server.trustStore, 
-                client.signedKeyStore, client.trustStore,
-                "");
-    }
-   
-    //@Test
-    public void testDynamicRevocation() throws Exception {
-        init();
         testDynamicRevocation(server.keyStore, server.trustStore, 
                 client.signedKeyStore, client.trustStore, 1001);
     }
     
     private void testExclusive(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
-            String expectedServerErrorMessage) throws Exception {        
-        SSLContext serverSSLContext = SSLContexts.create(
-                serverKeyStore, pass, serverTrustStore);
+            String expectedServerErrorMessage, 
+            String expectedClientErrorMessage) throws Exception {
+        SSLContext serverSSLContext = SSLContexts.create(serverKeyStore, pass, serverTrustStore);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 1);
-            Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
-            Assert.assertEquals(expectedServerErrorMessage, serverThread.getErrorMessage());
+            Assert.assertEquals(expectedServerErrorMessage, serverThread.getErrorMessage());                     if (expectedServerErrorMessage.length() == 0) {
+                Assert.assertEquals(expectedClientErrorMessage,
+                        ClientThread.connect(clientSSLContext, port));
+            }
         } finally {
             serverThread.close();
         }
@@ -142,7 +147,7 @@ public class LocalCaTest {
     
     private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
-            int serialNumber) throws Exception {        
+            int serialNumber) throws Exception {
         logger.info("testRevoke: " + serialNumber);
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
         SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
@@ -209,7 +214,7 @@ public class LocalCaTest {
     //@Test
     public void testOpenssl() throws Exception {
         System.setProperty("Xjavax.net.debug", "ssl:trustmanager");
-        init();
+        server.init();
         new Invoker(new Object() {
             public void run() throws Exception {
                 acceptSingle(server.keyStore, pass, server.trustStore, port);
