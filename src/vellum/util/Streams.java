@@ -30,8 +30,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import vellum.logr.Logr;
-import vellum.logr.LogrFactory;
 import vellum.exception.ArgsRuntimeException;
 import vellum.exception.Exceptions;
 import java.net.ServerSocket;
@@ -39,6 +37,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vellum.exception.SizeRuntimeException;
 
 /**
@@ -46,10 +46,10 @@ import vellum.exception.SizeRuntimeException;
  * @author evan.summers
  */
 public class Streams {
+    private final static Logger logger = LoggerFactory.getLogger(Streams.class);
 
     public static final String fileSeparator = System.getProperty("file.separator");
     public static final String userHomeDir = System.getProperty("user.home");
-    public static Logr logger = LogrFactory.getLogger(Streams.class);
 
     public static BufferedReader newBufferedReader(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream));
@@ -184,7 +184,7 @@ public class Streams {
     }
 
     public static InputStream exec(String command) throws IOException {
-        logger.info(command);
+        logger.debug("exec {}", command);
         Process process = Runtime.getRuntime().exec(command);
         return process.getInputStream();
     }
@@ -235,10 +235,10 @@ public class Streams {
     }
 
     public static void renameTo(String srcFileName, String destFileName) {
+        logger.debug("replaceFile {} {}", srcFileName, destFileName);
         File srcFile = new File(srcFileName);
         File destFile = new File(destFileName);
         srcFile.renameTo(destFile);
-        logger.info("replaceFile", srcFileName, destFileName);
     }
 
     public static List<String> readLineList(InputStream stream, int capacity) {
@@ -329,7 +329,8 @@ public class Streams {
         return fileName;
     }
 
-    public static void transmit(InputStream inputStream, OutputStream outputStream) throws IOException {
+    public static void transmit(InputStream inputStream, OutputStream outputStream) 
+            throws IOException {
         while (true) {
             int b = inputStream.read();
             if (b < 0) {
