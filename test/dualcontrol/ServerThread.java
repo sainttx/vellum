@@ -63,7 +63,7 @@ public class ServerThread extends Thread {
             errorMessage = e.getMessage();
         } finally {
             Streams.close(serverSocket);
-            Threads.sleep(100);
+            Threads.sleep(0);
         }
     }
 

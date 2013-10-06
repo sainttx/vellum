@@ -64,7 +64,7 @@ public class ClientThread extends Thread {
         SSLSocket socket = (SSLSocket) context.getSocketFactory().
                 createSocket(HOST, port);
         try {
-            Thread.sleep(100);
+            Thread.sleep(0);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF("clienthello");
             DataInputStream dis = new DataInputStream(socket.getInputStream());
