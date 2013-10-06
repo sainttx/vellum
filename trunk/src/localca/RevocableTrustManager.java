@@ -90,6 +90,11 @@ public class RevocableTrustManager implements X509TrustManager {
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
+        throw new CertificateException("For server use only");
+    }
+
+    public void checkServerTrusted0(X509Certificate[] certs, String authType) 
+            throws CertificateException {
         logger.debug("checkServerTrusted {} {}", certs[0].getSubjectDN().getName(), authType);
         if (certs.length == 0) {
             throw new CertificateException("Empty cert chain");
