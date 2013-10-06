@@ -114,6 +114,8 @@ public class LocalCaTest {
         server.trust(server.cert);
         testDynamicRevocation(server.keyStore, server.trustStore, client.signedKeyStore,
                 client.trustStore, 1001);
+        testDynamicRevocation(server.keyStore, server.trustStore, client.signedKeyStore,
+                client.trustStore, 1001);
     }
 
     private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
@@ -129,7 +131,7 @@ public class LocalCaTest {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
             Assert.assertEquals("", serverThread.getErrorMessage());
-            revokedSerialNumbers.add(new BigInteger("" + serialNumber));
+            revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
             logger.debug("revokedSerialNumbers: " + revokedSerialNumbers);
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             ClientThread.connect(clientSSLContext, port);
@@ -182,7 +184,7 @@ public class LocalCaTest {
         }
     }    
 
-    @Test
+    //@Test
     public void testMain() throws Exception {
         System.setProperty("Xjavax.net.debug", "ssl:trustmanager");
         init();
