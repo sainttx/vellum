@@ -34,33 +34,31 @@ import vellum.security.Certificates;
  * @author evan.summers
  */
 public class GenRsaPair {    
-    String providerName = null;
     String keyAlgName = "RSA";
     String sigAlgName = "SHA1WithRSA";
     int keySize = 2048;
     String dname;    
     Date notBefore;
     int validityDays;    
-    CertAndKeyGen pair;
+    CertAndKeyGen gen;
     X509Certificate cert;
 
     public void generate(String dname, Date notBefore, int validityDays) throws Exception {
         this.dname = dname;
         this.notBefore = notBefore;
         this.validityDays = validityDays;
-        pair = new CertAndKeyGen(keyAlgName, sigAlgName, providerName);
-        pair.generate(keySize);
-        X500Name x500Name = new X500Name(dname);
-        cert = pair.getSelfCertificate(x500Name, notBefore, 
+        gen = new CertAndKeyGen(keyAlgName, sigAlgName);
+        gen.generate(keySize);
+        cert = gen.getSelfCertificate(new X500Name(dname), notBefore, 
                 TimeUnit.DAYS.toSeconds(validityDays));
     }
 
-    public CertAndKeyGen getPair() {
-        return pair;
+    public CertAndKeyGen getGen() {
+        return gen;
     }
     
     public PrivateKey getPrivateKey() {
-        return pair.getPrivateKey();
+        return gen.getPrivateKey();
     }
 
     public X509Certificate getCertificate() {
@@ -68,7 +66,7 @@ public class GenRsaPair {
     }
 
     public PKCS10 getCertRequest(String dname) throws Exception {
-        return pair.getCertRequest(new X500Name(dname));
+        return gen.getCertRequest(new X500Name(dname));
     }   
     
     public void sign(PrivateKey signerKey, X509Certificate signerCert) throws Exception {
