@@ -77,7 +77,7 @@ Your keystore contains 1 entry
 
 server, trustedCertEntry
 }}}
-where our client certificates will be signed by the server certificate, and so it is our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
+where our client certificates will be signed by the server certificate, and so it can be our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
 
 
 <h4>SSLContexts</h4>
