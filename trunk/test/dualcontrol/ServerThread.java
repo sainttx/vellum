@@ -25,6 +25,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import junit.framework.Assert;
@@ -36,7 +38,7 @@ import vellum.util.Threads;
  * @author evan
  */
 public class ServerThread extends Thread {
-    final static Logger logger = Logger.getLogger(ClientThread.class);
+    final static Logger logger = Logger.getLogger(ServerThread.class);
 
     private int count;
     private String errorMessage = "";
@@ -71,6 +73,7 @@ public class ServerThread extends Thread {
             Assert.assertEquals("clienthello", dis.readUTF());
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF("serverhello");
+            logger.info("ok");
         } finally {
             socket.close();
         }

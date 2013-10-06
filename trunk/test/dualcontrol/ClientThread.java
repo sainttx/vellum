@@ -69,12 +69,13 @@ public class ClientThread extends Thread {
             dos.writeUTF("clienthello");
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             Assert.assertEquals("serverhello", dis.readUTF());
+            logger.info("ok");
             return "";
         } catch (Exception e) {
             logger.info(e.getMessage());
             return e.getMessage();
         } finally {
-            socket.close();            
+            socket.close();
         }
     }
     

@@ -21,10 +21,15 @@
  */
 package dualcontrol;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import org.apache.log4j.Logger;
+import vellum.exception.Exceptions;
+import vellum.exception.SizeRuntimeException;
 
 /**
  *
@@ -49,6 +54,26 @@ public class Streams {
                 serverSocket.close();
             } catch (IOException ioe) {
                 logger.warn(ioe.getMessage());
+            }
+        }
+    }
+    
+    public static String readString(InputStream stream, long capacity) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder builder = new StringBuilder();
+        while (true) {
+            try {
+                String line = reader.readLine();
+                if (line == null) {
+                    return builder.toString();
+                }
+                builder.append(line);
+                builder.append("\n");
+                if (capacity > 0 && builder.length() > capacity) {
+                    throw new SizeRuntimeException(builder.length());
+                }
+            } catch (Exception e) {
+                throw Exceptions.newRuntimeException(e);
             }
         }
     }

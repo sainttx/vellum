@@ -72,7 +72,7 @@ public class RevocableClientTrustManagerTest {
         serverPair = new GenRsaPair();
         serverPair.generate("CN=server", new Date(), 365);
         serverCert = serverPair.getCertificate();
-        serverKeyStore = createKeyStore("server", serverPair);        
+        serverKeyStore = createKeyStore("server", serverPair);
         clientPair = new GenRsaPair();
         clientPair.generate("CN=client", new Date(), 365);
         clientKeyStore = createKeyStore("client", clientPair);
@@ -98,9 +98,9 @@ public class RevocableClientTrustManagerTest {
         serverPair = new GenRsaPair();
         serverPair.generate("CN=server", new Date(), 1);
         serverCert = serverPair.getCertificate();
-        serverKeyStore = createKeyStore("server", serverPair);        
-        Assert.assertEquals("CN=server", serverCert.getIssuerDN().getName());        
-        Assert.assertEquals("CN=server", serverCert.getSubjectDN().getName());        
+        serverKeyStore = createKeyStore("server", serverPair);
+        Assert.assertEquals("CN=server", serverCert.getIssuerDN().getName());
+        Assert.assertEquals("CN=server", serverCert.getSubjectDN().getName());
         Assert.assertEquals(1, Collections.list(serverKeyStore.aliases()).size());
         serverContext = createContext(serverKeyStore, "revokedName"); 
         testConnectionException(serverContext, serverContext, 
@@ -112,8 +112,8 @@ public class RevocableClientTrustManagerTest {
         clientPair.generate("CN=client", new Date(), 1);
         clientKeyStore = createKeyStore("client", clientPair);
         clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
-        Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());        
-        Assert.assertEquals("CN=client", clientCert.getSubjectDN().getName());        
+        Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());
+        Assert.assertEquals("CN=client", clientCert.getSubjectDN().getName());
         Assert.assertEquals(1, Collections.list(clientKeyStore.aliases()).size());
         SSLContext clientContext = SSLContexts.create(clientKeyStore, pass, clientKeyStore);
         testConnectionOk(clientContext, clientContext);
@@ -126,10 +126,10 @@ public class RevocableClientTrustManagerTest {
         signedCert = RsaSigner.signCert(serverPair.getPrivateKey(),
                 serverPair.getCertificate(), certRequest, new Date(), 365, 1234);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
-        Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());        
+        Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());
         signedKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), signedCert,
                 serverPair.getCertificate());
-        Assert.assertEquals(2, Collections.list(signedKeyStore.aliases()).size());        
+        Assert.assertEquals(2, Collections.list(signedKeyStore.aliases()).size());
         signedContext = SSLContexts.create(signedKeyStore, pass,
                 signedKeyStore);
         testConnectionOk(serverContext, signedContext);
