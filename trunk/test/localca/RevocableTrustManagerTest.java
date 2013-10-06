@@ -118,7 +118,7 @@ public class RevocableTrustManagerTest {
 
     private void testSigned() throws Exception {
         certRequest = clientPair.getCertRequest("CN=client");
-        signedCert = Certificates.sign(serverPair.getPrivateKey(),
+        signedCert = X509Certificates.sign(serverPair.getPrivateKey(),
                 serverPair.getCertificate(), certRequest, new Date(), 365, 1234);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
         Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());
@@ -133,7 +133,7 @@ public class RevocableTrustManagerTest {
        
     private void testRevoked() throws Exception {
         SSLContext revokedContext = createContext(serverKeyStore,
-                Certificates.getCN(signedCert.getSubjectDN()));
+                X509Certificates.getCN(signedCert.getSubjectDN()));
         testConnection(revokedContext, signedContext,
                 "java.security.cert.CertificateException: Certificate CN revoked");
     }
@@ -187,8 +187,8 @@ public class RevocableTrustManagerTest {
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverContext, port, 1);
-            Assert.assertEquals("", ClientThread.connect(clientContext, port));
-            Assert.assertEquals("", serverThread.getErrorMessage());
+            Assert.assertNull(ClientThread.connect(clientContext, port));
+            Assert.assertNull(serverThread.getErrorMessage());
         } finally {
             serverThread.close();
         }
@@ -201,9 +201,7 @@ public class RevocableTrustManagerTest {
             serverThread.start(serverContext, port, 1);
             ClientThread.connect(clientContext, port);
             if (!serverThread.getErrorMessage().contains(expectedExceptionMessage)) {
-                String message = "expected: [" + expectedExceptionMessage + "]" + 
-                        " but got: [" + serverThread.getErrorMessage() + "]";
-                throw new Exception(message);
+                Assert.assertEquals(expectedExceptionMessage, serverThread.getErrorMessage());
             }
         } finally {
             serverThread.close();
@@ -215,8 +213,10 @@ public class RevocableTrustManagerTest {
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverContext, port, 1);
-            Assert.assertEquals(expectedExceptionMessage,
-                    ClientThread.connect(clientContext, port));
+            String clientErrorMessage = ClientThread.connect(clientContext, port);
+            if (!clientErrorMessage.contains(expectedExceptionMessage)) {
+                Assert.assertEquals(expectedExceptionMessage, clientErrorMessage);
+            }
         } finally {
             serverThread.close();
         }

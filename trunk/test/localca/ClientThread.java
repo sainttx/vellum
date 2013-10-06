@@ -42,7 +42,7 @@ public class ClientThread extends Thread {
     private final SSLContext sslContext;
     private final int port;
     private final String host;
-    private Exception exception;
+    private String errorMessage;
 
     public ClientThread(SSLContext sslContext, String host, int port) {
         this.sslContext = sslContext;
@@ -55,7 +55,7 @@ public class ClientThread extends Thread {
         try {
             connect(sslContext, port);
         } catch (Exception e) {
-            exception = e;
+            errorMessage = e.getMessage();
         }
     }
     
@@ -70,7 +70,7 @@ public class ClientThread extends Thread {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             Assert.assertEquals("serverhello", dis.readUTF());
             logger.info("ok");
-            return "";
+            return null;
         } catch (Exception e) {
             logger.info(e.getMessage());
             return e.getMessage();
@@ -78,9 +78,8 @@ public class ClientThread extends Thread {
             socket.close();
         }
     }
-    
-    
-    public Exception getException() {
-        return exception;
+
+    public String getErrorMessage() {
+        return errorMessage;
     }    
 }

@@ -81,7 +81,7 @@ public class LocalCaTest {
         }
 
         void sign(SSLEndPoint signer, int serialNumber) throws Exception {
-            signedCert = Certificates.sign(signer.pair.getPrivateKey(),
+            signedCert = X509Certificates.sign(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
                     serialNumber);
             signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
@@ -108,16 +108,14 @@ public class LocalCaTest {
         server.trust(client.cert);
         client.trust(server.cert);
         testExclusive(server.keyStore, server.trustStore, 
-                client.keyStore, client.trustStore,
-                "", 
-                "");
+                client.keyStore, client.trustStore);
+        client.sign(server, 1000);
+        server.trust(server.cert);
         testExclusive(server.keyStore, server.trustStore, 
-                client.signedKeyStore, client.trustStore,
-                "",
-                "Received fatal alert: bad_certificate");
+                client.signedKeyStore, client.trustStore);
     }
    
-    //@Test
+    @Test
     public void testDynamicRevocation() throws Exception {
         ca.init();
         server.init();
@@ -131,18 +129,31 @@ public class LocalCaTest {
     }
     
     private void testExclusive(KeyStore serverKeyStore, KeyStore serverTrustStore,
-            KeyStore clientKeyStore, KeyStore clientTrustStore,
-            String expectedServerErrorMessage, 
-            String expectedClientErrorMessage) throws Exception {
+            KeyStore clientKeyStore, KeyStore clientTrustStore) throws Exception {
         SSLContext serverSSLContext = SSLContexts.create(serverKeyStore, pass, serverTrustStore);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 1);
-            Assert.assertEquals(expectedServerErrorMessage, serverThread.getErrorMessage());                     if (expectedServerErrorMessage.length() == 0) {
-                Assert.assertEquals(expectedClientErrorMessage,
-                        ClientThread.connect(clientSSLContext, port));
-            }
+            String clientErrorMessage = ClientThread.connect(clientSSLContext, port);
+            Assert.assertNull(clientErrorMessage);
+            Assert.assertNull(serverThread.getErrorMessage());
+        } finally {
+            serverThread.close();
+        }
+    }
+    
+    private void testExclusive(KeyStore serverKeyStore, KeyStore serverTrustStore,
+            KeyStore clientKeyStore, KeyStore clientTrustStore,
+            String expectedErrorMessage) throws Exception {
+        SSLContext serverSSLContext = SSLContexts.create(serverKeyStore, pass, serverTrustStore);
+        SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
+        ServerThread serverThread = new ServerThread();
+        try {
+            serverThread.start(serverSSLContext, port, 1);
+            String clientErrorMessage = ClientThread.connect(clientSSLContext, port);
+            Assert.assertNotNull(clientErrorMessage);
+            Assert.assertEquals(expectedErrorMessage, serverThread.getErrorMessage());
         } finally {
             serverThread.close();
         }
@@ -159,17 +170,29 @@ public class LocalCaTest {
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
-            Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
-            Assert.assertEquals("", serverThread.getErrorMessage());
+            Assert.assertNull(serverThread.getErrorMessage());
+            Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
             logger.debug("revokedSerialNumbers: " + revokedSerialNumbers);
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
-            ClientThread.connect(clientSSLContext, port);
-            Assert.assertTrue(serverThread.getErrorMessage().
-                    contains("Certificate serial number revoked"));
+            String errorMessage = ClientThread.connect(clientSSLContext, port);
+            Assert.assertEquals("java.security.cert.CertificateException: " + 
+                    "Certificate serial number revoked", 
+                    serverThread.getErrorMessage());
+            Assert.assertNotNull(errorMessage);
         } finally {
             serverThread.close();
             serverThread.join(1000);
+        }
+    }
+
+    private void assertContains(String expected, String string) throws Exception {
+        if (string == null) {
+            throw new Exception("Expected to contain: [" + string
+                    + "] but as null");
+        } else if (!string.contains(expected)) {
+            throw new Exception("Expected to contain: [" + string
+                    + "] but was [" + string + "]");
         }
     }
 
