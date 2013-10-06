@@ -231,7 +231,7 @@ We connect to the server socket as follows.
         }
     }
 }}}
-where we return any error message.
+where we return the error message, otherwise <tt>null</tt>.
 
 
 <h4><tt>keytool</tt></h4>
