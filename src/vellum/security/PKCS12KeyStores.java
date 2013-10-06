@@ -18,13 +18,13 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.crypto.rsa;
+package vellum.security;
 
 import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import java.io.OutputStream;
 import java.util.Date;
 import java.security.cert.X509Certificate;
-import vellum.security.DefaultKeyStores;
+import vellum.crypto.rsa.GenRsaPair;
 
 /**
  * @see GeneratedRsaKeyPair
@@ -34,13 +34,11 @@ import vellum.security.DefaultKeyStores;
 public class PKCS12KeyStores {    
     
     public static PKCS12KeyStore generateKeyStore(String dname, int validityDays,
-            X509Certificate signingCert,
             String alias, char[] password, OutputStream stream) throws Exception {
-        GeneratedRsaKeyPair keyPair = new GeneratedRsaKeyPair();
+        GenRsaPair keyPair = new GenRsaPair();
         keyPair.generate(dname, new Date(), validityDays);
-        keyPair.sign(DefaultKeyStores.getPrivateKey(alias), signingCert);
         PKCS12KeyStore p12KeyStore = new PKCS12KeyStore();
-        X509Certificate[] chain = new X509Certificate[] {keyPair.getCert(), signingCert};
+        X509Certificate[] chain = new X509Certificate[] {keyPair.getCertificate()};
         p12KeyStore.engineSetKeyEntry(alias, keyPair.getPrivateKey(), password, chain);
         p12KeyStore.engineStore(stream, password);
         return p12KeyStore;

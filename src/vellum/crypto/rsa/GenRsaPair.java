@@ -27,52 +27,46 @@ import java.util.concurrent.TimeUnit;
 import sun.security.pkcs.PKCS10;
 import sun.security.x509.CertAndKeyGen;
 import sun.security.x509.X500Name;
-import vellum.security.Certificates;
 
 /**
  *
  * @author evan.summers
  */
-public class GeneratedRsaKeyPair {    
+public class GenRsaPair {    
     String providerName = null;
     String keyAlgName = "RSA";
     String sigAlgName = "SHA1WithRSA";
-    int keySize = 1024;
-    Date startDate;
-    int validityDays;
-    CertAndKeyGen keyPair;
-    PrivateKey privateKey;
+    int keySize = 2048;
+    String dname;    
+    Date notBefore;
+    int validityDays;    
+    CertAndKeyGen pair;
     X509Certificate cert;
-    PKCS10 certReq;
-    
-    public GeneratedRsaKeyPair() {
-    }
 
-    public void generate(String dname, Date startDate, int validityDays) throws Exception {
-        this.startDate = startDate;
+    public void generate(String dname, Date notBefore, int validityDays) throws Exception {
+        this.dname = dname;
+        this.notBefore = notBefore;
         this.validityDays = validityDays;
-        keyPair = new CertAndKeyGen(keyAlgName, sigAlgName, providerName);
-        keyPair.generate(keySize);
-        privateKey = keyPair.getPrivateKey();
+        pair = new CertAndKeyGen(keyAlgName, sigAlgName, providerName);
+        pair.generate(keySize);
         X500Name x500Name = new X500Name(dname);
-        certReq = keyPair.getCertRequest(x500Name);
-        cert = keyPair.getSelfCertificate(x500Name, startDate, 
+        cert = pair.getSelfCertificate(x500Name, notBefore, 
                 TimeUnit.DAYS.toSeconds(validityDays));
     }
 
-    public void sign(PrivateKey signerKey, X509Certificate signerCert) throws Exception {
-        cert = Certificates.signCert(signerKey, signerCert, certReq, startDate, validityDays);
+    public CertAndKeyGen getPair() {
+        return pair;
     }
     
     public PrivateKey getPrivateKey() {
-        return privateKey;
+        return pair.getPrivateKey();
     }
 
-    public PKCS10 getCertReq() {
-        return certReq;
-    }
-    
-    public X509Certificate getCert() {
+    public X509Certificate getCertificate() {
         return cert;
     }
+
+    public PKCS10 getCertRequest(String dname) throws Exception {
+        return pair.getCertRequest(new X500Name(dname));
+    }   
 }
