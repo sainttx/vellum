@@ -20,6 +20,7 @@
  */
 package localca;
 
+import dualcontrol.MockableConsole;
 import dualcontrol.ExtendedProperties;
 import java.io.FileInputStream;
 import java.io.IOException;

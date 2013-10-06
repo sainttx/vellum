@@ -25,6 +25,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.naming.InvalidNameException;
@@ -53,6 +54,16 @@ import sun.security.x509.X509CertInfo;
  */
 public class Certificates {
 
+    public static boolean equals(X509Certificate cert, X509Certificate other) {
+        if (cert.getSubjectDN().equals(other.getSubjectDN())) {
+            if (Arrays.equals(cert.getPublicKey().getEncoded(),
+                    other.getPublicKey().getEncoded())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public static String getCN(Principal principal) throws CertificateException {
         String dname = principal.getName();
         try {
