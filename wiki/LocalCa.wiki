@@ -355,9 +355,9 @@ where we build a map of the certificates in our truststore, and check these as f
     }
 }}}
 
-<img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
-
 where we only accept our self-signed client certificates i.e. the first cert in the chain.
+
+<img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 <h4>Conclusion</h4>
 
