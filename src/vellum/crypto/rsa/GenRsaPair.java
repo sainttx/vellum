@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import sun.security.pkcs.PKCS10;
 import sun.security.x509.CertAndKeyGen;
 import sun.security.x509.X500Name;
+import vellum.security.Certificates;
 
 /**
  *
@@ -69,4 +70,9 @@ public class GenRsaPair {
     public PKCS10 getCertRequest(String dname) throws Exception {
         return pair.getCertRequest(new X500Name(dname));
     }   
+    
+    public void sign(PrivateKey signerKey, X509Certificate signerCert) throws Exception {
+        cert = Certificates.signCert(signerKey, signerCert, getCertRequest(dname), 
+                notBefore, validityDays);
+    }
 }
