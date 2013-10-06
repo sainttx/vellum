@@ -57,7 +57,7 @@ public class MockConsole implements MockableConsole {
         logger.info(prompt);
         lines.add(prompt);
         return password.clone();
-    }    
+    }
     
     @Override
     public void println(String message) {

@@ -45,7 +45,7 @@ public class Exec<T> {
 
     public int getExitCode() {
         return exitCode;
-    }        
+    }    
     
     public static String readString(InputStream stream) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));

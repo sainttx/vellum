@@ -82,5 +82,5 @@ public class ClientThread extends Thread {
     
     public Exception getException() {
         return exception;
-    }        
+    }    
 }

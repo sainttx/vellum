@@ -59,9 +59,9 @@ public class GenRsaPair {
 
     public X509Certificate getCertificate() {
         return cert;
-    }    
+    }
 
     public PKCS10 getCertRequest(String dname) throws Exception {
         return pair.getCertRequest(new X500Name(dname));
-    }       
+    }   
 }

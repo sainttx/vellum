@@ -55,5 +55,5 @@ public class Sockets {
     private static void sleep(long millis) throws InterruptedException {
         logger.debug("sleep: {}", millis);
         Thread.sleep(millis);
-    }    
+    }
 }

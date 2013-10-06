@@ -56,11 +56,13 @@ public class ServerThread extends Thread {
     public void run() {
         try {
             while (count-- > 0) {
-                handle(serverSocket.accept());
+                try {
+                    handle(serverSocket.accept());
+                } catch (Exception e) {
+                    logger.info(e.getMessage());
+                    errorMessage = e.getMessage();
+                }
             }
-        } catch (Exception e) {
-            logger.info(e.getMessage());
-            errorMessage = e.getMessage();
         } finally {
             Streams.close(serverSocket);
             Threads.sleep(0);
@@ -81,7 +83,7 @@ public class ServerThread extends Thread {
 
     public String getErrorMessage() {
         return errorMessage;
-    }    
+    }
     
     public void close() {
         Streams.close(serverSocket);
