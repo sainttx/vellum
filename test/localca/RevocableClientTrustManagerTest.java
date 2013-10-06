@@ -22,9 +22,7 @@
 package localca;
 
 import dualcontrol.DualControlManager;
-import dualcontrol.GenRsaPair;
-import localca.SSLContexts;
-import localca.RevocableSSLContexts;
+import vellum.crypto.rsa.GenRsaPair;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -127,7 +125,7 @@ public class RevocableClientTrustManagerTest {
     
     private void testSigned() throws Exception {
         certRequest = clientPair.getCertRequest("CN=client");
-        signedCert = RsaSigner.signCert(serverPair.getPrivateKey(),
+        signedCert = Certificates.sign(serverPair.getPrivateKey(),
                 serverPair.getCertificate(), certRequest, new Date(), 365, 1234);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
         Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());
