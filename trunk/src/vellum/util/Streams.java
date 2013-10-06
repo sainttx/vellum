@@ -58,7 +58,8 @@ public class Streams {
     public static BufferedReader newBufferedGzip(String fileName) {
         try {
             File file = newFile(fileName);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    new GZIPInputStream(new FileInputStream(file))));
             return reader;
         } catch (IOException e) {
             throw new ArgsRuntimeException(e, null, fileName);
@@ -71,7 +72,8 @@ public class Streams {
         }
         try {
             File file = newFile(fileName);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(file)));
             return reader;
         } catch (IOException e) {
             throw new ArgsRuntimeException(e, null, fileName);
@@ -103,7 +105,8 @@ public class Streams {
     public static BufferedReader newBufferedReaderEnd(String fileName, long length) {
         try {
             File file = newFile(fileName);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(file)));
             if (file.length() > length) {
                 reader.skip(file.length() - length);
             }
@@ -248,7 +251,7 @@ public class Streams {
                     return lineList;
                 }
                 lineList.add(line);
-                if (lineList.size() > capacity) {
+                if (capacity > 0 && lineList.size() > capacity) {
                     throw new SizeRuntimeException(lineList.size());
                 }
             } catch (Exception e) {
@@ -286,7 +289,7 @@ public class Streams {
                 }
                 builder.append(line);
                 builder.append("\n");
-                if (builder.length() > capacity) {
+                if (capacity > 0 && builder.length() > capacity) {
                     throw new SizeRuntimeException(builder.length());
                 }
             } catch (Exception e) {

@@ -78,7 +78,7 @@ public class DualControlManager {
     }
 
     public void call() throws Exception {
-        logger.info("purpose: "  + purpose);        
+        logger.info("purpose: "  + purpose);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
                 getServerSocketFactory().createServerSocket(PORT, submissionCount,
                 InetAddress.getByName(HOST));
@@ -128,7 +128,7 @@ public class DualControlManager {
     }
     
     private void accept(SSLServerSocket serverSocket) throws Exception {
-        logger.info("accept: " + submissionCount);        
+        logger.info("accept: " + submissionCount);
         while (submissions.size() < submissionCount) {
             logger.debug(String.format("Waiting for %d of %d", submissions.size() + 1, 
                     submissionCount));
@@ -156,7 +156,7 @@ public class DualControlManager {
             dos.writeUTF("");
             throw new Exception(errorMessage);
         }
-        dos.writeUTF("Connected " + name);        
+        dos.writeUTF("Connected " + name);
         dos.writeUTF(purpose);
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         char[] passphrase = readChars(dis);

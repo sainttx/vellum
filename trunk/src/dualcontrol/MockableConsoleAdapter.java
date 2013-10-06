@@ -49,7 +49,7 @@ public class MockableConsoleAdapter implements MockableConsole {
         if (console == null) {
             logger.warn("No console available: " + message);
         } else {
-            console.writer().println(message);            
+            console.writer().println(message);
         }
     }    
 }

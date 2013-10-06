@@ -33,6 +33,7 @@ import javax.naming.ldap.Rdn;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vellum.util.Args;
 
 /**
  *
@@ -58,6 +59,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
     
     @Override
     public X509Certificate[] getAcceptedIssuers() {
+        logger.debug("getAcceptedIssuers");
         return new X509Certificate[] {serverCertificate};
     }
     
@@ -67,13 +69,11 @@ public class RevocableClientTrustManager implements X509TrustManager {
         if (certs.length != 2) {
             throw new CertificateException("Invalid cert chain length");
         }
-        logger.debug(String.format(
-                "checkClientTrusted: revoked %s %d, %s [%s], issuer [%s], root [%s]", 
-                revokedSerialNumbers.hashCode(),
-                revokedSerialNumbers.size(),
-                certs[0].getSerialNumber(),
-                certs[0].getSubjectDN().getName(), certs[0].getIssuerDN().getName(),
-                certs[1].getSubjectDN().getName()));
+        logger.debug("revokedSerialNumbers: " + revokedSerialNumbers);
+        logger.debug("cert: " + Args.format(
+                    certs[0].getSerialNumber(),
+                    certs[0].getSubjectDN().getName(), certs[0].getIssuerDN().getName(),
+                    certs[1].getSubjectDN().getName()));
         if (!certs[0].getIssuerX500Principal().equals(
                 serverCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
@@ -96,6 +96,7 @@ public class RevocableClientTrustManager implements X509TrustManager {
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
+        logger.debug("checkServerTrusted: " + certs[0].getSubjectDN().getName());
         delegate.checkServerTrusted(certs, authType);
     }        
         
