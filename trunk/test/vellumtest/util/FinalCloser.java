@@ -30,8 +30,8 @@ import org.apache.log4j.Logger;
  *
  * @author evan
  */
-public class LaxStreams {
-    private final static Logger logger = Logger.getLogger(LaxStreams.class);
+public class FinalCloser {
+    private final static Logger logger = Logger.getLogger(FinalCloser.class);
     
     public static void close(Socket socket) {
         if (socket != null && !socket.isClosed()) {
