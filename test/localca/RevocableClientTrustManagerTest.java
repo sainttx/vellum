@@ -19,8 +19,10 @@
  under the License.  
        
  */
-package dualcontrol;
+package localca;
 
+import dualcontrol.DualControlManager;
+import dualcontrol.GenRsaPair;
 import localca.SSLContexts;
 import localca.RevocableSSLContexts;
 import java.io.DataInputStream;
