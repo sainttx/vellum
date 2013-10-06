@@ -77,7 +77,7 @@ public class RevocableTrustManager implements X509TrustManager {
             throw new CertificateException("Invalid parent certificate key");
         }
         if (revokedCommonNames != null && 
-                revokedCommonNames.contains(Certificates.getCN(certs[0].getSubjectDN()))) {
+                revokedCommonNames.contains(X509Certificates.getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
         if (revokedSerialNumbers != null && 
@@ -94,7 +94,7 @@ public class RevocableTrustManager implements X509TrustManager {
         if (certs.length == 0) {
             throw new CertificateException("Empty cert chain");
         }
-        if (!Certificates.equals(certs[0], parentCertificate)) {
+        if (!X509Certificates.equals(certs[0], parentCertificate)) {
             throw new CertificateException("Untrusted server certificate");
         }
         delegate.checkServerTrusted(certs, authType);

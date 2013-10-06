@@ -52,7 +52,7 @@ import sun.security.x509.X509CertInfo;
  *
  * @author evan.summers
  */
-public class Certificates {
+public class X509Certificates {
 
     public static boolean equals(X509Certificate cert, X509Certificate other) {
         if (cert.getSubjectDN().equals(other.getSubjectDN())) {
