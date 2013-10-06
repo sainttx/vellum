@@ -213,7 +213,7 @@ We connect to the server socket as follows.
         }
     }
 }}}
-where we return any error message, or otherwise an empty string which indicates success.
+where we return any error message, or otherwise an empty string which indicates success, and avoids a <tt>NullPointerException</tt> when we do expect an error message e.g. that the certificate has been revoked. 
 
 
 <h4><tt>keytool</tt></h4>
