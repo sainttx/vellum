@@ -178,8 +178,8 @@ The set of revoked certificates' identifiers might be read from a file or a data
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
-            Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
-            Assert.assertEquals("", serverThread.getErrorMessage());
+            Assert.assertNull(ClientThread.connect(clientSSLContext, port));
+            Assert.assertNull(serverThread.getErrorMessage());
             revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             ClientThread.connect(clientSSLContext, port);
@@ -206,7 +206,7 @@ We connect to the server socket as follows.
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             Assert.assertEquals("serverhello", dis.readUTF());
             logger.info("ok");
-            return "";
+            return null;
         } catch (Exception e) {
             logger.info(e.getMessage());
             return e.getMessage();
@@ -215,7 +215,7 @@ We connect to the server socket as follows.
         }
     }
 }}}
-where we return any error message, or otherwise an empty string which indicates success. This avoids having to check for <tt>null</tt> when we expect an error message. 
+where we return any error message.
 
 
 <h4><tt>keytool</tt></h4>
