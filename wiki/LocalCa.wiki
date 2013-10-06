@@ -354,7 +354,7 @@ where we build a map of the certificates in our truststore, and check these as f
 {{{    
     private void checkTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
-        if (certs.length != 1) {
+        if (certs.length < 1) {
             throw new CertificateException("Invalid cert chain length");
         }
         X509Certificate trustedCertificate = certificateMap.get(
