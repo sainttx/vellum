@@ -23,6 +23,9 @@ package vellum.security;
 import java.io.FileInputStream;
 import java.security.*;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.net.ssl.*;
 import vellum.exception.Exceptions;
 import vellum.logr.Logr;
@@ -107,6 +110,16 @@ public class KeyStores {
         KeyStore keyStore = KeyStore.getInstance(type);
         keyStore.load(null, null);
         return keyStore;
+    }
+
+    public static Map<String, X509Certificate> mapTrustStore(KeyStore trustStore) 
+            throws KeyStoreException {
+        Map<String, X509Certificate> clientCertificateMap = new HashMap();
+        for (String alias : Collections.list(trustStore.aliases())) {
+            clientCertificateMap.put(alias, (X509Certificate) 
+                    trustStore.getCertificate(alias));
+        }
+        return clientCertificateMap;
     }
     
 }

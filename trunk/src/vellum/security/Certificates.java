@@ -22,12 +22,17 @@ package vellum.security;
 
 import java.io.IOException;
 import java.security.KeyStore;
+import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import sun.security.pkcs.PKCS10;
 import sun.security.pkcs.PKCS10Attribute;
 import sun.security.pkcs.PKCS9Attribute;
@@ -141,4 +146,19 @@ public class Certificates {
         return info;
     }
 
+    public static String getCN(Principal principal) throws CertificateException {
+        String dname = principal.getName();
+        try {
+            LdapName ln = new LdapName(dname);
+            for (Rdn rdn : ln.getRdns()) {
+                if (rdn.getType().equalsIgnoreCase("CN")) {
+                    return rdn.getValue().toString();
+                }
+            }
+            throw new InvalidNameException("no CN: " + dname);
+        } catch (Exception e) {
+            throw new CertificateException(e.getMessage());
+        }
+    }    
+    
 }

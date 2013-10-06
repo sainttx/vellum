@@ -18,15 +18,38 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package vellumdemo.localca;
+
+import java.io.Console;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
-public interface MockableConsole {
-
-    public char[] readPassword(String prompt, Object ... args);
+public class MockableConsoleAdapter implements MockableConsole {
+    static Logger logger = Logger.getLogger(MockableConsoleAdapter.class);
+    Console console; 
     
-    public void println(String message);
+    public MockableConsoleAdapter(Console console) {
+        this.console = console;
+    }
+    
+    @Override
+    public char[] readPassword(String prompt, Object ... args) {
+        if (console == null) {
+            logger.warn("No console available: " + String.format(prompt, args));
+            return new char[0];
+        }
+        return console.readPassword(prompt, args);
+    }    
+    
+    @Override
+    public void println(String message) {
+        if (console == null) {
+            logger.warn("No console available: " + message);
+        } else {
+            console.writer().println(message);
+        }
+    }
 }

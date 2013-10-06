@@ -20,6 +20,9 @@
  */
 package dualcontrol;
 
+import vellumdemo.localca.MockableConsoleAdapter;
+import vellumdemo.localca.SSLContexts;
+import vellumdemo.localca.MockableConsole;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;

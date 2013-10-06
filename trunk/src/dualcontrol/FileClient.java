@@ -20,6 +20,8 @@
  */
 package dualcontrol;
 
+import vellumdemo.localca.MockableConsoleAdapter;
+import vellumdemo.localca.SSLContexts;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

@@ -18,22 +18,18 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package vellumdemo.localca;
 
 import java.math.BigInteger;
-import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vellum.security.Certificates;
 import vellum.util.Args;
 
 /**
@@ -43,17 +39,17 @@ import vellum.util.Args;
 public class RevocableClientTrustManager implements X509TrustManager {
     static Logger logger = LoggerFactory.getLogger(RevocableClientTrustManager.class);
 
-    X509Certificate serverCertificate;
+    X509Certificate parentCertificate;
     X509TrustManager delegate;
     Set<String> revokedCommonNames;
     Set<BigInteger> revokedSerialNumbers;
     
-    public RevocableClientTrustManager(X509Certificate serverCertificate, 
+    public RevocableClientTrustManager(X509Certificate parentCertificate, 
             X509TrustManager delegate, 
             Set<String> revokedCommonNames,
             Set<BigInteger> revokedSerialNumbers) {
         this.delegate = delegate;
-        this.serverCertificate = serverCertificate;
+        this.parentCertificate = parentCertificate;
         this.revokedCommonNames = Collections.synchronizedSet(revokedCommonNames);
         this.revokedSerialNumbers = Collections.synchronizedSet(revokedSerialNumbers);
     }
@@ -61,11 +57,10 @@ public class RevocableClientTrustManager implements X509TrustManager {
     @Override
     public X509Certificate[] getAcceptedIssuers() {
         logger.debug("getAcceptedIssuers");
-        return new X509Certificate[] {serverCertificate};
+        return new X509Certificate[] {parentCertificate};
     }
     
-    @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+    private void checkTrusted(X509Certificate[] certs) 
             throws CertificateException {
         if (certs.length != 2) {
             throw new CertificateException("Invalid cert chain length");
@@ -76,44 +71,36 @@ public class RevocableClientTrustManager implements X509TrustManager {
                     certs[0].getSubjectDN().getName(), certs[0].getIssuerDN().getName(),
                     certs[1].getSubjectDN().getName()));
         if (!certs[0].getIssuerX500Principal().equals(
-                serverCertificate.getSubjectX500Principal())) {
+                parentCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
-                serverCertificate.getPublicKey().getEncoded())) {
+                parentCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid server certificate");
         }
         if (revokedCommonNames != null && 
-                revokedCommonNames.contains(getCN(certs[0].getSubjectDN()))) {
+                revokedCommonNames.contains(Certificates.getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
         if (revokedSerialNumbers != null && 
                 revokedSerialNumbers.contains(certs[0].getSerialNumber())) {
             throw new CertificateException("Certificate serial number revoked");
         }
-        delegate.checkClientTrusted(certs, authType);
     }
     
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        logger.debug("checkClientTrusted {} {}", certs[0].getSubjectDN().getName(), authType);
+        checkTrusted(certs);
+        delegate.checkClientTrusted(certs, authType);
+    }
+
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
         logger.debug("checkServerTrusted {}", certs[0].getSubjectDN().getName());
+        checkTrusted(certs);
         delegate.checkServerTrusted(certs, authType);
-    }    
-        
-    public static String getCN(Principal principal) throws CertificateException {
-        String dname = principal.getName();
-        try {
-            LdapName ln = new LdapName(dname);
-            for (Rdn rdn : ln.getRdns()) {
-                if (rdn.getType().equalsIgnoreCase("CN")) {
-                    return rdn.getValue().toString();
-                }
-            }
-            throw new InvalidNameException("no CN: " + dname);
-        } catch (Exception e) {
-            throw new CertificateException(e.getMessage());
-        }
-    }    
-    
+    }            
 }

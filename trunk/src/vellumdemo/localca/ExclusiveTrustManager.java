@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package vellumdemo.localca;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -41,20 +41,26 @@ import org.slf4j.LoggerFactory;
  *
  * @author evan.summers
  */
-public class ExclusiveClientTrustManager implements X509TrustManager {
-    static Logger logger = LoggerFactory.getLogger(ExclusiveClientTrustManager.class);
+public class ExclusiveTrustManager implements X509TrustManager {
+    static Logger logger = LoggerFactory.getLogger(ExclusiveTrustManager.class);
 
-    X509Certificate serverCertificate;
     X509TrustManager delegate;
-    Map<String, X509Certificate> clientCertificateMap = new HashMap();
+    Map<String, X509Certificate> certificateMap = new HashMap();
     
-    public ExclusiveClientTrustManager(KeyStore trustStore) 
+    public ExclusiveTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
         this.delegate = KeyStores.getX509TrustManager(trustStore);
         for (String alias: Collections.list(trustStore.aliases())) {
-            clientCertificateMap.put(alias, (X509Certificate) 
+            certificateMap.put(alias, (X509Certificate) 
                     trustStore.getCertificate(alias));
         }
+    }
+
+    public ExclusiveTrustManager(X509TrustManager delegate, 
+            Map<String, X509Certificate> certificateMap) 
+            throws GeneralSecurityException {
+        this.delegate = delegate;
+        this.certificateMap = certificateMap;
     }
     
     @Override
@@ -62,55 +68,35 @@ public class ExclusiveClientTrustManager implements X509TrustManager {
         return null;
     }
     
-    @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+    private void checkTrusted(X509Certificate[] certs) 
             throws CertificateException {
-        logger.debug("checkClientTrusted {}", certs[0].getSubjectDN().getName());
         if (certs.length != 1) {
             throw new CertificateException("Invalid cert chain length");
         }
-        X509Certificate trustedCertificate = clientCertificateMap.get(
-                getCN(certs[0].getSubjectDN()));
+        X509Certificate trustedCertificate = certificateMap.get(
+                Certificates.getCN(certs[0].getSubjectDN()));
         if (trustedCertificate == null) {
-            throw new CertificateException("Untrusted client certificate");            
+            throw new CertificateException("Untrusted peer certificate");
         }
         if (!Arrays.equals(certs[0].getPublicKey().getEncoded(),
                 trustedCertificate.getPublicKey().getEncoded())) {
-            throw new CertificateException("Invalid client certificate");
+            throw new CertificateException("Invalid peer certificate");
         }
+    }
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+            throws CertificateException {
+        logger.debug("checkClientTrusted {} {}", certs[0].getSubjectDN().getName(), authType);
+        checkTrusted(certs);
         delegate.checkClientTrusted(certs, authType);
     }
-    
+
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
         logger.debug("checkServerTrusted {}", certs[0].getSubjectDN().getName());
+        checkTrusted(certs);
         delegate.checkServerTrusted(certs, authType);
     }    
-
-    public static Map<String, X509Certificate> mapTrustStore(KeyStore trustStore) 
-            throws KeyStoreException {
-        Map<String, X509Certificate> clientCertificateMap = new HashMap();
-        for (String alias : Collections.list(trustStore.aliases())) {
-            clientCertificateMap.put(alias, (X509Certificate) 
-                    trustStore.getCertificate(alias));
-        }
-        return clientCertificateMap;
-    }
-    
-    public static String getCN(Principal principal) throws CertificateException {
-        String dname = principal.getName();
-        try {
-            LdapName ln = new LdapName(dname);
-            for (Rdn rdn : ln.getRdns()) {
-                if (rdn.getType().equalsIgnoreCase("CN")) {
-                    return rdn.getValue().toString();
-                }
-            }
-            throw new InvalidNameException("no CN: " + dname);
-        } catch (Exception e) {
-            throw new CertificateException(e.getMessage());
-        }
-    }    
-    
 }

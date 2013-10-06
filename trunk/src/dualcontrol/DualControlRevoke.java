@@ -20,6 +20,8 @@
  */
 package dualcontrol;
 
+import vellumdemo.localca.SystemConsole;
+import vellumdemo.localca.MockableConsole;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
