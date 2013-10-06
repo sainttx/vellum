@@ -144,9 +144,13 @@ public class RevocableTrustManager implements X509TrustManager {
         if (certs.length < 2) {
             throw new CertificateException("Invalid cert chain length");
         }
-        if (!certs[0].getIssuerX500Principal().equals(
+        if (!certs[0].getSubjectX500Principal().equals(
                 parentCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
+        }
+        if (certs[0].getSubjectX500Principal().equals(
+                parentCertificate.getSubjectX500Principal())) {
+            throw new CertificateException("Certificate is parent certificate");
         }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
                 parentCertificate.getPublicKey().getEncoded())) {
