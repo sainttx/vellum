@@ -120,7 +120,7 @@ public class RevocableSSLContexts {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        TrustManager revocableTrustManager = new RevocableClientTrustManager(
+        TrustManager revocableTrustManager = new RevocableTrustManager(
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
                 revokedList);
@@ -131,9 +131,9 @@ public class RevocableSSLContexts {
     }
 }
 }}}
-where we initialise a custom <tt>!RevocableClientTrustManager</tt> with our server cert, and a set of revoked certificates' serial numbers.
+where we initialise a custom <tt>!RevocableTrustManager</tt> with our server cert, and a set of revoked certificates' serial numbers.
 {{{
-public class RevocableClientTrustManager implements X509TrustManager {
+public class RevocableTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
     X509TrustManager delegate;
     Set<BigInteger> revokedSerialNumbers;
