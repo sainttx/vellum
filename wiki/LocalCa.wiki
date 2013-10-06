@@ -17,11 +17,7 @@ public class LocalCaTest {
     ...
     static void acceptSingle(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
             int port) throws GeneralSecurityException, IOException {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(trustStore);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+        SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
@@ -35,7 +31,7 @@ public class LocalCaTest {
     }    
 }
 }}}
-where we create an SSL context and server socket, and accept a client connection.
+where we create an SSL context and server socket, and accept a client connection. Our <tt>SSLContexts</tt> utility will be presented further below.
 
 The keystore must contain our asymmetric private key, which is paired with its public key certificate. Moreover, it must contain the entire certificate chain of that key certificate right through to its root certificate. We list the certicate chain as follows.
 {{{
