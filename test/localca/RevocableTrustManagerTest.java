@@ -21,13 +21,7 @@
  */
 package localca;
 
-import dualcontrol.DualControlManager;
 import vellum.crypto.rsa.GenRsaPair;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -36,8 +30,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -48,9 +40,9 @@ import sun.security.validator.Validator;
  *
  * @author evan
  */
-public class RevocableClientTrustManagerTest {
-    static Logger logger = Logger.getLogger(RevocableClientTrustManagerTest.class);
-    
+public class RevocableTrustManagerTest {
+
+    static Logger logger = Logger.getLogger(RevocableTrustManagerTest.class);
     private int port = 4446;
     private char[] pass = "test1234".toCharArray();
     GenRsaPair serverPair;
@@ -65,8 +57,8 @@ public class RevocableClientTrustManagerTest {
     KeyStore signedKeyStore;
     X509Certificate signedCert;
     SSLContext signedContext;
-    
-    public RevocableClientTrustManagerTest() {
+
+    public RevocableTrustManagerTest() {
     }
 
     @Test
@@ -83,8 +75,8 @@ public class RevocableClientTrustManagerTest {
         clientContext = SSLContexts.create(clientKeyStore, pass, serverKeyStore);
         testConnection(serverContext, clientContext);
     }
-    
-    @Test
+
+    //@Test
     public void testAll() throws Exception {
         initServer();
         initClient();
@@ -104,11 +96,11 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals("CN=server", serverCert.getIssuerDN().getName());
         Assert.assertEquals("CN=server", serverCert.getSubjectDN().getName());
         Assert.assertEquals(1, Collections.list(serverKeyStore.aliases()).size());
-        serverContext = createContext(serverKeyStore, "revokedName"); 
-        testConnectionException(serverContext, serverContext, 
-                "Invalid cert chain length");
+        serverContext = createContext(serverKeyStore, "revokedName");
+        testConnection(serverContext, serverContext,
+                "java.security.cert.CertificateException: Invalid cert chain length");
     }
-    
+
     private void initClient() throws Exception {
         clientPair = new GenRsaPair();
         clientPair.generate("CN=client", new Date(), 1);
@@ -117,12 +109,13 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());
         Assert.assertEquals("CN=client", clientCert.getSubjectDN().getName());
         Assert.assertEquals(1, Collections.list(clientKeyStore.aliases()).size());
-        SSLContext clientContext = SSLContexts.create(clientKeyStore, pass, clientKeyStore);
-        testConnectionOk(clientContext, clientContext);
-        testConnectionException(serverContext, clientContext, 
-                "Received fatal alert: certificate_unknown");
+        clientContext = SSLContexts.create(clientKeyStore, pass, clientKeyStore);
+        testConnection(clientContext, clientContext);
+        testConnectionClient(serverContext, clientContext,
+                "sun.security.validator.ValidatorException: No trusted certificate found");
+
     }
-    
+
     private void testSigned() throws Exception {
         certRequest = clientPair.getCertRequest("CN=client");
         signedCert = Certificates.sign(serverPair.getPrivateKey(),
@@ -134,103 +127,99 @@ public class RevocableClientTrustManagerTest {
         Assert.assertEquals(2, Collections.list(signedKeyStore.aliases()).size());
         signedContext = SSLContexts.create(signedKeyStore, pass,
                 signedKeyStore);
-        testConnectionOk(serverContext, signedContext);
-        testConnectionOk(signedContext, signedContext);
+        testConnection(serverContext, signedContext,
+                "java.security.cert.CertificateException: Invalid parent certificate");
     }
-    
-    private void testRevoked() throws Exception {        
-        SSLContext revokedContext = createContext(serverKeyStore, 
-                DualControlManager.getCN(signedCert.getSubjectDN()));
-        testConnectionException(revokedContext, signedContext, 
-                "Certificate CN revoked");
+       
+    private void testRevoked() throws Exception {
+        SSLContext revokedContext = createContext(serverKeyStore,
+                Certificates.getCN(signedCert.getSubjectDN()));
+        testConnection(revokedContext, signedContext,
+                "java.security.cert.CertificateException: Certificate CN revoked");
     }
 
     private void testInvalidServerCertClient() throws Exception {
-        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
-                signedCert, clientCert
-                );
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(),
+                signedCert, clientCert);
         SSLContext invalidContext = createContext(invalidKeyStore, null);
-        testConnectionException(serverContext, invalidContext, 
+        testConnection(serverContext, invalidContext,
                 "Received fatal alert: certificate_unknown");
     }
 
     private void testInvalidServerCertOrder() throws Exception {
-        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
-                serverCert, signedCert
-                );
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(),
+                serverCert, signedCert);
         SSLContext invalidContext = createContext(invalidKeyStore, null);
-        testConnectionException(serverContext, invalidContext, 
-                "Invalid server certificate");
+        testConnection(serverContext, invalidContext,
+                "java.security.cert.CertificateException: Invalid server certificate");
     }
-    
+
     private void testInvalidServerCertSigned() throws Exception {
-        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
-                signedCert, signedCert
-                );
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(),
+                signedCert, signedCert);
         SSLContext invalidContext = createContext(invalidKeyStore, null);
-        testConnectionException(serverContext, invalidContext, 
+        testConnection(serverContext, invalidContext,
                 "Received fatal alert: certificate_unknown");
     }
-    
+
     private void testInvalidServerCertOther() throws Exception {
         GenRsaPair otherPair = new GenRsaPair();
         otherPair.generate("CN=server", new Date(), 1);
-        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), 
-                signedCert, otherPair.getCertificate()
-                );
+        KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(),
+                signedCert, otherPair.getCertificate());
         SSLContext invalidContext = createContext(invalidKeyStore, null);
-        testConnectionException(serverContext, invalidContext, 
+        testConnection(serverContext, invalidContext,
                 "Received fatal alert: certificate_unknown");
     }
-    
-    private SSLContext createContext(KeyStore keyStore, String revokedName) 
+
+    private SSLContext createContext(KeyStore keyStore, String revokedName)
             throws Exception {
         Set<String> revocationList = new TreeSet();
         if (revokedName != null) {
             revocationList.add(revokedName);
         }
-        KeyStore trustStore = keyStore;
-        return RevocableSSLContexts.createRevokedNames(keyStore, pass, trustStore, 
+        return RevocableSSLContexts.createRevocableNames(keyStore, pass, keyStore,
                 revocationList);
     }
-    
-    private void testConnectionOk(SSLContext serverContext, SSLContext clientContext)
+
+    private void testConnection(SSLContext serverContext, SSLContext clientContext)
             throws Exception {
-        Exception exception = testConnection(serverContext, clientContext);
-        if (exception != null) {
-            throw exception;
+        ServerThread serverThread = new ServerThread();
+        try {
+            serverThread.start(serverContext, port, 1);
+            Assert.assertEquals("", ClientThread.connect(clientContext, port));
+            Assert.assertEquals("", serverThread.getErrorMessage());
+        } finally {
+            serverThread.close();
         }
     }
 
-    private void testConnectionException(SSLContext serverContext, SSLContext clientContext,
+    private void testConnection(SSLContext serverContext, SSLContext clientContext,
             String expectedExceptionMessage) throws Exception {
-        Exception exception = testConnection(serverContext, clientContext);
-        if (exception != null) {
-            if (!exception.getMessage().contains(expectedExceptionMessage)) {
-                logger.info("expected: " + expectedExceptionMessage);
-                logger.error("got: %s" + exception.getMessage());
-                throw new Exception("testConnectionException invalid");
+        ServerThread serverThread = new ServerThread();
+        try {
+            serverThread.start(serverContext, port, 1);
+            ClientThread.connect(clientContext, port);
+            if (!serverThread.getErrorMessage().contains(expectedExceptionMessage)) {
+                String message = "expected: [" + expectedExceptionMessage + "]" + 
+                        " but got: [" + serverThread.getErrorMessage() + "]";
+                throw new Exception(message);
             }
-        } else {
-            throw new Exception("testConnectionException expected exception");
+        } finally {
+            serverThread.close();
         }
     }
 
-    private Exception testConnection(SSLContext serverContext, SSLContext clientContext)
-            throws Exception {
-        ServerThread serverThread = new ServerThread(serverContext);
-        ClientThread clientThread = new ClientThread(clientContext);
-        serverThread.start();
-        clientThread.start();
-        clientThread.join(1000);
-        serverThread.join(1000);
-        if (serverThread.exception != null) {
-            return serverThread.exception;
+    private void testConnectionClient(SSLContext serverContext, SSLContext clientContext,
+            String expectedExceptionMessage) throws Exception {
+        ServerThread serverThread = new ServerThread();
+        try {
+            serverThread.start(serverContext, port, 1);
+            Assert.assertEquals(expectedExceptionMessage,
+                    ClientThread.connect(clientContext, port));
+        } finally {
+            serverThread.close();
         }
-        if (clientThread.exception != null) {
-            return clientThread.exception;
-        }
-        return null;
     }
 
     private KeyStore createKeyStore(String keyAlias, GenRsaPair keyPair) throws Exception {
@@ -258,90 +247,9 @@ public class RevocableClientTrustManagerTest {
         keyStore.setCertificateEntry(alias, cert);
         return keyStore;
     }
-    
-    private void testValidator() {
+
+    void testValidator() {
         Validator validator = Validator.getInstance(Validator.TYPE_SIMPLE,
                 Validator.VAR_GENERIC, serverKeyStore);
-    }
-    
-    class ServerThread extends Thread {
-
-        SSLContext sslContext;
-        Exception exception;
-
-        public ServerThread(SSLContext sslContext) {
-            this.sslContext = sslContext;
-        }
-
-        @Override
-        public void run() {
-            SSLServerSocket serverSocket = null;
-            SSLSocket clientSocket = null;
-            try {
-                serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().
-                        createServerSocket(port);
-                serverSocket.setNeedClientAuth(true);
-                clientSocket = (SSLSocket) serverSocket.accept();
-                DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-                Assert.assertEquals("clienthello", dis.readUTF());
-                DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-                dos.writeUTF("serverhello");
-                clientSocket.close();
-                serverSocket.close();
-                Thread.sleep(500);
-            } catch (Exception e) {
-                exception = e;
-                close(clientSocket);
-                close(serverSocket);
-            }
-        }
-    }
-
-    class ClientThread extends Thread {
-
-        SSLContext sslContext;
-        Exception exception;
-
-        public ClientThread(SSLContext sslContext) {
-            this.sslContext = sslContext;
-        }
-
-        @Override
-        public void run() {
-            SSLSocket clientSocket = null;
-            try {
-                Thread.sleep(500);
-                clientSocket = (SSLSocket) sslContext.getSocketFactory().
-                        createSocket("localhost", port);
-                DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-                dos.writeUTF("clienthello");
-                DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-                Assert.assertEquals("serverhello", dis.readUTF());
-                clientSocket.close();
-            } catch (Exception e) {
-                exception = e;
-                close(clientSocket);
-            }
-        }
-    }
-
-    private void close(Socket socket) {
-        if (socket != null && !socket.isClosed()) {
-            try {
-                socket.close();
-            } catch (IOException ioe) {
-                logger.warn(ioe.getMessage());
-            }
-        }
-    }
-
-    private void close(ServerSocket serverSocket) {
-        if (serverSocket != null && !serverSocket.isClosed()) {
-            try {
-                serverSocket.close();
-            } catch (IOException ioe) {
-                logger.warn(ioe.getMessage());
-            }
-        }
     }
 }

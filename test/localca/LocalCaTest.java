@@ -153,7 +153,7 @@ public class LocalCaTest {
             int serialNumber) throws Exception {
         logger.info("testRevoke: " + serialNumber);
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
-        SSLContext serverSSLContext = RevocableSSLContexts.createRevokedSerialNumbers(
+        SSLContext serverSSLContext = RevocableSSLContexts.createRevocableSerialNumbers(
                 serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
@@ -169,6 +169,7 @@ public class LocalCaTest {
                     contains("Certificate serial number revoked"));
         } finally {
             serverThread.close();
+            serverThread.join(1000);
         }
     }
 
