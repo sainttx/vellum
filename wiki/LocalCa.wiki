@@ -180,6 +180,8 @@ Since we use this trust manager on the server rather than a client, we do not ex
 
 The set of revoked certificates' identifiers might be read from a file or a database. This could be a <tt>synchronized</tt> <tt>Set</tt> that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
 {{{
+public class LocalCaTest {
+    ...
     private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
             int serialNumber) throws Exception {
@@ -204,6 +206,7 @@ The set of revoked certificates' identifiers might be read from a file or a data
             serverThread.join(1000);
         }
     }
+}
 }}}
 where we create a concurrent <tt>Set</tt> for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
