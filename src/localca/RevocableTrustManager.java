@@ -61,7 +61,8 @@ public class RevocableTrustManager implements X509TrustManager {
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
-        logger.debug("checkClientTrusted {} {}", certs[0].getSubjectDN().getName(), authType);
+        logger.debug("checkClientTrusted {} {}", certs[0].getSubjectDN().getName(),
+                certs[0].getSerialNumber());
         if (certs.length < 2) {
             throw new CertificateException("Invalid cert chain length");
         }
@@ -69,12 +70,9 @@ public class RevocableTrustManager implements X509TrustManager {
                 parentCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
-        if (certs[1].getSubjectDN().equals(parentCertificate.getSubjectDN())) {
-            throw new CertificateException("Invalid parent certificate");        
-        }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
                 parentCertificate.getPublicKey().getEncoded())) {
-            throw new CertificateException("Invalid parent certificate key");
+            throw new CertificateException("Issuer certificate not matching");
         }
         if (revokedCommonNames != null && 
                 revokedCommonNames.contains(X509Certificates.getCN(certs[0].getSubjectDN()))) {
@@ -95,7 +93,7 @@ public class RevocableTrustManager implements X509TrustManager {
 
     public void checkServerTrusted0(X509Certificate[] certs, String authType) 
             throws CertificateException {
-        logger.debug("checkServerTrusted {} {}", certs[0].getSubjectDN().getName(), authType);
+        logger.debug("checkServerTrusted {}", certs[0].getSubjectDN().getName());
         if (certs.length == 0) {
             throw new CertificateException("Empty cert chain");
         }
