@@ -376,7 +376,7 @@ We'll delve into the unit testing of our custom trust manager in a follow-up art
 
 <h4>Resources</h4>
 
-You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in the <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellumdemo/localca"><tt>src/localca</tt></a> package, and <a href="https://code.google.com/p/vellum/source/browse/trunk/test/vellumdemo/localca"><tt>test/localca</tt></a>.
+You can browse the code for this exercise at <a href="http://code.google.com/p/vellum">code.google.com/vellum</a> in its <a href="https://code.google.com/p/vellum/source/browse/trunk/src/vellumdemo/localca"><tt>src</tt></a> and <a href="https://code.google.com/p/vellum/source/browse/trunk/test/vellumdemo/localca"><tt>test</tt></a> packages.
 
 <h4>Other reading</h4>
 
