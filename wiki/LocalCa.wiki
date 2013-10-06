@@ -171,7 +171,6 @@ The set of revoked certificates' identifiers might be read from a file or a data
     private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
             int serialNumber) throws Exception {
-        logger.info("testRevoke: " + serialNumber);
         Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
         SSLContext serverSSLContext = RevocableSSLContexts.createRevocableSerialNumbers(
                 serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
@@ -209,10 +208,8 @@ We connect to the server socket as follows.
             dos.writeUTF("clienthello");
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             Assert.assertEquals("serverhello", dis.readUTF());
-            logger.info("ok");
             return null;
         } catch (Exception e) {
-            logger.info(e.getMessage());
             return e.getMessage();
         } finally {
             socket.close();
@@ -359,7 +356,6 @@ where we build a map of the certificates in our truststore, and check these as f
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
-        logger.debug("checkClientTrusted {}", certs[0].getSubjectDN().getName());
         checkTrusted(certs, authType);
         delegate.checkClientTrusted(certs, authType);
     }
