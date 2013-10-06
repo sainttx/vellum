@@ -20,6 +20,7 @@
  */
 package dualcontrol;
 
+import vellum.security.KeyGenerators;
 import vellum.crypto.aes.AESCiphers;
 import javax.crypto.SecretKey;
 import org.junit.Test;
