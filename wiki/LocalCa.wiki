@@ -74,6 +74,7 @@ The server truststore contains trusted certificates to authenticate the client k
 $ keytool -keystore server.trust.jks -list 
 
 Your keystore contains 1 entry
+
 server, trustedCertEntry
 }}}
 where our client certificates will be signed by the server certificate. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
