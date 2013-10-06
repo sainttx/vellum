@@ -96,7 +96,6 @@ public class RevocableClientTrustManager implements X509TrustManager {
             throws CertificateException {
         logger.debug("checkServerTrusted {}", certs[0].getSubjectDN().getName());
         checkTrusted(certs);
-        logger.debug("checkServerTrusted delegate");
         delegate.checkServerTrusted(certs, authType);
     }            
 }
