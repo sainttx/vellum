@@ -70,6 +70,10 @@ public class RevocableTrustManager implements X509TrustManager {
                 parentCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
+        if (certs[0].getSubjectX500Principal().equals(
+                parentCertificate.getSubjectX500Principal())) {
+            throw new CertificateException("Certificate is parent certificate");
+        }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
                 parentCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Issuer certificate not matching");
