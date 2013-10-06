@@ -20,8 +20,8 @@
  */
 package dualcontrol;
 
-import vellumdemo.localca.MockableConsoleAdapter;
-import vellumdemo.localca.SSLContexts;
+import localca.MockableConsoleAdapter;
+import localca.SSLContexts;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;

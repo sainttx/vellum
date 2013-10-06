@@ -18,39 +18,24 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package localca;
 
-import localca.MockableConsoleAdapter;
-import localca.SSLContexts;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
+import dualcontrol.*;
+import java.io.PrintWriter;
 
 /**
  *
  * @author evan.summers
  */
-public class FileClient {
-
-    public static byte[] read(String hostAddress, int port) throws Exception {
-        Socket socket = SSLContexts.create(false, "fileclient.ssl", 
-                System.getProperties(), new MockableConsoleAdapter(System.console())).
-                getSocketFactory().createSocket(hostAddress, port);
-        byte[] bytes = readBytes(socket.getInputStream());
-        socket.close();
-        return bytes;
+public class SystemConsole implements MockableConsole {
+    
+    @Override
+    public char[] readPassword(String prompt, Object ... args) {
+        return System.console().readPassword(prompt, args);
     }
     
-    public static byte[] readBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while (true) {
-            int b = inputStream.read();
-            if (b < 0) {
-                return baos.toByteArray();
-            }
-            baos.write(b);
-        }
+    @Override
+    public void println(String message) {
+        System.console().writer().println(message);
     }
-    
 }
