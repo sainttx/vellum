@@ -74,7 +74,7 @@ public class ExclusiveTrustManager implements X509TrustManager {
             throw new CertificateException("Invalid cert chain length");
         }
         X509Certificate trustedCertificate = certificateMap.get(
-                Certificates.getCN(certs[0].getSubjectDN()));
+                X509Certificates.getCN(certs[0].getSubjectDN()));
         if (trustedCertificate == null) {
             throw new CertificateException("Untrusted peer certificate");
         }
