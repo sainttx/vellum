@@ -49,6 +49,18 @@ Issuer: CN=ca
 }}}
 where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
 
+The server truststore contains trusted certificates to authenticate the client key certificate chain. 
+{{{
+$ keytool -keystore server.trust.jks -list 
+
+Your keystore contains 1 entry
+
+server, trustedCertEntry
+}}}
+where our client certificates will be signed by the server certificate, and so it can be our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
+
+<h4>openssl</h4>
+
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
 {{{
 $ openssl s_client -connect localhost:4444
@@ -65,17 +77,6 @@ Acceptable client certificate CA names
 where the subject and issuer of the two certificates in the key certificate chain are listed, and it will accept client certificates whose chain includes the server certificate.
 
 This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root. 
-
-The server truststore contains trusted certificates to authenticate the client key certificate chain. 
-{{{
-$ keytool -keystore server.trust.jks -list 
-
-Your keystore contains 1 entry
-
-server, trustedCertEntry
-}}}
-where our client certificates will be signed by the server certificate, and so it can be our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
-
 
 <h4>SSLContexts</h4>
 
