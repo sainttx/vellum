@@ -59,7 +59,7 @@ server, trustedCertEntry
 }}}
 where our client certificates will be signed by the server certificate, and so it can be our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
 
-<h4>openssl</h4>
+<h4>openssl s_client</h4>
 
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
 {{{
