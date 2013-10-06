@@ -58,5 +58,5 @@ public class Chars {
             array[i] = (byte) chars[i];    
         }
         return array;
-    }       
+    }   
 }

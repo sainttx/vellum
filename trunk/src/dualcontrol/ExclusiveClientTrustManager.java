@@ -86,7 +86,7 @@ public class ExclusiveClientTrustManager implements X509TrustManager {
             throws CertificateException {
         logger.debug("checkServerTrusted {}", certs[0].getSubjectDN().getName());
         delegate.checkServerTrusted(certs, authType);
-    }        
+    }    
 
     public static Map<String, X509Certificate> mapTrustStore(KeyStore trustStore) 
             throws KeyStoreException {
@@ -111,6 +111,6 @@ public class ExclusiveClientTrustManager implements X509TrustManager {
         } catch (Exception e) {
             throw new CertificateException(e.getMessage());
         }
-    }        
+    }    
     
 }

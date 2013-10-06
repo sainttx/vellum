@@ -42,7 +42,7 @@ public class MockableConsoleAdapter implements MockableConsole {
             return new char[0];
         }
         return console.readPassword(prompt, args);
-    }        
+    }    
     
     @Override
     public void println(String message) {
@@ -51,5 +51,5 @@ public class MockableConsoleAdapter implements MockableConsole {
         } else {
             console.writer().println(message);
         }
-    }    
+    }
 }

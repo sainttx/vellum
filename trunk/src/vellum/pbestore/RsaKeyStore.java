@@ -108,5 +108,5 @@ public class RsaKeyStore {
         byte[] keyBytes = pbeStore.load(stream, alg, alias, password);
         return KeyFactory.getInstance(alg).generatePrivate(
                 new PKCS8EncodedKeySpec(keyBytes));
-    }    
+    }
 }

@@ -28,5 +28,5 @@ public class DualControlException extends Exception {
 
     public DualControlException(String message) {
         super(message);
-    }    
+    }
 }

@@ -33,5 +33,5 @@ public class LongIdEntityMapStorage<I extends Comparable, E extends IdEntity<I>>
     @Override
     public E find(I id) throws SQLException {
         return super.get(id);
-    }        
+    }    
 }
