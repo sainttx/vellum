@@ -19,7 +19,7 @@
  under the License.  
        
  */
-package dualcontrol;
+package localca;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

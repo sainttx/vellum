@@ -19,9 +19,9 @@
  under the License.  
        
  */
-package dualcontrol;
+package localca;
 
-import static dualcontrol.ServerThread.logger;
+import static localca.ServerThread.logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

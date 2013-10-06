@@ -19,7 +19,7 @@
  under the License.  
        
  */
-package dualcontrol;
+package localca;
 
 import java.io.BufferedReader;
 import java.io.IOException;

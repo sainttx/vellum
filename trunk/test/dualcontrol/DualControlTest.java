@@ -21,6 +21,7 @@
  */
 package dualcontrol;
 
+import localca.Sockets;
 import localca.SSLContexts;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;

@@ -19,7 +19,7 @@
  under the License.  
        
  */
-package dualcontrol;
+package localca;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
