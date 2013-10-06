@@ -18,12 +18,13 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package vellum.security;
+package vellumtools.security;
 
 import java.io.File;
 import sun.security.tools.KeyTool;
 import vellum.logr.Logr;
 import vellum.logr.LogrFactory;
+import vellum.security.Certificates;
 import vellum.util.Streams;
 import vellum.util.Strings;
 
@@ -31,7 +32,7 @@ import vellum.util.Strings;
  *
  * @author evan.summers
  */
-public class GenKeyPairTool {
+public class GenKeyTool {
 
     Logr logger = LogrFactory.getLogger(getClass());
     String keyStoreType = "JKS";
@@ -134,7 +135,7 @@ public class GenKeyPairTool {
     }
 
     public static void main(String[] args) throws Exception {
-        GenKeyPairTool instance = new GenKeyPairTool();
+        GenKeyTool instance = new GenKeyTool();
         try {
             instance.call();
         } catch (Exception e) {

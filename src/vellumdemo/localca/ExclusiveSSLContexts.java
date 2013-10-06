@@ -18,7 +18,7 @@
  specific language governing permissions and limitations
  under the License.  
  */
-package dualcontrol;
+package vellumdemo.localca;
 
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
@@ -46,7 +46,7 @@ public class ExclusiveSSLContexts {
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[] {new ExclusiveClientTrustManager(trustStore)},
+                new TrustManager[] {new ExclusiveTrustManager(trustStore)},
                 new SecureRandom());
         return sslContext;
     }

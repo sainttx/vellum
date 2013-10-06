@@ -18,24 +18,15 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
-
-import dualcontrol.*;
-import java.io.PrintWriter;
+package vellumdemo.localca;
 
 /**
  *
  * @author evan.summers
  */
-public class SystemConsole implements MockableConsole {
+public interface MockableConsole {
+
+    public char[] readPassword(String prompt, Object ... args);
     
-    @Override
-    public char[] readPassword(String prompt, Object ... args) {
-        return System.console().readPassword(prompt, args);
-    }
-    
-    @Override
-    public void println(String message) {
-        System.console().writer().println(message);
-    }
+    public void println(String message);
 }

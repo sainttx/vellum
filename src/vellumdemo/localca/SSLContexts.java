@@ -18,16 +18,22 @@
  specific language governing permissions and limitations
  under the License.  
  */
-package dualcontrol;
+package vellumdemo.localca;
 
+import dualcontrol.ExtendedProperties;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.Principal;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Properties;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -89,15 +95,4 @@ public class SSLContexts {
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         return sslContext;
     }
-    
-    public static void init(SSLContext sslContext, KeyStore keyStore, char[] keyPassword,
-            KeyStore trustStore) throws GeneralSecurityException {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(trustStore);
-        sslContext.init(keyManagerFactory.getKeyManagers(),
-                trustManagerFactory.getTrustManagers(), new SecureRandom());
-    }
-    
 }

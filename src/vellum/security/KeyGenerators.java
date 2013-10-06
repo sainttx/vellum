@@ -18,7 +18,7 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package vellum.security;
 
 import java.security.GeneralSecurityException;
 import javax.crypto.KeyGenerator;
