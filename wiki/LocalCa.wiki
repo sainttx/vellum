@@ -178,7 +178,7 @@ The set of revoked certificates' identifiers might be read from a file or a data
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertEquals("", ClientThread.connect(clientSSLContext, port));
             Assert.assertEquals("", serverThread.getErrorMessage());
-            revokedSerialNumbers.add(new BigInteger("" + serialNumber));
+            revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             ClientThread.connect(clientSSLContext, port);
             Assert.assertTrue(serverThread.getErrorMessage().
