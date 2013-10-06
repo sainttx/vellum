@@ -18,39 +18,38 @@
        specific language governing permissions and limitations
        under the License.  
  */
-package dualcontrol;
+package localca;
 
-import localca.MockableConsoleAdapter;
-import localca.SSLContexts;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
+import java.io.Console;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
-public class FileClient {
-
-    public static byte[] read(String hostAddress, int port) throws Exception {
-        Socket socket = SSLContexts.create(false, "fileclient.ssl", 
-                System.getProperties(), new MockableConsoleAdapter(System.console())).
-                getSocketFactory().createSocket(hostAddress, port);
-        byte[] bytes = readBytes(socket.getInputStream());
-        socket.close();
-        return bytes;
+public class MockableConsoleAdapter implements MockableConsole {
+    static Logger logger = Logger.getLogger(MockableConsoleAdapter.class);
+    Console console; 
+    
+    public MockableConsoleAdapter(Console console) {
+        this.console = console;
     }
     
-    public static byte[] readBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while (true) {
-            int b = inputStream.read();
-            if (b < 0) {
-                return baos.toByteArray();
-            }
-            baos.write(b);
+    @Override
+    public char[] readPassword(String prompt, Object ... args) {
+        if (console == null) {
+            logger.warn("No console available: " + String.format(prompt, args));
+            return new char[0];
+        }
+        return console.readPassword(prompt, args);
+    }    
+    
+    @Override
+    public void println(String message) {
+        if (console == null) {
+            logger.warn("No console available: " + message);
+        } else {
+            console.writer().println(message);
         }
     }
-    
 }
