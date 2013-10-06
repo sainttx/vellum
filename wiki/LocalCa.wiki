@@ -190,7 +190,30 @@ The set of revoked certificates' identifiers might be read from a file or a data
 }}}
 where we create a concurrent set for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the client session is cached for the SSL context, and so create a new <tt>clientSSLContext</tt> instance in our test above. This forces re-authentication by the server, i.e. so it actually invokes our trust manager.
+Incidently, we find that the client session is cached for the SSL context, and so note that we recreate a new <tt>clientSSLContext</tt> instance in our test above. This forces re-authentication by the server, i.e. so it actually invokes our trust manager.
+
+We connect to the server socket as follows.
+{{{
+    static String connect(SSLContext context, int port) 
+            throws GeneralSecurityException, IOException {
+        SSLSocket socket = (SSLSocket) context.getSocketFactory().
+                createSocket(HOST, port);
+        try {
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("clienthello");
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            Assert.assertEquals("serverhello", dis.readUTF());
+            logger.info("ok");
+            return "";
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return e.getMessage();
+        } finally {
+            socket.close();
+        }
+    }
+}}}
+where we return any error message, or otherwise an empty string which indicates success.
 
 
 <h4><tt>keytool</tt></h4>
