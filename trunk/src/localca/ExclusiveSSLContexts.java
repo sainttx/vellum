@@ -20,16 +20,8 @@
  */
 package localca;
 
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.SecureRandom;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -37,17 +29,9 @@ import org.apache.log4j.Logger;
  */
 public class ExclusiveSSLContexts {
 
-    static Logger logger = Logger.getLogger(ExclusiveSSLContexts.class);
-    static Set<String> revokedNames; 
-    
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore) throws Exception {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPass);
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[] {new ExclusiveTrustManager(trustStore)},
-                new SecureRandom());
-        return sslContext;
+        return SSLContexts.create(keyStore, keyPass, 
+                new ExclusiveTrustManager(trustStore));
     }
 }
