@@ -65,6 +65,7 @@ We import the CA root cert first, and then the signed reply.
 {{{
 $ keytool -keystore server.jks -alias ca -importcert -file ca.pem
 }}}
+Finally we import the signed certificate reply.
 {{{
 $ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
 }}}
