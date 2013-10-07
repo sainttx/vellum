@@ -21,48 +21,41 @@
 package localca;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author evan.summers
  */
-public class RevocableSSLContexts {
+public class RevocableNameSSLContexts {
 
-    static Logger logger = Logger.getLogger(RevocableSSLContexts.class);
-    static Set<String> revokedNames; 
-    
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) 
-            throws GeneralSecurityException {
+            KeyStore trustStore, Set<String> revokedNames) throws Exception {
         X509TrustManager revocableTrustManager = new RevocableTrustManager(
                 KeyStores.getPrivateKeyCertificate(keyStore),
-                KeyStores.getX509TrustManager(trustStore),
-                new TreeSet(),
-                revokedSerialNumbers);
+                KeyStores.getX509TrustManager(trustStore),                
+                revokedNames, new TreeSet());
         return SSLContexts.create(keyStore, keyPass, revocableTrustManager);
     }
-    
-    static Set<BigInteger> readRevokedSerialNumbers(String crlFile)
+
+    public static Set<String> readRevokedCertNames(String crlFile)
             throws FileNotFoundException, IOException {
-        Set<BigInteger> revocationList = new TreeSet();
+        Set<String> revocationList = new TreeSet();
         BufferedReader reader = new BufferedReader(new FileReader(crlFile));
         while (true) {
             String line = reader.readLine();
             if (line == null) {
                 return revocationList;
             }
-            revocationList.add(new BigInteger(line.trim()));
+            revocationList.add(line.trim());
         }    
     }
 }

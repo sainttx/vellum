@@ -27,17 +27,13 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.Principal;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Properties;
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -76,19 +72,19 @@ public class SSLContexts {
     }
 
     public static SSLContext create(String keyStoreLocation,
-            char[] keyStorePassword, char[] keyPassword, String trustStoreLocation, 
+            char[] keyStorePassword, char[] keyPass, String trustStoreLocation, 
             char[] trustStorePassword) throws GeneralSecurityException, IOException {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
-        return create(keyStore, keyPassword, trustStore);
+        return create(keyStore, keyPass, trustStore);
     }
 
-    public static SSLContext create(KeyStore keyStore, char[] keyPassword,
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore) throws GeneralSecurityException {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, keyPassword);
+        keyManagerFactory.init(keyStore, keyPass);
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
         trustManagerFactory.init(trustStore);
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -96,4 +92,20 @@ public class SSLContexts {
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         return sslContext;
     }
+
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+            X509TrustManager trustManager) throws GeneralSecurityException {
+        return create(keyStore, keyPass, new X509TrustManager[] {trustManager});
+    }
+    
+    public static SSLContext create(KeyStore keyStore, char[] keyPass,
+            X509TrustManager[] trustManagers) throws GeneralSecurityException {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPass);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagers, 
+                new SecureRandom());
+        return sslContext;
+    }
+    
 }
