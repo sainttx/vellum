@@ -122,7 +122,7 @@ Acceptable client certificate CA names
 }}}
 where the subject and issuer of the two certificates in our key certificate chain are listed, and it will accept client certificates whose chain includes the server certificate e.g. as a parent certificate.
 
-This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root.
+This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root!
 
 
 <h4>Serial numbers</h4>
