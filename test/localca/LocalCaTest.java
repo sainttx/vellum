@@ -124,8 +124,8 @@ public class LocalCaTest {
         server.trust(server.cert);
         client.sign(server, 1001);
         client.trust(server.cert);
-        testDynamicRevocation(server.keyStore, server.trustStore, 
-                client.signedKeyStore, client.trustStore, 1001);
+        testDynamicNameRevocation(server.keyStore, server.trustStore, 
+                client.signedKeyStore, client.trustStore, "client");
     }
     
     private void testExclusive(KeyStore serverKeyStore, KeyStore serverTrustStore,
@@ -159,21 +159,21 @@ public class LocalCaTest {
         }
     }
     
-    private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
+    private void testDynamicNameRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
-            int serialNumber) throws Exception {
-        logger.info("testRevoke: " + serialNumber);
-        Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
-        SSLContext serverSSLContext = RevocableSSLContexts.create(
-                serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
+            String revokeName) throws Exception {
+        logger.info("testRevoke: " + revokeName);
+        Set<String> revokedNames = new ConcurrentSkipListSet();
+        SSLContext serverSSLContext = RevocableNameSSLContexts.create(
+                serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
-            revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
-            logger.debug("revokedSerialNumbers: " + revokedSerialNumbers);
+            revokedNames.add(revokeName);
+            logger.debug("revokedNames: " + revokedNames);
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
