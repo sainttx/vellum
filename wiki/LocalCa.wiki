@@ -231,7 +231,7 @@ The set of revoked certificates' identifiers might be read from a file or a data
 {{{
 public class LocalCaTest {
     ...
-    private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
+    private void testDynamicNameRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
             String revokedName) throws Exception {
         Set<String> revokedNames = new ConcurrentSkipListSet();
