@@ -200,17 +200,13 @@ public class RevocableTrustManager implements X509TrustManager {
         if (certs.length < 2) {
             throw new CertificateException("Invalid cert chain length");
         }
-        if (!certs[0].getSubjectX500Principal().equals(
-                serverCertificate.getSubjectX500Principal())) {
+        if (!certs[0].getIssuerX500Principal().equals(
+                parentCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
-        if (certs[0].getSubjectX500Principal().equals(
-                serverCertificate.getSubjectX500Principal())) {
-            throw new CertificateException("Certificate is parent certificate");
-        }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
-                serverCertificate.getPublicKey().getEncoded())) {
-            throw new CertificateException("Issuer public key invalid");
+                parentCertificate.getPublicKey().getEncoded())) {
+            throw new CertificateException("Untrusted issuer public key");
         }
         if (revokedNames.contains(X509Certificates.getCN(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
@@ -220,8 +216,6 @@ public class RevocableTrustManager implements X509TrustManager {
 }
 }}}
 where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure, e.g. to validate the certificate chain, expiry dates and what-not.
-
-Notice that we do not accept the server cert as a client cert. This is a precaution in case our server keystore has been compromised, and a rogue is using it to connect to our server.
 
 Since we use this trust manager on the server rather than a client, we do not expect its <tt>checkServerTrusted()</tt> method to be invoked.
 {{{
@@ -382,9 +376,12 @@ where this is not a truststore per se, but just a database of issued certificate
 
 Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
 
+Note that should our server keystore be compromised, it can be used to issue rogue client certificates at will, which is somewhat disconcerting.
+
+
 <h4>Self-signed client certificates</h4>
 
-All told, given the risk of a rogue certificate, we recommend using self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. Any issued certificate which goes unrecorded or is given a duplicate identifier by mistake or on purpose, is a vulnerability.
+All told, given the risk of a rogue certificate, we recommend using self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. Any issued certificate which goes unrecorded or is given a duplicate identifier by mistake or on purpose, presents a vulnerability. Furthermore, if our server keystore is compromised, then we are totally vulnerable.
 
 Note that when using self-signed client certs (or CA-signed server certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above. 
 
