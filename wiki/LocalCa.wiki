@@ -43,7 +43,7 @@ where the signed certificate is a "reply" to a certificate signing request (CSR)
 
 <h4>Server certificate signing</h4>
 
-Naturally we create a keystore containing a private key and its self-signed cert using <tt>keytool -genkeypair</tt>.
+Naturally we create a keystore containing a private key and its self-signed cert, using <tt>keytool -genkeypair</tt>.
 {{{
 $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
   -validity 365 -noprompt
