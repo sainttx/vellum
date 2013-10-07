@@ -121,7 +121,9 @@ This demonstrates why the keystore requires a certificate chain, i.e. to send to
 
 <h4>Serial numbers</h4>
 
-Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> command-line utility, generates a random serial number as follows.
+We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the certificate serial number, which should be unique. (Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.)
+
+<a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> command-line utility, generates a random serial number as follows.
 {{{
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
             new java.util.Random().nextInt() & 0x7fffffff));
@@ -150,7 +152,7 @@ public class SSLContexts {
 }
 }}}
 
-Since we wish to support a local CA, we should enable local certificate revocation in order to retain access control. We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the serial number, that should be unique. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.
+Since we wish to support a local CA, we should enable local certificate revocation in order to retain access control. 
 
 So we create an <tt>SSLContext</tt> with a set of revoked certificate serial numbers, as follows.
 {{{
