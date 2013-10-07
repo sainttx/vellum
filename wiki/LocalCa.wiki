@@ -45,11 +45,9 @@ where the signed certificate is a "reply" to a certificate signing request (CSR)
 
 <h4>Server certificate signing</h4>
 
+Although we intend to use a self-signed server certificate which signs our client certs, let's sign our server certificate as an exercise.
+
 Naturally we create a keystore containing a private key and its self-signed cert, using <tt>keytool -genkeypair</tt>.
-{{{
-$ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
-  -keyalg rsa -keysize 2048 -validity 365 -noprompt
-}}}
 {{{
 $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
@@ -57,6 +55,11 @@ $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
 We export a certificate signing request as follows.
 {{{
 $ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
+}}}
+We create a signing key.
+{{{
+$ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
 }}}
 We can sign the CSR using using Java7's <tt>keytool -gencert</tt>.
 {{{
