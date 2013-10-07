@@ -170,8 +170,8 @@ public class LocalCaTest {
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
-            Assert.assertNull(serverThread.getErrorMessage());
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
+            Assert.assertNull(serverThread.getErrorMessage());
             revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
             logger.debug("revokedSerialNumbers: " + revokedSerialNumbers);
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
