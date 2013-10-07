@@ -8,6 +8,7 @@ Naturally, we generate certificates for each client, and typically import these 
 
 In this article, we sign client certificates using our server certificate as a local root CA certificate. As such, our server should support certificate revocation.
 
+
 <h4>SSLContext</h4>
 
 Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore, as in the following example.
@@ -41,6 +42,7 @@ keytool error: java.lang.Exception: Failed to establish chain from reply
 }}}
 where the signed certificate is a "reply" to a certificate signing request (CSR).
 
+
 <h4>Server certificate signing</h4>
 
 Naturally we create a keystore containing a private key and its self-signed cert, using <tt>keytool -genkeypair</tt>.
@@ -70,6 +72,7 @@ An "intermediate" certificate would be next, if we have one. Finally we import t
 $ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
 }}}
 
+
 <h4>Certificate chain</h4>
 
 We can list the certicate chain as follows.
@@ -88,6 +91,7 @@ Issuer: CN=ca
 }}}
 where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
 
+
 <h4>Server truststore</h4>
 
 The server truststore contains trusted certificates to authenticate the client key certificate chain. 
@@ -99,6 +103,7 @@ Your keystore contains 1 entry
 server, trustedCertEntry
 }}}
 where our client certificates will be signed by the server certificate, and so it can be our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
+
 
 <h4>openssl</h4>
 
@@ -117,7 +122,8 @@ Acceptable client certificate CA names
 }}}
 where the subject and issuer of the two certificates in our key certificate chain are listed, and it will accept client certificates whose chain includes the server certificate e.g. as a parent certificate.
 
-This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root. 
+This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root.
+
 
 <h4>Serial numbers</h4>
 
@@ -154,32 +160,32 @@ public class SSLContexts {
 
 Since we wish to support a local CA, we should enable local certificate revocation in order to retain access control. 
 
-So we create an <tt>SSLContext</tt> with a set of revoked certificate serial numbers, as follows.
+So we create an <tt>SSLContext</tt> with a set of revoked certificate names, as follows.
 {{{
-public class RevocableSSLContexts {
+public class RevocableNameSSLContexts {
     ...
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) throws Exception {
+            KeyStore trustStore, Set<String> revokedNames) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableTrustManager(
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
-                revokedList);
+                revokedNames);
         sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[]{revocableTrustManager},
+                new TrustManager[] {revocableTrustManager},
                 new SecureRandom());
         return sslContext;
     }
 }
 }}}
-where we initialise a custom <tt>!RevocableTrustManager</tt> with our server cert, and a set of revoked certificates' serial numbers.
+where we initialise a custom <tt>!RevocableTrustManager</tt> with our server cert, and a set of revoked certificate names.
 {{{
 public class RevocableTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
     X509TrustManager delegate;
-    Set<BigInteger> revokedSerialNumbers;
+    Set<String> revokedNames;
     ...
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
@@ -199,8 +205,8 @@ public class RevocableTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Issuer public key invalid");
         }
-        if (revokedSerialNumbers.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate serial number revoked");
+        if (revokedNames.contains(X509Certificates.getCN(certs[0].getSubjectDN()))) {
+            throw new CertificateException("Certificate CN revoked");
         }
         delegate.checkClientTrusted(certs, authType);
     }
@@ -227,21 +233,21 @@ public class LocalCaTest {
     ...
     private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
-            int serialNumber) throws Exception {
-        Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
-        SSLContext serverSSLContext = RevocableSSLContexts.createRevocableSerialNumbers(
-                serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
+            String revokedName) throws Exception {
+        Set<String> revokedNames = new ConcurrentSkipListSet();
+        SSLContext serverSSLContext = RevocableNameSSLContexts.create(
+                serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
-            revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
+            revokedNames.add(revokedName);
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
-                    "Certificate serial number revoked", 
+                    "Certificate CN revoked", 
                     serverThread.getErrorMessage());
             Assert.assertNotNull(errorMessage);
         } finally {
