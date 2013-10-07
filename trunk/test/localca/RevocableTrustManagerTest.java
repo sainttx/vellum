@@ -178,7 +178,7 @@ public class RevocableTrustManagerTest {
         if (revokedName != null) {
             revocationList.add(revokedName);
         }
-        return RevocableSSLContexts.createRevocableNames(keyStore, pass, keyStore,
+        return RevocableNameSSLContexts.create(keyStore, pass, keyStore,
                 revocationList);
     }
 
