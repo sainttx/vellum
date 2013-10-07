@@ -48,11 +48,11 @@ where the signed certificate is a "reply" to a certificate signing request (CSR)
 Naturally we create a keystore containing a private key and its self-signed cert, using <tt>keytool -genkeypair</tt>.
 {{{
 $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
-  -validity 365 -noprompt
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
 }}}
 {{{
 $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
-  -validity 365 -noprompt
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
 }}}
 We export a certificate signing request as follows.
 {{{
@@ -61,7 +61,7 @@ $ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
 We can sign the CSR using using Java7's <tt>keytool -gencert</tt>.
 {{{
 $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=server" \
-  -validity 365 -rfc -outfile server.signed.pem
+  -sigalg SHA256withRSA -validity 365 -rfc -outfile server.signed.pem
 }}}
 We now wish to import this signed certificate reply into our keystore. Actually we must import its certificate chain, starting with the root certificate.
 {{{
@@ -283,9 +283,9 @@ We connect to the server socket as follows.
 where we return the error message, otherwise <tt>null</tt>.
 
 
-<h4><tt>keytool</tt></h4>
+<h4>Client keystore</h4>
 
-Naturally we use <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> to create our keystores and truststores. For example, we create a private SSL keystore for a client, say evanx, as follows.
+Naturally we use <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> to create our keystores and truststores. For example, we create a private SSL keystore for a client named "evanx" as follows.
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx"
