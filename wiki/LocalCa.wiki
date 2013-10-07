@@ -45,13 +45,15 @@ where the signed certificate is a "reply" to a certificate signing request (CSR)
 
 <h4>Server certificate signing</h4>
 
-Although we intend to use a self-signed server certificate which signs our client certs, let's sign our server certificate as an exercise.
+Although we intend to use a self-signed certificate which signs our client certs, let's sign our server certificate as an exercise.
 
-Naturally we create a keystore containing a private key and its self-signed cert, using <tt>keytool -genkeypair</tt>.
+Naturally we create a keystore containing a private key and its self-signed cert using <tt>keytool -genkeypair</tt>.
 {{{
 $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
 }}}
+where we specify a validity period of 365 days.
+
 We export a certificate signing request as follows.
 {{{
 $ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
@@ -136,7 +138,7 @@ Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.j
             new java.util.Random().nextInt() & 0x7fffffff));
 }}}
 
-We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the certificate serial number, which should be unique. (Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.)
+We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the certificate serial number, which should be unique, and can be used for revocation. (Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.)
 
 In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
 
@@ -161,7 +163,9 @@ public class SSLContexts {
 }
 }}}
 
-Since we wish to support a local CA, we should enable local certificate revocation in order to retain access control. 
+Since we wish to support a local CA for client certificates, we should enable local certificate revocation in order to retain access control. 
+
+Let's implement a minimal solution, where our server cert is self-signed, and signs client certs. In this case we can support a local revocation list on the server, e.g. a file which contains a list of revoked certificates. For convenience, we'll revoke certificates by their CN.
 
 So we create an <tt>SSLContext</tt> with a set of revoked certificate names, as follows.
 {{{
