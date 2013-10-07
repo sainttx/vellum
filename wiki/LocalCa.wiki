@@ -165,9 +165,9 @@ public class SSLContexts {
 
 Since we wish to support a local CA for client certificates, we should enable local certificate revocation in order to retain access control. 
 
-Let's implement a minimal solution, where our server cert is self-signed, and signs client certs. In this case we can support a local revocation list on the server, e.g. a file which contains a list of revoked certificates. For convenience, we'll revoke certificates by their CN.
+Let's implement a minimal solution, where our server cert is self-signed, and signs our client certs. In this case we can support a local revocation list on the server, e.g. a file which contains a list of revoked certificates. For convenience, we'll revoke certificates by their common name (CN), which must be unique.
 
-So we create an <tt>SSLContext</tt> with a set of revoked certificate names, as follows.
+So we create an <tt>SSLContext</tt> with a set of revoked names, as follows.
 {{{
 public class RevocableNameSSLContexts {
     ...
@@ -187,7 +187,7 @@ public class RevocableNameSSLContexts {
     }
 }
 }}}
-where we initialise a custom <tt>!RevocableTrustManager</tt> with our server cert, and a set of revoked certificate names.
+where we initialise a custom <tt>!RevocableTrustManager</tt> with our server cert, and a set of revoked names.
 {{{
 public class RevocableTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
@@ -330,7 +330,7 @@ Incidently, in a follow-up article we will create keystores programmatically for
 
 <h4>Client certificate signing</h4>
 
-Alternatively, we might export a certificate signing request (CSR) as follows, and sign this with the server cert. In this case our server is a local CA where we will trust any of its issued certificates. So we must support certificate revocation to control access.
+We export a certificate signing request (CSR) as follows, and sign this with the server cert. In this case our server is a local CA where we will trust any of its issued certificates. So we must support certificate revocation to control access.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
@@ -384,19 +384,19 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 <h4>Self-signed client certificates</h4>
 
-All told, given the risk of a rogue certificate, we recommend using self-signed client certificates which are explicitly imported into our server truststore, where can be reviewed. Any issued certificate which goes unrecorded or is given a duplicate identifier by mistake or on purpose, is a vulnerability.
+All told, given the risk of a rogue certificate, we recommend using self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. Any issued certificate which goes unrecorded or is given a duplicate identifier by mistake or on purpose, is a vulnerability.
 
 Note that when using self-signed client certs (or CA-signed server certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above. 
 
 Similarly, when using CA-signed server certs, the server keystore contains the CA root key, and so must not be used as the truststore. Otherwise any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
 
-As a precaution, we might use an exclusive trust manager, implemented as follows.
+As a precaution, we might use an explicit trust manager, implemented as follows.
 {{{
-public class ExclusiveTrustManager implements X509TrustManager {
+public class ExplicitTrustManager implements X509TrustManager {
     X509TrustManager delegate;
     Map<String, X509Certificate> certificateMap = new HashMap();
     
-    public ExclusiveTrustManager(KeyStore trustStore) 
+    public ExplicitTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
         this.delegate = KeyStores.getX509TrustManager(trustStore);
         for (String alias: Collections.list(trustStore.aliases())) {
@@ -406,7 +406,7 @@ public class ExclusiveTrustManager implements X509TrustManager {
     }
     ...
 }}}
-where we build a map of the certificates in our truststore, and check these as follows.
+where we build a map of the certificates in our truststore, and check peer certificate chains as follows.
 {{{    
     private void checkTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
@@ -452,6 +452,8 @@ We can sign client certificates using our server certificate, which is then our 
 In this special case, we can use our keystore as our truststore, which we argue is a practice that should be prohibited ordinarily.
 
 We discuss the risk of rogue certificates, and recommend using self-signed client certificates whenever possible, rather than a local CA as presented here.
+
+We introduce an explicit trust manager, which only trusts the peer certificate if it is contained in the truststore, irregardless of its certificate chain, in order to protect against rogue certificates signed by trusted certificates.
 
 <h4>Furthermore</h4>
 
