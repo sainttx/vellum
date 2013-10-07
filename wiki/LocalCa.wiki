@@ -127,7 +127,7 @@ Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.j
             new java.util.Random().nextInt() & 0x7fffffff));
 }}}
 
-In a later article, we might build a local CA management tool, which might use a sequence number for certs which it generates programmatically and records into an SQL database.
+In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
 
 
 <h4>SSLContexts</h4>
