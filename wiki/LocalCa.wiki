@@ -453,7 +453,7 @@ In this special case, we can use our keystore as our truststore, which we argue 
 
 We discuss the risk of rogue certificates, and recommend using self-signed client certificates whenever possible, rather than a local CA as presented here.
 
-We introduce an explicit trust manager, which only trusts the peer certificate if it is contained in the truststore, irregardless of its certificate chain, in order to protect against rogue certificates signed by trusted certificates.
+We introduce an explicit trust manager, which only trusts the peer certificate if it is contained in the truststore, irregardless of its certificate chain. This protects against rogue certificates signed by trusted certificates.
 
 <h4>Furthermore</h4>
 
