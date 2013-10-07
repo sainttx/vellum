@@ -225,7 +225,7 @@ Since we use this trust manager on the server rather than a client, we do not ex
     }    
 }}}
 
-<h4>Revoked certificates</h4>
+<h4>Dynamic revocation</h4>
 
 The set of revoked certificates' identifiers might be read from a file or a database. This could be a <tt>synchronized</tt> <tt>Set</tt> that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
 {{{
