@@ -88,6 +88,8 @@ Issuer: CN=ca
 }}}
 where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
 
+<h4>Server truststore</h4>
+
 The server truststore contains trusted certificates to authenticate the client key certificate chain. 
 {{{
 $ keytool -keystore server.trust.jks -list 
