@@ -1,5 +1,150 @@
-Ordinarily we create an SSLContext as follows.
-<pre>
+#labels Java, SSL, keytool, KeyStore, TrustManager
+
+<h4>Overview</h4>
+
+We consider innumerable clients connecting to a Java server over SSL sockets. 
+
+Naturally, we generate certificates for each client, and typically import these self-signed certificates into our server truststore.
+
+In this article, we sign client certificates using our server certificate as a local root CA certificate. As such, our server should support certificate revocation.
+
+
+<h4>SSLContext</h4>
+
+Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore, as in the following example.
+
+{{{
+public class LocalCaTest {
+    ...
+    static void acceptSingle(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
+            int port) throws GeneralSecurityException, IOException {
+        SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(port);
+        try {
+            serverSocket.setNeedClientAuth(true);
+            handle(serverSocket.accept());
+        } finally {
+            serverSocket.close();
+        }
+    }    
+}
+}}}
+where we create an SSL context and server socket, and accept a client connection. Our <tt>SSLContexts</tt> factory will be presented further below.
+
+The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. In fact, <tt>keytool</tt> will not allow a signed certificate reply to be imported unless its parent certificate chain is already present in the keystore.
+{{{
+$ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
+Enter keystore password:
+keytool error: java.lang.Exception: Failed to establish chain from reply
+}}}
+where the signed certificate is a "reply" to a certificate signing request (CSR).
+
+
+<h4>Server certificate signing</h4>
+
+Let's sign our server certificate as an exercise. However, we will not implement a CA server
+
+Naturally we create a keystore containing a private key and its self-signed cert using <tt>keytool -genkeypair</tt>.
+{{{
+$ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
+}}}
+We export a certificate signing request as follows.
+{{{
+$ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
+}}}
+We create a signing key.
+{{{
+$ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
+}}}
+We can sign the CSR using using Java7's <tt>keytool -gencert</tt>.
+{{{
+$ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=server" \
+  -sigalg SHA256withRSA -validity 365 -rfc -outfile server.signed.pem
+}}}
+We now wish to import this signed certificate reply into our keystore. Actually we must import its certificate chain, starting with the root certificate.
+{{{
+$ keytool -keystore server.jks -alias ca -importcert -file ca.pem
+}}}
+An "intermediate" certificate would be next, if we have one. Finally we import the signed certificate reply.
+{{{
+$ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
+}}}
+
+
+<h4>Certificate chain</h4>
+
+We can list the certicate chain as follows.
+{{{
+$ keytool -keystore server.jks -alias server -list -v
+
+Certificate chain length: 2
+
+Certificate[1]:
+Owner: CN=server
+Issuer: CN=ca
+
+Certificate[2]:
+Owner: CN=ca
+Issuer: CN=ca
+}}}
+where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
+
+
+<h4>Server truststore</h4>
+
+The server truststore contains trusted certificates to authenticate the client key certificate chain. 
+{{{
+$ keytool -keystore server.trust.jks -list 
+
+Your keystore contains 1 entry
+
+server, trustedCertEntry
+}}}
+where our client certificates will be signed by the server certificate, and so it can be our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
+
+
+<h4>openssl</h4>
+
+We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
+{{{
+$ openssl s_client -connect localhost:4444
+
+Certificate chain
+ 0 s:/CN=server
+   i:/CN=ca
+ 1 s:/CN=ca
+   i:/CN=ca
+
+Acceptable client certificate CA names
+/CN=server
+}}}
+where the subject and issuer of the two certificates in our key certificate chain are listed, and it will accept client certificates whose chain includes the server certificate e.g. as a parent certificate.
+
+This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root!
+
+
+<h4>Serial numbers</h4>
+
+Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> command-line utility, generates a random serial number as follows.
+{{{
+        info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
+            new java.util.Random().nextInt() & 0x7fffffff));
+}}}
+
+We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the certificate serial number, which should be unique. (Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.)
+
+In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
+
+
+<h4>SSLContexts</h4>
+
+Ordinarily we create an <tt>SSLContext</tt> as follows.
+{{{
 public class SSLContexts {
     ...
     public static SSLContext create(KeyStore keyStore, char[] keyPassword,
@@ -14,36 +159,36 @@ public class SSLContexts {
         return sslContext;
     }
 }
-</pre>
+}}}
 
-Since we wish to support a local CA, we should enable local certificate revocation in order to retain access control. We see that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">X509Certificate</a> returns a BigInteger for the serial number, that should be unique. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html">X509CertImpl</a>.
+Since we wish to support a local CA, we should enable local certificate revocation in order to retain access control. 
 
-So we create an SSLContext with a set of revoked certificate serial numbers, as follows.
-<pre>
-public class RevocableSSLContexts {
+So we create an <tt>SSLContext</tt> with a set of revoked certificate names, as follows.
+{{{
+public class RevocableNameSSLContexts {
     ...
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) throws Exception {
+            KeyStore trustStore, Set<String> revokedNames) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableTrustManager(
                 getPrivateKeyCertificate(keyStore),
                 getX509TrustManager(trustStore),
-                revokedList);
+                revokedNames);
         sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[]{revocableTrustManager},
+                new TrustManager[] {revocableTrustManager},
                 new SecureRandom());
         return sslContext;
     }
 }
-</pre>
-where we initialise a custom RevocableTrustManager with our server cert, and a set of revoked certificates' serial numbers.
-<pre>
+}}}
+where we initialise a custom <tt>!RevocableTrustManager</tt> with our server cert, and a set of revoked certificate names.
+{{{
 public class RevocableTrustManager implements X509TrustManager {
     X509Certificate serverCertificate;
     X509TrustManager delegate;
-    Set<BigInteger> revokedSerialNumbers;
+    Set<String> revokedNames;
     ...
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
@@ -63,49 +208,49 @@ public class RevocableTrustManager implements X509TrustManager {
                 serverCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Issuer public key invalid");
         }
-        if (revokedSerialNumbers.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate serial number revoked");
+        if (revokedNames.contains(X509Certificates.getCN(certs[0].getSubjectDN()))) {
+            throw new CertificateException("Certificate CN revoked");
         }
         delegate.checkClientTrusted(certs, authType);
     }
 }
-</pre>
-where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard X509TrustManager for good measure, to validate the certificate chain, expiry dates and what-not.
+}}}
+where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard <tt>!X509TrustManager</tt> for good measure, e.g. to validate the certificate chain, expiry dates and what-not.
 
 Notice that we do not accept the server cert as a client cert. This is a precaution in case our server keystore has been compromised, and a rogue is using it to connect to our server.
 
-Since we use this trust manager on the server rather than a client, we do not expect its checkServerTrusted() method to be invoked.
-<pre>
+Since we use this trust manager on the server rather than a client, we do not expect its <tt>checkServerTrusted()</tt> method to be invoked.
+{{{
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
         throw new CertificateException("Server authentication not supported");
     }    
-</pre>
+}}}
 
-<h4>Revoked certificates</h4>
+<h4>Dynamic revocation</h4>
 
-The set of revoked certificates' identifiers might be read from a file or a database. This could be a synchronized Set that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
-<pre>
+The set of revoked certificates' identifiers might be read from a file or a database. This could be a <tt>synchronized</tt> <tt>Set</tt> that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
+{{{
 public class LocalCaTest {
     ...
-    private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
+    private void testDynamicNameRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
-            int serialNumber) throws Exception {
-        Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
-        SSLContext serverSSLContext = RevocableSSLContexts.createRevocableSerialNumbers(
-                serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
+            String revokedName) throws Exception {
+        Set<String> revokedNames = new ConcurrentSkipListSet();
+        SSLContext serverSSLContext = RevocableNameSSLContexts.create(
+                serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
-            revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
+            revokedNames.add(revokedName);
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
-                    "Certificate serial number revoked", 
+                    "Certificate CN revoked", 
                     serverThread.getErrorMessage());
             Assert.assertNotNull(errorMessage);
         } finally {
@@ -114,13 +259,13 @@ public class LocalCaTest {
         }
     }
     ...
-</pre>
-where we create a concurrent Set for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
+}}}
+where we create a concurrent <tt>Set</tt> for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the client session is cached for the SSL context, and so we recreate the clientSSLContext instance in our test above. This forces re-authentication by the server, so our trust manager is actually invoked and so our newly revoked certificate is rejected. Perhaps the reader can advise how to disable this client session caching for our unit test?
+Incidently, we find that the client session is cached for the SSL context, and so we recreate the <tt>clientSSLContext</tt> instance in our test above. This forces re-initialisation of the client session, and so re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. Perhaps the reader can advise how to disable this client session caching for our unit test?
 
 We connect to the server socket as follows.
-<pre>
+{{{
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
         SSLSocket socket = (SSLSocket) context.getSocketFactory().
@@ -137,25 +282,25 @@ We connect to the server socket as follows.
             socket.close();
         }
     }
-</pre>
-where we return the error message, otherwise null.
+}}}
+where we return the error message, otherwise <tt>null</tt>.
 
 
-<h4>keytool</h4>
+<h4>Client keystore</h4>
 
-Naturally we use <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html">keytool</a> to create our keystores and truststores. For example, we create a private SSL keystore for a client, say evanx, as follows.
-<pre>
+Naturally we use <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html"><tt>keytool</tt></a> to create our keystores and truststores. For example, we create a private SSL keystore for a client named "evanx" as follows.
+{{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx"
-</pre>
+}}}
 where we specify a validity period of 365 days.
  
 We export our certificate as follows.
-<pre>
+{{{
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
-</pre>
-We cut and paste the exported PEM text into a file, which we can inspect using openssl as follows.
-<pre>
+}}}
+We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt> as follows.
+{{{
 $ openssl x509 -text -in evanx.pem
 Certificate:
     Data:
@@ -170,37 +315,37 @@ Certificate:
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
-</pre>
+}}}
 We import the client cert into the server SSL truststore.
-<pre>
+{{{
 $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
-</pre>
+}}}
 Similarly, the server cert is imported into the clients' truststores.
 
-Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html">KeyTool</a>, and emulating the manual procedure.
+Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool</tt></a>, and emulating the manual procedure.
 
 <h4>Client certificate signing</h4>
 
 Alternatively, we might export a certificate signing request (CSR) as follows, and sign this with the server cert. In this case our server is a local CA where we will trust any of its issued certificates. So we must support certificate revocation to control access.
-<pre>
+{{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
-</pre>
-We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its new -gencert option, which by the way is not available in earlier JRE's.
-<pre>
+}}}
+We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its new <tt>-gencert</tt> option, which by the way is not available in earlier JRE's.
+{{{
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem
-</pre>
+}}}
 where we specify an unchanged DN and validity period for the newly signed certificate.
 
-We can inspect the cert using openssl.
-<pre>
+We can inspect the cert using <tt>openssl</tt>.
+{{{
 $ openssl x509 -text -in evanx.signed.pem | grep CN
         Issuer: CN=server
         Subject: CN=evanx
-</pre>
+}}}
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
-<pre>
+{{{
 $ keytool -keystore evanx.jks -importcert -noprompt \
     -file server.pem -alias server 
 Enter keystore password: 
@@ -210,7 +355,7 @@ $ keytool -keystore evanx.jks -importcert -noprompt \
     -file evanx.signed.pem -alias evanx
 Enter keystore password: 
 Certificate reply was installed in keystore
-</pre>
+}}}
 
 In this case, our client keystore can double up as our truststore since it happens to contain the server cert by virtue of its certificate chain, and naturally it must trust the server to which it wishes to connect. If the client cert is CA-signed, we must not use its keystore as its truststore, otherwise it would trust any server with a cert signed by that CA, since the CA certificate must be in the keystore as the root of the key certificate chain.
 
@@ -225,10 +370,10 @@ If our server cert is CA-signed, then since the keystore must include its key ce
 Clearly a certificate with a duplicate CN, impersonates the original certificate with that CN. So when issuing a client certificate, we must take care to ensure the uniqueness of the CN, and add the certificate or at least its unique identifier to a registry of some sort. 
 
 If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. In order to review access, we clearly require a perfect record of all issued certificates. So we might record our signed certs into a keystore file as follows.
-<pre>
+{{{
 $ keytool -keystore server.issued.jks -importcert -alias evanx -file evanx.pem 
 Certificate was added to keystore
-</pre>
+}}}
 where this is not a truststore per se, but just a database of issued certificates. 
 
 Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
@@ -237,12 +382,12 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 All told, given the risk of a rogue certificate, we recommend using self-signed client certificates which are explicitly imported into our server truststore, where can be reviewed. Any issued certificate which goes unrecorded or is given a duplicate identifier by mistake or on purpose, is a vulnerability.
 
-Note that when using self-signed client certs (or CA-signed server certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using keytool -gencert, as illustrated above. 
+Note that when using self-signed client certs (or CA-signed server certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above. 
 
 Similarly, when using CA-signed server certs, the server keystore contains the CA root key, and so must not be used as the truststore. Otherwise any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
 
 As a precaution, we might use an exclusive trust manager, implemented as follows.
-<pre>
+{{{
 public class ExclusiveTrustManager implements X509TrustManager {
     X509TrustManager delegate;
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -256,9 +401,9 @@ public class ExclusiveTrustManager implements X509TrustManager {
         }
     }
     ...
-</pre>
+}}}
 where we build a map of the certificates in our truststore, and check these as follows.
-<pre>    
+{{{    
     private void checkTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
         if (certs.length < 1) {
@@ -274,11 +419,11 @@ where we build a map of the certificates in our truststore, and check these as f
             throw new CertificateException("Invalid client certificate");
         }
     }
-</pre>
+}}}
 where we check that the first cert in the chain sent by the peer, is contained in our map.
 
 We can use this trust manager on the server and client.
-<pre>
+{{{
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
@@ -292,7 +437,7 @@ We can use this trust manager on the server and client.
         checkTrusted(certs);
         delegate.checkServerTrusted(certs, authType);
     }    
-</pre>
+}}}
 
 <h4>Conclusion</h4>
 
