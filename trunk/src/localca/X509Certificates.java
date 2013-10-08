@@ -35,6 +35,7 @@ import sun.security.pkcs.PKCS10;
 import sun.security.pkcs.PKCS10Attribute;
 import sun.security.pkcs.PKCS9Attribute;
 import sun.security.x509.AlgorithmId;
+import sun.security.x509.BasicConstraintsExtension;
 import sun.security.x509.CertificateAlgorithmId;
 import sun.security.x509.CertificateExtensions;
 import sun.security.x509.CertificateIssuerName;
@@ -43,6 +44,8 @@ import sun.security.x509.CertificateSubjectName;
 import sun.security.x509.CertificateValidity;
 import sun.security.x509.CertificateVersion;
 import sun.security.x509.CertificateX509Key;
+import sun.security.x509.ExtendedKeyUsageExtension;
+import sun.security.x509.KeyUsageExtension;
 import sun.security.x509.X500Name;
 import sun.security.x509.X500Signer;
 import sun.security.x509.X509CertImpl;
@@ -97,7 +100,8 @@ public class X509Certificates {
     }
     
     public static X509Certificate sign(PrivateKey signingKey, X509Certificate signingCert,
-            PKCS10 certReq, Date startDate, int validityDays, int serialNumber) 
+            PKCS10 certReq, Date startDate, int validityDays, int serialNumber,
+            boolean canSign) 
             throws Exception {
         String sigAlgName = "SHA256WithRSA";
         Date endDate = new Date(startDate.getTime() + TimeUnit.DAYS.toMillis(validityDays));
@@ -110,23 +114,34 @@ public class X509Certificates {
                 X509CertInfo.SUBJECT + "." + CertificateSubjectName.DN_NAME);
         Signature signature = Signature.getInstance(sigAlgName);
         signature.initSign(signingKey);
-        X509CertImpl cert = new X509CertImpl(buildCertInfo(issuer, certReq, 
-                sigAlgName, validity, serialNumber));
+        X509CertInfo certInfo = buildCertInfo(issuer, certReq, 
+                sigAlgName, validity, serialNumber, canSign);
+        X509CertImpl cert = new X509CertImpl(certInfo);
         cert.sign(signingKey, sigAlgName);
         return cert;
     }
     
     private static X509CertInfo buildCertInfo(X500Name issuer, PKCS10 certReq, 
-            String sigAlgName, CertificateValidity validity, int serialNumber) throws Exception {
+            String sigAlgName, CertificateValidity validity, int serialNumber,
+            boolean canSign) throws Exception {
         X509CertInfo info = new X509CertInfo();
         info.set(X509CertInfo.VALIDITY, validity);
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(serialNumber));
         info.set(X509CertInfo.VERSION, new CertificateVersion(CertificateVersion.V3));
-        info.set(X509CertInfo.ALGORITHM_ID, 
+        info.set(X509CertInfo.ALGORITHM_ID,
                 new CertificateAlgorithmId(AlgorithmId.get(sigAlgName)));
         info.set(X509CertInfo.ISSUER, new CertificateIssuerName(issuer));
         info.set(X509CertInfo.KEY, new CertificateX509Key(certReq.getSubjectPublicKeyInfo()));
         info.set(X509CertInfo.SUBJECT, new CertificateSubjectName(certReq.getSubjectName()));
+        CertificateExtensions extensions = new CertificateExtensions();
+        extensions.set(BasicConstraintsExtension.IS_CA, 
+                new BasicConstraintsExtension(true, false, 1));
+        if (false) {
+            KeyUsageExtension kue = new KeyUsageExtension();
+            kue.set(KeyUsageExtension.KEY_CERTSIGN, false);
+            extensions.set(KeyUsageExtension.NAME, kue);
+        }
+        info.set(X509CertInfo.EXTENSIONS, extensions);
         return info;
     }
     
