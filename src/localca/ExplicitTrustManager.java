@@ -22,17 +22,12 @@ package localca;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +36,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author evan.summers
  */
-public class ExclusiveTrustManager implements X509TrustManager {
-    static Logger logger = LoggerFactory.getLogger(ExclusiveTrustManager.class);
+public class ExplicitTrustManager implements X509TrustManager {
+    static Logger logger = LoggerFactory.getLogger(ExplicitTrustManager.class);
 
     X509TrustManager delegate;
     Map<String, X509Certificate> certificateMap = new HashMap();
     
-    public ExclusiveTrustManager(KeyStore trustStore) 
+    public ExplicitTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
         this.delegate = KeyStores.getX509TrustManager(trustStore);
         for (String alias: Collections.list(trustStore.aliases())) {
@@ -56,7 +51,7 @@ public class ExclusiveTrustManager implements X509TrustManager {
         }
     }
 
-    public ExclusiveTrustManager(X509TrustManager delegate, 
+    public ExplicitTrustManager(X509TrustManager delegate, 
             Map<String, X509Certificate> certificateMap) 
             throws GeneralSecurityException {
         this.delegate = delegate;

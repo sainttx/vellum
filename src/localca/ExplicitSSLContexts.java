@@ -27,11 +27,11 @@ import javax.net.ssl.SSLContext;
  *
  * @author evan.summers
  */
-public class ExclusiveSSLContexts {
+public class ExplicitSSLContexts {
 
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore) throws Exception {
         return SSLContexts.create(keyStore, keyPass, 
-                new ExclusiveTrustManager(trustStore));
+                new ExplicitTrustManager(trustStore));
     }
 }
