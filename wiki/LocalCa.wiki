@@ -333,7 +333,7 @@ We cut and paste the output PEM text into a CSR file, and use Java7's keytool to
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem
 }}}
-where we specify an unchanged DN and validity period for the newly signed certificate. Actually, we should add some extensions here e.g. to restrict key usage to exclude signing certs.
+where we specify an unchanged DN and validity period for the newly signed certificate. Actually, we should add some extensions here e.g. to restrict key usage to exclude cert signing.
 
 We can inspect the cert using <tt>openssl</tt>.
 {{{
