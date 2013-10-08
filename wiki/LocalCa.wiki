@@ -333,7 +333,7 @@ We cut and paste the output PEM text into a CSR file, and use Java7's keytool to
 $ keytool -keystore server.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem
 }}}
-where we specify an unchanged DN and validity period for the newly signed certificate.
+where we specify an unchanged DN and validity period for the newly signed certificate. Actually, we should add some extensions here e.g. to restrict key usage to exclude signing certs.
 
 We can inspect the cert using <tt>openssl</tt>.
 {{{
@@ -454,7 +454,7 @@ We introduce an explicit trust manager, which only trusts the peer certificate i
 
 <h4>Furthermore</h4>
 
-We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, a local CA server supporting standard CRLs, and perhaps even a web-based admin tool for these goodies. But don't believe it ;)
+We'll delve into the unit testing of our custom trust manager in a follow-up article. In the future, we might implement a local CA management tool that records issued certificates, and supports standard CRLs.
 
 <h4>Resources</h4>
 
