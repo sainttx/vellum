@@ -119,7 +119,8 @@ public class RevocableTrustManagerTest {
     private void testSigned() throws Exception {
         certRequest = clientPair.getCertRequest("CN=client");
         signedCert = X509Certificates.sign(serverPair.getPrivateKey(),
-                serverPair.getCertificate(), certRequest, new Date(), 365, 1234);
+                serverPair.getCertificate(), certRequest, new Date(), 365, 1234,
+                false);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
         Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());
         signedKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), signedCert,
