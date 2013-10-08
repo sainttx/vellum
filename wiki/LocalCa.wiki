@@ -454,7 +454,7 @@ We introduce an explicit trust manager, which only trusts the peer certificate i
 
 <h4>Furthermore</h4>
 
-We'll delve into the unit testing of our custom trust manager in a follow-up article. In the future, we might implement a local CA management tool that records issued certificates, and supports standard CRLs.
+We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, and supports standard CRLs.
 
 <h4>Resources</h4>
 
