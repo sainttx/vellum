@@ -27,7 +27,6 @@ import vellum.crypto.rsa.GenRsaPair;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -83,7 +82,7 @@ public class LocalCaTest {
         void sign(SSLEndPoint signer, int serialNumber) throws Exception {
             signedCert = X509Certificates.sign(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
-                    serialNumber);
+                    serialNumber, false);
             signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
                     signedCert, signer.cert);
             signedKeyStore.store(createOutputStream(alias), pass);
@@ -177,7 +176,7 @@ public class LocalCaTest {
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
-                    "Certificate serial number revoked", 
+                    "Certificate CN revoked", 
                     serverThread.getErrorMessage());
             Assert.assertNotNull(errorMessage);
         } finally {
