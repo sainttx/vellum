@@ -61,8 +61,7 @@ public class LocalCaTest {
         KeyStore keyStore;
         KeyStore trustStore;
         SSLContext sslContext;
-        X509Certificate cert;
-        PKCS10 certRequest;
+        X509Certificate cert;        
         KeyStore signedKeyStore;
         X509Certificate signedCert;
         SSLContext signedContext;
@@ -76,10 +75,10 @@ public class LocalCaTest {
             pair.generate("CN=" + alias, new Date(), 365);
             cert = pair.getCertificate();
             keyStore = createKeyStore(alias, pair);
-            certRequest = pair.getCertRequest("CN=" + alias);
         }
 
         void sign(SSLEndPoint signer, int serialNumber) throws Exception {
+            PKCS10 certRequest = pair.getCertRequest("CN=" + alias);
             signedCert = X509Certificates.sign(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
                     serialNumber, false);
