@@ -134,12 +134,12 @@ public class X509Certificates {
         info.set(X509CertInfo.KEY, new CertificateX509Key(certReq.getSubjectPublicKeyInfo()));
         info.set(X509CertInfo.SUBJECT, new CertificateSubjectName(certReq.getSubjectName()));
         CertificateExtensions extensions = new CertificateExtensions();
-        extensions.set(BasicConstraintsExtension.IS_CA, 
-                new BasicConstraintsExtension(true, false, 1));
-        if (false) {
-            KeyUsageExtension kue = new KeyUsageExtension();
-            kue.set(KeyUsageExtension.KEY_CERTSIGN, false);
-            extensions.set(KeyUsageExtension.NAME, kue);
+        if (canSign) {
+            BasicConstraintsExtension bce = new BasicConstraintsExtension(true, true, 1);
+            extensions.set(BasicConstraintsExtension.NAME, bce);
+        } else {
+            BasicConstraintsExtension bce = new BasicConstraintsExtension(true, false, 0);
+            extensions.set(BasicConstraintsExtension.NAME, bce);            
         }
         info.set(X509CertInfo.EXTENSIONS, extensions);
         return info;
