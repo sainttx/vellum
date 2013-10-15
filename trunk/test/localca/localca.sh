@@ -44,16 +44,29 @@ command0_initks() {
   command1_initks ca
   command1_initks server
   command1_initks client
+}
+
+command0_trust() {
   $keytool -keystore server.trust.jks -storepass $pass -importcert -noprompt \
     -alias client -file client.pem
   $keytool -keystore client.trust.jks -storepass $pass -importcert -noprompt \
     -alias server -file server.pem
 }
 
+command_connect() {
+  echo command_connect $@
+  for ks in $@
+  do
+    echo "$ks" 
+    $keytool -keystore $ks -storepass $pass -list | grep Entry
+  done
+  java localca.LocalCaMain $@ $pass
+}
+
 command0_connect() {
-  java localca.LocalCaMain server.jks server.jks server.jks server.jks test1234
-  java localca.LocalCaMain server.jks server.trust.jks client.jks client.trust.jks test1234
-  java localca.LocalCaMain ca.jks server.trust.jks client.jks ca.jks test1234
+  command_connect server.jks server.jks server.jks server.jks
+  command_connect server.jks server.trust.jks client.jks client.trust.jks
+  command_connect ca.jks server.trust.jks client.jks ca.jks
 }
 
 command0_signerr() {
@@ -69,14 +82,26 @@ command0_sign() {
   $keytool -keystore ca.jks -storepass $pass -keypass $pass -alias ca \
     -gencert -infile client.csr -rfc -outfile client.signed.pem \
     -validity 999 -dname "CN=client" \
-    -ext BC:critical=ca:false,pathlen:0 -ext KU:critical=keyAgreement,digitalSignature
+    -ext BC:critical=ca:false,pathlen:0 \
+    -ext KU:critical=keyAgreement,digitalSignature,dataEncipherment
+  $keytool -keystore ca.jks -storepass $pass -keypass $pass -alias ca \
+    -gencert -infile server.csr -rfc -outfile server.signed.pem \
+    -validity 999 -dname "CN=server" \
+    -ext BC:critical=ca:false,pathlen:0 \
+    -ext KU:critical=keyAgreement,digitalSignature,dataEncipherment
   openssl x509 -text -in client.signed.pem | grep "CN=\|CA:"
   openssl x509 -text -in client.signed.pem | grep "X509v3" -A1
   $keytool -keystore client.jks -storepass $pass -importcert -noprompt \
     -alias ca -file ca.pem 
   $keytool -keystore client.jks -storepass $pass -importcert -noprompt \
     -alias client -file client.signed.pem
+  $keytool -keystore server.jks -storepass $pass -importcert -noprompt \
+    -alias ca -file ca.pem 
+  $keytool -keystore server.jks -storepass $pass -importcert -noprompt \
+    -alias server -file server.signed.pem
   $keytool -keystore server.trust.jks -storepass $pass -importcert -noprompt \
+    -alias ca -file ca.pem
+  $keytool -keystore client.trust.jks -storepass $pass -importcert -noprompt \
     -alias ca -file ca.pem
 }
 
