@@ -64,9 +64,9 @@ command_connect() {
 }
 
 command0_connect() {
-  command_connect server.jks server.jks server.jks server.jks
+  #command_connect server.jks server.jks server.jks server.jks
+  #command_connect ca.jks server.trust.jks client.jks ca.jks
   command_connect server.jks server.trust.jks client.jks client.trust.jks
-  command_connect ca.jks server.trust.jks client.jks ca.jks
 }
 
 command0_signerr() {
@@ -88,7 +88,7 @@ command0_sign() {
     -gencert -infile server.csr -rfc -outfile server.signed.pem \
     -validity 999 -dname "CN=server" \
     -ext BC:critical=ca:false,pathlen:0 \
-    -ext KU:critical=keyAgreement,digitalSignature,dataEncipherment
+    -ext KU:critical=keyAgreement,digitalSignature #,keyEncipherment
   openssl x509 -text -in client.signed.pem | grep "CN=\|CA:"
   openssl x509 -text -in client.signed.pem | grep "X509v3" -A1
   $keytool -keystore client.jks -storepass $pass -importcert -noprompt \
@@ -103,6 +103,10 @@ command0_sign() {
     -alias ca -file ca.pem
   $keytool -keystore client.trust.jks -storepass $pass -importcert -noprompt \
     -alias ca -file ca.pem
+  $keytool -keystore server.jks -storepass $pass -exportcert -rfc -alias server |
+    openssl x509 -text | grep 'CN='
+  $keytool -keystore client.jks -storepass $pass -exportcert -rfc -alias client |
+    openssl x509 -text | grep 'CN='
 }
 
 command0_test() {
