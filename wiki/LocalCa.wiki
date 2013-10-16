@@ -2,11 +2,11 @@
 
 <h4>Overview</h4>
 
-We consider innumerable clients connecting to a Java server over SSL sockets, e.g. for some mobile app, device or monitor.
+We consider a whole bunch of clients connecting to a Java server over SSL sockets, e.g. some mobile app, configuration agent or device monitor.
 
-Naturally, we generate certificates for each client, and typically import these self-signed certificates into our server truststore.
+Naturally, we can generate certificates for each client, and typically import these into our server truststore.
 
-In this article, we sign client certificates using a local root CA certificate. As such, our server should support certificate revocation.
+In this article, we'll sign the client certificates using a local root CA certificate. As such, our server should somehow support certificate revocation.
 
 
 <h4>SSLContext</h4>
@@ -101,6 +101,15 @@ Issuer: CN=ca
 where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
 
 
+<h4>Server truststore</h4>
+
+Our server truststore will contain the CA certificate.
+{{{
+$ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
+}}}
+where our local CA signs the client certs.
+
+
 <h4>openssl</h4>
 
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
@@ -114,7 +123,7 @@ Certificate chain
    i:/CN=ca
 
 Acceptable client certificate CA names
-/CN=server
+/CN=ca
 }}}
 where the subject and issuer of the two certificates in our key certificate chain are listed, and it will accept client certificates whose chain includes the server certificate e.g. as a parent certificate.
 
