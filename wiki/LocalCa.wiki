@@ -77,9 +77,9 @@ $ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
 Enter keystore password:
 keytool error: java.lang.Exception: Failed to establish chain from reply
 }}}
-where the signed certificate is a so-called "reply" to a certificate signing request (CSR).
+where the signed certificate is a so-called "reply" to its certificate signing request.
 
-So we must import the certificate chain, starting with the root certificate, as follows.
+So we must import the certificate chain in order starting with the root certificate, as follows.
 {{{
 $ keytool -keystore server.jks -alias ca -importcert -file ca.pem
 }}}
