@@ -134,7 +134,7 @@ Acceptable client certificate CA names
 }}}
 where the subject and issuer of the two certificates in our key certificate chain are listed, and our server will accept client certificates whose chain includes the CA certificate, i.e. as its root certificate. If we are using an intermediate CA certificate to sign the client certs, then that would be imported into the truststore rather than the root certificate.
 
-This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted certificate need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root. If that root is a public CA e.g. !GoDaddy.com, then clearly it must not be in the truststore.
+This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted certificate need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root. If that root is a public CA e.g. !GoDaddy.com, then clearly it must not be included in our truststore.
 
 <h4>Intermediate cert</h4>
 
