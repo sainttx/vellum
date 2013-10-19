@@ -164,7 +164,7 @@ We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509C
 In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
 
 
-<h4>SSLContexts</h4>
+<h4>Revocable SSL contexts</h4>
 
 Ordinarily we create an <tt>SSLContext</tt> as follows.
 {{{
