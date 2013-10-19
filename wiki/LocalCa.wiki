@@ -207,7 +207,7 @@ public class RevocableNameSSLContexts {
     }
 }
 }}}
-where we initialise a custom <tt>!RevocableTrustManager</tt> with our signing cert, and a set of revoked names.
+where we initialise a custom <tt>!RevocableTrustManager</tt> with our signing cert and a set of revoked names.
 {{{
 public class RevocableTrustManager implements X509TrustManager {
     X509Certificate issuerCertificate;
