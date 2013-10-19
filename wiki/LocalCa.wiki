@@ -253,8 +253,8 @@ The set of revoked certificates' identifiers might be read from a file, URL or d
 public class LocalCaTest {
     ...
     private void testDynamicNameRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
-            KeyStore clientKeyStore, KeyStore clientTrustStore,
-            String revokedName) throws Exception {
+            KeyStore clientKeyStore, KeyStore clientTrustStore, String revokedName) 
+            throws Exception {
         Set<String> revokedNames = new ConcurrentSkipListSet();
         SSLContext serverSSLContext = RevocableNameSSLContexts.create(
                 serverKeyStore, pass, serverTrustStore, revokedNames);
