@@ -384,6 +384,7 @@ We see that the X509v3 extensions are set as follows.
             X509v3 Key Usage: critical
                 Digital Signature
 }}}
+where we can compare to these to certificates we have bought e.g. from !GoDaddy.com.
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the CA cert first, and then our signed cert.
 {{{
