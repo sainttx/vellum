@@ -141,7 +141,7 @@ This demonstrates why the keystore requires a certificate chain, i.e. to send to
 In practice, we might have multiple servers with different sets of clients. So we might generate an intermediate certificate that is used to sign client certificates for a specific server.
 
 {{{
-$ keytool -keystore intermediate.jks -genkeypair -alias serverca -dname "CN=intermediate" \
+$ keytool -keystore intermediate1.jks -genkeypair -alias intermediate1 -dname "CN=intermediate1" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
 }}}
 where this keystore resides on our secure CA server, and not in the DMZ.
