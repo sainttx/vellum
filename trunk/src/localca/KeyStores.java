@@ -20,18 +20,11 @@
  */
 package localca;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
@@ -41,7 +34,7 @@ import javax.net.ssl.X509TrustManager;
  */
 public class KeyStores {
 
-    public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore, 
+    public static X509Certificate findPrivateKeyCertificate(KeyStore keyStore, 
             String keyAlias) throws KeyStoreException {
         if (!keyStore.entryInstanceOf(keyAlias, KeyStore.PrivateKeyEntry.class)) {
             throw new KeyStoreException("Not private key entry: " + keyAlias);
@@ -49,7 +42,7 @@ public class KeyStores {
         return (X509Certificate) keyStore.getCertificate(keyAlias);
     }
 
-    public static X509Certificate getPrivateKeyCertificate(KeyStore keyStore) 
+    public static X509Certificate findPrivateKeyCertificate(KeyStore keyStore) 
             throws KeyStoreException {
         if (countKeys(keyStore) == 1) {
             for (String alias : Collections.list(keyStore.aliases())) {
@@ -60,7 +53,19 @@ public class KeyStores {
         }
         throw new KeyStoreException("No sole private key found in keystore");
     }
-            
+
+    public static X509Certificate findSoleTrustedCertificate(KeyStore trustStore) 
+            throws KeyStoreException {
+        if (countKeys(trustStore) == 1) {
+            for (String alias : Collections.list(trustStore.aliases())) {
+                if (trustStore.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class)) {
+                    return (X509Certificate) trustStore.getCertificate(alias);
+                }
+            }
+        }
+        throw new KeyStoreException("No sole trusted certificate found in keystore");
+    }
+    
     public static int countKeys(KeyStore keyStore) throws KeyStoreException {
         int count = 0;
         for (String alias : Collections.list(keyStore.aliases())) {
@@ -71,7 +76,7 @@ public class KeyStores {
         return count;
     }
 
-    public static X509TrustManager getX509TrustManager(KeyStore trustStore)
+    public static X509TrustManager findX509TrustManager(KeyStore trustStore)
             throws GeneralSecurityException {
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
         trustManagerFactory.init(trustStore);

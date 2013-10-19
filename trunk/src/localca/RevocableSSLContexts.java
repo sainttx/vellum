@@ -46,8 +46,8 @@ public class RevocableSSLContexts {
             KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) 
             throws GeneralSecurityException {
         X509TrustManager revocableTrustManager = new RevocableTrustManager(
-                KeyStores.getPrivateKeyCertificate(keyStore),
-                KeyStores.getX509TrustManager(trustStore),
+                KeyStores.findPrivateKeyCertificate(keyStore),
+                KeyStores.findX509TrustManager(trustStore),
                 new TreeSet(),
                 revokedSerialNumbers);
         return SSLContexts.create(keyStore, keyPass, revocableTrustManager);
