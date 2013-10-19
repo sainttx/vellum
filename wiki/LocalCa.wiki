@@ -2,23 +2,27 @@
 
 <h4>Overview</h4>
 
-We consider a whole bunch of clients connecting to a Java server over SSL sockets, e.g. some mobile app, configuration agent or device monitor.
+We consider a bunch of remote clients connecting to our Java server over SSL sockets.
 
-Naturally, we can generate certificates for each client, and typically import these into our server truststore.
+Naturally, we generate a private key for each client, and perhaps import all our clients' self-signed certificates into our server truststore.
 
-In this article, we'll sign the client certificates using a local root CA certificate. As such, our server should somehow support certificate revocation.
+In this article, we'll sign the client certificates using a local CA certificate. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation, e.g. so that we can disable access for devices that go amiss.
 
 
 <h4>SSLContext</h4>
 
-Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is configured with a keystore and a truststore, as in the following example.
+Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which is initialized via a keystore and a truststore, as in the following example.
 
 {{{
 public class LocalCaTest {
     ...
-    static void acceptSingle(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
+    static void accept(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
             int port) throws GeneralSecurityException, IOException {
-        SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyPassword);
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(trustStore);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(keyManagerFactory.getKeyManagers(),
                 trustManagerFactory.getTrustManagers(), new SecureRandom());
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
@@ -32,7 +36,7 @@ public class LocalCaTest {
     }    
 }
 }}}
-where we create an SSL context and server socket, and accept a client connection. Our <tt>SSLContexts</tt> factory will be presented further below.
+where we create an SSL context for our server socket, and accept a client connection.
 
 The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. In fact, <tt>keytool</tt> will not allow a signed certificate "reply" to be imported unless its parent certificate chain is already present in the keystore.
 {{{
