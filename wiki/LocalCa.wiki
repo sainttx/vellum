@@ -110,12 +110,12 @@ where we have signed our server cert with a local root CA cert, where by definit
 
 <h4>Server truststore</h4>
 
-Our server truststore will contain the CA certificate.
+Our server truststore will contain the CA certificate, which signs our client certs.
 {{{
 $ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
 }}}
-where our local CA signs the client certs.
 
+Note that by definition, any remote certificate whose chain contains a certificate in the truststore, is trusted. Therefore since our client certificate chain contains our CA certificate, it will be trusted.
 
 <h4>openssl</h4>
 
