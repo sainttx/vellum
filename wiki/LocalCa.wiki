@@ -38,7 +38,7 @@ public class LocalCaTest {
 }}}
 where we create an SSL context for our server socket, and accept a client connection.
 
-The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. In fact, <tt>keytool</tt> will not allow a signed certificate "reply" to be imported unless its parent certificate chain is already present in the keystore, as we'll see further below.
+The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. In fact, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 {{{
 keytool error: java.lang.Exception: Failed to establish chain from reply
 }}}
