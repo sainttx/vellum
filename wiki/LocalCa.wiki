@@ -159,7 +159,7 @@ Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.j
             new java.util.Random().nextInt() & 0x7fffffff));
 }}}
 
-We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> returns a <tt>!BigInteger</tt> for the certificate serial number, which should be unique, and can be used for revocation. (Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>.)
+We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> (implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>) returns a <tt>!BigInteger</tt> for the certificate serial number, which should be unique, and can be used for revocation.
 
 In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
 
