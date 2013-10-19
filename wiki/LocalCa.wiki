@@ -248,7 +248,7 @@ Since we use this trust manager on the server, to validate clients, we do not ex
 
 <h4>Dynamic revocation</h4>
 
-The set of revoked certificates' identifiers might be read from a file, URL or a database. This could be a <tt>synchronized</tt> <tt>Set</tt> that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
+The set of revoked certificates' identifiers might be read from a file, URL or database. This could be a <tt>synchronized</tt> <tt>Set</tt> that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
 {{{
 public class LocalCaTest {
     ...
@@ -268,8 +268,7 @@ public class LocalCaTest {
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
-                    "Certificate CN revoked", 
-                    serverThread.getErrorMessage());
+                    "Certificate CN revoked", serverThread.getErrorMessage());
             Assert.assertNotNull(errorMessage);
         } finally {
             serverThread.close();
