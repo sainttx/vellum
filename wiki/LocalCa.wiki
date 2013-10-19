@@ -105,7 +105,7 @@ Certificate[2]:
 Owner: CN=ca
 Issuer: CN=ca
 }}}
-where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
+where we have signed our server cert with a local root CA cert, where by definition the "root" certificate of our chain is self-signed.
 
 
 <h4>Server truststore</h4>
