@@ -422,9 +422,7 @@ We might record our signed certs into a keystore file as follows.
 $ keytool -keystore server.issued.jks -importcert -alias evanx -file evanx.pem 
 Certificate was added to keystore
 }}}
-where this is not a truststore per se, but just a database of issued certificates. 
-
-Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
+where this is not a truststore per se, but just a database of issued certificates. Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
 
 <h4>Self-signed client certificates</h4>
 
