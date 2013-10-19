@@ -1,3 +1,153 @@
+<h4>SSLContext</h4>
+
+Naturally an SSLServerSocket is created using an SSLContext, which is configured with a keystore and a truststore, as in the following example.
+
+<pre>
+public class LocalCaTest {
+    ...
+    static void acceptSingle(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
+            int port) throws GeneralSecurityException, IOException {
+        SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
+        sslContext.init(keyManagerFactory.getKeyManagers(),
+                trustManagerFactory.getTrustManagers(), new SecureRandom());
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
+                getServerSocketFactory().createServerSocket(port);
+        try {
+            serverSocket.setNeedClientAuth(true);
+            handle(serverSocket.accept());
+        } finally {
+            serverSocket.close();
+        }
+    }    
+}
+</pre>
+where we create an SSL context and server socket, and accept a client connection. Our SSLContexts factory will be presented further below.
+
+The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. In fact, keytool will not allow a signed certificate "reply" to be imported unless its parent certificate chain is already present in the keystore.
+<pre>
+$ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
+Enter keystore password:
+keytool error: java.lang.Exception: Failed to establish chain from reply
+</pre>
+where the signed certificate is a so-called "reply" to a certificate signing request (CSR).
+
+
+<h4>Server certificate signing</h4>
+
+Naturally we create a keystore containing a private key and its self-signed cert using keytool -genkeypair.
+<pre>
+$ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
+</pre>
+where we specify a validity period of 365 days.
+
+We export a certificate signing request as follows.
+<pre>
+$ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
+</pre>
+We create a signing key. Actually this is our "local CA" certificate.
+<pre>
+$ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
+</pre>
+Incidently, our server might reside in a DMZ accessible to the Internet, whereas our "CA" key is on a more secure internal machine.
+
+We can sign the CSR using using Java7's keytool -gencert.
+<pre>
+$ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=server" \
+    -validity 365 -rfc -outfile server.signed.pem \
+    -ext BasicConstraints:critical=ca:false,pathlen:0 \
+    -ext KeyUsage:critical=keyEncipherment \
+    -ext ExtendedKeyUsage:critical=serverAuth
+</pre>
+where we set X509v3 extensions to restrict the key usage, for good measure. 
+
+We now wish to import this signed certificate reply into our server keystore. Actually we must import its certificate chain, starting with the root certificate.
+<pre>
+$ keytool -keystore server.jks -alias ca -importcert -file ca.pem
+</pre>
+An "intermediate" certificate would be next, if we have one. Finally we import the signed certificate reply.
+<pre>
+$ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
+</pre>
+
+<h4>Certificate chain</h4>
+
+We can list the certicate chain as follows.
+<pre>
+$ keytool -keystore server.jks -alias server -list -v
+
+Certificate chain length: 2
+
+Certificate[1]:
+Owner: CN=server
+Issuer: CN=ca
+
+Certificate[2]:
+Owner: CN=ca
+Issuer: CN=ca
+</pre>
+where we have signed our server cert with a local CA cert, which is by definition the self-signed root of our certificate chain.
+
+
+<h4>Server truststore</h4>
+
+Our server truststore will contain the CA certificate.
+<pre>
+$ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
+</pre>
+where our local CA signs the client certs.
+
+
+<h4>openssl</h4>
+
+We can use openssl to connect to the SSLServerSocket and inspect its key certificate chain as follows.
+<pre>
+$ openssl s_client -connect localhost:4444
+
+Certificate chain
+ 0 s:/CN=server
+   i:/CN=ca
+ 1 s:/CN=ca
+   i:/CN=ca
+
+Acceptable client certificate CA names
+/CN=ca
+</pre>
+where the subject and issuer of the two certificates in our key certificate chain are listed, and it will accept client certificates whose chain includes the CA certificate i.e. as its root certificate. If we are using an intermediate CA certificate to sign the client certs, then that would in the truststore rather than the root certificate.
+
+This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted cert need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> children of the trusted cert's root. If that root is a public CA e.g. GoDaddy.com, one can imagine the problem.
+
+<h4>Intermediate cert</h4>
+
+In practice, we might have multiple servers with different sets of clients. So we might generate an intermediate certificate that is used to sign client certificates for a specific server.
+
+<pre>
+$ keytool -keystore intermediate.jks -genkeypair -alias serverca -dname "CN=intermediate" \
+  -keyalg rsa -keysize 2048 -validity 365 -noprompt
+</pre>
+where this keystore resides on our secure CA server, and not on the server in the DMZ.
+
+We can then use this CA to sign our client certs, and as such our server truststore contains this cert, in order to trust all its clients in one fell swoop.
+
+Note that the problem with signing client certs with the server cert, is that the server is not as secure as our CA, and if compromised, could be used to sign rogue certificates.
+
+
+<h4>Serial numbers</h4>
+
+Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html">KeyTool.java</a>, as used by the <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html">keytool</a> command-line utility, generates a random serial number as follows.
+<pre>
+        info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(
+            new java.util.Random().nextInt() & 0x7fffffff));
+</pre>
+
+We see that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">X509Certificate</a> returns a BigInteger for the certificate serial number, which should be unique, and can be used for revocation. (Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html">X509CertImpl</a>.)
+
+In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
+
+
+<h4>SSLContexts</h4>
+
 Ordinarily we create an SSLContext as follows.
 <pre>
 public class SSLContexts {

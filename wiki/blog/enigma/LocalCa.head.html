@@ -1,7 +1,6 @@
+We consider a bunch of remote clients connecting to our Java server over SSL sockets.
 
-We consider a whole bunch of clients connecting to a Java server over SSL sockets, e.g. some mobile app, configuration agent or device monitor.
-
-Naturally, we can generate certificates for each client, and typically import these into our server truststore.
+Naturally, we generate a private key for each client, and perhaps import all our clients' self-signed certificates into our server truststore.
 
 <!--break-->
 
@@ -10,5 +9,5 @@ Naturally, we can generate certificates for each client, and typically import th
 
 <br>
 
-In this article, we'll sign the client certificates using a local root CA certificate. As such, our server should somehow support certificate revocation.
+In this article, we'll sign the client certificates using a local CA certificate. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation, so that we can disable devices that go amiss.
 
