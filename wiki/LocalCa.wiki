@@ -71,7 +71,15 @@ $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=serv
 }}}
 where we set X509v3 extensions to restrict the key usage, for good measure. 
 
-We now wish to import this signed certificate reply into our server keystore. Actually we must import its certificate chain, starting with the root certificate.
+We now wish to import this signed certificate reply into our server keystore. As mentioned earlier, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
+{{{
+$ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
+Enter keystore password:
+keytool error: java.lang.Exception: Failed to establish chain from reply
+}}}
+where the signed certificate is a so-called "reply" to a certificate signing request (CSR).
+
+So we must import the certificate chain, starting with the root certificate, as follows.
 {{{
 $ keytool -keystore server.jks -alias ca -importcert -file ca.pem
 }}}
@@ -79,14 +87,6 @@ An "intermediate" certificate would be next, if we have one. Finally we import t
 {{{
 $ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
 }}}
-
-As mentioned earlier, note that <tt>keytool</tt> will not allow a signed certificate "reply" to be imported unless its parent certificate chain is already present in the keystore.
-{{{
-$ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
-Enter keystore password:
-keytool error: java.lang.Exception: Failed to establish chain from reply
-}}}
-where the signed certificate is a so-called "reply" to a certificate signing request (CSR).
 
 
 <h4>Certificate chain</h4>
