@@ -491,7 +491,7 @@ We can use this trust manager on the server and client.
 
 <h4>Conclusion</h4>
 
-We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable specific clients. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our server to use it!
+We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable certificates for devices that have gone amiss. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our Java server to use it.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
