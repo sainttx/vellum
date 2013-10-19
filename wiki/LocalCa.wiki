@@ -146,9 +146,9 @@ $ keytool -keystore intermediate1.jks -genkeypair -alias intermediate1 -dname "C
 }}}
 where this keystore resides on our secure CA server, and not in the DMZ.
 
-We can then use this intermediate CA key to sign our client certs, and as such our server truststore contains this CA certificate, in order to trust all its clients in one fell swoop. Clearly, it is not a <i>root</i> CA certificate, but since it can sign certificates, it is a "CA certificate" nonetheless.
+We can then use this intermediate CA key to sign the client certs for some server, and as such its truststore contains this CA certificate, in order to trust all its clients in one fell swoop. Clearly, it is not a <i>root</i> CA certificate, but since it can sign certificates, it is a "CA certificate" nonetheless.
 
-Note that the problem with signing client certs with the server cert, is that the server is not as secure as our CA, and if compromised, could be used to sign rogue certificates.
+Note that the problem with signing client certs with the server cert, is that the server is not as secure as our CA since it resides in the DMZ, and if compromised, could be used to sign rogue certificates.
 
 
 <h4>Serial numbers</h4>
