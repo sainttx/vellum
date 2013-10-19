@@ -24,6 +24,7 @@ import com.sun.net.ssl.internal.pkcs12.PKCS12KeyStore;
 import java.io.OutputStream;
 import java.util.Date;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 import vellum.crypto.rsa.GenRsaPair;
 
 /**
@@ -36,7 +37,7 @@ public class PKCS12KeyStores {
     public static PKCS12KeyStore generateKeyStore(String dname, int validityDays,
             String alias, char[] password, OutputStream stream) throws Exception {
         GenRsaPair keyPair = new GenRsaPair();
-        keyPair.generate(dname, new Date(), validityDays);
+        keyPair.generate(dname, new Date(), validityDays, TimeUnit.DAYS);
         PKCS12KeyStore p12KeyStore = new PKCS12KeyStore();
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCertificate()};
         p12KeyStore.engineSetKeyEntry(alias, keyPair.getPrivateKey(), password, chain);

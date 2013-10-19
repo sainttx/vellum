@@ -39,18 +39,19 @@ public class GenRsaPair {
     int keySize = 2048;
     String dname;    
     Date notBefore;
-    int validityDays;    
+    Date notAfter;
     CertAndKeyGen gen;
     X509Certificate cert;
 
-    public void generate(String dname, Date notBefore, int validityDays) throws Exception {
+    public void generate(String dname, Date notBefore, long validity, TimeUnit timeUnit) 
+            throws Exception {
         this.dname = dname;
         this.notBefore = notBefore;
-        this.validityDays = validityDays;
+        notAfter = new Date(notBefore.getTime() + timeUnit.toMillis(validity));
         gen = new CertAndKeyGen(keyAlgName, sigAlgName);
         gen.generate(keySize);
         cert = gen.getSelfCertificate(new X500Name(dname), notBefore, 
-                TimeUnit.DAYS.toSeconds(validityDays));
+                timeUnit.toSeconds(validity));
     }
 
     public CertAndKeyGen getGen() {
@@ -71,6 +72,6 @@ public class GenRsaPair {
     
     public void sign(PrivateKey signerKey, X509Certificate signerCert) throws Exception {
         cert = Certificates.signCert(signerKey, signerCert, getCertRequest(dname), 
-                notBefore, validityDays);
+                notBefore, notAfter);
     }
 }
