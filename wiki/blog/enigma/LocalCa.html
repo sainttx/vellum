@@ -1,7 +1,7 @@
 
-Consider innumerable clients connecting to a Java server over SSL sockets. 
+We consider a whole bunch of clients connecting to a Java server over SSL sockets, e.g. some mobile app, configuration agent or device monitor.
 
-Naturally, we generate certificates for each client, and perhaps import these self-signed certificates into our server truststore.
+Naturally, we can generate certificates for each client, and typically import these into our server truststore.
 
 <!--break-->
 
@@ -10,7 +10,7 @@ Naturally, we generate certificates for each client, and perhaps import these se
 
 <br>
 
-In this article, we sign the client certificates using our server certificate, which is then our local CA root certificate. As such, our server must enable the revocation of certificates.
+In this article, we'll sign the client certificates using a local root CA certificate. As such, our server should somehow support certificate revocation.
 
 Ordinarily we create an SSLContext as follows.
 <pre>
@@ -28,33 +28,33 @@ public class SSLContexts {
         return sslContext;
     }
 }
-</pre>Since we wish to support a local CA, we should enable local certificate revocation in order to retain access control. We see that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">X509Certificate</a> returns a BigInteger for the serial number, that should be unique. Incidently, this is implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html">X509CertImpl</a>.
+</pre>Since we wish to support a local CA for client certificates, we should enable local certificate revocation in order to retain access control. For convenience, we'll revoke certificates by their common name (CN), which must be unique.
 
-So we create an SSLContext with a set of revoked certificate serial numbers, as follows.
+So we create an SSLContext with a set of revoked names, as follows.
 <pre>
-public class RevocableSSLContexts {
+public class RevocableNameSSLContexts {
     ...
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
-            KeyStore trustStore, Set<BigInteger> revokedSerialNumbers) throws Exception {
+            KeyStore trustStore, Set<String> revokedNames) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableTrustManager(
-                getPrivateKeyCertificate(keyStore),
-                getX509TrustManager(trustStore),
-                revokedList);
+                KeyStores.findSoleTrustedCertificate(keyStore),
+                KeyStores.findX509TrustManager(trustStore),
+                revokedNames);
         sslContext.init(keyManagerFactory.getKeyManagers(),
-                new TrustManager[]{revocableTrustManager},
+                new TrustManager[] {revocableTrustManager},
                 new SecureRandom());
         return sslContext;
     }
 }
-</pre>where we initialise a custom RevocableTrustManager with our server cert, and a set of revoked certificates' serial numbers.
+</pre>where we initialise a custom RevocableTrustManager with our signing cert, and a set of revoked names.
 <pre>
 public class RevocableTrustManager implements X509TrustManager {
-    X509Certificate serverCertificate;
+    X509Certificate issuerCertificate;
     X509TrustManager delegate;
-    Set<BigInteger> revokedSerialNumbers;
+    Set<String> revokedNames;
     ...
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) 
@@ -62,27 +62,21 @@ public class RevocableTrustManager implements X509TrustManager {
         if (certs.length < 2) {
             throw new CertificateException("Invalid cert chain length");
         }
-        if (!certs[0].getSubjectX500Principal().equals(
-                serverCertificate.getSubjectX500Principal())) {
+        if (!certs[0].getIssuerX500Principal().equals(
+                issuerCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
-        if (certs[0].getSubjectX500Principal().equals(
-                serverCertificate.getSubjectX500Principal())) {
-            throw new CertificateException("Certificate is parent certificate");
-        }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
-                serverCertificate.getPublicKey().getEncoded())) {
-            throw new CertificateException("Issuer public key invalid");
+                issuerCertificate.getPublicKey().getEncoded())) {
+            throw new CertificateException("Untrusted issuer public key");
         }
-        if (revokedSerialNumbers.contains(certs[0].getSerialNumber())) {
-            throw new CertificateException("Certificate serial number revoked");
+        if (revokedNames.contains(X509Certificates.getCN(certs[0].getSubjectDN()))) {
+            throw new CertificateException("Certificate CN revoked");
         }
         delegate.checkClientTrusted(certs, authType);
     }
 }
-</pre>where we check that the client certificate is signed by our server certificate, and not revoked. Finally, we delegate to the standard X509TrustManager for good measure, to validate the certificate chain, expiry dates and what-not.
-
-Notice that we do not accept the server cert as a client cert. This is a precaution in case our server keystore has been compromised, and a rogue is using it to connect to our server.
+</pre>where we check that the client certificate is issued by our CA, and not revoked. Finally, we delegate to the standard X509TrustManager for good measure, e.g. to validate the certificate chain, expiry dates and what-not.
 
 Since we use this trust manager on the server rather than a client, we do not expect its checkServerTrusted() method to be invoked.
 <pre>
@@ -91,29 +85,29 @@ Since we use this trust manager on the server rather than a client, we do not ex
             throws CertificateException {
         throw new CertificateException("Server authentication not supported");
     }    
-</pre><h4>Revoked certificates</h4>
+</pre><h4>Dynamic revocation</h4>
 
-The set of revoked certificates' identifiers might be read from a file or a database. This could be a synchronized Set that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
+The set of revoked certificates' identifiers might be read from a file, URL or a database. This could be a synchronized Set that can be updated concurrently, and so enables a dynamic truststore, which we test as follows.
 <pre>
 public class LocalCaTest {
     ...
-    private void testDynamicRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
+    private void testDynamicNameRevocation(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
-            int serialNumber) throws Exception {
-        Set<BigInteger> revokedSerialNumbers = new ConcurrentSkipListSet();
-        SSLContext serverSSLContext = RevocableSSLContexts.createRevocableSerialNumbers(
-                serverKeyStore, pass, serverTrustStore, revokedSerialNumbers);
+            String revokedName) throws Exception {
+        Set<String> revokedNames = new ConcurrentSkipListSet();
+        SSLContext serverSSLContext = RevocableNameSSLContexts.create(
+                serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
-            revokedSerialNumbers.add(BigInteger.valueOf(serialNumber));
+            revokedNames.add(revokedName);
             clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
-                    "Certificate serial number revoked", 
+                    "Certificate CN revoked", 
                     serverThread.getErrorMessage());
             Assert.assertNotNull(errorMessage);
         } finally {
@@ -124,7 +118,7 @@ public class LocalCaTest {
     ...
 </pre>where we create a concurrent Set for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the client session is cached for the SSL context, and so we recreate the clientSSLContext instance in our test above. This forces re-authentication by the server, so our trust manager is actually invoked and so our newly revoked certificate is rejected. Perhaps the reader can advise how to disable this client session caching for our unit test?
+Incidently, we find that the client session is cached for the SSL context, and so we recreate the clientSSLContext instance in our test above. This forces re-initialisation of the client session, and so re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. Perhaps the reader can advise how to disable this client session caching for our unit test?
 
 We connect to the server socket as follows.
 <pre>
@@ -147,14 +141,13 @@ We connect to the server socket as follows.
 </pre>where we return the error message, otherwise null.
 
 
-<h4>keytool</h4>
+<h4>Client keystore</h4>
 
-Naturally we use <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/keytool.html">keytool</a> to create our keystores and truststores. For example, we create a private SSL keystore for a client, say evanx, as follows.
+For example, we create a private SSL keystore for a test client named "evanx" as follows.
 <pre>
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
     -dname "CN=evanx"
-</pre>where we specify a validity period of 365 days.
- 
+</pre> 
 We export our certificate as follows.
 <pre>
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
@@ -177,30 +170,54 @@ Certificate:
 </pre>We import the client cert into the server SSL truststore.
 <pre>
 $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
-</pre>Similarly, the server cert is imported into the clients' truststores.
+</pre>Similarly, our CA cert is imported into this client's truststore.
 
 Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html">KeyTool</a>, and emulating the manual procedure.
 
+
 <h4>Client certificate signing</h4>
 
-Alternatively, we might export a certificate signing request (CSR) as follows, and sign this with the server cert. In this case our server is a local CA where we will trust any of its issued certificates. So we must support certificate revocation to control access.
+We export a certificate signing request (CSR) as follows, and sign this with our local CA cert.
 <pre>
 $ keytool -keystore evanx.jks -alias evanx -certreq
 </pre>We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its new -gencert option, which by the way is not available in earlier JRE's.
 <pre>
-$ keytool -keystore server.jks -gencert -validity 365 -rfc \
-    -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem
-</pre>where we specify an unchanged DN and validity period for the newly signed certificate.
+$ keytool -keystore ca.jks -gencert -validity 365 -rfc \
+    -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem \
+    -ext BasicConstraints:critical=ca:false,pathlen:0 \
+    -ext KeyUsage:critical=digitalSignature \
+    -ext ExtendedKeyUsage:critical=clientAuth
+</pre>where we specify an unchanged DN and validity period for the newly signed certificate. We might add some extensions for good measure, i.e. to restrict key usage.
 
 We can inspect the cert using openssl.
 <pre>
-$ openssl x509 -text -in evanx.signed.pem | grep CN
-        Issuer: CN=server
+$ openssl x509 -text -in evanx.signed.pem
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 448957773 (0x1ac28d4d)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=ca
+        Validity
+            Not Before: Oct 16 20:02:24 2013 GMT
+            Not After : Jul 11 20:02:24 2016 GMT
         Subject: CN=evanx
-</pre>Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the server cert first, and then our signed cert.
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+</pre>We see that the X509v3 extensions are set as follows.
+<pre>
+
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Extended Key Usage: critical
+                TLS Web Client Authentication
+            X509v3 Key Usage: critical
+                Digital Signature
+</pre>Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the CA cert first, and then our signed cert.
 <pre>
 $ keytool -keystore evanx.jks -importcert -noprompt \
-    -file server.pem -alias server 
+    -file ca.pem -alias ca
 Enter keystore password: 
 Certificate was added to keystore
 
@@ -208,13 +225,7 @@ $ keytool -keystore evanx.jks -importcert -noprompt \
     -file evanx.signed.pem -alias evanx
 Enter keystore password: 
 Certificate reply was installed in keystore
-</pre>In this case, our client keystore can double up as our truststore since it happens to contain the server cert by virtue of its certificate chain, and naturally it must trust the server to which it wishes to connect. If the client cert is CA-signed, we must not use its keystore as its truststore, otherwise it would trust any server with a cert signed by that CA, since the CA certificate must be in the keystore as the root of the key certificate chain.
-
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
-Our server keystore can also double up as its truststore in this particular case, since naturally it contains the self-signed server cert (paired with its private key), and our client certs' CA cert is in fact this server cert.
-
-If our server cert is CA-signed, then since the keystore must include its key certificate chain, it will include the CA root cert. Therefore if the keystore is misused as the trustore, then the server would trust <i>any</i> client cert signed by that CA.
+</pre><img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 <h4>Client certificate management</h4>
 
@@ -230,19 +241,19 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 <h4>Self-signed client certificates</h4>
 
-All told, given the risk of a rogue certificate, we recommend using self-signed client certificates which are explicitly imported into our server truststore, where can be reviewed. Any issued certificate which goes unrecorded or is given a duplicate identifier by mistake or on purpose, is a vulnerability.
+Given the risk of a rogue certificate, one might recommend using self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. Any issued certificate which goes unrecorded or is given a duplicate identifier by mistake or on purpose, presents a vulnerability.
 
 Note that when using self-signed client certs (or CA-signed server certs), the server keystore must not be used as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using keytool -gencert, as illustrated above. 
 
 Similarly, when using CA-signed server certs, the server keystore contains the CA root key, and so must not be used as the truststore. Otherwise any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
 
-As a precaution, we might use an exclusive trust manager, implemented as follows.
+As a precaution, we might use an explicit trust manager, implemented as follows.
 <pre>
-public class ExclusiveTrustManager implements X509TrustManager {
+public class ExplicitTrustManager implements X509TrustManager {
     X509TrustManager delegate;
     Map<String, X509Certificate> certificateMap = new HashMap();
     
-    public ExclusiveTrustManager(KeyStore trustStore) 
+    public ExplicitTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
         this.delegate = KeyStores.getX509TrustManager(trustStore);
         for (String alias: Collections.list(trustStore.aliases())) {
@@ -251,7 +262,7 @@ public class ExclusiveTrustManager implements X509TrustManager {
         }
     }
     ...
-</pre>where we build a map of the certificates in our truststore, and check these as follows.
+</pre>where we build a map of the certificates in our truststore, and check peer certificate chains as follows.
 <pre>    
     private void checkTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
@@ -287,17 +298,17 @@ We can use this trust manager on the server and client.
     }    
 </pre><h4>Conclusion</h4>
 
-We can sign client certificates using our server certificate, which is then our local CA root certificate. As such we should support certificate revocation. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our server to use it!
+We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable specific clients. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our server to use it!
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-In this special case, we can use our keystore as our truststore, which we argue is a practice that should be prohibited ordinarily.
-
 We discuss the risk of rogue certificates, and recommend using self-signed client certificates whenever possible, rather than a local CA as presented here.
+
+We introduce an explicit trust manager, which only trusts the peer certificate if it is contained in the truststore, irregardless of its certificate chain. This protects against rogue certificates signed by trusted certificates.
 
 <h4>Furthermore</h4>
 
-We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, a local CA server supporting standard CRLs, and perhaps even a web-based admin tool for these goodies.
+We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, and supports standard CRLs.
 
 <h4>Resources</h4>
 

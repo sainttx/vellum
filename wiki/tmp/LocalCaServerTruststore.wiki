@@ -1,0 +1,14 @@
+
+
+<h4>Server truststore</h4>
+
+The server truststore contains trusted certificates to authenticate the client key certificate chain. 
+{{{
+$ keytool -keystore server.trust.jks -list 
+
+Your keystore contains 1 entry
+
+ca, trustedCertEntry
+}}}
+where our client certificates will be signed by the CA certificate, and so it can be our sole trusted cert. Notice that the certificate chain of this trusted certificate is not installed in the truststore.
+
