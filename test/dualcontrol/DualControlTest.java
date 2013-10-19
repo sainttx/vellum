@@ -35,6 +35,7 @@ import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
@@ -253,7 +254,7 @@ public class DualControlTest {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, keyStorePass);
         GenRsaPair keyPair = new GenRsaPair();
-        keyPair.generate("CN=" + name, new Date(), validityDays);
+        keyPair.generate("CN=" + name, new Date(), validityDays, TimeUnit.DAYS);
         X509Certificate[] chain = new X509Certificate[] {keyPair.getCertificate()};
         keyStore.setKeyEntry(name, keyPair.getPrivateKey(), keyStorePass, chain);
         return keyStore;
