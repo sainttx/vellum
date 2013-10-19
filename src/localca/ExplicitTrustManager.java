@@ -44,7 +44,7 @@ public class ExplicitTrustManager implements X509TrustManager {
     
     public ExplicitTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
-        this.delegate = KeyStores.getX509TrustManager(trustStore);
+        this.delegate = KeyStores.findX509TrustManager(trustStore);
         for (String alias: Collections.list(trustStore.aliases())) {
             certificateMap.put(alias, (X509Certificate) 
                     trustStore.getCertificate(alias));

@@ -37,17 +37,17 @@ import org.slf4j.LoggerFactory;
 public class RevocableTrustManager implements X509TrustManager {
     static Logger logger = LoggerFactory.getLogger(RevocableTrustManager.class);
 
-    X509Certificate parentCertificate;
+    X509Certificate issuerCertificate;
     X509TrustManager delegate;
     Set<String> revokedCommonNames;
     Set<BigInteger> revokedSerialNumbers;
     
-    public RevocableTrustManager(X509Certificate parentCertificate, 
+    public RevocableTrustManager(X509Certificate issuerCertificate, 
             X509TrustManager delegate, 
             Set<String> revokedCommonNames,
             Set<BigInteger> revokedSerialNumbers) {
         this.delegate = delegate;
-        this.parentCertificate = parentCertificate;
+        this.issuerCertificate = issuerCertificate;
         this.revokedCommonNames = Collections.synchronizedSet(revokedCommonNames);
         this.revokedSerialNumbers = Collections.synchronizedSet(revokedSerialNumbers);
     }
@@ -55,7 +55,7 @@ public class RevocableTrustManager implements X509TrustManager {
     @Override
     public X509Certificate[] getAcceptedIssuers() {
         logger.debug("getAcceptedIssuers");
-        return new X509Certificate[] {parentCertificate};
+        return new X509Certificate[] {issuerCertificate};
     }
     
     @Override
@@ -67,11 +67,11 @@ public class RevocableTrustManager implements X509TrustManager {
             throw new CertificateException("Invalid cert chain length");
         }
         if (!certs[0].getIssuerX500Principal().equals(
-                parentCertificate.getSubjectX500Principal())) {
+                issuerCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
         if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
-                parentCertificate.getPublicKey().getEncoded())) {
+                issuerCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Untrusted issuer public key");
         }
         if (revokedCommonNames != null && 
