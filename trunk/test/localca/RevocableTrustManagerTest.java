@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
@@ -64,11 +65,11 @@ public class RevocableTrustManagerTest {
     @Test
     public void test() throws Exception {
         serverPair = new GenRsaPair();
-        serverPair.generate("CN=server", new Date(), 365);
+        serverPair.generate("CN=server", new Date(), 365, TimeUnit.DAYS);
         serverCert = serverPair.getCertificate();
         serverKeyStore = createKeyStore("server", serverPair);
         clientPair = new GenRsaPair();
-        clientPair.generate("CN=client", new Date(), 365);
+        clientPair.generate("CN=client", new Date(), 365, TimeUnit.DAYS);
         clientKeyStore = createKeyStore("client", clientPair);
         clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
         serverContext = SSLContexts.create(serverKeyStore, pass, clientKeyStore);
@@ -90,7 +91,7 @@ public class RevocableTrustManagerTest {
 
     private void initServer() throws Exception {
         serverPair = new GenRsaPair();
-        serverPair.generate("CN=server", new Date(), 1);
+        serverPair.generate("CN=server", new Date(), 1, TimeUnit.DAYS);
         serverCert = serverPair.getCertificate();
         serverKeyStore = createKeyStore("server", serverPair);
         Assert.assertEquals("CN=server", serverCert.getIssuerDN().getName());
@@ -103,7 +104,7 @@ public class RevocableTrustManagerTest {
 
     private void initClient() throws Exception {
         clientPair = new GenRsaPair();
-        clientPair.generate("CN=client", new Date(), 1);
+        clientPair.generate("CN=client", new Date(), 1, TimeUnit.DAYS);
         clientKeyStore = createKeyStore("client", clientPair);
         clientCert = (X509Certificate) clientKeyStore.getCertificate("client");
         Assert.assertEquals("CN=client", clientCert.getIssuerDN().getName());
@@ -165,7 +166,7 @@ public class RevocableTrustManagerTest {
 
     private void testInvalidServerCertOther() throws Exception {
         GenRsaPair otherPair = new GenRsaPair();
-        otherPair.generate("CN=server", new Date(), 1);
+        otherPair.generate("CN=server", new Date(), 1, TimeUnit.DAYS);
         KeyStore invalidKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(),
                 signedCert, otherPair.getCertificate());
         SSLContext invalidContext = createContext(invalidKeyStore, null);

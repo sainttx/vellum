@@ -34,12 +34,15 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import sun.security.pkcs.PKCS10;
+import sun.security.validator.SimpleValidator;
+import sun.security.validator.Validator;
 
 /**
  *
@@ -72,7 +75,7 @@ public class LocalCaTest {
 
         void init() throws Exception {
             pair = new GenRsaPair();
-            pair.generate("CN=" + alias, new Date(), 365);
+            pair.generate("CN=" + alias, new Date(), 365, TimeUnit.DAYS);
             cert = pair.getCertificate();
             keyStore = createKeyStore(alias, pair);
         }
@@ -112,7 +115,7 @@ public class LocalCaTest {
         testExclusive(server.keyStore, server.trustStore, 
                 client.signedKeyStore, client.trustStore);
     }
-   
+
     @Test
     public void testDynamicRevocation() throws Exception {
         ca.init();
