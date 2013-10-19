@@ -144,7 +144,7 @@ In practice, we might have multiple servers with different sets of clients. So w
 $ keytool -keystore intermediate.jks -genkeypair -alias serverca -dname "CN=intermediate" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
 }}}
-where this keystore resides on our secure CA server, and not on the server in the DMZ.
+where this keystore resides on our secure CA server, and not in the DMZ.
 
 We can then use this CA to sign our client certs, and as such our server truststore contains this cert, in order to trust all its clients in one fell swoop.
 
