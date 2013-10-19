@@ -183,6 +183,7 @@ public class SSLContexts {
     }
 }
 }}}
+where we provide the keystore and truststore. 
 
 Since we wish to support a local CA for client certificates, we should enable local certificate revocation in order to retain access control. For convenience, we'll revoke certificates by their common name (CN), which must be unique.
 
