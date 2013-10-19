@@ -415,7 +415,9 @@ Certificate reply was installed in keystore
 
 Clearly a certificate with a duplicate CN impersonates the original certificate with that CN. So when issuing a client certificate, we must take care to ensure the uniqueness of the CN, and should add the certificate (or at least its unique identifier) to a registry of some sort. 
 
-In order to review access, we clearly require a perfect record of all issued certificates. If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. So we might record our signed certs into a keystore file as follows.
+In order to review access, we clearly require a perfect record of all issued certificates. If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. 
+
+We might record our signed certs into a keystore file as follows.
 {{{
 $ keytool -keystore server.issued.jks -importcert -alias evanx -file evanx.pem 
 Certificate was added to keystore
