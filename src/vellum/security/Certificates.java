@@ -124,10 +124,15 @@ public class Certificates {
     }
 
     public static X509Certificate signCert(PrivateKey signingKey, X509Certificate signingCert,
-            PKCS10 certReq, Date startDate, int validityDays) throws Exception {
+            PKCS10 certReq, Date notBefore, int validityDays) throws Exception {
+        Date notAfter = new Date(notBefore.getTime() + TimeUnit.DAYS.toMillis(validityDays));
+        return signCert(signingKey, signingCert, certReq, notBefore, notAfter);
+    }
+    
+    public static X509Certificate signCert(PrivateKey signingKey, X509Certificate signingCert,
+            PKCS10 certReq, Date notBefore, Date notAfter) throws Exception {
         String sigAlgName = "SHA256WithRSA";
-        Date endDate = new Date(startDate.getTime() + TimeUnit.DAYS.toMillis(validityDays));
-        CertificateValidity validity = new CertificateValidity(startDate, endDate);
+        CertificateValidity validity = new CertificateValidity(notBefore, notAfter);
         byte[] encoded = signingCert.getEncoded();
         X509CertImpl signerCertImpl = new X509CertImpl(encoded);
         X509CertInfo signerCertInfo = (X509CertInfo) signerCertImpl.get(

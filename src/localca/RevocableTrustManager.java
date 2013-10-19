@@ -21,6 +21,7 @@
 package localca;
 
 import java.math.BigInteger;
+import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.Set;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.validator.Validator;
 
 /**
  *

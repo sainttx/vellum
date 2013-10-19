@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.validator.Validator;
 
 /**
  *
@@ -41,13 +42,14 @@ public class ExplicitTrustManager implements X509TrustManager {
 
     X509TrustManager delegate;
     Map<String, X509Certificate> certificateMap = new HashMap();
+    Validator validator;
     
-    public ExplicitTrustManager(KeyStore trustStore) 
-        throws GeneralSecurityException {
+    public ExplicitTrustManager(KeyStore trustStore) throws GeneralSecurityException {
+        this.validator = Validator.getInstance(Validator.TYPE_SIMPLE,
+                Validator.VAR_GENERIC, trustStore);
         this.delegate = KeyStores.findX509TrustManager(trustStore);
-        for (String alias: Collections.list(trustStore.aliases())) {
-            certificateMap.put(alias, (X509Certificate) 
-                    trustStore.getCertificate(alias));
+        for (String alias : Collections.list(trustStore.aliases())) {
+            certificateMap.put(alias, (X509Certificate) trustStore.getCertificate(alias));
         }
     }
 
@@ -63,35 +65,37 @@ public class ExplicitTrustManager implements X509TrustManager {
         return null;
     }
     
-    private void checkTrusted(X509Certificate[] certs) 
+    private void checkTrusted(X509Certificate[] chain) 
             throws CertificateException {
-        if (certs.length != 1) {
+        if (chain.length != 1) {
             throw new CertificateException("Invalid cert chain length");
         }
         X509Certificate trustedCertificate = certificateMap.get(
-                X509Certificates.getCN(certs[0].getSubjectDN()));
+                X509Certificates.getCN(chain[0].getSubjectDN()));
         if (trustedCertificate == null) {
             throw new CertificateException("Untrusted peer certificate");
         }
-        if (!Arrays.equals(certs[0].getPublicKey().getEncoded(),
+        if (!Arrays.equals(chain[0].getPublicKey().getEncoded(),
                 trustedCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid peer certificate");
         }
+        validator.validate(chain);
     }
 
     @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+    public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
-        logger.debug("checkClientTrusted {} {}", certs[0].getSubjectDN().getName(), authType);
-        checkTrusted(certs);
-        delegate.checkClientTrusted(certs, authType);
+        logger.debug("checkClientTrusted {} {}", chain[0].getSubjectDN().getName(), authType);
+        checkTrusted(chain);
+        delegate.checkClientTrusted(chain, authType);
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] certs, String authType) 
+    public void checkServerTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
-        logger.debug("checkServerTrusted {}", certs[0].getSubjectDN().getName());
-        checkTrusted(certs);
-        delegate.checkServerTrusted(certs, authType);
+        logger.debug("checkServerTrusted {}", chain[0].getSubjectDN().getName());
+        checkTrusted(chain);
+        delegate.checkServerTrusted(chain, authType);
     }    
+       
 }
