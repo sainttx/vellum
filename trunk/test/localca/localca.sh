@@ -10,11 +10,12 @@ export CLASSPATH=/home/evans/NetBeansProjects/vellum/build/test/classes:/home/ev
 
 keytool=~/jdk7/jre/bin/keytool
 
+command0_clean() {
+  rm -f *.jks
+}
+
 command1_initks() {
   alias=$1
-  rm -f $alias.jks
-  rm -f $alias.signed.jks
-  rm -f $alias.trust.jks
   $keytool -keystore $alias.jks -storepass $pass -keypass $pass -alias $alias \
     -genkeypair -keyalg rsa -keysize 2048 -validity 999 -dname "CN=$alias" \
     -ext BC:critical=ca:false,pathlen:0 -ext KU:critical=digitalSignature
@@ -66,29 +67,46 @@ command_connect() {
 command0_connect() {
   #command_connect server.jks server.jks server.jks server.jks
   #command_connect ca.jks server.trust.jks client.jks ca.jks
+  #command_connect server.jks server.trust.jks client.server.jks client.server.trust.jks
   command_connect server.jks server.trust.jks client.jks client.trust.jks
 }
 
-command0_signerr() {
+command0_signx() {
   $keytool -keystore server.jks -storepass $pass -keypass $pass -alias server \
     -gencert -infile client.csr -rfc -outfile client.server.pem \
     -validity 999 -dname "CN=client" && echo INFO server cert can sign client cert
   $keytool -keystore client.jks -storepass $pass -keypass $pass -alias client \
     -gencert -infile server.csr -rfc -outfile server.client.pem \
     -validity 999 -dname "CN=server" && echo INFO client cert can sign server cert
+  cp -f client.jks client.server.jks
+  $keytool -keystore client.server.jks -storepass $pass -alias server \
+    -importcert -noprompt -file server.signed.pem 
+  $keytool -keystore client.server.jks -storepass $pass -alias client \
+    -importcert -noprompt -file client.server.pem 
+  $keytool -keystore server.trust.jks -storepass $pass -importcert -noprompt \
+    -alias client.server -file client.server.pem
+  echo "client.server.trust.jks"
+
+
+  $keytool -keystore client.server.trust.jks -storepass $pass -alias server \
+    -importcert -noprompt -file server.signed.pem 
+  $keytool -keystore server.trust.jks -storepass $pass -alias client \
+    -importcert -noprompt -file client.signed.pem 
 }
 
 command0_sign() {
   $keytool -keystore ca.jks -storepass $pass -keypass $pass -alias ca \
     -gencert -infile client.csr -rfc -outfile client.signed.pem \
     -validity 999 -dname "CN=client" \
-    -ext BC:critical=ca:false,pathlen:0 \
-    -ext KU:critical=keyAgreement,digitalSignature,dataEncipherment
+    -ext BasicConstraints:critical=ca:false,pathlen:0 \
+    -ext KeyUsage:critical=digitalSignature \
+    -ext ExtendedKeyUsage:critical=clientAuth
   $keytool -keystore ca.jks -storepass $pass -keypass $pass -alias ca \
     -gencert -infile server.csr -rfc -outfile server.signed.pem \
     -validity 999 -dname "CN=server" \
-    -ext BC:critical=ca:false,pathlen:0 \
-    -ext KU:critical=keyAgreement,digitalSignature #,keyEncipherment
+    -ext BasicConstraints:critical=ca:false,pathlen:0 \
+    -ext KeyUsage:critical=keyEncipherment \
+    -ext ExtendedKeyUsage:critical=serverAuth
   openssl x509 -text -in client.signed.pem | grep "CN=\|CA:"
   openssl x509 -text -in client.signed.pem | grep "X509v3" -A1
   $keytool -keystore client.jks -storepass $pass -importcert -noprompt \
@@ -110,9 +128,10 @@ command0_sign() {
 }
 
 command0_test() {
+  command0_clean
   command0_initks
   command0_sign
-  command0_signerr
+  command0_signx
   command0_connect
 }
 
