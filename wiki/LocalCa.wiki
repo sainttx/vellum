@@ -142,7 +142,7 @@ In practice, we might have multiple servers with different sets of clients. So w
 
 {{{
 $ keytool -keystore intermediate1.jks -genkeypair -alias intermediate1 -dname "CN=intermediate1" \
-  -keyalg rsa -keysize 2048 -validity 365 -noprompt
+    -keyalg rsa -keysize 2048 -validity 365 -noprompt 
 }}}
 where this keystore resides on our secure CA server, and not in the DMZ.
 
