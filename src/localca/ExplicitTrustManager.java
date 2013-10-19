@@ -31,7 +31,7 @@ import java.util.Map;
 import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.validator.Validator;
+import vellum.security.Certificates;
 
 /**
  *
@@ -42,11 +42,8 @@ public class ExplicitTrustManager implements X509TrustManager {
 
     X509TrustManager delegate;
     Map<String, X509Certificate> certificateMap = new HashMap();
-    Validator validator;
     
     public ExplicitTrustManager(KeyStore trustStore) throws GeneralSecurityException {
-        this.validator = Validator.getInstance(Validator.TYPE_SIMPLE,
-                Validator.VAR_GENERIC, trustStore);
         this.delegate = KeyStores.findX509TrustManager(trustStore);
         for (String alias : Collections.list(trustStore.aliases())) {
             certificateMap.put(alias, (X509Certificate) trustStore.getCertificate(alias));
@@ -62,7 +59,7 @@ public class ExplicitTrustManager implements X509TrustManager {
     
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        return null;
+        return Certificates.toArray(certificateMap.values());
     }
     
     private void checkTrusted(X509Certificate[] chain) 
@@ -79,7 +76,6 @@ public class ExplicitTrustManager implements X509TrustManager {
                 trustedCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Invalid peer certificate");
         }
-        validator.validate(chain);
     }
 
     @Override
@@ -97,5 +93,4 @@ public class ExplicitTrustManager implements X509TrustManager {
         checkTrusted(chain);
         delegate.checkServerTrusted(chain, authType);
     }    
-       
 }
