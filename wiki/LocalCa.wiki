@@ -343,7 +343,7 @@ Incidently, in a follow-up article we will create keystores programmatically for
 
 <h4>Client certificate signing</h4>
 
-We export a certificate signing request (CSR) as follows, and sign this with our local CA cert.
+We export a certificate signing request (CSR) to be signed by our local CA.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
