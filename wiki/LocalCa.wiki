@@ -437,12 +437,12 @@ Also when using CA-signed server certs, the server keystore contains the CA root
 As a precaution, we might use an explicit trust manager, implemented as follows.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
-    X509TrustManager delegate;
     Map<String, X509Certificate> certificateMap = new HashMap();
+    X509TrustManager delegate;
     
     public ExplicitTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
-        this.delegate = KeyStores.getX509TrustManager(trustStore);
+        this.delegate = KeyStores.findX509TrustManager(trustStore);
         for (String alias: Collections.list(trustStore.aliases())) {
             certificateMap.put(alias, (X509Certificate) 
                     trustStore.getCertificate(alias));
@@ -450,21 +450,23 @@ public class ExplicitTrustManager implements X509TrustManager {
     }
     ...
 }}}
-where we build a map of the certificates in our truststore, and check peer certificate chains as follows.
+where we build a map of the certificates in our truststore. 
+
+We validate peer certificate chains as follows.
 {{{    
-    private void checkTrusted(X509Certificate[] certs, String authType) 
+    private void checkTrusted(X509Certificate[] chain) 
             throws CertificateException {
-        if (certs.length < 1) {
+        if (chain.length != 1) {
             throw new CertificateException("Invalid cert chain length");
         }
         X509Certificate trustedCertificate = certificateMap.get(
-                getCN(certs[0].getSubjectDN()));
+                X509Certificates.getCN(chain[0].getSubjectDN()));
         if (trustedCertificate == null) {
-            throw new CertificateException("Untrusted client certificate");            
+            throw new CertificateException("Untrusted peer certificate");
         }
-        if (!Arrays.equals(certs[0].getPublicKey().getEncoded(),
+        if (!Arrays.equals(chain[0].getPublicKey().getEncoded(),
                 trustedCertificate.getPublicKey().getEncoded())) {
-            throw new CertificateException("Invalid client certificate");
+            throw new CertificateException("Invalid peer certificate");
         }
     }
 }}}
@@ -473,17 +475,17 @@ where we check that the first cert in the chain sent by the peer, is contained i
 We can use this trust manager on the server and client.
 {{{
     @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+    public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
-        checkTrusted(certs);
-        delegate.checkClientTrusted(certs, authType);
+        checkTrusted(chain);
+        delegate.checkClientTrusted(chain, authType);
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] certs, String authType) 
+    public void checkServerTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
-        checkTrusted(certs);
-        delegate.checkServerTrusted(certs, authType);
+        checkTrusted(chain);
+        delegate.checkServerTrusted(chain, authType);
     }    
 }}}
 
