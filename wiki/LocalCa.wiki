@@ -69,7 +69,7 @@ $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=serv
     -ext KeyUsage:critical=keyEncipherment \
     -ext ExtendedKeyUsage:critical=serverAuth
 }}}
-where we set X509v3 extensions to restrict the key usage, for good measure. 
+where we set X509v3 extensions to restrict the key usage, for good measure, e.g. as per a cheap certificate we have bought from !GoDaddy.com. 
 
 We now wish to import this signed certificate reply into our server keystore. As mentioned earlier, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 {{{
@@ -347,7 +347,7 @@ We export a certificate signing request (CSR) to be signed by our local CA.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -certreq
 }}}
-We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its new <tt>-gencert</tt> option, which by the way is not available in earlier JRE's.
+We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its <tt>-gencert</tt> option, which by the way is not available in earlier JRE's.
 {{{
 $ keytool -keystore ca.jks -gencert -validity 365 -rfc \
     -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem \
