@@ -384,7 +384,17 @@ We see that the X509v3 extensions are set as follows.
             X509v3 Key Usage: critical
                 Digital Signature
 }}}
-where we can compare to these to certificates we have bought e.g. from !GoDaddy.com.
+Compare these settings to a cheap certificate e.g. from GoDaddy.com, as follows.
+{{{
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+}}}
+where we find that "Digital Signature" usage is required for client authentication, and "Key Encipherment" for server authentication.
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the CA cert first, and then our signed cert.
 {{{
