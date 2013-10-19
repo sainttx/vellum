@@ -183,7 +183,7 @@ public class SSLContexts {
     }
 }
 }}}
-where we provide the keystore and truststore for this SSL context, e.g. used to create a <tt>SSLServerSocket</tt> or client <tt>SSLSocket</tt>.
+where we provide the keystore and truststore for this SSL context, which can be used to create an <tt>SSLServerSocket</tt>, or client <tt>SSLSocket</tt>.
 
 Since we wish to support a local CA for client certificates, we should enable local certificate revocation in order to retain access control. For convenience, we'll revoke certificates by their common name (CN), which must be unique.
 
