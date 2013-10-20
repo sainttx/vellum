@@ -1,13 +1,6 @@
-We consider a bunch of remote clients connecting to our Java server over SSL sockets.
-
-Naturally, we generate a private key for each client, and perhaps import all our clients' self-signed certificates into our server truststore.
+We consider a bunch of remote clients connecting to our Java server over SSL sockets. Naturally, we generate a private key for each client, and perhaps import all our clients' self-signed certificates into our server truststore.
 
 <!--break-->
-
-<div style="border-bottom: solid 1px; background-color: #ccff00; font-size: 11pt; font-style: italic;"><img src="http://upload.wikimedia.org/wikipedia/commons/5/55/Gnome-security-medium.svg" border="0" align="left" hspace="0"/> Part of "The Enigma Posts"
-</div>
-
-<br>
 
 In this article, we'll sign the client certificates using a local CA certificate. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation, so that we can disable devices that go amiss.
 
@@ -149,7 +142,7 @@ Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.j
 In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
 
 
-<h4>SSLContexts</h4>
+<h4>Revocable SSL contexts</h4>
 
 Ordinarily we create an SSLContext as follows.
 <pre>
@@ -217,9 +210,9 @@ public class RevocableTrustManager implements X509TrustManager {
         delegate.checkClientTrusted(certs, authType);
     }
 }
-</pre>where we check that the client certificate is issued by our CA, and not revoked. Finally, we delegate to the standard <a href="http://www.docjar.org/html/api/javax/net/ssl/X509TrustManager.java.html">X509TrustManager</a> (implemented by <a href="http://www.docjar.org/html/api/sun/security/ssl/X509TrustManagerImpl.java.html">X509TrustManagerImpl</a>) for good measure, e.g. to validate the certificate chain, expiry dates and what-not, using <a href="http://www.docjar.org/html/api/sun/security/validator/PKIXValidator.java.html">PKIXValidator</a>.
+</pre>where we check that the client certificate is issued by our CA, and not revoked. Finally, we delegate to the standard <a href="http://www.docjar.org/html/api/javax/net/ssl/X509TrustManager.java.html">X509TrustManager</a> (implemented by <a href="http://www.docjar.org/html/api/sun/security/ssl/X509TrustManagerImpl.java.html">X509TrustManagerImpl</a>) for good measure, e.g. to validate the certificate chain, expiry dates and what not (using <a href="http://www.docjar.org/html/api/sun/security/validator/PKIXValidator.java.html">PKIXValidator</a>, we see).
 
-Since we use this trust manager on the server, to validate clients, we do not expect its checkServerTrusted() method to be invoked.
+Since we use this trust manager on the server to validate clients, we know its checkServerTrusted() method is not needed.
 <pre>
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 

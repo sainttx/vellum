@@ -153,7 +153,7 @@ We see that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certi
 In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
 
 
-<h4>SSLContexts</h4>
+<h4>Revocable SSL contexts</h4>
 
 Ordinarily we create an SSLContext as follows.
 <pre>
@@ -224,9 +224,9 @@ public class RevocableTrustManager implements X509TrustManager {
     }
 }
 </pre>
-where we check that the client certificate is issued by our CA, and not revoked. Finally, we delegate to the standard <a href="http://www.docjar.org/html/api/javax/net/ssl/X509TrustManager.java.html">X509TrustManager</a> (implemented by <a href="http://www.docjar.org/html/api/sun/security/ssl/X509TrustManagerImpl.java.html">X509TrustManagerImpl</a>) for good measure, e.g. to validate the certificate chain, expiry dates and what-not, using <a href="http://www.docjar.org/html/api/sun/security/validator/PKIXValidator.java.html">PKIXValidator</a>.
+where we check that the client certificate is issued by our CA, and not revoked. Finally, we delegate to the standard <a href="http://www.docjar.org/html/api/javax/net/ssl/X509TrustManager.java.html">X509TrustManager</a> (implemented by <a href="http://www.docjar.org/html/api/sun/security/ssl/X509TrustManagerImpl.java.html">X509TrustManagerImpl</a>) for good measure, e.g. to validate the certificate chain, expiry dates and what not (using <a href="http://www.docjar.org/html/api/sun/security/validator/PKIXValidator.java.html">PKIXValidator</a>, we see).
 
-Since we use this trust manager on the server, to validate clients, we do not expect its checkServerTrusted() method to be invoked.
+Since we use this trust manager on the server to validate clients, we know its checkServerTrusted() method is not needed.
 <pre>
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
