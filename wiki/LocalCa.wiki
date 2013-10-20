@@ -52,7 +52,7 @@ $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
 }}}
 where we specify a validity period of 365 days.
 
-We export a certificate signing request as follows.
+We export a certificate signing request (CSR) as follows.
 {{{
 $ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
 }}}
@@ -71,7 +71,7 @@ $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=serv
     -ext KeyUsage:critical=keyEncipherment \
     -ext ExtendedKeyUsage:critical=serverAuth
 }}}
-where we set X509v3 extensions to restrict the key usage, for good measure, e.g. as per a cheap certificate we have bought from !GoDaddy.com. 
+where we set X509v3 extensions to restrict the key usage, for good measure, e.g. as per certificates we have bought from !GoDaddy.com. 
 
 We now wish to import this signed certificate reply into our server keystore. As mentioned earlier, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 {{{
