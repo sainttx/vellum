@@ -151,7 +151,7 @@ where this keystore resides on our secure CA server, and not in the DMZ.
 
 We can then use this intermediate CA key to sign the client certs for some server, and its truststore contains this CA certificate, in order to trust all its clients. Clearly, it is not a <i>root</i> CA certificate, but since it can sign certificates, it is a "CA certificate" nonetheless.
 
-While it is possible to sign client certificates with the server key, this resides in the DMZ and so is not as secure as our CA. If compromised, it could be used to sign rogue certificates, which we want to prevent.
+While it is possible to sign client certificates with the server key as our CA, this resides in the DMZ, which naturally is our least secure zone. If compromised, it could be used to sign rogue certificates. So we shouldn't store CA keys in our DMZ.
 
 
 <h4>Serial numbers</h4>
@@ -499,15 +499,13 @@ We can sign client certificates using a local CA root certificate. However, we s
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-Naturally, our SSL server resides in the DMZ, whereas we can secure our local CA on an internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
+Naturally, our SSL server resides in the DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
+
+The keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
+
+The keystore must contain the certificate chain of the key certificate, whereas the truststore must not contain the certificate chains of its trusted certificates. When using a public CA, the keystore will contain that CA's root certificate, and if misused as the truststore, then <i>any</i> certificate issued by that public CA would be trusted.
 
 We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager that treats these as leaf certificates rather than root CA certificates.
-
-While the keystore must contain the certificate chain of the key certificate, the truststore must not contain certificate chains per se, and so they differ critically in this respect. 
-
-We warn against misusing the server keystore as its truststore. The keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
-
-Also, when using public CA-signed server certs, the server keystore must contain the CA root key, and if misused as its truststore, then any client cert signed by that CA would be trusted.
 
 
 <h4>Furthermore</h4>
