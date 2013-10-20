@@ -505,7 +505,7 @@ We note that self-signed client certificates are effectively CA certificates, an
 
 While the keystore must contain the certificate chain of the key certificate, the truststore must not contain certificate chains per se, and so they differ critically in this respect. 
 
-We note that the server keystore must not be misused as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key.
+We warn against misusing the server keystore as its truststore. The keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
 
 When using public CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would be trusted.
 
