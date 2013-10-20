@@ -68,7 +68,7 @@ public class ExplicitTrustManager implements X509TrustManager {
             throw new CertificateException("Invalid cert chain length");
         }
         X509Certificate trustedCertificate = certificateMap.get(
-                X509Certificates.getCN(chain[0].getSubjectDN()));
+                Certificates.getCN(chain[0].getSubjectDN()));
         if (trustedCertificate == null) {
             throw new CertificateException("Untrusted peer certificate");
         }
