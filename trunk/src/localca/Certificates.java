@@ -44,8 +44,6 @@ import sun.security.x509.CertificateSubjectName;
 import sun.security.x509.CertificateValidity;
 import sun.security.x509.CertificateVersion;
 import sun.security.x509.CertificateX509Key;
-import sun.security.x509.ExtendedKeyUsageExtension;
-import sun.security.x509.KeyUsageExtension;
 import sun.security.x509.X500Name;
 import sun.security.x509.X500Signer;
 import sun.security.x509.X509CertImpl;
@@ -55,7 +53,7 @@ import sun.security.x509.X509CertInfo;
  *
  * @author evan.summers
  */
-public class X509Certificates {
+public class Certificates {
 
     public static boolean equals(X509Certificate cert, X509Certificate other) {
         if (cert.getSubjectDN().equals(other.getSubjectDN())) {
