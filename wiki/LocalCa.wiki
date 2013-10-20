@@ -36,7 +36,7 @@ public class LocalCaTest {
 }}}
 where we create an SSL context for our server socket, and accept a client connection.
 
-The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. We'll see further below that <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
+The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. In fact <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 
 
 <h4>Server certificate signing</h4>
