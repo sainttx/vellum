@@ -436,11 +436,9 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 <h4>Self-signed client certificates</h4>
 
-If our local CA is compromised by a breach, or abused by a rogue administrator, there is a risk of rogue certificates being issued, of which we have no record. 
+If our local CA is compromised by a breach, or abused by a rogue administrator, there is a risk of rogue certificates being issued, of which we have no record. So we might prefer self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. 
 
-To avoid that, we might prefer self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. 
-
-As a further precaution against rogue certificates created using compromised keys, we might use an explicit trust manager where only certificates explicitly listed in the truststore are trusted, and so not any certificates signed by these.
+However, self-signed client keys are effectively CA certificates, and clearly rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. To protect the server against such rogue certificates, we might use an explicit trust manager as below, where only leaf certificates explicitly listed in the truststore are trusted.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -495,21 +493,22 @@ We can use this trust manager on the server and client.
     }    
 }}}
 
-<h4>Finally</h4>
-
-Note that the server keystore must not be misused as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above. 
-
-Also when using CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
-
 <h4>Conclusion</h4>
 
 We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable certificates for devices that have gone amiss. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our Java server to use it.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-We discuss the risk of rogue certificates, and recommend using self-signed client certificates whenever possible, rather than a local CA as presented here.
+Naturally, our SSL server resides in the DMZ, whereas we can secure our local CA on an internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
 
-We introduce an explicit trust manager, which only trusts the peer certificate if it is contained in the truststore, irregardless of its certificate chain. This protects against rogue certificates signed by trusted certificates.
+We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager that treats these as leaf certificates rather than root CA certificates.
+
+We note that the server keystore must not be misused as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key.
+
+Also when using public CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
+
+The keystore must contain the certificate chain of the key certificate, whereas the truststore must not contain certificate chains per se, and so they differ critically in this respect.
+
 
 <h4>Furthermore</h4>
 
