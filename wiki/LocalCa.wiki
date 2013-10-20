@@ -289,7 +289,7 @@ We connect to the server socket as follows.
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
         SSLSocket socket = (SSLSocket) context.getSocketFactory().
-                createSocket(HOST, port);
+                createSocket("localhost", port);
         try {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF("clienthello");
