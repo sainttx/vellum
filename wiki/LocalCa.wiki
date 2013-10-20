@@ -56,7 +56,7 @@ We export a certificate signing request as follows.
 {{{
 $ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
 }}}
-We create a signing key. Actually this is our "local CA" certificate.
+Let's create our "local CA" key, which will be used to issue signed certificates.
 {{{
 $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
