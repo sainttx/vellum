@@ -71,7 +71,7 @@ $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=serv
     -ext KeyUsage:critical=keyEncipherment \
     -ext ExtendedKeyUsage:critical=serverAuth
 }}}
-where we set X509v3 extensions to restrict the key usage, for good measure, e.g. as per certificates we have bought from !GoDaddy.com. 
+where we set X509v3 extensions to restrict the key usage for good measure, as per certificates from a public CA. 
 
 We now wish to import this signed certificate reply into our server keystore. As mentioned earlier, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 {{{
