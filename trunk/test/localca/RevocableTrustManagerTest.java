@@ -119,7 +119,7 @@ public class RevocableTrustManagerTest {
 
     private void testSigned() throws Exception {
         certRequest = clientPair.getCertRequest("CN=client");
-        signedCert = X509Certificates.sign(serverPair.getPrivateKey(),
+        signedCert = Certificates.sign(serverPair.getPrivateKey(),
                 serverPair.getCertificate(), certRequest, new Date(), 365, 1234,
                 false);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
@@ -135,7 +135,7 @@ public class RevocableTrustManagerTest {
        
     private void testRevoked() throws Exception {
         SSLContext revokedContext = createContext(serverKeyStore,
-                X509Certificates.getCN(signedCert.getSubjectDN()));
+                Certificates.getCN(signedCert.getSubjectDN()));
         testConnection(revokedContext, signedContext,
                 "java.security.cert.CertificateException: Certificate CN revoked");
     }

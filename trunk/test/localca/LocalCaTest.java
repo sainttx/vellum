@@ -82,7 +82,7 @@ public class LocalCaTest {
 
         void sign(SSLEndPoint signer, int serialNumber) throws Exception {
             PKCS10 certRequest = pair.getCertRequest("CN=" + alias);
-            signedCert = X509Certificates.sign(signer.pair.getPrivateKey(),
+            signedCert = Certificates.sign(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
                     serialNumber, false);
             signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
