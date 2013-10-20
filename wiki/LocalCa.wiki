@@ -117,7 +117,7 @@ Our server truststore will contain the CA certificate, which signs our client ce
 $ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
 }}}
 
-Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains our CA certificate as it root certificate, it will be trusted. In fact, any certificate issued by our CA is trusted.
+Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains our CA certificate (as it root certificate), it will be trusted. In fact, any certificate issued by our CA is trusted.
 
 <h4>openssl</h4>
 
