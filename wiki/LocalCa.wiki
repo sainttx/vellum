@@ -411,6 +411,10 @@ $ keytool -keystore evanx.jks -importcert -noprompt \
 Enter keystore password: 
 Certificate reply was installed in keystore
 }}}
+Otherwise if the parent chain is not present, we'll get the following <tt>keytool</tt> error.
+{{{
+keytool error: java.lang.Exception: Failed to establish chain from reply
+}}}
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
