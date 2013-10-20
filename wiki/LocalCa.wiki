@@ -151,7 +151,7 @@ where this keystore resides on our secure CA server, and not in the DMZ.
 
 We can then use this intermediate CA key to sign the client certs for some server, and its truststore contains this CA certificate, in order to trust all its clients. Clearly, it is not a <i>root</i> CA certificate, but since it can sign certificates, it is a "CA certificate" nonetheless.
 
-While it is possible to sign client certificates with the server key, this resides in the DMZ and so is not as secure as our CA, and if compromised, could be used to sign rogue certificates.
+While it is possible to sign client certificates with the server key, this resides in the DMZ and so is not as secure as our CA. If compromised, it could be used to sign rogue certificates, which we want to prevent.
 
 
 <h4>Serial numbers</h4>
