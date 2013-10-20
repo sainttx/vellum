@@ -310,8 +310,8 @@ where we return the error message, otherwise <tt>null</tt>.
 
 For example, let's create a private SSL keystore for a test client named "evanx" as follows.
 {{{
-$ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 -alias evanx \
-    -dname "CN=evanx"
+$ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
+    -alias evanx -dname "CN=evanx"
 }}}
  
 We export our certificate as follows.
