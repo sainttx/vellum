@@ -495,7 +495,7 @@ We can use this trust manager on the server and client.
 
 <h4>Conclusion</h4>
 
-We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable certificates for devices that have gone amiss. So we introduce a custom SSL trust manager to support a local revocation list. Naturally this is only useful is if we can configure our Java server to use it.
+We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable certificates for devices that have gone amiss. So we introduce a custom SSL trust manager to support a local revocation list.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
@@ -505,9 +505,7 @@ We note that self-signed client certificates are effectively CA certificates, an
 
 We note that the server keystore must not be misused as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key.
 
-Also when using public CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
-
-The keystore must contain the certificate chain of the key certificate, whereas the truststore must not contain certificate chains per se, and so they differ critically in this respect.
+The keystore must contain the certificate chain of the key certificate, whereas the truststore must not contain certificate chains per se, and so they differ critically in this respect. When using public CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would be trusted.
 
 
 <h4>Furthermore</h4>
