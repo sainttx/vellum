@@ -335,11 +335,11 @@ Certificate:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
 }}}
-We import the client cert into the server SSL truststore.
+Typically we might import the client's self-signed certificate into our server truststore, as follows.
 {{{
 $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
-Similarly, our server's CA cert is imported into this client's truststore.
+Similarly, our server's certificate (perhaps self-signed) is imported into this client's truststore.
 
 Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool</tt></a>, and emulating the above manual procedure.
 
