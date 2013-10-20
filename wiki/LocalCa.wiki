@@ -507,7 +507,7 @@ While the keystore must contain the certificate chain of the key certificate, th
 
 We warn against misusing the server keystore as its truststore. The keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
 
-When using public CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would be trusted.
+Also, when using public CA-signed server certs, the server keystore must contain the CA root key, and if misused as its truststore, then any client cert signed by that CA would be trusted.
 
 
 <h4>Furthermore</h4>
