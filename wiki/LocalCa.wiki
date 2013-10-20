@@ -438,13 +438,9 @@ Interestingly, in trying to avoid a truststore containing all our client certifi
 
 If our local CA is compromised by a breach, or abused by a rogue administrator, there is a risk of rogue certificates being issued, of which we have no record. 
 
-To avoid the risk of rogue certificates, we might prefer self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. 
+To avoid that, we might prefer self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. 
 
-Note that the server keystore must not be misused as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above. 
-
-Also when using CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
-
-As a precaution, we might use an explicit trust manager, implemented as follows.
+As a further precaution against rogue certificates created using compromised keys, we might use an explicit trust manager where only certificates explicitly listed in the truststore are trusted, and so not any certificates signed by these.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -498,6 +494,12 @@ We can use this trust manager on the server and client.
         delegate.checkServerTrusted(chain, authType);
     }    
 }}}
+
+<h4>Finally</h4>
+
+Note that the server keystore must not be misused as its truststore, since the keystore naturally contains the server certificate, and so a rogue certificate can be created by signing it with the server key, e.g. using <tt>keytool -gencert</tt>, as illustrated above. 
+
+Also when using CA-signed server certs, the server keystore contains the CA root key, and if misused as its truststore, then any client cert signed by that CA would trusted, rather than just the client certs we have specifically added to the truststore.
 
 <h4>Conclusion</h4>
 
