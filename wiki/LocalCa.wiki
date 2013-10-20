@@ -36,7 +36,11 @@ public class LocalCaTest {
 }}}
 where we create an SSL context for our server socket, and accept a client connection.
 
-The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. In fact <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
+The keystore must contain our asymmetric private key, which naturally is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate. Indeed we'll see that <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
+
+The truststore contains certificates that we trust. Any peer certificate chain that includes a certificate in our truststore, is trusted. That is to say, if our truststore contains a CA certificate, then we trust all certificates issued by that CA.
+
+Since a keystore must contain the certificate chain of the key certificate, and the truststore must not contain certificate chains per se, they differ critically in this respect, and so the keystore should not be misused as the truststore.
 
 
 <h4>Server certificate signing</h4>
