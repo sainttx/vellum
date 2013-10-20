@@ -238,7 +238,7 @@ public class RevocableTrustManager implements X509TrustManager {
     }
 }
 }}}
-where we check that the client certificate is issued by our CA, and not revoked. Finally, we delegate to the standard <a href="http://www.docjar.org/html/api/javax/net/ssl/X509TrustManager.java.html"><tt>!X509TrustManager</tt></a> (implemented by <a href="http://www.docjar.org/html/api/sun/security/ssl/X509TrustManagerImpl.java.html"><tt>!X509TrustManagerImpl</tt></a>) for good measure, e.g. to validate the certificate chain, expiry dates and what not (using <a href="http://www.docjar.org/html/api/sun/security/validator/PKIXValidator.java.html"><tt>PKIXValidator</tt></a>, we see).
+where we check that the client certificate is issued by our CA, and not revoked. Finally, we delegate to the standard <a href="http://www.docjar.org/html/api/javax/net/ssl/X509TrustManager.java.html"><tt>!X509TrustManager</tt></a> (implemented by <a href="http://www.docjar.org/html/api/sun/security/ssl/X509TrustManagerImpl.java.html"><tt>!X509TrustManagerImpl</tt></a>) for good measure, e.g. to validate the certificate chain, expiry dates and what not (using <a href="http://www.docjar.org/html/api/sun/security/validator/PKIXValidator.java.html"><tt>PKIXValidator</tt></a>).
 
 Since we use this trust manager on the server to validate clients, we know its <tt>checkServerTrusted()</tt> method is not needed.
 {{{
