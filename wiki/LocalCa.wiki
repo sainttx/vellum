@@ -303,7 +303,7 @@ Our test connects to the server socket as follows.
         }
     }
 }}}
-where we return the error message, otherwise <tt>null</tt>.
+where we return the error message, otherwise <tt>null</tt> which indicates success.
 
 
 <h4>Client keystore</h4>
