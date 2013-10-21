@@ -399,7 +399,7 @@ We compare these settings to a certificate bought from !GoDaddy.com.
             X509v3 Key Usage: critical
                 Digital Signature, Key Encipherment
 }}}
-where we find that the "Digital Signature" usage is required for client authentication, and "Key Encipherment" is used for server authentication.
+Our tests indicate that the "Digital Signature" usage is required for client authentication, and "Key Encipherment" is required for server authentication.
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the CA cert first, and then our signed cert.
 {{{
