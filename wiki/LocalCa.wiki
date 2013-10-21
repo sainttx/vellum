@@ -359,7 +359,7 @@ $ keytool -keystore ca.jks -gencert -validity 365 -rfc \
     -ext KeyUsage:critical=digitalSignature \
     -ext ExtendedKeyUsage:critical=clientAuth
 }}}
-where we specify an unchanged DN and validity period for the newly signed certificate. We might add some extensions for good measure, i.e. to restrict key usage.
+where we specify an unchanged name and validity period for the newly signed certificate. We might add some extensions for good measure, i.e. to restrict key usage.
 
 We can inspect the cert using <tt>openssl</tt>.
 {{{
