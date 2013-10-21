@@ -61,7 +61,7 @@ Let's create our "local CA" key, which will be used to issue signed certificates
 $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
 }}}
-Incidently, our server might reside in a DMZ accessible to the Internet, whereas our "CA" key is on a more secure internal machine.
+Incidently, our server naturally resides in a DMZ accessible to the Internet, whereas our "CA" key is isolated on a more secure internal machine.
 
 We can sign the CSR using using Java7's <tt>keytool -gencert</tt>.
 {{{
