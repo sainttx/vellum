@@ -425,7 +425,7 @@ Incidently, in a follow-up article we will create keystores programmatically for
 
 <h4>Client certificate management</h4>
 
-Clearly a certificate with a duplicate CN impersonates the original certificate with that CN. So when issuing a client certificate, we must take care to ensure the uniqueness of the CN, and should add the certificate (or at least its unique identifier) to a registry of some sort. 
+Clearly a certificate with a duplicate CN impersonates the original certificate with that CN. So when issuing a client certificate, we must take care to ensure the uniqueness of its CN, and should add the certificate (or at least its unique identifier) to a registry of some sort. 
 
 In order to review access, we clearly require a perfect record of all issued certificates. If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. 
 
@@ -436,7 +436,7 @@ Certificate was added to keystore
 }}}
 where this is not a truststore per se, but just a database of issued certificates. 
 
-Interestingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one! 
+Tellingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one.
 
 
 <h4>Self-signed client certificates</h4>
