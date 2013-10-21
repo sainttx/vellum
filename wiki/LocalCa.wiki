@@ -308,17 +308,19 @@ where we return the error message, otherwise <tt>null</tt> which indicates succe
 
 <h4>Client keystore</h4>
 
-For example, let's create a private SSL keystore for a test client named "evanx" as follows.
+For example, let's create a private SSL keystore for a test client named "evanx."
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
     -alias evanx -dname "CN=evanx"
 }}}
  
-We export our certificate as follows.
+We print our certificate as PEM text using <tt>-rfc</tt>.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
+----BEGIN CERTIFICATE-----
+...
 }}}
-We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt> as follows.
+We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt>.
 {{{
 $ openssl x509 -text -in evanx.pem
 Certificate:
@@ -336,7 +338,7 @@ Certificate:
                 Public-Key: (2048 bit)
 ...
 }}}
-Typically we might import the client's self-signed certificate into our server truststore, as follows.
+Typically we might import the client's self-signed certificate into our server truststore.
 {{{
 $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
