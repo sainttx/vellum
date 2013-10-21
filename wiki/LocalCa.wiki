@@ -96,7 +96,7 @@ $ keytool -keystore server.jks -alias server -importcert -file server.signed.pem
 We can list the certicate chain as follows.
 {{{
 $ keytool -keystore server.jks -alias server -list -v
-
+...
 Certificate chain length: 2
 
 Certificate[1]:
@@ -124,7 +124,7 @@ Note that by definition, any remote peer certificate whose chain contains a cert
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
 {{{
 $ openssl s_client -connect localhost:4444
-
+...
 Certificate chain
  0 s:/CN=server
    i:/CN=ca
