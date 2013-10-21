@@ -107,12 +107,12 @@ Certificate[2]:
 Owner: CN=ca
 Issuer: CN=ca
 }}}
-where we have signed our server certificate with a local root CA certificate. By definition the "root" certificate of a chain is self-signed.
+where we have signed our server certificate with a local CA root certificate. By definition the "root" certificate of a chain is self-signed.
 
 
 <h4>Server truststore</h4>
 
-Our server truststore will contain the CA certificate, which signs our client certs.
+Our server truststore will contain our CA certificate which signs our client certs.
 {{{
 $ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
 }}}
