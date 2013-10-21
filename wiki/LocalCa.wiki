@@ -119,6 +119,9 @@ $ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pe
 
 Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains our CA certificate (as it root certificate), it will be trusted. In fact, any certificate issued by our CA is trusted, according to this truststore.
 
+Note that keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
+
+
 <h4>openssl</h4>
 
 We can use <tt>openssl</tt> to connect to the <tt>SSLServerSocket</tt> and inspect its key certificate chain as follows.
@@ -441,9 +444,9 @@ Tellingly, in trying to avoid a truststore containing all our client certificate
 
 <h4>Self-signed client certificates</h4>
 
-If our local CA is compromised by a breach, or abused by a rogue administrator, unrecorded rogue certificates might be issued. So we might prefer self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. 
+If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. 
 
-However, self-signed client keys are effectively CA certificates, and clearly rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. To protect the server against such rogue certificates, we might use an explicit trust manager as below, where only leaf certificates explicitly listed in the truststore are trusted.
+However, self-signed client keys are effectively CA certificates, and rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. To protect the server against such rogue certificates, we might use an explicit trust manager as below, where only leaf certificates explicitly listed in the truststore are trusted.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -504,9 +507,7 @@ We can sign client certificates using a local CA root certificate. However, we s
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-Naturally, our SSL server resides in the DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
-
-The keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
+Naturally, our SSL server resides in our DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
 
 The keystore must contain the certificate chain of the key certificate, whereas the truststore must not contain the certificate chains of its trusted certificates. When using a public CA, the keystore will contain that CA's root certificate, and if misused as the truststore, then <i>any</i> certificate issued by that public CA would be trusted.
 
