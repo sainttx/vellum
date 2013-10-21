@@ -284,7 +284,7 @@ where we create a concurrent <tt>Set</tt> for the revoked certificates, and revo
 
 Incidently, we find that the client session is cached for the SSL context, and so we recreate the <tt>clientSSLContext</tt> instance in our test above. This forces re-initialisation of the client session, and so re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. Perhaps the reader can advise how to disable this client session caching for our unit test?
 
-We connect to the server socket as follows.
+Our test connects to the server socket as follows.
 {{{
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
