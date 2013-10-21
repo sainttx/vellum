@@ -149,7 +149,7 @@ $ keytool -keystore server-ca.jks -genkeypair -noprompt -keyalg rsa -keysize 204
 }}}
 where this keystore resides on our secure CA server, and not in the DMZ.
 
-We can then use this intermediate CA key to sign the client certs for some server, and its truststore contains this CA certificate, in order to trust all its clients. Clearly, it is not a <i>root</i> CA certificate, but since it can sign certificates, it is a "CA certificate" nonetheless.
+We can then use this intermediate CA key to sign the client certs for some server. The server's truststore contains this CA certificate, in order to trust all its clients. Clearly, it is not a <i>root</i> CA certificate, but since it can sign certificates, it is a "CA certificate" nonetheless.
 
 While it is possible to sign client certificates with the server key as our CA, this resides in the DMZ, which naturally is our least secure zone. If compromised, it could be used to sign rogue certificates. So we shouldn't store CA keys in our DMZ.
 
