@@ -389,7 +389,7 @@ We see that the X509v3 extensions are set as follows.
             X509v3 Key Usage: critical
                 Digital Signature
 }}}
-Compare these settings to certificate bought from !GoDaddy.com:
+We compare these settings to a certificate bought from !GoDaddy.com.
 {{{
         X509v3 extensions:
             X509v3 Basic Constraints: critical
