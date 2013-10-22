@@ -9,7 +9,7 @@ In this article, we'll sign the client certificates using a local CA certificate
 
 <h4>SSLContext</h4>
 
-Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which we initialized via a keystore and a truststore, as follows.
+Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which we create with a keystore and a truststore, as follows.
 
 {{{
 public class LocalCaTest {
