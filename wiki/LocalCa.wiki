@@ -101,7 +101,9 @@ Certificate[2]:
 Owner: CN=ca
 Issuer: CN=ca
 }}}
-where we have signed our server certificate with a local CA root certificate. By definition the "root" certificate of a chain is self-signed.
+where we have signed our server certificate with a local CA root certificate. 
+
+Note that the first certificate of the chain is our key certificate, and the last certificate is the root CA certificate. By definition the "root" certificate of a chain is self-signed. We might have an "intermediate" CA certificate that issues the key certificate.
 
 
 <h4>Server truststore</h4>
