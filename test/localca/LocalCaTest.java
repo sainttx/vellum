@@ -226,7 +226,7 @@ public class LocalCaTest {
         return keyStore;
     }
 
-    static void acceptSingle(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
+    static void accept(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
             int port) throws GeneralSecurityException, IOException {
         SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
@@ -245,7 +245,7 @@ public class LocalCaTest {
         server.init();
         new Invoker(new Object() {
             public void run() throws Exception {
-                acceptSingle(server.keyStore, pass, server.trustStore, port);
+                accept(server.keyStore, pass, server.trustStore, port);
             }
         }).start();
         logger.info(new Exec().exec("openssl s_client -connect localhost:4446"));
