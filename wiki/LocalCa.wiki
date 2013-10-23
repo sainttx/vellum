@@ -505,9 +505,9 @@ We can sign client certificates using a local CA root certificate. However, we s
 
 Naturally, our SSL server resides in our DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
 
-The keystore must contain the certificate chain of the key certificate, whereas the truststore must not contain the certificate chains of its trusted certificates. When using a public CA, the keystore will contain that CA's root certificate, and if misused as the truststore, then <i>any</i> certificate issued by that public CA would be trusted.
-
 We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager that treats these as leaf certificates rather than root CA certificates.
+
+Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
 
 
 <h4>Furthermore</h4>
