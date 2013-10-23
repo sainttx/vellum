@@ -435,7 +435,7 @@ Certificate was added to keystore
 }}}
 where this is not a truststore per se, but just a database of issued certificates. 
 
-Tellingly, in trying to avoid a truststore containing all our client certificates, we have nevertheless ended up with one.
+So we signed our client certificates in order to avoid a truststore containing all our client certificates, but have nevertheless ended up with such a truststore, which is perhaps telling.
 
 
 <h4>Self-signed client certificates</h4>
