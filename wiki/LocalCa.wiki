@@ -440,9 +440,9 @@ So we signed our client certificates in order to avoid a truststore containing a
 
 <h4>Self-signed client certificates</h4>
 
-If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore, where they can be reviewed. 
+If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA certificates, and rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. To protect the server against such rogue certificates, we might use an explicit trust manager as below, where only leaf certificates explicitly listed in the truststore are trusted.
+However, self-signed client keys are effectively CA certificates, and rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So to protect our server against such rogue certificates, we might use an explicit trust manager as below, where the "leaf" certificate must be in the truststore. That is, the certificate of the client's key must be in the truststore, and its chain (if it is not self-signed) is disregarded.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
