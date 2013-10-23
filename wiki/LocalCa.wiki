@@ -140,17 +140,19 @@ This demonstrates why the keystore requires a certificate chain, i.e. to send to
 
 <h4>Intermediate CA certificate</h4>
 
-In practice, we might have multiple servers with different sets of clients. So we might generate an intermediate certificate that is used to sign client certificates for a specific server.
+In practice we might have multiple servers with different sets of clients, where we generate a certificate that is used to sign client certificates for a specific server.
 
 {{{
 $ keytool -keystore server-ca.jks -genkeypair -noprompt -keyalg rsa -keysize 2048 \
     -alias server-ca -dname "CN=server-ca" -validity 365     
 }}}
-where this keystore resides on our secure CA server, and not in the DMZ. We might then sign it using our root CA key. 
+where this keystore resides on our secure CA server, and not in the DMZ. We might sign it using our root CA key, for good measure.
 
 We can then use this intermediate CA key to sign the client certs for some server. The server's truststore would contain this intermediate CA certificate, and so trust all of its clients. Even if it is not our <i>root</i> CA certificate, since it is used to sign certificates, it is a "CA certificate" nonetheless.
 
-While it is possible to sign client certificates with the server key as its own CA, this resides in the DMZ, which naturally is our least secure zone. If compromised, this key could be used to sign rogue certificates. So we don't store CA keys in our DMZ.
+However, the advantage of signing intermediate certificates, rather than creating multiple root CA certificates, is not obvious.
+
+Incidently, while it is possible to sign client certificates with the server key as its own CA, this key resides in the DMZ, which is our least secure zone. If compromised, the key can be used to issue rogue certificates. Therefore we choose not to store CA keys in our DMZ.
 
 
 <h4>Serial numbers</h4>
