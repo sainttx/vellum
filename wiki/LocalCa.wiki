@@ -341,7 +341,7 @@ We might import the client's self-signed certificate into our server truststore.
 {{{
 $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
 }}}
-Similarly, our server's certificate (perhaps self-signed) is imported into this client's truststore.
+Similarly, our server's certificate is imported into this client's truststore.
 
 
 <h4>Client certificate signing</h4>
