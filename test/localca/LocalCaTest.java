@@ -37,12 +37,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import sun.security.pkcs.PKCS10;
-import sun.security.validator.SimpleValidator;
-import sun.security.validator.Validator;
 
 /**
  *
@@ -233,7 +232,11 @@ public class LocalCaTest {
                 getServerSocketFactory().createServerSocket(port);
         try {
             serverSocket.setNeedClientAuth(true);
-            ServerThread.handle(serverSocket.accept());
+            SSLSocket clientSocket = (SSLSocket) serverSocket.accept();
+            javax.security.cert.X509Certificate peer = 
+                    clientSocket.getSession().getPeerCertificateChain()[0];
+            logger.info("peer: " + peer.getSubjectDN().getName());
+            ServerThread.handle(clientSocket);
         } finally {
             serverSocket.close();
         }
