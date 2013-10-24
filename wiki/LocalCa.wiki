@@ -482,7 +482,7 @@ We validate peer certificate chains as follows.
 }}}
 where we check that the first cert in the chain sent by the peer, is contained in our map.
 
-We can use this trust manager on the server and client.
+We could use this trust manager equally on a client, as well as our server.
 {{{
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
