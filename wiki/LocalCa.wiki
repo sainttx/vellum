@@ -421,7 +421,7 @@ keytool error: java.lang.Exception: Failed to establish chain from reply
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, and emulating the manual procedure presented here.
+Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, to emulate the manual procedure presented here.
 
 
 <h4>Client certificate management</h4>
@@ -437,7 +437,7 @@ Certificate was added to keystore
 }}}
 where this is not a truststore per se, but just a database of issued certificates. 
 
-So we signed our client certificates in order to avoid a truststore containing all our client certificates, but have nevertheless ended up with such a truststore, which is perhaps telling.
+Interestingly, we sign our client certificates to avoid having such a truststore containing all our client certificates, but nevertheless end up with one.
 
 
 <h4>Self-signed client certificates</h4>
