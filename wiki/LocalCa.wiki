@@ -496,7 +496,7 @@ We could use this trust manager equally on a client, as well as our server.
     }    
 }}}
 
-<h4>Auto enrollment</h4>
+<h4>Auto-import</h4>
 
 We might combine our revocable and explicit trust managers, and consider other variations. 
 
