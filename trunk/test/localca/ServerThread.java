@@ -25,9 +25,9 @@ import vellumtest.util.FinalCloser;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import vellum.util.Threads;
@@ -56,7 +56,7 @@ public class ServerThread extends Thread {
         try {
             while (count-- > 0) {
                 try {
-                    handle(serverSocket.accept());
+                    handle((SSLSocket) serverSocket.accept());
                 } catch (Exception e) {
                     logger.info(e.getMessage());
                     errorMessage = e.getMessage();
@@ -68,7 +68,8 @@ public class ServerThread extends Thread {
         }
     }
 
-    static void handle(Socket socket) throws IOException {
+    static void handle(SSLSocket socket) throws IOException {
+        logger.info("handle: " + socket.getSession().getPeerPrincipal());
         try {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             Assert.assertEquals("clienthello", dis.readUTF());
