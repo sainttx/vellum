@@ -526,7 +526,7 @@ The auto-import functionality might be performed by our application e.g. where w
 
 Our application might validate the content of the message, e.g. a registration request, and import the peer certificate into our dynamic truststore e.g. by means of inserting the certificate into our SQL truststore.
 
-Alternatively our trust manager itself might auto-import certificates in the truststore.
+Alternatively our trust manager itself might auto-import certificates. To this end, this implement a trust manager which a mockable delegate to accept self-signed certificates.
 {{{
 public class DelegatingTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
@@ -548,7 +548,7 @@ public interface TrustManagerDelegate {
     public boolean accept(X509Certificate certificate) throws CertificateException;
 }
 }}}
-where we mock our trusted certificate storage as follows.
+We mock our trusted certificate storage as follows.
 {{{
 public class MockCertificateStorageDelegate implements TrustManagerDelegate {
     Set<Principal> acceptableSet = new TreeSet();
@@ -569,7 +569,9 @@ public class MockCertificateStorageDelegate implements TrustManagerDelegate {
     ...
 }
 }}}
-where we accept pre-approved clients and auto-import their certificate, and otherwise validate existing certificates. Our SQL delegate implementation might check if that certificate's CN record exists. If the record exists but with a <tt>null</tt> certificate, then we auto-import the certificate, i.e. update that record with the certificate. Otherwise if the certificate has been imported previously, then we validate that the certificates match.
+where we accept a set of pre-approved clients and auto-import their certificate, and otherwise validate existing certificates. 
+
+Our SQL delegate implementation might check if that certificate's CN record exists. If the record exists but has a <tt>null</tt> certificate, then we auto-import the certificate, i.e. update that record with the peer certificate. Otherwise the certificate has been imported previously, and we load it from our database and validate that the certificates match.
 
 
 <h4>Conclusion</h4>
