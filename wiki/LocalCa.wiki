@@ -500,11 +500,11 @@ We could use this trust manager equally on a client, as well as our server.
 
 We might combine our revocable and explicit trust managers, and consider other variations. 
 
-For example, we might trust new clients which have a pre-approved subject, and automatically import their key certificates into our truststore. Our truststore might be a database table with columns for the CN and the actual certificate e.g. in PEM format. Moreover, we might pre-approve clients by inserting records with the CN name, but <tt>null</tt> entry for certificate.
+For example, we might trust new clients which have been pre-approved by name, and automatically import their certificates into our truststore. For example, our truststore might be an SQL database table with a column for the CN, and a column for the actual certificate e.g. in PEM format. We might pre-approve clients by inserting records with their CN name, but a <tt>null</tt> entry for certificate.
 
-In this case, we would look up that certificate from the truststore using the peer certificate's CN, and check that the public key of peer certificate matches what is on record. So we only authenticate that the client's certificate hasn't changed, to protect against spoofing attacks. 
+In this case, our trust manager would look up that certificate from the truststore using the peer certificate's CN. If the record exists, but the certificate is <tt>null</tt>, it would update the record with certificate. Otherwise it checks that the public key of peer certificate matches what is on record. So we only authenticate that the client's certificate hasn't changed, to protect against spoofing attacks. 
 
-The auto-import functionality might be performed by our trust manager itself, or it might be left to our application e.g. where we accept the connection to the <tt>SSLServerSocket</tt>. We can access the <tt>SSLSession</tt> from the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
+The auto-import functionality might be performed by our application e.g. where we accept the connection to the <tt>SSLServerSocket</tt>. We can get the peer certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
 {{{
     static void accept(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
             int port) throws GeneralSecurityException, IOException {
@@ -524,10 +524,9 @@ The auto-import functionality might be performed by our trust manager itself, or
     }
 }}}
 
-Our application might validate the content of the request, e.g. a registration request. Our application would then import the peer certificate into its dynamic truststore e.g. by means of inserting the certificate into our SSL client table in our SQL database. 
+Our application might validate the content of the message, e.g. a registration request. Our application would then import the peer certificate into our dynamic truststore e.g. by means of inserting the certificate into our SQL truststore.
 
-Alternatively, this can be performed by the trust manager. 
-
+Alternatively our trust manager itself might auto-import certificates in the truststore.
 {{{
 public class DelegatingTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
@@ -570,7 +569,7 @@ public class MockCertificateStorageDelegate implements TrustManagerDelegate {
     ...
 }
 }}}
-where we accept pre-approved clients and auto-import their certificate, and otherwise validate existing certificates. Our SQL delegate implementation might check if that certificate's CN record exists, and if it's certificate has been imported previously, or should now be auto-imported i.e. of the record exists but with a <tt>null</tt> certificate. 
+where we accept pre-approved clients and auto-import their certificate, and otherwise validate existing certificates. Our SQL delegate implementation might check if that certificate's CN record exists. If the record exists but with a <tt>null</tt> certificate, then we auto-import the certificate, i.e. update that record with the certificate. Otherwise if the certificate has been imported previously, then we validate that the certificates match.
 
 
 <h4>Conclusion</h4>
