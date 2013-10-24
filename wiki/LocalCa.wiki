@@ -444,7 +444,7 @@ Interestingly, we sign our client certificates to avoid having such a truststore
 
 If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So to protect our server against such rogue certificates, we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and its chain is disregarded.
+However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So to protect our server against such rogue certificates, we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and it's chain is disregarded.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -466,9 +466,6 @@ We validate peer certificate chains as follows.
 {{{    
     private void checkTrusted(X509Certificate[] chain) 
             throws CertificateException {
-        if (chain.length != 1) {
-            throw new CertificateException("Invalid cert chain length");
-        }
         X509Certificate trustedCertificate = certificateMap.get(
                 X509Certificates.getCN(chain[0].getSubjectDN()));
         if (trustedCertificate == null) {
@@ -507,7 +504,7 @@ We can sign client certificates using a local CA root certificate. However, we s
 
 Naturally, our SSL server resides in our DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
 
-We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager that treats these as leaf certificates rather than root CA certificates.
+We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore.
 
 Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
 
