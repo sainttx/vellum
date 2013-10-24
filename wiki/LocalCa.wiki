@@ -219,23 +219,23 @@ public class RevocableTrustManager implements X509TrustManager {
     Set<String> revokedNames;
     ...
     @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType) 
+    public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
-        if (certs.length < 2) {
+        if (chain.length < 2) {
             throw new CertificateException("Invalid cert chain length");
         }
-        if (!certs[0].getIssuerX500Principal().equals(
+        if (!chain[0].getIssuerX500Principal().equals(
                 issuerCertificate.getSubjectX500Principal())) {
             throw new CertificateException("Untrusted issuer");
         }
-        if (!Arrays.equals(certs[1].getPublicKey().getEncoded(),
+        if (!Arrays.equals(chain[1].getPublicKey().getEncoded(),
                 issuerCertificate.getPublicKey().getEncoded())) {
             throw new CertificateException("Untrusted issuer public key");
         }
-        if (revokedNames.contains(Certificates.getCN(certs[0].getSubjectDN()))) {
+        if (revokedNames.contains(Certificates.getCN(chain[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
-        delegate.checkClientTrusted(certs, authType);
+        delegate.checkClientTrusted(chain, authType);
     }
 }
 }}}
