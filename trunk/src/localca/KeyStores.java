@@ -27,13 +27,16 @@ import java.security.cert.X509Certificate;
 import java.util.Collections;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author evan.summers
  */
 public class KeyStores {
-
+    static Logger logger = LoggerFactory.getLogger(KeyStores.class);
+    
     public static X509Certificate findPrivateKeyCertificate(KeyStore keyStore, 
             String keyAlias) throws KeyStoreException {
         if (!keyStore.entryInstanceOf(keyAlias, KeyStore.PrivateKeyEntry.class)) {
@@ -56,7 +59,7 @@ public class KeyStores {
 
     public static X509Certificate findSoleTrustedCertificate(KeyStore trustStore) 
             throws KeyStoreException {
-        if (countKeys(trustStore) == 1) {
+        if (countEntries(trustStore) == 1) {
             for (String alias : Collections.list(trustStore.aliases())) {
                 if (trustStore.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class)) {
                     return (X509Certificate) trustStore.getCertificate(alias);
@@ -65,10 +68,31 @@ public class KeyStores {
         }
         throw new KeyStoreException("No sole trusted certificate found in keystore");
     }
+
+    public static int countEntries(KeyStore trustStore) throws KeyStoreException {
+        int count = 0;
+        for (String alias : Collections.list(trustStore.aliases())) {
+            logger.debug("countEntries {}", alias);
+            count++;
+        }
+        return count;
+    }
+    
+    public static int countCerts(KeyStore trustStore) throws KeyStoreException {
+        int count = 0;
+        for (String alias : Collections.list(trustStore.aliases())) {
+            logger.debug("countCerts {}", alias);
+            if (trustStore.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class)) {
+                count++;
+            }
+        }
+        return count;
+    }
     
     public static int countKeys(KeyStore keyStore) throws KeyStoreException {
         int count = 0;
         for (String alias : Collections.list(keyStore.aliases())) {
+            logger.debug("countKeys {}", alias);
             if (keyStore.entryInstanceOf(alias, KeyStore.PrivateKeyEntry.class)) {
                 count++;
             }
