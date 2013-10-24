@@ -563,7 +563,7 @@ public class MockCertificateStorageDelegate implements TrustManagerDelegate {
 }}}
 where we accept a set of pre-approved clients and auto-import their certificate, and otherwise validate existing certificates. 
 
-Our SQL delegate implementation might check if that certificate's CN record exists. If the record exists but has a <tt>null</tt> certificate, then we auto-import the certificate, i.e. update that record with the peer certificate. Otherwise the certificate has been imported previously, and we load it from our database and validate that the certificates match.
+Our SQL delegate implementation might check if the peer certificate's CN record exists. If the record exists but has a <tt>null</tt> certificate, then we auto-import the certificate, i.e. update that record with the peer certificate. Otherwise the certificate has been imported previously, and we load it from the database and validate that the certificates match.
 
 
 <h4>Conclusion</h4>
