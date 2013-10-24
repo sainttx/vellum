@@ -500,7 +500,7 @@ We could use this trust manager equally on a client, as well as our server.
 
 We might combine our revocable and explicit trust managers, and consider other variations. 
 
-For example, we might trust new clients which have been pre-approved by name, and automatically import their certificates into our truststore. For example, our truststore might be an SQL database table with a column for the CN, and a column for the actual certificate e.g. in PEM format. We might pre-approve clients by inserting records with their CN name, but a <tt>null</tt> entry for certificate.
+For example, we might trust new clients which have been pre-approved by name, and automatically import their certificates into our truststore. For example, our truststore might be an SQL database table with a column for the CN, and a column for the actual certificate e.g. in PEM format. We might pre-approve clients by inserting records with their CN name, but a <tt>null</tt> entry for the certificate.
 
 In this case, our trust manager would look up that certificate from the truststore using the peer certificate's CN. If the record exists, but the certificate is <tt>null</tt>, it would update the record with certificate. Otherwise it checks that the public key of peer certificate matches what is on record. So we only authenticate that the client's certificate hasn't changed, to protect against spoofing attacks. 
 
