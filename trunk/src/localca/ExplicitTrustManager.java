@@ -59,7 +59,7 @@ public class ExplicitTrustManager implements X509TrustManager {
     
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        return Certificates.toArray(certificateMap.values());
+        return new X509Certificate[0];
     }
     
     private void checkTrusted(X509Certificate[] chain) 
