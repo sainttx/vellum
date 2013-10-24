@@ -526,7 +526,7 @@ The auto-import functionality might be performed by our application e.g. where w
 
 Our application might validate the content of the message, e.g. a registration request, and import the peer certificate into our dynamic truststore e.g. by means of inserting the certificate into our SQL truststore.
 
-Alternatively our trust manager itself might auto-import certificates. To this end, this implement a trust manager which a mockable delegate to accept self-signed certificates.
+Alternatively our trust manager itself might auto-import certificates. To this end, let's implement a trust manager which a mockable delegate to accept self-signed certificates.
 {{{
 public class DelegatingTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
