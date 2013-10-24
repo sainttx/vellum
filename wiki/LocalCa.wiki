@@ -535,11 +535,11 @@ public class DelegatingTrustManager implements X509TrustManager {
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
         if (!delegate.accept(chain[0])) {
-            throw new CertificateException("Untrusted certificate principal");            
+            throw new CertificateException("Untrusted certificate");
         }
     }
 }}}
-where our delegate interface has an <tt>accept()</tt> method. Then we can mock our trusted certificate storage as follows.
+Then we can mock our trusted certificate storage as follows.
 {{{
 public class MockCertificateStorageDelegate implements TrustManagerDelegate {
     Set<Principal> acceptableSet = new TreeSet();
