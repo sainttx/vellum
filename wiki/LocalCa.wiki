@@ -526,7 +526,7 @@ The auto-import functionality might be performed by our application e.g. where w
 
 Our application might validate the content of the message, e.g. a registration request, and import the peer certificate into our dynamic truststore e.g. by means of inserting the certificate into our SQL truststore.
 
-Alternatively our trust manager itself might auto-import certificates. To this end, let's implement a trust manager which a mockable delegate to accept self-signed certificates.
+Alternatively our trust manager itself might auto-import certificates. To this end, firstly let's implement a trust manager to accept certificates, using a mockable delegate.
 {{{
 public class DelegatingTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
@@ -534,21 +534,12 @@ public class DelegatingTrustManager implements X509TrustManager {
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
-        if (chain.length != 1) {
-            throw new CertificateException("Invalid cert chain length");
-        }
         if (!delegate.accept(chain[0])) {
             throw new CertificateException("Untrusted certificate principal");            
         }
     }
 }}}
-where our delegate interface has an <tt>accept()</tt> method.
-{{{
-public interface TrustManagerDelegate {
-    public boolean accept(X509Certificate certificate) throws CertificateException;
-}
-}}}
-We mock our trusted certificate storage as follows.
+where our delegate interface has an <tt>accept()</tt> method. Then we can mock our trusted certificate storage as follows.
 {{{
 public class MockCertificateStorageDelegate implements TrustManagerDelegate {
     Set<Principal> acceptableSet = new TreeSet();
