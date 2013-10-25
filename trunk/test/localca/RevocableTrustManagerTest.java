@@ -135,7 +135,7 @@ public class RevocableTrustManagerTest {
        
     private void testRevoked() throws Exception {
         SSLContext revokedContext = createContext(serverKeyStore,
-                Certificates.getCN(signedCert.getSubjectDN()));
+                Certificates.getCommonName(signedCert.getSubjectDN()));
         testConnection(revokedContext, signedContext,
                 "java.security.cert.CertificateException: Certificate CN revoked");
     }
