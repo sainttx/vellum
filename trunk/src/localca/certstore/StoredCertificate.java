@@ -20,9 +20,6 @@
  */
 package localca.certstore;
 
-import java.security.cert.X509Certificate;
-import org.apache.commons.codec.binary.Base64;
-
 /**
  *
  * @author evans
@@ -30,7 +27,7 @@ import org.apache.commons.codec.binary.Base64;
 public class StoredCertificate {
     String commonName;
     String encoded;
-    boolean revoked = false;
+    boolean enabled = false;
 
     public StoredCertificate(String commonName, String encoded) {
         this.commonName = commonName;
@@ -45,10 +42,10 @@ public class StoredCertificate {
         this.encoded = encoded;
     }
 
-    public void setRevoked(boolean revoked) {
-        this.revoked = revoked;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
-        
+    
     public String getCommonName() {
         return commonName;
     }
@@ -57,7 +54,7 @@ public class StoredCertificate {
         return encoded;
     }
 
-    public boolean isRevoked() {
-        return revoked;
-    }        
+    public boolean isEnabled() {
+        return enabled;
+    }   
 }

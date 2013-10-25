@@ -33,11 +33,15 @@ import localca.TrustManagerDelegate;
  */
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCertificate;
+    final private boolean autoInsert;
     final private CertificateStorage certificateStorage;
     
-    public StorageTrustManagerDelegate(boolean requireCertificate, 
+    public StorageTrustManagerDelegate(
+            boolean requireCertificate, 
+            boolean autoInsert, 
             CertificateStorage certificateStorage) {
         this.requireCertificate = requireCertificate;
+        this.autoInsert = autoInsert;
         this.certificateStorage = certificateStorage;
     }
 
@@ -59,13 +63,18 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
                     if (new Date().after(trustedCertificate.getNotAfter())) {
                         certificateStorage.update(commonName, peerCertificate);
                         return true;
-                    } else {
+                    } else if (certificateStorage.isEnabled(commonName)) {                        
                         return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
                                 trustedCertificate.getPublicKey().getEncoded());
+                    } else {
+                        return false;
                     }
                 }
+            } else if (autoInsert) {
+                certificateStorage.insert(commonName, peerCertificate);
+                return true;
             } else {
-                return false;
+                return false;                
             }
         } catch (CertificateStorageException e) {
             throw new CertificateException(e);

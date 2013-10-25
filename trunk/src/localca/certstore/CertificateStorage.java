@@ -31,6 +31,7 @@ public interface CertificateStorage {
     public boolean exists(String commonName) throws CertificateStorageException;
     public X509Certificate load(String commonName) throws CertificateStorageException;    
     public boolean isNull(String commonName) throws CertificateStorageException;
+    public boolean isEnabled(String commonName) throws CertificateStorageException;
     public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
     public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
