@@ -537,7 +537,7 @@ The auto-import functionality might be performed by our application e.g. when we
     }
 }}}
 
-Our application might validate the content of the message, e.g. be it a registration request, and import the peer certificate into our dynamic truststore e.g. by inserting the certificate into our SQL truststore.
+Our application might validate the content of the message, e.g. be it a registration request (, and import the peer certificate into our dynamic truststore e.g. by inserting the certificate into our SQL truststore.
 
 Alternatively our trust manager itself might auto-import certificates. To this end, firstly let's implement a trivial trust manager to accept certificates using a mockable delegate.
 {{{
@@ -547,42 +547,71 @@ public class DelegatingTrustManager implements X509TrustManager {
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
+        if (chain.length == 0) {
+            if (!delegate.accept()) {
+                throw new CertificateException("Invalid cert chain length");
+            }
+        }
         if (!delegate.accept(chain[0])) {
-            throw new CertificateException("Untrusted certificate");
+            throw new CertificateException("Untrusted certificate principal");            
         }
     }
 }}}
-Then we can mock our trusted certificate database storage as follows.
+where our delegate might accept clients without a certificate, i.e. without requiring client-authentication. In this case, our application would presumably authenticate the message. This is useful for the scenario where our client sends a registration request whereby the server generates a key and certificate on the client's behalf and sends this as its response e.g. in <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> format. 
 {{{
-public class MockCertificateStorageDelegate implements TrustManagerDelegate {
-    Set<Principal> acceptableSet = new TreeSet();
-    Map<Principal, X509Certificate> trustedMap = new HashMap();
+public class StorageTrustManagerDelegate implements TrustManagerDelegate {
+    final private boolean requireCert;
+    final private CertificateStorage certificateStorage;
+    
+    public StorageTrustManagerDelegate(boolean requireCert, 
+            CertificateStorage certificateStorage) {
+        this.requireCert = requireCert;
+        this.certificateStorage = certificateStorage;
+    }
+
+    @Override
+    public boolean accept() throws CertificateException {
+        return !requireCert;
+    }
 
     @Override
     public boolean accept(X509Certificate peerCertificate) throws CertificateException {
-        Principal principal = peerCertificate.getSubjectDN();
-        if (trustedMap.containsKey(principal)) {
-            X509Certificate trustedCertificate = trustedMap.get(principal);
-            if (new Date().after(trustedCertificate.getNotAfter())) {                
-                trustedMap.put(principal, peerCertificate);                
-                return true;
+        String commonName = Certificates.getCommonName(peerCertificate.getSubjectDN());
+        try {
+            if (certificateStorage.exists(commonName)) {
+                if (certificateStorage.isNull(commonName)) {
+                    certificateStorage.set(commonName, peerCertificate);
+                    return true;
+                } else {
+                    X509Certificate trustedCertificate = certificateStorage.load(commonName);
+                    if (new Date().after(trustedCertificate.getNotAfter())) {
+                        certificateStorage.update(commonName, peerCertificate);
+                        return true;
+                    } else {
+                        return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
+                                trustedCertificate.getPublicKey().getEncoded());
+                    }
+                }
             } else {
-                return Arrays.equals(trustedCertificate.getPublicKey().getEncoded(),
-                        peerCertificate.getPublicKey().getEncoded());
+                return false;
             }
-        } else if (acceptableSet.remove(principal)) {
-            trustedMap.put(principal, peerCertificate);
-            return true;
-        } else {
-            return false;
+        } catch (CertificateStorageException e) {
+            throw new CertificateException(e);
         }
     }
-    ...
+}}}
+where we provide a mockable storage implementation to our trust manager delegate.
+{{{
+public interface CertificateStorage {
+    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean exists(String commonName) throws CertificateStorageException;
+    public X509Certificate load(String commonName) throws CertificateStorageException;    
+    public boolean isNull(String commonName) throws CertificateStorageException;
+    public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
 }}}
-where firstly if the certificate on record has expired, we replace it with the current peer certificate. We validate existing certificates by matching the public key, but otherwise auto-import certificates for a set of pre-approved names.
-
-Our SQL delegate implementation might check if the peer certificate's CN record exists. If the record exists but has a <tt>null</tt> certificate, then we auto-import the certificate, i.e. update that record with the peer certificate. Otherwise the certificate has been imported previously, and so we load it from the database. If the certificate has not expired, we validate that its public key matches the peer certificate. If the certificate has expired, we automatically accept the new certificate.
+where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNull()</tt> returns <tt>true</tt>, and we can <tt>set()</tt> the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
 
 <h4>Conclusion</h4>
 
