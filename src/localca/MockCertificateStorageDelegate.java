@@ -24,6 +24,7 @@ import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,13 +49,20 @@ public class MockCertificateStorageDelegate implements TrustManagerDelegate {
     @Override
     public boolean accept(X509Certificate peerCertificate) throws CertificateException {
         Principal principal = peerCertificate.getSubjectDN();
-        if (acceptableSet.remove(principal)) {
+        if (trustedMap.containsKey(principal)) {
+            X509Certificate trustedCertificate = trustedMap.get(principal);
+            if (new Date().after(trustedCertificate.getNotAfter())) {                
+                trustedMap.put(principal, peerCertificate);                
+                return true;
+            } else {
+                return Arrays.equals(trustedCertificate.getPublicKey().getEncoded(),
+                        peerCertificate.getPublicKey().getEncoded());
+            }
+        } else if (acceptableSet.remove(principal)) {
             trustedMap.put(principal, peerCertificate);
             return true;
         } else {
-            X509Certificate trustedCertificate = trustedMap.get(principal);
-            return Arrays.equals(trustedCertificate.getPublicKey().getEncoded(),
-                    peerCertificate.getPublicKey().getEncoded());
+            return false;
         }
     }
 }
