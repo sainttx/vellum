@@ -32,12 +32,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author evan.summers
  */
-public class DelegatingTrustManager implements X509TrustManager {
-    static Logger logger = LoggerFactory.getLogger(DelegatingTrustManager.class);
-
+public class DelegatingClientTrustManager implements X509TrustManager {
+    static Logger logger = LoggerFactory.getLogger(DelegatingClientTrustManager.class);
     TrustManagerDelegate delegate;
     
-    public DelegatingTrustManager(TrustManagerDelegate delegate) throws GeneralSecurityException {
+    public DelegatingClientTrustManager(TrustManagerDelegate delegate) throws GeneralSecurityException {
         this.delegate = delegate;
     }
 
@@ -49,11 +48,13 @@ public class DelegatingTrustManager implements X509TrustManager {
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
-        if (chain.length != 1) {
-            throw new CertificateException("Invalid cert chain length");
+        if (chain.length == 0) {
+            if (!delegate.accept()) {
+                throw new CertificateException("No certificate");
+            }
         }
         if (!delegate.accept(chain[0])) {
-            throw new CertificateException("Untrusted certificate principal");            
+            throw new CertificateException("Certificate not accepted");            
         }
     }
 

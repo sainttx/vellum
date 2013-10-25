@@ -18,16 +18,46 @@
  specific language governing permissions and limitations
  under the License.  
  */
-package localca;
+package localca.certstore;
 
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
  * @author evans
  */
-public interface TrustManagerDelegate {
-    public boolean accept() throws CertificateException;
-    public boolean accept(X509Certificate certificate) throws CertificateException;
+public class StoredCertificate {
+    String commonName;
+    String encoded;
+    boolean revoked = false;
+
+    public StoredCertificate(String commonName, String encoded) {
+        this.commonName = commonName;
+        this.encoded = encoded;
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
+
+    public void setEncoded(String encoded) {
+        this.encoded = encoded;
+    }
+
+    public void setRevoked(boolean revoked) {
+        this.revoked = revoked;
+    }
+        
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public String getEncoded() {
+        return encoded;
+    }
+
+    public boolean isRevoked() {
+        return revoked;
+    }        
 }

@@ -18,16 +18,19 @@
  specific language governing permissions and limitations
  under the License.  
  */
-package localca;
+package localca.certstore;
 
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
  *
  * @author evans
  */
-public interface TrustManagerDelegate {
-    public boolean accept() throws CertificateException;
-    public boolean accept(X509Certificate certificate) throws CertificateException;
+public interface CertificateStorage {
+    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean exists(String commonName) throws CertificateStorageException;
+    public X509Certificate load(String commonName) throws CertificateStorageException;    
+    public boolean isNull(String commonName) throws CertificateStorageException;
+    public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
