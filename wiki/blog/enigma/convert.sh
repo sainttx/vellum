@@ -20,6 +20,7 @@ sed -i 's/>\!/>/g' $name.content.html
 sed -i 's/<tt>\!//g' $name.content.html 
 sed -i 's/<tt>//g' $name.content.html 
 sed -i 's/<\/tt>//g' $name.content.html 
+sed -i 's/\!G/G/g' $name.content.html 
 sed -i 's/{{{/<pre>/g' $name.content.html 
 sed -i 's/}}}/<\/pre>/g' $name.content.html 
 

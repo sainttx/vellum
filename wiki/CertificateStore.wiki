@@ -4,6 +4,8 @@
 
 The problem with client-authenticated connections is that enrollment is tedious, either requiring a certificate signing process, or otherwise importing the client's certificate in advance, before the client can connect. Clearly a new client cannot register itself via the client-authenticated connection. Moreover certificate expiry requires this process to be repeated regularly.
 
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
+
 As a consequence of the inconvenience of client certificate generation, enrollment and renewal, browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions, and these might be hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated clients.
 
 A further impediment to client-authenticated HTTPS sites is that they require a non-client-authenticated HTTPS server for enrollment. Unfortunately the standard port number is the same for both, i.e. 443, which is widely allowed by firewalls. Consequently two hosts are typically required, i.e. with different IP numbers.
