@@ -537,7 +537,7 @@ The auto-import functionality might be performed by our application e.g. when we
     }
 }}}
 
-Our application might validate the content of the message, e.g. be it a registration request (, and import the peer certificate into our dynamic truststore e.g. by inserting the certificate into our SQL truststore.
+Our application might validate the content of the message, e.g. be it a registration request, and import the peer certificate into our dynamic truststore e.g. by inserting the certificate into our SQL truststore.
 
 Alternatively our trust manager itself might auto-import certificates. To this end, firstly let's implement a trivial trust manager to accept certificates using a mockable delegate.
 {{{
@@ -557,8 +557,8 @@ public class DelegatingTrustManager implements X509TrustManager {
         }
     }
 }}}
-where our delegate might accept clients without a certificate, i.e. without requiring client-authentication. In this case, our application would presumably authenticate the message. This is useful for the scenario where our client sends a registration request whereby the server generates a key and certificate on the client's behalf and sends this as its response e.g. in <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> format. 
-{{{
+where our delegate might accept clients without a certificate, i.e. without requiring client-authentication. 
+
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCert;
     final private CertificateStorage certificateStorage;
@@ -573,7 +573,25 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     public boolean accept() throws CertificateException {
         return !requireCert;
     }
+    ...
+}
+}}}
 
+If our trust manager delegate doesn't require a client certificate, then this is equivalent to non-client-authenticated SSL. In this case, our application would presumably authenticate the message. This is useful for the scenario where our client sends a registration request whereby the server generates a key and certificate on the client's behalf, and sends this as its response e.g. in <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> format. 
+
+We provide a mockable storage implementation to our trust manager delegate.
+{{{
+public interface CertificateStorage {
+    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean exists(String commonName) throws CertificateStorageException;
+    public X509Certificate load(String commonName) throws CertificateStorageException;    
+    public boolean isNull(String commonName) throws CertificateStorageException;
+    public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
+}
+}}}
+where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNull()</tt> returns <tt>true</tt>, and we can <tt>set()</tt> the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
+{{{
     @Override
     public boolean accept(X509Certificate peerCertificate) throws CertificateException {
         String commonName = Certificates.getCommonName(peerCertificate.getSubjectDN());
@@ -600,18 +618,6 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
         }
     }
 }}}
-where we provide a mockable storage implementation to our trust manager delegate.
-{{{
-public interface CertificateStorage {
-    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean exists(String commonName) throws CertificateStorageException;
-    public X509Certificate load(String commonName) throws CertificateStorageException;    
-    public boolean isNull(String commonName) throws CertificateStorageException;
-    public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
-}
-}}}
-where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNull()</tt> returns <tt>true</tt>, and we can <tt>set()</tt> the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
 
 <h4>Conclusion</h4>
 
