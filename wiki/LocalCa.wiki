@@ -559,7 +559,6 @@ public class MockCertificateStorageDelegate implements TrustManagerDelegate {
     Map<Principal, X509Certificate> trustedMap = new HashMap();
 
     @Override
-    @Override
     public boolean accept(X509Certificate peerCertificate) throws CertificateException {
         Principal principal = peerCertificate.getSubjectDN();
         if (trustedMap.containsKey(principal)) {
