@@ -587,7 +587,6 @@ public class MockCertificateStorageDelegate implements TrustManagerDelegate {
 }}}
 where firstly if the certificate on record has expired, we replace it with the current peer certificate. We validate existing certificates by matching the public key, but otherwise auto-import certificates for a set of pre-approved names.
 
-Our SQL delegate implementation might check if the peer certificate's CN record exists. If the record exists but has a <tt>null</tt> certificate, then we auto-import the certificate, i.e. update that record with the peer certificate. Otherwise the certificate has been imported previously, and so we load it from the database, and if the certificate has not expired, we validate that its public key matches the peer certificate. If the certificate has expired, we automatically accept the new certificate.
 
 <h4>Conclusion</h4>
 
