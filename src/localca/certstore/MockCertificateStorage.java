@@ -114,4 +114,13 @@ public class MockCertificateStorage implements CertificateStorage {
         }
         
     }    
+
+    @Override
+    public boolean isEnabled(String commonName) throws CertificateStorageException {
+        if (!map.containsKey(commonName)) {
+            throw new CertificateStorageException(CertificateStorageExceptionType.NOT_FOUND,
+                    commonName);            
+        }
+        return map.get(commonName).isEnabled();
+    }
 }
