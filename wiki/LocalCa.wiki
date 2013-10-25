@@ -504,7 +504,7 @@ Similarly, client-authenticated HTTPS sites require a non-client-authenticated H
 
 So let's implement a dynamic truststore which enables us to support client-authenticated SSL connections, where new clients can register via this same connection. This offers convenience similar to non-client-authenticated SSL connections, but with enhanced security e.g. preventing client spoofing attacks.
 
-For example, we might trust new clients which have been pre-approved by name, or where they submit a valid registration request, and we automatically import their self-signed certificates into our truststore. 
+For example, we might trust new clients which have been pre-approved by name, or where they submit a valid registration request, and we automatically import their self-signed certificates into our truststore when they first connect.
 
 Our truststore might be an SQL database table with a column for the CN, and a column for the actual certificate e.g. in PEM format. 
 {{{
