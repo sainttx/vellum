@@ -500,15 +500,15 @@ We could use this trust manager equally on a client, as well as our server.
 
 The problem with client-authenticated connections is that enrollment is tedious, either requiring a certificate signing process, or otherwise importing the client's certificate in advance, before the client can connect. Clearly a new client cannot register itself via the client-authenticated connection. Moreover certificate expiry requires this process to be repeated regularly.
 
-Similarly, client-authenticated HTTPS sites require a non-client-authenticated HTTPS server for automated registration. This can be achieved using a different host, in order to use the standard HTTPS port number i.e. 443. 
+Similarly, for HTTPS, as a consequence of the inconvenience of client certificate generation, enrollment and renewal, browser certificates are not widely used for consumer sites. Typically cookies are used to record authenticated sessions. Unfortunately cookies are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
 
-As a consequence of the inconvenience of client certificate generation, enrollment and renewal, browser certificates are not widely used for consumer sites. Typically cookies are used to record authenticated sessions. This is unfortunate, as cookies are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
+A further impediment to client-authenticated HTTPS sites, is that they require a non-client-authenticated HTTPS server for enrollment. Unfortunately the standard port number is the same for both, i.e. 443, which is widely allowed by firewalls. Consequently two hosts are typically required, i.e. with different IP numbers.
 
-So let's implement a dynamic truststore which enables us to support client-authenticated SSL connections, where new clients can register via this same connection. This offers convenience similar to non-client-authenticated SSL connections, but with enhanced security e.g. preventing client spoofing attacks.
+So let's implement a dynamic truststore which enables us to support client-authenticated SSL connections, but where new clients can register via this same connection, thanks to a liberal custom trust manager. This offers convenience similar to non-client-authenticated SSL connections, but with enhanced security e.g. preventing client spoofing attacks.
 
 For example, we might trust new clients which have been pre-approved by name, or where they submit a valid registration request, and we automatically import their self-signed certificates into our truststore when they first connect.
 
-Our truststore might be an SQL database table with a column for the common name, and a column for the certificate itself e.g. Base64-encoded. 
+Our truststore might be an SQL database table with a column for the client certificate name, and another for the certificate itself.
 {{{
 create table client_cert (
   cert_name text,
@@ -516,6 +516,7 @@ create table client_cert (
   enabled boolean default false
 );
 }}}
+where the certificate would be Base64-encoded.
 
 We might pre-approve clients by inserting a record with the certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set later when the client connects for the first time. Also, we can revoke clients by setting the <tt>enabled</tt> column to <tt>false</tt>.
 
@@ -539,9 +540,9 @@ The auto-import functionality might be performed by our application e.g. when we
     }
 }}}
 
-Our application might validate the content of the message, e.g. be it a registration request, and import the peer certificate into our dynamic truststore e.g. by inserting the certificate into our SQL truststore.
+Our application might validate the content of the message, e.g. be it a registration request, and import the peer certificate into our dynamic truststore e.g. by updating the record in our SQL truststore.
 
-Alternatively our trust manager itself might auto-import certificates. To this end, firstly let's implement a trivial trust manager to accept certificates using a mockable delegate.
+Alternatively our trust manager itself might auto-import certificates. To this end, firstly let's implement a trivial trust manager to accept certificates using a delegate.
 {{{
 public class DelegatingClientTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
@@ -559,7 +560,7 @@ public class DelegatingClientTrustManager implements X509TrustManager {
         }
     }
 }}}
-where our delegate might accept clients without a certificate, i.e. without requiring client-authentication, where then our application authenticates the message.
+where our delegate might accept clients without a certificate, i.e. without requiring client-authentication, where our application will authenticate the message.
 {{{
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCertificate;
@@ -577,7 +578,9 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     ...
 }
 }}}
-Perhaps we accept a client without an certificate in order to enable it to send a registration request for the server to generate a key and certificate on the client's behalf. For example, the server might respond to such a request with a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle.
+For example, we might accept a client without an certificate in order to enable it to send a registration request for the server to generate a key and certificate on the client's behalf. For example, the server might respond to such a request with a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle.
+
+In this case the server might sign the certificate, or import it into the truststore. Perhaps the certificate are initially disabled in the truststore database, pending manual approval by the appropriate administrator e.g. via a client-authenticated HTTPS site requiring browser certificates.
 
 We provide a mockable certificate storage implementation to our trust manager delegate.
 {{{
