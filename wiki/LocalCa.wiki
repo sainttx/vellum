@@ -557,7 +557,7 @@ public class DelegatingClientTrustManager implements X509TrustManager {
         }
     }
 }}}
-where our delegate might accept clients without a certificate, i.e. without requiring client-authentication. 
+where our delegate might accept clients without a certificate, i.e. without requiring client-authentication, where then our application authenticates the message.
 {{{
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCertificate;
@@ -576,10 +576,9 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     ...
 }
 }}}
+where perhaps we accept a client without an certificate in order to enable it to send a registration request for the server to generate a key and certificate on the client's behalf. For example, the server might respond to such a request with a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle.
 
-If our trust manager delegate doesn't require a client certificate, then this is equivalent to non-client-authenticated SSL. In this case, our application would presumably authenticate the message. This is useful for the scenario where our client sends a registration request whereby the server generates a key and certificate on the client's behalf, and sends this as its response e.g. in <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> format. 
-
-We provide a mockable storage implementation to our trust manager delegate.
+We provide a mockable certificate storage implementation to our trust manager delegate.
 {{{
 public interface CertificateStorage {
     public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
