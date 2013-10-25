@@ -541,7 +541,7 @@ Our application might validate the content of the message, e.g. be it a registra
 
 Alternatively our trust manager itself might auto-import certificates. To this end, firstly let's implement a trivial trust manager to accept certificates using a mockable delegate.
 {{{
-public class DelegatingTrustManager implements X509TrustManager {
+public class DelegatingClientTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
     ...
     @Override
@@ -549,23 +549,23 @@ public class DelegatingTrustManager implements X509TrustManager {
             throws CertificateException {
         if (chain.length == 0) {
             if (!delegate.accept()) {
-                throw new CertificateException("Invalid cert chain length");
+                throw new CertificateException("No certificate");
             }
         }
         if (!delegate.accept(chain[0])) {
-            throw new CertificateException("Untrusted certificate principal");            
+            throw new CertificateException("Certificate not accepted");            
         }
     }
 }}}
 where our delegate might accept clients without a certificate, i.e. without requiring client-authentication. 
-
+{{{
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
-    final private boolean requireCert;
+    final private boolean requireCertificate;
     final private CertificateStorage certificateStorage;
     
-    public StorageTrustManagerDelegate(boolean requireCert, 
+    public StorageTrustManagerDelegate(boolean requireCertificate, 
             CertificateStorage certificateStorage) {
-        this.requireCert = requireCert;
+        this.requireCertificate = requireCertificate;
         this.certificateStorage = certificateStorage;
     }
 
