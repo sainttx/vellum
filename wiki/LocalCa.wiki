@@ -500,7 +500,7 @@ We could use this trust manager equally on a client, as well as our server.
 
 The problem with client-authenticated connections is that enrollment is tedious, either requiring certificate signing, or importing the client's certificate in advance, before the client can connect. So ordinarily the client cannot register via the client-authenticated connection itself. 
 
-Similarly, client-authenticated HTTPS requires a non-client-authenticated HTTPS server for automated registration. Consequently, browser certificates are not widely used, which is unfortunate. So typically cookies are used for authenticated sessions, and these are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
+Similarly, client-authenticated HTTPS sites require a non-client-authenticated HTTPS server for automated registration. Consequently, browser certificates are not widely used, which is unfortunate. So typically cookies are used for authenticated sessions, and these are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
 
 So let's implement a dynamic truststore which enables us to support client-authenticated SSL connections, where new clients can register via this same connection. This offers convenience similar to non-client-authenticated SSL connections, but with enhanced security e.g. preventing client spoofing attacks.
 
