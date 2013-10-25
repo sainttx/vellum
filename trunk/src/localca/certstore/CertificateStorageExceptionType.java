@@ -18,16 +18,17 @@
  specific language governing permissions and limitations
  under the License.  
  */
-package localca;
-
-import java.security.Principal;
-import java.security.cert.CertificateException;
+package localca.certstore;
 
 /**
  *
  * @author evans
  */
-public interface TrustedCertificateStorage {
-    public boolean accept(Principal principal) throws CertificateException;
-    public boolean load(Principal principal) throws CertificateException;
+public enum CertificateStorageExceptionType {
+    NOT_FOUND,
+    ALREADY_EXISTS,
+    ALREADY_SET,
+    ENCODING_ERROR,
+    DECODING_ERROR,
+    
 }

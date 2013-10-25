@@ -65,7 +65,7 @@ public class Certificates {
         return false;
     }
     
-    public static String getCN(Principal principal) throws CertificateException {
+    public static String getCommonName(Principal principal) throws CertificateException {
         String dname = principal.getName();
         try {
             LdapName ln = new LdapName(dname);

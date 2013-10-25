@@ -75,7 +75,7 @@ public class RevocableTrustManager implements X509TrustManager {
             throw new CertificateException("Untrusted issuer public key");
         }
         if (revokedCommonNames != null && 
-                revokedCommonNames.contains(Certificates.getCN(certs[0].getSubjectDN()))) {
+                revokedCommonNames.contains(Certificates.getCommonName(certs[0].getSubjectDN()))) {
             throw new CertificateException("Certificate CN revoked");
         }
         if (revokedSerialNumbers != null && 
