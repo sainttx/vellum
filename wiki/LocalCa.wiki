@@ -498,9 +498,11 @@ We could use this trust manager equally on a client, as well as our server.
 
 <h4>Auto-import</h4>
 
-The problem with client-authenticated connections is that enrollment is tedious, either requiring a certificate signing process, or otherwise importing the client's certificate in advance, before the client can connect. Clearly a new client cannot register itself via the client-authenticated connection. Moreover certificate expiry requires the process to be repeated regularly.
+The problem with client-authenticated connections is that enrollment is tedious, either requiring a certificate signing process, or otherwise importing the client's certificate in advance, before the client can connect. Clearly a new client cannot register itself via the client-authenticated connection. Moreover certificate expiry requires this process to be repeated regularly.
 
-Similarly, client-authenticated HTTPS sites require a non-client-authenticated HTTPS server for automated registration. This can be achieved using a different host, in order to use the standard HTTPS port number i.e. 443. Consequently, browser certificates are not widely used for consumer sites, but typically cookies are used to record authenticated sessions. This is unfortunate, as cookies are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
+Similarly, client-authenticated HTTPS sites require a non-client-authenticated HTTPS server for automated registration. This can be achieved using a different host, in order to use the standard HTTPS port number i.e. 443. 
+
+As a consequence of the inconvenience of client certificate generation, enrollment and renewal, browser certificates are not widely used for consumer sites. Typically cookies are used to record authenticated sessions. This is unfortunate, as cookies are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
 
 So let's implement a dynamic truststore which enables us to support client-authenticated SSL connections, where new clients can register via this same connection. This offers convenience similar to non-client-authenticated SSL connections, but with enhanced security e.g. preventing client spoofing attacks.
 
@@ -508,14 +510,14 @@ For example, we might trust new clients which have been pre-approved by name, or
 
 Our truststore might be an SQL database table with a column for the common name, and a column for the certificate itself e.g. Base64-encoded. 
 {{{
-CREATE TABLE client_cert (
-  cert_name VARCHAR(255),
-  cert VARCHAR(4096), 
-  revoked BOOLEAN,
+create table client_cert (
+  cert_name text,
+  cert text, 
+  enabled boolean default false
 );
 }}}
 
-We might pre-approve clients by inserting a record with the certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set later when the client connects for the first time. Also, we can revoke clients by setting the <tt>revoked</tt> column to <tt>true</tt>.
+We might pre-approve clients by inserting a record with the certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set later when the client connects for the first time. Also, we can revoke clients by setting the <tt>enabled</tt> column to <tt>false</tt>.
 
 The auto-import functionality might be performed by our application e.g. when we accept the connection to the <tt>SSLServerSocket</tt>. We can get the peer certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
 {{{
@@ -561,22 +563,21 @@ where our delegate might accept clients without a certificate, i.e. without requ
 {{{
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCertificate;
+    final private boolean autoInsert;
     final private CertificateStorage certificateStorage;
     
-    public StorageTrustManagerDelegate(boolean requireCertificate, 
+    public StorageTrustManagerDelegate(
+            boolean requireCertificate, 
+            boolean autoInsert, 
             CertificateStorage certificateStorage) {
         this.requireCertificate = requireCertificate;
+        this.autoInsert = autoInsert;
         this.certificateStorage = certificateStorage;
-    }
-
-    @Override
-    public boolean accept() throws CertificateException {
-        return !requireCert;
     }
     ...
 }
 }}}
-where perhaps we accept a client without an certificate in order to enable it to send a registration request for the server to generate a key and certificate on the client's behalf. For example, the server might respond to such a request with a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle.
+Perhaps we accept a client without an certificate in order to enable it to send a registration request for the server to generate a key and certificate on the client's behalf. For example, the server might respond to such a request with a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle.
 
 We provide a mockable certificate storage implementation to our trust manager delegate.
 {{{
@@ -585,7 +586,7 @@ public interface CertificateStorage {
     public boolean exists(String commonName) throws CertificateStorageException;
     public boolean isNull(String commonName) throws CertificateStorageException;
     public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean isRevoked(String commonName) throws CertificateStorageException;
+    public boolean isEnabled(String commonName) throws CertificateStorageException;
     public X509Certificate load(String commonName) throws CertificateStorageException;    
     public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
@@ -605,22 +606,25 @@ where if the record for that common name exists but has a <tt>null</tt> certific
                     if (new Date().after(trustedCertificate.getNotAfter())) {
                         certificateStorage.update(commonName, peerCertificate);
                         return true;
-                    } else if (!certificateStorage.isRevoked(commonName)) {                        
+                    } else if (certificateStorage.isEnabled(commonName)) {                        
                         return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
                                 trustedCertificate.getPublicKey().getEncoded());
                     } else {
                         return false;
                     }
                 }
+            } else if (autoInsert) {
+                certificateStorage.insert(commonName, peerCertificate);
+                return true;
             } else {
-                return false;
+                return false;                
             }
         } catch (CertificateStorageException e) {
             throw new CertificateException(e);
         }
     }
 }}}
-where we check that the certificate has not be revoked via our SQL truststore.
+where we check that an existing certificate is <tt>enabled</tt> i.e. has not been thereby revoked. If we auto-insert a new certificiate, then <tt>enabled</tt> might be <tt>false</tt>, where our application might enable it automatically following registration, or require an administrator to do so manually. 
 
 <h4>Conclusion</h4>
 
