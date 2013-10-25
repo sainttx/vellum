@@ -498,9 +498,9 @@ We could use this trust manager equally on a client, as well as our server.
 
 <h4>Auto-import</h4>
 
-The problem with client-authenticated connections is that enrollment is tedious, either requiring a certificate signing process, or otherwise importing the client's certificate in advance, before the client can connect. Clearly a new client cannot register itself via the client-authenticated connection. 
+The problem with client-authenticated connections is that enrollment is tedious, either requiring a certificate signing process, or otherwise importing the client's certificate in advance, before the client can connect. Clearly a new client cannot register itself via the client-authenticated connection. Moreover certificate expiry requires the process to be repeated regularly.
 
-Similarly, client-authenticated HTTPS sites require a non-client-authenticated HTTPS server for automated registration. This can be achieved using a different host, in order to use the standard HTTPS port number i.e. 443. Consequently, browser certificates are not widely used, but rather cookies are used for authenticated sessions. This is unfortunate, as cookies are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
+Similarly, client-authenticated HTTPS sites require a non-client-authenticated HTTPS server for automated registration. This can be achieved using a different host, in order to use the standard HTTPS port number i.e. 443. Consequently, browser certificates are not widely used for consumer sites, but typically cookies are used to record authenticated sessions. This is unfortunate, as cookies are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated sessions.
 
 So let's implement a dynamic truststore which enables us to support client-authenticated SSL connections, where new clients can register via this same connection. This offers convenience similar to non-client-authenticated SSL connections, but with enhanced security e.g. preventing client spoofing attacks.
 
@@ -517,7 +517,7 @@ CREATE TABLE client_cert (
 
 We might pre-approve clients by inserting records with their CN name, and a <tt>null</tt> entry for the certificate. The certificate is recorded later when the client connects for the first time. Finally, we can revoke clients by setting the <tt>revoked</tt> column to <tt>true</tt>.
 
-In this case, our trust manager would look up that certificate from the truststore using the peer certificate's CN. If the record exists, but the certificate is <tt>null</tt>, it would update the record with certificate. Otherwise if the certificate is not revoked, it checks that the public key of peer certificate matches what is on record. So we only authenticate that the client's certificate hasn't changed, to protect against spoofing attacks. Additionally. if the certificate on record has expired, we might automatically update it with the new certificate that the client uses. 
+In this case, our trust manager would look up that certificate from the truststore using the peer certificate's CN. If the record exists, but the certificate is <tt>null</tt>, it would update the record with certificate. Otherwise if the certificate is not revoked, it checks that the public key of peer certificate matches what is on record. So we only authenticate that the client's certificate hasn't changed, to protect against spoofing attacks. Additionally, if the certificate on record has expired, we might automatically update it with the new certificate that the client uses. 
 
 The auto-import functionality might be performed by our application e.g. when we accept the connection to the <tt>SSLServerSocket</tt>. We can get the peer certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
 {{{
