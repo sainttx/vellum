@@ -624,7 +624,8 @@ where if the record for that common name exists but has a <tt>null</tt> certific
         }
     }
 }}}
-where we check that an existing certificate is <tt>enabled</tt> i.e. has not been thereby revoked. If we auto-insert a new certificiate, then <tt>enabled</tt> might be <tt>false</tt>, where our application might enable it automatically following registration, or require an administrator to do so manually. 
+where we check that an existing certificate is <tt>enabled</tt> i.e. has not been thereby revoked. If we auto-insert a new certificiate, then <tt>enabled</tt> might be <tt>false</tt>, where our application might enable it automatically following registration, or require an administrator to do so manually.
+
 
 <h4>Conclusion</h4>
 
