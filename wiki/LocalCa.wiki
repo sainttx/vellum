@@ -506,16 +506,16 @@ So let's implement a dynamic truststore which enables us to support client-authe
 
 For example, we might trust new clients which have been pre-approved by name, or where they submit a valid registration request, and we automatically import their self-signed certificates into our truststore when they first connect.
 
-Our truststore might be an SQL database table with a column for the CN, and a column for the actual certificate e.g. in PEM format. 
+Our truststore might be an SQL database table with a column for the common name, and a column for the certificate itself e.g. Base64-encoded. 
 {{{
 CREATE TABLE client_cert (
-  cert_cn VARCHAR(255),
-  cert_pem VARCHAR(4096), 
+  cert_name VARCHAR(255),
+  cert VARCHAR(4096), 
   revoked BOOLEAN,
 );
 }}}
 
-We might pre-approve clients by inserting records with their CN name, and a <tt>null</tt> entry for the certificate. The certificate is recorded later when the client connects for the first time. Finally, we can revoke clients by setting the <tt>revoked</tt> column to <tt>true</tt>.
+We might pre-approve clients by inserting a record with the certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set later when the client connects for the first time. Also, we can revoke clients by setting the <tt>revoked</tt> column to <tt>true</tt>.
 
 The auto-import functionality might be performed by our application e.g. when we accept the connection to the <tt>SSLServerSocket</tt>. We can get the peer certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
 {{{
@@ -583,9 +583,10 @@ We provide a mockable certificate storage implementation to our trust manager de
 public interface CertificateStorage {
     public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
     public boolean exists(String commonName) throws CertificateStorageException;
-    public X509Certificate load(String commonName) throws CertificateStorageException;    
     public boolean isNull(String commonName) throws CertificateStorageException;
     public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean isRevoked(String commonName) throws CertificateStorageException;
+    public X509Certificate load(String commonName) throws CertificateStorageException;    
     public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
 }}}
@@ -604,9 +605,11 @@ where if the record for that common name exists but has a <tt>null</tt> certific
                     if (new Date().after(trustedCertificate.getNotAfter())) {
                         certificateStorage.update(commonName, peerCertificate);
                         return true;
-                    } else {
+                    } else if (!certificateStorage.isRevoked(commonName)) {                        
                         return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
                                 trustedCertificate.getPublicKey().getEncoded());
+                    } else {
+                        return false;
                     }
                 }
             } else {
@@ -617,6 +620,7 @@ where if the record for that common name exists but has a <tt>null</tt> certific
         }
     }
 }}}
+where we check that the certificate has not be revoked via our SQL truststore.
 
 <h4>Conclusion</h4>
 
