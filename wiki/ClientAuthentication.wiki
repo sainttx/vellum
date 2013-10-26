@@ -59,12 +59,11 @@ When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our appli
 
 In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore, to enable our application to decide whether to import the new certificate into our SQL truststore, e.g. if the message is a valid registration request.
 
+Alternatively our trust manager itself might import new certificates. 
 
 <h4>Trust manager</h4>
 
-Alternatively our trust manager itself might import new certificates. 
-
-Firstly let's implement a trivial trust manager to accept certificates using a delegate.
+Firstly, let's implement a trivial trust manager to accept certificates using a delegate.
 {{{
 public class DelegatingClientTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
