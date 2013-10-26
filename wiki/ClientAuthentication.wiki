@@ -142,7 +142,7 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
 }}}
 where our delegate might accept clients without a certificate. For example, the client might request for a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its client's behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.)
 
-In this case, perhaps the certificate is initially disabled in the truststore database, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
+In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
 
 If the client sends a certificate, we check it against our SQL truststore as follows.
 {{{
@@ -182,6 +182,8 @@ where we use the common name of the peer certificate to select the matching trus
     }
 }}}
 where we validate the certificate against our truststore, i.e. check that it is <tt>enabled</tt> e.g. it is not pending confirmation, and has not been revoked. If the certificate on record has expired, we auto import the client's renewed certificate. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record for its common name. 
+
+Finally, we might automatically insert that client's certificate into our SQL truststore if it does not exist. In this case, the newly inserted certificate is initially disabled, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
 
 
 <h4>To be continued</h4>
