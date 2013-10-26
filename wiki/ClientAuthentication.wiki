@@ -111,7 +111,7 @@ where our delegate might accept clients without a certificate, e.g. to enable a 
 
 In this case the server might sign the certificate, or import it into its truststore. Perhaps the certificate is initially disabled in the truststore database, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
 
-However if the client sends a certificate, we check it using our SQL truststore as follows.
+If the client sends a certificate, we check it against our SQL truststore as follows.
 {{{
     @Override
     public boolean accept(X509Certificate peerCertificate) throws CertificateException {
