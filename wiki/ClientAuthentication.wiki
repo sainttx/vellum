@@ -82,7 +82,7 @@ public class DelegatingClientTrustManager implements X509TrustManager {
         }
     }
 }}}
-where we consider only key certificates, and disregard their chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.(
+where we consider only key certificates, and disregard their chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
 
 We implement a trust manager delegate which uses a dynamic certificate truststore.
 {{{
