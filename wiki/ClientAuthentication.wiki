@@ -57,7 +57,7 @@ When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our appli
     }
 }}}
 
-In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore, since our application will decide whether to import the new certificate into our SQL truststore, e.g. if the message is a valid registration request.
+In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore, to enable our application to decide whether to import the new certificate into our SQL truststore, e.g. if the message is a valid registration request.
 
 
 <h4>Trust manager</h4>
