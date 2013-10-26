@@ -4,7 +4,7 @@
 
 Client-authenticated SSL connections require client certificate generation, enrollment, and renewal. Enrollment typically requires a manual process, either certificate signing, or importing into our truststore. Moreover certificate expiry requires this process to be repeated regularly. 
 
-Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. Unfortunately such cookies can hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, to thereby <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoof</a> authenticated client sessions.
+Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. Unfortunately such cookies are hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, to thereby <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoof</a> authenticated client sessions.
 
 <img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
 
