@@ -317,8 +317,7 @@ For example, let's create a private SSL keystore for a test client named "evanx.
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
     -alias evanx -dname "CN=evanx"
 }}}
- 
-We print our certificate as PEM text using <tt>-rfc</tt>.
+ We print our certificate as PEM text using <tt>-rfc</tt>.
 {{{
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 ----BEGIN CERTIFICATE-----
