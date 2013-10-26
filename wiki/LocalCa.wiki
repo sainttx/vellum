@@ -511,12 +511,13 @@ We note that self-signed client certificates are effectively CA certificates, an
 
 Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and so we note that if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
 
-Finally, we introduce a trust manager to enable automated registration, where new clients' certificates are imported into our truststore when they connect for the first time, and thereafter we validate our clients' certificates, to protect against spoofing attacks.
-
 
 <h4>Furthermore</h4>
 
 We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, and supports standard CRLs, if not a local CA server that supports the <a href="http://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol">Online Certificate Status Protocol</a>.
+
+We'll introduce a trust manager to enable automated enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time, and thereafter we validate our clients' certificates, to protect against spoofing attacks. This truststore will use an SQL database table to manage our trusted certificates.
+
 
 <h4>Resources</h4>
 
