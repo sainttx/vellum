@@ -65,6 +65,22 @@ When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our appli
 }}}
 where our application might import that peer certificate that its truststore. In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore. Alternatively our trust manager itself might import new certificates. 
 
+<h4>Certificate storage</h4>
+
+We provide a mockable certificate storage implementation for our trust manager.
+{{{
+public interface CertificateStorage {
+    public boolean exists(String commonName) throws CertificateStorageException;
+    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean isNullCert(String commonName) throws CertificateStorageException;
+    public void setCert(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean isEnabled(String commonName) throws CertificateStorageException;
+    public X509Certificate load(String commonName) throws CertificateStorageException;    
+    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
+}
+}}}
+where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
+
 
 <h4>Delegating trust manager</h4>
 
@@ -157,23 +173,6 @@ where we use the common name of the peer certificate to select the matching trus
     }
 }}}
 where we validate the certificate against our truststore, i.e. check that it is <tt>enabled</tt> e.g. it is not pending confirmation, and has not been revoked. If the certificate on record has expired, we auto import the client's renewed certificate. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record for its common name. 
-
-
-<h4>Certificate storage</h4>
-
-We provide a mockable certificate storage implementation to our trust manager delegate.
-{{{
-public interface CertificateStorage {
-    public boolean exists(String commonName) throws CertificateStorageException;
-    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean isNullCert(String commonName) throws CertificateStorageException;
-    public void setCert(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean isEnabled(String commonName) throws CertificateStorageException;
-    public X509Certificate load(String commonName) throws CertificateStorageException;    
-    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
-}
-}}}
-where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
 
 
 <h4>Furthermore</h4>
