@@ -266,12 +266,13 @@ public class LocalCaTest {
                 serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
+        serverSSLContext.getClientSessionContext().setSessionTimeout(1);
         try {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
             revokedNames.add(revokedName);
-            clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
+            Thread.sleep(1000);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
                     "Certificate CN revoked", serverThread.getErrorMessage());
@@ -285,9 +286,9 @@ public class LocalCaTest {
 }}}
 where we create a concurrent <tt>Set</tt> for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the client session is cached for the SSL context, and so we recreate the <tt>clientSSLContext</tt> instance in our test above. This forces re-initialisation of the client session, and so re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. Perhaps the reader can advise how to disable this client session caching for our unit test?
+Incidently, we find that the SSL session is cached, and so we must either recreate the client <tt>SSLContext</tt> instance, or set a client session timeout on the server context. We set the minimum timeout of 1 second, and we sleep for the same. This forces re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. 
 
-Our test connects to the server socket as follows.
+Incidently, our test connects to the server socket as follows.
 {{{
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
