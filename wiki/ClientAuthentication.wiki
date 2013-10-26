@@ -67,7 +67,7 @@ where our application might import that peer certificate that its truststore. In
 
 <h4>Certificate storage</h4>
 
-We provide a mockable certificate storage implementation for our trust manager.
+We provide a mockable certificate storage implementation for our SQL truststore.
 {{{
 public interface CertificateStorage {
     public boolean exists(String commonName) throws CertificateStorageException;
