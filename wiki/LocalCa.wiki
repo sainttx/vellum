@@ -446,7 +446,7 @@ Interestingly, we sign our client certificates to avoid having such a truststore
 
 If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So to protect our server against such rogue certificates, we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and it's chain is disregarded.
+However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and it's chain is disregarded.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -455,7 +455,7 @@ public class ExplicitTrustManager implements X509TrustManager {
     public ExplicitTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
         this.delegate = KeyStores.findX509TrustManager(trustStore);
-        for (String alias: Collections.list(trustStore.aliases())) {
+        for (String alias : Collections.list(trustStore.aliases())) {
             certificateMap.put(alias, (X509Certificate) 
                     trustStore.getCertificate(alias));
         }
@@ -479,7 +479,7 @@ We validate peer certificate chains as follows.
         }
     }
 }}}
-where we check that the first cert in the chain sent by the peer, is contained in our map.
+where we check that the first cert in the chain sent by the peer, i.e. the key certificate, is contained in our map.
 
 We could use this trust manager equally on a client, as well as our server.
 {{{
