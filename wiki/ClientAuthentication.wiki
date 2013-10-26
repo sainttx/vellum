@@ -12,7 +12,7 @@ Alternatively, our application might support client devices connecting via SSL s
 
 <h4>Solution overview</h4>
 
-We consider automatic enrollment using a custom trust manager that recognises new clients, and automatically imports their certificate into our truststore. Otherwise the trust manager authenticates existing clients to protect against spoofing attacks.
+We consider automated using a custom trust manager that recognises new clients, and automatically imports their certificate into our truststore. Otherwise the trust manager authenticates existing clients to protect against spoofing attacks.
 
 A new client might be pre-approved by an administrator according to its expected certificate name, where we automatically import its certificate the first time it connects. The risk is that a rogue client connects before the legitimate client. However, this requires immediate knowledge of currently pending client names. Also, our application might mitigate this risk, e.g. where the new client's access is restricted until it is somehow confirmed.
 
@@ -35,7 +35,7 @@ where the certificate name is unique. Incidently, the certificate itself would b
 
 We might import certificates for new clients where these are disabled until validated by our application, and perhaps their access is restricted pending confirmation by an administrator. In this case, we might be vulnerable to a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, limiting the rate in general, and enforcing a cutoff where we disable any new clients for some period.
 
-Alternatively we might pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is then set when the client connects for the first time. 
+Alternatively we might pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is then set when the client connects for the first time. In this case, we might use the <tt>expiry_date</tt> column to apply to enrollment. The new client is thus given a limited window to enroll, in order to reduce the risk of a rogue client, especially if the legitimate client never enrolls for some reason.
 
 Incidently, clearly we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused, because of our uniqueness constraint.
 
