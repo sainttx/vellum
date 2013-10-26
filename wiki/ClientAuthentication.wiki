@@ -2,7 +2,7 @@
 
 <h4>Problem overview</h4>
 
-Client-authenticated SSL connections require client certificate generation, enrollment, and renewal. Enrollment typically requires a manual process, either certificate signing, or importing into our truststore. Moreover certificate expiry requires this process to be repeated regularly. 
+Client-authenticated SSL connections require client certificate generation, enrollment, and renewal. Enrollment typically requires a manual process, either certificate signing, or importing into our truststore. Moreover certificate expiry requires this process to be repeated at some stage. 
 
 Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. Unfortunately such cookies are hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, to thereby <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoof</a> authenticated client sessions.
 
@@ -115,35 +115,37 @@ If the client sends a certificate, we check it against our SQL truststore as fol
 {{{
     @Override
     public boolean accept(X509Certificate peerCertificate) throws CertificateException {
-        String commonName = Certificates.getCommonName(peerCertificate.getSubjectDN());
         try {
-            if (certificateStorage.exists(commonName)) {
-                if (certificateStorage.isNull(commonName)) {
-                    certificateStorage.set(commonName, peerCertificate);
-                    return true;
-                } else {
-                    if (certificateStorage.isEnabled(commonName)) {                        
-                        X509Certificate trustedCertificate = certificateStorage.load(commonName);
-                        if (new Date().after(trustedCertificate.getNotAfter())) {
-                            certificateStorage.update(commonName, peerCertificate);
-                            return true;
-                        } else {
-                            return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
-                                    trustedCertificate.getPublicKey().getEncoded());
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-            } else if (autoInsert) {
-                certificateStorage.insert(commonName, peerCertificate);
-                return true;
-            } else {
-                return false;                
-            }
+            return accept(Certificates.getCommonName(peerCertificate.getSubjectDN()), 
+                    peerCertificate);
         } catch (CertificateStorageException e) {
             throw new CertificateException(e);
         }
+    }
+}}}
+where we extra the common name 
+{{{    
+    private boolean accept(String commonName, X509Certificate peerCertificate)
+            throws CertificateStorageException {
+        if (certificateStorage.exists(commonName)) {
+            if (certificateStorage.isNull(commonName)) {
+                certificateStorage.set(commonName, peerCertificate);
+                return true;
+            }
+            if (certificateStorage.isEnabled(commonName)) {
+                X509Certificate trustedCertificate = certificateStorage.load(commonName);
+                if (new Date().after(trustedCertificate.getNotAfter())) {
+                    certificateStorage.update(commonName, peerCertificate);
+                    return true;
+                }
+                return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
+                        trustedCertificate.getPublicKey().getEncoded());
+            }
+        } else if (autoInsert) {
+            certificateStorage.insert(commonName, peerCertificate);
+            return true;
+        }
+        return false;
     }
 }}}
 where we validate the certificate against our truststore, i.e. check that it is <tt>enabled</tt> e.g. it is not pending confirmation, and has not been revoked. If the certificate on record has expired, we auto import the client's renewed certificate. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record for its common name. 
