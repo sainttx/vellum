@@ -169,9 +169,9 @@ where if the record for that common name exists but has a <tt>null</tt> certific
 
 <h4>Conclusion</h4>
 
-We want the enhanced security of client-authenticated SSL, with the comparable convenience of non-authenticated SSL, through automated certificate enrollment.
+We want the enhanced security of client-authenticated SSL, with the comparable convenience of non-authenticated SSL, achieved by automated certificate enrollment.
 
-Usually a new client cannot register itself via a client-authenticated connection, and we would require an additional non-client-authenticated HTTPS server for enrollment. Unfortunately the standard port number is the same for both, i.e. 443, which is widely allowed by firewalls. Typically two hosts are typically required, i.e. distinguished by their different IP numbers.
+Usually a new client cannot register itself via a client-authenticated connection, and we would require an additional non-client-authenticated HTTPS server for enrollment. Unfortunately the standard port number is the same for both, i.e. 443, which is widely allowed by firewalls. Consequently two hosts are typically required, i.e. distinguished by their different IP numbers.
 
 We introduce a custom trust manager to enable the initial enrollment, and client-authenticated sessions, through the same server. New clients' certificates are imported into our truststore when they connect for the first time, and thereafter we validate our clients' certificates, to protect against spoofing attacks.
 
