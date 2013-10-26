@@ -41,7 +41,7 @@ Since a keystore must contain the certificate chain of the key certificate, and 
 
 <h4>Server certificate signing</h4>
 
-We create a keystore containing a private key and its self-signed cert (for starters) using <tt>keytool</tt>'s <tt>-genkeypair</tt> option.
+We create a keystore containing a private key and its self-signed cert (for starters) using <tt>keytool genkeypair</tt>.
 {{{
 $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
