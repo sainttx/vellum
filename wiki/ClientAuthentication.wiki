@@ -41,6 +41,7 @@ Alternatively we might pre-approve a new client by inserting a record with its e
 
 Incidently, clearly we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused, because of our uniqueness constraint.
 
+
 <h4><tt>SSLSession</tt></h4>
 
 When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our application reads and validates the request message. At this stage, our application itself might import the peer certificate e.g. for new clients that send a valid registration message. We can get the client certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
@@ -88,7 +89,10 @@ public class DelegatingClientTrustManager implements X509TrustManager {
 }}}
 where we consider only key certificates, and disregard their chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
 
-We implement a trust manager delegate which uses a dynamic certificate truststore.
+
+<h4>Storage trust manager</h4>
+
+We implement a trust manager delegate which uses a dynamic truststore i.e. our SQL table.
 {{{
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCertificate;
