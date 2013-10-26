@@ -33,7 +33,7 @@ We might import certificates for new clients where these are disabled until vali
 
 Alternatively we might pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is set when the client connects for the first time. 
 
-Incidently, clearly we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused.
+Incidently, clearly we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused, because of our uniqueness constraint.
 
 <h4><tt>SSLSession</tt></h4>
 
