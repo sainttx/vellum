@@ -509,7 +509,7 @@ Naturally, our SSL server resides in our DMZ, whereas we want to isolate our loc
 
 We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore. 
 
-Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
+Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and so we note that if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
 
 Finally, we introduce a trust manager to enable automated registration, where new clients' certificates are imported into our truststore when they connect for the first time, and thereafter we validate our clients' certificates, to protect against spoofing attacks.
 
