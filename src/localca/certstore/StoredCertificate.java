@@ -20,6 +20,8 @@
  */
 package localca.certstore;
 
+import java.util.Date;
+
 /**
  *
  * @author evans
@@ -28,7 +30,8 @@ public class StoredCertificate {
     String commonName;
     String encoded;
     boolean enabled = false;
-
+    Date expiryTime;
+    
     public StoredCertificate(String commonName, String encoded) {
         this.commonName = commonName;
         this.encoded = encoded;
@@ -57,4 +60,8 @@ public class StoredCertificate {
     public boolean isEnabled() {
         return enabled;
     }   
+
+    public Date getExpiryTime() {
+        return expiryTime;
+    }        
 }
