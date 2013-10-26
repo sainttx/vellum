@@ -20,17 +20,17 @@ Alternatively a new client might connect without a certificate in order to send 
 
 Our dynamic truststore might be an SQL database table with a columns for the client certificate name, the certificate itself, and its status.
 {{{
-create table client_cert (
-  cert_name text,
-  cert text, 
-  enabled boolean default false
+CREATE TABLE client_cert (
+  cert_name VARCHAR(255) PRIMARY KEY,
+  cert VARCHAR(4096), 
+  enabled BOOL DEFAULT TRUE
 );
 }}}
 where the certificate would be Base64-encoded for SQL storage.
 
-We might pre-approve an expected new client by inserting a record with the certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set later when the client connects for the first time. 
+We might pre-approve an expected new client by inserting a record with its certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set later when the client connects for the first time. 
 
-We can revoke clients by setting the <tt>enabled</tt> column to <tt>false</tt>. Also we might import certificates for new clients where these are however disabled for further access until they are approved by an administrator.
+We can revoke clients by setting the <tt>enabled</tt> column to <tt>false</tt>. We might import certificates for new clients where these are disabled until validated by our application, or pending approval by an administrator.
 
 <h4><tt>SSLSession</tt></h4>
 
