@@ -140,7 +140,7 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     ...
 }
 }}}
-where our delegate might accept clients without a certificate. For example, the client might request for a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its client's behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally the server must not store the generated key, but does import the client certificate into its truststore. (This will be demonstrated in a subsequent article in this series.)
+where our delegate might accept clients without a certificate. For example, the client might request for a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its client's behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.)
 
 In this case the server might sign the certificate, or import it into its truststore. Perhaps the certificate is initially disabled in the truststore database, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
 
