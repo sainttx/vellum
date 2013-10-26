@@ -139,21 +139,24 @@ where the subject and issuer of the two certificates in our key certificate chai
 This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted certificate need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> certificate issued by that trusted cert's root, irrespective of the trusted cert itself. For example, if our clients are to trust only our server, whose certificate happens to be issued by !GoDaddy, we certainly don't want those clients to trust any server with a certificate issued by !GoDaddy.
 
 
-<h4>Intermediate CA certificate</h4>
+<h4>Server-specific CA certificate</h4>
 
-In practice we might have multiple servers with different sets of clients, where we generate a certificate that is used to sign client certificates for a specific server.
+In practice we might have multiple servers with different sets of clients, where we generate a CA certificate that is used to sign client certificates for a specific server.
 
 {{{
 $ keytool -keystore server-ca.jks -genkeypair -noprompt -keyalg rsa -keysize 2048 \
     -alias server-ca -dname "CN=server-ca" -validity 365     
 }}}
-where this keystore resides on our secure CA server, and not in the DMZ. We might sign it using our root CA key, for good measure.
+where the server's truststore would contain this CA certificate, and so trust all of its clients. 
 
-We can then use this intermediate CA key to sign the client certs for some server. The server's truststore would contain this intermediate CA certificate, and so trust all of its clients. Even if it is not our <i>root</i> CA certificate, since it is used to sign certificates, it is a "CA certificate" nonetheless.
+While it is possible to sign client certificates with the server key as its own CA, this key resides in the DMZ, which is our least secure zone. If compromised, the key can be used to issue rogue certificates. Therefore we choose not to store CA keys in our DMZ.
 
-However, the advantage of signing intermediate certificates, rather than creating multiple root CA certificates, is not obvious, unless our clients' can trust all the intermediate CA certificates issued by our root CA certificate.
 
-Incidently, while it is possible to sign client certificates with the server key as its own CA, this key resides in the DMZ, which is our least secure zone. If compromised, the key can be used to issue rogue certificates. Therefore we choose not to store CA keys in our DMZ.
+<h4>Intermediate CA certificate</h4>
+
+We might keep our root CA key offline where it cannot possibly be compromised. In this case, we generate an intermediate CA key, and its CSR and certificate reply is transferred via removable media between our online intermediate CA server, and our offline root CA server.
+ 
+In the event that an intermediate keystore is compromised, we should generate a new intermediate keystore, a new server keystore, and re-sign our server and clients' certificates. Actually, re-signing all our clients' certificates might be a tedious exercise, and so perhaps we would prefer to use self-signed client certificates.
 
 
 <h4>Serial numbers</h4>
