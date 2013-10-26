@@ -32,13 +32,14 @@ import localca.TrustManagerDelegate;
  * @author evans
  */
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
+
     final private boolean requireCertificate;
     final private boolean autoInsert;
     final private CertificateStorage certificateStorage;
-    
+
     public StorageTrustManagerDelegate(
-            boolean requireCertificate, 
-            boolean autoInsert, 
+            boolean requireCertificate,
+            boolean autoInsert,
             CertificateStorage certificateStorage) {
         this.requireCertificate = requireCertificate;
         this.autoInsert = autoInsert;
@@ -49,37 +50,38 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     public boolean accept() throws CertificateException {
         return !requireCertificate;
     }
-    
+
     @Override
     public boolean accept(X509Certificate peerCertificate) throws CertificateException {
-        String commonName = Certificates.getCommonName(peerCertificate.getSubjectDN());
         try {
-            if (certificateStorage.exists(commonName)) {
-                if (certificateStorage.isNull(commonName)) {
-                    certificateStorage.set(commonName, peerCertificate);
-                    return true;
-                } else {
-                    X509Certificate trustedCertificate = certificateStorage.load(commonName);
-                    if (certificateStorage.isEnabled(commonName)) {                        
-                        if (new Date().after(trustedCertificate.getNotAfter())) {
-                            certificateStorage.update(commonName, peerCertificate);
-                            return true;
-                        } else {
-                            return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
-                                    trustedCertificate.getPublicKey().getEncoded());
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-            } else if (autoInsert) {
-                certificateStorage.insert(commonName, peerCertificate);
-                return true;
-            } else {
-                return false;                
-            }
+            return accept(Certificates.getCommonName(peerCertificate.getSubjectDN()), 
+                    peerCertificate);
         } catch (CertificateStorageException e) {
             throw new CertificateException(e);
         }
     }
+    
+    private boolean accept(String commonName, X509Certificate peerCertificate)
+            throws CertificateStorageException {
+        if (certificateStorage.exists(commonName)) {
+            if (certificateStorage.isNull(commonName)) {
+                certificateStorage.set(commonName, peerCertificate);
+                return true;
+            }
+            if (certificateStorage.isEnabled(commonName)) {
+                X509Certificate trustedCertificate = certificateStorage.load(commonName);
+                if (new Date().after(trustedCertificate.getNotAfter())) {
+                    certificateStorage.update(commonName, peerCertificate);
+                    return true;
+                }
+                return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
+                        trustedCertificate.getPublicKey().getEncoded());
+            }
+        } else if (autoInsert) {
+            certificateStorage.insert(commonName, peerCertificate);
+            return true;
+        }
+        return false;
+    }
+    
 }
