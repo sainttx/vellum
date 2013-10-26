@@ -14,7 +14,7 @@ We consider automatic enrollment using a custom trust manager that recognises ne
 
 A new client might be pre-approved by an administrator according to its expected certificate name, where we automatically import its certificate the first time it connects. The risk is that a rogue client connects before the legitimate client. However, this requires knowledge of currently pending client names. Nevertheless, our application might mitigate this risk, e.g. where the new client's access is restricted until it is somehow confirmed.
 
-Alternatively a new client might connect without a certificate, in order to send a registration request for the server to generate a PKCS12 key and certificate bundle on its behalf. For example, our HTTPS server might send this as its response i.e. with a content type of "application/x-pkcs12" to be imported by the client's browser.
+Alternatively a new client might connect without a certificate, in order to send a registration request for the server to generate a PKCS12 key and certificate bundle on its behalf. For example, our HTTPS server might send this as its response i.e. with a content type of <tt>application/x-pkcs12</tt> to be imported by the client's browser.
 
  
 <h4>SQL truststore</h4>
