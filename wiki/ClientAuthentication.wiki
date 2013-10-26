@@ -33,9 +33,9 @@ CREATE TABLE client_cert (
 }}}
 where the certificate name is unique. Incidently, the certificate itself would be Base64-encoded for SQL storage. For convenience we might want an explicit expiry date column, even though that information is in the certificate, e.g. where this is used by a script for alerts of impending expiry dates.
 
-We might import certificates for new clients where these are disabled until validated by our application, and perhaps their access is restricted pending confirmation by an administrator. In this case, we might be vulnerable to a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, limiting the rate in general, and enforcing a cutoff where we disable any new clients for some period.
-
 <img align="left" style="margin-left: 4px" src="http://upload.wikimedia.org/wikipedia/commons/4/40/Crystal_Clear_app_database.png" />
+
+We might import certificates for new clients where these are disabled until validated by our application, and perhaps their access is restricted pending confirmation by an administrator. In this case, we might be vulnerable to a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, limiting the rate in general, and enforcing a cutoff where we disable any new clients for some period.
 
 Alternatively we might pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is then set when the client connects for the first time. In this case, we might use the <tt>expiry_date</tt> column to apply to enrollment. The new client is thus given a limited window to enroll, in order to reduce the risk of a rogue client, especially if the legitimate client never enrolls for some reason.
 
