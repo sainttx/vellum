@@ -6,7 +6,6 @@ We consider a bunch of remote clients connecting to our private Java server usin
 
 In this article, we'll sign the client certificates using a local CA certificate. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation so that we can disable access e.g. for devices that go amiss.
 
-
 <h4>SSLContext</h4>
 
 Naturally an <tt>SSLServerSocket</tt> is created using an <tt>SSLContext</tt>, which we create with a keystore and a truststore, as follows.
