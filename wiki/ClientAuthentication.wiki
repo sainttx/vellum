@@ -176,6 +176,11 @@ public interface CertificateStorage {
 where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNull()</tt> returns <tt>true</tt>, and we can <tt>set()</tt> the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
 
 
+<h4>Furthermore</h4>
+
+We'll delve into the unit testing of our custom trust manager in a follow-up article.
+
+
 <h4>Conclusion</h4>
 
 We want the enhanced security of client-authenticated SSL, with the comparable convenience of non-authenticated SSL, achieved by automated certificate enrollment.
@@ -191,14 +196,13 @@ New clients might be pre-approved by an administrator according to their expecte
 
 <h4>Furthermore</h4>
 
-We'll delve into the unit testing of our custom trust manager in a follow-up article.
-
-In a further article, we'll demonstrate a HTTPS server which can generate a PKCS12 key and certificate bundle for clients, in response to a valid registration request.
+In a follow-up article, we'll demonstrate a HTTPS server which can generate a PKCS12 key and certificate bundle for clients, in response to a valid registration request.
 
 
 <h4>Resources</h4>
 
 You can browse the code for this exercise on <a href="https://code.google.com/p/vellum">code.google.com/vellum</a>.
+
 
 <h4>Other reading</h4>
 
