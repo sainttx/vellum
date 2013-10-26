@@ -84,7 +84,7 @@ where if the record for that common name exists but has a <tt>null</tt> certific
 
 <h4>Delegating trust manager</h4>
 
-Firstly, let's implement a trivial trust manager to accept certificates using a delegate.
+We implement a trivial trust manager to accept certificates using a delegate.
 {{{
 public class DelegatingClientTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
