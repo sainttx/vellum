@@ -64,8 +64,8 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     private boolean accept(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException {
         if (certificateStorage.exists(commonName)) {
-            if (certificateStorage.isNull(commonName)) {
-                certificateStorage.set(commonName, peerCertificate);
+            if (certificateStorage.isNullCert(commonName)) {
+                certificateStorage.setCert(commonName, peerCertificate);
                 return true;
             }
             if (certificateStorage.isEnabled(commonName)) {
