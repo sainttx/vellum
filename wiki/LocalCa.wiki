@@ -30,7 +30,7 @@ public class LocalCaTest {
 }}}
 where we create an SSL context for our server socket, and accept a client connection. We'll present our <tt>SSLContexts</tt> utility further below.
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 For the purpose of SSL, the keystore must contains an asymmetric private key, is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate (which is self-signed). In fact, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 
@@ -421,7 +421,7 @@ Otherwise if the parent chain is not present, we're balked by the following <tt>
 keytool error: java.lang.Exception: Failed to establish chain from reply
 }}}
 
-<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+<img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
 
 Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html"><tt>!KeyTool.java</tt></a>, to emulate the manual procedure presented here.
 
