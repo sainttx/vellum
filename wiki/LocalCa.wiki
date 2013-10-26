@@ -153,7 +153,7 @@ where this keystore resides on our secure CA server, and not in the DMZ. We migh
 
 We can then use this intermediate CA key to sign the client certs for some server. The server's truststore would contain this intermediate CA certificate, and so trust all of its clients. Even if it is not our <i>root</i> CA certificate, since it is used to sign certificates, it is a "CA certificate" nonetheless.
 
-However, the advantage of signing intermediate certificates, rather than creating multiple root CA certificates, is not obvious.
+However, the advantage of signing intermediate certificates, rather than creating multiple root CA certificates, is not obvious, unless our clients' can trust all the intermediate CA certificates issued by our root CA certificate.
 
 Incidently, while it is possible to sign client certificates with the server key as its own CA, this key resides in the DMZ, which is our least secure zone. If compromised, the key can be used to issue rogue certificates. Therefore we choose not to store CA keys in our DMZ.
 
