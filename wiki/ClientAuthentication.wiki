@@ -122,8 +122,8 @@ If the client sends a certificate, we check it against our SQL truststore as fol
                     certificateStorage.set(commonName, peerCertificate);
                     return true;
                 } else {
-                    X509Certificate trustedCertificate = certificateStorage.load(commonName);
                     if (certificateStorage.isEnabled(commonName)) {                        
+                        X509Certificate trustedCertificate = certificateStorage.load(commonName);
                         if (new Date().after(trustedCertificate.getNotAfter())) {
                             certificateStorage.update(commonName, peerCertificate);
                             return true;
