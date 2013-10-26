@@ -41,7 +41,7 @@ public class MockCertificateStorage implements CertificateStorage {
     }
     
     @Override
-    public boolean isNull(String commonName) throws CertificateStorageException {
+    public boolean isNullCert(String commonName) throws CertificateStorageException {
         return map.containsKey(commonName) && map.get(commonName).getEncoded() == null;
     }
 
@@ -62,7 +62,7 @@ public class MockCertificateStorage implements CertificateStorage {
     }
 
     @Override
-    public void set(String commonName, X509Certificate certificate) 
+    public void setCert(String commonName, X509Certificate certificate) 
             throws CertificateStorageException {
         if (!map.containsKey(commonName)) {
             throw new CertificateStorageException(CertificateStorageExceptionType.NOT_FOUND,
