@@ -136,8 +136,8 @@ where we use the common name of the peer certificate to select the matching trus
     private boolean accept(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException {
         if (certificateStorage.exists(commonName)) {
-            if (certificateStorage.isNull(commonName)) {
-                certificateStorage.set(commonName, peerCertificate);
+            if (certificateStorage.isNullCert(commonName)) {
+                certificateStorage.setCert(commonName, peerCertificate);
                 return true;
             }
             if (certificateStorage.isEnabled(commonName)) {
@@ -166,14 +166,14 @@ We provide a mockable certificate storage implementation to our trust manager de
 public interface CertificateStorage {
     public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
     public boolean exists(String commonName) throws CertificateStorageException;
-    public boolean isNull(String commonName) throws CertificateStorageException;
-    public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean isNullCert(String commonName) throws CertificateStorageException;
+    public void setCert(String commonName, X509Certificate cert) throws CertificateStorageException;
     public boolean isEnabled(String commonName) throws CertificateStorageException;
     public X509Certificate load(String commonName) throws CertificateStorageException;    
     public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
 }}}
-where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNull()</tt> returns <tt>true</tt>, and we can <tt>set()</tt> the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
+where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
 
 
 <h4>Furthermore</h4>
