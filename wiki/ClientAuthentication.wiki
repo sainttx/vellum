@@ -131,7 +131,7 @@ If the client sends a certificate, we check it against our SQL truststore as fol
         }
     }
 }}}
-where we extra the common name 
+where we use the common name of the certificate to select the certificate in our SQL truststore.
 {{{    
     private boolean accept(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException {
