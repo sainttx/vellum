@@ -37,11 +37,11 @@ import vellum.util.Threads;
  * @author evan
  */
 public class ServerThread extends Thread {
-    final static Logger logger = Logger.getLogger(ServerThread.class);
 
+    final static Logger logger = Logger.getLogger(ServerThread.class);
     private int count;
     private String errorMessage = null;
-    private SSLServerSocket serverSocket; 
+    private SSLServerSocket serverSocket;
 
     public void start(SSLContext sslContext, int port, int count) throws IOException {
         this.count = count;
@@ -50,7 +50,7 @@ public class ServerThread extends Thread {
         serverSocket.setNeedClientAuth(true);
         start();
     }
-    
+
     @Override
     public void run() {
         try {
@@ -58,7 +58,7 @@ public class ServerThread extends Thread {
                 try {
                     handle((SSLSocket) serverSocket.accept());
                 } catch (Exception e) {
-                    logger.info(e.getMessage());
+                    logger.info("cause: " + e.getCause());
                     errorMessage = e.getMessage();
                 }
             }
@@ -77,6 +77,7 @@ public class ServerThread extends Thread {
             dos.writeUTF("serverhello");
             logger.info("ok");
         } finally {
+            socket.getSession().getSessionContext().setSessionTimeout(1);
             socket.close();
         }
     }
@@ -84,7 +85,7 @@ public class ServerThread extends Thread {
     public String getErrorMessage() {
         return errorMessage;
     }
-    
+
     public void close() {
         FinalCloser.close(serverSocket);
     }
