@@ -24,6 +24,7 @@ Our dynamic truststore might be an SQL database table with columns for the clien
 CREATE TABLE client_cert (
   cert_name VARCHAR(255) PRIMARY KEY,
   cert VARCHAR(4096), 
+  expiry_time TIMESTAMP, 
   enabled BOOL DEFAULT TRUE
 );
 }}}
@@ -31,7 +32,7 @@ where the certificate name is unique. Incidently, the certificate itself would b
 
 We might import certificates for new clients where these are disabled until validated by our application, or pending approval by an administrator. However, this would enable a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, limiting the rate in general, and enforcing a cutoff where we disable any new clients for some period.
 
-Alternatively we might pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is set when the client connects for the first time. 
+Alternatively we might pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is then set when the client connects for the first time. 
 
 Incidently, clearly we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused, because of our uniqueness constraint.
 
