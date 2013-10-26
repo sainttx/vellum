@@ -28,9 +28,10 @@ public class LocalCaTest {
     }    
 }
 }}}
-where we create an SSL context for our server socket, and accept a client connection. We'll present our <tt>SSLContexts</tt> utility further below.
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+
+where we create an SSL context for our server socket, and accept a client connection. We'll present our <tt>SSLContexts</tt> utility further below.
 
 For the purpose of SSL, the keystore must contain an asymmetric private key, which is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate (which is self-signed by definition). In fact, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 
@@ -41,7 +42,7 @@ Since a keystore must contain the certificate chain of the key certificate, and 
 
 <h4>Server certificate signing</h4>
 
-We create a keystore containing a private key and its self-signed cert (for starters) using <tt>keytool genkeypair</tt>.
+We create a keystore containing a private key and its self-signed cert (for starters) using <tt>keytool -genkeypair</tt>.
 {{{
 $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
