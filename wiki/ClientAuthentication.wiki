@@ -1,12 +1,14 @@
 #labels Java, SSL, TrustManager
 
-<h4>Overview</h4>
+<h4>Problem overview</h4>
 
 Client-authenticated SSL connections require client certificate generation, enrollment, and renewal. Enrollment typically requires a manual process, either certificate signing, or importing into our truststore. Moreover certificate expiry requires this process to be repeated regularly. 
 
 Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. Unfortunately such cookies can hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, to thereby <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoof</a> authenticated client sessions.
 
 <img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
+
+<h4>Solution overview</h4>
 
 We consider automatic enrollment using a custom trust manager that recognises new clients, and automatically imports their certificate into our truststore. Otherwise the trust manager authenticates existing clients to protect against spoofing attacks.
 
