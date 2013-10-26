@@ -93,12 +93,13 @@ public class LocalCaTest {
                 serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
+        serverSSLContext.getClientSessionContext().setSessionTimeout(1);
         try {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
             revokedNames.add(revokedName);
-            clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
+            Thread.sleep(1000);
             String errorMessage = ClientThread.connect(clientSSLContext, port);
             Assert.assertEquals("java.security.cert.CertificateException: " + 
                     "Certificate CN revoked", serverThread.getErrorMessage());
@@ -111,9 +112,9 @@ public class LocalCaTest {
     ...
 </pre>where we create a concurrent Set for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the client session is cached for the SSL context, and so we recreate the clientSSLContext instance in our test above. This forces re-initialisation of the client session, and so re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. Perhaps the reader can advise how to disable this client session caching for our unit test?
+Incidently, we find that the SSL session is cached, and so we must either recreate the client SSLContext instance, or set a client session timeout on the server context. We set the minimum timeout of 1 second, and we sleep for the same. This forces re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. 
 
-Our test connects to the server socket as follows.
+Incidently, our test connects to the server socket as follows.
 <pre>
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
@@ -140,8 +141,7 @@ For example, let's create a private SSL keystore for a test client named "evanx.
 <pre>
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
     -alias evanx -dname "CN=evanx"
-</pre> 
-We print our certificate as PEM text using -rfc.
+</pre> We print our certificate as PEM text using -rfc.
 <pre>
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 ----BEGIN CERTIFICATE-----
@@ -234,7 +234,7 @@ Certificate reply was installed in keystore
 </pre>Otherwise if the parent chain is not present, we're balked by the following keytool error.
 <pre>
 keytool error: java.lang.Exception: Failed to establish chain from reply
-</pre><img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+</pre><img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
 
 Incidently, in a follow-up article we will create keystores programmatically for our unit tests, taking cues from <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.java.html">KeyTool.java</a>, to emulate the manual procedure presented here.
 
@@ -258,7 +258,7 @@ Interestingly, we sign our client certificates to avoid having such a truststore
 
 If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using keytool -gencert. So to protect our server against such rogue certificates, we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and it's chain is disregarded.
+However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using keytool -gencert. So we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and it's chain is disregarded.
 <pre>
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -267,7 +267,7 @@ public class ExplicitTrustManager implements X509TrustManager {
     public ExplicitTrustManager(KeyStore trustStore) 
         throws GeneralSecurityException {
         this.delegate = KeyStores.findX509TrustManager(trustStore);
-        for (String alias: Collections.list(trustStore.aliases())) {
+        for (String alias : Collections.list(trustStore.aliases())) {
             certificateMap.put(alias, (X509Certificate) 
                     trustStore.getCertificate(alias));
         }
@@ -289,7 +289,7 @@ We validate peer certificate chains as follows.
             throw new CertificateException("Invalid peer certificate");
         }
     }
-</pre>where we check that the first cert in the chain sent by the peer, is contained in our map.
+</pre>where we check that the first cert in the chain sent by the peer, i.e. the key certificate, is contained in our map.
 
 We could use this trust manager equally on a client, as well as our server.
 <pre>
@@ -306,142 +306,7 @@ We could use this trust manager equally on a client, as well as our server.
         checkTrusted(chain);
         delegate.checkServerTrusted(chain, authType);
     }    
-</pre><h4>Auto-import</h4>
-
-The problem with client-authenticated connections is that enrollment is tedious, either requiring a certificate signing process, or otherwise importing the client's certificate in advance, before the client can connect. Clearly a new client cannot register itself via the client-authenticated connection. Moreover certificate expiry requires this process to be repeated regularly.
-
-As a consequence of the inconvenience of client certificate generation, enrollment and renewal, browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions, and these might be hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>, and used to spoof authenticated clients.
-
-A further impediment to client-authenticated HTTPS sites is that they require a non-client-authenticated HTTPS server for enrollment. Unfortunately the standard port number is the same for both, i.e. 443, which is widely allowed by firewalls. Consequently two hosts are typically required, i.e. with different IP numbers.
-
-So let's implement a dynamic truststore which enables us to support client-authenticated SSL connections, but where new clients can register via this same connection, via a custom trust manager. We wish to achieve convenience comparable to non-client-authenticated SSL connections, but with enhanced security e.g. preventing client spoofing attacks.
-
-For example, we might trust a new client who submits a valid registration request, provide them with a PKCS12 key and certificate e.g. to import into their browser, and automatically import their certificate into our truststore.
-
-<h4>SQL truststore</h4>
-
-Our truststore might be an SQL database table with a column for the client certificate name, and another for the certificate itself.
-<pre>
-create table client_cert (
-  cert_name text,
-  cert text, 
-  enabled boolean default false
-);
-</pre>where the certificate would be Base64-encoded for SQL storage.
-
-We might pre-approve new client devices that we are expecting to connect, by inserting a record with the certificate name but a null entry for the actual certificate. The certificate column is set later when the client connects for the first time. Also, we can revoke clients by setting the enabled column to false.
-
-<h4>SSLSession</h4>
-
-When we accept the connection to the SSLServerSocket, our application validates the request message, and can then import the peer certificate. Our application can get the client certificate via the SSLSession of the client SSLSocket, as demonstrated in the following test code.
-<pre>
-    static void accept(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
-            int port) throws GeneralSecurityException, IOException {
-        SSLContext sslContext = SSLContexts.create(keyStore, keyPassword, trustStore);
-        SSLServerSocket serverSocket = (SSLServerSocket) sslContext.
-                getServerSocketFactory().createServerSocket(port);
-        try {
-            serverSocket.setNeedClientAuth(true);
-            SSLSocket clientSocket = (SSLSocket) serverSocket.accept();
-            javax.security.cert.X509Certificate peer = 
-                    clientSocket.getSession().getPeerCertificateChain()[0];
-            logger.info("peer: " + peer.getSubjectDN().getName());
-            ServerThread.handle(clientSocket);
-        } finally {
-            serverSocket.close();
-        }
-    }
-</pre>Our application might validate the content of the message, e.g. a registration request, and import the peer certificate into our dynamic truststore e.g. by updating the record in our SQL truststore.
-
-<h4>Trust manager</h4>
-
-Alternatively our trust manager itself might auto-import certificates. To this end, firstly let's implement a trivial trust manager to accept certificates using a delegate.
-<pre>
-public class DelegatingClientTrustManager implements X509TrustManager {
-    TrustManagerDelegate delegate;
-    ...
-    @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType) 
-            throws CertificateException {
-        if (chain.length == 0) {
-            if (!delegate.accept()) {
-                throw new CertificateException("No certificate");
-            }
-        }
-        if (!delegate.accept(chain[0])) {
-            throw new CertificateException("Certificate not accepted");            
-        }
-    }
-</pre>where our delegate might accept clients without a certificate, i.e. without requiring client-authentication, where our application will authenticate the message.
-<pre>
-public class StorageTrustManagerDelegate implements TrustManagerDelegate {
-    final private boolean requireCertificate;
-    final private boolean autoInsert;
-    final private CertificateStorage certificateStorage;
-    
-    public StorageTrustManagerDelegate(
-            boolean requireCertificate, 
-            boolean autoInsert, 
-            CertificateStorage certificateStorage) {
-        this.requireCertificate = requireCertificate;
-        this.autoInsert = autoInsert;
-        this.certificateStorage = certificateStorage;
-    }
-    ...
-}
-</pre>For example, we might accept a client without an certificate in order to enable it to send a registration request for the server to generate a key and certificate on the client's behalf. For example, the server might respond to such a request with a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle.
-
-In this case the server might sign the certificate, or import it into the truststore. Perhaps the certificate are initially disabled in the truststore database, pending manual approval by the appropriate administrator.
-
-<h4>Certificate storage</h4>
-
-We provide a mockable certificate storage implementation to our trust manager delegate.
-<pre>
-public interface CertificateStorage {
-    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean exists(String commonName) throws CertificateStorageException;
-    public boolean isNull(String commonName) throws CertificateStorageException;
-    public void set(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean isEnabled(String commonName) throws CertificateStorageException;
-    public X509Certificate load(String commonName) throws CertificateStorageException;    
-    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
-}
-</pre>where if the record for that common name exists but has a null certificate, then isNull() returns true, and we can set() the certificate. If the certificate exists(), then we can load() it, and update() it i.e. if it has expired.
-<pre>
-    @Override
-    public boolean accept(X509Certificate peerCertificate) throws CertificateException {
-        String commonName = Certificates.getCommonName(peerCertificate.getSubjectDN());
-        try {
-            if (certificateStorage.exists(commonName)) {
-                if (certificateStorage.isNull(commonName)) {
-                    certificateStorage.set(commonName, peerCertificate);
-                    return true;
-                } else {
-                    X509Certificate trustedCertificate = certificateStorage.load(commonName);
-                    if (new Date().after(trustedCertificate.getNotAfter())) {
-                        certificateStorage.update(commonName, peerCertificate);
-                        return true;
-                    } else if (certificateStorage.isEnabled(commonName)) {                        
-                        return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
-                                trustedCertificate.getPublicKey().getEncoded());
-                    } else {
-                        return false;
-                    }
-                }
-            } else if (autoInsert) {
-                certificateStorage.insert(commonName, peerCertificate);
-                return true;
-            } else {
-                return false;                
-            }
-        } catch (CertificateStorageException e) {
-            throw new CertificateException(e);
-        }
-    }
-</pre>where we check that an existing certificate is enabled i.e. has not been thereby revoked. If we auto-insert a new certificiate, then enabled might be false, where our application might enable it automatically following registration, or require an administrator to do so manually.
-
-
-<h4>Conclusion</h4>
+</pre><h4>Conclusion</h4>
 
 We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable certificates for devices that have gone amiss. So we introduce a custom SSL trust manager to support a local revocation list.
 
@@ -451,14 +316,15 @@ Naturally, our SSL server resides in our DMZ, whereas we want to isolate our loc
 
 We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore. 
 
-Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
-
-Finally, we introduce a trust manager to enable automated registration, where new clients' certificates are imported into our truststore when they connect for the first time, and thereafter we validate our clients' certificates, to protect against spoofing attacks.
+Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and so we note that if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
 
 
 <h4>Furthermore</h4>
 
-We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, and supports standard CRLs, or ideally a local CA server that supports the <a href="http://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol">Online Certificate Status Protocol</a>.
+We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, and supports standard CRLs, if not a local CA server that supports the <a href="http://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol">Online Certificate Status Protocol</a>.
+
+We'll introduce a trust manager to automate certificate enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time, and thereafter we validate clients' certificates to protect against spoofing attacks. This truststore will use an SQL database table to manage our trusted certificates.
+
 
 <h4>Resources</h4>
 
