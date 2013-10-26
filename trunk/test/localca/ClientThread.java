@@ -63,7 +63,7 @@ public class ClientThread extends Thread {
             throws GeneralSecurityException, IOException {
         SSLSocket socket = (SSLSocket) context.getSocketFactory().
                 createSocket(HOST, port);
-        try {
+    try {
             Thread.sleep(0);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF("clienthello");
