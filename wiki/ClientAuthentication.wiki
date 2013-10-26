@@ -29,7 +29,7 @@ CREATE TABLE client_cert (
 }}}
 where the certificate would be Base64-encoded for SQL storage.
 
-We might import certificates for new clients where these are disabled until validated by our application, or pending approval by an administrator. However, this would enable a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, and the limiting the rate in general. 
+We might import certificates for new clients where these are disabled until validated by our application, or pending approval by an administrator. However, this would enable a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, limiting the rate in general, and having a cutoff where we disable any new clients for some period.
 
 Alternatively we might pre-approve a new client by inserting a record with its expected certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set when the client connects for the first time. 
 
