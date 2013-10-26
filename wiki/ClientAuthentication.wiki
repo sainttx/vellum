@@ -19,7 +19,7 @@ Alternatively a new client might connect without a certificate, in order to send
  
 <h4>SQL truststore</h4>
 
-Our dynamic truststore might be an SQL database table with a columns for the client certificate name, the certificate itself, and its status.
+Our dynamic truststore might be an SQL database table with columns for the client certificate name, the certificate itself, and its status.
 {{{
 CREATE TABLE client_cert (
   cert_name VARCHAR(255) PRIMARY KEY,
