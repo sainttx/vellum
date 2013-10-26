@@ -60,12 +60,14 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
                     return true;
                 } else {
                     X509Certificate trustedCertificate = certificateStorage.load(commonName);
-                    if (new Date().after(trustedCertificate.getNotAfter())) {
-                        certificateStorage.update(commonName, peerCertificate);
-                        return true;
-                    } else if (certificateStorage.isEnabled(commonName)) {                        
-                        return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
-                                trustedCertificate.getPublicKey().getEncoded());
+                    if (certificateStorage.isEnabled(commonName)) {                        
+                        if (new Date().after(trustedCertificate.getNotAfter())) {
+                            certificateStorage.update(commonName, peerCertificate);
+                            return true;
+                        } else {
+                            return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
+                                    trustedCertificate.getPublicKey().getEncoded());
+                        }
                     } else {
                         return false;
                     }
