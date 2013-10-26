@@ -59,25 +59,13 @@ public class KeyStores {
 
     public static X509Certificate findSoleTrustedCertificate(KeyStore trustStore) 
             throws KeyStoreException {
-        if (countEntries(trustStore) == 1) {
-            for (String alias : Collections.list(trustStore.aliases())) {
-                if (trustStore.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class)) {
-                    return (X509Certificate) trustStore.getCertificate(alias);
-                }
-            }
+        if (Collections.list(trustStore.aliases()).size() == 1) {
+            String alias = trustStore.aliases().nextElement();
+            return (X509Certificate) trustStore.getCertificate(alias);
         }
         throw new KeyStoreException("No sole trusted certificate found in keystore");
     }
 
-    public static int countEntries(KeyStore trustStore) throws KeyStoreException {
-        int count = 0;
-        for (String alias : Collections.list(trustStore.aliases())) {
-            logger.debug("countEntries {}", alias);
-            count++;
-        }
-        return count;
-    }
-    
     public static int countCerts(KeyStore trustStore) throws KeyStoreException {
         int count = 0;
         for (String alias : Collections.list(trustStore.aliases())) {
