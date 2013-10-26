@@ -8,6 +8,8 @@ Consequently browser certificates are not widely used for consumer sites i.e. fo
 
 <img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
 
+Alternatively, our application might support client devices connecting via SSL sockets, where we want to automate certificate management for operational reasons.
+
 <h4>Solution overview</h4>
 
 We consider automatic enrollment using a custom trust manager that recognises new clients, and automatically imports their certificate into our truststore. Otherwise the trust manager authenticates existing clients to protect against spoofing attacks.
