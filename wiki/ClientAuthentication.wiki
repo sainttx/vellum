@@ -66,7 +66,7 @@ When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our appli
 where our application might import that peer certificate that its truststore. In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore. Alternatively our trust manager itself might import new certificates. 
 
 
-<h4>Trust manager</h4>
+<h4>Delegating trust manager</h4>
 
 Firstly, let's implement a trivial trust manager to accept certificates using a delegate.
 {{{
@@ -90,7 +90,7 @@ public class DelegatingClientTrustManager implements X509TrustManager {
 where we consider only key certificates, and disregard their chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
 
 
-<h4>Storage trust manager</h4>
+<h4>Storage trust manager delegate</h4>
 
 We implement a trust manager delegate which uses a dynamic truststore i.e. our SQL table.
 {{{
