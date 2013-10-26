@@ -4,17 +4,19 @@
 
 Client-authenticated SSL connections require client certificate generation, enrollment, and renewal. Enrollment typically requires a manual process, either certificate signing, or importing into our truststore. Moreover certificate expiry requires this process to be repeated regularly. 
 
+<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
+
 Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. Unfortunately such cookies can hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, to thereby <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoof</a> authenticated client sessions.
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/wooden-shield200.png" />
 
 <h4>Solution overview</h4>
 
 We consider automatic enrollment using a custom trust manager that recognises new clients, and automatically imports their certificate into our truststore. Otherwise the trust manager authenticates existing clients to protect against spoofing attacks.
 
-New clients might be pre-approved by an administrator according to their expected certificate names, and the first time a new client connects, we automatically import its certificate. The risk is that a rogue client connects before the legitimate client. However this requires knowledge of pending client names, and timing. Nevertheless, our application should mitigate this risk, e.g. a new client might be granted limited access until it is somehow confirmed.
+A new client might be pre-approved by an administrator according to its expected certificate name, where we automatically import its certificate the first time it connects. The risk is that a rogue client connects before the legitimate client. However, this requires knowledge of currently pending client names. Nevertheless, our application might mitigate this risk, e.g. where the new client's access is restricted until it is somehow confirmed.
 
-Alternatively a new client might connect without a certificate in order to send a registration request for the server to generate a PKCS12 key and certificate bundle on its behalf. For example, our HTTPS server might send this as its response i.e. with a content type of "application/x-pkcs12" for the client to import into their browser. 
+Alternatively a new client might connect without a certificate, in order to send a registration request for the server to generate a PKCS12 key and certificate bundle on its behalf. For example, our HTTPS server might send this as its response i.e. with a content type of "application/x-pkcs12" to be imported by the client's browser.
+
  
 <h4>SQL truststore</h4>
 
@@ -28,13 +30,15 @@ CREATE TABLE client_cert (
 }}}
 where the certificate would be Base64-encoded for SQL storage.
 
-We might pre-approve an expected new client by inserting a record with its certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set later when the client connects for the first time. 
+We might import certificates for new clients where these are disabled until validated by our application, or pending approval by an administrator. However, this would enable a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, and the limiting the rate in general. 
 
-We can revoke clients by setting the <tt>enabled</tt> column to <tt>false</tt>. We might import certificates for new clients where these are disabled until validated by our application, or pending approval by an administrator.
+Alternatively we might pre-approve a new client by inserting a record with its expected certificate name but a <tt>null</tt> entry for the actual certificate. The certificate column is set when the client connects for the first time. 
+
+Incidently, we can revoke clients by setting the <tt>enabled</tt> column to <tt>false</tt>. 
 
 <h4><tt>SSLSession</tt></h4>
 
-When we accept the connection to the <tt>SSLServerSocket</tt>, our application validates the request message, and might import the peer certificate for new clients. We can get the client certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
+When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our application validates the request message, and might import the peer certificate for new clients. We can get the client certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
 {{{
     static void accept(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
             int port) throws GeneralSecurityException, IOException {
@@ -54,11 +58,14 @@ When we accept the connection to the <tt>SSLServerSocket</tt>, our application v
     }
 }}}
 
-In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore. Our application will then choose to import the new certificate into our SQL truststore.
+In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore, since our application will decide whether to import the new certificate into our SQL truststore, e.g. if the message is a valid registration request.
+
 
 <h4>Trust manager</h4>
 
-Alternatively our trust manager itself might import new certificates. To this end, firstly let's implement a trivial trust manager to accept certificates using a delegate.
+Alternatively our trust manager itself might import new certificates. 
+
+Firstly let's implement a trivial trust manager to accept certificates using a delegate.
 {{{
 public class DelegatingClientTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
@@ -76,7 +83,9 @@ public class DelegatingClientTrustManager implements X509TrustManager {
         }
     }
 }}}
-where our delegate might accept clients without a certificate, i.e. without requiring client-authentication, where our application will authenticate the message.
+where we consider only key certificates, and disregard their chain. 
+
+We implement a trust manager delegate which uses a dynamic certificate truststore.
 {{{
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCertificate;
@@ -99,9 +108,9 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     ...
 }
 }}}
-For example, we might accept a client without an certificate, to enable a registration request for a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on the client's behalf, and delivered as the response.
+where our delegate might accept clients without a certificate, e.g. to enable a registration request for a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on the client's behalf, and delivered as the response.
 
-In this case the server might sign the certificate, or import it into its truststore. Perhaps the certificate is initially disabled in the truststore database, pending manual approval by the appropriate administrator.
+In this case the server might sign the certificate, or import it into its truststore. Perhaps the certificate is initially disabled in the truststore database, pending validation of message by our application, or manual approval by the appropriate administrator.
 
 However if the client sends a certificate, we check it using our SQL truststore as follows.
 {{{
