@@ -126,7 +126,7 @@ where we consider only the peer certificate, and disregard its chain. (See the p
 
 We might allow clients without a certificate. For example, the client could request a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.) In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
 
-We use the common name of the peer certificate to select the matching trusted certificate in our SQL truststore.
+We validate the peer certificate against our records, by its common name.
 {{{    
     private boolean validate(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException, CertificateException {
@@ -155,7 +155,7 @@ We use the common name of the peer certificate to select the matching trusted ce
         }
     }
 }}}
-where we validate the certificate against our records. We check that we have a record for this common name. We ensure that it is <tt>enabled</tt> e.g. it is not pending confirmation or revoked. We import the certificate if we don't have one. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record. If the certificate on record has expired, we automatically import the client's renewed certificate.
+We check that we have a record for this common name. We ensure that it is <tt>enabled</tt> e.g. it is not pending confirmation or revoked. We import the certificate if we don't have one. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record. If the certificate on record has expired, we automatically import the client's renewed certificate.
 
 Note that we might automatically insert that client's certificate into our SQL truststore if it does not exist. In this case, the newly inserted certificate is initially disabled, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
 
