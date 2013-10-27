@@ -8,7 +8,7 @@ Client-authenticated SSL connections require client certificate generation, enro
 
 Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. These might be hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, in order to mount a <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoofing attack</a> as an authenticated client.
 
-Our application might support client devices connecting via SSL sockets, where we want to automate certificate management for operational reasons.
+That aside, our application might manage client devices connecting via SSL sockets, where we want to automate certificate management for operational reasons.
 
 <h4>Solution overview</h4>
 
