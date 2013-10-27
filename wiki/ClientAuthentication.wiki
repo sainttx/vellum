@@ -167,7 +167,7 @@ We'll delve into the unit testing of our custom trust manager in a follow-up art
 
 <h4>Conclusion</h4>
 
-We want the enhanced security of client-authenticated SSL, with the comparable convenience of non-authenticated SSL, achieved by automated certificate enrollment.
+We want the enhanced security of client-authenticated SSL, with the convenience of non-authenticated SSL, via automated certificate enrollment.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
