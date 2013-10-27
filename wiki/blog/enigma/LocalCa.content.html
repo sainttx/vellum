@@ -34,25 +34,30 @@ Since a keystore must contain the certificate chain of the key certificate, and 
 
 We create a keystore containing a private key and its self-signed cert (for starters) using keytool -genkeypair.
 <pre>
-$ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server" \
+$ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server.com" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
 </pre>
-where we specify a validity period of 365 days.
+where we specify a validity period of 365 days. 
+
+Naturally the common name of server certificates is their domain name. This is used by the client for domain validation, where the client might do a reverse DNS lookup on the server's IP number, and check that the CN domain name matches that reported by DNS.
 
 We export a certificate signing request (CSR) as follows.
 <pre>
 $ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
 </pre>
+
 Let's create our "local CA" key, which will be used to issue signed certificates.
 <pre>
 $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
 </pre>
-Incidently, our server naturally resides in a DMZ accessible to the Internet, whereas our "CA" key should be isolated on a more secure internal machine.
+Incidently, our server naturally resides in a DMZ accessible to the Internet, whereas our "CA" key should be isolated on a more secure internal machine. 
+
+In fact, our root CA key could be generated offline, where it can never be compromised. In this case, an intermediate CA key would be used for online signing. We would transfer the intermediate CA's CSR to the offline CA server, and return its signed certificate, using removable USB media.
 
 We can sign the CSR using using Java7's keytool -gencert.
 <pre>
-$ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=server" \
+$ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=server.com" \
     -validity 365 -rfc -outfile server.signed.pem \
     -ext BasicConstraints:critical=ca:false,pathlen:0 \
     -ext KeyUsage:critical=keyEncipherment \
@@ -87,7 +92,7 @@ $ keytool -keystore server.jks -alias server -list -v
 Certificate chain length: 2
 
 Certificate[1]:
-Owner: CN=server
+Owner: CN=server.com
 Issuer: CN=ca
 
 Certificate[2]:
@@ -96,7 +101,7 @@ Issuer: CN=ca
 </pre>
 where we have signed our server certificate with a local CA root certificate. 
 
-Note that the first certificate of the chain is our key certificate, and the last certificate is the root CA certificate. By definition the "root" certificate of a chain is self-signed. We might have an "intermediate" CA certificate that issues the key certificate.
+Note that the first certificate of the chain is our key certificate, and the last certificate is the root CA certificate. By definition the "root" certificate of a chain is self-signed. Additionally, might have an "intermediate" CA certificate that issues the key certificate.
 
 
 <h4>Server truststore</h4>
@@ -118,11 +123,11 @@ We can use openssl to connect to the SSLServerSocket and inspect its key certifi
 $ openssl s_client -connect localhost:4444
 ...
 Certificate chain
- 0 s:/CN=server
+ 0 s:/CN=server.com
    i:/CN=ca
  1 s:/CN=ca
    i:/CN=ca
-
+...
 Acceptable client certificate CA names
 /CN=ca
 </pre>
@@ -131,21 +136,43 @@ where the subject and issuer of the two certificates in our key certificate chai
 This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted certificate need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> certificate issued by that trusted cert's root, irrespective of the trusted cert itself. For example, if our clients are to trust only our server, whose certificate happens to be issued by GoDaddy, we certainly don't want those clients to trust any server with a certificate issued by GoDaddy.
 
 
-<h4>Intermediate CA certificate</h4>
+<h4>Server-specific CA certificate</h4>
 
-In practice we might have multiple servers with different sets of clients, where we generate a certificate that is used to sign client certificates for a specific server.
+In practice we might have multiple servers with different sets of clients, where we generate a CA certificate that is used to sign client certificates for a specific server.
 
 <pre>
 $ keytool -keystore server-ca.jks -genkeypair -noprompt -keyalg rsa -keysize 2048 \
     -alias server-ca -dname "CN=server-ca" -validity 365     
 </pre>
-where this keystore resides on our secure CA server, and not in the DMZ. We might sign it using our root CA key, for good measure.
+where the server's truststore would contain this CA certificate, and so trust all of its clients. 
 
-We can then use this intermediate CA key to sign the client certs for some server. The server's truststore would contain this intermediate CA certificate, and so trust all of its clients. Even if it is not our <i>root</i> CA certificate, since it is used to sign certificates, it is a "CA certificate" nonetheless.
+While it is possible to sign client certificates with the server key as its own CA, this key resides in the DMZ, which is our least secure zone. If compromised, the key can be used to issue rogue certificates. Therefore we choose not to store CA keys in our DMZ.
 
-However, the advantage of signing intermediate certificates, rather than creating multiple root CA certificates, is not obvious, unless our clients' can trust all the intermediate CA certificates issued by our root CA certificate.
 
-Incidently, while it is possible to sign client certificates with the server key as its own CA, this key resides in the DMZ, which is our least secure zone. If compromised, the key can be used to issue rogue certificates. Therefore we choose not to store CA keys in our DMZ.
+<h4>Intermediate CA certificate</h4>
+
+We might keep our root CA key offline where it cannot possibly be compromised. In this case, we generate an intermediate CA key, where its CSR and certificate reply is transferred via removable USB media between our online intermediate CA server, and our offline root CA server. 
+
+Our intermediate CA key is then used for certificate signing, but where our parties only trust the root CA certificate, i.e. their truststores contain only the root CA certificate. However, their keystores contain their key certificate chain, which includes the intermediate CA certificate.
+
+<pre>
+$ openssl s_client -connect localhost:4444
+...
+Certificate chain
+ 0 s:/CN=server.com
+   i:/CN=ca-intermediate-2013
+ 1 s:/CN=ca-intermediate-2013
+   i:/CN=ca
+ 2 s:/CN=ca
+   i:/CN=ca
+...
+Acceptable client certificate CA names
+/CN=ca
+</pre>
+ 
+In the event that an intermediate keystore is compromised, then it's certificate should be revoked, e.g. where our root CA certificate includes a URL for its certificate revocation list. In this case, our clients can reject servers signed with that compromised intermediate CA certificate.
+
+Clearly we would have to generate a new intermediate CA key, and re-sign all our certificates. To avoid such a burden, we might prefer self-signed client certificates.
 
 
 <h4>Serial numbers</h4>
@@ -490,22 +517,31 @@ We could use this trust manager equally on a client, as well as our server.
 </pre>
 
 
+<h4>Furthermore</h4>
+
+We'll delve into the unit testing of our custom trust manager in a follow-up article. 
+
+Thereafter, we might implement a local CA management tool that records issued certificates, and supports standard CRLs, if not a local CA server that supports the <a href="http://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol">Online Certificate Status Protocol</a>.
+
+
 <h4>Conclusion</h4>
+
+Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and so we note that if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
 
 We can sign client certificates using a local CA root certificate. However, we should then support certificate revocation, e.g. to disable certificates for devices that have gone amiss. So we introduce a custom SSL trust manager to support a local revocation list.
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-Naturally, our SSL server resides in our DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that importing each client certificate into the truststore enables us to review access.
+Naturally, our SSL server resides in our DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that explicitly importing each client certificate into the truststore enables us to review access. In this case our client certificates needn't be signed by our local CA.
+
+If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, we might prefer self-signed client certificates.
 
 We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore. 
 
-Naturally, the keystore must contain the certificate chain of the key certificate, including root CA certificate, and so we note that if the keystore is misused as a truststore, then <i>any</i> certificate issued by that CA would be trusted. If we are using a public CA, then we would trust any certiticate issued by that CA, not just our own.
+Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. One might conclude that using a local CA for client authentication certainly introduces some security problems, and one might question what problem it actually solves, compared to using self-signed certificates?
 
 
-<h4>Furthermore</h4>
-
-We'll delve into the unit testing of our custom trust manager in a follow-up article. Thereafter, we might implement a local CA management tool that records issued certificates, and supports standard CRLs, if not a local CA server that supports the <a href="http://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol">Online Certificate Status Protocol</a>.
+<h4>Moreover</h4>
 
 We'll introduce a trust manager to automate certificate enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time, and thereafter we validate clients' certificates to protect against spoofing attacks. This truststore will use an SQL database table to manage our trusted certificates.
 
