@@ -31,7 +31,7 @@ CREATE TABLE client_cert (
   confirmed_date TIMESTAMP
 );
 }}}
-where the certificate name is unique. Incidently, the certificate itself would be Base64-encoded for SQL storage. For convenience we might want an explicit expiry date column, even though that information is in the certificate, e.g. where this is used by a script for alerts of impending expiry dates.
+where the certificate name is unique. Incidently, the certificate itself would be Base64-encoded for SQL storage. For convenience we might want an expiry date column, even though that information is in the certificate. For example, this might be used by a script for alerts for impending expiry dates.
 
 <img align="left" style="margin-left: 4px" src="http://upload.wikimedia.org/wikipedia/commons/4/40/Crystal_Clear_app_database.png" />
 
