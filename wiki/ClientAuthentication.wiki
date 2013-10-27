@@ -155,7 +155,7 @@ We use the common name of the peer certificate to select the matching trusted ce
         }
     }
 }}}
-where we validate the certificate against our truststore, i.e. check that it is <tt>enabled</tt> e.g. it is not pending confirmation, and has not been revoked. If the certificate on record has expired, we auto import the client's renewed certificate. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record for its common name. 
+where we validate the certificate against our truststore, i.e. check that it is <tt>enabled</tt> e.g. it is not pending confirmation, and has not been revoked. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record for its common name. If the certificate on record has expired, we auto import the client's renewed certificate.
 
 Finally, we might automatically insert that client's certificate into our SQL truststore if it does not exist. In this case, the newly inserted certificate is initially disabled, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
 
