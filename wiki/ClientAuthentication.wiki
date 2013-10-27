@@ -79,7 +79,7 @@ public interface CertificateStorage {
     public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
 }}}
-where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate <tt>exists()</tt>, then we can <tt>load()</tt> it, and <tt>update()</tt> it i.e. if it has expired.
+where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate exists, then we can load it, and update it i.e. if it has expired.
 
 
 <h4>Delegating trust manager</h4>
