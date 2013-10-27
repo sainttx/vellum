@@ -53,7 +53,7 @@ public class LocalCaTest {
     private final int port = 4446;
     private char[] pass = "test1234".toCharArray();
     private SSLEndPoint ca = new SSLEndPoint("ca");
-    private SSLEndPoint server = new SSLEndPoint("server");
+    private SSLEndPoint server = new SSLEndPoint("server.com");
     private SSLEndPoint client = new SSLEndPoint("client");
 
     class SSLEndPoint {
