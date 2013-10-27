@@ -183,7 +183,7 @@ Acceptable client certificate CA names
  
 In the event that an intermediate keystore is compromised, then it's certificate should be revoked, e.g. where our root CA certificate includes a URL for its certificate revocation list. In this case, our clients can reject servers signed with that compromised intermediate CA certificate.
 
-Clearly we would have to generate a new intermediate CA key, and re-sign all our certificates. To avoid such a burden, we might prefer self-signed client certificates.
+Clearly we would have to generate a new intermediate CA key, and re-sign all our certificates. To avoid such a burden, one might prefer self-signed client certificates.
 
 
 <h4>Serial numbers</h4>
@@ -545,7 +545,7 @@ We can sign client certificates using a local CA root certificate. However, we s
 
 Naturally, our SSL server resides in our DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that explicitly importing each client certificate into the truststore enables us to review access. In this case our client certificates needn't be signed by our local CA.
 
-If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, we might prefer self-signed client certificates.
+If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, one might prefer to use self-signed client certificates.
 
 We note that client keys can be used to create rogue certificates with the same trusted CA certificate (and self-signed client certificates are effectively CA certificates). So we present a custom trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it needn't be signed. So we might as well used self-signed client certificates.
 
