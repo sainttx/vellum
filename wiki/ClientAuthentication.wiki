@@ -12,7 +12,7 @@ Our application might support client devices connecting via SSL sockets, where w
 
 <h4>Solution overview</h4>
 
-We consider automated using a custom trust manager that recognises new clients, and automatically imports their certificate into our truststore. Otherwise the trust manager authenticates existing clients to protect against spoofing attacks.
+We implement a custom trust manager that authenticates existing clients, but also recognises new clients, and automatically imports their certificate into our truststore.  
 
 A new client might be pre-approved by an administrator according to its expected certificate name, where we automatically import its certificate the first time it connects. The risk is that a rogue client connects before the legitimate client. However, this requires immediate knowledge of currently pending client names. Also, our application might mitigate this risk, e.g. where the new client's access is restricted until it is somehow confirmed.
 
