@@ -28,6 +28,6 @@ import java.security.cert.X509Certificate;
  * @author evans
  */
 public interface TrustManagerDelegate {
-    public boolean accept() throws CertificateException;
-    public boolean accept(X509Certificate certificate) throws CertificateException;
+    public void check() throws CertificateException;
+    public void check(X509Certificate certificate) throws CertificateException;
 }

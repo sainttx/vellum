@@ -49,12 +49,9 @@ public class DelegatingClientTrustManager implements X509TrustManager {
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
         if (chain.length == 0) {
-            if (!delegate.accept()) {
-                throw new CertificateException("No certificate");
-            }
-        }
-        if (!delegate.accept(chain[0])) {
-            throw new CertificateException("Certificate not accepted");            
+            delegate.check();
+        } else {
+            delegate.check(chain[0]);
         }
     }
 
