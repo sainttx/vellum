@@ -171,7 +171,7 @@ We want the enhanced security of client-authenticated SSL, with the convenience 
 
 Usually a new client cannot connect to our client-authenticated connection, and so also requires a non-authenticated HTTPS server for enrollment. Unfortunately the standard port number is the same for both, i.e. 443, which is widely allowed by firewalls. Consequently two hosts are typically required, i.e. distinguished by their different IP numbers.
 
-We introduce a custom trust manager to enable non-authenticated connections for enrollment, as well as our client-authenticated sessions, through the same server. New clients' certificates are imported into our truststore when they connect for the first time, and thereafter we validate our clients' certificates, to protect against spoofing attacks.
+We introduce a custom trust manager to enable non-authenticated connections for enrollment, as well as our client-authenticated sessions, through the same server. New clients' certificates are imported into our truststore when they connect for the first time, and thereafter we validate our clients' certificates, which nullifies spoofing attacks.
 
 New clients might be pre-approved by an administrator according to their expected certificate names. Alternatively a new client might connect without a certificate in order to send a registration request for the server to generate a PKCS12 key and certificate bundle on its behalf.
 
