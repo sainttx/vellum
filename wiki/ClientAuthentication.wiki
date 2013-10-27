@@ -117,7 +117,7 @@ Since we use this trust manager on the server to validate clients, its <tt>check
 
 <h4>Storage trust manager delegate</h4>
 
-We implement a trust manager delegate which uses a dynamic truststore i.e. our SQL table.
+We implement a trust manager delegate which uses our certificate storage as a dynamic truststore.
 {{{
 public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     final private boolean requireCertificate;
