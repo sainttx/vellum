@@ -173,12 +173,7 @@ Usually a new client cannot connect to our client-authenticated connection, and 
 
 We introduce a custom trust manager to enable non-authenticated connections for enrollment, as well as our client-authenticated sessions, through the same server. New clients' certificates are imported into our truststore when they connect for the first time, and thereafter we authenticate our SSL clients.
 
-New clients might be pre-approved by an administrator according to their expected certificate names. Alternatively we might allow a new client might connect without a certificate in order to request the server to generate a PKCS12 key and certificate bundle on its behalf.
-
-
-<h4>Furthermore</h4>
-
-In a follow-up article, we'll demonstrate a HTTPS server which can generate a PKCS12 key and certificate bundle for clients, in response to a valid registration request.
+New clients might be pre-approved by an administrator according to their expected certificate names. Alternatively we might allow a new client might connect without a certificate in order to request the server to generate a PKCS12 key and certificate bundle on its behalf. We'll demonstrate this is a follow-up article.
 
 
 <h4>Resources</h4>
