@@ -164,7 +164,7 @@ While it is possible to sign client certificates with the server key as its own 
 
 We might keep our root CA key offline where it cannot possibly be compromised. In this case, we generate an intermediate CA key, where its CSR and certificate reply is transferred via removable USB media between our online intermediate CA server, and our offline root CA server. 
 
-Our intermediate CA key is then used for certificate signing, but where our parties only trust the root CA certificate, i.e. their truststores contain only the root CA certificate. However, their keystores contain their key certificate chain, which includes the intermediate CA certificate.
+Our intermediate CA key is then used for certificate signing. Our parties still only need trust the root CA certificate, via their truststores. However, their keystores contain their key certificate chain, which includes the intermediate CA certificate.
 
 {{{
 $ openssl s_client -connect localhost:4444
