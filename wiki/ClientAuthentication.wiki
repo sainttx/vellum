@@ -100,8 +100,6 @@ public class StorageTrustManager implements X509TrustManager {
 }}}
 where we use this trust manager on the server to validate clients, and so the <tt>checkServerTrusted()</tt> method is not implemented.
 
-We might allow clients without a certificate. For example, the client could request a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.) In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
-
 We check our client certificate chain as follows.
 {{{
     @Override
@@ -124,7 +122,9 @@ We check our client certificate chain as follows.
         }
     }
 }}}
-where we consider only the key certificate, and disregard its chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
+where we consider only the peer certificate, and disregard its chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
+
+We might allow clients without a certificate. For example, the client could request a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.) In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
 
 We use the common name of the peer certificate to select the matching trusted certificate in our SQL truststore.
 {{{    
