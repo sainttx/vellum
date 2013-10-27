@@ -475,7 +475,7 @@ Interestingly, we sign our client certificates to avoid having such a truststore
 
 If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and it's chain is disregarded.
+However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So we might use an explicit trust manager as below, where the key certificate must be in the truststore, and it's chain is disregarded.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -547,14 +547,14 @@ Naturally, our SSL server resides in our DMZ, whereas we want to isolate our loc
 
 If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, we might prefer self-signed client certificates.
 
-We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore. 
+We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it needn't be signed. So we might as well used self-signed client certificates.
 
-Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. One might conclude that using a local CA for client authentication certainly introduces some security problems, and one might question what problem it actually solves, compared to using self-signed certificates?
+Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. One might conclude that using a local CA for client certificates introduces operational burdens and security problems, and one might question what problem it actually solves, compared to using self-signed certificates?
 
 
 <h4>Moreover</h4>
 
-We'll introduce a trust manager to automate certificate enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time, and thereafter we validate clients' certificates to protect against spoofing attacks. This truststore will use an SQL database table to manage our trusted certificates.
+We'll introduce a trust manager to automate certificate enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time. Thereafter we validate clients' certificates to protect against spoofing attacks. Morever, we automatically import clients' renewed certificates when their old certificates have expired. This trust manager uses an SQL database table as its truststore. 
 
 
 <h4>Resources</h4>
