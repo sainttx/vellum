@@ -547,9 +547,9 @@ Naturally, our SSL server resides in our DMZ, whereas we want to isolate our loc
 
 If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, we might prefer self-signed client certificates.
 
-We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it needn't be signed. So we might as well used self-signed client certificates.
+We note that client keys can be used to create rogue certificates with the same trusted CA certificate (and self-signed client certificates are effectively CA certificates). So we present a custom trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it needn't be signed. So we might as well used self-signed client certificates.
 
-Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. One might conclude that using a local CA for client certificates introduces operational burdens and security problems, and so one might question what problem it actually solves, compared to using self-signed certificates?
+Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. One might conclude that using a local CA to sign client certificates introduces operational burdens and security problems, and so one might question what problem it actually solves, compared to using self-signed certificates?
 
 
 <h4>Moreover</h4>
