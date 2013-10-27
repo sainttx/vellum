@@ -84,7 +84,7 @@ where if the record for that common name exists but has a <tt>null</tt> certific
 
 <h4>Delegating trust manager</h4>
 
-We implement a trust manager to accept certificates using a delegate.
+We implement a trust manager to check certificates using a delegate.
 {{{
 public class DelegatingClientTrustManager implements X509TrustManager {
     TrustManagerDelegate delegate;
@@ -93,12 +93,12 @@ public class DelegatingClientTrustManager implements X509TrustManager {
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
         if (chain.length == 0) {
-            if (!delegate.accept()) {
+            if (!delegate.allow()) {
                 throw new CertificateException("No certificate");
             }
         }
-        if (!delegate.accept(chain[0])) {
-            throw new CertificateException("Certificate not accepted");            
+        if (!delegate.allow(chain[0])) {
+            throw new CertificateException("Certificate not allowed");            
         }
     }
 }
@@ -134,20 +134,20 @@ public class StorageTrustManagerDelegate implements TrustManagerDelegate {
     }
 
     @Override
-    public boolean accept() throws CertificateException {
+    public boolean allow() throws CertificateException {
         return !requireCertificate;
     }
     ...
 }
 }}}
-where our delegate might accept clients without a certificate. For example, the client could request a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.) In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
+where our delegate might allow clients without a certificate. For example, the client could request a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.) In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
 
 If the client sends a certificate, the following method is called.
 {{{
     @Override
-    public boolean accept(X509Certificate peerCertificate) throws CertificateException {
+    public boolean allow(X509Certificate peerCertificate) throws CertificateException {
         try {
-            return accept(Certificates.getCommonName(peerCertificate.getSubjectDN()), 
+            return allow(Certificates.getCommonName(peerCertificate.getSubjectDN()), 
                     peerCertificate);
         } catch (CertificateStorageException e) {
             throw new CertificateException(e);
@@ -156,7 +156,7 @@ If the client sends a certificate, the following method is called.
 }}}
 where we use the common name of the peer certificate to select the matching trusted certificate in our SQL truststore.
 {{{    
-    private boolean accept(String commonName, X509Certificate peerCertificate)
+    private boolean allow(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException {
         if (certificateStorage.exists(commonName)) {
             if (certificateStorage.isNullCert(commonName)) {
