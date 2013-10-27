@@ -84,7 +84,7 @@ where if the record for that common name exists but has a <tt>null</tt> certific
 
 <h4>Trust manager</h4>
 
-We implement a trust manager delegate which uses our certificate storage as a dynamic truststore.
+We implement a trust manager which uses our certificate storage.
 {{{
 public class StorageTrustManager implements X509TrustManager {
     final private boolean requireCertificate;
@@ -146,7 +146,29 @@ We use the common name of the peer certificate to select the matching trusted ce
                     trustedCertificate.getPublicKey().getEncoded())) {
                 return true;
             } else if (new Date().after(trustedCertificate.getNotAfter())) {
-                certificateStorage.update(commonName, peerCertificate);
+                certificateStorage.update(commonName, peerCertif    private boolean check(String commonName, X509Certificate peerCertificate)
+            throws CertificateStorageException {
+        if (certificateStorage.exists(commonName)) {
+            if (certificateStorage.isNullCert(commonName)) {
+                certificateStorage.setCert(commonName, peerCertificate);
+                return true;
+            }
+            if (certificateStorage.isEnabled(commonName)) {
+                X509Certificate trustedCertificate = certificateStorage.load(commonName);
+                if (new Date().after(trustedCertificate.getNotAfter())) {
+                    certificateStorage.update(commonName, peerCertificate);
+                    return true;
+                }
+                return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
+                        trustedCertificate.getPublicKey().getEncoded());
+            }
+        } else if (autoInsert) {
+            certificateStorage.insert(commonName, peerCertificate);
+            return true;
+        }
+        return false;
+    }
+icate);
                 return true;
             } else {
                 return false;
