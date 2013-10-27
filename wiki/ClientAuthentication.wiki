@@ -147,29 +147,7 @@ We use the common name of the peer certificate to select the matching trusted ce
                     trustedCertificate.getPublicKey().getEncoded())) {
                 return true;
             } else if (new Date().after(trustedCertificate.getNotAfter())) {
-                certificateStorage.update(commonName, peerCertif    private boolean check(String commonName, X509Certificate peerCertificate)
-            throws CertificateStorageException {
-        if (certificateStorage.exists(commonName)) {
-            if (certificateStorage.isNullCert(commonName)) {
-                certificateStorage.setCert(commonName, peerCertificate);
-                return true;
-            }
-            if (certificateStorage.isEnabled(commonName)) {
-                X509Certificate trustedCertificate = certificateStorage.load(commonName);
-                if (new Date().after(trustedCertificate.getNotAfter())) {
-                    certificateStorage.update(commonName, peerCertificate);
-                    return true;
-                }
-                return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
-                        trustedCertificate.getPublicKey().getEncoded());
-            }
-        } else if (autoInsert) {
-            certificateStorage.insert(commonName, peerCertificate);
-            return true;
-        }
-        return false;
-    }
-icate);
+                certificateStorage.update(commonName, peerCertificate);
                 return true;
             } else {
                 return false;
