@@ -63,7 +63,7 @@ When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our appli
         }
     }
 }}}
-where our application might import that peer certificate that its truststore. In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore. Alternatively our trust manager itself might import new certificates. 
+where our application might import that peer certificate into its truststore. In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore. Alternatively our trust manager itself might import new certificates. 
 
 <h4>Certificate storage</h4>
 
