@@ -554,7 +554,7 @@ Public CA certificates are typically used for server authentication. However, we
 
 <h4>Moreover</h4>
 
-We'll introduce a trust manager to automate certificate enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time. Thereafter we validate clients' certificates to protect against spoofing attacks. Morever, we automatically import clients' renewed certificates when their old certificates have expired. Incidently, this trust manager will use an SQL database table as its truststore. 
+We'll introduce a trust manager to automate certificate enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time. Morever, we automatically import clients' renewed certificates when their old certificates have expired.
 
 
 <h4>Resources</h4>
