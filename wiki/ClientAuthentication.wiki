@@ -95,7 +95,8 @@ public class StorageTrustManager implements X509TrustManager {
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
         throw new CertificateException("Server authentication not supported");
-    }    
+    }
+}
 }}}
 where we use this trust manager on the server to validate clients, and so the <tt>checkServerTrusted()</tt> method is not implemented.
 
