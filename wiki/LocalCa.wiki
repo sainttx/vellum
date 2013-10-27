@@ -171,8 +171,8 @@ $ openssl s_client -connect localhost:4444
 ...
 Certificate chain
  0 s:/CN=server.com
-   i:/CN=ca-intermediate-2013
- 1 s:/CN=ca-intermediate-2013
+   i:/CN=ca-intermediate-2013-10
+ 1 s:/CN=ca-intermediate-2013-10
    i:/CN=ca
  2 s:/CN=ca
    i:/CN=ca
