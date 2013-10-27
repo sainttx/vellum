@@ -105,7 +105,7 @@ public class DelegatingClientTrustManager implements X509TrustManager {
 }}}
 where we consider only key certificates, and disregard their chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
 
-Since we use this trust manager on the server to validate clients, we know its <tt>checkServerTrusted()</tt> method is not needed.
+Since we use this trust manager on the server to validate clients, its <tt>checkServerTrusted()</tt> method is not needed.
 {{{
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
