@@ -82,101 +82,76 @@ public interface CertificateStorage {
 where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate exists, then we can load it, and update it i.e. if it has expired.
 
 
-<h4>Delegating trust manager</h4>
+<h4>Trust manager</h4>
 
-We implement a trust manager to check certificates using a delegate.
+We implement a trust manager delegate which uses our certificate storage as a dynamic truststore.
 {{{
-public class DelegatingClientTrustManager implements X509TrustManager {
-    TrustManagerDelegate delegate;
-    ...
-    @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType) 
-            throws CertificateException {
-        if (chain.length == 0) {
-            if (!delegate.allow()) {
-                throw new CertificateException("No certificate");
-            }
-        }
-        if (!delegate.allow(chain[0])) {
-            throw new CertificateException("Certificate not allowed");            
-        }
-    }
-}
-}}}
-where we consider only key certificates, and disregard their chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
-
-Since we use this trust manager on the server to validate clients, its <tt>checkServerTrusted()</tt> method is not needed.
-{{{
+public class StorageTrustManager implements X509TrustManager {
+    final private boolean requireCertificate;
+    final private boolean autoInsert;
+    final private CertificateStorage certificateStorage;
+    ...    
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
             throws CertificateException {
         throw new CertificateException("Server authentication not supported");
     }    
 }}}
+where we use this trust manager on the server to validate clients, and so the <tt>checkServerTrusted()</tt> method is not implemented.
 
+We might allow clients without a certificate. For example, the client could request a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.) In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
 
-<h4>Storage trust manager delegate</h4>
-
-We implement a trust manager delegate which uses our certificate storage as a dynamic truststore.
-{{{
-public class StorageTrustManagerDelegate implements TrustManagerDelegate {
-    final private boolean requireCertificate;
-    final private boolean autoInsert;
-    final private CertificateStorage certificateStorage;
-    
-    public StorageTrustManagerDelegate(
-            boolean requireCertificate, 
-            boolean autoInsert, 
-            CertificateStorage certificateStorage) {
-        this.requireCertificate = requireCertificate;
-        this.autoInsert = autoInsert;
-        this.certificateStorage = certificateStorage;
-    }
-
-    @Override
-    public boolean allow() throws CertificateException {
-        return !requireCertificate;
-    }
-    ...
-}
-}}}
-where our delegate might allow clients without a certificate. For example, the client could request a <a href="http://en.wikipedia.org/wiki/PKCS_12">PKCS12</a> bundle to be generated on its behalf, and delivered as an HTTP response, i.e. with a content type of <tt>application/x-pkcs12</tt>. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. (This functionality will be demonstrated in a subsequent article in this series.) In this case, perhaps the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
-
-If the client sends a certificate, the following method is called.
+We check our client certificate chain as follows.
 {{{
     @Override
-    public boolean allow(X509Certificate peerCertificate) throws CertificateException {
-        try {
-            return allow(Certificates.getCommonName(peerCertificate.getSubjectDN()), 
-                    peerCertificate);
-        } catch (CertificateStorageException e) {
-            throw new CertificateException(e);
+    public void checkClientTrusted(X509Certificate[] chain, String authType) 
+            throws CertificateException {
+        if (chain.length == 0) {
+            if (requireCertificate) {
+                throw new CertificateException("No certificate");
+            }
+        } else {
+            try {
+                X509Certificate peerCertificate = chain[0];
+                if (!validate(Certificates.getCommonName(peerCertificate.getSubjectDN()),
+                        peerCertificate)) {
+                    throw new CertificateException("Certificate rejected");
+                }
+            } catch (CertificateStorageException e) {
+                throw new CertificateException(e);
+            }
         }
     }
 }}}
-where we use the common name of the peer certificate to select the matching trusted certificate in our SQL truststore.
+where we consider only the key certificate, and disregard its chain. (See the prequel article <a href="https://code.google.com/p/vellum/wiki/LocalCa">Local CA</a>.)
+
+We use the common name of the peer certificate to select the matching trusted certificate in our SQL truststore.
 {{{    
-    private boolean allow(String commonName, X509Certificate peerCertificate)
-            throws CertificateStorageException {
-        if (certificateStorage.exists(commonName)) {
-            if (certificateStorage.isNullCert(commonName)) {
-                certificateStorage.setCert(commonName, peerCertificate);
+    private boolean validate(String commonName, X509Certificate peerCertificate)
+            throws CertificateStorageException, CertificateException {
+        if (!certificateStorage.exists(commonName)) {
+            if (autoInsert) {
+                certificateStorage.insert(commonName, peerCertificate);
                 return true;
             }
-            if (certificateStorage.isEnabled(commonName)) {
-                X509Certificate trustedCertificate = certificateStorage.load(commonName);
-                if (new Date().after(trustedCertificate.getNotAfter())) {
-                    certificateStorage.update(commonName, peerCertificate);
-                    return true;
-                }
-                return Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
-                        trustedCertificate.getPublicKey().getEncoded());
-            }
-        } else if (autoInsert) {
-            certificateStorage.insert(commonName, peerCertificate);
+            return false;
+        } else if (!certificateStorage.isEnabled(commonName)) {
+            return false;
+        } else if (certificateStorage.isNullCert(commonName)) {
+            certificateStorage.setCert(commonName, peerCertificate);
             return true;
+        } else {
+            X509Certificate trustedCertificate = certificateStorage.load(commonName);
+            if (Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
+                    trustedCertificate.getPublicKey().getEncoded())) {
+                return true;
+            } else if (new Date().after(trustedCertificate.getNotAfter())) {
+                certificateStorage.update(commonName, peerCertificate);
+                return true;
+            } else {
+                return false;
+            }
         }
-        return false;
     }
 }}}
 where we validate the certificate against our truststore, i.e. check that it is <tt>enabled</tt> e.g. it is not pending confirmation, and has not been revoked. If the certificate on record has expired, we auto import the client's renewed certificate. Otherwise we check that the peer certificate's public key matches the trusted certificate we have on record for its common name. 
