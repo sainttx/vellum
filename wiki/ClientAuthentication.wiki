@@ -6,9 +6,9 @@
 
 Client-authenticated SSL connections require client certificate generation, enrollment, and renewal. Enrollment typically involves a manual process, either certificate signing, or importing into our truststore. Moreover certificate expiry requires this process to be repeated at some stage. 
 
-Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. However, we hear that such cookies are routinely hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, in order to mount a <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoofing attack</a> as an authenticated client, and thereby breach our access security.
+Consequently browser certificates are not widely used for consumer sites i.e. for client-authenticated HTTPS. Typically cookies are used to record authenticated sessions. These are hijacked using <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> attacks, in order to mount a <a href="http://en.wikipedia.org/wiki/Spoofing_attack">spoofing attack</a> as an authenticated client.
 
-Alternatively, our application might support client devices connecting via SSL sockets, where we want to automate certificate management for operational reasons.
+Our application might support client devices connecting via SSL sockets, where we want to automate certificate management for operational reasons.
 
 <h4>Solution overview</h4>
 
