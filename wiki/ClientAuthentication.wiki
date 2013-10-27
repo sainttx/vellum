@@ -42,6 +42,23 @@ Alternatively we might pre-approve a new client by inserting a record with its e
 Finally, we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused, because of our uniqueness constraint.
 
 
+<h4>Certificate storage</h4>
+
+We provide a mockable certificate storage interface for our SQL truststore.
+{{{
+public interface CertificateStorage {
+    public boolean exists(String commonName) throws CertificateStorageException;
+    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean isNullCert(String commonName) throws CertificateStorageException;
+    public void setCert(String commonName, X509Certificate cert) throws CertificateStorageException;
+    public boolean isEnabled(String commonName) throws CertificateStorageException;
+    public X509Certificate load(String commonName) throws CertificateStorageException;    
+    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
+}
+}}}
+where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate exists, then we can load it, and update it i.e. if it has expired.
+
+
 <h4><tt>SSLSession</tt></h4>
 
 When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our application reads and validates the request message. At this stage, our application itself might import the peer certificate e.g. for new clients that send a valid registration message. We can get the client certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
@@ -64,22 +81,6 @@ When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our appli
     }
 }}}
 where our application might import that peer certificate into its truststore. In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore. Alternatively our trust manager itself might import new certificates. 
-
-<h4>Certificate storage</h4>
-
-We provide a mockable certificate storage interface for our SQL truststore.
-{{{
-public interface CertificateStorage {
-    public boolean exists(String commonName) throws CertificateStorageException;
-    public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean isNullCert(String commonName) throws CertificateStorageException;
-    public void setCert(String commonName, X509Certificate cert) throws CertificateStorageException;
-    public boolean isEnabled(String commonName) throws CertificateStorageException;
-    public X509Certificate load(String commonName) throws CertificateStorageException;    
-    public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
-}
-}}}
-where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate exists, then we can load it, and update it i.e. if it has expired.
 
 
 <h4>Trust manager</h4>
