@@ -1,10 +1,11 @@
 
 set -u 
 
+cd
+
 lscript=`basename $0 .sh`
 cat $0 | grep ^command > tmp/$lscript.txt
 
-cd
 cd tmp
 
 pass=test1234
@@ -32,21 +33,18 @@ command1_initks() {
 
 command1_initca() {
   alias=$1
-  rm -f $alias.jks
-  rm -f $alias.signed.jks
-  rm -f $alias.trust.jks
   $keytool -keystore $alias.jks -storepass $pass -keypass $pass -alias $alias \
-    -genkeypair -keyalg rsa -keysize 2048 -validity 999 -dname "CN=$alias" \    
+    -genkeypair -keyalg rsa -keysize 2048 -validity 999 -dname "CN=$alias" \
     -ext BC:critial=ca:false,pathlen:0 -ext KU:critical=decipherOnly
     # -ext BC:critial=ca:true,pathlen:0 -ext KU:critical=digitalSignature
   $keytool -keystore $alias.jks -storepass $pass -alias $alias \
     -exportcert -rfc -file $alias.pem
   openssl x509 -text -in $alias.pem | grep "CN=\|CA:"
-  openssl x509 -text -in client.signed.pem | grep "X509v3" -A1
+  openssl x509 -text -in $alias.pem | grep "X509v3" -A1
 }
 
 command0_initks() {
-  command1_initks ca
+  command1_initca ca
   command1_initks server
   command1_initks client
 }
