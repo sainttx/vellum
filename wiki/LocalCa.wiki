@@ -62,7 +62,7 @@ where we set constraints and usage extensions by taking cues e.g. from a !GoDadd
             X509v3 Key Usage: critical
                 Certificate Sign, CRL Sign
 }}}
-Alternatively we list the extensions of a !GoDaddy CA root certificate using <tt>keytool</tt>.
+Alternatively we print the extensions of our sample !GoDaddy CA root certificate using <tt>keytool</tt>.
 {{{
 Extensions: 
 
