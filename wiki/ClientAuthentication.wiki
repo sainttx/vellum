@@ -149,10 +149,8 @@ where we consider only the peer certificate, and disregard its chain. (See the p
             X509Certificate trustedCertificate = certificateStorage.load(commonName);
             if (Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
                     trustedCertificate.getPublicKey().getEncoded())) {
-                if (allowExpired || new Date().before(trustedCertificate.getNotAfter())) {
-                    return true;
-                }
-            } else if (updateExpired && new Date().after(trustedCertificate.getNotAfter())) {
+                return allowExpired || !isExpired(trustedCertificate);
+            } else if (updateExpired && isExpired(trustedCertificate)) {
                 certificateStorage.update(commonName, peerCertificate);
                 return true;
             }
@@ -162,7 +160,13 @@ where we consider only the peer certificate, and disregard its chain. (See the p
 }}}
 We check that we have a record for this common name. We ensure that it is <tt>enabled</tt> e.g. it is not pending confirmation or revoked. We import the certificate if we don't have one. Otherwise we check that the peer certificate's public key matches that of the trusted certificate we have on record. If the certificate on record has expired, we automatically import the client's renewed certificate.
 
-Note that we might automatically insert that client's certificate into our SQL truststore if it does not exist. In this case, the newly inserted certificate is initially disabled, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
+{{{
+    private static boolean isExpired(X509Certificate certificate) {
+        return new Date().after(certificate.getNotAfter());
+    }
+}}}
+
+We might automatically insert that client's certificate into our SQL truststore if it does not exist. In this case, the newly inserted certificate is initially disabled, pending validation of the client's request message by our application, or alternatively requiring manual approval by an administrator.
 
 
 <h4>To be continued</h4>
