@@ -35,6 +35,17 @@ public class ExtendedProperties extends Properties {
     public ExtendedProperties(Properties properties) {
         super.putAll(properties);
     }
+
+    public ExtendedProperties(Properties properties, String prefix) {
+        for (Object key : properties.keySet()) {
+            String propertyName = key.toString();
+            if (propertyName.startsWith(prefix) && 
+                    propertyName.charAt(prefix.length()) == '.') {
+                super.put(propertyName.substring(prefix.length() + 1), 
+                        properties.get(propertyName));
+            }
+        }
+    }
     
     public String getString(String propertyName) {
         String propertyValue = super.getProperty(propertyName);
@@ -66,6 +77,10 @@ public class ExtendedProperties extends Properties {
             return defaultValue;
         }
         return Integer.parseInt(propertyString);
+    }
+
+    public boolean getBoolean(String propertyName) {
+        return getBoolean(propertyName, false);
     }
     
     public boolean getBoolean(String propertyName, boolean defaultValue) {
