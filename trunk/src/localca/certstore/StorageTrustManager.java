@@ -20,10 +20,12 @@
  */
 package localca.certstore;
 
+import dualcontrol.ExtendedProperties;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Properties;
 import javax.net.ssl.X509TrustManager;
 import localca.Certificates;
 
@@ -31,19 +33,27 @@ import localca.Certificates;
  *
  * @author evans
  */
-public class StorageTrustManager implements X509TrustManager {
+public final class StorageTrustManager implements X509TrustManager {
 
-    final private boolean requireCertificate;
-    final private boolean autoInsert;
     final private CertificateStorage certificateStorage;
+    private boolean allowNoCert;
+    private boolean allowExpired;
+    private boolean insertNew;
+    private boolean updateExpired;
+    private boolean setNull;
 
-    public StorageTrustManager(
-            boolean requireCertificate,
-            boolean autoInsert,
+    public StorageTrustManager(Properties properties, 
             CertificateStorage certificateStorage) {
-        this.requireCertificate = requireCertificate;
-        this.autoInsert = autoInsert;
+        init(new ExtendedProperties(properties, "StorageTrustManager"));
         this.certificateStorage = certificateStorage;
+    }
+    
+    private void init(ExtendedProperties properties) {
+        this.allowNoCert = properties.getBoolean("allowNoCert");
+        this.allowExpired = properties.getBoolean("allowExpired");
+        this.insertNew = properties.getBoolean("insertNew");
+        this.updateExpired = properties.getBoolean("updateExpired");        
+        this.setNull = properties.getBoolean("updateNull");
     }
 
     @Override
@@ -55,7 +65,7 @@ public class StorageTrustManager implements X509TrustManager {
     public void checkClientTrusted(X509Certificate[] chain, String authType)
             throws CertificateException {
         if (chain.length == 0) {
-            if (requireCertificate) {
+            if (!allowNoCert) {
                 throw new CertificateException("No certificate");
             }
         } else {
@@ -74,28 +84,30 @@ public class StorageTrustManager implements X509TrustManager {
     private boolean validate(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException, CertificateException {
         if (!certificateStorage.exists(commonName)) {
-            if (autoInsert) {
+            if (insertNew) {
                 certificateStorage.insert(commonName, peerCertificate);
                 return true;
             }
-            return false;
         } else if (!certificateStorage.isEnabled(commonName)) {
             return false;
         } else if (certificateStorage.isNullCert(commonName)) {
-            certificateStorage.setCert(commonName, peerCertificate);
-            return true;
+            if (setNull) {
+                certificateStorage.setCert(commonName, peerCertificate);
+                return true;
+            }
         } else {
             X509Certificate trustedCertificate = certificateStorage.load(commonName);
             if (Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
                     trustedCertificate.getPublicKey().getEncoded())) {
-                return true;
-            } else if (new Date().after(trustedCertificate.getNotAfter())) {
+                if (allowExpired || new Date().before(trustedCertificate.getNotAfter())) {
+                    return true;
+                }
+            } else if (updateExpired && new Date().after(trustedCertificate.getNotAfter())) {
                 certificateStorage.update(commonName, peerCertificate);
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
 
     @Override
