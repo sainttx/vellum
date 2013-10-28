@@ -89,9 +89,12 @@ where our application might import that peer certificate into its truststore. In
 We implement a trust manager which uses our certificate storage.
 {{{
 public class StorageTrustManager implements X509TrustManager {
-    final private boolean requireCertificate;
-    final private boolean autoInsert;
     final private CertificateStorage certificateStorage;
+    private boolean allowNoCert;
+    private boolean allowExpired;
+    private boolean insertNew;
+    private boolean updateExpired;
+    private boolean setNull;
     ...    
     @Override
     public void checkServerTrusted(X509Certificate[] certs, String authType) 
@@ -131,28 +134,30 @@ where we consider only the peer certificate, and disregard its chain. (See the p
     private boolean validate(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException, CertificateException {
         if (!certificateStorage.exists(commonName)) {
-            if (autoInsert) {
+            if (insertNew) {
                 certificateStorage.insert(commonName, peerCertificate);
                 return true;
             }
-            return false;
         } else if (!certificateStorage.isEnabled(commonName)) {
             return false;
         } else if (certificateStorage.isNullCert(commonName)) {
-            certificateStorage.setCert(commonName, peerCertificate);
-            return true;
+            if (setNull) {
+                certificateStorage.setCert(commonName, peerCertificate);
+                return true;
+            }
         } else {
             X509Certificate trustedCertificate = certificateStorage.load(commonName);
             if (Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
                     trustedCertificate.getPublicKey().getEncoded())) {
-                return true;
-            } else if (new Date().after(trustedCertificate.getNotAfter())) {
+                if (allowExpired || new Date().before(trustedCertificate.getNotAfter())) {
+                    return true;
+                }
+            } else if (updateExpired && new Date().after(trustedCertificate.getNotAfter())) {
                 certificateStorage.update(commonName, peerCertificate);
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
 }}}
 We check that we have a record for this common name. We ensure that it is <tt>enabled</tt> e.g. it is not pending confirmation or revoked. We import the certificate if we don't have one. Otherwise we check that the peer certificate's public key matches that of the trusted certificate we have on record. If the certificate on record has expired, we automatically import the client's renewed certificate.
