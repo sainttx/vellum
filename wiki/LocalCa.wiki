@@ -432,7 +432,7 @@ public class ServerThread extends Thread {
 
 <h4>Client keystore</h4>
 
-For example, let's create a private SSL keystore for a test client named "evanx."
+Let's create the private keystore for a test client named "evanx" for example.
 {{{
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
     -alias evanx -dname "CN=evanx"
@@ -441,6 +441,7 @@ $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 36
 {{{
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 ----BEGIN CERTIFICATE-----
+MIIDxTCCAq2gAwIBAgIBADANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMx
 ...
 }}}
 We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt>.
