@@ -41,7 +41,7 @@ The truststore contains peer or CA certificates that we trust. By definition we 
 Since a keystore must contain the certificate chain of the key certificate, and the truststore needn't include the certificate chains of trusted certificates, they differ critically in this respect, and so the keystore should not be misused as the truststore.
 
 
-<h4>CA key</tt>
+<h4>CA key</h4>
 
 While our server naturally resides in a DMZ accessible to the Internet, our "CA" key should be isolated on a more secure internal machine. 
 
