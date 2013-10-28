@@ -176,9 +176,8 @@ public class LocalCaTest {
             logger.debug("revokedNames: " + revokedNames);
             serverSSLContext.getClientSessionContext().setSessionTimeout(1);
             Thread.sleep(1000);
-            String errorMessage = ClientThread.connect(clientSSLContext, port);
+            Assert.assertNotNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNotNull(serverThread.getErrorMessage());
-            Assert.assertNotNull(errorMessage);
         } finally {
             serverThread.close();
             serverThread.join(1000);
