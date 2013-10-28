@@ -124,7 +124,7 @@ We test SSL connections by creating server and client keystores and truststores 
         }        
     }
 }}}
-where we test the connection to the server socket as follows.
+where we test the client connection to the server socket as follows.
 {{{
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
@@ -139,7 +139,6 @@ where we test the connection to the server socket as follows.
         } catch (Exception e) {
             return e.getMessage();
         } finally {
-            socket.getSession().getSessionContext().setSessionTimeout(1);
             socket.close();
         }
     }
