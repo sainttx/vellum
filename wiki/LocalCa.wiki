@@ -33,7 +33,7 @@ public class LocalCaTest {
 
 where we create an SSL context for our server socket, and accept a client connection. We'll present our <tt>SSLContexts</tt> utility further below.
 
-<img align="left" style="margin-left: 4px" width="50%" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+<img align="left" style="margin-left: 4px" width="100px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 For the purpose of SSL, the keystore must contain an asymmetric private key, which is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate (which is self-signed by definition). In fact, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 
@@ -44,7 +44,7 @@ Since a keystore must contain the certificate chain of the key certificate, and 
 
 <h4>CA root certificate</h4>
 
-Let's inspect an !GoDaddy root certificate, for example.
+Let's first inspect a !GoDaddy root certificate, for example.
 {{{
 $ openssl x509 -text -in godaddy-root.pem 
 Certificate:
