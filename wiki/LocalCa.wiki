@@ -41,11 +41,7 @@ The truststore contains peer or CA certificates that we trust. By definition we 
 Since a keystore must contain the certificate chain of the key certificate, and the truststore needn't include the certificate chains of trusted certificates, they differ critically in this respect, and so the keystore should not be misused as the truststore.
 
 
-<h4>CA key</h4>
-
-While our server naturally resides in a DMZ accessible to the Internet, our "CA" key should be isolated on a more secure internal machine. 
-
-In fact, our root CA key could be generated offline, where it can never be compromised. In this case, an intermediate CA key would be used for online signing. We would transfer the intermediate CA's CSR to the offline CA server, and return its signed certificate, using removable USB media.
+<h4>CA root certificate</h4>
 
 Let's inspect an !GoDaddy root certificate, for example.
 {{{
@@ -78,6 +74,13 @@ KeyUsage [
 ]
 }}}
 where the path length of certificate chains that can be validated is set to the maximum for a signed integer.
+
+
+<h4>CA key</h4>
+
+While our server naturally resides in a DMZ accessible to the Internet, our "CA" key should be isolated on a more secure internal machine. 
+
+In fact, our root CA key could be generated offline, where it can never be compromised. In this case, an intermediate CA key would be used for online signing. We would transfer the intermediate CA's CSR to the offline CA server, and return its signed certificate, using removable USB media.
 
 We create our "local CA" key as follows.
 {{{
