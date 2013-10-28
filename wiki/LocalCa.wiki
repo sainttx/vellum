@@ -641,7 +641,7 @@ If our CA certificate is compromised, we would need to re-sign all our client ce
 
 We note that self-signed client certificates are effectively CA certificates, and so compromised client keys can be used to create rogue certificates. We present an explicit trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it can be self-signed.
 
-Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. We conclude that using local CA to sign client certificates introduces operational burdens and security risks, and might prefer to use self-signed certificates, which are explicitly trusted.
+Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. We find that using a local CA to sign client certificates introduces operational burdens and security risks, and so one might prefer to use self-signed certificates, which are explicitly trusted.
 
 
 <h4>Moreover</h4>
