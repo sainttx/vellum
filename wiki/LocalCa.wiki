@@ -44,7 +44,7 @@ Since a keystore must contain the certificate chain of the key certificate, and 
 
 <h4>CA root certificate</h4>
 
-Let's first inspect a !GoDaddy root certificate, for example.
+Let's first inspect a <a href="https://certs.godaddy.com/anonymous/repository.pki">!GoDaddy</a> root certificate, for example.
 {{{
 $ openssl x509 -text -in godaddy-root.pem 
 Certificate:
