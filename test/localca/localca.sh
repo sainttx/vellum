@@ -35,7 +35,7 @@ command1_initca() {
   alias=$1
   $keytool -keystore $alias.jks -storepass $pass -keypass $pass -alias $alias \
     -genkeypair -keyalg rsa -keysize 2048 -validity 999 -dname "CN=$alias" \
-    -ext BC:critial=ca:true,pathlen:1 -ext KU:critical=decipherOnly
+    -ext BC:critial=CA:false,pathlen:0 -ext KU:critical=decipherOnly
     # -ext BC:critial=ca:true,pathlen:0 -ext KU:critical=keyCertSign,cRLSign
   $keytool -keystore $alias.jks -storepass $pass -alias $alias \
     -exportcert -rfc -file $alias.pem

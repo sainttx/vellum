@@ -174,7 +174,6 @@ public class LocalCaTest {
             Assert.assertNull(serverThread.getErrorMessage());
             revokedNames.add(revokeName);
             logger.debug("revokedNames: " + revokedNames);
-            serverSSLContext.getClientSessionContext().setSessionTimeout(1);
             Thread.sleep(1000);
             Assert.assertNotNull(ClientThread.connect(clientSSLContext, port));
             Assert.assertNotNull(serverThread.getErrorMessage());
@@ -184,7 +183,7 @@ public class LocalCaTest {
         }
     }
 
-    private void assertContains(String expected, String string) throws Exception {
+    public static void assertContains(String expected, String string) throws Exception {
         if (string == null) {
             throw new Exception("Expected to contain: [" + string
                     + "] but as null");
