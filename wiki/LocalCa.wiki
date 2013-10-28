@@ -32,9 +32,9 @@ public class LocalCaTest {
 }}}
 where we create an SSL context for our server socket, and accept a client connection. We'll present our <tt>SSLContexts</tt> utility further below.
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 For the purpose of SSL, the keystore must contain an asymmetric private key, which is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate (which is self-signed by definition). In fact, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
+
+<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 The truststore contains peer or CA certificates that we trust. By definition we trust any peer certificate chain that includes a certificate in our truststore. That is to say, if our truststore contains a CA certificate, then we trust all certificates issued by that CA.
 
@@ -54,7 +54,7 @@ $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
     -ext BasicConstraints:critical=ca:true,pathlen:2 \
     -ext KeyUsage:critical=keyCertSign,cRLSign
 }}}
-We observe that the following extensions are set on a <tt>GoDaddy</tt> root certificate.
+where we set constraints and usage extensions by taking cues e.g. from a !GoDaddy root certificate, which are printed using <tt>openssl</tt> as follows.
 {{{
         X509v3 extensions:
             X509v3 Basic Constraints: critical
@@ -62,7 +62,7 @@ We observe that the following extensions are set on a <tt>GoDaddy</tt> root cert
             X509v3 Key Usage: critical
                 Certificate Sign, CRL Sign
 }}}
-Using <tt>openssl</tt>, we observe the constraints as follows.
+Alternatively we list the extensions of a !GoDaddy CA root certificate using <tt>keytool</tt>.
 {{{
 Extensions: 
 
