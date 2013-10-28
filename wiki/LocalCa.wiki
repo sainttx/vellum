@@ -302,10 +302,8 @@ public class LocalCaTest {
             Assert.assertNull(serverThread.getErrorMessage());
             revokedNames.add(revokedName);
             Thread.sleep(1000);
-            String errorMessage = ClientThread.connect(clientSSLContext, port);
-            Assert.assertEquals("java.security.cert.CertificateException: " + 
-                    "Certificate CN revoked", serverThread.getErrorMessage());
-            Assert.assertNotNull(errorMessage);
+            Assert.assertNotNull(ClientThread.connect(clientSSLContext, port));
+            Assert.assertNotNull(serverThread.getErrorMessage());
         } finally {
             serverThread.close();
             serverThread.join(1000);
