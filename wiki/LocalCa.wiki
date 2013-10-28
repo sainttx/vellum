@@ -31,9 +31,9 @@ public class LocalCaTest {
 }
 }}}
 
-<img align="left" style="margin-left: 4px" width="50%" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
-
 where we create an SSL context for our server socket, and accept a client connection. We'll present our <tt>SSLContexts</tt> utility further below.
+
+<img align="left" style="margin-left: 4px" width="50%" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 For the purpose of SSL, the keystore must contain an asymmetric private key, which is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate (which is self-signed by definition). In fact, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 
@@ -51,15 +51,28 @@ Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
-...
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, ..., CN=Go Daddy Root Certificate Authority - G2
+        Validity
+            Not Before: Sep  1 00:00:00 2009 GMT
+            Not After : Dec 31 23:59:59 2037 GMT
+        Subject: C=US, ..., CN=Go Daddy Root Certificate Authority - G2
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+}}}
+We observe the following CA constraints and key usage.
+{{{
         X509v3 extensions:
             X509v3 Basic Constraints: critical
                 CA:TRUE
             X509v3 Key Usage: critical
                 Certificate Sign, CRL Sign
 }}}
-Alternatively we print the extensions of our sample !GoDaddy CA root certificate using <tt>keytool</tt>.
+Alternatively we import the certificate into a keystore, and the print certificate using <tt>keytool</tt>.
 {{{
+$ keytool -keystore godaddy.jks -alias godaddy-root -list -v
+...
 Extensions: 
 
 #1: ObjectId: 2.5.29.19 Criticality=true
