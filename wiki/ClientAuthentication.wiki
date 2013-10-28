@@ -102,7 +102,7 @@ public class StorageTrustManager implements X509TrustManager {
 }}}
 where we use this trust manager on the server to validate clients, and so the <tt>checkServerTrusted()</tt> method is not implemented.
 
-we might allow a client without a certificate to connect, e.g. to request a PKCS12 bundle to be generated on its behalf. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. However, the certificate is initially disabled in the SQL truststore, e.g. pending manual confirmation by an administrator.
+we might allow a client without a certificate to connect, e.g. to request a PKCS12 bundle to be generated on its behalf. Naturally in this case the server must not store the generated key, but does import the client certificate into its truststore. However, the certificate is perhaps initially disabled, pending manual confirmation by an administrator.
 
 We check our client certificate chain as follows.
 {{{
