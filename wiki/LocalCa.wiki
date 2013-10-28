@@ -31,7 +31,7 @@ public class LocalCaTest {
 }
 }}}
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+<img align="left" style="margin-left: 4px" width="50%" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 where we create an SSL context for our server socket, and accept a client connection. We'll present our <tt>SSLContexts</tt> utility further below.
 
