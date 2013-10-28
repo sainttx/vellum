@@ -104,7 +104,7 @@ $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
 
 Incidently, our testing using Java SSL sockets indicates that these constraints are ignored. For example, even setting <tt>CA:false</tt> on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This is disconcerting, since means that our server and client keys can be used to issue rogue certificates. 
 
-We test an SSL connection as follows, having created our keystores and truststores using <tt>keytool</tt> e.g. where both our client and server are signed by our CA. 
+Having created our keystores and truststores using <tt>keytool</tt>, where both our client and server are signed by our CA, we test an SSL connection as follows.
 {{{
     private void connect(String serverKeyStoreLocation, String serverTrustStoreLocation,
             String clientKeyStoreLocation, String clientTrustStoreLocation,
