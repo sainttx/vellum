@@ -1,6 +1,9 @@
 
 set -u 
 
+lscript=`basename $0 .sh`
+cat $0 | grep ^command > tmp/$lscript.txt
+
 cd
 cd tmp
 
@@ -33,8 +36,9 @@ command1_initca() {
   rm -f $alias.signed.jks
   rm -f $alias.trust.jks
   $keytool -keystore $alias.jks -storepass $pass -keypass $pass -alias $alias \
-    -genkeypair -keyalg rsa -keysize 2048 -validity 999 -dname "CN=$alias" \
-    -ext KU:critical=digitalSignature # -ext BC:critial=ca:true,pathlen:0
+    -genkeypair -keyalg rsa -keysize 2048 -validity 999 -dname "CN=$alias" \    
+    -ext BC:critial=ca:false,pathlen:0 -ext KU:critical=decipherOnly
+    # -ext BC:critial=ca:true,pathlen:0 -ext KU:critical=digitalSignature
   $keytool -keystore $alias.jks -storepass $pass -alias $alias \
     -exportcert -rfc -file $alias.pem
   openssl x509 -text -in $alias.pem | grep "CN=\|CA:"
@@ -86,8 +90,6 @@ command0_signx() {
   $keytool -keystore server.trust.jks -storepass $pass -importcert -noprompt \
     -alias client.server -file client.server.pem
   echo "client.server.trust.jks"
-
-
   $keytool -keystore client.server.trust.jks -storepass $pass -alias server \
     -importcert -noprompt -file server.signed.pem 
   $keytool -keystore server.trust.jks -storepass $pass -alias client \
@@ -142,7 +144,7 @@ then
   shift
   command$#_$command $@
 else 
-  cat $0 | grep ^command
+  cat $lscript.txt
 fi
 
 
