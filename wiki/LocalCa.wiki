@@ -78,6 +78,7 @@ KeyUsage [
   Crl_Sign
 ]
 }}}
+where the path length of certificate chains that can be validated is set to the maximum for a signed integer.
 
 Incidently, our testing using Java SSL sockets indicates that these constraints are ignored. This is disconcerting, since means that our server and client keys can be used to issue rogue certificates. 
 
