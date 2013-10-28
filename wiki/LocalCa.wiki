@@ -393,11 +393,11 @@ public class LocalCaTest {
         ServerThread serverThread = new ServerThread();
         try {
             serverThread.start(serverSSLContext, port, 2);
-            Assert.assertNull(ClientThread.connect(clientSSLContext, port));
+            Assert.assertNull(connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
             revokedNames.add(revokedName);
             Thread.sleep(1000);
-            Assert.assertNotNull(ClientThread.connect(clientSSLContext, port));
+            Assert.assertNotNull(connect(clientSSLContext, port));
             Assert.assertNotNull(serverThread.getErrorMessage());
         } finally {
             serverThread.close();
