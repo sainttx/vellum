@@ -139,6 +139,7 @@ where we test the connection to the server socket as follows.
         } catch (Exception e) {
             return e.getMessage();
         } finally {
+            socket.getSession().getSessionContext().setSessionTimeout(1);
             socket.close();
         }
     }
@@ -391,7 +392,6 @@ public class LocalCaTest {
                 serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
-        serverSSLContext.getClientSessionContext().setSessionTimeout(1);
         try {
             serverThread.start(serverSSLContext, port, 2);
             Assert.assertNull(ClientThread.connect(clientSSLContext, port));
@@ -409,7 +409,26 @@ public class LocalCaTest {
 }}}
 where we create a concurrent <tt>Set</tt> for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the SSL session is cached, and so we must either recreate the client <tt>SSLContext</tt> instance, or set a client session timeout on the server context. We set the minimum timeout of 1 second, and we sleep for the same. This forces re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. 
+Incidently, we find that the SSL session is cached, and so we must either recreate the client <tt>SSLContext</tt> instance, or set a session timeout on the client socket. We set the minimum timeout of 1 second, and we sleep for the same. This forces re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. 
+
+{{{
+public class ServerThread extends Thread {
+    ...
+    static void handle(SSLSocket socket) throws IOException {
+        logger.info("handle: " + socket.getSession().getPeerPrincipal());
+        try {
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            Assert.assertEquals("clienthello", dis.readUTF());
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("serverhello");
+            logger.info("ok");
+        } finally {
+            socket.getSession().getSessionContext().setSessionTimeout(1);
+            socket.close();
+        }
+    }
+}
+}}}
 
 
 <h4>Client keystore</h4>
