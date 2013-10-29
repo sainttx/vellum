@@ -19,15 +19,120 @@ public class LocalCaTest {
     }    
 }
 </pre>
+
 where we create an SSL context for our server socket, and accept a client connection. We'll present our SSLContexts utility further below.
 
-<img align="left" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
+<img align="left" style="margin-left: 4px" width="125px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
 For the purpose of SSL, the keystore must contain an asymmetric private key, which is paired with its public key certificate. Moreover, the keystore must contain the certificate chain of that key certificate, through to its root certificate (which is self-signed by definition). In fact, keytool will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 
 The truststore contains peer or CA certificates that we trust. By definition we trust any peer certificate chain that includes a certificate in our truststore. That is to say, if our truststore contains a CA certificate, then we trust all certificates issued by that CA.
 
 Since a keystore must contain the certificate chain of the key certificate, and the truststore needn't include the certificate chains of trusted certificates, they differ critically in this respect, and so the keystore should not be misused as the truststore.
+
+
+<h4>CA root certificate</h4>
+
+Let's first inspect a <a href="https://certs.godaddy.com/anonymous/repository.pki">GoDaddy</a> root certificate, for example.
+<pre>
+$ openssl x509 -text -in godaddy-root.pem 
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 0 (0x0)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, ..., CN=Go Daddy Root Certificate Authority - G2
+        Validity
+            Not Before: Sep  1 00:00:00 2009 GMT
+            Not After : Dec 31 23:59:59 2037 GMT
+        Subject: C=US, ..., CN=Go Daddy Root Certificate Authority - G2
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+</pre>
+We observe the following CA constraints and key usage.
+<pre>
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+</pre>
+Alternatively we import the certificate into a keystore, and the print certificate using keytool.
+<pre>
+$ keytool -keystore godaddy.jks -alias godaddy-root -list -v
+...
+Extensions: 
+
+#1: ObjectId: 2.5.29.19 Criticality=true
+BasicConstraints:[
+  CA:true
+  PathLen:2147483647
+]
+
+#2: ObjectId: 2.5.29.15 Criticality=true
+KeyUsage [
+  Key_CertSign
+  Crl_Sign
+]
+</pre>
+where the path length of certificate chains that can be validated is set to the maximum for a signed integer.
+
+
+<h4>CA key</h4>
+
+While our server naturally resides in a DMZ accessible to the Internet, our CA key should be isolated on a more secure internal machine. In fact, our root CA key could be generated offline, where it can never be compromised. In this case, an intermediate CA key would be used for online signing. We would transfer the intermediate CA's certificate signing request to the offline CA server, and return its signed certificate, using removable USB media.
+
+We create our "local CA" key as follows.
+<pre>
+$ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
+    -keyalg rsa -keysize 2048 -validity 365 -noprompt \
+    -ext BasicConstraints:critical=CA:true,pathlen:2 \
+    -ext KeyUsage:critical=keyCertSign,cRLSign
+</pre>
+
+Incidently, our testing using Java SSL sockets indicates that these constraints are ignored. For example, even setting CA:false on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This is disconcerting, since means that our server and client keys can be used to issue rogue certificates. 
+
+Having created our keystores and truststores using keytool, where both our client and server are signed by our CA, we test an SSL connection as follows.
+<pre>
+    private void connect(String serverKeyStoreLocation, String serverTrustStoreLocation,
+            String clientKeyStoreLocation, String clientTrustStoreLocation,
+            char[] pass) throws Exception {
+        SSLContext serverSSLContext = SSLContexts.create(
+                serverKeyStoreLocation, pass, serverTrustStoreLocation);
+        SSLContext clientSSLContext = SSLContexts.create(
+                clientKeyStoreLocation, pass, clientTrustStoreLocation);        
+        ServerThread serverThread = new ServerThread();
+        try {
+            serverThread.start(serverSSLContext, PORT, 1);
+            Assert.assertNull(connect(clientSSLContext, PORT));
+            Assert.assertNull(serverThread.getErrorMessage());
+        } finally {
+            serverThread.close();
+            serverThread.join(1000);
+        }        
+    }
+</pre>
+where we test the client connection to the server socket as follows.
+<pre>
+    static String connect(SSLContext context, int port) 
+            throws GeneralSecurityException, IOException {
+        SSLSocket socket = (SSLSocket) context.getSocketFactory().
+                createSocket("localhost", port);
+        try {
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("clienthello");
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            Assert.assertEquals("serverhello", dis.readUTF());
+            return null;
+        } catch (Exception e) {
+            return e.getMessage();
+        } finally {
+            socket.close();
+        }
+    }
+</pre>
+where we return an error message, otherwise null which indicates success.
 
 
 <h4>Server certificate signing</h4>
@@ -39,21 +144,12 @@ $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server.com" 
 </pre>
 where we specify a validity period of 365 days. 
 
-Naturally the common name of server certificates is their domain name. This is used by the client for domain validation, where the client might do a reverse DNS lookup on the server's IP number, and check that the CN domain name matches that reported by DNS.
+Naturally the common name of server certificates is their domain name, for validation by the client, as performed by browsers.
 
 We export a certificate signing request (CSR) as follows.
 <pre>
 $ keytool -keystore server.jks -alias server -certreq -rfc -file server.csr
 </pre>
-
-Let's create our "local CA" key, which will be used to issue signed certificates.
-<pre>
-$ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
-  -keyalg rsa -keysize 2048 -validity 365 -noprompt
-</pre>
-Incidently, our server naturally resides in a DMZ accessible to the Internet, whereas our "CA" key should be isolated on a more secure internal machine. 
-
-In fact, our root CA key could be generated offline, where it can never be compromised. In this case, an intermediate CA key would be used for online signing. We would transfer the intermediate CA's CSR to the offline CA server, and return its signed certificate, using removable USB media.
 
 We can sign the CSR using using Java7's keytool -gencert.
 <pre>
@@ -153,15 +249,15 @@ While it is possible to sign client certificates with the server key as its own 
 
 We might keep our root CA key offline where it cannot possibly be compromised. In this case, we generate an intermediate CA key, where its CSR and certificate reply is transferred via removable USB media between our online intermediate CA server, and our offline root CA server. 
 
-Our intermediate CA key is then used for certificate signing, but where our parties only trust the root CA certificate, i.e. their truststores contain only the root CA certificate. However, their keystores contain their key certificate chain, which includes the intermediate CA certificate.
+Our intermediate CA key is then used for certificate signing. Our parties still only need trust the root CA certificate, via their truststores. However, their keystores contain their key certificate chain, which includes the intermediate CA certificate.
 
 <pre>
 $ openssl s_client -connect localhost:4444
 ...
 Certificate chain
  0 s:/CN=server.com
-   i:/CN=ca-intermediate-2013
- 1 s:/CN=ca-intermediate-2013
+   i:/CN=ca-intermediate-2013-10
+ 1 s:/CN=ca-intermediate-2013-10
    i:/CN=ca
  2 s:/CN=ca
    i:/CN=ca
@@ -172,7 +268,7 @@ Acceptable client certificate CA names
  
 In the event that an intermediate keystore is compromised, then it's certificate should be revoked, e.g. where our root CA certificate includes a URL for its certificate revocation list. In this case, our clients can reject servers signed with that compromised intermediate CA certificate.
 
-Clearly we would have to generate a new intermediate CA key, and re-sign all our certificates. To avoid such a burden, we might prefer self-signed client certificates.
+Clearly we would have to generate a new intermediate CA key, and re-sign all our certificates. To avoid such a burden, one might prefer self-signed client certificates.
 
 
 <h4>Serial numbers</h4>
@@ -188,7 +284,7 @@ We see that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certi
 In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
 
 
-<h4>Revocable SSL contexts</h4>
+<h4>Local revocation</h4>
 
 Ordinarily we create an SSLContext as follows.
 <pre>
@@ -284,17 +380,14 @@ public class LocalCaTest {
                 serverKeyStore, pass, serverTrustStore, revokedNames);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
         ServerThread serverThread = new ServerThread();
-        serverSSLContext.getClientSessionContext().setSessionTimeout(1);
         try {
             serverThread.start(serverSSLContext, port, 2);
-            Assert.assertNull(ClientThread.connect(clientSSLContext, port));
+            Assert.assertNull(connect(clientSSLContext, port));
             Assert.assertNull(serverThread.getErrorMessage());
             revokedNames.add(revokedName);
             Thread.sleep(1000);
-            String errorMessage = ClientThread.connect(clientSSLContext, port);
-            Assert.assertEquals("java.security.cert.CertificateException: " + 
-                    "Certificate CN revoked", serverThread.getErrorMessage());
-            Assert.assertNotNull(errorMessage);
+            Assert.assertNotNull(connect(clientSSLContext, port));
+            Assert.assertNotNull(serverThread.getErrorMessage());
         } finally {
             serverThread.close();
             serverThread.join(1000);
@@ -304,33 +397,31 @@ public class LocalCaTest {
 </pre>
 where we create a concurrent Set for the revoked certificates, and revoke a client certificate after the server has been started. Before the certificate is revoked, the connection should succeed, and afterwards it should fail. 
 
-Incidently, we find that the SSL session is cached, and so we must either recreate the client SSLContext instance, or set a client session timeout on the server context. We set the minimum timeout of 1 second, and we sleep for the same. This forces re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. 
+Incidently, we find that the SSL session is cached, and so we must either recreate the client SSLContext instance, or set a session timeout on the client socket. We set the minimum timeout of 1 second, and we sleep for the same. This forces re-authentication by the server, so that our trust manager is actually invoked and rejects our newly revoked certificate. 
 
-Incidently, our test connects to the server socket as follows.
 <pre>
-    static String connect(SSLContext context, int port) 
-            throws GeneralSecurityException, IOException {
-        SSLSocket socket = (SSLSocket) context.getSocketFactory().
-                createSocket("localhost", port);
+public class ServerThread extends Thread {
+    ...
+    static void handle(SSLSocket socket) throws IOException {
+        logger.info("handle: " + socket.getSession().getPeerPrincipal());
         try {
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            dos.writeUTF("clienthello");
             DataInputStream dis = new DataInputStream(socket.getInputStream());
-            Assert.assertEquals("serverhello", dis.readUTF());
-            return null;
-        } catch (Exception e) {
-            return e.getMessage();
+            Assert.assertEquals("clienthello", dis.readUTF());
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF("serverhello");
+            logger.info("ok");
         } finally {
+            socket.getSession().getSessionContext().setSessionTimeout(1);
             socket.close();
         }
     }
+}
 </pre>
-where we return the error message, otherwise null which indicates success.
 
 
 <h4>Client keystore</h4>
 
-For example, let's create a private SSL keystore for a test client named "evanx."
+Let's create the private keystore for a test client named "evanx" for example.
 <pre>
 $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
     -alias evanx -dname "CN=evanx"
@@ -339,6 +430,7 @@ $ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 36
 <pre>
 $ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
 ----BEGIN CERTIFICATE-----
+MIIDxTCCAq2gAwIBAgIBADANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMx
 ...
 </pre>
 We cut and paste the exported PEM text into a file, which we can inspect using openssl.
@@ -464,7 +556,7 @@ Interestingly, we sign our client certificates to avoid having such a truststore
 
 If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using keytool -gencert. So we might use an explicit trust manager as below, where the key certificate must be in the truststore. That is, the client's key certificate must be in the truststore, and it's chain is disregarded.
+However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using keytool -gencert. So we might use an explicit trust manager as below, where the key certificate must be in the truststore, and it's chain is disregarded.
 <pre>
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -534,16 +626,16 @@ We can sign client certificates using a local CA root certificate. However, we s
 
 Naturally, our SSL server resides in our DMZ, whereas we want to isolate our local CA on a secure internal server. Even so, we discuss the risk of rogue certificates signed by our CA, and argue that explicitly importing each client certificate into the truststore enables us to review access. In this case our client certificates needn't be signed by our local CA.
 
-If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, we might prefer self-signed client certificates.
+If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, one might prefer to use self-signed client certificates.
 
-We note that self-signed client certificates are effectively CA certificates, and so can be used to create rogue certificates. So we present a custom trust manager to check that the peer's key certificate is in the truststore. 
+We note that self-signed client certificates are effectively CA certificates, and so compromised client keys can be used to create rogue certificates. We present an explicit trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it can be self-signed.
 
-Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. One might conclude that using a local CA for client authentication certainly introduces some security problems, and one might question what problem it actually solves, compared to using self-signed certificates?
+Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. We find that using a local CA to sign client certificates introduces operational burdens and security risks, and so one might prefer to use self-signed certificates, which are explicitly trusted.
 
 
 <h4>Moreover</h4>
 
-We'll introduce a trust manager to automate certificate enrollment, where new clients' certificates are imported into a dynamic truststore when they connect for the first time, and thereafter we validate clients' certificates to protect against spoofing attacks. This truststore will use an SQL database table to manage our trusted certificates.
+In an upcoming article, We'll introduce a trust manager to automate certificate enrollment, e.g. new clients' certificates are imported into a dynamic truststore when they connect for the first time.
 
 
 <h4>Resources</h4>
