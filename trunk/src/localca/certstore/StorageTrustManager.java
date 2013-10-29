@@ -99,10 +99,8 @@ public final class StorageTrustManager implements X509TrustManager {
             X509Certificate trustedCertificate = certificateStorage.load(commonName);
             if (Arrays.equals(peerCertificate.getPublicKey().getEncoded(),
                     trustedCertificate.getPublicKey().getEncoded())) {
-                if (allowExpired || new Date().before(trustedCertificate.getNotAfter())) {
-                    return true;
-                }
-            } else if (updateExpired && new Date().after(trustedCertificate.getNotAfter())) {
+                return allowExpired || !isExpired(trustedCertificate);
+            } else if (updateExpired && isExpired(trustedCertificate)) {
                 certificateStorage.update(commonName, peerCertificate);
                 return true;
             }
@@ -110,6 +108,10 @@ public final class StorageTrustManager implements X509TrustManager {
         return false;
     }
 
+    private static boolean isExpired(X509Certificate certificate) {
+        return new Date().after(certificate.getNotAfter());
+    }
+    
     @Override
     public void checkServerTrusted(X509Certificate[] chain, String authType)
             throws CertificateException {
