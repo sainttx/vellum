@@ -72,7 +72,7 @@ public class ClientThread extends Thread {
             logger.info("ok");
             return null;
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            logger.info("error: " + e.getMessage());
             return e.getMessage();
         } finally {
             socket.close();

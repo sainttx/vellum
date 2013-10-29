@@ -84,15 +84,24 @@ public class LocalCaTest {
         }
 
         void sign(SSLEndPoint signer) throws Exception {
-            sign(signer, ++serialNumber);
+            sign(signer, ++serialNumber, null);
+        }
+
+        void signServer(SSLEndPoint signer) throws Exception {
+            sign(signer, ++serialNumber, KeyUsageType.KEY_ENCIPHERMENT);
+        }
+
+        void signClient(SSLEndPoint signer) throws Exception {
+            sign(signer, ++serialNumber, KeyUsageType.DIGITAL_SIGNATURE);
         }
         
-        void sign(SSLEndPoint signer, int serialNumber) throws Exception {
+        void sign(SSLEndPoint signer, int serialNumber, KeyUsageType keyUsage) 
+                throws Exception {
             PKCS10 certRequest = pair.getCertRequest("CN=" + alias);
             logger.info("sign {}", signer.cert.getSubjectDN());
             signedCert = Certificates.sign(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
-                    serialNumber, false, 0, KeyUsageType.DIGITAL_SIGNATURE);
+                    serialNumber, false, 0, keyUsage);
             this.signer = signer;
             if (signer.signer == null) {
                 signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
@@ -108,8 +117,10 @@ public class LocalCaTest {
             trustStore = createTrustStore(alias, trustedCert);
             trustStore.store(createOutputStream(alias + ".trust"), pass);
             sslContext = SSLContexts.create(keyStore, pass, trustStore);
-            signedContext = SSLContexts.create(signedKeyStore, pass,
-                    trustStore);
+            if (signedKeyStore != null) {
+                signedContext = SSLContexts.create(signedKeyStore, pass,
+                        trustStore);
+            }
         }
     }
 
@@ -137,11 +148,11 @@ public class LocalCaTest {
         ca.init();
         server.init();
         client.init();
+        server.signServer(ca);
+        client.signClient(ca);
         server.trust(ca.cert);
         client.trust(ca.cert);
-        server.sign(ca);
-        client.sign(ca);
-        testDynamicNameRevocation(server.keyStore, server.trustStore,
+        testDynamicNameRevocation(server.signedKeyStore, server.trustStore,
                 client.signedKeyStore, client.trustStore, "client");
     }
 
@@ -216,7 +227,7 @@ public class LocalCaTest {
         if (file.exists()) {
             file.delete();
         }
-        logger.info("createOutputStream {}", fileName);
+        logger.debug("createOutputStream {}", fileName);
         return new FileOutputStream(file);
     }
 
@@ -239,10 +250,8 @@ public class LocalCaTest {
             X509Certificate ... chain) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
-        logger.info("createKeyStore: " + chain.length);
         for (int i = 1; i < chain.length; i++) {
             String commonName = Certificates.getCommonName(chain[i].getSubjectDN());
-            logger.info("createKeyStore {} {}", i, commonName);
             keyStore.setCertificateEntry(commonName, chain[i]);
         }
         keyStore.setKeyEntry(alias, privateKey, pass, chain);
