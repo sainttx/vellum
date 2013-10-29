@@ -32,7 +32,6 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Date;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
@@ -68,8 +67,8 @@ public class LocalCaTest {
         SSLContext sslContext;
         X509Certificate cert;
         SSLEndPoint signer;
-        KeyStore signedKeyStore;
         X509Certificate signedCert;
+        KeyStore signedKeyStore;
         SSLContext signedContext;
 
         SSLEndPoint(String alias) {
