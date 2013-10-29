@@ -6,7 +6,7 @@ We consider a bunch of authenticated clients connecting to our private Java serv
 
 For client authentication, naturally each client generates a private key, and we import all our clients' certificates into our server truststore.
 
-In this article, we'll sign the client certificates using a local CA certificate. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation so that we can disable access e.g. for devices that go amiss.
+In this article, we'll sign the client certificates using a local CA certificate, as an experiment. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation so that we can disable access e.g. for devices that go amiss.
 
 
 <h4>SSLContext</h4>
@@ -102,9 +102,9 @@ $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
     -ext KeyUsage:critical=keyCertSign,cRLSign
 }}}
 
-Incidently, our testing using Java SSL sockets indicates that these constraints are ignored. For example, even setting <tt>CA:false</tt> on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This is disconcerting, since means that self-signed server and client keys can be used to issue rogue certificates. 
+Incidently, our testing using Java SSL sockets indicates that these CA constraints are ignored for root certificates. For example, even setting <tt>CA:false</tt> on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This means that self-signed server and client keys can be used to issue rogue certificates. 
 
-Having created our keystores and truststores using <tt>keytool</tt>, where both our client and server are signed by our local CA, we can test them for an SSL connection as follows.
+Having created our keystores and truststores using <tt>keytool</tt>, where both our client and server are signed by our local CA, we test them for SSL sockets as follows.
 {{{
     private void connect(String serverKeyStoreLocation, String serverTrustStoreLocation,
             String clientKeyStoreLocation, String clientTrustStoreLocation,
@@ -124,7 +124,7 @@ Having created our keystores and truststores using <tt>keytool</tt>, where both 
         }        
     }
 }}}
-where we test the client connection to the server socket as follows.
+where we create SSL contexts for the server socket and the client, using the provided keystores and truststores, and try to connect. We test the client connection to the server socket as follows.
 {{{
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
