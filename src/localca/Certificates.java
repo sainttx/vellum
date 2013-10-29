@@ -126,7 +126,6 @@ public class Certificates {
     private static X509CertInfo buildCertInfo(X500Name issuer, PKCS10 certReq, 
             String sigAlgName, CertificateValidity validity, int serialNumber,
             boolean isCa, int pathLength, KeyUsageType keyUsage) throws Exception {
-        logger.warn("setKeyUsage {} {}", keyUsage, keyUsage.ordinal());
         X509CertInfo info = new X509CertInfo();
         info.set(X509CertInfo.VALIDITY, validity);
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(serialNumber));
@@ -153,7 +152,6 @@ public class Certificates {
     private static boolean[] getKeyUsages(KeyUsageType keyUsage) {
         boolean[] array = new boolean[9];
         array[keyUsage.ordinal()] = true;
-        logger.warn("setKeyUsage {} {}", keyUsage, keyUsage.ordinal());
         return array;        
     }
 }
