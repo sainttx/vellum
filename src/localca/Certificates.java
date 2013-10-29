@@ -31,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.security.pkcs.PKCS10;
 import sun.security.pkcs.PKCS10Attribute;
 import sun.security.pkcs.PKCS9Attribute;
@@ -44,6 +46,7 @@ import sun.security.x509.CertificateSubjectName;
 import sun.security.x509.CertificateValidity;
 import sun.security.x509.CertificateVersion;
 import sun.security.x509.CertificateX509Key;
+import sun.security.x509.KeyUsageExtension;
 import sun.security.x509.X500Name;
 import sun.security.x509.X500Signer;
 import sun.security.x509.X509CertImpl;
@@ -54,7 +57,8 @@ import sun.security.x509.X509CertInfo;
  * @author evan.summers
  */
 public class Certificates {
-
+    static Logger logger = LoggerFactory.getLogger(Certificates.class);
+    
     public static boolean equals(X509Certificate cert, X509Certificate other) {
         if (cert.getSubjectDN().equals(other.getSubjectDN())) {
             if (Arrays.equals(cert.getPublicKey().getEncoded(),
@@ -99,7 +103,7 @@ public class Certificates {
     
     public static X509Certificate sign(PrivateKey signingKey, X509Certificate signingCert,
             PKCS10 certReq, Date startDate, int validityDays, int serialNumber,
-            boolean canSign) 
+            boolean isCa, int pathLength, KeyUsageType keyUsage) 
             throws Exception {
         String sigAlgName = "SHA256WithRSA";
         Date endDate = new Date(startDate.getTime() + TimeUnit.DAYS.toMillis(validityDays));
@@ -113,7 +117,7 @@ public class Certificates {
         Signature signature = Signature.getInstance(sigAlgName);
         signature.initSign(signingKey);
         X509CertInfo certInfo = buildCertInfo(issuer, certReq, 
-                sigAlgName, validity, serialNumber, canSign);
+                sigAlgName, validity, serialNumber, isCa, pathLength, keyUsage);
         X509CertImpl cert = new X509CertImpl(certInfo);
         cert.sign(signingKey, sigAlgName);
         return cert;
@@ -121,7 +125,8 @@ public class Certificates {
     
     private static X509CertInfo buildCertInfo(X500Name issuer, PKCS10 certReq, 
             String sigAlgName, CertificateValidity validity, int serialNumber,
-            boolean canSign) throws Exception {
+            boolean isCa, int pathLength, KeyUsageType keyUsage) throws Exception {
+        logger.warn("setKeyUsage {} {}", keyUsage, keyUsage.ordinal());
         X509CertInfo info = new X509CertInfo();
         info.set(X509CertInfo.VALIDITY, validity);
         info.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(serialNumber));
@@ -132,15 +137,23 @@ public class Certificates {
         info.set(X509CertInfo.KEY, new CertificateX509Key(certReq.getSubjectPublicKeyInfo()));
         info.set(X509CertInfo.SUBJECT, new CertificateSubjectName(certReq.getSubjectName()));
         CertificateExtensions extensions = new CertificateExtensions();
-        if (canSign) {
+        if (isCa) {
             BasicConstraintsExtension bce = new BasicConstraintsExtension(true, true, 1);
             extensions.set(BasicConstraintsExtension.NAME, bce);
         } else {
             BasicConstraintsExtension bce = new BasicConstraintsExtension(true, false, 0);
-            extensions.set(BasicConstraintsExtension.NAME, bce);            
+            extensions.set(BasicConstraintsExtension.NAME, bce);
+            KeyUsageExtension kue = new KeyUsageExtension(getKeyUsages(keyUsage));
+            extensions.set(KeyUsageExtension.NAME, kue);
         }
         info.set(X509CertInfo.EXTENSIONS, extensions);
         return info;
     }
     
+    private static boolean[] getKeyUsages(KeyUsageType keyUsage) {
+        boolean[] array = new boolean[9];
+        array[keyUsage.ordinal()] = true;
+        logger.warn("setKeyUsage {} {}", keyUsage, keyUsage.ordinal());
+        return array;        
+    }
 }
