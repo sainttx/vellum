@@ -115,7 +115,7 @@ Having created our keystores and truststores using <tt>keytool</tt>, where both 
                 clientKeyStoreLocation, pass, clientTrustStoreLocation);        
         ServerThread serverThread = new ServerThread();
         try {
-            serverThread.start(serverSSLContext, PORT, 1);
+            serverThread.start(serverSSLContext, PORT);
             Assert.assertNull(connect(clientSSLContext, PORT));
             Assert.assertNull(serverThread.getErrorMessage());
         } finally {
