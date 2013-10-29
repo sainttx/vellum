@@ -121,7 +121,7 @@ public class RevocableTrustManagerTest {
         certRequest = clientPair.getCertRequest("CN=client");
         signedCert = Certificates.sign(serverPair.getPrivateKey(),
                 serverPair.getCertificate(), certRequest, new Date(), 365, 1234,
-                false);
+                false, 0, KeyUsageType.DIGITAL_SIGNATURE);
         Assert.assertEquals("CN=server", signedCert.getIssuerDN().getName());
         Assert.assertEquals("CN=client", signedCert.getSubjectDN().getName());
         signedKeyStore = createSSLKeyStore("client", clientPair.getPrivateKey(), signedCert,

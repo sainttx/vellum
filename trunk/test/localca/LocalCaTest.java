@@ -32,6 +32,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
@@ -39,8 +40,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import junit.framework.Assert;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.security.pkcs.PKCS10;
 
 /**
@@ -49,13 +51,14 @@ import sun.security.pkcs.PKCS10;
  */
 public class LocalCaTest {
 
-    private final static Logger logger = Logger.getLogger(LocalCaTest.class);
+    private final static Logger logger = LoggerFactory.getLogger(LocalCaTest.class);
     private final int port = 4446;
     private char[] pass = "test1234".toCharArray();
     private SSLEndPoint ca = new SSLEndPoint("ca");
     private SSLEndPoint server = new SSLEndPoint("server.com");
     private SSLEndPoint client = new SSLEndPoint("client");
-
+    static int serialNumber = 1000;
+    
     class SSLEndPoint {
 
         String alias;
@@ -64,6 +67,7 @@ public class LocalCaTest {
         KeyStore trustStore;
         SSLContext sslContext;
         X509Certificate cert;
+        SSLEndPoint signer;
         KeyStore signedKeyStore;
         X509Certificate signedCert;
         SSLContext signedContext;
@@ -79,13 +83,24 @@ public class LocalCaTest {
             keyStore = createKeyStore(alias, pair);
         }
 
+        void sign(SSLEndPoint signer) throws Exception {
+            sign(signer, ++serialNumber);
+        }
+        
         void sign(SSLEndPoint signer, int serialNumber) throws Exception {
             PKCS10 certRequest = pair.getCertRequest("CN=" + alias);
+            logger.info("sign {}", signer.cert.getSubjectDN());
             signedCert = Certificates.sign(signer.pair.getPrivateKey(),
                     signer.pair.getCertificate(), certRequest, new Date(), 365,
-                    serialNumber, false);
-            signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
-                    signedCert, signer.cert);
+                    serialNumber, false, 0, KeyUsageType.DIGITAL_SIGNATURE);
+            this.signer = signer;
+            if (signer.signer == null) {
+                signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
+                        signedCert, signer.cert);
+            } else if (signer.signedCert != null) {
+                signedKeyStore = createKeyStore(alias, pair.getPrivateKey(),
+                        signedCert, signer.signedCert, signer.signer.cert);
+            }
             signedKeyStore.store(createOutputStream(alias), pass);
         }
 
@@ -103,16 +118,18 @@ public class LocalCaTest {
 
     @Test
     public void testExclusive() throws Exception {
+        ca.init();
         server.init();
         client.init();
         server.trust(client.cert);
         client.trust(server.cert);
-        testExclusive(server.keyStore, server.trustStore,
+        testConnection(server.keyStore, server.trustStore,
                 client.keyStore, client.trustStore);
-        client.sign(server, 1000);
-        server.trust(server.cert);
-        testExclusive(server.keyStore, server.trustStore,
-                client.signedKeyStore, client.trustStore);
+        server.sign(ca);
+        client.sign(server);
+        testConnection(server.keyStore, server.trustStore,
+                client.signedKeyStore, client.trustStore, 
+                "peer not authenticated");
     }
 
     @Test
@@ -120,15 +137,15 @@ public class LocalCaTest {
         ca.init();
         server.init();
         client.init();
-        server.sign(ca, 1000);
-        server.trust(server.cert);
-        client.sign(server, 1001);
-        client.trust(server.cert);
+        server.trust(ca.cert);
+        client.trust(ca.cert);
+        server.sign(ca);
+        client.sign(ca);
         testDynamicNameRevocation(server.keyStore, server.trustStore,
                 client.signedKeyStore, client.trustStore, "client");
     }
 
-    private void testExclusive(KeyStore serverKeyStore, KeyStore serverTrustStore,
+    private void testConnection(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore) throws Exception {
         SSLContext serverSSLContext = SSLContexts.create(serverKeyStore, pass, serverTrustStore);
         SSLContext clientSSLContext = SSLContexts.create(clientKeyStore, pass, clientTrustStore);
@@ -143,7 +160,7 @@ public class LocalCaTest {
         }
     }
 
-    private void testExclusive(KeyStore serverKeyStore, KeyStore serverTrustStore,
+    private void testConnection(KeyStore serverKeyStore, KeyStore serverTrustStore,
             KeyStore clientKeyStore, KeyStore clientTrustStore,
             String expectedErrorMessage) throws Exception {
         SSLContext serverSSLContext = SSLContexts.create(serverKeyStore, pass, serverTrustStore);
@@ -194,7 +211,13 @@ public class LocalCaTest {
     }
 
     private FileOutputStream createOutputStream(String alias) throws IOException {
-        return new FileOutputStream(File.createTempFile(alias, "jks"));
+        String fileName = "/tmp/" + alias + ".jks";
+        File file = new File(fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+        logger.info("createOutputStream {}", fileName);
+        return new FileOutputStream(file);
     }
 
     private KeyStore createKeyStore(String keyAlias, GenRsaPair keyPair) throws Exception {
@@ -213,11 +236,15 @@ public class LocalCaTest {
     }
 
     private KeyStore createKeyStore(String alias, PrivateKey privateKey,
-            X509Certificate signed, X509Certificate ca) throws Exception {
+            X509Certificate ... chain) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
-        keyStore.setCertificateEntry("ca", ca);
-        X509Certificate[] chain = new X509Certificate[]{signed, ca};
+        logger.info("createKeyStore: " + chain.length);
+        for (int i = 1; i < chain.length; i++) {
+            String commonName = Certificates.getCommonName(chain[i].getSubjectDN());
+            logger.info("createKeyStore {} {}", i, commonName);
+            keyStore.setCertificateEntry(commonName, chain[i]);
+        }
         keyStore.setKeyEntry(alias, privateKey, pass, chain);
         return keyStore;
     }
