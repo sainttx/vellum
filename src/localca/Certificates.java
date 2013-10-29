@@ -142,8 +142,10 @@ public class Certificates {
         } else {
             BasicConstraintsExtension bce = new BasicConstraintsExtension(true, false, 0);
             extensions.set(BasicConstraintsExtension.NAME, bce);
-            KeyUsageExtension kue = new KeyUsageExtension(getKeyUsages(keyUsage));
-            extensions.set(KeyUsageExtension.NAME, kue);
+            if (keyUsage != null) {
+                KeyUsageExtension kue = new KeyUsageExtension(getKeyUsages(keyUsage));
+                extensions.set(KeyUsageExtension.NAME, kue);
+            }
         }
         info.set(X509CertInfo.EXTENSIONS, extensions);
         return info;
