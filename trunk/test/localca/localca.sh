@@ -25,10 +25,10 @@ command1_initks() {
     -ext BC:critical=ca:false,pathlen:0 -ext KU:critical=digitalSignature
   $keytool -keystore $alias.jks -storepass $pass -alias $alias \
     -exportcert -rfc -file $alias.pem
-  openssl x509 -text -in $alias.pem | grep "CN=\|CA:"
-  openssl x509 -text -in $alias.pem | grep "X509v3" -A1
   $keytool -keystore $alias.jks -storepass $pass -alias $alias \
     -certreq -file $alias.csr
+  openssl x509 -text -in $alias.pem | grep "CN=\|CA:"
+  openssl x509 -text -in $alias.pem | grep "X509v3" -A1
 }
 
 command1_initca() {
@@ -47,6 +47,7 @@ command0_initks() {
   command1_initca ca
   command1_initks server
   command1_initks client
+  cp client.jks client.server.jks
 }
 
 command0_trust() {
@@ -69,29 +70,36 @@ command_connect() {
 command0_connect() {
   #command_connect server.jks server.jks server.jks server.jks
   #command_connect ca.jks server.trust.jks client.jks ca.jks
-  #command_connect server.jks server.trust.jks client.server.jks client.server.trust.jks
   command_connect server.jks server.trust.jks client.jks client.trust.jks
 }
 
-command0_signx() {
+command0_xconnect() {
+  command_connect server.jks server.trust.jks client.server.jks client.trust.jks
+}
+
+command0_xsign() {
   $keytool -keystore server.jks -storepass $pass -keypass $pass -alias server \
     -gencert -infile client.csr -rfc -outfile client.server.pem \
     -validity 999 -dname "CN=client" && echo INFO server cert can sign client cert
   $keytool -keystore client.jks -storepass $pass -keypass $pass -alias client \
     -gencert -infile server.csr -rfc -outfile server.client.pem \
     -validity 999 -dname "CN=server" && echo INFO client cert can sign server cert
-  cp -f client.jks client.server.jks
-  $keytool -keystore client.server.jks -storepass $pass -alias server \
-    -importcert -noprompt -file server.signed.pem 
-  $keytool -keystore client.server.jks -storepass $pass -alias client \
-    -importcert -noprompt -file client.server.pem 
-  $keytool -keystore server.trust.jks -storepass $pass -importcert -noprompt \
-    -alias client.server -file client.server.pem
+  $keytool -keystore client.server.jks -alias ca -file ca.pem \
+    -storepass $pass -importcert -noprompt
+  $keytool -keystore client.server.jks -alias server -file server.signed.pem \
+    -storepass $pass -importcert -noprompt 
+  $keytool -keystore client.server.jks -alias client -file client.server.pem \
+    -storepass $pass -importcert -noprompt
+}
+
+command0_xtrust() {
+  $keytool -keystore server.trust.jks -alias client.server -file client.server.pem \
+     -storepass $pass -importcert -noprompt    
   echo "client.server.trust.jks"
-  $keytool -keystore client.server.trust.jks -storepass $pass -alias server \
-    -importcert -noprompt -file server.signed.pem 
-  $keytool -keystore server.trust.jks -storepass $pass -alias client \
-    -importcert -noprompt -file client.signed.pem 
+  $keytool -keystore client.server.trust.jks -alias server -file server.signed.pem \
+    -storepass $pass -importcert -noprompt
+  $keytool -keystore server.trust.jks -alias client -file client.signed.pem \
+    -storepass $pass -importcert -noprompt
 }
 
 command0_sign() {
@@ -131,8 +139,9 @@ command0_test() {
   command0_clean
   command0_initks
   command0_sign
-  #command0_signx
   command0_connect
+  command0_xsign
+  command0_xconnect
 }
 
 

@@ -58,8 +58,11 @@ public class ServerThread extends Thread {
                 try {
                     handle((SSLSocket) serverSocket.accept());
                 } catch (Exception e) {
-                    logger.info("cause: " + e.getCause());
                     errorMessage = e.getMessage();
+                    logger.info("error: " + e.getMessage());
+                    if (e.getCause() != null) {
+                        logger.info("cause: " + e.getCause());
+                    }
                 }
             }
         } finally {
