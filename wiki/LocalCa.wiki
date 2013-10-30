@@ -40,7 +40,7 @@ The truststore contains peer or CA certificates that we trust. By definition we 
 Note that since the keystore must contain the certificate chain of the key certificate, and the truststore needn't include the certificate chains of trusted certificates, they differ critically in this respect, and so the keystore should not be misused as the truststore.
 
 
-<h4>CA root certificate</h4>
+<h4>Root CA certificate</h4>
 
 Let's first inspect a <a href="https://certs.godaddy.com/anonymous/repository.pki">!GoDaddy</a> root certificate, for example.
 {{{
