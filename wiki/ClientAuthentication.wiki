@@ -116,7 +116,7 @@ We check our client certificate chain as follows.
     public void checkClientTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
         if (chain.length == 0) {
-            if (requireCertificate) {
+            if (!allowWithoutCertificate) {
                 throw new CertificateException("No certificate");
             }
         } else {
