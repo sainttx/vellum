@@ -484,7 +484,7 @@ $ keytool -keystore ca.jks -gencert -validity 365 -rfc \
 }}}
 where we specify an unchanged name and validity period for the newly signed certificate. We might add some extensions for good measure, i.e. to restrict key usage.
 
-We can inspect the cert using <tt>openssl</tt>.
+We inspect the certificate using <tt>openssl</tt>.
 {{{
 $ openssl x509 -text -in client.signed.pem
 Certificate:
