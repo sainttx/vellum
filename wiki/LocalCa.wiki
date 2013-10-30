@@ -102,7 +102,7 @@ $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
     -ext KeyUsage:critical=keyCertSign,cRLSign
 }}}
 
-Incidently, our testing using Java SSL sockets indicates that these CA constraints are ignored for root certificates. For example, even setting <tt>CA:false</tt> on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This means that self-signed server and client keys can be used to issue rogue certificates. 
+Incidently, our testing using Java SSL sockets indicates that these CA constraints are ignored for root certificates. For example, even setting <tt>CA:false</tt> on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This means that self-signed server and client keys can be used to issue rogue certificates, which is somewhat disconcerting.
 
 Having created our keystores and truststores using <tt>keytool</tt>, where both our client and server are signed by our local CA, we test them for SSL sockets as follows.
 {{{
