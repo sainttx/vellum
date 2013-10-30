@@ -79,7 +79,7 @@ KeyUsage [
 where the path length of certificate chains that can be validated is set to the maximum for a signed integer.
 
 
-<h4>CA key</h4>
+<h4>Local CA key</h4>
 
 While our server naturally resides in a DMZ accessible to the Internet, our CA key should be isolated on a more secure internal machine. In fact, our root CA key could be generated offline, where it can never be compromised. In this case, an intermediate CA key would be used for online signing. We would transfer the intermediate CA's certificate signing request to the offline CA server, and return its signed certificate, using removable USB media.
 
@@ -91,9 +91,9 @@ $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
     -ext KeyUsage:critical=keyCertSign,cRLSign
 </pre>
 
-Incidently, our testing using Java SSL sockets indicates that these constraints are ignored. For example, even setting CA:false on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This is disconcerting, since means that our server and client keys can be used to issue rogue certificates. 
+Incidently, our testing using Java SSL sockets indicates that these CA constraints are ignored for root certificates. For example, even setting CA:false on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This means that self-signed server and client keys can be used to issue rogue certificates. 
 
-Having created our keystores and truststores using keytool, where both our client and server are signed by our CA, we test an SSL connection as follows.
+Having created our keystores and truststores using keytool, where both our client and server are signed by our local CA, we test them for SSL sockets as follows.
 <pre>
     private void connect(String serverKeyStoreLocation, String serverTrustStoreLocation,
             String clientKeyStoreLocation, String clientTrustStoreLocation,
@@ -104,7 +104,7 @@ Having created our keystores and truststores using keytool, where both our clien
                 clientKeyStoreLocation, pass, clientTrustStoreLocation);        
         ServerThread serverThread = new ServerThread();
         try {
-            serverThread.start(serverSSLContext, PORT, 1);
+            serverThread.start(serverSSLContext, PORT);
             Assert.assertNull(connect(clientSSLContext, PORT));
             Assert.assertNull(serverThread.getErrorMessage());
         } finally {
@@ -113,7 +113,7 @@ Having created our keystores and truststores using keytool, where both our clien
         }        
     }
 </pre>
-where we test the client connection to the server socket as follows.
+where we create SSL contexts for the server socket and the client, using the provided keystores and truststores, and try to connect. We test the client connection to the server socket as follows.
 <pre>
     static String connect(SSLContext context, int port) 
             throws GeneralSecurityException, IOException {
