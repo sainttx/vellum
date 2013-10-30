@@ -213,12 +213,12 @@ Note that the first certificate of the chain is our key certificate, and the las
 
 <h4>Server truststore</h4>
 
-Our server truststore should contain the CA certificate which signs our client certs.
+Our server truststore should contain the CA certificate which signs our client certficates.
 {{{
 $ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
 }}}
 
-If we use an intermediate CA certificate to sign our client certs, then that would be imported into the truststore rather than the root CA certificate.
+If we use an intermediate CA certificate to sign our client certificates, then that would be imported into the truststore rather than the root CA certificate.
 
 Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains this trusted certificate (as it root certificate), it will be trusted. In fact, any certificate issued by our CA is trusted, according to this truststore.
 
@@ -370,7 +370,7 @@ where we check that the client certificate is issued by our CA, and not revoked.
 Since we use this trust manager on the server to validate clients, we know its <tt>checkServerTrusted()</tt> method is not needed.
 {{{
     @Override
-    public void checkServerTrusted(X509Certificate[] certs, String authType) 
+    public void checkServerTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
         throw new CertificateException("Server authentication not supported");
     }    
@@ -552,7 +552,7 @@ Clearly a certificate with a duplicate CN impersonates the original certificate 
 
 In order to review access, we clearly require a perfect record of all issued certificates. If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. 
 
-We might record our signed certs into a keystore file as follows.
+We might record our signed certificates into a keystore file as follows.
 {{{
 $ keytool -keystore server.issued.jks -importcert -alias client -file client.pem 
 Certificate was added to keystore
