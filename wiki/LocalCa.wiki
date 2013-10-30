@@ -559,7 +559,7 @@ Certificate was added to keystore
 }}}
 where this is not a truststore per se, but just a database of issued certificates. 
 
-Interestingly, we sign our client certificates to avoid having such a truststore containing all our client certificates, but nevertheless end up with one.
+Interestingly, we sign our client certificates to avoid having such a truststore containing all our client certificates, but nevertheless end up with one, which is telling.
 
 
 <h4>Self-signed client certificates</h4>
