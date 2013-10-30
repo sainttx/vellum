@@ -83,7 +83,7 @@ public final class StorageTrustManager implements X509TrustManager {
 
     private boolean validate(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException, CertificateException {
-        if (!certificateStorage.exists(commonName)) {
+        if (!certificateStorage.contains(commonName)) {
             if (insertNew) {
                 certificateStorage.insert(commonName, peerCertificate);
                 return true;
