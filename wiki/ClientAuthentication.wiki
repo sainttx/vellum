@@ -62,7 +62,7 @@ where if our storage contains a record for that common name, but has a <tt>null<
 
 <h4><tt>SSLSession</tt></h4>
 
-When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our application reads and validates the request message. At this stage, our application itself might import the peer certificate e.g. for new clients that send a valid registration message. We can get the client certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
+When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our application reads and validates the request message. At this stage, our application itself might import the peer certificate e.g. for new clients that send a valid registration message. Our application gets the client certificate via the <tt>SSLSession</tt> of the client <tt>SSLSocket</tt>, as demonstrated in the following test code.
 {{{
     static void accept(KeyStore keyStore, char[] keyPassword, KeyStore trustStore,
             int port) throws GeneralSecurityException, IOException {
@@ -81,7 +81,10 @@ When we accept a connection to our <tt>SSLServerSocket</tt>, naturally our appli
         }
     }
 }}}
-where our application might import that peer certificate into its truststore. In this case, our trust manager should allow connections by new clients whose certificates are not yet in our truststore. Alternatively our trust manager itself might import new certificates. 
+
+In this case, our trust manager would allow connections by new clients whose certificates are not yet in our truststore, where these are imported by our application.
+
+Alternatively our trust manager itself imports new certificates. 
 
 
 <h4>Trust manager</h4>
