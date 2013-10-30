@@ -36,7 +36,7 @@ public class MockCertificateStorage implements CertificateStorage {
     Map<String, StoredCertificate> map = new HashMap();
     
     @Override
-    public boolean exists(String commonName) throws CertificateStorageException {
+    public boolean contains(String commonName) throws CertificateStorageException {
         return map.containsKey(commonName) && map.get(commonName).getEncoded() != null;
     }
     
