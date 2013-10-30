@@ -36,7 +36,7 @@ import localca.Certificates;
 public final class StorageTrustManager implements X509TrustManager {
 
     final private CertificateStorage certificateStorage;
-    private boolean allowNoCert;
+    private boolean allowWithoutCertificate;
     private boolean allowExpired;
     private boolean insertNew;
     private boolean updateExpired;
@@ -49,7 +49,7 @@ public final class StorageTrustManager implements X509TrustManager {
     }
     
     private void init(ExtendedProperties properties) {
-        this.allowNoCert = properties.getBoolean("allowNoCert");
+        this.allowWithoutCertificate = properties.getBoolean("allowWithoutCertificate");
         this.allowExpired = properties.getBoolean("allowExpired");
         this.insertNew = properties.getBoolean("insertNew");
         this.updateExpired = properties.getBoolean("updateExpired");        
@@ -65,7 +65,7 @@ public final class StorageTrustManager implements X509TrustManager {
     public void checkClientTrusted(X509Certificate[] chain, String authType)
             throws CertificateException {
         if (chain.length == 0) {
-            if (!allowNoCert) {
+            if (!allowWithoutCertificate) {
                 throw new CertificateException("No certificate");
             }
         } else {
