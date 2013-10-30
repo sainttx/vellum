@@ -291,7 +291,7 @@ Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.j
 
 We see that <tt><a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">!X509Certificate</a></tt> (implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html"><tt>!X509CertImpl</tt></a>) returns a <tt>!BigInteger</tt> for the certificate serial number, which should be unique, and can be used for revocation.
 
-In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
+In a later article, we might build a local CA management tool, which uses a sequence number for certificates which it generates programmatically and records in an SQL database.
 
 
 <h4>Local revocation</h4>
@@ -327,7 +327,7 @@ public class RevocableNameSSLContexts {
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableTrustManager(
-                KeyStores.findSoleTrustedCertificate(keyStore),
+                KeyStores.findSoleTrustedCertificate(trustStore),
                 KeyStores.findX509TrustManager(trustStore),
                 revokedNames);
         sslContext.init(keyManagerFactory.getKeyManagers(),
