@@ -170,7 +170,7 @@ $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=serv
     -ext KeyUsage:critical=keyEncipherment \
     -ext ExtendedKeyUsage:critical=serverAuth
 }}}
-where we set X509v3 extensions to restrict the key usage for good measure, as we see for certificates we buy from a public CA. 
+where we set the X509v3 extensions to restrict the key usage for good measure, as we see for certificates we buy from a public CA. 
 
 We now wish to import this signed certificate reply into our server keystore. As mentioned earlier, <tt>keytool</tt> will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 {{{
@@ -206,21 +206,19 @@ Certificate[2]:
 Owner: CN=ca
 Issuer: CN=ca
 }}}
-where we have signed our server certificate with a local CA root certificate. 
+where we have signed our server certificate with our local CA root certificate. 
 
 Note that the first certificate of the chain is our key certificate, and the last certificate is the root CA certificate. By definition the "root" certificate of a chain is self-signed. Additionally, might have an "intermediate" CA certificate that issues the key certificate.
 
 
 <h4>Server truststore</h4>
 
-Our server truststore will contain our CA certificate which signs our client certs.
+Our server truststore should contain our CA certificate, which signs our client certs.
 {{{
 $ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
 }}}
 
-Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains our CA certificate (as it root certificate), it will be trusted. In fact, any certificate issued by our CA is trusted, according to this truststore.
-
-Note that keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
+Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains this trusted certificate (as it root certificate), it will be trusted. In fact, any certificate issued by our CA is trusted, according to this truststore.
 
 
 <h4>openssl</h4>
