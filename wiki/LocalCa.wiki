@@ -2,11 +2,9 @@
 
 <h4>Overview</h4>
 
-We consider a bunch of authenticated clients connecting to our private Java server using SSL sockets. Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. 
+We consider authenticated clients connecting to our private Java server using SSL sockets. Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. 
 
-For client authentication, naturally each client generates a private key, and we import all our clients' certificates into our server truststore.
-
-In this article, we'll sign the client certificates using a local CA certificate, as an experiment. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation so that we can disable access e.g. for devices that go amiss.
+For client authentication, naturally each client generates a private key, and we import all our clients' certificates into our server truststore. As an experiment, we'll sign the client certificates with a local CA certificate using <tt>keytool</tt>. In this case our truststore contains our CA certificate only. However, then our server should somehow support certificate revocation so that we can disable access e.g. for devices that go amiss.
 
 
 <h4>SSLContext</h4>
