@@ -48,7 +48,7 @@ Incidently, we can "revoke" a client certificate by setting its <tt>enabled</tt>
 We provide a mockable certificate storage interface for our SQL truststore.
 {{{
 public interface CertificateStorage {
-    public boolean exists(String commonName) throws CertificateStorageException;
+    public boolean contains(String commonName) throws CertificateStorageException;
     public void insert(String commonName, X509Certificate cert) throws CertificateStorageException;
     public boolean isNullCert(String commonName) throws CertificateStorageException;
     public void setCert(String commonName, X509Certificate cert) throws CertificateStorageException;
@@ -57,7 +57,7 @@ public interface CertificateStorage {
     public void update(String commonName, X509Certificate cert) throws CertificateStorageException;
 }
 }}}
-where if the record for that common name exists but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate exists, then we can load it, and update it i.e. if it has expired.
+where if our storage contains a record for that common name, but has a <tt>null</tt> certificate, then <tt>isNullCert()</tt> returns <tt>true</tt>, and we can invoke <tt>setCert()</tt> to set the certificate. If the certificate exists, then we can load it, and update it i.e. if it has expired.
 
 
 <h4><tt>SSLSession</tt></h4>
@@ -133,7 +133,7 @@ where we consider only the peer certificate, and disregard its chain. (See the p
 {{{    
     private boolean validate(String commonName, X509Certificate peerCertificate)
             throws CertificateStorageException, CertificateException {
-        if (!certificateStorage.exists(commonName)) {
+        if (!certificateStorage.contains(commonName)) {
             if (insertNew) {
                 certificateStorage.insert(commonName, peerCertificate);
                 return true;
