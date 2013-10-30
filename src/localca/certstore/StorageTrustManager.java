@@ -52,7 +52,7 @@ public final class StorageTrustManager implements X509TrustManager {
         this.allowWithoutCertificate = properties.getBoolean("allowWithoutCertificate");
         this.allowExpired = properties.getBoolean("allowExpired");
         this.insertNew = properties.getBoolean("insertNew");
-        this.updateExpired = properties.getBoolean("updateExpired");        
+        this.updateExpired = properties.getBoolean("updateExpired");
         this.setNull = properties.getBoolean("updateNull");
     }
 
