@@ -155,7 +155,7 @@ $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server.com" 
 }}}
 where we specify a validity period of 365 days. 
 
-Naturally the common name of server certificates is their domain name, for validation by the client, as performed by browsers.
+Naturally the common name of server certificates is their domain name, for validation by the client i.e. as performed by browsers.
 
 We export a certificate signing request (CSR) as follows.
 {{{
