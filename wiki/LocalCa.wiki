@@ -564,7 +564,7 @@ Interestingly, we sign our client certificates to avoid having such a truststore
 
 <h4>Self-signed client certificates</h4>
 
-If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
+If our local CA key is compromised by a breach, or abused by an administrator, rogue certificates can might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
 However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So we might use an explicit trust manager as below, where the key certificate must be in the truststore, and it's chain is disregarded.
 {{{
