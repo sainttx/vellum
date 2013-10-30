@@ -15,9 +15,9 @@ That aside, our application manages client devices connecting via SSL sockets, w
 
 We implement a custom trust manager that authenticates existing clients, but also recognises new clients, and automatically imports their certificate into our truststore.  
 
-A new client is be pre-approved by an administrator according to its expected certificate name, and we automatically import its certificate the first time it connects. The risk is that a rogue client connects before the legitimate client. However, this requires immediate knowledge of currently pending client names. Also, our application might mitigate this risk, e.g. where the new client's access is restricted until it is somehow confirmed.
+A new client is be pre-approved by an administrator according to its expected certificate name, and we automatically import its certificate the first time it connects. The risk is that a rogue client connects before the legitimate client. However, this requires timeous knowledge of the names of pending new clients. Moreover, our application might mitigate this risk by limiting the transactions of new clients until they have been manually confirmed.
 
-Alternatively a new client connects without a certificate, in order to send a registration request for the server to generate a key on its behalf. For example, our HTTPS server might send this as its response i.e. with a content type of <tt>application/x-pkcs12</tt>, to be imported by the client's browser. 
+Alternatively a new client can register without a certificate, where our application generates a key on its behalf. For example, our HTTPS server responds with a content type of <tt>application/x-pkcs12</tt>, to be imported by the client's browser. 
 
  
 <h4>SQL truststore</h4>
@@ -38,9 +38,9 @@ where the certificate name is unique. Incidently, the certificate itself would b
 
 We might import certificates for new clients where these are disabled until validated by our application, and perhaps their access is restricted pending confirmation by an administrator. In this case, we might be vulnerable to a denial of service attack whereby our server is flooded with new clients. We could counter this limiting the number of new clients that are recorded from the same source IP number, limiting the rate in general, and enforcing a cutoff where we disable any new clients for some period.
 
-Alternatively we pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is then set when the client connects for the first time. Initially, the <tt>expiry_date</tt> column applies to enrollment. The new client is thus given a limited window to enroll, in order to reduce the risk of a rogue client, especially if the legitimate client never enrolls for some reason.
+We pre-approve a new client by inserting a record with its expected certificate name, but with a <tt>null</tt> entry for the actual certificate. The certificate is then set when the client connects for the first time. Initially, the <tt>expiry_date</tt> column is used to limit the enrollment period. This mitigates the risk of a rogue client, especially if the legitimate client never enrolls for some reason.
 
-Finally, we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused, because of our uniqueness constraint.
+Incidently, we can "revoke" a client certificate by setting its <tt>enabled</tt> column to <tt>false</tt>. However in this case the certificate name cannot be reused, because of our uniqueness constraint.
 
 
 <h4>Certificate storage</h4>
