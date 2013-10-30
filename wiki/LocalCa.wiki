@@ -59,7 +59,7 @@ Certificate:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
 }}}
-We observe the following CA constraints and key usage.
+We observe that the following "Basic Constraints" and "Key Usage" extensions are set.
 {{{
         X509v3 extensions:
             X509v3 Basic Constraints: critical
@@ -67,6 +67,8 @@ We observe the following CA constraints and key usage.
             X509v3 Key Usage: critical
                 Certificate Sign, CRL Sign
 }}}
+where the "Basic Constraints" indicates if this a CA certificate, i.e. it is a root or intermediate certificate belonging to a CA. It will therefore likely be used for signing certificates, revocation lists, code, or email. The "Key Usage" of the above certificate indicates that it can be used to sign certificates, and certificate revocation lists. These usage limitations are considered when validating a certificate chain i.e. during an SSL handshake.
+
 Alternatively we import the certificate into a keystore, and the print certificate using <tt>keytool</tt>.
 {{{
 $ keytool -keystore godaddy.jks -alias godaddy-root -list -v
@@ -85,7 +87,7 @@ KeyUsage [
   Crl_Sign
 ]
 }}}
-where the path length of certificate chains that can be validated is set to the maximum for a signed integer.
+where the path length of certificate chains that can be validated is set to the maximum for a signed integer. Certificates are stored in <a href="http://en.wikipedia.org/wiki/Distinguished_Encoding_Rules#DER_encoding">DER</a> format, i.e. using "Distinguished Encoding Rules" where a field can have "Object ID" e.g. "2.5.29.19" is used for "Basic Constraints."
 
 
 <h4>Local CA key</h4>
