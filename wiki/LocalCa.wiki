@@ -431,31 +431,31 @@ public class ServerThread extends Thread {
 
 <h4>Client keystore</h4>
 
-Let's create the private keystore for a test client named "evanx" for example.
+Let's create the private keystore for a test client named "client" for example.
 {{{
-$ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
-    -alias evanx -dname "CN=evanx"
+$ keytool -keystore client.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
+    -alias client -dname "CN=client"
 }}}
  We print our certificate as PEM text using <tt>-rfc</tt>.
 {{{
-$ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
+$ keytool -keystore client.jks -alias client -exportcert -rfc
 ----BEGIN CERTIFICATE-----
 MIIDxTCCAq2gAwIBAgIBADANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMx
 ...
 }}}
 We cut and paste the exported PEM text into a file, which we can inspect using <tt>openssl</tt>.
 {{{
-$ openssl x509 -text -in evanx.pem
+$ openssl x509 -text -in client.pem
 Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number: 1380030508 (0x5241982c)
     Signature Algorithm: sha1WithRSAEncryption
-        Issuer: CN=evanx
+        Issuer: CN=client
         Validity
             Not Before: Sep 24 13:48:28 2013 GMT
             Not After : Sep 24 13:48:28 2014 GMT
-        Subject: CN=evanx
+        Subject: CN=client
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -463,7 +463,7 @@ Certificate:
 }}}
 We might import the client's self-signed certificate into our server truststore.
 {{{
-$ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
+$ keytool -keystore server.trust.jks -alias client -importcert -file client.pem
 }}}
 Similarly, our server's certificate is imported into this client's truststore.
 
@@ -472,12 +472,12 @@ Similarly, our server's certificate is imported into this client's truststore.
 
 We export a certificate signing request (CSR) to be signed by our local CA.
 {{{
-$ keytool -keystore evanx.jks -alias evanx -certreq
+$ keytool -keystore client.jks -alias client -certreq
 }}}
 We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its <tt>-gencert</tt> option, which by the way is not available in earlier JRE's.
 {{{
 $ keytool -keystore ca.jks -gencert -validity 365 -rfc \
-    -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem \
+    -dname "CN=client" -infile client.csr -outfile client.signed.pem \
     -ext BasicConstraints:critical=ca:false,pathlen:0 \
     -ext KeyUsage:critical=digitalSignature \
     -ext ExtendedKeyUsage:critical=clientAuth
@@ -486,7 +486,7 @@ where we specify an unchanged name and validity period for the newly signed cert
 
 We can inspect the cert using <tt>openssl</tt>.
 {{{
-$ openssl x509 -text -in evanx.signed.pem
+$ openssl x509 -text -in client.signed.pem
 Certificate:
     Data:
         Version: 3 (0x2)
@@ -496,7 +496,7 @@ Certificate:
         Validity
             Not Before: Oct 16 20:02:24 2013 GMT
             Not After : Jul 11 20:02:24 2016 GMT
-        Subject: CN=evanx
+        Subject: CN=client
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -526,13 +526,13 @@ where our tests indicate that the "Digital Signature" usage is required for clie
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the CA cert first, and then our signed cert.
 {{{
-$ keytool -keystore evanx.jks -importcert -noprompt \
+$ keytool -keystore client.jks -importcert -noprompt \
     -file ca.pem -alias ca
 Enter keystore password: 
 Certificate was added to keystore
 
-$ keytool -keystore evanx.jks -importcert -noprompt \
-    -file evanx.signed.pem -alias evanx
+$ keytool -keystore client.jks -importcert -noprompt \
+    -file client.signed.pem -alias client
 Enter keystore password: 
 Certificate reply was installed in keystore
 }}}
@@ -554,7 +554,7 @@ In order to review access, we clearly require a perfect record of all issued cer
 
 We might record our signed certs into a keystore file as follows.
 {{{
-$ keytool -keystore server.issued.jks -importcert -alias evanx -file evanx.pem 
+$ keytool -keystore server.issued.jks -importcert -alias client -file client.pem 
 Certificate was added to keystore
 }}}
 where this is not a truststore per se, but just a database of issued certificates. 
