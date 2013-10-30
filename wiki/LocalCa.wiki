@@ -564,9 +564,9 @@ Interestingly, we sign our client certificates to avoid having such a truststore
 
 <h4>Self-signed client certificates</h4>
 
-If our local CA key is compromised by a breach, or abused by an administrator, rogue certificates can might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
+If our local CA key is compromised by a breach, or abused by an administrator, rogue certificates can might be created. So we prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So we might use an explicit trust manager as below, where the key certificate must be in the truststore, and it's chain is disregarded.
+However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using <tt>keytool -gencert</tt>. So we use an explicit trust manager as below, where the key certificate must be in the truststore.
 {{{
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -599,7 +599,7 @@ We validate peer certificate chains as follows.
         }
     }
 }}}
-where we check that the first cert in the chain sent by the peer, i.e. the key certificate, is contained in our map.
+where we check that the first cert in the chain sent by the peer, i.e. the key certificate, is contained in our map. It's chain is disregarded, and so our certificates can be self-signed.
 
 We could use this trust manager equally on a client, as well as our server.
 {{{
@@ -638,9 +638,9 @@ Naturally, our SSL server resides in our DMZ, whereas we want to isolate our loc
 
 If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, one might prefer to use self-signed client certificates.
 
-We note that self-signed client certificates are effectively CA certificates, and so compromised client keys can be used to create rogue certificates. We present an explicit trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it can be self-signed.
+We note that self-signed client certificates are effectively CA certificates, and so compromised client keys can be used to create rogue certificates. We present an explicit trust manager to check that the peer's key certificate is in the truststore, and disregard its chain.
 
-Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. We find that using a local CA to sign client certificates introduces operational burdens and security risks, and so one might prefer to use self-signed certificates, which are explicitly trusted.
+Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. We find that using a local CA to sign client certificates introduces operational burdens and security risks, and so we would prefer to use self-signed certificates, with the above-mentioned truststore.
 
 
 <h4>Moreover</h4>
