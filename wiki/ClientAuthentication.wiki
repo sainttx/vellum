@@ -93,7 +93,7 @@ We implement a trust manager which uses our certificate storage.
 {{{
 public class StorageTrustManager implements X509TrustManager {
     final private CertificateStorage certificateStorage;
-    private boolean allowNoCert;
+    private boolean allowWithoutCertificate;
     private boolean allowExpired;
     private boolean insertNew;
     private boolean updateExpired;
