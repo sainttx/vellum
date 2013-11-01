@@ -6,7 +6,7 @@ Say we have a customer that deploys hundreds of managed point-of-sale devices th
 
 We note that a similar problem is a mobile application, where one might have millions of clients connecting to one's server.
 
-CA-signed certificates are typically used for server authentication. Certainly we'll buy a CA certificate for our production server. However, we are primarily concerned with client authentication. We suspect that we should be able to issue certificates for our managed devices ourselves. Ultimately, we wish to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
+CA-signed certificates are typically used for server authentication. Certainly we'll buy a CA certificate for our production server. However, we are primarily concerned with client authentication. We suspect that we should be able to issue certificates for our managed devices ourselves. Moreover, we wish to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
 
 Naturally each client generates a private key, and usually we import all our clients' self-certificates into our server "truststore."
 
