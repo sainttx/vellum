@@ -2,9 +2,15 @@
 
 <h4>Overview</h4>
 
-We consider authenticated clients connecting to our private Java server using SSL sockets. Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. 
+Say we have a customer that deploys hundreds of managed point-of-sale devices that connect to our private Java server to perform online transactions. We propose client-authenticated SSL sockets. The question is, should we buy CA certificates for each device, or use self-signed certificates?
 
-For client authentication, naturally each client generates a private key, and we import all our clients' certificates into our server truststore. As an experiment, we'll sign the client certificates with a local CA certificate using <tt>keytool</tt>. In this case our truststore contains our CA certificate only. However, then our server should somehow support certificate revocation so that we can disable access e.g. for devices that go amiss.
+We note that a similar problem is a mobile application, where one might have millions of clients connecting to one's server.
+
+Public CA certificates are typically used for server authentication. Certainly we'll use a CA certificate for our production server. However, we are primarily concerned with client authentication. We suspect that we should be able to issue certificates for our managed devices ourselves. Ultimately, we wish to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
+
+Naturally each client generates a private key, and usually we import all our clients' self-certificates into our server "truststore."
+
+As an experiment, let's sign the client certificates with a "local CA" certificate using <tt>keytool</tt>. We explore setting up our own CA, and examine the security implications. In the course of this exercise, we'll understand Java SSL better. Finally, we'll decide whether to use a local CA, or self-signed certicates?
 
 
 <h4>SSLContext</h4>
