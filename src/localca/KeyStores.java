@@ -60,11 +60,9 @@ public class KeyStores {
 
     public static X509Certificate findSoleTrustedCertificate(KeyStore trustStore) 
             throws KeyStoreException {        
-        for (String alias : Collections.list(trustStore.aliases())) {
-            logger.debug("countCerts {}", alias);
-            if (trustStore.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class)) {
-                return (X509Certificate) trustStore.getCertificate(alias);
-            }
+        if (Collections.list(trustStore.aliases()).size() == 1) {
+            return (X509Certificate) trustStore.getCertificate(
+                    trustStore.aliases().nextElement());
         }
         throw new KeyStoreException("No sole trusted certificate found in keystore");
     }
