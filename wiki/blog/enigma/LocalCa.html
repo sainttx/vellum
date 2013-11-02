@@ -1,11 +1,13 @@
 
-We consider a bunch of authenticated clients connecting to our private Java server using SSL sockets. Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. 
+Say we have a customer that deploys hundreds of managed point-of-sale devices that connect to our private Java server to perform online transactions. You propose client-authenticated SSL sockets. The question is, should we buy CA-signed certificates for each device, or use self-signed certificates?
 
 <!--break-->
 
-For client authentication, naturally each client generates a private key, and we import all our clients' certificates into our server truststore.
+CA-signed certificates are typically used for server authentication. Certainly we'll buy a CA certificate for our production server. However, we are primarily concerned with client authentication. Down the line, we want to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
 
-In this article, we'll sign the client certificates using a local CA certificate. In this case our truststore contains our CA certificate only. However, our server should somehow support certificate revocation so that we can disable access e.g. for devices that go amiss.
+Naturally each client generates a private key. We can import all each client's self-signed certificate into our server "truststore." As an experiment, let's setup our own CA, and sign the client certificates with our local CA key. 
+
+We'll examine the security implications, and propose measures to mitigate risks. In the course of this exercise, we'll learn about <tt>keytool</tt>, and understand Java SSL better. Finally, we'll decide if this approach is better than using self-certificates.
 
 <h4>SSLContext</h4>
 
@@ -35,10 +37,10 @@ For the purpose of SSL, the keystore must contain an asymmetric private key, whi
 
 The truststore contains peer or CA certificates that we trust. By definition we trust any peer certificate chain that includes a certificate in our truststore. That is to say, if our truststore contains a CA certificate, then we trust all certificates issued by that CA.
 
-Since a keystore must contain the certificate chain of the key certificate, and the truststore needn't include the certificate chains of trusted certificates, they differ critically in this respect, and so the keystore should not be misused as the truststore.
+Note that since the keystore must contain the certificate chain of the key certificate, and the truststore needn't include the certificate chains of trusted certificates, they differ critically in this respect, and so the keystore should not be misused as the truststore.
 
 
-<h4>CA root certificate</h4>
+<h4>Root CA certificate</h4>
 
 Let's first inspect a <a href="https://certs.godaddy.com/anonymous/repository.pki">GoDaddy</a> root certificate, for example.
 <pre>
@@ -56,14 +58,16 @@ Certificate:
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
-</pre>We observe the following CA constraints and key usage.
+</pre>We observe that the following "Basic Constraints" and "Key Usage" extensions are set.
 <pre>
         X509v3 extensions:
             X509v3 Basic Constraints: critical
                 CA:TRUE
             X509v3 Key Usage: critical
                 Certificate Sign, CRL Sign
-</pre>Alternatively we import the certificate into a keystore, and the print certificate using keytool.
+</pre>where the "Basic Constraints" indicates if this a CA certificate, i.e. it is a root or intermediate certificate belonging to a CA. It will therefore likely be used for signing certificates, revocation lists, code, or email. The "Key Usage" of the above certificate indicates that it can be used to sign certificates, and certificate revocation lists. These usage limitations are considered when validating a certificate chain i.e. during an SSL handshake.
+
+Alternatively we import the certificate into a keystore, and the print certificate using keytool.
 <pre>
 $ keytool -keystore godaddy.jks -alias godaddy-root -list -v
 ...
@@ -80,7 +84,7 @@ KeyUsage [
   Key_CertSign
   Crl_Sign
 ]
-</pre>where the path length of certificate chains that can be validated is set to the maximum for a signed integer.
+</pre>where the path length of certificate chains that can be validated is set to the maximum for a signed integer. Certificates are stored in <a href="http://en.wikipedia.org/wiki/Distinguished_Encoding_Rules#DER_encoding">DER</a> format, i.e. using "Distinguished Encoding Rules" where a field can have "Object ID" e.g. "2.5.29.19" is used for "Basic Constraints."
 
 
 <h4>Local CA key</h4>
@@ -93,7 +97,7 @@ $ keytool -keystore ca.jks -genkeypair -alias ca -dname "CN=ca" \
     -keyalg rsa -keysize 2048 -validity 365 -noprompt \
     -ext BasicConstraints:critical=CA:true,pathlen:2 \
     -ext KeyUsage:critical=keyCertSign,cRLSign
-</pre>Incidently, our testing using Java SSL sockets indicates that these CA constraints are ignored for root certificates. For example, even setting CA:false on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This means that self-signed server and client keys can be used to issue rogue certificates. 
+</pre>Incidently, our testing using Java SSL sockets indicates that these CA constraints are ignored for root certificates. For example, even setting CA:false on our CA certificate, we are nevertheless able to sign certificates, and use those for SSL connections. This means that self-signed server and client keys can be used to issue rogue certificates, which is somewhat disconcerting.
 
 Having created our keystores and truststores using keytool, where both our client and server are signed by our local CA, we test them for SSL sockets as follows.
 <pre>
@@ -143,7 +147,7 @@ $ keytool -keystore server.jks -genkeypair -alias server -dname "CN=server.com" 
   -keyalg rsa -keysize 2048 -validity 365 -noprompt
 </pre>where we specify a validity period of 365 days. 
 
-Naturally the common name of server certificates is their domain name, for validation by the client, as performed by browsers.
+Naturally the common name of a server certificate is its domain name. This is validated by the client e.g. the browser, that the domain name of the server to which we connect, matches its certificate's common name.
 
 We export a certificate signing request (CSR) as follows.
 <pre>
@@ -155,7 +159,7 @@ $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=serv
     -ext BasicConstraints:critical=ca:false,pathlen:0 \
     -ext KeyUsage:critical=keyEncipherment \
     -ext ExtendedKeyUsage:critical=serverAuth
-</pre>where we set X509v3 extensions to restrict the key usage for good measure, as per certificates from a public CA. 
+</pre>where we set the X509v3 extensions to restrict the key usage for good measure, as we see for certificates we buy from a public CA. 
 
 We now wish to import this signed certificate reply into our server keystore. As mentioned earlier, keytool will not allow a signed certificate to be imported unless its parent certificate chain is already present in the keystore.
 <pre>
@@ -185,20 +189,19 @@ Issuer: CN=ca
 Certificate[2]:
 Owner: CN=ca
 Issuer: CN=ca
-</pre>where we have signed our server certificate with a local CA root certificate. 
+</pre>where we have signed our server certificate with our local CA root certificate. 
 
 Note that the first certificate of the chain is our key certificate, and the last certificate is the root CA certificate. By definition the "root" certificate of a chain is self-signed. Additionally, might have an "intermediate" CA certificate that issues the key certificate.
 
 
 <h4>Server truststore</h4>
 
-Our server truststore will contain our CA certificate which signs our client certs.
+Our server truststore should contain the CA certificate which signs our client certficates.
 <pre>
 $ keytool -keystore server.trust.jks -alias ca -importcert -noprompt -file ca.pem
-</pre>Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains our CA certificate (as it root certificate), it will be trusted. In fact, any certificate issued by our CA is trusted, according to this truststore.
+</pre>If we use an intermediate CA certificate to sign our client certificates, then that would be imported into the truststore rather than the root CA certificate.
 
-Note that keystore naturally contains the server certificate, and so if this is misused as the truststore, then a rogue certificate can be created by signing it with the server key.
-
+Note that by definition, any remote peer certificate whose chain contains a certificate in the truststore, is trusted. Therefore since each client certificate chain contains this trusted certificate (as it root certificate), it will be trusted. In fact, any certificate issued by our CA is trusted, according to this truststore.
 
 <h4>openssl</h4>
 
@@ -214,9 +217,9 @@ Certificate chain
 ...
 Acceptable client certificate CA names
 /CN=ca
-</pre>where the subject and issuer of the two certificates in our key certificate chain are listed, and our server will accept client certificates whose chain includes the CA certificate, i.e. as its root certificate. (If we are using an intermediate CA certificate to sign the client certs, then that would be imported into the truststore rather than the root certificate.)
+</pre>where the subject and issuer of the two certificates in our key certificate chain are listed, and our server will accept client certificates whose chain includes our CA certificate, i.e. as its root certificate.
 
-This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for authentication. The peer receives the chain, and authenticates it, stopping as soon as it encounters a certificate that it trusts. Therefore the chain for a trusted certificate need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> certificate issued by that trusted cert's root, irrespective of the trusted cert itself. For example, if our clients are to trust only our server, whose certificate happens to be issued by GoDaddy, we certainly don't want those clients to trust any server with a certificate issued by GoDaddy.
+This demonstrates why the keystore requires a certificate chain, i.e. to send to the peer for validation. The peer validates the chain, and checks it against our trusted certificates. It stops checking as soon as it encounters a certificate in the chain that it trusts. Therefore the chain for a trusted certificate need not be stored in the truststore, and actually must not be, otherwise we trust <i>any</i> certificate issued by that trusted certificate's root, irrespective of the trusted certificate itself. For example, if our clients must trust only our server, whose certificate happens to be issued by GoDaddy, we certainly don't want those clients to trust any server with a certificate issued by GoDaddy.
 
 
 <h4>Server-specific CA certificate</h4>
@@ -226,7 +229,7 @@ In practice we might have multiple servers with different sets of clients, where
 <pre>
 $ keytool -keystore server-ca.jks -genkeypair -noprompt -keyalg rsa -keysize 2048 \
     -alias server-ca -dname "CN=server-ca" -validity 365     
-</pre>where the server's truststore would contain this CA certificate, and so trust all of its clients. 
+</pre>where the server's truststore would contain this CA certificate.
 
 While it is possible to sign client certificates with the server key as its own CA, this key resides in the DMZ, which is our least secure zone. If compromised, the key can be used to issue rogue certificates. Therefore we choose not to store CA keys in our DMZ.
 
@@ -235,7 +238,7 @@ While it is possible to sign client certificates with the server key as its own 
 
 We might keep our root CA key offline where it cannot possibly be compromised. In this case, we generate an intermediate CA key, where its CSR and certificate reply is transferred via removable USB media between our online intermediate CA server, and our offline root CA server. 
 
-Our intermediate CA key is then used for certificate signing. Our parties still only need trust the root CA certificate, via their truststores. However, their keystores contain their key certificate chain, which includes the intermediate CA certificate.
+Although the intermediate CA key is then used for certificate signing, our server and client truststores still contain the root CA certificate. However, their keystores contain their key certificate chain, which includes the intermediate CA certificate.
 
 <pre>
 $ openssl s_client -connect localhost:4444
@@ -251,7 +254,7 @@ Certificate chain
 Acceptable client certificate CA names
 /CN=ca
 </pre> 
-In the event that an intermediate keystore is compromised, then it's certificate should be revoked, e.g. where our root CA certificate includes a URL for its certificate revocation list. In this case, our clients can reject servers signed with that compromised intermediate CA certificate.
+In the event that an intermediate keystore is compromised, then it's certificate should be revoked, e.g. where our root CA certificate includes a URL for its certificate revocation list. In this case, our clients can reject servers signed with that compromised intermediate certificate.
 
 Clearly we would have to generate a new intermediate CA key, and re-sign all our certificates. To avoid such a burden, one might prefer self-signed client certificates.
 
@@ -264,7 +267,7 @@ Incidently, <a href="http://www.docjar.org/html/api/sun/security/tools/KeyTool.j
             new java.util.Random().nextInt() & 0x7fffffff));
 </pre>We see that <a href="http://www.docjar.org/html/api/java/security/cert/X509Certificate.java.html">X509Certificate</a> (implemented by <a href="http://www.docjar.org/html/api/sun/security/x509/X509CertImpl.java.html">X509CertImpl</a>) returns a BigInteger for the certificate serial number, which should be unique, and can be used for revocation.
 
-In a later article, we might build a local CA management tool, which uses a sequence number for certs which it generates programmatically and records in an SQL database.
+In a later article, we might build a local CA management tool, which uses a sequence number for certificates which it generates programmatically and records in an SQL database.
 
 
 <h4>Local revocation</h4>
@@ -299,7 +302,7 @@ public class RevocableNameSSLContexts {
         keyManagerFactory.init(keyStore, keyPass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         TrustManager revocableTrustManager = new RevocableTrustManager(
-                KeyStores.findSoleTrustedCertificate(keyStore),
+                KeyStores.findSoleTrustedCertificate(trustStore),
                 KeyStores.findX509TrustManager(trustStore),
                 revokedNames);
         sslContext.init(keyManagerFactory.getKeyManagers(),
@@ -340,7 +343,7 @@ public class RevocableTrustManager implements X509TrustManager {
 Since we use this trust manager on the server to validate clients, we know its checkServerTrusted() method is not needed.
 <pre>
     @Override
-    public void checkServerTrusted(X509Certificate[] certs, String authType) 
+    public void checkServerTrusted(X509Certificate[] chain, String authType) 
             throws CertificateException {
         throw new CertificateException("Server authentication not supported");
     }    
@@ -395,36 +398,36 @@ public class ServerThread extends Thread {
 }
 </pre><h4>Client keystore</h4>
 
-Let's create the private keystore for a test client named "evanx" for example.
+Let's create the private keystore for a test client..
 <pre>
-$ keytool -keystore evanx.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
-    -alias evanx -dname "CN=evanx"
-</pre> We print our certificate as PEM text using -rfc.
+$ keytool -keystore client.jks -genkeypair -keyalg rsa -keysize 2048 -validity 365 \
+    -alias client -dname "CN=client"
+</pre>We print our certificate as PEM text using -rfc.
 <pre>
-$ keytool -keystore evanx.jks -alias evanx -exportcert -rfc
+$ keytool -keystore client.jks -alias client -exportcert -rfc
 ----BEGIN CERTIFICATE-----
 MIIDxTCCAq2gAwIBAgIBADANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMx
 ...
-</pre>We cut and paste the exported PEM text into a file, which we can inspect using openssl.
+</pre>We cut and paste the exported PEM text into a file, which we inspect using openssl.
 <pre>
-$ openssl x509 -text -in evanx.pem
+$ openssl x509 -text -in client.pem
 Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number: 1380030508 (0x5241982c)
     Signature Algorithm: sha1WithRSAEncryption
-        Issuer: CN=evanx
+        Issuer: CN=client
         Validity
             Not Before: Sep 24 13:48:28 2013 GMT
             Not After : Sep 24 13:48:28 2014 GMT
-        Subject: CN=evanx
+        Subject: CN=client
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
 ...
 </pre>We might import the client's self-signed certificate into our server truststore.
 <pre>
-$ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
+$ keytool -keystore server.trust.jks -alias client -importcert -file client.pem
 </pre>Similarly, our server's certificate is imported into this client's truststore.
 
 
@@ -432,19 +435,19 @@ $ keytool -keystore server.trust.jks -alias evanx -importcert -file evanx.pem
 
 We export a certificate signing request (CSR) to be signed by our local CA.
 <pre>
-$ keytool -keystore evanx.jks -alias evanx -certreq
+$ keytool -keystore client.jks -alias client -certreq
 </pre>We cut and paste the output PEM text into a CSR file, and use Java7's keytool to sign this CSR, using its -gencert option, which by the way is not available in earlier JRE's.
 <pre>
 $ keytool -keystore ca.jks -gencert -validity 365 -rfc \
-    -dname "CN=evanx" -infile evanx.csr -outfile evanx.signed.pem \
+    -dname "CN=client" -infile client.csr -outfile client.signed.pem \
     -ext BasicConstraints:critical=ca:false,pathlen:0 \
     -ext KeyUsage:critical=digitalSignature \
     -ext ExtendedKeyUsage:critical=clientAuth
 </pre>where we specify an unchanged name and validity period for the newly signed certificate. We might add some extensions for good measure, i.e. to restrict key usage.
 
-We can inspect the cert using openssl.
+We inspect the certificate using openssl.
 <pre>
-$ openssl x509 -text -in evanx.signed.pem
+$ openssl x509 -text -in client.signed.pem
 Certificate:
     Data:
         Version: 3 (0x2)
@@ -454,7 +457,7 @@ Certificate:
         Validity
             Not Before: Oct 16 20:02:24 2013 GMT
             Not After : Jul 11 20:02:24 2016 GMT
-        Subject: CN=evanx
+        Subject: CN=client
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -481,13 +484,13 @@ Certificate:
 
 Since the keystore requires its key certificate chain to be imported in the correct order starting with the root cert, we import the CA cert first, and then our signed cert.
 <pre>
-$ keytool -keystore evanx.jks -importcert -noprompt \
+$ keytool -keystore client.jks -importcert -noprompt \
     -file ca.pem -alias ca
 Enter keystore password: 
 Certificate was added to keystore
 
-$ keytool -keystore evanx.jks -importcert -noprompt \
-    -file evanx.signed.pem -alias evanx
+$ keytool -keystore client.jks -importcert -noprompt \
+    -file client.signed.pem -alias client
 Enter keystore password: 
 Certificate reply was installed in keystore
 </pre>Otherwise if the parent chain is not present, we're balked by the following keytool error.
@@ -504,20 +507,20 @@ Clearly a certificate with a duplicate CN impersonates the original certificate 
 
 In order to review access, we clearly require a perfect record of all issued certificates. If a certificate is signed but not recorded, or its record is deleted, our server is forever vulnerable to that rogue certificate. 
 
-We might record our signed certs into a keystore file as follows.
+We might record our signed certificates into a keystore file as follows.
 <pre>
-$ keytool -keystore server.issued.jks -importcert -alias evanx -file evanx.pem 
+$ keytool -keystore server.issued.jks -importcert -alias client -file client.pem 
 Certificate was added to keystore
 </pre>where this is not a truststore per se, but just a database of issued certificates. 
 
-Interestingly, we sign our client certificates to avoid having such a truststore containing all our client certificates, but nevertheless end up with one.
+Interestingly, we sign our client certificates to avoid having such a truststore containing all our client certificates, but nevertheless end up with one, which is telling.
 
 
 <h4>Self-signed client certificates</h4>
 
-If our local CA is compromised by a breach, or abused by a rogue administrator, rogue certificates might be created. So we might prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
+If our local CA key is compromised by a breach, or abused by an administrator, rogue certificates can might be created. So we prefer self-signed client certificates which are explicitly imported into our server truststore where they can be reviewed. 
 
-However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using keytool -gencert. So we might use an explicit trust manager as below, where the key certificate must be in the truststore, and it's chain is disregarded.
+However, self-signed client keys are effectively CA keys, and so rogue certificates can be created using compromised client keys, e.g. using keytool -gencert. So we use an explicit trust manager as below, where the key certificate must be in the truststore.
 <pre>
 public class ExplicitTrustManager implements X509TrustManager {
     Map<String, X509Certificate> certificateMap = new HashMap();
@@ -548,7 +551,7 @@ We validate peer certificate chains as follows.
             throw new CertificateException("Invalid peer certificate");
         }
     }
-</pre>where we check that the first cert in the chain sent by the peer, i.e. the key certificate, is contained in our map.
+</pre>where we check that the first cert in the chain sent by the peer, i.e. the key certificate, is contained in our map. It's chain is disregarded, and so our certificates can be self-signed.
 
 We could use this trust manager equally on a client, as well as our server.
 <pre>
@@ -584,9 +587,9 @@ Naturally, our SSL server resides in our DMZ, whereas we want to isolate our loc
 
 If our CA certificate is compromised, we would need to re-sign all our client certificates. In order to avoid such a burden, one might prefer to use self-signed client certificates.
 
-We note that self-signed client certificates are effectively CA certificates, and so compromised client keys can be used to create rogue certificates. We present an explicit trust manager to check that the peer's key certificate is in the truststore. Since in this case we disregard its chain, clearly it can be self-signed.
+We note that self-signed client certificates are effectively CA certificates, and so compromised client keys can be used to create rogue certificates. We present an explicit trust manager to check that the peer's key certificate is in the truststore, and disregard its chain.
 
-Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. We find that using a local CA to sign client certificates introduces operational burdens and security risks, and so one might prefer to use self-signed certificates, which are explicitly trusted.
+Public CA certificates are typically used for server authentication. However, we are primarily concerned with client authentication. We find that using a local CA to sign client certificates introduces operational burdens and security risks, and so we would prefer to use self-signed certificates, with the above-mentioned truststore.
 
 
 <h4>Moreover</h4>
