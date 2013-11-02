@@ -6,9 +6,9 @@ Say we have a customer that deploys hundreds of managed point-of-sale devices th
 
 CA-signed certificates are typically used for server authentication. Certainly we'll buy a CA certificate for our production server. However, we are primarily concerned with client authentication. Down the line, we want to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
 
-Naturally each client generates a private key. We can import all each client's self-signed certificate into our server "truststore." As an experiment, let's setup our own CA, and sign the client certificates with our local CA key. 
+Naturally each client generates a private key. We could import all each client's self-signed certificate into our server "truststore." But as an experiment, let's setup our own CA, and sign the client certificates with our local CA key. 
 
-We'll examine the security implications, and propose measures to mitigate risks. In the course of this exercise, we'll learn about <tt>keytool</tt>, and understand Java SSL better. Finally, we'll decide if this approach is better than using self-certificates.
+We'll examine the security implications, and propose measures to mitigate risks. In the course of this exercise, we'll learn about <tt>keytool</tt>, and understand Java SSL better. Finally, we must decide if local CA signing is preferrable to self-signed certificates for client authentication.
 
 
 <h4>SSLContext</h4>
