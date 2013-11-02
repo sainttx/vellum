@@ -39,7 +39,7 @@ public class RevocableNameSSLContexts {
     public static SSLContext create(KeyStore keyStore, char[] keyPass,
             KeyStore trustStore, Set<String> revokedNames) throws Exception {
         X509TrustManager revocableTrustManager = new RevocableTrustManager(
-                KeyStores.findSoleTrustedCertificate(keyStore),
+                KeyStores.findSoleTrustedCertificate(trustStore),
                 KeyStores.findX509TrustManager(trustStore),                
                 revokedNames, new TreeSet());
         return SSLContexts.create(keyStore, keyPass, revocableTrustManager);
