@@ -4,11 +4,9 @@
 
 Say we have a customer that deploys hundreds of managed point-of-sale devices that connect to our private Java server to perform online transactions. You propose client-authenticated SSL sockets. The question is, should we buy CA-signed certificates for each device, or use self-signed certificates?
 
-We note that a similar problem is a mobile application, where one might have millions of clients connecting to one's server.
+CA-signed certificates are typically used for server authentication. Certainly we'll buy a CA certificate for our production server. However, we are primarily concerned with client authentication. Down the line, we want to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
 
-CA-signed certificates are typically used for server authentication. Certainly we'll buy a CA certificate for our production server. However, we are primarily concerned with client authentication. We suspect that we should be able to issue certificates for our managed devices ourselves. Down the line, we want to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
-
-Naturally each client generates a private key, and usually we import all our clients' self-certificates into our server "truststore." As an experiment, let's sign the client certificates with a certificate signed by our own "local CA." We'll examine the security implications, and propose measures to mitigate risks. In the course of this exercise, we'll learn about <tt>keytool</tt>, and understand Java SSL better. Finally, we must decide whether to use our local CA, over self-signed certicates?
+Naturally each client generates a private key. We can import all each client's self-signed certificate into our server "truststore." As an experiment, let's setup our own CA, and sign the client certificates with our local CA key. We'll examine the security implications, and propose measures to mitigate risks. In the course of this exercise, we'll learn about <tt>keytool</tt>, and understand Java SSL better. We'll decide if this approach is better than using self-certificates.
 
 
 <h4>SSLContext</h4>
