@@ -3,7 +3,7 @@ Say we have a customer that deploys hundreds of managed point-of-sale devices th
 
 <!--break-->
 
-CA-signed certificates are typically used for server authentication. Certainly we'll buy a CA certificate for our production server. However, we are primarily concerned with client authentication. Down the line, we want to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
+CA-signed certificates are typically used for server authentication. Certainly we can buy a CA certificate for our production server. However, we are primarily concerned with client authentication. Down the line, we want to automate the deployment and enrollment of new devices, without any intervening manual process, such as stopping to buy a certificate on the company's credit card!
 
 Naturally each client generates a private key. We can import all each client's self-signed certificate into our server "truststore." As an experiment, let's setup our own CA, and sign the client certificates with our local CA key. 
 
