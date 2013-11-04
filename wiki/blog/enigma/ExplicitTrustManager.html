@@ -5,29 +5,25 @@ Say we intend to deploy hundreds of devices that connect to our private Java ser
 
 <img align="right" style="margin-left: 4px" src="http://jroller.com/evanx/resource/gnome-keys-250.png" />
 
-<h4>Motivation for self-signed</h4>
+<h4>CA-signed vs self-signed</h4>
 
 CA-signed certificates are typically used for authentication of public servers. However, our clients must trust our private server exclusively, and not any server certificate issued by some CA. So we need a CA specific to our server, and none other.
 
-Actually we are primarily concerned with client authentication. Moreover, we want to automate the deployment and enrollment of new devices. 
-
-Let's consider self-signed certificates.
+Actually we are primarily concerned with client authentication. Moreover, we want to automate the deployment and enrollment of new devices. So we explore the efficacy of self-signed certificates for client devices, to simplify enrollment and reduce costs, without degrading security.
 
 
-<h4>Problem with self-signed</h4>
+<h4>Rogue certificates</h4>
 
 Self-signed peer certificates in a truststore are effectively root CA certificates. Consequently, a rogue certificate can be issued using the keystore of a trusted certificate, i.e. abusing it as a CA certificate, as follows.
 <pre>
 $ keytool -keystore keystore.jks -alias mykey -gencert -infile rogue.csr -dname "CN=client" \
     -validity 365 -rfc -outfile rogue.signed.pem
+</pre>where our compromised keystore is used sign a CSR from a rogue keystore, using Java7's `keytool -gencert`. (Alternatively, we could use `openssl`.)
 
-*
-where our compromised keystore is used sign the CSR from the rogue keystore, using Java7's keytool -gencert.
-
-The rogue certificate is trusted by virtue of being signed by a trusted certificate. This enables an attack without having to tamper with the peer's truststore. D'oh! 
+The rogue certificate is trusted by virtue of being signed by a trusted certificate. This enables an attack vector which overcomes the peer's truststore.
 
 
-<h4>A custom trust manager to the rescue</h4>
+<h4>Custom trust manager</h4>
 
 We should trust only certificates that are explicitly imported into our truststore, irrespective of their certificate chain. For this purpose, we implement a custom X509TrustManager.
 <pre>
@@ -41,9 +37,7 @@ public class ExplicitTrustManager implements X509TrustManager {
     }
     ...
 }
-
-*
-where the trusted certificates in our truststore are put into a map.
+</pre>where the trusted certificates in our truststore are put into a map.
 
 We implement the methods required for an X509TrustManager.
 <pre>
@@ -63,9 +57,7 @@ We implement the methods required for an X509TrustManager.
             throws CertificateException {
         checkTrusted(chain);
     }    
-
-*
-We check that the peer key certificate is trusted, i.e. the first certificate in the peer certificate chain.
+</pre>We check that the peer key certificate is trusted, i.e. the first certificate in the peer certificate chain.
 <pre>
     private void checkTrusted(X509Certificate[] chain) 
             throws CertificateException {
@@ -83,52 +75,41 @@ We check that the peer key certificate is trusted, i.e. the first certificate in
         }
         trustedCertificate.checkValidity();
     }
-
-*
-where we where lookup the trusted certificate with the same common name as the peer certificate. We check the equality of the peer certificate via its public key. This thwarts a spoofing attack using a rogue certificate crafted with the same common name.
+</pre>where we where lookup the trusted certificate with the same common name as the peer certificate. We check the equality of the peer certificate via its public key. This thwarts a spoofing attack using a rogue certificate crafted with the same common name.
 
 We note that certificates are "revoked" by removing them from the truststore, and restarting our server.
 
-Disclaimer: This trust manager is an untested prototype and should not be used in production without much further review.
+Disclaimer: This trust manager is an untested prototype and should not be used in production without further review.
 
 
 <h4>Server key change</h4>
 
-When we discover that our server has been compromised, we must generate a new server key. In this event, we must update each client's truststore appropriately, which might be quite a burden. Moreover, we might wish to change our server key periodically anyway.
+When we discover that our server has been compromised, we must generate a new server key. In this event, we must update each client's truststore accordingly, which might be quite a burden. Moreover, we might wish to change our server key periodically anyway.
 
-So the best approach for a private server is to sign its certificate using an offline CA key, which we create for this purpose. Our private clients trust this exclusive CA certificate, which is offline and so cannot be compromised, except by physical access e.g. by a rogue employee. In the event that our server is compromised, we generate a new server key, which we sign by transferring its CSR to our CA machine, and returning its signed certificate reply, via USB key. 
-
-*
+So the best approach for a private server is to sign its certificate using an offline CA key, which we create for this purpose. Our private clients trust this CA certificate, which cannot be compromised except by physical access e.g. by a rogue employee. In the event that our server is compromised, we generate a new server key, which we sign by transferring its CSR to our CA machine, and returning its signed certificate reply, via USB key. 
+<pre>
 $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=server.com" \
     -validity 365 -rfc -outfile server.signed.pem \
     -ext BasicConstraints:critical=ca:false,pathlen:0 \
     -ext KeyUsage:critical=keyEncipherment \
     -ext ExtendedKeyUsage:critical=serverAuth
-
-*
-
-So in this case, we can perform a server key change, whereby our clients are unaffected.
+</pre>So in this case, we can perform a server key change, whereby our clients are unaffected.
 
 
 <h4>Conclusion</h4>
 
-CA-signed certificates are typically used for authentication of public servers by clients' browsers. However, we are concerned with client-authenticated devices, connecting to a private server.
+CA-signed certificates are typically used for authentication of public servers by any browser. However, we are concerned with client-authenticated devices, connecting to a private server. Our server and each of its clients should exclusively trust each other, and certainly not trust any certificate issued by some public CA. 
 
 <img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
-Our server and each of its clients should exclusively trust each other, and certainly not trust any certificate issued by some public CA. 
+We note that self-signed client certificates in a truststore are effectively CA certificates. Therefore compromised keystores can be used to sign rogue certificates. These are likewise trusted, by virtue of being issued by a trusted certificate. So we implement a custom trust manager that trusts only certificates that are explicitly imported into our truststore, irrespective of their certificate chain.
 
-We note that self-signed client certificates in a truststore are effectively CA certificates. Therefore compromised keystores can be used to sign rogue certificates. These are likewise trusted, by virtue of being issued by a trusted certificate.
+We note that a compromised client keystore can itself be used to spoof that client. Such an attack must be detected by analyzing logs for simultaneous connections, ostensibly from the same client, but from an alternate IP address. We note that rogue certificates can spoof any chosen certificate name, and so present a higher risk. Fortunately they are easily detectable, since they are signed by one of our trusted certificates.
 
-In order to eliminate the risk of rogue certificates, we implement a custom trust manager that trusts only certificates that are explicitly imported into our truststore, irrespective of their certificate chain.
+We also consider an attack where a rogue certificate is injected into a compromised truststore. We note that such tampering is overt and thereby detectable.
 
-We note that a compromised client keystore can itself be used to spoof that client. Such an attack must be detected by analyzing logs for simultaneous connections from the same client from different IP addresses. However, rogue certificates can spoof any chosen certificate name, and so present a higher risk. Fortunately they are easily detectable, since they are signed by one of our trusted certificates.
+When we discover that our server is compromised, we must of course change our server key. Since our clients specifically trust our server's certificate, we must update every client's truststore. To avoid this burden, we should use an offline server CA key to sign our server certificate. Our clients trust this local CA certificate, and so are unaffected by a server key change.
 
-Of course rogue certificates can be injected into a compromised truststore. However, such tampering is overt and thereby detectable.
-
-When we discover that our server is compromised, naturally we must change our server key. Since our clients specifically trust our server's certificate, we must update every client's truststore. To avoid this burden, we should use an offline server CA key to sign our server certificate. Our clients trust this local CA certificate, and so are unaffected by a server key change.
-
-<img align="left" style="margin-left: 4px" src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Gnome-applications-office.svg/200px-Gnome-applications-office.svg.png" />
 
 <h4>Moreover</h4>
 
