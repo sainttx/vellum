@@ -1,4 +1,5 @@
 
+
 Say we intend to deploy hundreds of devices that connect to our private Java server to perform online transactions. We propose client-authenticated SSL sockets. The question is, should we buy CA-signed certificates for each device, or use self-signed certificates?
 
 <!--break-->
@@ -16,8 +17,8 @@ Actually we are primarily concerned with client authentication. Moreover, we wan
 
 Self-signed peer certificates in a truststore are effectively root CA certificates. Consequently, a rogue certificate can be issued using the keystore of a trusted certificate, i.e. abusing it as a CA certificate, as follows.
 <pre>
-$ keytool -keystore keystore.jks -alias mykey -gencert -infile rogue.csr -dname "CN=client" \
-    -validity 365 -rfc -outfile rogue.signed.pem
+$ keytool -keystore keystore.jks -alias mykey -gencert -validity 365 -rfc \
+    -infile rogue.csr -outfile rogue.signed.pem -dname "CN=client"
 </pre>where our compromised keystore is used sign a CSR from a rogue keystore, using Java7's `keytool -gencert`. (Alternatively, we could use `openssl`.)
 
 The rogue certificate is trusted by virtue of being signed by a trusted certificate. This enables an attack vector which overcomes the peer's truststore.
@@ -100,9 +101,9 @@ $ keytool -keystore ca.jks -alias ca -gencert -infile server.csr -dname "CN=serv
 
 CA-signed certificates are typically used for authentication of public servers by any browser. However, we are concerned with client-authenticated devices, connecting to a private server. Our server and each of its clients should exclusively trust each other, and certainly not trust any certificate issued by some public CA. 
 
-<img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
-
 We note that self-signed client certificates in a truststore are effectively CA certificates. Therefore compromised keystores can be used to sign rogue certificates. These are likewise trusted, by virtue of being issued by a trusted certificate. So we implement a custom trust manager that trusts only certificates that are explicitly imported into our truststore, irrespective of their certificate chain.
+
+<img align="right" src="http://jroller.com/evanx/resource/Gnome-application-certificate-250-crop.png">
 
 We note that a compromised client keystore can itself be used to spoof that client. Such an attack must be detected by analyzing logs for simultaneous connections, ostensibly from the same client, but from an alternate IP address. We note that rogue certificates can spoof any chosen certificate name, and so present a higher risk. Fortunately they are easily detectable, since they are signed by one of our trusted certificates.
 
@@ -124,5 +125,4 @@ You can browse the code for this exercise on <a href="https://github.com/evanx/v
 <h4>Other reading</h4>
 
 Also relating to Java crypto in this blog: <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">Password Salt</a> for secure passwords; and leveraging the <a href="https://weblogs.java.net/blog/evanx/archive/2012/11/07/google-authenticator-thus-enabled">Google Authenticator</a> mobile app for multi-factor authentication for your own sites.
-
 
