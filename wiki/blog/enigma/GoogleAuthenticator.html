@@ -1,4 +1,3 @@
-
 The Google Authenticator mobile apps implement an IETF time-based one-time-password standard. This hashes the time, with a shared secret using the HMAC-SHA1 algorithm, to generate a one-time password.
 
 But besides enabling multi-factor authentication for our personal Google account, how would we employ Google Authenticator clients for our own websites?!
@@ -7,10 +6,8 @@ But besides enabling multi-factor authentication for our personal Google account
 
 <h4>Prequels</h4>
 
-A few years ago i emitted a series of Java crypto articles on this blog, which have been collated on https://code.google.com/p/vellum in wiki format, but otherwise not updated or patched up e.g. the old "Password Hash" article there neglects to add salt! Anyways, herewith starts a new crypto series to rehash the past, and decipher a possible future.
-
 <p>   
-<a style='text-decoration: none;' href="https://code.google.com/p/vellum/wiki/home">
+<a style='text-decoration: none;' href="https://github.com/evanx/vellum">
 <div style="border-bottom: solid 1px; background-color: #ccff00;">
 <img src="http://upload.wikimedia.org/wikipedia/commons/5/55/Gnome-security-medium.svg" border="0" align="left" hspace="0"/><span style="font-style: normal; font-weight: bold; font-size: 12pt;">&nbsp;Google Authenticator thus enabled:</span><span style="font-style: italic; font-weight: normal; font-size: 11pt;">&nbsp;A part of "The Enigma Posts: a trilogy in a few parts."</span>
 </div>
@@ -209,7 +206,7 @@ and
     Authentication methods that depend on more than one factor are more difficult to compromise than single-factor methods.
 </blockquote>
 
-Clearly the only way to generate the correct OTP code is by having the secret key, so then if the user has entered their correct password (as the thing they "know"), as well as the correct OTP (proving that they "have" the secret), then two-factor authentication is "thus enabled" :)
+Clearly the only way to generate the correct OTP code is by having the secret key, so then if the user has entered the correct password (as the thing they "know"), as well as the correct OTP (proving that they "have" the secret), then two-factor authentication is "thus enabled" :)
 
 Finally, the question arises how to handle the event of a user losing their phone (and OTP secret)? So I guess in addition to a "Forgot Password" facility, one needs a "Lost phone" button ;) That is, we need to enable users to reset their OTP secret, without that becoming the weak link. We'll address this another day ;)
 
@@ -225,13 +222,12 @@ A slight complication is that the clocks might be a bit out of sync, so we allow
 
 We should investigate the counter-based <a href="http://en.wikipedia.org/wiki/HOTP">HOTP</a>, since we might be missing a trick there?!
 
-In an upcoming article, we'll build a sample site using a <a href="http://twitter.github.com/bootstrap/getting-started.html#examples">Twitter Bootstrap</a> template, <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/web/bindex.js">enabling</a> "Login with Google" via that <a href="https://developers.google.com/accounts/docs/OAuth2">OAuth 2.0 API</a>. For a sneak preview, see the <a href="http://code.google.com/p/vellum/source/browse/trunk/src/crocserver/#crocserver%2Fhttphandler%2Faccess"><tt>crocserver</tt></a> package under construction.
+In an upcoming article, we'll build a sample site using a <a href="http://twitter.github.com/bootstrap/getting-started.html#examples">Twitter Bootstrap</a> template, enabling "Login with Google" via that <a href="https://developers.google.com/accounts/docs/OAuth2">OAuth 2.0 API</a>, in addition to the usual <a href="https://weblogs.java.net/blog/evanx/archive/2013/01/24/password-salt">hashed and salted password</a>, and of course this T-OTP with Google Authenticator.
 
-And then coming "soon" in 2013, we'll build out a crypto server called <a href="http://code.google.com/p/vellum/source/browse/trunk/src/venigma/#venigma%2Fserver"><tt>venigma</tt></a> :)
 
 <h4>Resources</h4>
 
-See https://code.google.com/p/vellum/ where i will collate these articles and their code, e.g. the <a href="http://code.google.com/p/vellum/source/browse/#svn%2Ftrunk%2Fsrc%2Fvellumdemo%2Ftotp"><tt>vellumdemo.totp</tt></a> package.
+https://github.com/evanx/vellum/wiki - where i will collate these articles and their code - see the <a href="https://github.com/evanx/vellum/blob/master/src/vellumdemo/totp"><tt>vellumdemo.totp</tt></a> package.
 
 <h4>Link list</h4>
 
